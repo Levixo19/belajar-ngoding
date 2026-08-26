@@ -1,0 +1,377 @@
+BASH_QUIZZES = [
+    {
+        "title": "Kuis 1: Dasar Bash & Variabel",
+        "questions": [
+            {
+                "q": "Baris #!/usr/bin/env bash di awal script disebut?",
+                "options": ["Header", "Shebang", "Prolog", "Manifest"],
+                "answer": 1,
+                "explanation": "Shebang memberi tahu sistem program mana yang harus menjalankan file ini.",
+            },
+            {
+                "q": "Manakah cara membuat variabel yang BENAR di bash?",
+                "options": ["nama = \"Andi\"", "nama=\"Andi\"", "var nama = \"Andi\"", "let nama = \"Andi\""],
+                "answer": 1,
+                "explanation": "Tidak boleh ada spasi di sekitar tanda =. Dengan spasi, bash mengira 'nama' adalah nama perintah.",
+            },
+            {
+                "q": "Apa perbedaan \"$nama\" dan '$nama'?",
+                "options": [
+                    "Tidak ada bedanya",
+                    "Petik ganda memproses variabel, petik tunggal menampilkan apa adanya",
+                    "Petik tunggal memproses variabel, petik ganda apa adanya",
+                    "Petik tunggal hanya untuk angka",
+                ],
+                "answer": 1,
+                "explanation": "Petik ganda melakukan ekspansi variabel dan $(...). Petik tunggal membuat semuanya literal.",
+            },
+            {
+                "q": "Perintah apa yang memberi izin eksekusi pada file script?",
+                "options": ["chown +x file.sh", "chmod +x file.sh", "exec file.sh", "setx file.sh"],
+                "answer": 1,
+                "explanation": "chmod +x menambahkan bit executable sehingga file bisa dijalankan dengan ./file.sh",
+            },
+            {
+                "q": "Variabel khusus $? berisi apa?",
+                "options": [
+                    "Jumlah argumen",
+                    "Nama script",
+                    "Kode keluar perintah yang terakhir dijalankan",
+                    "Process ID script",
+                ],
+                "answer": 2,
+                "explanation": "$? menyimpan exit code perintah terakhir. Nilai 0 berarti sukses.",
+            },
+            {
+                "q": "Bagaimana cara menyimpan hasil sebuah perintah ke variabel?",
+                "options": ["x = date", "x=$(date)", "x=<date>", "x=exec date"],
+                "answer": 1,
+                "explanation": "$(perintah) disebut command substitution: perintah dijalankan lalu output-nya jadi nilai.",
+            },
+            {
+                "q": "Kenapa ${nama} lebih aman daripada $nama?",
+                "options": [
+                    "Lebih cepat dieksekusi",
+                    "Batas nama variabel jadi jelas saat menempel teks lain",
+                    "Otomatis menambahkan petik",
+                    "Hanya bentuk itu yang valid",
+                ],
+                "answer": 1,
+                "explanation": "Pada \"${nama}ku\", kurawal menandai bahwa nama variabelnya 'nama', bukan 'namaku'.",
+            },
+            {
+                "q": "Berapa tipe data yang dikenal bash untuk variabel biasa?",
+                "options": [
+                    "Empat: int, float, string, bool",
+                    "Dua: angka dan teks",
+                    "Pada dasarnya semua diperlakukan sebagai string",
+                    "Tiga: int, string, array",
+                ],
+                "answer": 2,
+                "explanation": "Bash tidak punya sistem tipe. Semua nilai disimpan sebagai string dan dikonversi saat perlu.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 2: Input, Output & Aritmatika",
+        "questions": [
+            {
+                "q": "Perintah untuk membaca input dari keyboard adalah?",
+                "options": ["input", "read", "scan", "gets"],
+                "answer": 1,
+                "explanation": "read menyimpan baris yang diketik user ke dalam variabel.",
+            },
+            {
+                "q": "Apa arti operator > dalam 'echo halo > file.txt'?",
+                "options": [
+                    "Menambahkan ke akhir file",
+                    "Menulis ke file dan menimpa isi lamanya",
+                    "Membandingkan lebih besar",
+                    "Membaca dari file",
+                ],
+                "answer": 1,
+                "explanation": "> menimpa isi file. Untuk menambahkan di akhir, gunakan >>.",
+            },
+            {
+                "q": "Berapa hasil dari echo $((10 / 3)) ?",
+                "options": ["3.33", "3", "4", "error"],
+                "answer": 1,
+                "explanation": "Aritmatika bawaan bash hanya bilangan bulat, sisa pembagian dibuang.",
+            },
+            {
+                "q": "Untuk perhitungan desimal di bash, alat yang umum dipakai adalah?",
+                "options": ["calc", "bc atau awk", "math", "float"],
+                "answer": 1,
+                "explanation": "bc dan awk mendukung bilangan pecahan, sedangkan $(( )) hanya bilangan bulat.",
+            },
+            {
+                "q": "Apa fungsi tanda | (pipe)?",
+                "options": [
+                    "Menjalankan dua perintah bersamaan",
+                    "Menyambungkan output perintah kiri ke input perintah kanan",
+                    "Membandingkan dua nilai",
+                    "Menandai komentar",
+                ],
+                "answer": 1,
+                "explanation": "Pipe merangkai perintah: output yang satu langsung jadi input berikutnya.",
+            },
+            {
+                "q": "Ke mana '2> galat.log' mengalihkan keluaran?",
+                "options": [
+                    "Output normal saja",
+                    "Pesan error (stderr) saja",
+                    "Output dan error sekaligus",
+                    "Input dari file",
+                ],
+                "answer": 1,
+                "explanation": "Deskriptor 2 adalah stderr. Deskriptor 1 adalah stdout, dan 0 adalah stdin.",
+            },
+            {
+                "q": "Apa guna /dev/null?",
+                "options": [
+                    "Menyimpan log sistem",
+                    "Membuang output yang tidak diperlukan",
+                    "File konfigurasi bash",
+                    "Folder sementara",
+                ],
+                "answer": 1,
+                "explanation": "/dev/null adalah 'tempat sampah' sistem. Semua yang ditulis ke sana langsung hilang.",
+            },
+            {
+                "q": "Mana yang lebih bisa diandalkan lintas shell untuk output berformat?",
+                "options": ["echo -e", "printf", "cat", "write"],
+                "answer": 1,
+                "explanation": "Perilaku echo -e berbeda antar shell, sedangkan printf konsisten di mana-mana.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 3: Percabangan",
+        "questions": [
+            {
+                "q": "Kata kunci penutup blok if di bash adalah?",
+                "options": ["end", "endif", "fi", "done"],
+                "answer": 2,
+                "explanation": "Blok if ditutup dengan 'fi', yaitu kata 'if' dibalik.",
+            },
+            {
+                "q": "Operator perbandingan untuk 'lebih besar dari' pada ANGKA di dalam [[ ]] adalah?",
+                "options": [">", "-gt", "gt", ">>"],
+                "answer": 1,
+                "explanation": "Untuk angka pakai -gt. Tanda > di dalam [[ ]] membandingkan urutan abjad, bukan nilai.",
+            },
+            {
+                "q": "Kenapa [[ ]] lebih disarankan daripada [ ] ?",
+                "options": [
+                    "Lebih pendek diketik",
+                    "Lebih aman terhadap variabel kosong dan mendukung && || serta regex",
+                    "Hanya [[ ]] yang bisa membandingkan angka",
+                    "[ ] sudah dihapus dari bash",
+                ],
+                "answer": 1,
+                "explanation": "[[ ]] adalah keyword bash yang tidak melakukan word splitting, jadi jauh lebih aman.",
+            },
+            {
+                "q": "Operator -z pada [[ -z \"$x\" ]] memeriksa apa?",
+                "options": [
+                    "Apakah x berupa angka nol",
+                    "Apakah string x kosong",
+                    "Apakah file x ada",
+                    "Apakah x sudah dideklarasikan",
+                ],
+                "answer": 1,
+                "explanation": "-z benar kalau panjang string nol. Kebalikannya adalah -n untuk string tidak kosong.",
+            },
+            {
+                "q": "Operator untuk memeriksa apakah sebuah FOLDER ada?",
+                "options": ["-f", "-d", "-e", "-r"],
+                "answer": 1,
+                "explanation": "-d untuk folder, -f untuk file biasa, -e untuk keduanya (ada apa pun jenisnya).",
+            },
+            {
+                "q": "Setiap cabang di dalam blok case harus diakhiri dengan?",
+                "options": ["break", ";;", "}", "esac"],
+                "answer": 1,
+                "explanation": ";; menandai akhir sebuah cabang case. Blok case-nya sendiri ditutup 'esac'.",
+            },
+            {
+                "q": "Pola apa yang berfungsi sebagai 'default' di dalam case?",
+                "options": ["default", "else", "*", "_"],
+                "answer": 2,
+                "explanation": "Tanda * cocok dengan apa pun, jadi diletakkan paling akhir sebagai cabang default.",
+            },
+            {
+                "q": "Perintah 'mkdir data && cd data' berarti?",
+                "options": [
+                    "Jalankan keduanya bersamaan",
+                    "cd hanya dijalankan kalau mkdir SUKSES",
+                    "cd hanya dijalankan kalau mkdir GAGAL",
+                    "Jalankan cd lebih dulu",
+                ],
+                "answer": 1,
+                "explanation": "&& menjalankan perintah kanan hanya jika perintah kiri mengembalikan exit code 0.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 4: Perulangan & Array",
+        "questions": [
+            {
+                "q": "Blok perulangan di bash diapit oleh kata kunci?",
+                "options": ["begin ... end", "do ... done", "{ ... }", "loop ... pool"],
+                "answer": 1,
+                "explanation": "Semua bentuk perulangan bash (for, while, until) memakai do dan done.",
+            },
+            {
+                "q": "Apa hasil dari for i in {1..5}; do echo $i; done ?",
+                "options": [
+                    "Mencetak teks '{1..5}'",
+                    "Mencetak angka 1 sampai 5",
+                    "Mencetak angka 1 sampai 4",
+                    "Error",
+                ],
+                "answer": 1,
+                "explanation": "{1..5} adalah brace expansion yang menghasilkan deret 1 2 3 4 5.",
+            },
+            {
+                "q": "Bagaimana cara BENAR membaca file baris demi baris?",
+                "options": [
+                    "for baris in $(cat file); do",
+                    "while IFS= read -r baris; do ... done < file",
+                    "foreach baris in file; do",
+                    "read file | while do",
+                ],
+                "answer": 1,
+                "explanation": "Bentuk while read memproses per baris. Bentuk for dengan cat memecah berdasarkan spasi, bukan baris.",
+            },
+            {
+                "q": "Bagaimana mengakses SELURUH isi array bernama buah?",
+                "options": ["$buah", "${buah}", "${buah[@]}", "${buah[*all]}"],
+                "answer": 2,
+                "explanation": "$buah hanya memberi elemen pertama. Untuk semua elemen gunakan ${buah[@]}.",
+            },
+            {
+                "q": "Ekspresi ${#buah[@]} menghasilkan apa?",
+                "options": [
+                    "Elemen pertama",
+                    "Jumlah elemen array",
+                    "Panjang karakter elemen pertama",
+                    "Indeks terakhir",
+                ],
+                "answer": 1,
+                "explanation": "Tanda # di depan nama array memberikan banyaknya elemen.",
+            },
+            {
+                "q": "Apa yang WAJIB dilakukan sebelum memakai associative array?",
+                "options": [
+                    "Tidak ada, langsung pakai",
+                    "declare -A namaarray",
+                    "export namaarray",
+                    "set -A namaarray",
+                ],
+                "answer": 1,
+                "explanation": "Tanpa declare -A, bash memperlakukannya sebagai array indeks angka dan hasilnya salah.",
+            },
+            {
+                "q": "Perintah 'continue' di dalam perulangan berfungsi untuk?",
+                "options": [
+                    "Keluar dari perulangan",
+                    "Melompat ke iterasi berikutnya",
+                    "Mengulang iterasi yang sama",
+                    "Menghentikan script",
+                ],
+                "answer": 1,
+                "explanation": "continue melewati sisa badan perulangan dan langsung lanjut ke putaran berikutnya. break yang keluar.",
+            },
+            {
+                "q": "Apa beda while dan until?",
+                "options": [
+                    "until lebih cepat",
+                    "while mengulang selama kondisi benar, until mengulang sampai kondisi benar",
+                    "until hanya untuk angka",
+                    "Tidak ada beda",
+                ],
+                "answer": 1,
+                "explanation": "until adalah kebalikan while: badan perulangan jalan selama kondisinya masih SALAH.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 5: Fungsi, String & Praktik Baik",
+        "questions": [
+            {
+                "q": "Bagaimana cara memanggil fungsi bernama sapa dengan argumen \"Andi\"?",
+                "options": ["sapa(\"Andi\")", "sapa \"Andi\"", "call sapa Andi", "$sapa(Andi)"],
+                "answer": 1,
+                "explanation": "Fungsi bash dipanggil seperti perintah biasa: nama diikuti argumen yang dipisah spasi, tanpa kurung.",
+            },
+            {
+                "q": "Perintah return di dalam fungsi bash mengirimkan apa?",
+                "options": [
+                    "Nilai data apa pun",
+                    "Kode status 0-255, bukan data",
+                    "String hasil",
+                    "Array",
+                ],
+                "answer": 1,
+                "explanation": "return hanya untuk exit code. Untuk mengirim data, gunakan echo lalu tangkap dengan $(...).",
+            },
+            {
+                "q": "Apa gunanya kata kunci local di dalam fungsi?",
+                "options": [
+                    "Mempercepat eksekusi",
+                    "Membatasi variabel agar hanya hidup di dalam fungsi",
+                    "Menjadikan variabel read-only",
+                    "Mengekspor variabel ke proses anak",
+                ],
+                "answer": 1,
+                "explanation": "Tanpa local, variabel bersifat global dan bisa menimpa variabel bernama sama di luar fungsi.",
+            },
+            {
+                "q": "Ekspresi ${berkas##*/} pada \"/home/andi/data.txt\" menghasilkan?",
+                "options": ["/home/andi", "data.txt", "home", ".txt"],
+                "answer": 1,
+                "explanation": "## membuang pencocokan terpanjang dari awal, jadi semua sampai garis miring terakhir hilang dan tersisa nama file.",
+            },
+            {
+                "q": "Ekspresi ${nama:-Tamu} berarti?",
+                "options": [
+                    "Hapus nama lalu isi Tamu",
+                    "Pakai nilai nama, atau 'Tamu' kalau nama kosong",
+                    "Bandingkan nama dengan Tamu",
+                    "Potong nama sepanjang kata Tamu",
+                ],
+                "answer": 1,
+                "explanation": "Bentuk :- memberi nilai bawaan tanpa mengubah isi variabel aslinya.",
+            },
+            {
+                "q": "Apa efek dari 'set -e' di awal script?",
+                "options": [
+                    "Menampilkan tiap perintah sebelum dijalankan",
+                    "Menghentikan script begitu ada perintah yang gagal",
+                    "Mengaktifkan mode interaktif",
+                    "Mengabaikan semua error",
+                ],
+                "answer": 1,
+                "explanation": "set -e menghentikan eksekusi saat ada perintah mengembalikan exit code bukan nol.",
+            },
+            {
+                "q": "Alat linter yang dipakai untuk memeriksa kualitas script bash adalah?",
+                "options": ["bashlint", "shellcheck", "pylint", "eslint"],
+                "answer": 1,
+                "explanation": "shellcheck menganalisis script dan menangkap kesalahan umum seperti variabel tanpa petik.",
+            },
+            {
+                "q": "Kenapa variabel sebaiknya selalu dibungkus petik ganda, seperti rm \"$file\"?",
+                "options": [
+                    "Supaya lebih rapi dibaca",
+                    "Agar nilai yang mengandung spasi tidak terpecah jadi beberapa argumen",
+                    "Petik ganda mempercepat eksekusi",
+                    "Bash mewajibkannya",
+                ],
+                "answer": 1,
+                "explanation": "Tanpa petik, bash memecah nilai berdasarkan spasi. Nama file 'laporan akhir.txt' akan dianggap dua file berbeda.",
+            },
+        ],
+    },
+]

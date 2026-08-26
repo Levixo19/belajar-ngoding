@@ -1,0 +1,543 @@
+JAVASCRIPT_QUIZZES = [
+    {
+        "title": "Kuis 1: Dasar JavaScript & Tipe Data",
+        "questions": [
+            {
+                "q": "Fungsi bawaan untuk menampilkan output ke console?",
+                "options": ["print()", "console.log()", "System.out()", "echo()"],
+                "answer": 1,
+                "explanation": "console.log() adalah cara standar menampilkan output di JavaScript.",
+            },
+            {
+                "q": "Cara deklarasi variabel yang DISARANKAN untuk nilai yang tidak berubah?",
+                "options": ["var", "let", "const", "static"],
+                "answer": 2,
+                "explanation": "const dipakai sebagai default untuk nilai yang tidak akan diubah ulang.",
+            },
+            {
+                "q": "Kenapa sebaiknya menghindari 'var' di kode JavaScript modern?",
+                "options": [
+                    "var lebih lambat dieksekusi",
+                    "var function-scoped dan bisa menyebabkan bug scope yang membingungkan",
+                    "var tidak didukung browser modern",
+                    "var hanya untuk angka",
+                ],
+                "answer": 1,
+                "explanation": "var bersifat function-scoped (bukan block-scoped) sehingga sering menyebabkan bug tak terduga.",
+            },
+            {
+                "q": "Hasil dari \"5\" + 3 di JavaScript?",
+                "options": ["8", "\"53\"", "error", "53 (number)"],
+                "answer": 1,
+                "explanation": "Operator + dengan string melakukan penggabungan (concatenation), hasilnya string \"53\".",
+            },
+            {
+                "q": "Perbedaan == dan === di JavaScript?",
+                "options": [
+                    "Tidak ada beda, sama saja",
+                    "=== melakukan type coercion, == tidak",
+                    "== melakukan type coercion (convert tipe), === tidak (strict)",
+                    "=== hanya untuk angka",
+                ],
+                "answer": 2,
+                "explanation": "== longgar (convert tipe dulu), === ketat (tipe harus sama persis). Disarankan selalu pakai ===.",
+            },
+            {
+                "q": "typeof null menghasilkan?",
+                "options": ["\"null\"", "\"undefined\"", "\"object\"", "\"boolean\""],
+                "answer": 2,
+                "explanation": "Ini adalah quirk/bug lama JavaScript yang sudah diketahui - typeof null adalah 'object'.",
+            },
+            {
+                "q": "Template literal ditandai dengan tanda kutip?",
+                "options": ["' (tunggal)", "\" (ganda)", "` (backtick)", "tidak perlu tanda kutip"],
+                "answer": 2,
+                "explanation": "Template literal memakai backtick (`) dan mendukung interpolasi ${ekspresi}.",
+            },
+            {
+                "q": "Nilai mana yang termasuk 'Falsy' di JavaScript?",
+                "options": ["\"0\" (string)", "[] (array kosong)", "0 (number)", "{} (object kosong)"],
+                "answer": 2,
+                "explanation": "0 adalah falsy. String \"0\", array [], dan object {} SEMUA truthy (sering mengejutkan pemula).",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 2: Percabangan, Perulangan & Operator",
+        "questions": [
+            {
+                "q": "switch-case di JavaScript membandingkan nilai memakai?",
+                "options": ["== (loose)", "=== (strict)", "kombinasi keduanya", "tidak membandingkan sama sekali"],
+                "answer": 1,
+                "explanation": "switch di JS memakai perbandingan strict (===), beda tipe tidak akan cocok.",
+            },
+            {
+                "q": "for...of dipakai untuk iterasi?",
+                "options": [
+                    "key/index dari object",
+                    "NILAI dari iterable (array, string, dll)",
+                    "hanya untuk angka",
+                    "hanya untuk Promise",
+                ],
+                "answer": 1,
+                "explanation": "for...of mengiterasi nilai langsung dari iterable seperti array atau string.",
+            },
+            {
+                "q": "for...in lebih cocok dipakai untuk iterasi?",
+                "options": ["array besar", "key dari object", "Promise", "angka saja"],
+                "answer": 1,
+                "explanation": "for...in mengiterasi key/property dari object (untuk array lebih baik pakai for...of atau forEach).",
+            },
+            {
+                "q": "Operator nullish coalescing (??) berbeda dari || karena?",
+                "options": [
+                    "?? sama persis dengan ||",
+                    "?? hanya anggap null/undefined sebagai 'kosong', || anggap semua falsy",
+                    "?? hanya untuk angka",
+                    "|| lebih baru dari ??",
+                ],
+                "answer": 1,
+                "explanation": "?? tidak menganggap 0, \"\", atau false sebagai kosong - hanya null/undefined.",
+            },
+            {
+                "q": "Optional chaining (?.) berguna untuk?",
+                "options": [
+                    "mempercepat eksekusi kode",
+                    "akses property object bersarang dengan aman tanpa error jika null/undefined",
+                    "membuat object baru",
+                    "looping array",
+                ],
+                "answer": 1,
+                "explanation": "user.profil?.nama tidak akan error walau 'profil' bernilai null/undefined, hasilnya undefined.",
+            },
+            {
+                "q": "Berapa kali loop ini berjalan? for (let i = 0; i < 3; i++)",
+                "options": ["2", "3", "4", "tak terbatas"],
+                "answer": 1,
+                "explanation": "i = 0, 1, 2 -> tiga kali, berhenti saat i mencapai 3.",
+            },
+            {
+                "q": "Ternary operator yang benar untuk (nilai>=75 ? 'Lulus' : 'Gagal')?",
+                "options": [
+                    "if nilai>=75 then 'Lulus' else 'Gagal'",
+                    "nilai >= 75 ? \"Lulus\" : \"Gagal\"",
+                    "nilai >= 75 => \"Lulus\" : \"Gagal\"",
+                    "switch(nilai>=75)"
+                ],
+                "answer": 1,
+                "explanation": "Sintaks ternary JS: kondisi ? nilaiJikaTrue : nilaiJikaFalse.",
+            },
+            {
+                "q": "if ([]) { console.log('jalan'); } - apa yang terjadi?",
+                "options": [
+                    "tidak jalan, array kosong itu falsy",
+                    "JALAN, array (bahkan kosong) dianggap truthy",
+                    "error kompilasi",
+                    "tergantung environment",
+                ],
+                "answer": 1,
+                "explanation": "Array, walau kosong, tetap dianggap truthy di JavaScript - beda dengan bahasa lain.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 3: String, Array & Object",
+        "questions": [
+            {
+                "q": "Untuk mendapat panjang string/array di JavaScript, gunakan?",
+                "options": ["s.length()", "s.length", "len(s)", "s.size()"],
+                "answer": 1,
+                "explanation": "length adalah PROPERTY (tanpa kurung), bukan method, beda dengan Java yang pakai .length().",
+            },
+            {
+                "q": "arr.map(x => x * 2) menghasilkan?",
+                "options": [
+                    "mengubah array asli",
+                    "array BARU dengan tiap elemen dikali 2",
+                    "satu nilai total",
+                    "boolean true/false",
+                ],
+                "answer": 1,
+                "explanation": "map() mengembalikan array baru hasil transformasi, tidak mengubah array asli.",
+            },
+            {
+                "q": "arr.filter(x => x > 5) dipakai untuk?",
+                "options": [
+                    "mengurutkan array",
+                    "menyaring elemen yang memenuhi kondisi, hasil array baru",
+                    "menjumlahkan semua elemen",
+                    "menghapus elemen dari array asli",
+                ],
+                "answer": 1,
+                "explanation": "filter() menyaring elemen sesuai kondisi callback, mengembalikan array baru (bisa lebih pendek).",
+            },
+            {
+                "q": "arr.reduce((acc, n) => acc + n, 0) dipakai untuk?",
+                "options": [
+                    "menyaring array",
+                    "menggabungkan semua elemen jadi satu nilai (misal total)",
+                    "mengurutkan array",
+                    "membalik array",
+                ],
+                "answer": 1,
+                "explanation": "reduce() mengakumulasi semua elemen array menjadi satu nilai akhir.",
+            },
+            {
+                "q": "[40, 1, 100, 20].sort() TANPA compare function menghasilkan urutan aneh karena?",
+                "options": [
+                    "sort() tidak berfungsi di JS",
+                    "default sort() membandingkan berdasarkan STRING, bukan angka",
+                    "array harus di-convert dulu",
+                    "sort() hanya untuk string",
+                ],
+                "answer": 1,
+                "explanation": "Default sort() JS mengurutkan berdasarkan representasi string, sehingga urutan angka jadi salah tanpa compare function (a,b)=>a-b.",
+            },
+            {
+                "q": "Cara mengakses property 'nama' dari object mahasiswa?",
+                "options": [
+                    "mahasiswa.nama ATAU mahasiswa['nama']",
+                    "mahasiswa->nama",
+                    "mahasiswa::nama",
+                    "get(mahasiswa, nama)",
+                ],
+                "answer": 0,
+                "explanation": "Dot notation dan bracket notation keduanya valid untuk akses property object.",
+            },
+            {
+                "q": "const { nama, umur } = mahasiswa; adalah contoh dari?",
+                "options": ["spread operator", "object destructuring", "template literal", "arrow function"],
+                "answer": 1,
+                "explanation": "Destructuring mengekstrak property object langsung menjadi variabel.",
+            },
+            {
+                "q": "Spread operator [...arr1, ...arr2] dipakai untuk?",
+                "options": [
+                    "menghapus elemen array",
+                    "menggabungkan/menyalin array menjadi array baru",
+                    "membalik urutan array",
+                    "membandingkan dua array",
+                ],
+                "answer": 1,
+                "explanation": "Spread operator (...) menyebarkan elemen array, sering dipakai untuk menggabung/menyalin array atau object.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 4: Function, Scope & Closure",
+        "questions": [
+            {
+                "q": "Arrow function yang benar untuk fungsi kuadrat satu parameter?",
+                "options": ["x => x * x", "function => x*x", "x -> x*x", "(x): x*x"],
+                "answer": 0,
+                "explanation": "Sintaks arrow function: parameter => ekspresi (kurung opsional untuk satu parameter).",
+            },
+            {
+                "q": "Rest parameter (...angka) pada function total(...angka) dipakai untuk?",
+                "options": [
+                    "menerima SATU argumen wajib",
+                    "mengumpulkan SEMUA argumen menjadi array",
+                    "membuat argumen opsional bertipe string",
+                    "menandai fungsi async",
+                ],
+                "answer": 1,
+                "explanation": "Rest parameter mengumpulkan sisa argumen menjadi sebuah array.",
+            },
+            {
+                "q": "Variabel yang dideklarasikan dengan 'let' di dalam blok if bersifat?",
+                "options": [
+                    "bisa diakses di luar blok if (function-scoped)",
+                    "hanya bisa diakses di dalam blok if itu (block-scoped)",
+                    "global otomatis",
+                    "sama seperti var",
+                ],
+                "answer": 1,
+                "explanation": "let (dan const) bersifat block-scoped, hanya dikenal di dalam { } tempat ia dideklarasikan.",
+            },
+            {
+                "q": "Closure adalah?",
+                "options": [
+                    "cara menutup program",
+                    "fungsi yang 'mengingat' variabel dari scope tempat ia dibuat, walau scope itu sudah selesai",
+                    "error handling khusus",
+                    "tipe data baru di ES6",
+                ],
+                "answer": 1,
+                "explanation": "Closure memungkinkan fungsi dalam mengakses variabel dari fungsi luar meski fungsi luar sudah selesai dieksekusi.",
+            },
+            {
+                "q": "Kenapa 'for (var i=0...) { setTimeout(()=>console.log(i), 100); }' mencetak angka yang sama berulang?",
+                "options": [
+                    "setTimeout rusak",
+                    "var function-scoped, semua closure berbagi variabel i yang sama",
+                    "console.log tidak bekerja di loop",
+                    "ini tidak benar, hasilnya selalu berurutan",
+                ],
+                "answer": 1,
+                "explanation": "Karena var bukan block-scoped, semua closure merujuk ke 'i' yang sama (nilai akhirnya). Solusi: pakai 'let'.",
+            },
+            {
+                "q": "Function declaration (function tambah(){...}) dibanding function expression?",
+                "options": [
+                    "Sama persis, tidak ada beda",
+                    "Function declaration di-hoist (bisa dipanggil sebelum ditulis di kode)",
+                    "Function expression selalu lebih cepat",
+                    "Function declaration tidak bisa punya parameter",
+                ],
+                "answer": 1,
+                "explanation": "Function declaration di-hoist ke atas scope, function expression (disimpan ke variabel) tidak.",
+            },
+            {
+                "q": "Default parameter yang benar: function sapa(nama, sapaan = ...)?",
+                "options": [
+                    "function sapa(nama, sapaan = \"Halo\") {...}",
+                    "function sapa(nama, sapaan default \"Halo\") {...}",
+                    "function sapa(nama, sapaan ?? \"Halo\") {...}",
+                    "function sapa(nama, sapaan: \"Halo\") {...}",
+                ],
+                "answer": 0,
+                "explanation": "Default parameter memakai tanda = diikuti nilai default di deklarasi parameter.",
+            },
+            {
+                "q": "Manfaat UTAMA closure yang sering dipakai di JavaScript modern?",
+                "options": [
+                    "mempercepat kompilasi",
+                    "membuat 'private variable' dan dasar dari custom hook di React",
+                    "mengganti kebutuhan array",
+                    "menghapus kebutuhan class",
+                ],
+                "answer": 1,
+                "explanation": "Closure dipakai untuk enkapsulasi data (private variable) dan menjadi fondasi banyak pola JS modern.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 5: OOP JavaScript (Class & Prototype)",
+        "questions": [
+            {
+                "q": "Keyword untuk memanggil constructor class induk di JavaScript?",
+                "options": ["parent()", "super()", "base()", "this.super()"],
+                "answer": 1,
+                "explanation": "super() memanggil constructor (atau method) dari class induk.",
+            },
+            {
+                "q": "Semua object di JavaScript pada dasarnya berbasis mekanisme?",
+                "options": ["interface", "prototype", "abstract class", "generic"],
+                "answer": 1,
+                "explanation": "JavaScript adalah bahasa berbasis prototype; keyword 'class' hanyalah syntactic sugar di atasnya.",
+            },
+            {
+                "q": "Method yang dideklarasikan di dalam 'class' otomatis ditaruh di?",
+                "options": ["memory global", "prototype dari class tersebut", "constructor object", "file terpisah"],
+                "answer": 1,
+                "explanation": "Method class otomatis ditaruh di prototype agar dibagi (hemat memori) oleh semua instance.",
+            },
+            {
+                "q": "Private field di JavaScript (ES2022+) ditandai dengan awalan?",
+                "options": ["_ (underscore)", "# (pagar)", "$ (dollar)", "private keyword seperti Java"],
+                "answer": 1,
+                "explanation": "Tanda # di depan nama field menjadikannya private field yang benar-benar tidak bisa diakses dari luar class.",
+            },
+            {
+                "q": "get saldo() {...} di dalam class berfungsi sebagai?",
+                "options": [
+                    "method biasa yang harus dipanggil dengan ()",
+                    "getter, diakses seperti property biasa TANPA tanda kurung",
+                    "constructor",
+                    "static method",
+                ],
+                "answer": 1,
+                "explanation": "get menjadikan method bisa diakses seperti atribut biasa: objek.saldo (bukan objek.saldo()).",
+            },
+            {
+                "q": "static method pada class dipanggil melalui?",
+                "options": [
+                    "instance/objek dari class tersebut",
+                    "nama CLASS langsung, bukan instance",
+                    "hanya di dalam constructor",
+                    "tidak bisa dipanggil sama sekali",
+                ],
+                "answer": 1,
+                "explanation": "Static method dipanggil lewat NamaClass.method(), bukan lewat objek instance.",
+            },
+            {
+                "q": "class Kucing extends Hewan berarti?",
+                "options": [
+                    "Kucing meng-implement interface Hewan",
+                    "Kucing mewarisi (inherit) dari class Hewan",
+                    "Hewan mewarisi dari Kucing",
+                    "Keduanya class terpisah tanpa relasi",
+                ],
+                "answer": 1,
+                "explanation": "extends membuat Kucing menjadi subclass yang mewarisi property & method dari Hewan.",
+            },
+            {
+                "q": "Object.create(prototypeObj) dipakai untuk?",
+                "options": [
+                    "menghapus object",
+                    "membuat object baru dengan prototype tertentu secara langsung",
+                    "mengubah object jadi array",
+                    "membuat class baru",
+                ],
+                "answer": 1,
+                "explanation": "Object.create() adalah cara langsung membuat object dengan prototype yang ditentukan, tanpa function constructor.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 6: Exception Handling & 'this'",
+        "questions": [
+            {
+                "q": "Blok yang SELALU dijalankan pada try-catch-finally?",
+                "options": ["try", "catch", "finally", "throw"],
+                "answer": 2,
+                "explanation": "finally selalu dieksekusi baik terjadi error maupun tidak.",
+            },
+            {
+                "q": "throw new Error('pesan') dipakai untuk?",
+                "options": [
+                    "menangkap error",
+                    "melempar error secara sengaja",
+                    "mencegah semua error",
+                    "membuat try-catch otomatis",
+                ],
+                "answer": 1,
+                "explanation": "throw melempar sebuah exception/error yang bisa ditangkap oleh blok catch.",
+            },
+            {
+                "q": "Nilai 'this' di dalam arrow function mengacu pada?",
+                "options": [
+                    "objek yang memanggil fungsi tersebut",
+                    "this dari scope LUAR (lexical this), bukan this sendiri",
+                    "selalu window/global object",
+                    "selalu undefined",
+                ],
+                "answer": 1,
+                "explanation": "Arrow function TIDAK punya this sendiri - ia mewarisi this dari lingkungan tempat ia didefinisikan.",
+            },
+            {
+                "q": "Kenapa mahasiswa.sapaArrow() bisa menghasilkan this.nama = undefined?",
+                "options": [
+                    "typo di kode",
+                    "arrow function tidak mengikat this ke object mahasiswa, melainkan ke scope luar",
+                    "property nama tidak ada",
+                    "arrow function tidak valid dalam object literal",
+                ],
+                "answer": 1,
+                "explanation": "Karena arrow function memakai this dari scope luar (bukan object mahasiswa), this.nama jadi undefined.",
+            },
+            {
+                "q": "fungsi.bind(objekThis) mengembalikan?",
+                "options": [
+                    "hasil pemanggilan fungsi langsung",
+                    "fungsi BARU dengan this yang sudah terikat permanen",
+                    "error jika this belum diset",
+                    "object baru",
+                ],
+                "answer": 1,
+                "explanation": "bind() mengembalikan fungsi baru dengan konteks this yang tetap, tidak langsung memanggil fungsinya.",
+            },
+            {
+                "q": "class SaldoTidakCukup extends Error {...} adalah contoh dari?",
+                "options": ["polymorphism biasa", "custom error class (error turunan)", "static class", "abstract method"],
+                "answer": 1,
+                "explanation": "Membuat class error sendiri yang mewarisi Error, agar bisa dibedakan dengan instanceof.",
+            },
+            {
+                "q": "Error apa yang muncul jika memanggil method pada nilai bertipe salah (misal null.nama)?",
+                "options": ["SyntaxError", "TypeError", "RangeError", "ReferenceError"],
+                "answer": 1,
+                "explanation": "TypeError terjadi saat operasi dilakukan pada tipe data yang tidak sesuai.",
+            },
+            {
+                "q": "call(), apply(), dan bind() semuanya dipakai untuk?",
+                "options": [
+                    "membuat array baru",
+                    "mengatur/mengubah nilai this secara eksplisit saat memanggil fungsi",
+                    "menangani error",
+                    "membuat closure",
+                ],
+                "answer": 1,
+                "explanation": "Ketiganya adalah cara mengontrol nilai this saat sebuah fungsi dipanggil atau diikat.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 7: Asynchronous JavaScript (Promise & async/await)",
+        "questions": [
+            {
+                "q": "JavaScript bersifat single-threaded, tapi bisa menangani operasi async karena?",
+                "options": [
+                    "punya banyak thread tersembunyi",
+                    "event loop menangani callback/Promise setelah call stack kosong",
+                    "semua kode dijalankan dua kali",
+                    "browser otomatis membuat banyak proses",
+                ],
+                "answer": 1,
+                "explanation": "Event loop memproses antrian callback dari operasi async setelah call stack sinkron selesai/kosong.",
+            },
+            {
+                "q": "3 status yang mungkin dimiliki sebuah Promise?",
+                "options": [
+                    "start, running, done",
+                    "pending, fulfilled, rejected",
+                    "true, false, null",
+                    "open, close, error",
+                ],
+                "answer": 1,
+                "explanation": "Promise bisa berstatus pending (berjalan), fulfilled (sukses), atau rejected (gagal).",
+            },
+            {
+                "q": "Kata kunci yang menjeda eksekusi fungsi async sampai Promise selesai?",
+                "options": ["pause", "await", "wait", "stop"],
+                "answer": 1,
+                "explanation": "await menjeda eksekusi fungsi async (tanpa blocking thread) sampai Promise selesai.",
+            },
+            {
+                "q": "Menangani error pada async/await sebaiknya memakai?",
+                "options": [".catch() saja", "try-catch", "if-else biasa", "tidak perlu ditangani"],
+                "answer": 1,
+                "explanation": "Di dalam fungsi async, error dari await ditangkap dengan try-catch, bukan .catch().",
+            },
+            {
+                "q": "Promise.all([p1, p2, p3]) akan gagal (reject) jika?",
+                "options": [
+                    "semua Promise gagal",
+                    "SALAH SATU Promise gagal (reject)",
+                    "tidak pernah gagal",
+                    "hanya jika p1 gagal",
+                ],
+                "answer": 1,
+                "explanation": "Promise.all gagal total jika ADA SATU SAJA Promise di dalamnya yang reject.",
+            },
+            {
+                "q": "Kenapa menjalankan beberapa await SATU-SATU (berurutan) lebih lambat dari Promise.all?",
+                "options": [
+                    "await selalu lebih lambat secara umum",
+                    "berurutan menunggu satu selesai baru mulai berikutnya, sedangkan Promise.all menjalankan semua bersamaan",
+                    "Promise.all tidak valid",
+                    "tidak ada bedanya",
+                ],
+                "answer": 1,
+                "explanation": "await berurutan = waktu total dijumlah semua; Promise.all = waktu total hanya selama proses terlama (paralel).",
+            },
+            {
+                "q": "Fungsi yang dideklarasikan dengan 'async' SELALU mengembalikan?",
+                "options": ["nilai biasa", "sebuah Promise", "undefined selalu", "array"],
+                "answer": 1,
+                "explanation": "Fungsi async selalu membungkus hasilnya (atau errornya) ke dalam sebuah Promise.",
+            },
+            {
+                "q": "response.json() pada Fetch API dipakai untuk?",
+                "options": [
+                    "mengirim data ke server",
+                    "mem-parse body response menjadi object JavaScript",
+                    "membatalkan request",
+                    "mengecek status HTTP",
+                ],
+                "answer": 1,
+                "explanation": "response.json() adalah method async yang mem-parse body response (teks JSON) menjadi object JS.",
+            },
+        ],
+    },
+]

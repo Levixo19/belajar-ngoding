@@ -1,0 +1,23 @@
+# Artefak Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Artefak kompilasi dari contoh & latihan
+*.class
+*.o
+*.out
+*.exe
+program
+
+# Folder kerja latihan (kode jawaban user)
+kerjaanku/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
