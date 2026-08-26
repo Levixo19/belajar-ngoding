@@ -6,7 +6,9 @@ PYTHON_EXERCISES = [
             "Buat program yang menampilkan:",
             "  Halo, namaku Andi!",
             "  Aku sedang belajar Python.",
-            "(Nama boleh diganti dengan nama sendiri)",
+            "",
+            "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
+            "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
             "Gunakan print() untuk tiap baris.",
@@ -54,7 +56,9 @@ print(f"{a} % {b} = {a % b}")""",
             "Ubah ke int dengan int(input()), tanpa argumen di dalam input().",
             "Gunakan if-else atau ternary satu baris.",
         ],
-        "stdin": "80\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["80\n", "60\n"],
         "solution": """nilai = int(input())
 
 if nilai >= 75:
@@ -68,7 +72,7 @@ else:
     },
     {
         "title": "Latihan 4: Deret Angka Genap",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Tampilkan semua bilangan genap dari 1 sampai 20",
             "beserta total jumlahnya.",
@@ -85,7 +89,7 @@ print(f"Total: {sum(genap)}")""",
     },
     {
         "title": "Latihan 5: Pola Bintang",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat pola segitiga siku-siku dari bintang:",
             "  *",
@@ -109,7 +113,7 @@ print(f"Total: {sum(genap)}")""",
     },
     {
         "title": "Latihan 6: Statistik Nilai dengan List",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Diberikan list nilai = [80, 90, 75, 85, 60, 95, 70].",
             "Tampilkan: nilai terbesar, terkecil, rata-rata, dan",
@@ -128,7 +132,7 @@ print(f"Urutan menurun: {sorted(nilai, reverse=True)}")""",
     },
     {
         "title": "Latihan 7: Fungsi Hitung Luas",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat 3 fungsi:",
             "  1. luas_persegi(sisi)          -> sisi * sisi",
@@ -157,7 +161,7 @@ print(f"Lingkaran (r=7): {luas_lingkaran(7):.2f}")""",
     },
     {
         "title": "Latihan 8: Manipulasi String",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Diberikan kalimat = '  Belajar Python itu Menyenangkan  '.",
             "Tampilkan:",
@@ -181,7 +185,7 @@ print(f"4. {bersih.replace('Python', 'Coding')}")""",
     },
     {
         "title": "Latihan 9: Dictionary Buku Kontak",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat dictionary kontak kosong. Tambahkan 3 kontak",
             "(nama sebagai key, nomor telepon sebagai value).",
@@ -208,7 +212,7 @@ print(hasil)""",
     },
     {
         "title": "Latihan 10: Filter & Transform dengan Comprehension",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Diberikan list angka = list(range(1, 21)).",
             "Menggunakan SATU list comprehension untuk masing-masing:",
@@ -234,7 +238,7 @@ print(label_genap_ganjil)""",
     },
     {
         "title": "Latihan 11: Class Rekening Bank",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class Rekening dengan:",
             "  - __init__ mengisi pemilik dan saldo (saldo pakai _saldo)",
@@ -282,7 +286,7 @@ print(r)""",
     },
     {
         "title": "Latihan 12: Pewarisan Hewan",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class Hewan (nama, method bersuara()).",
             "Buat subclass Kucing dan Anjing yang meng-override bersuara().",
@@ -318,7 +322,7 @@ for h in daftar_hewan:
     },
     {
         "title": "Latihan 13: Exception Handling Kalkulator",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi bagi(a, b) yang menangani:",
             "  1. ZeroDivisionError jika b == 0",
@@ -353,7 +357,7 @@ print(bagi(10, "a"))""",
     },
     {
         "title": "Latihan 14: Lambda & Higher-Order Function",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Diberikan list mahasiswa berisi tuple (nama, nilai):",
             "  [('Andi', 80), ('Budi', 65), ('Citra', 92), ('Dedi', 70)]",

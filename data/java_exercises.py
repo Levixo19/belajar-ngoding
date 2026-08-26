@@ -6,7 +6,9 @@ JAVA_EXERCISES = [
             "Buat program yang menampilkan:",
             "  Halo, namaku Andi!",
             "  Aku sedang belajar Java.",
-            "(Nama boleh diganti dengan nama sendiri)",
+            "",
+            "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
+            "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
             "Gunakan System.out.println() untuk setiap baris.",
@@ -62,7 +64,9 @@ JAVA_EXERCISES = [
             "Gunakan if-else atau ternary.",
             "Ingat: setelah nextInt, jika pakai nextLine tambah sc.nextLine().",
         ],
-        "stdin": "80\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["80\n", "60\n"],
         "solution": """import java.util.Scanner;
 
 public class CekNilai {
@@ -82,7 +86,7 @@ public class CekNilai {
     },
     {
         "title": "Latihan 4: Deret Angka Genap",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Tampilkan semua bilangan genap dari 1 sampai 20",
             "beserta total jumlahnya.",
@@ -109,7 +113,7 @@ public class CekNilai {
     },
     {
         "title": "Latihan 5: Pola Bintang",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat pola segitiga siku-siku dari bintang:",
             "  *",
@@ -136,7 +140,7 @@ public class CekNilai {
     },
     {
         "title": "Latihan 6: Nilai Terbesar dalam Array",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat program untuk mencari nilai terbesar dan terkecil",
             "dari array berikut:",
@@ -166,7 +170,7 @@ public class CekNilai {
     },
     {
         "title": "Latihan 7: Method Hitung Luas",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat 3 method:",
             "  1. luasPersegi(int sisi)      -> sisi * sisi",
@@ -201,7 +205,7 @@ public class CekNilai {
     },
     {
         "title": "Latihan 8: Class BankAccount",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat class Rekening dengan:",
             "  - attribute private: nomor (String), saldo (double)",
@@ -261,7 +265,7 @@ public class CekNilai {
     },
     {
         "title": "Latihan 9: Pewarisan Hewan",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat class Hewan (nama, method bersuara()).",
             "Buat subclass Kucing dan Anjing yang me-@Override bersuara().",
@@ -308,7 +312,7 @@ public class Main {
     },
     {
         "title": "Latihan 10: Interface & Exception",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "1. Buat interface Hitung dengan method hitung(double a, double b).",
             "2. Buat class Tambah dan Kurang yang implements Hitung.",
@@ -349,7 +353,7 @@ public class Main {
     },
     {
         "title": "Latihan 11: Filter & Transform dengan Stream",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Diberikan List<String> nama = List.of(\"Andi\",\"Budi\",\"Citra\",",
             "\"Dedi\",\"Eka\",\"Farhan\"). Menggunakan Stream API:",
@@ -383,7 +387,7 @@ public class FilterNama {
     },
     {
         "title": "Latihan 12: Kotak Generic",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class generic Pasangan<K, V> yang menyimpan sepasang",
             "nilai (key & value) dengan:",

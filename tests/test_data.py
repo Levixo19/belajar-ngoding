@@ -11,7 +11,8 @@ from main import LANGUAGES
 from materials import teks_polos
 import runner
 
-TINGKAT_VALID = {"Mudah", "Sedang", "Menengah", "Sulit"}
+TINGKAT_URUT = ["Mudah", "Menengah", "Lanjut", "Sulit"]
+TINGKAT_VALID = set(TINGKAT_URUT)
 LEBAR_MAKS_BARIS = 100
 
 
@@ -234,15 +235,23 @@ class TestLatihan(unittest.TestCase):
         Siswa yang menulis input() polos -- yang justru lebih tepat untuk
         program yang dinilai dari output -- akan selalu dianggap salah.
 
-        Aturannya: latihan yang membaca stdin TIDAK boleh mencetak prompt.
+        Aturannya: latihan yang membaca stdin tidak boleh mencetak apa pun
+        SEBELUM pembacaan pertama. Cetakan sesudahnya sah, karena itu memang
+        bagian dari jawaban -- 'Isi array: 5 10 15' bukan prompt.
         """
         pola_prompt = [
-            re.compile(r"""input\(\s*["'][^"']+["']\s*\)"""),          # Python
+            re.compile(r"""input\(\s*["'][^"']+["']\s*\)"""),               # Python
             re.compile(r"""System\.out\.print\s*\(\s*"[^"]*"\s*\)\s*;"""),  # Java
-            re.compile(r"""printf\s*\(\s*"[^"\\]*[:?]\s*"\s*\)"""),    # C / C++
-            re.compile(r"""read\s+-p\b"""),                            # Bash
-            re.compile(r"""fmt\.Print\s*\(\s*"[^"]*[:?]\s*"\s*\)"""),  # Go
+            re.compile(r"""printf\s*\(\s*"[^"\\]*[:?]\s*"\s*\)"""),         # C / C++
+            re.compile(r"""cout\s*<<\s*"[^"]*[:?]\s*\""""),                 # C++
+            re.compile(r"""read\s+-p\b"""),                                 # Bash
+            re.compile(r"""fmt\.Print\s*\(\s*"[^"]*[:?]\s*"\s*\)"""),       # Go
         ]
+        pola_baca = re.compile(
+            r"""input\(|scanf\s*\(|cin\s*>>|getline\s*\(|nextInt\(|nextLine\(|"""
+            r"""nextDouble\(|fmt\.Scan|bufio\.|^\s*read\s+""",
+            re.MULTILINE,
+        )
 
         for lang in LANGUAGES:
             for e in lang["exercises"]:
@@ -250,12 +259,21 @@ class TestLatihan(unittest.TestCase):
                     continue
                 if e.get("auto_check") is False:
                     continue
+
+                solusi = e["solution"]
+                baca = pola_baca.search(solusi)
+                # Periksa bagian sebelum pembacaan pertama saja. Kalau tidak
+                # ada pembacaan sama sekali, seluruh berkas diperiksa -- itu
+                # sendiri sudah janggal untuk latihan yang punya stdin.
+                sebelum = solusi[: baca.start()] if baca else solusi
+
                 with self.subTest(bahasa=lang["label"], latihan=e["title"]):
                     for pola in pola_prompt:
-                        cocok = pola.search(e["solution"])
+                        cocok = pola.search(sebelum)
                         self.assertIsNone(
                             cocok,
-                            f"solusi mencetak prompt: {cocok.group(0) if cocok else ''}",
+                            "solusi mencetak teks sebelum membaca input: "
+                            f"{cocok.group(0) if cocok else ''}",
                         )
 
 

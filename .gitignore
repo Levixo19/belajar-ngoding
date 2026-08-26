@@ -21,3 +21,14 @@ kerjaanku/
 *.swp
 *~
 .DS_Store
+
+# Artefak dari contoh kode file-I/O di materi (dibuat saat contohnya dijalankan)
+catatan.txt
+data.json
+test.txt
+besar.bin
+
+# Laporan & cadangan progres
+laporan-belajar.md
+progres-belajar.json
+*.json.bak

@@ -6,7 +6,9 @@ C_EXERCISES = [
             "Buat program yang menampilkan:",
             "  Halo, namaku Andi!",
             "  Aku sedang belajar C.",
-            "(Nama boleh diganti dengan nama sendiri)",
+            "",
+            "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
+            "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
             "Gunakan printf() untuk tiap baris.",
@@ -51,19 +53,25 @@ int main(void) {
         "title": "Latihan 3: Cek Kelulusan",
         "difficulty": "Mudah",
         "question": [
-            "Buat program: minta input nilai dari user (scanf),",
+            "Buat program: baca satu angka nilai dari input dengan scanf,",
             "jika nilai >= 75 tampilkan 'Lulus', selain itu 'Tidak Lulus'.",
+            "",
+            "Jangan cetak teks ajakan apa pun. Program hanya boleh mengeluarkan",
+            "satu baris berisi Lulus atau Tidak Lulus.",
         ],
         "hints": [
             "int nilai; scanf(\"%d\", &nilai);",
+            "Jangan ada printf sebelum scanf -- penilaian membandingkan output.",
             "Gunakan if-else biasa.",
         ],
+        # Dua input supaya KEDUA cabang benar-benar diuji. Dengan satu input
+        # saja, program yang cuma menulis printf("Lulus") ikut dinyatakan benar.
+        "stdin_list": ["80\n", "60\n"],
         "solution": """#include <stdio.h>
 
 int main(void) {
     int nilai;
 
-    printf("Masukkan nilai: ");
     scanf("%d", &nilai);
 
     if (nilai >= 75) {
@@ -76,7 +84,7 @@ int main(void) {
     },
     {
         "title": "Latihan 4: Deret Angka Genap",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Tampilkan semua bilangan genap dari 1 sampai 20",
             "beserta total jumlahnya.",
@@ -101,7 +109,7 @@ int main(void) {
     },
     {
         "title": "Latihan 5: Pola Bintang",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat pola segitiga siku-siku dari bintang:",
             "  *",
@@ -128,7 +136,7 @@ int main(void) {
     },
     {
         "title": "Latihan 6: Nilai Terbesar & Terkecil dalam Array",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat program untuk mencari nilai terbesar dan terkecil",
             "dari array berikut:",
@@ -160,7 +168,7 @@ int main(void) {
     },
     {
         "title": "Latihan 7: Function Hitung Luas",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat 3 fungsi:",
             "  1. luasPersegi(int sisi)          -> sisi * sisi",
@@ -199,7 +207,7 @@ double luasLingkaran(double r) {
     },
     {
         "title": "Latihan 8: Manipulasi String Manual",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat fungsi panjangString(char s[]) yang menghitung panjang",
             "string TANPA memakai strlen() (loop manual sampai ketemu '\\0').",
@@ -240,7 +248,7 @@ int main(void) {
     },
     {
         "title": "Latihan 9: Struct Mahasiswa & Array of Struct",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat struct Mahasiswa (nama[50], umur, ipk).",
             "Buat array of struct berisi 3 mahasiswa dengan data bebas.",
@@ -279,7 +287,7 @@ int main(void) {
     },
     {
         "title": "Latihan 10: Pointer & Fungsi Tukar (Swap)",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi tukar(int *a, int *b) yang menukar nilai dua",
             "variabel int memakai pointer. Buat juga fungsi",
@@ -315,24 +323,30 @@ int main(void) {
     },
     {
         "title": "Latihan 11: Dynamic Array dengan Malloc",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
-            "Buat program yang meminta jumlah data (n) dari user, lalu",
+            "Buat program yang membaca jumlah data (n) dari input, lalu",
             "meng-alokasikan array int secara dinamis dengan malloc()",
             "sebesar n. Isi array dengan angka kelipatan 5 (5, 10, 15, ...),",
             "tampilkan semua isinya, lalu bebaskan (free) memorinya.",
+            "",
+            "Jangan cetak teks ajakan. Untuk input 5, outputnya:",
+            "  Isi array: 5 10 15 20 25",
         ],
         "hints": [
             "int *arr = malloc(n * sizeof(int)); SELALU cek arr == NULL.",
             "arr[i] = (i + 1) * 5;",
             "Jangan lupa free(arr); di akhir program.",
         ],
+        # Tanpa stdin, scanf gagal dan n tetap tak terinisialisasi: kunci
+        # jawabannya jadi "Isi array:" kosong dan seluruh materi malloc,
+        # perulangan, serta free tidak pernah diuji sama sekali.
+        "stdin_list": ["5\n", "1\n"],
         "solution": """#include <stdio.h>
 #include <stdlib.h>
 
 int main(void) {
     int n;
-    printf("Jumlah data: ");
     scanf("%d", &n);
 
     int *arr = (int*) malloc(n * sizeof(int));
@@ -358,7 +372,7 @@ int main(void) {
     },
     {
         "title": "Latihan 12: Rekening Bank dengan Struct & Pointer",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat struct Rekening (nomor[20], saldo).",
             "Buat fungsi setor(Rekening *r, double jumlah) dan",
@@ -410,7 +424,7 @@ int main(void) {
     },
     {
         "title": "Latihan 13: Function Pointer sebagai Callback",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat 3 fungsi operasi (tambah, kurang, kali) bertipe",
             "int(int, int). Buat fungsi prosesArray(int arr[], int n,",
@@ -448,7 +462,7 @@ int main(void) {
     },
     {
         "title": "Latihan 14: Membaca & Menulis File Nilai Mahasiswa",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat program yang menulis 3 baris data (nama dan nilai,",
             "dipisah spasi) ke file 'nilai.txt' dengan fprintf(). Lalu",

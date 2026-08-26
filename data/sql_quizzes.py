@@ -32,10 +32,13 @@ SQL_QUIZZES = [
                 "explanation": "VARCHAR(n) untuk teks dengan panjang maksimal n karakter.",
             },
             {
-                "q": "Perintah untuk menghapus SELURUH data tapi struktur tabel tetap?",
-                "options": ["DROP TABLE", "DELETE FROM", "TRUNCATE TABLE", "REMOVE TABLE"],
+                "q": "Perintah mana yang MENGHAPUS TABELNYA sekalian, bukan cuma isinya?",
+                "options": ["DELETE FROM", "TRUNCATE TABLE", "DROP TABLE", "CLEAR TABLE"],
                 "answer": 2,
-                "explanation": "TRUNCATE menghapus semua data, struktur tetap. DROP menghapus tabel juga.",
+                "explanation": ("DROP TABLE membuang tabel beserta strukturnya. DELETE FROM "
+                                "dan TRUNCATE TABLE sama-sama mengosongkan isi tapi tabelnya "
+                                "tetap ada (TRUNCATE lebih cepat karena tidak mencatat tiap "
+                                "baris). CLEAR TABLE bukan perintah SQL."),
             },
             {
                 "q": "Menambahkan kolom baru ke tabel menggunakan perintah?",

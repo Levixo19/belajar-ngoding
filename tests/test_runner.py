@@ -1,5 +1,7 @@
 """Tes eksekusi kode: keluaran, error, batas waktu, dan pencocokan jawaban."""
 
+import os
+import tempfile
 import unittest
 
 import runner
@@ -208,6 +210,174 @@ class TestNamaKelasJava(unittest.TestCase):
 
     def test_tanpa_class_memakai_nama_bawaan(self):
         self.assertEqual(runner._nama_kelas_java("int x = 1;"), "Main")
+
+
+class TestBatasSumberDaya(unittest.TestCase):
+    """Docstring runner.py berjanji membatasi memori, ukuran berkas, dan output.
+
+    Sebelum tes ini ada, mematikan SELURUH rlimit tetap membuat suite hijau --
+    janji itu tidak dijaga apa pun.
+    """
+
+    @butuh("python")
+    @unittest.skipIf(runner.resource is None, "modul resource hanya ada di POSIX")
+    def test_alokasi_memori_kebablasan_ditolak(self):
+        besar = runner.BATAS_MEMORI_MB * 4 * 1024 * 1024
+        hasil = runner.jalankan("python", f"x = bytearray({besar})", timeout=20)
+        self.assertFalse(hasil.sukses, "batas memori tidak ditegakkan")
+
+    @butuh("python")
+    @unittest.skipIf(runner.resource is None, "modul resource hanya ada di POSIX")
+    def test_menulis_berkas_raksasa_dihentikan(self):
+        kode = (f"blok = b'x' * (1024 * 1024)\n"
+                f"with open('besar.bin', 'wb') as f:\n"
+                f"    for _ in range({runner.BATAS_FILE_MB * 4}):\n"
+                f"        f.write(blok)\n"
+                f"print('selesai')")
+        hasil = runner.jalankan("python", kode, timeout=30)
+        self.assertFalse(hasil.sukses, "batas ukuran berkas tidak ditegakkan")
+
+    @butuh("python")
+    def test_output_tak_berujung_tidak_menyedot_memori_induk(self):
+        """Regresi: dulu induk menampung 4,7 GB sebelum sempat memotong output."""
+        if runner.resource is None:
+            self.skipTest("butuh modul resource untuk mengukur RSS")
+        sebelum = runner.resource.getrusage(runner.resource.RUSAGE_SELF).ru_maxrss
+        runner.jalankan("python",
+                        "import sys\nb='x'*65536\nwhile True: sys.stdout.write(b)",
+                        timeout=5)
+        sesudah = runner.resource.getrusage(runner.resource.RUSAGE_SELF).ru_maxrss
+        naik_mb = (sesudah - sebelum) / 1024
+        self.assertLess(naik_mb, 200, f"memori induk naik {naik_mb:.0f} MB")
+
+    @butuh("python")
+    def test_keluaran_selalu_dipotong(self):
+        hasil = runner.jalankan("python", "print('x' * 5_000_000)", timeout=20)
+        self.assertLessEqual(len(hasil.keluaran), runner.BATAS_OUTPUT_CHAR + 200)
+
+    @butuh("bash")
+    def test_proses_cucu_ikut_dibunuh_saat_timeout(self):
+        """Regresi: subshell `&` dulu selamat dan terus membakar CPU."""
+        import subprocess as sp
+        import time
+
+        def cucu_hidup():
+            # -x: cocokkan NAMA proses, bukan seluruh baris perintah. `pgrep -f`
+            # ikut mencocokkan shell yang menjalankan tes ini kalau kebetulan
+            # teks "sleep 91" ada di baris perintahnya -- positif palsu.
+            keluar = sp.run(["pgrep", "-a", "-x", "sleep"],
+                            capture_output=True, text=True)
+            return [b for b in keluar.stdout.splitlines() if b.rstrip().endswith(" 91")]
+
+        self.assertEqual(cucu_hidup(), [], "sudah ada proses sisa sebelum tes")
+        runner.jalankan("bash", "sleep 91 &\nsleep 30\n", timeout=2)
+        time.sleep(1)
+        self.assertEqual(cucu_hidup(), [], "proses cucu masih hidup setelah timeout")
+
+    @butuh("python")
+    def test_timeout_menyertakan_pesan_yang_sempat_tercetak(self):
+        kode = ("import sys\n"
+                "sys.stderr.write('sedang menunggu sesuatu')\n"
+                "sys.stderr.flush()\n"
+                "while True: pass")
+        hasil = runner.jalankan("python", kode, timeout=3)
+        self.assertTrue(hasil.timeout)
+        self.assertIn("sedang menunggu sesuatu", hasil.galat)
+
+
+class TestKeamananRunner(unittest.TestCase):
+    @butuh("sql")
+    def test_dot_command_sqlite_tidak_menembus_direktori_sementara(self):
+        if not runner._SQLITE_AMAN:
+            self.skipTest("sqlite3 di mesin ini belum mendukung -safe")
+        tujuan = os.path.join(tempfile.gettempdir(), "belajar_uji_bocor.txt")
+        if os.path.exists(tujuan):
+            os.unlink(tujuan)
+        runner.jalankan("sql", f".output {tujuan}\nselect 1;\n")
+        self.assertFalse(os.path.exists(tujuan), "sqlite menulis di luar tempdir")
+
+    @butuh("python")
+    def test_home_diarahkan_ke_direktori_sementara(self):
+        hasil = runner.jalankan("python", "import os; print(os.environ['HOME'])")
+        self.assertIn("belajar-", hasil.keluaran)
+
+    @butuh("java")
+    def test_kompilasi_tetap_jalan_di_locale_non_utf8(self):
+        """javac tanpa -encoding menolak huruf beraksen saat LC_ALL=C."""
+        asli = os.environ.get("LC_ALL")
+        os.environ["LC_ALL"] = "C"
+        try:
+            kode = ('public class Main { public static void main(String[] a) {'
+                    ' System.out.println("harga: Rp5.000 \u00e9\u00fc"); } }')
+            hasil = runner.jalankan("java", kode, timeout=60)
+            self.assertTrue(hasil.sukses, hasil.galat)
+        finally:
+            if asli is None:
+                os.environ.pop("LC_ALL", None)
+            else:
+                os.environ["LC_ALL"] = asli
+
+
+class TestKodeKeluarIkutDinilai(unittest.TestCase):
+    @butuh("python")
+    def test_output_benar_tapi_program_error_tidak_lulus(self):
+        """Program yang mencetak jawaban benar lalu meledak bukan jawaban benar."""
+        tests = [{"nama": "uji", "harapan": "Hasil: 7", "mode": "persis"}]
+        semua, hasil, _ = runner.periksa(
+            "python", 'print("Hasil: 7")\nraise SystemExit("boom")\n', tests)
+        self.assertFalse(semua)
+        self.assertTrue(hasil[0].output_cocok, "teksnya memang sudah cocok")
+        self.assertNotEqual(hasil[0].kode_keluar, 0)
+
+    @butuh("python")
+    def test_program_normal_tetap_lulus(self):
+        tests = [{"nama": "uji", "harapan": "7", "mode": "persis"}]
+        semua, hasil, _ = runner.periksa("python", 'print(7)', tests)
+        self.assertTrue(semua)
+        self.assertEqual(hasil[0].kode_keluar, 0)
+
+    @butuh("c")
+    def test_segfault_dijelaskan_dalam_bahasa_manusia(self):
+        kode = "int main(void){ int *p = 0; *p = 1; return 0; }"
+        hasil = runner.jalankan("c", kode, timeout=20)
+        self.assertFalse(hasil.sukses)
+        self.assertIn("segmentation fault", hasil.galat.lower())
+
+
+class TestNormalisasiSimetris(unittest.TestCase):
+    def test_indentasi_baris_pertama_dipertahankan(self):
+        """Regresi: .strip() global dulu membuang spasi baris pertama saja."""
+        self.assertEqual(runner.normalisasi("  *\n **\n***"), "  *\n **\n***")
+
+    def test_baris_kosong_di_awal_dibuang(self):
+        self.assertEqual(runner.normalisasi("\n\nhalo"), "halo")
+
+    def test_semua_baris_diperlakukan_sama(self):
+        a = runner.normalisasi("   x\n   y")
+        self.assertEqual(a, "   x\n   y")
+
+
+class TestInstalasiToolchain(unittest.TestCase):
+    def test_setiap_toolchain_punya_petunjuk_pemasangan(self):
+        for kunci, tc in runner.TOOLCHAINS.items():
+            with self.subTest(bahasa=kunci):
+                self.assertTrue(tc.instalasi, "tidak ada petunjuk instalasi")
+                for sistem in ("fedora", "debian", "mac", "windows"):
+                    self.assertIn(sistem, tc.instalasi)
+                    self.assertTrue(tc.instalasi[sistem].strip())
+
+    def test_perintah_instalasi_cocok_untuk_mesin_ini(self):
+        for kunci in runner.TOOLCHAINS:
+            with self.subTest(bahasa=kunci):
+                self.assertTrue(runner.perintah_instalasi(kunci).strip())
+
+    def test_bahasa_tak_dikenal_memberi_string_kosong(self):
+        self.assertEqual(runner.perintah_instalasi("klingon"), "")
+
+    def test_batas_waktu_bahasa_terkompilasi_lebih_longgar(self):
+        self.assertGreater(runner.batas_waktu("java"), runner.batas_waktu("python"))
+        self.assertGreater(runner.batas_waktu("go"), runner.batas_waktu("python"))
+
 
 
 if __name__ == "__main__":

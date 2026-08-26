@@ -6,7 +6,9 @@ JAVASCRIPT_EXERCISES = [
             "Buat program yang menampilkan:",
             "  Halo, namaku Andi!",
             "  Aku sedang belajar JavaScript.",
-            "(Nama boleh diganti dengan nama sendiri)",
+            "",
+            "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
+            "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
             "Gunakan console.log() untuk tiap baris.",
@@ -57,7 +59,7 @@ console.log(cekKelulusan(60));   // Tidak Lulus""",
     },
     {
         "title": "Latihan 4: Deret Angka Genap",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Tampilkan semua bilangan genap dari 1 sampai 20",
             "beserta total jumlahnya menggunakan array method.",
@@ -75,7 +77,7 @@ console.log(`Total: ${total}`);""",
     },
     {
         "title": "Latihan 5: Pola Bintang",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat pola segitiga siku-siku dari bintang:",
             "  *",
@@ -94,7 +96,7 @@ console.log(`Total: ${total}`);""",
     },
     {
         "title": "Latihan 6: Statistik Nilai dengan Array",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Diberikan array nilai = [80, 90, 75, 85, 60, 95, 70].",
             "Tampilkan: nilai terbesar, terkecil, rata-rata, dan",
@@ -119,7 +121,7 @@ console.log(`Urutan menurun: ${urutMenurun}`);""",
     },
     {
         "title": "Latihan 7: Fungsi Hitung Luas",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat 3 fungsi (arrow function):",
             "  1. luasPersegi(sisi)          -> sisi * sisi",
@@ -141,7 +143,7 @@ console.log(`Lingkaran (r=7): ${luasLingkaran(7).toFixed(2)}`);""",
     },
     {
         "title": "Latihan 8: Manipulasi String",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Diberikan kalimat = '  Belajar JavaScript itu Menyenangkan  '.",
             "Tampilkan:",
@@ -165,7 +167,7 @@ console.log(`4. ${bersih.replace("JavaScript", "Coding")}`);""",
     },
     {
         "title": "Latihan 9: Object Buku Kontak",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat object kontak kosong. Tambahkan 3 kontak",
             "(nama sebagai key, nomor telepon sebagai value).",
@@ -193,7 +195,7 @@ console.log(hasil);""",
     },
     {
         "title": "Latihan 10: Filter & Transform dengan Method Chaining",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Diberikan array mahasiswa berisi object {nama, nilai}:",
             "  [{nama:'Andi',nilai:80}, {nama:'Budi',nilai:65},",
@@ -224,7 +226,7 @@ console.log(namaLulusUrut);   // ['Citra', 'Andi']""",
     },
     {
         "title": "Latihan 11: Class Rekening Bank",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class Rekening dengan:",
             "  - private field #saldo (ES2022+)",
@@ -275,7 +277,7 @@ console.log(`Saldo akhir: ${r.saldo}`);""",
     },
     {
         "title": "Latihan 12: Pewarisan Hewan",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class Hewan (nama, method bersuara()).",
             "Buat subclass Kucing dan Anjing yang meng-override bersuara().",
@@ -313,7 +315,7 @@ daftarHewan.forEach(h => h.bersuara());""",
     },
     {
         "title": "Latihan 13: Exception Handling Kalkulator",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi bagi(a, b) yang melempar Error jika b === 0,",
             "dan melempar TypeError jika a atau b bukan bertipe number.",
@@ -354,7 +356,7 @@ ujiBagi(10, "a");""",
     },
     {
         "title": "Latihan 14: Closure Counter & Module Pattern",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi buatCounter() yang mengembalikan object dengan",
             "3 method: increment(), decrement(), dan getValue().",

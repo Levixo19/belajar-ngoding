@@ -7,6 +7,10 @@ lalu daftarkan satu entri di LANGUAGES pada main.py.
 
 from data.normalisasi import seimbangkan_kuis
 
+from data.aplikasi_materials import APLIKASI_MATERIALS
+from data.aplikasi_quizzes import APLIKASI_QUIZZES as _APLIKASI_QUIZZES
+from data.aplikasi_exercises import APLIKASI_EXERCISES
+
 from data.java_materials import JAVA_MATERIALS
 from data.java_quizzes import JAVA_QUIZZES as _JAVA_QUIZZES
 from data.java_exercises import JAVA_EXERCISES
@@ -41,6 +45,7 @@ from data.go_exercises import GO_EXERCISES
 
 # Posisi jawaban diratakan supaya kuis tidak bisa ditebak dari polanya.
 # Lihat data/normalisasi.py untuk alasan lengkapnya.
+APLIKASI_QUIZZES = seimbangkan_kuis(_APLIKASI_QUIZZES)
 JAVA_QUIZZES = seimbangkan_kuis(_JAVA_QUIZZES)
 SQL_QUIZZES = seimbangkan_kuis(_SQL_QUIZZES)
 PYTHON_QUIZZES = seimbangkan_kuis(_PYTHON_QUIZZES)
@@ -51,6 +56,7 @@ BASH_QUIZZES = seimbangkan_kuis(_BASH_QUIZZES)
 GO_QUIZZES = seimbangkan_kuis(_GO_QUIZZES)
 
 __all__ = [
+    "APLIKASI_MATERIALS", "APLIKASI_QUIZZES", "APLIKASI_EXERCISES",
     "JAVA_MATERIALS", "JAVA_QUIZZES", "JAVA_EXERCISES",
     "SQL_MATERIALS", "SQL_QUIZZES", "SQL_EXERCISES",
     "PYTHON_MATERIALS", "PYTHON_QUIZZES", "PYTHON_EXERCISES",

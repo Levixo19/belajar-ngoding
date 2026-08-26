@@ -77,7 +77,9 @@ func main() {
             "Gunakan rantai if / else if / else.",
             "Deklarasikan variabel grade lebih dulu lalu isi di dalam if.",
         ],
-        "stdin": "80\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["90\n", "80\n", "65\n", "40\n"],
         "solution": """package main
 
 import "fmt"
@@ -158,7 +160,9 @@ func main() {
             "Perulangan luar mengatur baris, perulangan dalam mencetak bintang.",
             "Pakai fmt.Print(\"*\") lalu fmt.Println() di akhir tiap baris.",
         ],
-        "stdin": "5\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["5\n", "3\n"],
         "solution": """package main
 
 import "fmt"
@@ -177,7 +181,7 @@ func main() {
     },
     {
         "title": "Latihan 6: Statistik Slice",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat slice berisi: 80, 65, 90, 45, 75",
             "Tampilkan:",
@@ -235,7 +239,7 @@ func main() {
     },
     {
         "title": "Latihan 7: Hitung Frekuensi Kata",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Diberikan kalimat: \"go itu cepat go itu sederhana go itu kuat\"",
             "Hitung berapa kali tiap kata muncul.",
@@ -285,7 +289,7 @@ func main() {
     },
     {
         "title": "Latihan 8: Fungsi Multi Return",
-        "difficulty": "Sedang",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi bagi(a, b float64) (float64, error).",
             "Fungsi mengembalikan error kalau pembaginya nol.",
@@ -347,7 +351,7 @@ func main() {
     },
     {
         "title": "Latihan 9: Pointer & Tukar Nilai",
-        "difficulty": "Sedang",
+        "difficulty": "Lanjut",
         "question": [
             "Buat tiga fungsi:",
             "  tukar(a, b *int)           menukar isi dua variabel",
@@ -404,7 +408,7 @@ func main() {
     },
     {
         "title": "Latihan 10: Struct Siswa",
-        "difficulty": "Sedang",
+        "difficulty": "Lanjut",
         "question": [
             "Buat struct Siswa dengan field Nama (string) dan Nilai (float64).",
             "Buat method:",

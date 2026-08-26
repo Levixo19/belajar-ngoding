@@ -67,11 +67,14 @@ SELECT nama, kategori, harga, stok FROM produk ORDER BY id;""",
             "  3. Tampilkan produk yang stok-nya 0.",
             "  4. Tampilkan produk dengan harga di atas 10000, urut dari termahal.",
         ],
+        # Hint harus MENUNTUN, bukan menyalinkan jawaban. Versi lama berisi
+        # empat baris query utuh, jadi yang membuka semua hint praktis sudah
+        # selesai tanpa pernah menyusun satu klausa pun sendiri.
         "hints": [
-            "SELECT * FROM produk;",
-            "WHERE kategori = 'Sembako'",
-            "WHERE stok = 0",
-            "ORDER BY harga DESC",
+            "Nomor 1 cukup menampilkan semua kolom -- ingat tanda bintang.",
+            "Nomor 2 butuh dua kolom saja, plus satu penyaring kategori.",
+            "Nomor 3: bandingkan kolom stok dengan angka nol memakai WHERE.",
+            "Nomor 4: saring dulu harganya, baru urutkan menurun (DESC).",
         ],
         "setup": """CREATE TABLE produk (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -138,7 +141,7 @@ SELECT * FROM produk;""",
     },
     {
         "title": "Latihan 5: Agregasi & Grouping",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Dengan tabel produk, tulis query untuk:",
             "  1. Jumlah total produk.",
@@ -191,7 +194,7 @@ HAVING SUM(harga * stok) > 1000000;""",
     },
     {
         "title": "Latihan 6: JOIN Tiga Tabel",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat tabel berikut lalu tulis query JOIN:",
             "  kategori(id, nama)",
@@ -257,7 +260,7 @@ WHERE pn.id IS NULL;""",
     },
     {
         "title": "Latihan 7: Subquery",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Dengan tabel mahasiswa(nim, nama, jurusan, ipk), tulis query:",
             "  1. Mahasiswa dengan IPK di atas rata-rata.",
@@ -302,7 +305,7 @@ ORDER BY m.jurusan;""",
     },
     {
         "title": "Latihan 8: Query Gabungan (Challenging)",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Database toko. Buat query yang menampilkan:",
             "  10 produk terlaris berdasarkan jumlah terjual,",

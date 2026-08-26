@@ -6,7 +6,9 @@ CPP_EXERCISES = [
             "Buat program yang menampilkan:",
             "  Halo, namaku Andi!",
             "  Aku sedang belajar C++.",
-            "(Nama boleh diganti dengan nama sendiri)",
+            "",
+            "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
+            "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
             "Gunakan cout << ... << endl; untuk tiap baris.",
@@ -51,20 +53,25 @@ int main() {
         "title": "Latihan 3: Cek Kelulusan",
         "difficulty": "Mudah",
         "question": [
-            "Buat program: minta input nilai dari user (cin),",
+            "Buat program: baca satu angka nilai dari input dengan cin,",
             "jika nilai >= 75 tampilkan 'Lulus', selain itu 'Tidak Lulus'.",
+            "",
+            "Jangan cetak teks ajakan apa pun. Program hanya boleh mengeluarkan",
+            "satu baris berisi Lulus atau Tidak Lulus.",
         ],
         "hints": [
             "int nilai; cin >> nilai;",
+            "Jangan ada cout sebelum cin -- penilaian membandingkan output.",
             "Gunakan if-else biasa.",
         ],
+        # Dua input supaya KEDUA cabang benar-benar diuji.
+        "stdin_list": ["80\n", "60\n"],
         "solution": """#include <iostream>
 using namespace std;
 
 int main() {
     int nilai;
 
-    cout << "Masukkan nilai: ";
     cin >> nilai;
 
     if (nilai >= 75) {
@@ -77,7 +84,7 @@ int main() {
     },
     {
         "title": "Latihan 4: Deret Angka Genap dengan Vector",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Menggunakan vector<int>, kumpulkan semua bilangan genap",
             "dari 1 sampai 20, tampilkan semuanya beserta total jumlahnya.",
@@ -109,7 +116,7 @@ int main() {
     },
     {
         "title": "Latihan 5: Pola Bintang",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat pola segitiga siku-siku dari bintang:",
             "  *",
@@ -135,7 +142,7 @@ int main() {
     },
     {
         "title": "Latihan 6: Statistik Nilai dengan Vector & Algorithm",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Diberikan vector<int> nilai = {80,90,75,85,60,95,70}.",
             "Tampilkan nilai terbesar, terkecil, rata-rata, dan versi",
@@ -171,7 +178,7 @@ int main() {
     },
     {
         "title": "Latihan 7: Function Overload Hitung Luas",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat 3 fungsi bernama SAMA 'luas' (function overloading):",
             "  1. luas(int sisi)          -> luas persegi (sisi * sisi)",
@@ -207,7 +214,7 @@ int main() {
     },
     {
         "title": "Latihan 8: Class Rekening dengan Encapsulation",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Buat class Rekening dengan:",
             "  - atribut private: pemilik (string), saldo (double)",
@@ -258,7 +265,7 @@ int main() {
     },
     {
         "title": "Latihan 9: Map untuk Buku Kontak",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Menggunakan map<string,string>, buat buku kontak dengan",
             "3 entri (nama -> nomor telepon). Tampilkan semua kontak",
@@ -293,7 +300,7 @@ int main() {
     },
     {
         "title": "Latihan 10: Inheritance & Virtual Function Hewan",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class Hewan (nama, virtual method bersuara()).",
             "Buat subclass Kucing dan Anjing yang override bersuara().",
@@ -352,7 +359,7 @@ int main() {
     },
     {
         "title": "Latihan 11: Abstract Class Bentuk Geometris",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat abstract class Bentuk dengan pure virtual function",
             "luas() dan keliling(). Buat subclass Persegi dan",
@@ -406,7 +413,7 @@ int main() {
     },
     {
         "title": "Latihan 12: Operator Overloading Vector2D",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat class Vector2D (x, y) dengan overload operator:",
             "  + (penjumlahan dua vector)",
@@ -452,7 +459,7 @@ int main() {
     },
     {
         "title": "Latihan 13: Template Function & Class Stack",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat function template cariMax(vector<T> data) yang",
             "mengembalikan elemen terbesar (tanpa memakai algorithm STL,",
@@ -508,7 +515,7 @@ int main() {
     },
     {
         "title": "Latihan 14: Exception Handling Kalkulator",
-        "difficulty": "Menengah",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi bagi(double a, double b) yang throw",
             "runtime_error jika b == 0. Buat class custom exception",

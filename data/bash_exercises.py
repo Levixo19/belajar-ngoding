@@ -61,7 +61,9 @@ echo "$a % $b = $((a % b))" """,
             "Bandingkan angka dengan -ge di dalam [[ ]].",
             "Blok if ditutup dengan fi.",
         ],
-        "stdin": "80\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["80\n", "60\n"],
         "solution": """#!/usr/bin/env bash
 
 read -r nilai
@@ -115,7 +117,9 @@ echo "Total: $total" """,
             "C * 9 / 5 lebih tepat daripada C * (9 / 5) karena 9/5 jadi 1.",
             "Semua operasi di dalam satu $(( )).",
         ],
-        "stdin": "25\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["25\n", "0\n"],
         "solution": """#!/usr/bin/env bash
 
 read -r c
@@ -125,7 +129,7 @@ echo "$c C = $f F" """,
     },
     {
         "title": "Latihan 6: Tabel Perkalian",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Baca satu angka n dari input.",
             "Tampilkan tabel perkalian n dari 1 sampai 10 dengan format:",
@@ -139,7 +143,9 @@ echo "$c C = $f F" """,
             "Hitung hasilnya dengan $(( n * i )).",
             "Perhatikan spasi di sekitar huruf x pada format output.",
         ],
-        "stdin": "7\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["7\n", "12\n"],
         "solution": """#!/usr/bin/env bash
 
 read -r n
@@ -150,7 +156,7 @@ done""",
     },
     {
         "title": "Latihan 7: Grade dengan case",
-        "difficulty": "Sedang",
+        "difficulty": "Menengah",
         "question": [
             "Baca satu huruf grade (A, B, C, D, atau E) dari input.",
             "Gunakan case untuk menampilkan keterangannya:",
@@ -168,7 +174,9 @@ done""",
             "Satu cabang bisa punya beberapa pola: A|a)",
             "Tiap cabang ditutup dengan ;; dan default-nya adalah *)",
         ],
-        "stdin": "B\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["B\n", "c\n", "Z\n"],
         "solution": """#!/usr/bin/env bash
 
 read -r g
@@ -184,7 +192,7 @@ esac""",
     },
     {
         "title": "Latihan 8: Fungsi Faktorial",
-        "difficulty": "Sedang",
+        "difficulty": "Lanjut",
         "question": [
             "Buat fungsi bernama faktorial yang menerima satu angka",
             "dan menampilkan hasil faktorialnya.",
@@ -223,7 +231,7 @@ done""",
     },
     {
         "title": "Latihan 9: Array Nilai Siswa",
-        "difficulty": "Sedang",
+        "difficulty": "Lanjut",
         "question": [
             "Buat array berisi nilai: 80 65 90 45 75",
             "Tampilkan:",
@@ -264,7 +272,7 @@ echo "Terendah: $terendah" """,
     },
     {
         "title": "Latihan 10: Membalik String",
-        "difficulty": "Sedang",
+        "difficulty": "Lanjut",
         "question": [
             "Baca satu kata dari input.",
             "Tampilkan kata itu terbalik, lalu tentukan apakah palindrom.",
@@ -281,7 +289,9 @@ echo "Terendah: $terendah" """,
             "Panjang string ada di ${#kata}.",
             "Bangun string terbalik dengan menempel karakter dari belakang ke depan.",
         ],
-        "stdin": "katak\n",
+        # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
+        # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
+        "stdin_list": ["katak\n", "buku\n"],
         "solution": """#!/usr/bin/env bash
 
 read -r kata
