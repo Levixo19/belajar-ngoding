@@ -12,6 +12,7 @@ Dua perubahan perilaku yang disengaja:
 Importir: main.py, navigasi.py, tests/test_data.py (memakai `teks_polos`).
 """
 
+import berkas
 import sorot
 import tema
 from utils import (
@@ -33,6 +34,52 @@ def _bahasa_dari_kategori(kategori):
     return kategori.rsplit("_", 1)[0] if "_" in kategori else ""
 
 
+def _garis_label(teks, lbr, peran="redup"):
+    """Garis pembatas kotak kode yang sekaligus memuat keterangan.
+
+    Bentuknya:  ── Buat berkas: hello.py ───────────────────
+    Keterangan ditaruh DI GARIS, bukan di baris terpisah, supaya tidak
+    memakan tinggi layar yang sudah sempit untuk isi materinya sendiri.
+    """
+    isi = "  ── " + teks + " "
+    sisa = lbr - 2 - len(isi)
+    if sisa < 2:
+        # Terminal sempit: potong keterangannya, jangan sampai garis membungkus.
+        maks = max(0, lbr - 12)
+        isi = "  ── " + teks[:maks] + " "
+        sisa = 2
+    return tema.cat(isi + "─" * sisa, peran)
+
+
+def _kotak_kode(kode, bahasa, konteks, lbr, sorot_nyala):
+    """Blok kode lengkap dengan instruksi di garis atas dan bawah."""
+    p = berkas.petunjuk_kode(bahasa, kode, konteks)
+
+    peran_atas = {
+        berkas.PROGRAM: "sukses",
+        berkas.MULTI: "sukses",
+        berkas.SESI: "info",
+    }.get(p.jenis, "redup")
+
+    baris = [_garis_label(p.instruksi, lbr, peran_atas)]
+
+    if sorot_nyala and bahasa:
+        baris.extend(sorot.sorot_baris(kode, bahasa, awalan="  "))
+    else:
+        for cl in kode.splitlines():
+            baris.append(tema.cat("  " + cl, "kode_string"))
+
+    if p.perintah:
+        bawah = "Jalankan: " + "  lalu  ".join(p.perintah)
+        baris.append(_garis_label(bawah, lbr, "aksen"))
+    elif p.keterangan:
+        baris.append(_garis_label(p.keterangan, lbr, "redup"))
+    else:
+        baris.append(tema.cat("  " + "─" * (lbr - 6), "redup"))
+
+    return baris
+
+
 def baris_materi(topic, bahasa="", kata_sorot=""):
     """Ubah satu topik jadi daftar baris siap tampil."""
     lbr = lebar()
@@ -52,13 +99,9 @@ def baris_materi(topic, bahasa="", kata_sorot=""):
                 lines.append(baris)
 
         if section.get("code"):
-            lines.append(tema.cat("  " + "─" * (lbr - 6), "redup"))
-            if sorot_nyala and bahasa:
-                lines.extend(sorot.sorot_baris(section["code"], bahasa, awalan="  "))
-            else:
-                for cl in section["code"].splitlines():
-                    lines.append(tema.cat("  " + cl, "kode_string"))
-            lines.append(tema.cat("  " + "─" * (lbr - 6), "redup"))
+            konteks = section.get("heading") or topic["title"]
+            lines.extend(_kotak_kode(section["code"], bahasa, konteks,
+                                     lbr, sorot_nyala))
 
     return lines
 

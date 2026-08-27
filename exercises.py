@@ -26,6 +26,7 @@ import shutil
 import subprocess
 
 import beda
+import berkas
 import galat as modul_galat
 import runner
 import sorot
@@ -423,6 +424,34 @@ def _status_latihan(ex, kategori, data):
     return "baru"
 
 
+def _cetak_petunjuk_berkas(ex, kategori, bahasa):
+    """Beri tahu berkas apa yang akan ditulis dan bagaimana menjalankannya.
+
+    Tanpa ini, pelajar tidak tahu apakah harus membuat berkas sendiri, apa
+    namanya, dan perintah apa yang dipakai menjalankannya di luar aplikasi.
+    Nama berkasnya ditentukan aplikasi (bukan bebas) karena Java mewajibkan
+    nama berkas sama dengan nama kelas, dan karena tombol [2] dan [3]
+    membaca berkas di jalur itu.
+    """
+    nama = nama_kerja(ex, bahasa)
+    p = berkas.petunjuk_latihan(bahasa, nama)
+    folder = os.path.join(DIR_KERJA, kategori)
+    rumah = os.path.expanduser("~")
+    if folder.startswith(rumah):
+        folder = "~" + folder[len(rumah):]
+
+    print(tema.cat("\n  BERKAS JAWABAN:", "info", tema.TEBAL))
+    print(tema.cat(f"    Nama berkas : {nama}", "sukses", tema.TEBAL))
+    if bahasa == "java":
+        print(tema.cat(f"    Nama kelas  : {nama[:-5]}   "
+                       "(javac mewajibkan sama dengan nama berkas)", "redup"))
+    print(tema.cat(f"    Lokasi      : {folder}", "redup"))
+    print(tema.cat("    Tekan [1] untuk membuat & membukanya di editor.", "redup"))
+
+    if p.perintah:
+        print(tema.cat("    Di terminal : " + "  lalu  ".join(p.perintah), "aksen"))
+
+
 def _tampilkan_soal(ex, kategori, bahasa, hint_terbuka):
     clear()
     data = load_progress()
@@ -445,6 +474,8 @@ def _tampilkan_soal(ex, kategori, bahasa, hint_terbuka):
     print(tema.cat("\n  SOAL:", "info", tema.TEBAL))
     for line in ex["question"]:
         print(tema.cat("  " + line, "teks"))
+
+    _cetak_petunjuk_berkas(ex, kategori, bahasa)
 
     if ex.get("setup", "").strip():
         print(tema.cat("\n  KONDISI AWAL (sudah disiapkan, tak perlu kamu tulis):",
