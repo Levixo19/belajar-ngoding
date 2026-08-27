@@ -227,6 +227,35 @@ class TestLatihan(unittest.TestCase):
             with self.subTest(bahasa=lang["label"]):
                 self.assertEqual(lang["exercises"][0]["difficulty"], "Mudah")
 
+    def test_solusi_yang_dinilai_tidak_mengakses_jaringan(self):
+        """Latihan yang hasilnya bergantung koneksi mustahil dinilai adil.
+
+        Solusi yang memanggil API sungguhan menghasilkan output berbeda
+        tergantung DNS, kecepatan jaringan, dan apakah domainnya masih hidup.
+        Pelajar dengan kode yang benar bisa dinyatakan salah hanya karena
+        internetnya mati, dan waktu tunggunya juga bisa menembus batas timeout.
+
+        Latihan seperti itu tetap boleh ada, tapi wajib ditandai
+        `auto_check: False` supaya dinilai manual.
+        """
+        pola_jaringan = re.compile(
+            r"""\bfetch\s*\(|https?://|XMLHttpRequest|\burllib\b"""
+            r"""|\brequests\.(?:get|post)|\bhttp\.(?:Get|Post)\b"""
+            r"""|HttpClient|\bsocket\.|(?:^|\s)(?:curl|wget)\s""",
+            re.IGNORECASE | re.MULTILINE)
+
+        for lang in LANGUAGES:
+            for e in lang["exercises"]:
+                if e.get("auto_check") is False:
+                    continue
+                with self.subTest(bahasa=lang["label"], latihan=e["title"]):
+                    cocok = pola_jaringan.search(e["solution"])
+                    self.assertIsNone(
+                        cocok,
+                        f"solusi mengakses jaringan ({cocok.group(0).strip() if cocok else ''});"
+                        " tandai auto_check: False",
+                    )
+
     def test_solusi_berinput_tidak_mencetak_prompt(self):
         """Prompt di solusi contoh membuat latihan mustahil dikerjakan benar.
 

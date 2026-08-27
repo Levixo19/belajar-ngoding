@@ -514,6 +514,8 @@ console.log(hasil);   // [1, 2, 3, 4, 5]""",
             "if (!response.ok) throw new Error(`HTTP ${response.status}`);",
             "return await response.json();",
         ],
+        "auto_check": False,
+        "alasan_tidak_dicek": "memanggil API lewat jaringan, hasilnya bergantung koneksi dan DNS, bukan pada kodemu",
         "solution": """async function ambilDataUser(id) {
     const url = `https://api.contoh.com/users/${id}`;
     const response = await fetch(url);
