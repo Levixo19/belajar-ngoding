@@ -11,7 +11,8 @@ itu, jadi menambah opsi baru cukup menambah satu entri -- tidak perlu menyentuh
 kode antarmuka sama sekali.
 
 Importir: utils.py (lebar & tinggi halaman), main.py (menu pengaturan),
-quiz.py (detik per soal), exercises.py (editor & konfirmasi jawaban).
+quiz.py (detik per soal), exercises.py (editor & konfirmasi jawaban),
+bab.py (saklar buka semua bab).
 Berkas data: ~/.belajar_ngoding_config.json, override lewat BELAJAR_CONFIG_FILE.
 """
 
@@ -109,6 +110,9 @@ SKEMA = [
          keterangan="Kosongkan untuk memakai $EDITOR / $VISUAL / nano."),
     Opsi("konfirmasi_jawaban", "Tanya dulu sebelum menampilkan jawaban", "sakelar", True,
          keterangan="Mencegah tidak sengaja membuka solusi."),
+    Opsi("buka_semua_bab", "Buka semua bab tanpa syarat", "sakelar", False,
+         keterangan="Matikan penguncian bertahap. Untuk yang sudah pernah "
+                    "belajar bahasanya dan cuma ingin melompat."),
     Opsi("nama", "Nama panggilan", "teks", "",
          keterangan="Dipakai di sapaan dan laporan kemajuan."),
 ]

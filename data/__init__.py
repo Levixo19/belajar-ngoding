@@ -43,6 +43,14 @@ from data.go_materials import GO_MATERIALS
 from data.go_quizzes import GO_QUIZZES as _GO_QUIZZES
 from data.go_exercises import GO_EXERCISES
 
+from data.html_materials import HTML_MATERIALS
+from data.html_quizzes import HTML_QUIZZES as _HTML_QUIZZES
+from data.html_exercises import HTML_EXERCISES
+
+from data.css_materials import CSS_MATERIALS
+from data.css_quizzes import CSS_QUIZZES as _CSS_QUIZZES
+from data.css_exercises import CSS_EXERCISES
+
 # Posisi jawaban diratakan supaya kuis tidak bisa ditebak dari polanya.
 # Lihat data/normalisasi.py untuk alasan lengkapnya.
 APLIKASI_QUIZZES = seimbangkan_kuis(_APLIKASI_QUIZZES)
@@ -54,6 +62,8 @@ C_QUIZZES = seimbangkan_kuis(_C_QUIZZES)
 CPP_QUIZZES = seimbangkan_kuis(_CPP_QUIZZES)
 BASH_QUIZZES = seimbangkan_kuis(_BASH_QUIZZES)
 GO_QUIZZES = seimbangkan_kuis(_GO_QUIZZES)
+HTML_QUIZZES = seimbangkan_kuis(_HTML_QUIZZES)
+CSS_QUIZZES = seimbangkan_kuis(_CSS_QUIZZES)
 
 __all__ = [
     "APLIKASI_MATERIALS", "APLIKASI_QUIZZES", "APLIKASI_EXERCISES",
@@ -65,4 +75,6 @@ __all__ = [
     "CPP_MATERIALS", "CPP_QUIZZES", "CPP_EXERCISES",
     "BASH_MATERIALS", "BASH_QUIZZES", "BASH_EXERCISES",
     "GO_MATERIALS", "GO_QUIZZES", "GO_EXERCISES",
+    "HTML_MATERIALS", "HTML_QUIZZES", "HTML_EXERCISES",
+    "CSS_MATERIALS", "CSS_QUIZZES", "CSS_EXERCISES",
 ]

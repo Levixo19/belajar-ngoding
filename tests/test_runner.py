@@ -358,8 +358,21 @@ class TestNormalisasiSimetris(unittest.TestCase):
 
 
 class TestInstalasiToolchain(unittest.TestCase):
-    def test_setiap_toolchain_punya_petunjuk_pemasangan(self):
+    """Setiap toolchain yang MEMBUTUHKAN pemasangan harus memberi tahu caranya.
+
+    Syaratnya sengaja diikatkan pada `butuh`, bukan pada keberadaan entri di
+    TOOLCHAINS. HTML dan CSS tidak memerlukan satu program pun — keduanya
+    dibaca oleh struktur.py memakai penerjemah Python yang sama dengan yang
+    menjalankan aplikasi ini — jadi menuntut petunjuk pemasangan untuk
+    keduanya berarti menuntut jawaban atas pertanyaan yang tidak pernah
+    ditanyakan. Yang penting justru kebalikannya, dan itu yang diuji di bawah:
+    toolchain yang butuh sesuatu TIDAK BOLEH diam soal cara memasangnya.
+    """
+
+    def test_setiap_toolchain_yang_butuh_program_punya_petunjuk_pemasangan(self):
         for kunci, tc in runner.TOOLCHAINS.items():
+            if not tc.butuh:
+                continue
             with self.subTest(bahasa=kunci):
                 self.assertTrue(tc.instalasi, "tidak ada petunjuk instalasi")
                 for sistem in ("fedora", "debian", "mac", "windows"):
@@ -367,9 +380,27 @@ class TestInstalasiToolchain(unittest.TestCase):
                     self.assertTrue(tc.instalasi[sistem].strip())
 
     def test_perintah_instalasi_cocok_untuk_mesin_ini(self):
-        for kunci in runner.TOOLCHAINS:
+        for kunci, tc in runner.TOOLCHAINS.items():
+            if not tc.butuh:
+                continue
             with self.subTest(bahasa=kunci):
                 self.assertTrue(runner.perintah_instalasi(kunci).strip())
+
+    def test_toolchain_tanpa_kebutuhan_selalu_tersedia(self):
+        """Yang `butuh`-nya kosong harus benar-benar jalan di mana pun.
+
+        Ini bukan sekadar konsekuensi logis: kalau suatu saat html/css diberi
+        kebutuhan baru diam-diam, janji "bisa dikerjakan di komputer mana pun"
+        ikut batal, dan yang menanggungnya adalah orang yang justru belum
+        sanggup memasang apa-apa.
+        """
+        tanpa = [k for k, tc in runner.TOOLCHAINS.items() if not tc.butuh]
+        self.assertEqual(sorted(tanpa), ["css", "html"])
+        for kunci in tanpa:
+            with self.subTest(bahasa=kunci):
+                self.assertTrue(runner.tersedia(kunci))
+                self.assertEqual(runner.program_hilang(kunci), [])
+                self.assertEqual(runner.perintah_instalasi(kunci), "")
 
     def test_bahasa_tak_dikenal_memberi_string_kosong(self):
         self.assertEqual(runner.perintah_instalasi("klingon"), "")

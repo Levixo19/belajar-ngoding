@@ -95,6 +95,7 @@ def _pascal(teks):
 EKSTENSI = {
     "python": ".py", "javascript": ".js", "java": ".java", "c": ".c",
     "cpp": ".cpp", "go": ".go", "bash": ".sh", "sql": ".sql",
+    "html": ".html", "css": ".css",
 }
 
 
@@ -106,6 +107,13 @@ def nama_berkas(bahasa, kode, konteks=""):
     if bahasa == "go":
         # `go run` pada satu berkas package main; nama bebas, main.go paling lazim.
         return "main.go"
+    if bahasa == "html":
+        # index.html adalah nama yang dicari server web mana pun saat sebuah
+        # folder dibuka. Membiasakannya sejak halaman pertama menghemat satu
+        # kebingungan besar nanti.
+        return "index.html"
+    if bahasa == "css":
+        return "gaya.css"
     return slug(konteks) + EKSTENSI.get(bahasa, ".txt")
 
 
@@ -121,6 +129,13 @@ def perintah_jalan(bahasa, nama):
         "go": [f"go run {nama}"],
         "bash": [f"bash {nama}"],
         "sql": [f"sqlite3 belajar.db < {nama}"],
+        # HTML dan CSS tidak dijalankan dari terminal: keduanya dibuka browser.
+        # Perintah yang benar-benar dipakai orang untuk melihat hasilnya adalah
+        # membuka berkasnya, bukan mengetik apa pun.
+        "html": [f"Buka {nama} di browser (klik dua kali, atau Ctrl+O)"],
+        "css": ["Tautkan dari HTML: "
+                f'<link rel="stylesheet" href="{nama}">',
+                "lalu buka berkas HTML-nya di browser"],
     }.get(bahasa, [])
 
 
@@ -269,6 +284,18 @@ def _js_lengkap(kode):
     return _kurung_seimbang(kode)
 
 
+def _html_lengkap(kode):
+    """Halaman utuh, bukan potongan markup.
+
+    Yang dicari <html> atau <!doctype — bukan sekadar adanya tag. Sebagian
+    besar contoh di materi HTML memang cuma beberapa elemen untuk menunjukkan
+    satu hal, dan menyuruh pelajar menyimpan tiap potongan itu sebagai berkas
+    justru mengaburkan mana yang benar-benar sebuah halaman.
+    """
+    rendah = kode.lower()
+    return "<!doctype" in rendah or "<html" in rendah
+
+
 def _bash_lengkap(kode):
     if re.search(r"^\s*(fi|done|esac|\})\s*$", kode.splitlines()[0] if kode.splitlines() else ""):
         return False
@@ -291,6 +318,13 @@ def jenis_kode(bahasa, kode):
         # Selebihnya mengandalkan tabel dari materi sebelumnya, jadi harus
         # diketik di sesi database yang sudah berisi data.
         return PROGRAM if re.search(r"\bCREATE\s+TABLE\b", kode, re.I) else SESI
+
+    if bahasa == "html":
+        return PROGRAM if _html_lengkap(kode) else POTONGAN
+    if bahasa == "css":
+        # Satu blok aturan pun sudah berupa berkas gaya yang sah dan bisa
+        # ditautkan apa adanya. CSS tidak punya "titik masuk" yang harus ada.
+        return PROGRAM if "{" in kode and "}" in kode else POTONGAN
 
     pemeriksa = {
         "python": _python_lengkap,

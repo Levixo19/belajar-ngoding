@@ -77,9 +77,36 @@ POLA = [
     (r"TabError",
      "Tab dan spasi tercampur dalam satu blok. Pilih salah satu, disarankan "
      "4 spasi."),
+    # Python 3.10+ mengganti "invalid syntax" yang serba-guna dengan pesan yang
+    # jauh lebih spesifik. Tanpa pola-pola berikut semuanya jatuh ke jawaban
+    # umum di bawah -- yang justru menyembunyikan petunjuk terbaik yang sudah
+    # susah payah diberikan Python.
+    (r"SyntaxError: '(.)' was never closed",
+     "Tanda '\\1' dibuka tapi tidak pernah ditutup. Hitung lagi pasangan "
+     "buka-tutupnya. Python menunjuk baris tempat tanda itu DIBUKA, bukan "
+     "tempat kesalahannya baru terasa."),
+    (r"SyntaxError: unmatched '(.)'",
+     "Ada '\\1' penutup yang tidak punya pasangan pembuka."),
+    (r"SyntaxError: expected ':'",
+     "Kurang titik dua (:) di akhir baris. Baris if, elif, else, for, while, "
+     "def, dan class selalu ditutup titik dua."),
+    (r"Perhaps you forgot a comma",
+     "Sepertinya ada koma yang kurang di antara dua nilai."),
+    (r"SyntaxError: cannot assign to (?:literal|expression)",
+     "Sisi kiri tanda = harus berupa nama variabel. Kalau maksudmu "
+     "MEMBANDINGKAN dua nilai, pakai == (dua tanda sama dengan)."),
     (r"SyntaxError: invalid syntax",
      "Ada kesalahan penulisan. Tersering: lupa titik dua (:) di akhir baris "
      "if/for/while/def, atau kurung yang belum ditutup."),
+    (r"object is not subscriptable",
+     "Nilai ini tidak bisa diakses dengan kurung siku [ ]. Kurung siku hanya "
+     "berlaku untuk list, tuple, string, dan dictionary."),
+    (r"object is not callable",
+     "Nilai ini dipanggil seperti fungsi padahal bukan fungsi. Periksa apakah "
+     "ada nama variabel yang tanpa sengaja menimpa nama fungsi."),
+    (r"takes \d+ positional arguments? but \d+ (?:was|were) given",
+     "Jumlah argumen saat memanggil fungsi tidak cocok dengan jumlah parameter "
+     "di definisinya."),
     (r"SyntaxError: unterminated string literal",
      "Ada teks yang tanda kutipnya belum ditutup."),
     (r"NameError: name '(\w+)' is not defined",
@@ -178,6 +205,14 @@ POLA = [
     (r"syntax error near unexpected token",
      "Ada kesalahan penulisan. Di Bash, spasi di sekitar = saat memberi nilai "
      "TIDAK boleh ada: tulis nama=\"Budi\", bukan nama = \"Budi\"."),
+    # Harus lebih spesifik daripada "command not found" di bawahnya. Menulis
+    # `nama = "Budi"` dengan spasi di sekitar = adalah kesalahan Bash paling
+    # sering di kalangan pemula, dan pesan aslinya sama sekali tidak
+    # menyinggungnya: bash cuma bilang "nama: command not found".
+    (r"line \d+: (\w+): command not found",
+     "Bash mengira '\\1' adalah nama perintah. Kalau maksudmu mengisi variabel, "
+     "hilangkan spasi di sekitar tanda sama dengan: tulis \\1=\"nilai\", bukan "
+     "\\1 = \"nilai\"."),
     (r"command not found",
      "Perintah tidak dikenal. Periksa ejaannya, atau program itu memang belum "
      "terpasang di komputer ini."),
@@ -197,6 +232,37 @@ POLA = [
      "Kolom '\\1' tidak ada di tabel itu. Periksa ejaan nama kolomnya."),
     (r"UNIQUE constraint failed: (\S+)",
      "Nilai yang dimasukkan ke \\1 sudah ada, padahal kolom itu wajib unik."),
+
+    # --------------------------------------------------------- HTML & CSS
+    #
+    # Pesan dari struktur.py sudah berbahasa Indonesia dan sudah menyebut
+    # nomor barisnya. Yang ditambahkan di sini bukan terjemahan melainkan
+    # AKIBATNYA — bagian yang paling sering tidak diduga pemula, karena
+    # browser tidak pernah mengeluh dan halamannya tetap tampil.
+    (r"<(\w+)> dibuka tapi tidak pernah ditutup",
+     "Tag <\\1> tidak punya penutup </\\1>. Browser tidak akan menampilkan "
+     "pesan error untuk ini -- ia menebak sendiri di mana elemennya berakhir, "
+     "dan tebakannya sering menelan elemen-elemen di bawahnya. Itu sebabnya "
+     "satu tag yang lupa ditutup bisa membuat separuh halaman ikut bergeser."),
+    (r"</(\w+)> menutup sesuatu yang tidak pernah dibuka",
+     "Ada </\\1> tanpa <\\1> pasangannya di atasnya. Biasanya ini sisa dari "
+     "menghapus satu baris tapi lupa menghapus penutupnya."),
+    (r"</(\w+)> tidak diperlukan",
+     "<\\1> termasuk elemen kosong -- ia tidak membungkus apa pun, jadi tidak "
+     "punya tag penutup. Cukup tulis <\\1> saja."),
+    (r"tidak diikuti '\{'",
+     "Setiap aturan CSS berbentuk `pemilih { properti: nilai; }`. Ada teks "
+     "yang berdiri sendiri tanpa blok kurung kurawal di belakangnya."),
+    (r"dibuka dengan '\{' tapi tidak pernah ditutup",
+     "Ada blok CSS yang kurung kurawalnya tidak ditutup. Semua aturan "
+     "sesudahnya ikut tertelan ke dalam blok itu dan berhenti berlaku -- "
+     "gejalanya: satu perubahan kecil membuat banyak gaya lain hilang."),
+    (r"bukan deklarasi yang sah",
+     "Deklarasi CSS selalu berbentuk `properti: nilai;` -- pakai titik dua "
+     "antara nama properti dan nilainya, dan titik koma di akhirnya."),
+    (r"blok '\{ … \}' tanpa pemilih",
+     "Ada kurung kurawal yang tidak didahului pemilih. CSS perlu tahu "
+     "elemen mana yang diatur: `p { ... }`, `.kartu { ... }`, `#judul { ... }`."),
 ]
 
 _TERKOMPILASI = [(re.compile(p, re.IGNORECASE | re.DOTALL), pesan) for p, pesan in POLA]

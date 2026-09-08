@@ -27,6 +27,7 @@ import re
 import shutil
 import signal
 import subprocess
+import sys
 import tempfile
 from dataclasses import dataclass, field
 
@@ -34,6 +35,13 @@ try:
     import resource  # POSIX saja
 except ImportError:
     resource = None
+
+# Pembaca struktur HTML/CSS. Dijalankan sebagai subprocess seperti compiler
+# mana pun, memakai penerjemah Python yang SAMA dengan yang menjalankan
+# aplikasi ini — jadi tidak ada yang perlu dipasang, dan tidak ada versi yang
+# bisa berbeda dari yang diuji.
+_STRUKTUR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "struktur.py")
 
 BATAS_WAKTU_DETIK = 10
 BATAS_MEMORI_MB = 512
@@ -214,6 +222,34 @@ TOOLCHAINS = {
             "windows": "Pakai WSL, Git Bash, atau MSYS2",
         },
     ),
+    # ------------------------------------------------------------ HTML & CSS
+    #
+    # Dua-duanya tidak "dijalankan": tidak ada yang dieksekusi, tidak ada yang
+    # dicetak. Yang dijalankan adalah struktur.py, yang MEMBACA berkasnya dan
+    # mencetak strukturnya sebagai pohon. Dengan begitu keduanya masuk ke mesin
+    # penilaian yang sama persis dengan Java atau Python — bandingkan keluaran,
+    # tidak ada aturan kelulusan kedua di mana pun.
+    #
+    # `butuh` sengaja kosong. Itu bukan kelalaian melainkan yang paling
+    # berharga dari keduanya: HTML dan CSS bisa dikerjakan DAN dinilai di
+    # komputer mana pun yang sanggup menjalankan aplikasi ini, termasuk yang
+    # tidak punya satu compiler pun. Buat orang yang baru mulai dan belum
+    # sanggup memasang apa-apa, dua bahasa inilah pintu masuknya.
+    "html": Toolchain(
+        key="html", label="HTML", ekstensi=".html", butuh=[],
+        nama_file=lambda kode: "index.html",
+        jalankan=lambda d, p: [sys.executable, _STRUKTUR, "html", p],
+        catatan="Struktur halaman dibaca dan ditampilkan sebagai pohon "
+                "elemen — itulah yang browser lihat dari markup-mu.",
+    ),
+    "css": Toolchain(
+        key="css", label="CSS", ekstensi=".css", butuh=[],
+        nama_file=lambda kode: "gaya.css",
+        jalankan=lambda d, p: [sys.executable, _STRUKTUR, "css", p],
+        catatan="Aturan CSS dibaca dan ditampilkan setelah dirapikan — "
+                "pemilih, lalu properti dan nilainya.",
+    ),
+
     "go": Toolchain(
         key="go", label="Go", ekstensi=".go", butuh=["go"],
         nama_file=lambda kode: "main.go",

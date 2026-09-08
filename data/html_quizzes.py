@@ -1,0 +1,462 @@
+HTML_QUIZZES = [
+    {
+        "title": "Kuis 1: Dasar HTML & Struktur Dokumen",
+        "questions": [
+            {
+                "q": "Apa yang sebenarnya dikerjakan HTML pada sebuah halaman?",
+                "options": [
+                    "Menandai bagian-bagian isi beserta perannya",
+                    "Mengatur warna, jarak, dan tata letak",
+                    "Melakukan perhitungan di dalam browser",
+                    "Menyimpan data pengunjung",
+                ],
+                "answer": 0,
+                "explanation": "HTML menyatakan 'ini judul, ini paragraf, ini daftar'. Tampilan urusan CSS, perilaku urusan JavaScript.",
+            },
+            {
+                "q": "Untuk apa baris <!DOCTYPE html> di paling atas berkas?",
+                "options": [
+                    "Mengimpor pustaka HTML",
+                    "Memberi tahu browser agar memakai aturan HTML modern",
+                    "Menandai versi berkas untuk editor teks",
+                    "Menjadi elemen pertama di dalam <head>",
+                ],
+                "answer": 1,
+                "explanation": "Tanpa baris itu browser masuk 'quirks mode', meniru bug browser lama, dan tata letaknya bisa melenceng. Ia bukan tag dan tidak menampilkan apa pun.",
+            },
+            {
+                "q": "Apa beda isi <head> dan isi <body>?",
+                "options": [
+                    "head untuk teks, body untuk gambar",
+                    "head dimuat lebih dulu, body menyusul beberapa detik kemudian",
+                    "Isi body terlihat di halaman, isi head keterangan tentang halaman",
+                    "Tidak ada bedanya, cuma kebiasaan penulisan",
+                ],
+                "answer": 2,
+                "explanation": "head berisi keterangan untuk browser dan mesin pencari: judul tab, charset, tautan ke CSS. Semua yang dibaca pengunjung ada di body.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <p>Baris satu</br>Baris dua</p>",
+                "options": [
+                    "<br> harus ditulis dengan huruf besar",
+                    "<br> tidak boleh berada di dalam <p>",
+                    "Seharusnya ditulis <br></br>",
+                    "<br> tidak punya tag penutup, jadi </br> keliru",
+                ],
+                "answer": 3,
+                "explanation": "br termasuk elemen kosong: ia tidak membungkus apa pun, jadi tidak ada yang perlu ditutup. Cukup tulis <br>.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <p><strong>Penting</p></strong>",
+                "options": [
+                    "<strong> tidak boleh dipakai di dalam <p>",
+                    "Tagnya bersilangan; yang dibuka terakhir harus ditutup lebih dulu",
+                    "<strong> wajib punya atribut class",
+                    "Tidak ada yang salah",
+                ],
+                "answer": 1,
+                "explanation": "Elemen bersarang seperti kotak di dalam kotak. Menutup p sebelum strong membuat kotak dalam menembus kotak luar, dan browser akan menebak sendiri maksudnya.",
+            },
+            {
+                "q": "Di browser, <p>Halo      dunia</p> tampil seperti apa?",
+                "options": [
+                    "Halo dunia — deretan spasi dipadatkan jadi satu",
+                    "Halo      dunia, persis seperti diketik",
+                    "Halodunia, semua spasi dibuang",
+                    "Halaman error karena spasi ganda tidak sah",
+                ],
+                "answer": 0,
+                "explanation": "HTML memadatkan deretan spasi, tab, dan baris baru jadi satu spasi. Itu sebabnya merapikan indentasi kode aman, dan mengatur jarak dengan spasi tidak akan berhasil.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <p class=kotak biru>Halo</p>",
+                "options": [
+                    "Nama kelas tidak boleh terdiri dari dua kata",
+                    "class harus ditulis sesudah isi elemen",
+                    "Tanda sama dengan harus diapit spasi",
+                    "Nilai atribut yang mengandung spasi wajib diapit kutip",
+                ],
+                "answer": 3,
+                "explanation": "Tanpa kutip, browser membaca class bernilai \"kotak\" lalu menganggap \"biru\" sebagai atribut baru yang tidak dikenal. Tulis class=\"kotak biru\".",
+            },
+            {
+                "q": "Kenapa HTML yang salah tulis sering tidak terasa sebagai kesalahan?",
+                "options": [
+                    "Browser menolak menampilkan halaman sampai diperbaiki",
+                    "Editor teks selalu memperbaikinya saat berkas disimpan",
+                    "Browser menambal sendiri markup yang rusak lalu tetap menampilkannya",
+                    "HTML memang tidak mungkin salah tulis",
+                ],
+                "answer": 2,
+                "explanation": "Tidak ada tahap kompilasi dan tidak ada pesan error. Tag yang lupa ditutup ditebak sendiri oleh browser, jadi halaman tetap muncul walau strukturnya keliru.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 2: Teks dan Daftar",
+        "questions": [
+            {
+                "q": "Apa dasar memilih antara <h1> sampai <h6>?",
+                "options": [
+                    "Ukuran huruf yang diinginkan",
+                    "Panjang teks judulnya",
+                    "Kedalaman judul itu di dalam kerangka isi",
+                    "Warna yang dipakai bagian tersebut",
+                ],
+                "answer": 2,
+                "explanation": "Heading membentuk daftar isi yang dipakai pembaca layar dan mesin pencari. Kalau h2 terasa terlalu besar, kecilkan lewat CSS — jangan pindah ke h4.",
+            },
+            {
+                "q": "Apa beda <strong> dan <b>?",
+                "options": [
+                    "Tidak ada, keduanya sama persis",
+                    "<b> menghasilkan huruf yang lebih tebal daripada <strong>",
+                    "<strong> hanya boleh dipakai di dalam judul",
+                    "<strong> menyatakan isinya penting, <b> sekadar menebalkan",
+                ],
+                "answer": 3,
+                "explanation": "Tampilan bawaannya sama-sama tebal, tapi strong membawa makna dan bisa ditekankan pembaca layar. Pakai b hanya kalau tidak ada penekanan makna sama sekali.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <ul><p>Belanja:</p><li>Beras</li></ul>",
+                "options": [
+                    "Anak langsung <ul> hanya boleh <li>",
+                    "<p> harus ditulis sesudah <li>, bukan sebelumnya",
+                    "<ul> tidak boleh berisi lebih dari satu jenis elemen",
+                    "<li> wajib punya atribut value",
+                ],
+                "answer": 0,
+                "explanation": "Judul daftar ditulis di luar, tepat sebelum <ul>. Anak langsung ul hanya boleh li, jadi teks lain di situ tidak terhitung sebagai item daftar.",
+            },
+            {
+                "q": "Di mana daftar bersarang (sub-daftar) seharusnya ditulis?",
+                "options": [
+                    "Di antara dua <li>, sebagai saudara mereka",
+                    "Di dalam <li> induknya, sebelum </li>",
+                    "Di luar <ul>, tepat sesudah tag penutupnya",
+                    "Di dalam <ul> terpisah yang berdiri sendiri",
+                ],
+                "answer": 1,
+                "explanation": "Sub-daftar itu bagian dari satu item, jadi ia ditulis di dalam item tersebut. Menaruhnya di antara dua li membuat browser memindahkannya dan susunannya berubah.",
+            },
+            {
+                "q": "Kenapa nomor pada <ol> sebaiknya tidak diketik sendiri di dalam tiap <li>?",
+                "options": [
+                    "Nomor yang diketik manual tidak akan muncul di browser",
+                    "Isi <li> tidak boleh diawali angka",
+                    "Nomor manual membuat halaman lebih lambat dimuat",
+                    "Browser menomori ulang otomatis saat item disisipkan atau dihapus",
+                ],
+                "answer": 3,
+                "explanation": "Dengan ol, menyisipkan item di tengah tidak menuntut kamu menomori ulang seluruh daftar, dan nomornya tidak akan pernah meleset.",
+            },
+            {
+                "q": "Kapan <br> tepat dipakai?",
+                "options": [
+                    "Untuk memberi jarak antara dua paragraf",
+                    "Untuk mengakhiri setiap baris kode HTML",
+                    "Untuk pindah baris yang memang bagian dari isi, misalnya baris alamat",
+                    "Untuk memulai halaman baru",
+                ],
+                "answer": 2,
+                "explanation": "Dua paragraf berarti dua <p>, dan jaraknya diatur CSS. Menumpuk <br> demi jarak berarti mengatur tampilan lewat isi, dan itu buyar saat lebar layar berubah.",
+            },
+            {
+                "q": "Apa yang membuat <pre> berbeda dari elemen teks lain?",
+                "options": [
+                    "Isinya tidak bisa disorot dengan tetikus",
+                    "Spasi dan pindah baris di dalamnya dipertahankan apa adanya",
+                    "Isinya otomatis diberi nomor baris",
+                    "Isinya dilewati pembaca layar",
+                ],
+                "answer": 1,
+                "explanation": "Di elemen lain spasi berlebih dipadatkan. pre menjaga susunan aslinya, jadi cocok untuk potongan kode atau teks yang bentuknya ikut bermakna.",
+            },
+            {
+                "q": "Bagaimana cara menampilkan tanda < sebagai teks biasa di halaman?",
+                "options": [
+                    "Tulis &lt;",
+                    "Tulis \\< dengan garis miring terbalik di depannya",
+                    "Tulis << dua kali",
+                    "Apit dengan kutip: \"<\"",
+                ],
+                "answer": 0,
+                "explanation": "Browser menganggap < sebagai awal tag. Entitas &lt; (juga &gt; dan &amp;) memberi tahu bahwa yang dimaksud karakternya sendiri.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 3: Tautan, Gambar, dan Atribut",
+        "questions": [
+            {
+                "q": "Halaman kamu ada di /blog/artikel.html. Ke mana <a href=\"/kontak.html\"> menuju?",
+                "options": [
+                    "Ke /blog/kontak.html",
+                    "Ke /kontak.html di akar situs",
+                    "Ke halaman yang dibuka sebelumnya",
+                    "Ke berkas kontak.html di komputer pengunjung",
+                ],
+                "answer": 1,
+                "explanation": "Garis miring di depan berarti dihitung dari akar situs, bukan dari folder berkas ini. Tanpa garis miring, kontak.html dicari di folder yang sama.",
+            },
+            {
+                "q": "Apa arti ../ pada <img src=\"../gambar/foto.jpg\">?",
+                "options": [
+                    "Naik satu folder dari lokasi berkas ini",
+                    "Masuk ke subfolder bernama ..",
+                    "Mulai dari akar situs",
+                    "Mulai dari folder tempat browser dipasang",
+                ],
+                "answer": 0,
+                "explanation": "Setiap ../ memundurkan satu tingkat folder. Dari /blog/artikel.html, ../gambar/foto.jpg menunjuk ke /gambar/foto.jpg.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <img src=\"kucing.jpg\" alt=\"Kucing oranye\"></img>",
+                "options": [
+                    "alt harus ditulis sebelum src",
+                    "src tidak boleh menunjuk berkas .jpg",
+                    "Gambar wajib dibungkus <figure>",
+                    "<img> elemen kosong, tag </img> tidak pernah ada",
+                ],
+                "answer": 3,
+                "explanation": "img tidak membungkus isi apa pun — alamat gambarnya ada di atribut src. Sama seperti br, hr, dan input, ia ditulis satu tag saja.",
+            },
+            {
+                "q": "Kapan alt=\"\" (dibiarkan kosong) justru pilihan yang benar?",
+                "options": [
+                    "Saat nama berkas gambarnya sudah cukup jelas",
+                    "Saat gambarnya berukuran kecil",
+                    "Saat gambarnya murni hiasan dan tidak menambah informasi",
+                    "Tidak pernah; alt harus selalu berisi teks",
+                ],
+                "answer": 2,
+                "explanation": "alt kosong memberi tahu pembaca layar untuk melewati gambar itu. Menghapus atribut alt sama sekali berbeda akibatnya: pembaca layar malah membacakan nama berkasnya.",
+            },
+            {
+                "q": "Kenapa teks tautan \"klik di sini\" dianggap buruk?",
+                "options": [
+                    "Teksnya tidak memberi tahu ke mana tautan itu menuju",
+                    "Terlalu pendek untuk dibaca mesin pencari",
+                    "Browser lama tidak bisa membukanya",
+                    "Teks tautan tidak boleh memuat kata kerja",
+                ],
+                "answer": 0,
+                "explanation": "Banyak orang menelusuri halaman lewat daftar tautannya saja. Sederet \"klik di sini\" tidak berarti apa-apa; tulis tujuannya, misalnya \"unduh panduan pemula\".",
+            },
+            {
+                "q": "Supaya <a href=\"#kontak\">Kontak</a> bekerja, apa yang harus ada di halaman?",
+                "options": [
+                    "Berkas bernama kontak.html di folder yang sama",
+                    "Elemen dengan atribut id=\"kontak\"",
+                    "Elemen dengan atribut class=\"kontak\"",
+                    "Tag pembuka <anchor name=\"kontak\">",
+                ],
+                "answer": 1,
+                "explanation": "Tanda pagar menunjuk id di halaman yang sama dan browser menggulir ke sana. Karena itu satu id cuma boleh dipakai satu elemen.",
+            },
+            {
+                "q": "Apa yang dilakukan target=\"_blank\" pada sebuah tautan?",
+                "options": [
+                    "Mengosongkan riwayat penjelajahan",
+                    "Membuka tautan tanpa memuat CSS-nya",
+                    "Membuka tautan di tab baru",
+                    "Menyembunyikan alamat tujuan dari pengunjung",
+                ],
+                "answer": 2,
+                "explanation": "Tab baru mengambil kendali dari pengunjung: tombol Kembali jadi tidak berguna. Pakai seperlunya, misalnya untuk berkas yang diunduh, bukan untuk semua tautan keluar.",
+            },
+            {
+                "q": "Apa beda class dan id?",
+                "options": [
+                    "class dipakai CSS, id hanya dipakai JavaScript",
+                    "id boleh dipakai berulang, class tidak",
+                    "class hanya untuk teks, id hanya untuk gambar",
+                    "Satu class boleh dipakai banyak elemen, satu id hanya satu elemen",
+                ],
+                "answer": 3,
+                "explanation": "class menandai sekelompok elemen sejenis; id menamai satu elemen supaya bisa dituju tautan #, label, atau skrip. Keduanya bisa dipakai CSS dan JavaScript.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 4: Semantik dan Tabel",
+        "questions": [
+            {
+                "q": "Apa yang didapat halaman dari <header>, <nav>, dan <main> dibanding <div> semua?",
+                "options": [
+                    "Halaman termuat lebih cepat",
+                    "Tampilannya otomatis lebih rapi",
+                    "Ukuran berkasnya jadi lebih kecil",
+                    "Peran tiap bagian bisa dikenali pembaca layar dan mesin pencari",
+                ],
+                "answer": 3,
+                "explanation": "div tidak berarti apa-apa. Dengan elemen semantik, pembaca layar bisa melompat langsung ke isi utama tanpa mendengarkan seluruh menu lebih dulu.",
+            },
+            {
+                "q": "Berapa banyak <main> yang seharusnya ada dalam satu halaman?",
+                "options": [
+                    "Sebanyak jumlah bagian isinya",
+                    "Dua: satu di atas dan satu di bawah",
+                    "Satu",
+                    "Bebas, tidak ada aturannya",
+                ],
+                "answer": 2,
+                "explanation": "main menandai isi utama yang khas halaman itu, yaitu bagian yang membedakannya dari halaman lain. Kalau ada dua, tidak ada lagi yang pantas disebut utama.",
+            },
+            {
+                "q": "Kapan <div> tetap merupakan pilihan yang tepat?",
+                "options": [
+                    "Setiap kali di dalamnya ada judul",
+                    "Saat wadahnya memang cuma dibutuhkan untuk mengatur tampilan",
+                    "Saat isinya berupa daftar",
+                    "Tidak pernah; div sudah tidak boleh dipakai lagi",
+                ],
+                "answer": 1,
+                "explanation": "Elemen semantik dipakai kalau bagian itu punya peran. Untuk sekadar membungkus demi tata letak, div justru jujur: ia memang tidak menyatakan apa-apa.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <table><td>Andi</td><td>17</td></table>",
+                "options": [
+                    "Sel harus berada di dalam <tr>",
+                    "<table> wajib punya atribut border",
+                    "Sel pertama harus berupa <th>",
+                    "Satu tabel tidak boleh punya dua sel",
+                ],
+                "answer": 0,
+                "explanation": "Tabel disusun bertingkat: table berisi tr (baris), tr berisi td atau th (sel). Tanpa tr, tidak ada yang menandai batas antar-baris.",
+            },
+            {
+                "q": "Apa gunanya <th> dibanding <td> biasa?",
+                "options": [
+                    "Membuat teks di dalamnya tebal",
+                    "Menambahkan garis tepi pada sel",
+                    "Menandai sel itu sebagai judul baris atau kolom",
+                    "Mengunci sel supaya isinya tidak bisa disorot",
+                ],
+                "answer": 2,
+                "explanation": "Pembaca layar menyebutkan judul kolomnya saat membacakan tiap sel, jadi pendengarnya tahu angka 17 itu 'Umur'. Tebalnya cuma tampilan bawaan yang bisa diubah CSS.",
+            },
+            {
+                "q": "Sebuah sel perlu melebar menutupi dua kolom. Atribut apa yang dipakai?",
+                "options": [
+                    "width=\"2\"",
+                    "span=\"2\"",
+                    "rowspan=\"2\"",
+                    "colspan=\"2\"",
+                ],
+                "answer": 3,
+                "explanation": "colspan melebarkan sel ke samping menutupi kolom; rowspan memanjangkannya ke bawah menutupi baris. Sel yang tergantikan tidak ditulis lagi.",
+            },
+            {
+                "q": "Kenapa tabel tidak dipakai untuk menyusun tata letak halaman?",
+                "options": [
+                    "Tabel menyatakan 'ini data berbaris dan berkolom', dan pembaca layar membacakannya begitu",
+                    "Tabel tidak bisa diberi warna lewat CSS",
+                    "Tabel hanya boleh muncul sekali dalam satu halaman",
+                    "Tabel tidak didukung browser ponsel",
+                ],
+                "answer": 0,
+                "explanation": "Orang yang mendengarkan halaman akan disuguhi 'baris 1 kolom 2' untuk sesuatu yang sebenarnya cuma panel samping. Tata letak urusan CSS.",
+            },
+            {
+                "q": "Apa fungsi <caption> di dalam tabel?",
+                "options": [
+                    "Memberi keterangan pada gambar di dalam sel",
+                    "Memberi judul tabel yang terbaca sebagai bagian dari tabel itu",
+                    "Menambahkan catatan kaki di dasar halaman",
+                    "Menyembunyikan kolom tertentu",
+                ],
+                "answer": 1,
+                "explanation": "caption ditulis tepat sesudah <table> dan menjelaskan isi tabelnya. Judul yang ditaruh di <p> sebelum tabel terlihat mirip, tapi tidak terhubung dengan tabel itu.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 5: Formulir dan Metadata",
+        "questions": [
+            {
+                "q": "Atribut for pada <label> harus cocok dengan atribut apa di isiannya?",
+                "options": ["id", "name", "class", "type"],
+                "answer": 0,
+                "explanation": "label for=\"email\" mencari elemen ber-id \"email\". Kalau cocok, mengklik labelnya memfokuskan isian, dan pembaca layar menyebutkan label itu saat isiannya disorot.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <form><input type=\"text\" id=\"kota\"></form>",
+                "options": [
+                    "<input> tidak boleh berada langsung di dalam <form>",
+                    "type=\"text\" sudah usang dan harus diganti",
+                    "id tidak boleh dipakai pada <input>",
+                    "Tanpa atribut name, isian ini tidak ikut terkirim",
+                ],
+                "answer": 3,
+                "explanation": "name adalah nama yang dipakai saat data dikirim ke server; id dipakai di dalam halaman, misalnya oleh label. Isian tanpa name diam-diam hilang dari kiriman.",
+            },
+            {
+                "q": "Dua tombol radio diberi name yang berbeda. Apa akibatnya?",
+                "options": [
+                    "Keduanya tidak muncul di halaman",
+                    "Keduanya bisa dipilih sekaligus",
+                    "Hanya yang pertama yang tampil",
+                    "Formulir menolak dikirim",
+                ],
+                "answer": 1,
+                "explanation": "Yang membuat radio saling meniadakan adalah name yang SAMA — itulah cara browser tahu keduanya satu pilihan. name berbeda berarti dua pertanyaan berbeda.",
+            },
+            {
+                "q": "Apa yang salah dari kode ini: <form> ... <button>Batal</button> </form>",
+                "options": [
+                    "Tombol wajib ditulis sebagai <input type=\"button\">",
+                    "Teks tombol tidak boleh cuma satu kata",
+                    "Tanpa atribut type, <button> di dalam form berarti mengirim formulir",
+                    "Tombol harus diletakkan di luar <form>",
+                ],
+                "answer": 2,
+                "explanation": "Bawaan <button> di dalam form adalah type=\"submit\". Tombol Batal yang malah mengirim data adalah bug yang sulit dicari karena kodenya terlihat wajar.",
+            },
+            {
+                "q": "Apa yang dilakukan type=\"email\" pada sebuah <input>?",
+                "options": [
+                    "Mengirimkan isian langsung lewat surel",
+                    "Meminta browser memeriksa bentuk alamatnya dan menyesuaikan papan ketik ponsel",
+                    "Menyembunyikan isian dari pembaca layar",
+                    "Memastikan alamat surel itu benar-benar ada",
+                ],
+                "answer": 1,
+                "explanation": "Browser cuma memeriksa bentuknya. Apakah alamatnya sungguh ada hanya bisa dipastikan server, jadi pemeriksaan di browser selalu harus diulang di sisi server.",
+            },
+            {
+                "q": "Kenapa placeholder tidak boleh dipakai sebagai pengganti <label>?",
+                "options": [
+                    "placeholder tidak bisa diberi warna lewat CSS",
+                    "placeholder hanya bekerja di ponsel",
+                    "Teksnya hilang begitu orang mulai mengetik",
+                    "placeholder tidak didukung browser modern",
+                ],
+                "answer": 2,
+                "explanation": "Setelah isian terisi, petunjuknya lenyap dan orang lupa isian itu untuk apa. Label tetap terlihat, bisa diklik, dan dibacakan pembaca layar.",
+            },
+            {
+                "q": "Apa akibatnya kalau <meta charset=\"UTF-8\"> tidak ditulis?",
+                "options": [
+                    "Halaman tidak bisa dibuka sama sekali",
+                    "CSS tidak ikut termuat",
+                    "Formulir tidak bisa dikirim",
+                    "Huruf beraksen dan emoji bisa tampil jadi karakter aneh",
+                ],
+                "answer": 3,
+                "explanation": "charset memberi tahu browser cara menerjemahkan byte berkas menjadi huruf. Tebakannya bisa meleset, jadi tulis meta ini sebagai baris paling awal di dalam <head>.",
+            },
+            {
+                "q": "Untuk apa <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">?",
+                "options": [
+                    "Supaya halaman memakai lebar layar ponsel yang sebenarnya",
+                    "Supaya halaman bisa diperbesar dengan cubitan jari",
+                    "Supaya gambar menyesuaikan ukuran layar dengan sendirinya",
+                    "Supaya pengunjung dialihkan ke versi mobile situs",
+                ],
+                "answer": 0,
+                "explanation": "Tanpa baris ini ponsel berpura-pura layarnya selebar layar komputer lalu mengecilkan seluruh halaman, sehingga tulisannya terlalu kecil untuk dibaca.",
+            },
+        ],
+    },
+]

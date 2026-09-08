@@ -1,0 +1,1306 @@
+"""Tes antarmuka web: keamanan server, endpoint JSON, sesi kuis, dan catatan.
+
+Tiga hal dijaga paling ketat di sini, dan ketiganya adalah hal yang kalau rusak
+tidak akan terlihat sampai terlambat:
+
+1. **Penjagaan server.** Endpoint di sini MENJALANKAN KODE. Begitu penjagaan
+   tokennya bocor, halaman web mana pun yang kebetulan terbuka di browser yang
+   sama bisa memanggilnya. Tesnya menembak dari sudut penyerang, bukan dari
+   sudut pemakai.
+
+2. **Pemetaan ulang jawaban kuis.** Opsi diacak sebelum dikirim ke browser.
+   Kalau index jawaban benarnya tidak ikut dipetakan, kuis akan menandai
+   jawaban benar sebagai salah -- bug yang membuat pelajar meragukan dirinya
+   sendiri, bukan aplikasinya. Diuji dengan mengerjakan SELURUH kuis di SEMUA
+   bahasa memakai jawaban yang benar, lalu menuntut skornya sempurna.
+
+3. **Penyorot JavaScript identik dengan Python.** Ada dua implementasi pemindai
+   token: sorot.py dan statik/js/sorot.js. Keduanya diadu memakai seluruh kode
+   di kurikulum. Kalau Node tidak terpasang, tesnya dilaporkan sebagai skipped
+   -- bukan lulus diam-diam.
+
+4. **Mesin gerak.** statik/js/gerak.js memuat solver pegas: matematika murni
+   yang menentukan berapa lama SETIAP animasi di aplikasi ini berjalan. Salah
+   satu tanda kurang di situ tidak menghasilkan error apa pun -- ia cuma
+   menghasilkan animasi yang salah, dan "terasa aneh" bukan sesuatu yang bisa
+   dilacak balik ke sebuah rumus enam bulan kemudian. Karena itu solvernya
+   diadu dengan sifat-sifat yang HARUS berlaku, bukan dengan angka yang
+   kebetulan keluar hari ini.
+"""
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import tempfile
+import threading
+import unittest
+import urllib.error
+import urllib.request
+from datetime import date
+
+import bab
+import konfigurasi
+import progress
+from webapp import api, isi, sesi
+from webapp import catatan as modul_catatan
+from webapp import server as modul_server
+
+LEWATI_LAMBAT = os.environ.get("BELAJAR_SKIP_LAMBAT") == "1"
+
+
+def _bahasa(key):
+    """Entri LANGUAGES berdasarkan KEY, bukan berdasarkan posisinya.
+
+    Tes-tes di bawah mengirim `{"key": "java"}` ke API lalu memeriksa judul
+    yang diambil dari daftar bahasa. Selama Java kebetulan berdiri paling
+    depan, `LANGUAGES[0]` memberi jawaban yang benar — dan begitu urutan
+    daftarnya berubah, tesnya bukan cuma gagal melainkan gagal dengan pesan
+    yang menyesatkan: "kunci java_kuis::Kuis 1: Dasar HTML tidak ditemukan".
+    Memilih berdasarkan key membuat tesnya menguji apa yang memang
+    dimaksudkan, apa pun urutan daftarnya nanti.
+    """
+    for lang in api.LANGUAGES:
+        if lang["key"] == key:
+            return lang
+    raise AssertionError(f"bahasa '{key}' tidak ada di LANGUAGES")
+
+
+def _urai(badan):
+    """Balasan JSON jadi objek; balasan lain (CSS, JS, HTML) jadi teks apa adanya."""
+    try:
+        return json.loads(badan or b"null")
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return badan.decode("utf-8", errors="replace")
+
+
+class BasisWeb(unittest.TestCase):
+    """Arahkan SEMUA berkas pengguna ke direktori sementara.
+
+    Termasuk direktori kerja: tanpa itu, tes yang menekan "simpan" akan menulis
+    ke ~/belajar-ngoding/kerjaanku milik pengguna sungguhan dan menimpa
+    jawabannya sendiri.
+    """
+
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        d = self.dir.name
+
+        self._simpan = {
+            "progres": progress.PROGRESS_FILE,
+            "progres_lama": progress.PROGRESS_FILE_LAMA,
+            "konfig": konfigurasi.BERKAS,
+            "catatan": modul_catatan.BERKAS,
+            "kerja": api.exercises.DIR_KERJA,
+        }
+        progress.PROGRESS_FILE = os.path.join(d, "progress.json")
+        progress.PROGRESS_FILE_LAMA = os.path.join(d, "tidak-ada.json")
+        konfigurasi.BERKAS = os.path.join(d, "config.json")
+        modul_catatan.BERKAS = os.path.join(d, "catatan.json")
+        api.exercises.DIR_KERJA = os.path.join(d, "kerjaanku")
+        konfigurasi.lupakan_cache()
+        sesi.kosongkan()
+
+    def tearDown(self):
+        progress.PROGRESS_FILE = self._simpan["progres"]
+        progress.PROGRESS_FILE_LAMA = self._simpan["progres_lama"]
+        konfigurasi.BERKAS = self._simpan["konfig"]
+        modul_catatan.BERKAS = self._simpan["catatan"]
+        api.exercises.DIR_KERJA = self._simpan["kerja"]
+        konfigurasi.lupakan_cache()
+        sesi.kosongkan()
+        self.dir.cleanup()
+
+
+# -------------------------------------------------------------------- server
+
+class TestPenjagaanServer(BasisWeb):
+    """Setiap tes di sini adalah satu cara menyusup yang harus gagal."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.server, cls.url = modul_server.buat(port=7801)
+        cls.utas = threading.Thread(target=cls.server.serve_forever, daemon=True)
+        cls.utas.start()
+        cls.token = cls.server.token
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+
+    def minta(self, jalur, token=None, metode="GET", muatan=None, kepala=None):
+        data = json.dumps(muatan).encode() if muatan is not None else None
+        h = dict(kepala or {})
+        if token:
+            h["X-Belajar-Token"] = token
+        if data is not None:
+            h["Content-Type"] = "application/json"
+        req = urllib.request.Request(self.url.rstrip("/") + jalur, data=data,
+                                     headers=h, method=metode)
+        try:
+            with urllib.request.urlopen(req, timeout=30) as f:
+                return f.status, _urai(f.read())
+        except urllib.error.HTTPError as e:
+            # HTTPError memegang soket; tanpa close() Python meneriakkan
+            # ResourceWarning di tengah keluaran tes.
+            with e:
+                return e.code, _urai(e.read())
+
+    def test_api_tanpa_token_ditolak(self):
+        kode, isi_ = self.minta("/api/dasbor")
+        self.assertEqual(kode, 403)
+        self.assertIn("Token", isi_["galat"])
+
+    def test_api_dengan_token_salah_ditolak(self):
+        kode, _ = self.minta("/api/dasbor", token="salah-sekali")
+        self.assertEqual(kode, 403)
+
+    def test_endpoint_yang_menjalankan_kode_juga_dijaga(self):
+        """Yang paling penting: tanpa token, kode tidak boleh bisa dijalankan."""
+        kode, _ = self.minta("/api/coba", metode="POST",
+                             muatan={"bahasa": "python", "kode": "print(1)"})
+        self.assertEqual(kode, 403)
+
+    def test_origin_asing_ditolak(self):
+        """Situs lain di browser yang sama tidak boleh bisa memanggil API."""
+        kode, _ = self.minta("/api/dasbor", token=self.token,
+                             kepala={"Origin": "https://situs-jahat.example"})
+        self.assertEqual(kode, 403)
+
+    def test_host_asing_ditolak(self):
+        """Penutup serangan DNS rebinding."""
+        kode, _ = self.minta("/api/dasbor", token=self.token,
+                             kepala={"Host": "rebind.example.com"})
+        self.assertEqual(kode, 403)
+
+    def test_origin_localhost_diterima(self):
+        kode, _ = self.minta("/api/dasbor", token=self.token,
+                             kepala={"Origin": "http://127.0.0.1:7801"})
+        self.assertEqual(kode, 200)
+
+    def test_halaman_utama_tidak_butuh_token(self):
+        """Kalau halamannya sendiri butuh token, tidak ada cara memulai."""
+        with urllib.request.urlopen(self.url, timeout=10) as f:
+            self.assertEqual(f.status, 200)
+            self.assertIn("Belajar Ngoding", f.read().decode())
+
+    def test_token_ditanam_ke_halaman(self):
+        with urllib.request.urlopen(self.url, timeout=10) as f:
+            html = f.read().decode()
+        self.assertIn(self.token, html)
+        self.assertNotIn("{{TOKEN}}", html)
+
+    def test_path_traversal_ditolak(self):
+        for jahat in ["/../../etc/passwd", "/js/../../../etc/passwd",
+                      "/%2e%2e/%2e%2e/etc/passwd"]:
+            kode, _ = self.minta(jahat)
+            self.assertIn(kode, (403, 404), f"{jahat} tidak ditolak")
+
+    def test_berkas_statik_tersaji(self):
+        for jalur in ["/gaya.css", "/js/aplikasi.js", "/js/sorot.js"]:
+            kode, _ = self.minta(jalur)
+            self.assertEqual(kode, 200, jalur)
+
+    def test_endpoint_tak_dikenal_404(self):
+        kode, _ = self.minta("/api/tidak-ada", token=self.token)
+        self.assertEqual(kode, 404)
+
+    def test_post_ke_berkas_statik_ditolak(self):
+        kode, _ = self.minta("/gaya.css", metode="POST", muatan={})
+        self.assertEqual(kode, 405)
+
+    def test_muatan_bukan_json_ditolak_dengan_rapi(self):
+        req = urllib.request.Request(
+            self.url.rstrip("/") + "/api/coba", data=b"bukan json",
+            headers={"X-Belajar-Token": self.token,
+                     "Content-Type": "application/json"}, method="POST")
+        try:
+            urllib.request.urlopen(req, timeout=10).close()
+            self.fail("muatan rusak seharusnya ditolak")
+        except urllib.error.HTTPError as e:
+            with e:
+                self.assertEqual(e.code, 400)
+
+    def test_bind_selain_loopback_ditolak(self):
+        """Menyalakan di 0.0.0.0 membuka eksekusi kode ke seluruh jaringan."""
+        with self.assertRaises(ValueError):
+            modul_server.buat(host="0.0.0.0", port=7802)
+
+
+# ------------------------------------------------------------------ endpoint
+
+class TestEndpoint(BasisWeb):
+    def test_awal_memuat_semua_yang_dibutuhkan_halaman(self):
+        a = api.awal()
+        self.assertEqual(len(a["bahasa"]), len(api.LANGUAGES))
+        self.assertIn("java", a["aturan_sorot"])
+        self.assertIn("progres", a["lokasi"])
+        for b in a["bahasa"]:
+            for kunci in ("key", "label", "runner", "sorot", "siap", "persen"):
+                self.assertIn(kunci, b)
+
+    def test_dasbor_konsisten_dengan_progres_kosong(self):
+        d = api.dasbor()
+        self.assertEqual(d["xp"], 0)
+        self.assertEqual(d["level"], 1)
+        self.assertEqual(len(d["heatmap"]), 7 * 26)
+        self.assertEqual(d["heatmap"][-1]["tanggal"], date.today().isoformat())
+
+    def test_statistik_memisahkan_gelar_kini_dari_tangga_gelar(self):
+        """Dua arti berbeda tidak boleh berbagi satu kunci JSON."""
+        s = api.statistik()
+        self.assertIsInstance(s["gelar"], str)
+        self.assertIsInstance(s["tangga_gelar"], list)
+        self.assertEqual(len(s["semua_badge"]), len(progress.DAFTAR_BADGE))
+
+    def test_bahasa_tidak_dikenal_404(self):
+        with self.assertRaises(api.Galat) as c:
+            api.bahasa({"key": "kobol"})
+        self.assertEqual(c.exception.kode, 404)
+
+    def test_indeks_di_luar_jangkauan_404(self):
+        with self.assertRaises(api.Galat) as c:
+            api.materi({"key": "java", "indeks": "9999"})
+        self.assertEqual(c.exception.kode, 404)
+
+    def test_indeks_bukan_angka_400(self):
+        with self.assertRaises(api.Galat) as c:
+            api.materi({"key": "java", "indeks": "abc"})
+        self.assertEqual(c.exception.kode, 400)
+
+    def test_materi_memuat_token_dan_petunjuk_berkas(self):
+        m = api.materi({"key": "java", "indeks": "0"})
+        kode = [b for b in m["bagian"] if b["jenis"] == "kode"]
+        self.assertTrue(kode, "materi Java pertama seharusnya punya contoh kode")
+        for b in kode:
+            self.assertEqual("".join(t[1] for t in b["token"]), b["kode"])
+            self.assertIn(b["petunjuk"]["jenis"],
+                          ("program", "potongan", "sesi", "multi", "ilustrasi"))
+
+    def test_materi_selesai_memberi_xp_sekali_saja(self):
+        r1 = api.materi_selesai({"key": "java", "indeks": 0, "tuntas": True})
+        self.assertEqual(r1["xp_tambah"], progress.XP_MATERI)
+        r2 = api.materi_selesai({"key": "java", "indeks": 0, "tuntas": True})
+        self.assertEqual(r2["xp_tambah"], 0)
+
+    def test_materi_sebagian_tidak_memberi_xp(self):
+        r = api.materi_selesai({"key": "java", "indeks": 1, "tuntas": False})
+        self.assertEqual(r["xp_tambah"], 0)
+        self.assertEqual(r["status"], "sebagian")
+        judul = _bahasa("java")["materials"][1]["title"]
+        self.assertIn(progress.kunci("java_materi", judul),
+                      progress.load_progress()["materi_sebagian"])
+
+    def test_bookmark_bolak_balik(self):
+        r1 = api.bookmark_ubah({"key": "java", "tipe": "materi", "indeks": 0})
+        self.assertTrue(r1["bookmark"])
+        self.assertEqual(len(api.bookmark_daftar()["daftar"]), 1)
+        r2 = api.bookmark_ubah({"key": "java", "tipe": "materi", "indeks": 0})
+        self.assertFalse(r2["bookmark"])
+        self.assertEqual(api.bookmark_daftar()["daftar"], [])
+
+    def test_bookmark_tipe_ngawur_ditolak(self):
+        with self.assertRaises(api.Galat):
+            api.bookmark_ubah({"key": "java", "tipe": "resep", "indeks": 0})
+
+    def test_bookmark_basi_dilaporkan_dan_bisa_dibersihkan(self):
+        d = progress.load_progress()
+        d["bookmark"].append("java_materi::Materi Yang Sudah Dihapus")
+        progress.save_progress(d)
+        self.assertEqual(api.bookmark_daftar()["basi"], 1)
+        self.assertEqual(api.bookmark_bersihkan()["dibuang"], 1)
+        self.assertEqual(api.bookmark_daftar()["basi"], 0)
+
+    def test_cari_menemukan_dan_membawa_cuplikan(self):
+        h = api.cari({"q": "variabel"})["hasil"]
+        self.assertTrue(h)
+        self.assertTrue(any(x["cuplikan"] for x in h))
+        for x in h:
+            self.assertIn(x["tipe"], ("materi", "kuis", "latihan"))
+
+    def test_cari_satu_huruf_tidak_membanjiri(self):
+        self.assertEqual(api.cari({"q": "a"})["hasil"], [])
+
+    def test_reset_butuh_konfirmasi(self):
+        with self.assertRaises(api.Galat) as c:
+            api.data_reset({"bagian": "semua"})
+        self.assertEqual(c.exception.kode, 409)
+
+    def test_reset_bahasa_tidak_menyentuh_bahasa_lain(self):
+        api.materi_selesai({"key": "java", "indeks": 0, "tuntas": True})
+        api.materi_selesai({"key": "python", "indeks": 0, "tuntas": True})
+        api.data_reset({"bagian": "java", "konfirmasi": "HAPUS"})
+        d = progress.load_progress()
+        self.assertFalse([k for k in d["materi_dibaca"] if k.startswith("java_")])
+        self.assertTrue([k for k in d["materi_dibaca"] if k.startswith("python_")])
+
+    def test_konfigurasi_menolak_opsi_khusus_terminal(self):
+        """Mengubah lebar terminal dari browser tidak berefek apa pun."""
+        with self.assertRaises(api.Galat):
+            api.konfigurasi_tulis({"lebar": 200})
+
+    def test_konfigurasi_menyimpan_nilai_sah(self):
+        api.konfigurasi_tulis({"target_xp_harian": 90})
+        self.assertEqual(konfigurasi.ambil("target_xp_harian"), 90)
+
+    def test_laporan_berbentuk_markdown(self):
+        teks = api.laporan()["markdown"]
+        self.assertIn("# Laporan Kemajuan", teks)
+        self.assertIn("| Bahasa |", teks)
+
+    def test_ekspor_impor_bolak_balik(self):
+        api.materi_selesai({"key": "java", "indeks": 0, "tuntas": True})
+        cadangan = api.data_ekspor()["progres"]
+        api.data_reset({"bagian": "semua", "konfirmasi": "HAPUS"})
+        self.assertEqual(progress.load_progress()["xp"], 0)
+        api.data_impor({"progres": cadangan})
+        self.assertEqual(progress.load_progress()["xp"], progress.XP_MATERI)
+
+    def test_impor_isi_ngawur_ditolak(self):
+        with self.assertRaises(api.Galat):
+            api.data_impor({"progres": "bukan dict"})
+
+
+# ------------------------------------------------------------------- catatan
+
+class TestCatatan(BasisWeb):
+    def test_tulis_lalu_baca(self):
+        api.catatan_tulis({"kunci": "java_materi::A", "teks": "ingat: ini penting"})
+        self.assertEqual(api.catatan_ambil({"kunci": "java_materi::A"})["teks"],
+                         "ingat: ini penting")
+
+    def test_mengosongkan_menghapus_entrinya(self):
+        api.catatan_tulis({"kunci": "java_materi::A", "teks": "x"})
+        api.catatan_tulis({"kunci": "java_materi::A", "teks": "   "})
+        self.assertEqual(modul_catatan.jumlah(), 0)
+
+    def test_kunci_tanpa_pemisah_ditolak(self):
+        with self.assertRaises(api.Galat):
+            api.catatan_tulis({"kunci": "tanpa-pemisah", "teks": "x"})
+
+    def test_reset_progres_TIDAK_menghapus_catatan(self):
+        """Ini alasan utama catatan tinggal di berkasnya sendiri."""
+        judul = _bahasa("java")["materials"][0]["title"]
+        api.catatan_tulis({"kunci": f"java_materi::{judul}", "teks": "tulisanku"})
+        api.materi_selesai({"key": "java", "indeks": 0, "tuntas": True})
+        api.data_reset({"bagian": "semua", "konfirmasi": "HAPUS"})
+        self.assertEqual(progress.load_progress()["xp"], 0)
+        self.assertEqual(modul_catatan.jumlah(), 1)
+
+    def test_berkas_rusak_tidak_menjatuhkan_aplikasi(self):
+        with open(modul_catatan.BERKAS, "w", encoding="utf-8") as f:
+            f.write("{ini bukan json")
+        self.assertEqual(modul_catatan.semua(), [])
+
+    def test_catatan_terlalu_panjang_dipotong(self):
+        hasil = modul_catatan.tulis("a::b", "x" * 50_000)
+        self.assertEqual(len(hasil["teks"]), modul_catatan.MAKS_PANJANG)
+
+    def test_bentuk_lama_berupa_teks_polos_tetap_terbaca(self):
+        with open(modul_catatan.BERKAS, "w", encoding="utf-8") as f:
+            json.dump({"versi": 1, "catatan": {"a::b": "tulisan lama"}}, f)
+        self.assertEqual(modul_catatan.ambil("a::b")["teks"], "tulisan lama")
+
+
+# ---------------------------------------------------------------------- kuis
+
+class TestSesiKuis(BasisWeb):
+    def test_jawaban_benar_dinilai_benar_di_seluruh_kurikulum(self):
+        """Pertahanan utama terhadap bug pemetaan-ulang index jawaban.
+
+        Setiap kuis di setiap bahasa dikerjakan dengan jawaban yang benar.
+        Skornya wajib sempurna. Kalau pengacakan opsi pernah lupa memetakan
+        ulang index jawabannya, tes ini gagal di kuis pertama.
+        """
+        for lang in api.LANGUAGES:
+            for i, q in enumerate(lang["quizzes"]):
+                s = api.kuis_mulai({"key": lang["key"], "indeks": i, "acak": True})
+                obj = sesi.ambil(s["sesi"])
+                for nomor, soal in enumerate(obj.soal):
+                    hasil = api.kuis_jawab({"sesi": s["sesi"], "nomor": nomor,
+                                            "pilihan": soal["jawab"]})
+                    self.assertTrue(hasil["benar"],
+                                    f"{lang['key']} kuis {i} soal {nomor}")
+                akhir = api.kuis_selesai({"sesi": s["sesi"]})
+                self.assertEqual(akhir["benar"], akhir["total"],
+                                 f"{lang['key']} / {q['title']}")
+
+    def test_opsi_teracak_tetap_memuat_semua_pilihan(self):
+        lang = _bahasa("java")
+        s = api.kuis_mulai({"key": lang["key"], "indeks": 0, "acak": True})
+        obj = sesi.ambil(s["sesi"])
+        asli = {soal["q"]: sorted(soal["options"])
+                for soal in lang["quizzes"][0]["questions"]}
+        for soal in obj.soal:
+            self.assertEqual(sorted(soal["options"]), asli[soal["q"]])
+
+    def test_soal_yang_dikirim_tidak_memuat_kunci_jawaban(self):
+        s = api.kuis_mulai({"key": "java", "indeks": 0})
+        mentah = json.dumps(s)
+        self.assertNotIn("jawab", mentah)
+        self.assertNotIn("penjelasan", mentah)
+        for soal in s["soal"]:
+            self.assertEqual(set(soal), {"nomor", "q", "options"})
+
+    def test_jawaban_pertama_yang_dikunci(self):
+        """Klik dua kali tidak boleh diam-diam memperbaiki jawaban salah."""
+        s = api.kuis_mulai({"key": "java", "indeks": 0, "acak": False})
+        obj = sesi.ambil(s["sesi"])
+        benar = obj.soal[0]["jawab"]
+        salah = (benar + 1) % len(obj.soal[0]["options"])
+        api.kuis_jawab({"sesi": s["sesi"], "nomor": 0, "pilihan": salah})
+        kedua = api.kuis_jawab({"sesi": s["sesi"], "nomor": 0, "pilihan": benar})
+        self.assertFalse(kedua["benar"])
+
+    def test_skor_dan_jadwal_ulang_tercatat(self):
+        s = api.kuis_mulai({"key": "java", "indeks": 0, "acak": False})
+        obj = sesi.ambil(s["sesi"])
+        for nomor, soal in enumerate(obj.soal):
+            api.kuis_jawab({"sesi": s["sesi"], "nomor": nomor,
+                            "pilihan": soal["jawab"]})
+        r = api.kuis_selesai({"sesi": s["sesi"]})
+        self.assertEqual(r["terbaik"], r["total"])
+        self.assertTrue(r["jadwal"], "kuis sempurna tetap harus dijadwalkan ulang")
+        self.assertEqual(r["salah_tersisa"], 0)
+        self.assertGreater(r["xp_tambah"], progress.XP_BONUS_KUIS_SEMPURNA)
+
+    def test_mode_ulangan_tidak_menyentuh_skor_terbaik(self):
+        lang = _bahasa("java")
+        judul = lang["quizzes"][0]["title"]
+        s = api.kuis_mulai({"key": "java", "indeks": 0, "acak": False})
+        obj = sesi.ambil(s["sesi"])
+        for nomor, soal in enumerate(obj.soal):
+            api.kuis_jawab({"sesi": s["sesi"], "nomor": nomor,
+                            "pilihan": soal["jawab"]})
+        api.kuis_selesai({"sesi": s["sesi"]})
+        k = progress.kunci("java_kuis", judul)
+        terbaik = progress.load_progress()["kuis_skor"][k]["terbaik"]
+
+        # Buat satu soal jadi "masih salah" supaya ada bahan untuk diulang.
+        progress.perbarui_soal_salah("java_kuis", judul, [0])
+        u = api.kuis_mulai({"key": "java", "indeks": 0, "mode": "salah"})
+        self.assertEqual(u["total"], 1)
+        objU = sesi.ambil(u["sesi"])
+        api.kuis_jawab({"sesi": u["sesi"], "nomor": 0,
+                        "pilihan": objU.soal[0]["jawab"]})
+        r = api.kuis_selesai({"sesi": u["sesi"]})
+
+        sesudah = progress.load_progress()["kuis_skor"][k]
+        self.assertEqual(sesudah["terbaik"], terbaik)
+        self.assertEqual(sesudah["total_soal"], len(obj.soal))
+        self.assertFalse(r["sesi_penuh"])
+        self.assertEqual(r["salah_tersisa"], 0)
+
+    def test_ulangan_sebagian_tidak_menghapus_sisa_daftar_salah(self):
+        """Mengulang 3 dari 3 soal salah dan hanya benar 2: 1 harus tersisa."""
+        lang = _bahasa("java")
+        judul = lang["quizzes"][0]["title"]
+        progress.perbarui_soal_salah("java_kuis", judul, [0, 1, 2])
+        u = api.kuis_mulai({"key": "java", "indeks": 0, "mode": "salah",
+                            "acak": False})
+        obj = sesi.ambil(u["sesi"])
+        api.kuis_jawab({"sesi": u["sesi"], "nomor": 0,
+                        "pilihan": obj.soal[0]["jawab"]})
+        salah = (obj.soal[1]["jawab"] + 1) % len(obj.soal[1]["options"])
+        api.kuis_jawab({"sesi": u["sesi"], "nomor": 1, "pilihan": salah})
+        api.kuis_jawab({"sesi": u["sesi"], "nomor": 2,
+                        "pilihan": obj.soal[2]["jawab"]})
+        r = api.kuis_selesai({"sesi": u["sesi"]})
+        self.assertEqual(r["salah_tersisa"], 1)
+
+    def test_mode_salah_tanpa_soal_salah_ditolak_dengan_jelas(self):
+        with self.assertRaises(api.Galat) as c:
+            api.kuis_mulai({"key": "java", "indeks": 0, "mode": "salah"})
+        self.assertEqual(c.exception.kode, 409)
+
+    def test_sesi_hilang_memberi_pesan_yang_bisa_ditindaklanjuti(self):
+        with self.assertRaises(api.Galat) as c:
+            api.kuis_jawab({"sesi": "tidak-ada", "nomor": 0, "pilihan": 0})
+        self.assertEqual(c.exception.kode, 410)
+        self.assertIn("Mulai ulang", c.exception.pesan)
+
+    def test_sesi_lama_dibuang_supaya_tidak_menumpuk(self):
+        for i in range(sesi.MAKS_SESI + 6):
+            sesi.buat("k", f"judul {i}", "java",
+                      [{"q": "?", "options": ["a", "b"], "answer": 0}])
+        self.assertLessEqual(len(sesi._SESI), sesi.MAKS_SESI)
+
+
+# ------------------------------------------------------------------- latihan
+
+class TestLatihan(BasisWeb):
+    def test_membuka_latihan_mencatat_dan_menyiapkan_berkas(self):
+        x = api.latihan({"key": "python", "indeks": "0"})
+        self.assertEqual(x["hadiah"]["xp_tambah"], progress.XP_LATIHAN_DILIHAT)
+        self.assertTrue(x["berkas"]["nama"].endswith(".py"))
+        self.assertTrue(x["kode"].strip(), "kerangka awal tidak boleh kosong")
+
+    def test_nama_berkas_java_sama_dengan_nama_kelas(self):
+        x = api.latihan({"key": "java", "indeks": "0"})
+        nama = x["berkas"]["nama"]
+        self.assertTrue(nama.endswith(".java"))
+        self.assertIn(f"public class {nama[:-5]}", x["kode"])
+
+    def test_simpan_menulis_ke_jalur_yang_sama_dengan_terminal(self):
+        api.latihan_simpan({"key": "python", "indeks": 0, "kode": "print(1)"})
+        lang = next(l for l in api.LANGUAGES if l["key"] == "python")
+        path = api._path_kerja("python_latihan", lang["exercises"][0], "python")
+        with open(path, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "print(1)")
+
+    def test_manual_ditolak_untuk_latihan_yang_bisa_dinilai(self):
+        with self.assertRaises(api.Galat) as c:
+            api.latihan_manual({"key": "python", "indeks": 0, "nyalakan": True})
+        self.assertEqual(c.exception.kode, 409)
+
+    def test_kerangka_bisa_diambil_ulang(self):
+        r = api.latihan_kerangka({"key": "java", "indeks": "0"})
+        self.assertIn("public class", r["kode"])
+
+    def test_ruang_coba_menolak_bahasa_tak_dikenal(self):
+        with self.assertRaises(api.Galat):
+            api.coba({"bahasa": "kobol", "kode": "x"})
+
+    def test_ruang_coba_menolak_kode_raksasa(self):
+        with self.assertRaises(api.Galat) as c:
+            api.coba({"bahasa": "python", "kode": "x" * (api.MAKS_KODE + 1)})
+        self.assertEqual(c.exception.kode, 413)
+
+    @unittest.skipIf(LEWATI_LAMBAT, "menjalankan kode; BELAJAR_SKIP_LAMBAT=1")
+    @unittest.skipUnless(shutil.which("python3"), "butuh python3")
+    def test_jawaban_benar_lulus_dan_memberi_xp(self):
+        lang = next(l for l in api.LANGUAGES if l["key"] == "python")
+        ex = lang["exercises"][0]
+        r = api.latihan_periksa({"key": "python", "indeks": 0,
+                                 "kode": ex["solution"]})
+        self.assertTrue(r["lulus"], r.get("alasan"))
+        self.assertEqual(r["status"], "lulus")
+        self.assertEqual(r["hadiah"]["xp_tambah"], progress.XP_LATIHAN_LULUS)
+
+    @unittest.skipIf(LEWATI_LAMBAT, "menjalankan kode; BELAJAR_SKIP_LAMBAT=1")
+    @unittest.skipUnless(shutil.which("python3"), "butuh python3")
+    def test_jawaban_salah_membawa_diff_dan_diagnosis(self):
+        r = api.latihan_periksa({
+            "key": "python", "indeks": 0,
+            "kode": 'print("halo, namaku andi!")\nprint("aku sedang belajar python.")',
+        })
+        self.assertFalse(r["lulus"])
+        beda = r["uji"][0]["beda"]
+        self.assertIsNotNone(beda, "kegagalan beda-output wajib membawa diff")
+        self.assertTrue(beda["catatan"], "diff wajib disertai diagnosis")
+        self.assertTrue(any("BESAR/KECIL" in c for c in beda["catatan"]))
+        self.assertEqual(beda["kolom_beda"], 1)
+
+    @unittest.skipIf(LEWATI_LAMBAT, "menjalankan kode; BELAJAR_SKIP_LAMBAT=1")
+    @unittest.skipUnless(shutil.which("python3"), "butuh python3")
+    def test_error_sintaks_diterjemahkan_dan_pathnya_disembunyikan(self):
+        r = api.latihan_periksa({"key": "python", "indeks": 0,
+                                 "kode": 'print("halo"'})
+        self.assertFalse(r["lulus"])
+        g = r["uji"][0]["galat"]
+        self.assertIsNotNone(g)
+        self.assertTrue(g["artinya"], "error sintaks Python wajib diterjemahkan")
+        self.assertNotIn("/tmp/belajar-", g["mentah"])
+
+    @unittest.skipIf(LEWATI_LAMBAT, "menjalankan kode; BELAJAR_SKIP_LAMBAT=1")
+    @unittest.skipUnless(shutil.which("python3"), "butuh python3")
+    def test_ruang_coba_tidak_menyentuh_progres(self):
+        sebelum = progress.load_progress()["xp"]
+        r = api.coba({"bahasa": "python", "kode": 'print("halo")'})
+        self.assertEqual(r["keluaran"].strip(), "halo")
+        self.assertEqual(progress.load_progress()["xp"], sebelum)
+
+    @unittest.skipIf(LEWATI_LAMBAT, "menjalankan kode; BELAJAR_SKIP_LAMBAT=1")
+    @unittest.skipUnless(shutil.which("python3"), "butuh python3")
+    def test_path_sementara_tidak_bocor_ke_ruang_coba(self):
+        r = api.coba({"bahasa": "python", "kode": "print(1/0)"})
+        self.assertIsNotNone(r["galat"])
+        self.assertNotIn("/tmp/belajar-", r["galat"]["mentah"])
+        self.assertTrue(r["galat"]["artinya"])
+
+
+# --------------------------------------------------------------- penyajian isi
+
+class TestPenyajianIsi(unittest.TestCase):
+    def test_blok_badan_memisahkan_prosa_pra_dan_daftar(self):
+        blok = isi.blok_badan([
+            "Kalimat biasa.", "",
+            "  Tipe   Ukuran", "  int    4 byte", "",
+            "- butir satu", "- butir dua", "",
+            "1. langkah satu", "2. langkah dua",
+        ])
+        self.assertEqual([b["jenis"] for b in blok],
+                         ["teks", "pra", "daftar", "daftar"])
+        self.assertFalse(blok[2]["urut"])
+        self.assertTrue(blok[3]["urut"])
+        self.assertEqual(blok[2]["butir"], ["butir satu", "butir dua"])
+
+    def test_blok_pra_mempertahankan_indentasi_relatif(self):
+        """Tabel ASCII hanya terbaca kalau kolomnya tetap sejajar."""
+        blok = isi.blok_badan(["  induk", "      anak"])
+        self.assertEqual(blok[0]["teks"], "induk\n    anak")
+
+    def test_token_semua_kode_kurikulum_utuh(self):
+        """Tidak boleh ada satu karakter pun yang hilang saat kode dipecah."""
+        for lang in api.LANGUAGES:
+            b = isi.bahasa_sorot(lang)
+            for m in lang["materials"]:
+                for bagian in m["sections"]:
+                    if "code" not in bagian:
+                        continue
+                    ulang = "".join(t[1] for t in isi.token_kode(bagian["code"], b))
+                    self.assertEqual(ulang, bagian["code"],
+                                     f"{lang['key']} / {m['title']}")
+
+    def test_aturan_penyorot_lengkap_untuk_semua_bahasa(self):
+        aturan = isi.aturan_penyorot()
+        for lang in api.LANGUAGES:
+            self.assertIn(isi.bahasa_sorot(lang), aturan, lang["key"])
+
+    def test_pencarian_menghormati_saringan_tipe(self):
+        for tipe in ("materi", "kuis", "latihan"):
+            for h in isi.cari(api.LANGUAGES, "data", tipe):
+                self.assertEqual(h["tipe"], tipe)
+
+
+# ---------------------------------------------------- kesepadanan penyorot JS
+
+_SKRIP_BANDING = r"""
+globalThis.window = { TOKEN_BELAJAR: "x" };
+globalThis.document = {
+  createElement: () => ({ style: {}, appendChild() {}, setAttribute() {} }),
+  createTextNode: () => ({}),
+  createDocumentFragment: () => ({ appendChild() {} }),
+  querySelector: () => null, addEventListener() {},
+};
+const fs = await import("node:fs");
+const { pasangAturan, token } = await import(process.argv[2]);
+const kasus = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
+pasangAturan(kasus.aturan);
+const beda = [];
+for (const k of kasus.kasus) {
+  if (JSON.stringify(token(k.kode, k.bahasa)) !== JSON.stringify(k.harapan)) {
+    beda.push(k.label);
+  }
+}
+console.log(JSON.stringify({ total: kasus.kasus.length,
+                             jumlahBeda: beda.length, beda: beda.slice(0, 5) }));
+"""
+
+# Kode yang sengaja rusak atau menjengkelkan. Pemindainya tidak boleh gagal,
+# dan KEDUA implementasinya harus gagal dengan cara yang sama persis.
+_KASUS_SULIT = [
+    ("python", 'x = "kutip belum ditutup\nprint(1)'),
+    ("python", 'a = """tiga\nbaris"""'),
+    ("python", "n = 1_000 + 3.14e-2 + 0b1010"),
+    ("python", "émoji = 'héllo → 日本'  # unicode"),
+    ("java", "char c = '\\''; // kutip di dalam kutip"),
+    ("bash", "#!/usr/bin/env bash\necho '$mentah' \"$ekspansi\" ${a} $1 $@"),
+    ("go", "x := `mentah\nmulti`"),
+    ("c", "#include <stdio.h>\nint a[] = {1,2}; /* tak ditutup"),
+    ("sql", "select COUNT(*) from t where x like '%a%'"),
+    ("javascript", "const s = `halo ${n}`; /* blok\ntak ditutup"),
+    ("python", ""),
+    ("java", "   "),
+]
+
+
+# ---------------------------------------------------------------- gerak.js
+
+_SKRIP_GERAK = r"""
+const g = await import(process.argv[2]);
+
+const hasil = { lolos: [], gagal: [] };
+const cek = (nama, syarat, ket = "") => {
+  (syarat ? hasil.lolos : hasil.gagal).push(nama + (syarat ? "" : " -- " + ket));
+};
+
+// 1. Tanpa DOM, mesinnya harus tetap bisa diimpor dan menjawab "mati".
+cek("tingkatGerak tanpa DOM = mati", g.tingkatGerak() === "mati",
+    "dapat " + g.tingkatGerak());
+cek("adaGerak tanpa DOM = false", g.adaGerak() === false);
+cek("skala tanpa DOM = 0", g.skala() === 0);
+// Fungsi ber-DOM tidak boleh melempar walau dipanggil di tempat tanpa DOM.
+try {
+  g.animasi(null, {}, {});
+  g.masuk(null);
+  g.tata(null, () => {});
+  g.percikBara(null);
+  g.saatTampak(null, () => {})();
+  cek("fungsi ber-DOM aman dipanggil tanpa DOM", true);
+} catch (e) {
+  cek("fungsi ber-DOM aman dipanggil tanpa DOM", false, e.message);
+}
+
+// 2. Pembantu angka.
+cek("jepit", g.jepit(5, 0, 1) === 1 && g.jepit(-2, 0, 1) === 0
+             && g.jepit(0.4, 0, 1) === 0.4);
+cek("antara", g.antara(10, 20, 0.5) === 15);
+cek("petakan naik", g.petakan(50, [0, 100], [0, 360]) === 180);
+cek("petakan menjepit", g.petakan(200, [0, 100], [0, 360]) === 360);
+cek("petakan turun", g.petakan(50, [0, 100], [1, 0]) === 0.5);
+cek("petakan rentang nol tidak NaN",
+    Number.isFinite(g.petakan(5, [3, 3], [0, 1])));
+
+// 3. durasiTampak harus benar-benar mengendalikan gerakannya. Ini sifat yang
+//    pernah SALAH: dengan definisi "waktu pertama menyentuh sasaran", pegas
+//    tak berpantul sudah 99,5% sampai jauh sebelum waktu yang diminta, dan
+//    dua durasiTampak yang berbeda menghasilkan animasi yang sama persis.
+//    Toleransinya sengaja ketat (0.004). Dengan definisi lama, f(durasiTampak)
+//    keluar tepat 1.0 alih-alih 0.99 -- selisih yang lolos begitu saja dari
+//    toleransi longgar, padahal ia menandai definisi yang salah.
+for (const [dt, pantul] of [[0.2, 0], [0.3, 0], [0.5, 0], [0.25, 0.3],
+                            [0.4, 0.5]]) {
+  const p = g.paramPegas({ durasiTampak: dt, pantul });
+  const f = g.jalurPegas(p);
+  const di = f(dt);
+  cek(`f(durasiTampak=${dt}, pantul=${pantul}) tepat 0.99`,
+      Math.abs(di - 0.99) < 0.004, "dapat " + di.toFixed(5));
+}
+
+// Dua durasiTampak berbeda WAJIB menghasilkan durasi yang berbeda.
+const cepat = g.kurvaPegas({ durasiTampak: 0.18, pantul: 0 }).durasi;
+const lambat = g.kurvaPegas({ durasiTampak: 0.45, pantul: 0 }).durasi;
+cek("durasiTampak lebih besar = durasi lebih panjang", lambat > cepat * 1.5,
+    `${cepat} vs ${lambat}`);
+
+// Animasinya tidak boleh SELESAI sebelum ia "terlihat selesai": durasi total
+// wajib >= durasiTampak, berapa pun pantulnya. Ini penjaga untuk kesalahan
+// yang paling gampang terjadi di sini -- rumus yang memakai
+// 1/sqrt(1 - zeta^2) meledak begitu pantul mendekati nol, dan "sampai dalam
+// 0,3 detik" diam-diam berubah jadi animasi 100 md.
+const perPantul = [0, 0.1, 0.3, 0.5]
+  .map((pantul) => g.kurvaPegas({ durasiTampak: 0.3, pantul }).durasi);
+cek("durasi total tidak lebih pendek dari durasiTampak",
+    perPantul.every((d) => d >= 300), perPantul.join(" / "));
+// Pantul yang lebih besar memang membeli ekor yang lebih panjang -- itu
+// fisikanya, dan itu justru alasan preset `lentur` menahan pantulnya di 0.26.
+cek("pantul besar = ekor lebih panjang",
+    perPantul[3] > perPantul[0], perPantul.join(" / "));
+
+// 4. Bentuk kurvanya.
+for (const [nama, p] of Object.entries(g.PEGAS)) {
+  const k = g.kurvaPegas(p);
+  const t = k.titik;
+  cek(`${nama}: mulai 0`, t[0] === 0);
+  cek(`${nama}: berakhir 1`, t[t.length - 1] === 1);
+  cek(`${nama}: durasi wajar`, k.durasi > 40 && k.durasi < 1200,
+      k.durasi + "ms");
+  cek(`${nama}: easing berbentuk linear()`,
+      /^linear\([-\d.,]+\)$/.test(k.easing), k.easing.slice(0, 40));
+  cek(`${nama}: tidak ada NaN`, t.every(Number.isFinite));
+  // Tidak ada satu pun animasi yang berkedip: kurvanya tidak boleh turun
+  // balik ke bawah nol atau melonjak jauh di atas sasaran.
+  cek(`${nama}: tidak menembus jauh di bawah nol`, Math.min(...t) > -0.12,
+      String(Math.min(...t)));
+  cek(`${nama}: puncak wajar`, Math.max(...t) < 1.25,
+      String(Math.max(...t)));
+}
+
+// pantul 0 harus benar-benar tidak berpantul; pantul besar harus berpantul.
+const tanpaPantul = g.kurvaPegas({ durasiTampak: 0.3, pantul: 0 }).titik;
+cek("pantul 0 tidak melewati sasaran", Math.max(...tanpaPantul) <= 1.0001,
+    String(Math.max(...tanpaPantul)));
+const berpantul = g.kurvaPegas({ durasiTampak: 0.3, pantul: 0.4 }).titik;
+cek("pantul 0.4 melewati sasaran", Math.max(...berpantul) > 1.01,
+    String(Math.max(...berpantul)));
+
+// pantul 0 juga harus MONOTON naik -- sekali turun di tengah, itu kedipan.
+let monoton = true;
+for (let i = 1; i < tanpaPantul.length; i++) {
+  if (tanpaPantul[i] < tanpaPantul[i - 1] - 1e-9) monoton = false;
+}
+cek("pantul 0 naik monoton", monoton);
+
+// 5. Kekakuan/redaman mentah tetap diterima apa adanya.
+const mentah = g.paramPegas({ kekakuan: 200, redaman: 20, massa: 2 });
+cek("parameter mentah dipakai apa adanya",
+    mentah.kekakuan === 200 && mentah.redaman === 20 && mentah.massa === 2);
+
+// Ketiga rezim redaman harus punya penyelesaian, bukan NaN.
+for (const [nama, redaman] of [["kurang", 10], ["kritis", 20], ["lebih", 60]]) {
+  const f = g.jalurPegas({ kekakuan: 100, redaman, massa: 1, kecepatan: 0 });
+  cek(`teredam ${nama}: berhingga`,
+      Number.isFinite(f(0)) && Number.isFinite(f(0.5)) && Number.isFinite(f(5)));
+  cek(`teredam ${nama}: mulai di 0`, Math.abs(f(0)) < 1e-9, String(f(0)));
+  cek(`teredam ${nama}: berakhir di 1`, Math.abs(f(30) - 1) < 1e-6,
+      String(f(30)));
+}
+
+// 6. Urutan (stagger).
+const b = g.berurut(60, { per: 34, maks: 300 });
+cek("berurut: item pertama tanpa tunggu", b(0) === 0);
+cek("berurut: daftar panjang tidak melewati batas", b(59) <= 300.0001,
+    String(b(59)));
+const b2 = g.berurut(5, { per: 30, maks: 1000 });
+cek("berurut: daftar pendek memakai jarak penuh", Math.abs(b2(4) - 120) < 1e-9,
+    String(b2(4)));
+const bt = g.berurut(5, { dari: "tengah", per: 20, maks: 1000 });
+cek("berurut dari tengah: pusatnya nol", bt(2) === 0);
+cek("berurut dari tengah: simetris", Math.abs(bt(0) - bt(4)) < 1e-9);
+const ba = g.berurut(5, { dari: "akhir", per: 20, maks: 1000 });
+cek("berurut dari akhir: item terakhir nol", ba(4) === 0);
+cek("berurut: mulai digeser", g.berurut(3, { mulai: 50, per: 10 })(0) === 50);
+cek("berurut: jumlah nol tidak meledak", Number.isFinite(g.berurut(0)(0)));
+
+console.log(JSON.stringify(hasil));
+"""
+
+
+class TestMesinGerak(unittest.TestCase):
+    """Adu solver pegas di statik/js/gerak.js dengan sifat yang harus berlaku.
+
+    Yang diuji bukan angka hasilnya melainkan SIFATNYA: kurva mulai di 0 dan
+    berakhir di 1, pegas tanpa pantul tidak pernah melewati sasaran dan tidak
+    pernah turun di tengah, `durasiTampak` benar-benar mengendalikan lamanya,
+    dan urutan tidak pernah membuat daftar panjang menunggu lebih lama dari
+    batasnya. Menguji angka persisnya akan membuat tes ini pecah setiap kali
+    sebuah preset disetel ulang -- padahal menyetel preset justru pekerjaan
+    yang wajar.
+
+    Separuh atas gerak.js sengaja ditulis tanpa menyentuh DOM sama sekali
+    supaya bisa dijalankan langsung di Node seperti ini.
+    """
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji gerak.js")
+    def test_solver_pegas_dan_urutan(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "js", "gerak.js")
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-gerak.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_GERAK)
+            hasil = subprocess.run(["node", js, jalur],
+                                   capture_output=True, text=True, timeout=60)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-1200:])
+        laporan = json.loads(hasil.stdout)
+        self.assertEqual(laporan["gagal"], [], "sifat pegas yang dilanggar")
+        self.assertGreater(len(laporan["lolos"]), 40,
+                           "terlalu sedikit sifat yang benar-benar diuji")
+
+
+class TestBerkasWebLengkap(unittest.TestCase):
+    """Setiap modul JS yang diimpor harus ada dan bisa disajikan server.
+
+    Aplikasi web ini memuat modul ES langsung dari sumbernya, tanpa langkah
+    build. Enaknya: tidak ada yang bisa basi. Bahayanya: sebuah `import` yang
+    salah ketik tidak ketahuan sampai halaman dibuka dan layar tinggal putih --
+    dan tidak ada satu pun tes Python yang akan menangkapnya.
+    """
+
+    def setUp(self):
+        self.akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.js = os.path.join(self.akar, "webapp", "statik", "js")
+
+    def _berkas_js(self):
+        return sorted(n for n in os.listdir(self.js) if n.endswith(".js"))
+
+    def test_semua_import_menunjuk_berkas_yang_ada(self):
+        import re
+        pola = re.compile(r"""from\s+["'](\./[^"']+)["']""")
+        diperiksa = 0
+        for nama in self._berkas_js():
+            with open(os.path.join(self.js, nama), encoding="utf-8") as f:
+                teks = f.read()
+            for m in pola.finditer(teks):
+                tujuan = os.path.join(self.js, m.group(1))
+                self.assertTrue(os.path.isfile(tujuan),
+                                f"{nama} mengimpor {m.group(1)} yang tidak ada")
+                diperiksa += 1
+        self.assertGreater(diperiksa, 8, "impor terlalu sedikit untuk dipercaya")
+
+    def test_gerak_js_ada_dan_diimpor_di_mana_mana(self):
+        self.assertIn("gerak.js", self._berkas_js())
+        pemakai = []
+        for nama in self._berkas_js():
+            if nama == "gerak.js":
+                continue
+            with open(os.path.join(self.js, nama), encoding="utf-8") as f:
+                if "./gerak.js" in f.read():
+                    pemakai.append(nama)
+        self.assertIn("inti.js", pemakai)
+        self.assertIn("aplikasi.js", pemakai)
+
+    def test_halaman_memuat_sarana_yang_dipakai_gerak(self):
+        with open(os.path.join(self.akar, "webapp", "statik", "index.html"),
+                  encoding="utf-8") as f:
+            html = f.read()
+        # Keduanya dicari lewat querySelector oleh aplikasi.js. Kalau salah
+        # satunya hilang dari halaman, penandanya diam-diam berhenti bekerja.
+        self.assertIn('class="rel-tanda"', html)
+        self.assertIn('id="maju-baca"', html)
+
+    def test_gaya_css_kurungnya_seimbang(self):
+        """Satu kurung tutup yang hilang membuat SISA berkas gaya diam-diam
+        tidak berlaku.
+
+        Ini bukan kekhawatiran teoretis: pernah terjadi persis begitu di sini.
+        Sebuah blok dihapus bersama kurung tutup tetangganya, dan browser
+        berhenti mengurai tepat di situ -- 60 aturan sesudahnya lenyap tanpa
+        satu pun error di konsol, tanpa halaman yang gagal dimuat, dan tanpa
+        satu tes pun yang gagal. Yang terlihat cuma "kok tampilannya jadi
+        aneh". Perhitungan kurung menangkapnya dalam sepersekian detik.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+
+        # Komentar dan string dibuang lebih dulu: kurung di dalamnya bukan
+        # kurung blok, dan berkas ini penuh komentar panjang.
+        import re
+        bersih = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+        bersih = re.sub(r'"[^"\n]*"|\'[^\'\n]*\'', '""', bersih)
+
+        buka = bersih.count("{")
+        tutup = bersih.count("}")
+        self.assertEqual(
+            buka, tutup,
+            f"kurung gaya.css tidak seimbang: {buka} '{{' lawan {tutup} '}}'. "
+            "Satu blok tidak ditutup, dan semua aturan sesudahnya tidak akan "
+            "berlaku.")
+
+        # Kedalaman tidak boleh pernah negatif -- itu tanda '}' yang berlebih,
+        # yang gejalanya sama merusaknya tapi arahnya berlawanan.
+        dalam = 0
+        for i, c in enumerate(bersih):
+            if c == "{":
+                dalam += 1
+            elif c == "}":
+                dalam -= 1
+                self.assertGreaterEqual(
+                    dalam, 0,
+                    "ada '}' berlebih di gaya.css sekitar: "
+                    + bersih[max(0, i - 90):i + 10].strip()[-110:])
+
+    def test_gaya_css_memuat_kelas_yang_dipakai_javascript(self):
+        """Kelas tata letak inti harus benar-benar punya aturan.
+
+        Kelas yang dipakai JS tapi tidak pernah didefinisikan di CSS tidak
+        menghasilkan error apa pun -- elemennya cuma tampil tanpa gaya. Yang
+        didaftar di sini adalah kelas yang kalau hilang membuat sebuah halaman
+        kehilangan bentuknya sama sekali, bukan sekadar terlihat berbeda.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+
+        wajib = [
+            "lanjutkan", "lanjutkan-tbl", "kepala-besar", "kepala-sub",
+            "fakta", "fakta-butir", "kemajuan-baris", "tab-jumlah",
+            "materi-tata", "materi-rel", "materi-peta", "materi-utama",
+            "kerja-tata", "kerja-soal", "kerja-kode", "tbl-pilih",
+            "sambut", "kartu-level", "tuntas",
+            # Bab: tanpa aturan-aturan ini daftar materi kembali jadi satu
+            # senarai rata tanpa pengelompokan, dan bab yang terkunci tampak
+            # persis sama dengan yang terbuka — kegagalan diam yang justru
+            # jadi alasan tes ini ada.
+            "bab", "bab-daftar", "bab-kepala", "bab-nomor", "bab-ket",
+            "bab-maju", "bab-kunci", "bab-terkunci", "baris-terkunci",
+            "pil-kunci", "materi-rel-bab",
+        ]
+        # Dua hal harus dibereskan dulu, dan keduanya pernah membuat tes ini
+        # tidak pernah bisa gagal:
+        #   1. KOMENTAR dibuang. Berkas ini penuh komentar panjang yang
+        #      menyebut nama kelas ("Kartu .lanjutkan adalah..."), jadi
+        #      mencarinya di teks mentah selalu ketemu walau aturannya hilang.
+        #   2. Batas kata, bukan substring — tanpa itu ".lanjutkan" dianggap
+        #      ada hanya karena ".lanjutkan-tbl" kebetulan memuatnya.
+        import re
+        tanpa_komentar = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+        hilang = [k for k in wajib
+                  if not re.search(r"\." + re.escape(k) + r"(?![\w-])",
+                                   tanpa_komentar)]
+        self.assertEqual(hilang, [],
+                         f"kelas tata letak tanpa aturan di gaya.css: {hilang}")
+
+    def test_tiga_tingkat_gerak_dikenali_gaya_dan_skrip(self):
+        with open(os.path.join(self.akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+        with open(os.path.join(self.js, "gerak.js"), encoding="utf-8") as f:
+            gerak = f.read()
+        for tingkat in ("halus", "mati"):
+            self.assertIn(f'[data-gerak="{tingkat}"]', css,
+                          f"gaya.css tidak mengurus tingkat {tingkat}")
+            self.assertIn(f'"{tingkat}"', gerak)
+        # prefers-reduced-motion wajib dihormati di KEDUA tempat: CSS untuk
+        # animasi yang ditulis di sana, JS untuk yang dijalankan WAAPI.
+        self.assertIn("prefers-reduced-motion", css)
+        self.assertIn("prefers-reduced-motion", gerak)
+
+class TestPenyorotJavaScript(unittest.TestCase):
+    """Adu sorot.py melawan statik/js/sorot.js atas seluruh kode kurikulum.
+
+    Dua implementasi pemindai yang sama artinya dua kesempatan untuk berbeda
+    pendapat. Tes ini menutup celah itu -- dan kalau Node tidak ada, ia
+    dilaporkan sebagai skipped, bukan lulus diam-diam.
+    """
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk mengadu penyorot")
+    def test_hasil_js_identik_dengan_python(self):
+        kasus = []
+        for lang in api.LANGUAGES:
+            b = isi.bahasa_sorot(lang)
+            for m in lang["materials"]:
+                for bagian in m["sections"]:
+                    if "code" in bagian:
+                        kasus.append({"bahasa": b, "kode": bagian["code"],
+                                      "harapan": isi.token_kode(bagian["code"], b),
+                                      "label": f"{lang['key']}/{m['title']}"})
+            for e in lang["exercises"]:
+                kasus.append({"bahasa": b, "kode": e["solution"],
+                              "harapan": isi.token_kode(e["solution"], b),
+                              "label": f"{lang['key']}/{e['title']}"})
+        for b, kode in _KASUS_SULIT:
+            kasus.append({"bahasa": b, "kode": kode,
+                          "harapan": isi.token_kode(kode, b),
+                          "label": f"rusak/{b}"})
+
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "banding.mjs")
+            data = os.path.join(d, "kasus.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_BANDING)
+            with open(data, "w", encoding="utf-8") as f:
+                json.dump({"aturan": isi.aturan_penyorot(), "kasus": kasus}, f)
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "sorot.js"), data],
+                capture_output=True, text=True, timeout=180)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-800:])
+        laporan = json.loads(hasil.stdout)
+        self.assertGreater(laporan["total"], 200, "kasus uji terlalu sedikit")
+        self.assertEqual(laporan["jumlahBeda"], 0,
+                         f"penyorot JS berbeda dari Python di: {laporan['beda']}")
+
+
+# ----------------------------------------------------------------------- bab
+
+class TestBabWeb(BasisWeb):
+    """Kontrak JSON fitur bab, diadu dari sisi yang memakainya.
+
+    Tes di sini sengaja menyebut NAMA BIDANG satu per satu, bukan sekadar
+    memeriksa "ada babnya". Bidang yang meleset satu huruf tidak menimbulkan
+    error di mana pun -- ia diam-diam menjadi `undefined` di JavaScript, dan
+    yang terlihat pemakainya cuma bab yang kemajuannya selalu nol.
+    """
+
+    def _baca_tuntas(self, key, sampai):
+        """Tandai materi 0..sampai-1 sebuah bahasa sudah dibaca tuntas."""
+        materi = _bahasa(key)["materials"]
+        for i in range(sampai):
+            progress.record_material_read(f"{key}_materi", materi[i]["title"],
+                                          tuntas=True)
+
+    def test_bahasa_membawa_bab_lengkap_dengan_bidangnya(self):
+        b = api.bahasa({"key": "java"})
+        self.assertIn("bab", b)
+        self.assertIn("bab_kalimat", b)
+        self.assertIn("buka_semua_bab", b)
+        self.assertGreater(len(b["bab"]), 1)
+        for x in b["bab"]:
+            for k in ("nomor", "judul", "ket", "tingkat", "label_tingkat",
+                      "awal", "akhir", "materi", "selesai", "jumlah",
+                      "kurang", "persen", "status", "alasan"):
+                self.assertIn(k, x, f"bidang '{k}' hilang dari bab")
+
+    def test_bab_menutupi_seluruh_materi_tanpa_celah(self):
+        for lang in api.LANGUAGES:
+            b = api.bahasa({"key": lang["key"]})
+            tertutup = [i for x in b["bab"] for i in x["materi"]]
+            self.assertEqual(tertutup, list(range(len(lang["materials"]))),
+                             f"bab {lang['key']} tidak menutupi materinya")
+
+    def test_tiap_materi_tahu_bab_tingkat_dan_kuncinya(self):
+        b = api.bahasa({"key": "python"})
+        for m in b["materi"]:
+            self.assertIn("bab", m)
+            self.assertIn("terkunci", m)
+            self.assertIn("tingkat", m)
+            self.assertIn(m["tingkat"], bab.TINGKAT)
+        self.assertFalse(b["materi"][0]["terkunci"],
+                         "materi pertama tidak boleh pernah terkunci")
+        self.assertTrue(b["materi"][-1]["terkunci"],
+                        "pada progres kosong, materi terakhir harus terkunci")
+
+    def test_materi_terkunci_ditolak_403_dengan_alasan(self):
+        b = api.bahasa({"key": "java"})
+        terkunci = next(m for m in b["materi"] if m["terkunci"])
+        with self.assertRaises(api.Galat) as c:
+            api.materi({"key": "java", "indeks": str(terkunci["indeks"])})
+        self.assertEqual(c.exception.kode, 403)
+        # Pesannya harus memberi tahu apa yang kurang, bukan cuma melarang.
+        self.assertTrue(str(c.exception).strip())
+        self.assertNotEqual(str(c.exception).lower(), "terkunci")
+
+    def test_materi_terbuka_membawa_babnya(self):
+        m = api.materi({"key": "java", "indeks": "0"})
+        self.assertIn("bab", m)
+        for k in ("nomor", "judul", "tingkat", "label_tingkat", "jumlah",
+                  "selesai"):
+            self.assertIn(k, m["bab"])
+
+    def test_sesudah_tidak_menunjuk_materi_terkunci(self):
+        """Materi terakhir sebuah bab yang belum tuntas tidak punya "berikutnya".
+
+        Kalau ia tetap menunjuk ke depan, tombol "lanjut" mengantar orang ke
+        pintu yang dikunci oleh aplikasi yang sama -- salah satu cara tercepat
+        membuat sebuah fitur terasa rusak, bukan terasa membimbing.
+        """
+        b = api.bahasa({"key": "java"})
+        bab1 = b["bab"][0]
+        self._baca_tuntas("java", bab1["jumlah"] - 1)
+        m = api.materi({"key": "java", "indeks": str(bab1["akhir"] - 1)})
+        self.assertEqual(m["sesudah"], "")
+
+    def test_menuntaskan_bab_membuka_bab_berikutnya(self):
+        b = api.bahasa({"key": "java"})
+        bab1, bab2 = b["bab"][0], b["bab"][1]
+        self.assertEqual(bab2["status"], bab.TERKUNCI)
+
+        self._baca_tuntas("java", bab1["jumlah"])
+
+        b2 = api.bahasa({"key": "java"})
+        self.assertEqual(b2["bab"][0]["status"], bab.TUNTAS)
+        self.assertEqual(b2["bab"][1]["status"], bab.TERBUKA)
+        # Yang ketiga TETAP terkunci: membuka satu pintu tidak membuka semuanya.
+        if len(b2["bab"]) > 2:
+            self.assertEqual(b2["bab"][2]["status"], bab.TERKUNCI)
+        api.materi({"key": "java", "indeks": str(bab2["awal"])})
+
+    def test_membaca_sebagian_tidak_membuka_bab_berikutnya(self):
+        b = api.bahasa({"key": "java"})
+        materi = _bahasa("java")["materials"]
+        for i in range(b["bab"][0]["jumlah"]):
+            progress.record_material_read("java_materi", materi[i]["title"],
+                                          tuntas=False)
+        self.assertEqual(api.bahasa({"key": "java"})["bab"][1]["status"],
+                         bab.TERKUNCI)
+
+    def test_saklar_buka_semua_membuka_semua_bab(self):
+        konfigurasi.pasang("buka_semua_bab", True)
+        try:
+            b = api.bahasa({"key": "java"})
+            self.assertTrue(b["buka_semua_bab"])
+            for x in b["bab"]:
+                self.assertNotEqual(x["status"], bab.TERKUNCI)
+            for m in b["materi"]:
+                self.assertFalse(m["terkunci"])
+            # Dan materinya benar-benar bisa dibuka, bukan cuma tampak terbuka.
+            api.materi({"key": "java", "indeks": str(b["bab"][-1]["awal"])})
+        finally:
+            konfigurasi.pasang("buka_semua_bab", False)
+
+    def test_saklar_bisa_dinyalakan_dari_web(self):
+        r = api.konfigurasi_tulis({"buka_semua_bab": True})
+        try:
+            self.assertTrue(r["diubah"]["buka_semua_bab"])
+            self.assertTrue(api.bahasa({"key": "css"})["buka_semua_bab"])
+        finally:
+            konfigurasi.pasang("buka_semua_bab", False)
+
+    def test_langkah_berikutnya_tidak_pernah_menunjuk_materi_terkunci(self):
+        """Saran yang mengantar ke pintu terkunci adalah bug, bukan sekadar
+        ketidakrapian: aplikasi menyuruh mengerjakan sesuatu lalu menolaknya."""
+        self._baca_tuntas("java", 3)
+        d = api.dasbor()
+        for s in d.get("langkah", []):
+            if s.get("tipe") != "materi":
+                continue
+            lang = _bahasa(s["bahasa"])
+            judul = [m["title"] for m in lang["materials"]]
+            self.assertIn(s["judul"], judul)
+            idx = judul.index(s["judul"])
+            self.assertFalse(bab.terkunci(lang, idx),
+                             f"langkah menunjuk materi terkunci: {s['judul']}")
+
+
+class TestIsiSamaDenganTerminal(BasisWeb):
+    """Web dan terminal harus menampilkan ISI yang sama untuk materi yang sama.
+
+    Bukan tata letak yang sama — itu memang sengaja berbeda — melainkan tidak
+    ada kalimat yang muncul di satu antarmuka lalu hilang di antarmuka lain.
+    Kegagalan seperti itu tidak menimbulkan error di mana pun, dan orang yang
+    membaca di browser tidak punya cara tahu ada yang tidak ia lihat.
+    """
+
+    def _prosa_web(self, materi, lang):
+        keluar = []
+        for b in isi.bagian_materi(materi, lang):
+            if b["jenis"] != "prosa":
+                continue
+            for blok in b["blok"]:
+                keluar.append(blok.get("teks") or "")
+                keluar.extend(blok.get("butir") or [])
+        return " ".join(keluar)
+
+    def test_bagian_bercode_tidak_membuang_prosanya(self):
+        """Regresi: `if "code" in bagian: ... else: ...` membuang body-nya.
+
+        Nol dari materi yang ada mencampur body dan code dalam satu bagian,
+        jadi bug ini tidak pernah terlihat — ia menunggu materi baru pertama
+        yang menulisnya untuk mulai menyembunyikan penjelasan.
+        """
+        lang = _bahasa("java")
+        materi = {"title": "Uji", "sections": [
+            {"heading": "Campur", "body": ["kalimat yang wajib terlihat"],
+             "code": "int x = 1;"},
+        ]}
+        jenis = [b["jenis"] for b in isi.bagian_materi(materi, lang)]
+        self.assertEqual(jenis, ["prosa", "kode"])
+        self.assertIn("kalimat yang wajib terlihat",
+                      self._prosa_web(materi, lang))
+
+    def test_judul_bagian_tidak_tercetak_dua_kali(self):
+        lang = _bahasa("java")
+        materi = {"title": "Uji", "sections": [
+            {"heading": "Sekali saja", "body": ["prosa"], "code": "int x;"},
+        ]}
+        judul = [b["judul"] for b in isi.bagian_materi(materi, lang)]
+        self.assertEqual(judul.count("Sekali saja"), 1)
+
+    @staticmethod
+    def _huruf(teks):
+        """Hanya huruf dan angka, dikecilkan.
+
+        `blok_badan` memang MERAPIKAN prosa untuk web: penanda daftar ("- ",
+        "3. ") dipindahkan jadi struktur, indentasi dibuang, baris disambung.
+        Membandingkan teks mentah karena itu akan menuduh perapian sebagai
+        kehilangan. Yang diuji di sini cuma satu: apakah HURUF-HURUFNYA masih
+        ada di sisi web, atau ada kalimat yang benar-benar lenyap.
+        """
+        return "".join(c.lower() for c in teks if c.isalnum())
+
+    def test_seluruh_kurikulum_tampil_utuh_di_kedua_antarmuka(self):
+        """Setiap baris body di SETIAP materi harus sampai ke sisi web."""
+        import materials
+        for lang in api.LANGUAGES:
+            for m in lang["materials"]:
+                web = self._huruf(self._prosa_web(m, lang))
+                for bagian in m["sections"]:
+                    for baris in bagian.get("body") or []:
+                        # Penanda daftar di awal baris ("- ", "3. ") memang
+                        # dipindahkan jadi struktur oleh blok_badan, jadi
+                        # angkanya sengaja dibuang dari kedua sisi sebelum
+                        # dibandingkan.
+                        inti = self._huruf(
+                            re.sub(r"^\s*(?:[-*\u2022]|\d+[.)])\s+", "", baris))
+                        if len(inti) < 12:
+                            continue     # baris kosong atau garis hias
+                        with self.subTest(bahasa=lang["key"],
+                                          materi=m["title"], baris=baris[:50]):
+                            self.assertIn(inti, web,
+                                          "baris ini terbaca di terminal tapi "
+                                          "tidak pernah sampai ke web")
+                self.assertIn(m["title"], materials.teks_polos(m))
+
+
+if __name__ == "__main__":
+    unittest.main()

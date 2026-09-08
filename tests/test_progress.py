@@ -596,5 +596,91 @@ class TestBerkasLama(BasisProgres):
 
 
 
+# --------------------------------------------------- identitas tanpa nomor
+
+class TestKunciTanpaNomor(BasisProgres):
+    """Menyisipkan materi baru tidak boleh menghapus pencapaian siapa pun.
+
+    Judul materi membawa nomor urutnya ("2. Variabel & Tipe Data"), dan nomor
+    itu bergeser setiap kali sebuah materi disisipkan di tengah kurikulum.
+    Dulu nomor itu ikut masuk ke kunci progres, jadi menambah SATU materi di
+    posisi kedua membuat dua puluh materi yang sudah dibaca seseorang mendadak
+    tidak dikenali lagi. Yang terlihat pemakainya bukan "kurikulumnya
+    bertambah" melainkan "progresku hilang".
+    """
+
+    def test_nomor_dibuang_dari_kunci(self):
+        self.assertEqual(progress.judul_kunci("2. Variabel & Tipe Data"),
+                         "Variabel & Tipe Data")
+        self.assertEqual(progress.judul_kunci("12. OOP: Abstract & Interface"),
+                         "OOP: Abstract & Interface")
+        self.assertEqual(progress.kunci("java_materi", "3. Operator"),
+                         "java_materi::Operator")
+
+    def test_judul_kuis_dan_latihan_tidak_tersentuh(self):
+        """Bentuknya bukan "angka-titik", jadi tidak boleh ikut dipangkas."""
+        for judul in ("Kuis 1: Dasar-Dasar Java", "Latihan 3: Halo, Nama!",
+                      "Latihan 10: Kalkulator"):
+            self.assertEqual(progress.judul_kunci(judul), judul)
+
+    def test_materi_yang_bergeser_nomornya_tetap_dikenali(self):
+        """Inti seluruh perubahan ini, ditulis sebagai satu skenario."""
+        progress.record_material_read("java_materi", "2. Variabel & Tipe Data")
+        # ... lalu sebuah materi baru disisipkan di posisi kedua, sehingga
+        # materi yang sama sekarang bernomor 3.
+        k = progress.kunci("java_materi", "3. Variabel & Tipe Data")
+        self.assertIn(k, progress.load_progress()["materi_dibaca"])
+
+    def test_berkas_bergaya_lama_dimigrasi_saat_dimuat(self):
+        with open(progress.PROGRESS_FILE, "w", encoding="utf-8") as f:
+            json.dump({
+                "versi": 3,
+                "xp": 43,
+                "materi_dibaca": ["java_materi::1. Pengenalan Java & Persiapan",
+                                  "java_materi::2. Variabel & Tipe Data"],
+                "bookmark": ["java_materi::2. Variabel & Tipe Data"],
+                "kuis_skor": {"java_kuis::Kuis 1: Dasar-Dasar Java":
+                              {"terbaik": 8, "percobaan": 1, "total_soal": 10}},
+            }, f)
+
+        d = progress.load_progress()
+        self.assertEqual(d["versi"], progress.VERSI_DATA)
+        self.assertEqual(d["materi_dibaca"],
+                         ["java_materi::Pengenalan Java & Persiapan",
+                          "java_materi::Variabel & Tipe Data"])
+        self.assertEqual(d["bookmark"], ["java_materi::Variabel & Tipe Data"])
+        # XP tidak boleh ikut berubah: yang dipindahkan namanya, bukan isinya.
+        self.assertEqual(d["xp"], 43)
+        # Kunci kuis tidak berbentuk angka-titik, jadi harus utuh.
+        self.assertIn("java_kuis::Kuis 1: Dasar-Dasar Java", d["kuis_skor"])
+
+    def test_kunci_lama_dan_baru_yang_bertabrakan_digabung(self):
+        """Bisa terjadi di berkas hasil sunting tangan atau impor campuran."""
+        with open(progress.PROGRESS_FILE, "w", encoding="utf-8") as f:
+            json.dump({"versi": 3, "materi_dibaca": [
+                "java_materi::2. Variabel & Tipe Data",
+                "java_materi::Variabel & Tipe Data",
+            ]}, f)
+        d = progress.load_progress()
+        self.assertEqual(d["materi_dibaca"],
+                         ["java_materi::Variabel & Tipe Data"])
+
+    def test_judul_tetap_unik_setelah_nomornya_dibuang(self):
+        """Kalau dua materi cuma dibedakan nomornya, keduanya jadi satu kunci.
+
+        Itu tabrakan diam: progres materi A ikut menandai materi B selesai.
+        Dijaga di sini supaya penambahan materi apa pun ketahuan sejak awal.
+        """
+        from main import LANGUAGES
+        for lang in LANGUAGES:
+            for bidang in ("materials", "quizzes", "exercises"):
+                judul = [progress.judul_kunci(o["title"]) for o in lang[bidang]]
+                kembar = {j for j in judul if judul.count(j) > 1}
+                self.assertFalse(
+                    kembar,
+                    f"{lang['key']}/{bidang}: judul kembar setelah nomornya "
+                    f"dibuang: {sorted(kembar)}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

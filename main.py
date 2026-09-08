@@ -17,6 +17,7 @@ import os
 import sys
 from datetime import date
 
+import bab
 import konfigurasi
 import runner
 import tema
@@ -33,7 +34,7 @@ from saran import langkah_berikutnya, tantangan_harian
 from progress import (
     load_progress, statistik_bahasa, info_level, gelar_dari_level, DAFTAR_BADGE,
     streak_aktif, xp_hari_ini, riwayat_harian, ekspor, impor, reset, cadangkan,
-    PROGRESS_FILE,
+    judul_kunci, PROGRESS_FILE,
 )
 from data import (
     JAVA_MATERIALS, JAVA_QUIZZES, JAVA_EXERCISES,
@@ -45,6 +46,8 @@ from data import (
     BASH_MATERIALS, BASH_QUIZZES, BASH_EXERCISES,
     GO_MATERIALS, GO_QUIZZES, GO_EXERCISES,
     APLIKASI_MATERIALS, APLIKASI_QUIZZES, APLIKASI_EXERCISES,
+    HTML_MATERIALS, HTML_QUIZZES, HTML_EXERCISES,
+    CSS_MATERIALS, CSS_QUIZZES, CSS_EXERCISES,
 )
 
 VERSI = "2.0"
@@ -54,6 +57,29 @@ VERSI = "2.0"
 #   key     : prefix kategori progres, harus stabil (jangan diubah setelah rilis)
 #   runner  : kunci toolchain di runner.TOOLCHAINS untuk eksekusi kode
 LANGUAGES = [
+    # HTML dan CSS berdiri paling depan, dan urutan itu disengaja. Keduanya
+    # satu-satunya bahasa di daftar ini yang TIDAK membutuhkan satu program pun
+    # untuk dipasang — cukup aplikasi ini dan sebuah browser. Buat orang yang
+    # baru mulai dan belum sanggup memasang compiler apa pun, di sinilah pintu
+    # masuk yang paling mungkin dilewati tanpa tersandung lebih dulu.
+    {
+        "key": "html", "label": "HTML", "runner": "html",
+        "materials": HTML_MATERIALS, "quizzes": HTML_QUIZZES,
+        "exercises": HTML_EXERCISES,
+        "run_info": ["Buka berkasnya di browser: klik dua kali, atau Ctrl+O.",
+                     "Di aplikasi ini strukturnya dibaca lalu ditampilkan",
+                     "sebagai pohon elemen — itulah yang browser lihat dari",
+                     "markup yang kamu tulis."],
+    },
+    {
+        "key": "css", "label": "CSS", "runner": "css",
+        "materials": CSS_MATERIALS, "quizzes": CSS_QUIZZES,
+        "exercises": CSS_EXERCISES,
+        "run_info": ['Tautkan dari HTML: <link rel="stylesheet" href="gaya.css">',
+                     "lalu buka berkas HTML-nya di browser.",
+                     "Di aplikasi ini aturannya dibaca lalu ditampilkan setelah",
+                     "dirapikan: pemilih, lalu properti dan nilainya."],
+    },
     {
         "key": "java", "label": "Java", "runner": "java",
         "materials": JAVA_MATERIALS, "quizzes": JAVA_QUIZZES, "exercises": JAVA_EXERCISES,
@@ -113,7 +139,13 @@ LANGUAGES = [
 
 
 def _soal_per_kuis(lang):
-    return {q["title"]: len(q["questions"]) for q in lang["quizzes"]}
+    # Berkunci judul_kunci, sama seperti kunci progres yang tersimpan. Judul
+    # kuis memang tidak berbentuk "angka-titik" sehingga tidak berubah hari
+    # ini — tapi peta yang kuncinya beda bentuk dari yang mencarinya adalah
+    # bug yang menunggu giliran, dan yang hilang nanti cuma penyebut skor:
+    # angka yang salah, bukan error yang kelihatan.
+    return {judul_kunci(q["title"]): len(q["questions"])
+            for q in lang["quizzes"]}
 
 
 def _tak_dinilai(lang):
@@ -261,7 +293,8 @@ def baris_saran(data):
 
 def _buka_langkah(s):
     if s.tipe == "materi":
-        render_material(s.obj, f"{s.lang['key']}_materi", daftar=s.lang["materials"])
+        render_material(s.obj, f"{s.lang['key']}_materi",
+                        daftar=s.lang["materials"], lang=s.lang)
     elif s.tipe == "kuis":
         menu_satu_kuis(s.obj, f"{s.lang['key']}_kuis")
     else:
@@ -321,6 +354,24 @@ def language_menu(lang):
 
         print("  " + bar(s["persen"], 100, 30)
               + tema.cat(f"  {s['persen']:.0f}%", "teks", tema.TEBAL))
+
+        # Ringkasan bab pakai bar KEDUA yang sengaja lebih pendek. Dua ukuran
+        # yang sama panjang akan terbaca sebagai dua hal yang sederajat,
+        # padahal yang di atas adalah kemajuan seluruh bahasa ini.
+        tuntas_bab, jumlah_bab, _ = bab.ringkas(lang, data)
+        kalimat_bab = bab.kalimat_ringkas(lang, data)
+        if jumlah_bab > 1:
+            print("  " + bar(tuntas_bab, jumlah_bab, 12)
+                  + tema.cat(f"  {tuntas_bab}/{jumlah_bab} bab tuntas", "teks"))
+            if kalimat_bab:
+                # Kalimatnya berdiri sendiri DI SINI, bukan ditempel ke baris
+                # menu "Materi". Baris menu digambar ulang tiap tombol panah
+                # dan karena itu dipotong selebar layar; di terminal 80 kolom
+                # -- ukuran bawaan -- ekornya berubah jadi "…" persis pada
+                # bagian yang paling perlu dibaca: nama bab dan sisa materinya.
+                print(tema.cat("  " + utils.potong(kalimat_bab, lebar() - 2),
+                               "redup"))
+
         if not runner.tersedia(lang["runner"]):
             hilang = ", ".join(runner.program_hilang(lang["runner"]))
             print(tema.cat(f"  Runner nonaktif: {hilang} belum terpasang.", "galat"))
@@ -342,7 +393,8 @@ def language_menu(lang):
         if pilih == 0:
             return
         if pilih == 1:
-            materials_menu(lang["label"], lang["materials"], f"{lang['key']}_materi")
+            materials_menu(lang["label"], lang["materials"], f"{lang['key']}_materi",
+                           lang=lang)
         elif pilih == 2:
             quiz_menu(lang["label"], lang["quizzes"], f"{lang['key']}_kuis")
         elif pilih == 3:

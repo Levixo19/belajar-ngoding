@@ -13,11 +13,12 @@ keberadaannya.
 
 import json
 import os
+import re
 import shutil
 import tempfile
 from datetime import date, datetime, timedelta
 
-VERSI_DATA = 3
+VERSI_DATA = 4
 
 PROGRESS_FILE = os.environ.get(
     "BELAJAR_PROGRESS_FILE",
@@ -114,8 +115,55 @@ def _migrasi(data):
     if not isinstance(data.get("xp"), int) or isinstance(data.get("xp"), bool) or data["xp"] < 0:
         data["xp"] = 0
 
+    _normalkan_kunci(data)
+
     data["versi"] = VERSI_DATA
     return data
+
+
+_BIDANG_DAFTAR_KUNCI = ("materi_dibaca", "materi_sebagian", "latihan_dilihat",
+                        "latihan_lulus", "latihan_manual", "bookmark")
+_BIDANG_PETA_KUNCI = ("kuis_skor", "jadwal_kuis", "salah_kuis")
+
+
+def _normalkan_kunci(data):
+    """Buang nomor urut dari kunci yang tersimpan (skema v3 -> v4).
+
+    Dijalankan setiap kali progres dimuat, bukan sekali saat naik versi. Itu
+    disengaja: berkas progres bisa datang dari mana saja — cadangan lama,
+    impor dari komputer lain, berkas yang disunting tangan — dan satu kunci
+    bergaya lama di antaranya berarti satu materi yang sudah dibaca tampil
+    sebagai belum. Biayanya sepersekian milidetik; harganya sebuah pencapaian
+    yang tidak bisa dikumpulkan ulang.
+
+    Kalau kunci lama dan kunci baru bertabrakan (mustahil dalam data yang
+    sah, tapi mungkin di berkas yang disunting tangan), yang menang adalah
+    yang sudah ada — menggabungkan dua catatan lebih aman daripada memilih
+    salah satu untuk dibuang.
+    """
+    for bidang in _BIDANG_DAFTAR_KUNCI:
+        terlihat = set()
+        baru = []
+        for k in data.get(bidang) or []:
+            n = _kunci_baru(k)
+            if n not in terlihat:
+                terlihat.add(n)
+                baru.append(n)
+        data[bidang] = baru
+
+    for bidang in _BIDANG_PETA_KUNCI:
+        peta = {}
+        for k, v in (data.get(bidang) or {}).items():
+            peta.setdefault(_kunci_baru(k), v)
+        data[bidang] = peta
+    return data
+
+
+def _kunci_baru(k):
+    if not isinstance(k, str) or "::" not in k:
+        return k
+    kategori, judul = k.split("::", 1)
+    return f"{kategori}::{judul_kunci(judul)}"
 
 
 def load_progress():
@@ -160,8 +208,32 @@ def save_progress(data):
         return False
 
 
+# Judul materi membawa nomornya sendiri ("2. Variabel & Tipe Data"), dan nomor
+# itu BERGESER setiap kali sebuah materi disisipkan di tengah kurikulum.
+_AWALAN_NOMOR = re.compile(r"^\s*\d+\.\s*")
+
+
+def judul_kunci(judul):
+    """Judul tanpa nomor urutnya — identitas sebuah materi yang tidak berubah.
+
+    Kenapa ini ada, dan kenapa ia penting justru saat tidak terjadi apa-apa:
+    kunci progres dulu memuat judul UTUH, jadi menyisipkan satu materi baru di
+    posisi kedua menggeser nomor dua puluh materi sesudahnya — dan setiap
+    materi yang pernah dibaca seseorang mendadak tidak dikenali lagi. Yang
+    terlihat pemakainya bukan "kurikulumnya bertambah" melainkan "progresku
+    hilang", dan tidak ada cara mengembalikannya karena kunci lamanya sudah
+    tidak menunjuk apa pun.
+
+    Dengan nomornya dibuang, urutan jadi urusan TAMPILAN saja. Kurikulum boleh
+    disusun ulang berapa kali pun tanpa menyentuh satu pun catatan pencapaian.
+    Judul kuis dan latihan ("Kuis 1: ...", "Latihan 3: ...") tidak berbentuk
+    "angka-titik" sehingga tidak tersentuh sama sekali.
+    """
+    return _AWALAN_NOMOR.sub("", judul or "").strip()
+
+
 def kunci(kategori, judul):
-    return f"{kategori}::{judul}"
+    return f"{kategori}::{judul_kunci(judul)}"
 
 
 # ---------------------------------------------------------------- streak & xp
@@ -648,7 +720,7 @@ def statistik_bahasa(data, prefix, total_materi, total_kuis, total_latihan,
         skor += info.get("terbaik", 0)
         jumlah_soal = info.get("total_soal", 0)
         if not jumlah_soal and soal_per_kuis:
-            jumlah_soal = soal_per_kuis.get(k.split("::", 1)[1], 0)
+            jumlah_soal = soal_per_kuis.get(judul_kunci(k.split("::", 1)[1]), 0)
         maks += jumlah_soal
     if maks:
         skor = min(skor, maks)

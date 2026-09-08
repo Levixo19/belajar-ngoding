@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id" data-tema="gelap">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Belajar Ngoding</title>
+<link rel="stylesheet" href="/gaya.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔥</text></svg>">
+</head>
+<body>
+
+<!-- Token sesi ditanam server. Lihat webapp/server.py: ia yang membuat setiap
+     panggilan API mustahil dilakukan halaman lain di browser yang sama. -->
+<script>window.TOKEN_BELAJAR = "{{TOKEN}}";</script>
+
+<div id="tungku" aria-hidden="true"></div>
+
+<div id="cangkang">
+
+  <nav id="rel" aria-label="Navigasi utama">
+    <!-- Penanda posisi yang meluncur antar butir menu. Diurus js/gerak.js;
+         kalau ia tidak jalan, ::before pada .kini tetap jadi penandanya. -->
+    <span class="rel-tanda" aria-hidden="true"></span>
+
+    <a class="merek" href="#/dasbor">
+      <span class="merek-bara" aria-hidden="true"></span>
+      <span class="merek-teks"><b>Belajar</b><i>Ngoding</i></span>
+    </a>
+
+    <button class="rel-tombol" data-buka="palet">
+      <span class="ikon" aria-hidden="true">⌕</span>
+      <span class="rel-label">Cari apa saja</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+
+    <ul class="rel-menu" id="rel-utama"></ul>
+
+    <div class="rel-judul">Bahasa</div>
+    <ul class="rel-menu rel-bahasa" id="rel-bahasa"></ul>
+
+    <ul class="rel-menu rel-kaki" id="rel-kaki"></ul>
+  </nav>
+
+  <div id="panggung">
+    <header id="atas">
+      <button id="rel-alih" class="ikon-tombol" title="Sembunyikan panel (Ctrl+B)"
+              aria-label="Sembunyikan panel">☰</button>
+      <nav id="jejak" aria-label="Posisimu sekarang"></nav>
+      <div id="ukuran">
+        <button class="tanda tanda-api" id="tanda-streak" title="Streak harian">
+          <span class="tanda-ikon" aria-hidden="true"></span>
+          <span class="tanda-angka">0</span>
+        </button>
+        <button class="tanda" id="tanda-xp" title="Total XP dan level">
+          <span class="tanda-angka">0</span><span class="tanda-satuan">XP</span>
+        </button>
+        <button class="ikon-tombol" id="tombol-tema" title="Ganti tema (Ctrl+J)"
+                aria-label="Ganti tema">◐</button>
+        <button class="ikon-tombol" id="tombol-bantuan" title="Pintasan papan ketik (?)"
+                aria-label="Bantuan pintasan">?</button>
+      </div>
+      <!-- Sejauh mana halaman ini sudah tergulir. Menjawab "masih berapa
+           lagi?" tanpa memakai satu baris teks pun. -->
+      <div id="maju-baca" aria-hidden="true"></div>
+    </header>
+
+    <main id="layar" tabindex="-1"></main>
+  </div>
+</div>
+
+<div id="sorak" aria-live="polite" aria-atomic="false"></div>
+<div id="tirai" hidden></div>
+
+<noscript>
+  <div class="tanpa-js">
+    <h1>Aplikasi ini butuh JavaScript</h1>
+    <p>Semua kodenya berjalan di komputermu sendiri — tidak ada yang dikirim ke
+      mana pun. Nyalakan JavaScript untuk halaman ini, atau pakai versi
+      terminalnya: <code>python3 main.py</code></p>
+  </div>
+</noscript>
+
+<script type="module" src="/js/aplikasi.js"></script>
+</body>
+</html>

@@ -228,10 +228,49 @@ class TestSmokeAplikasi(unittest.TestCase):
     def test_masuk_bahasa_baca_materi_benar_benar_mencatat_progres(self):
         import main
         import progress as p
-        judul = main.LANGUAGES[0]["materials"][0]["title"]
-        self._jalankan_menu(["1", "1", "1"] + [""] * 40 + ["0", "0", "0", "k"])
+        # Menu "1" memilih bahasa PERTAMA di daftar, jadi kunci progresnya
+        # harus diturunkan dari bahasa itu juga — bukan dari nama yang
+        # kebetulan benar hari ini. Versi sebelumnya menulis "java_materi"
+        # sebagai literal, dan pecah begitu HTML masuk ke urutan pertama.
+        #
+        # Empat kali "1", bukan tiga: bahasa -> Materi -> BAB 1 -> materi 1.
+        # Layar bab adalah tingkat tambahan yang sengaja ada, dan tes berikutnya
+        # menjaga supaya ia tidak diam-diam hilang lagi — kalau tingkat itu
+        # dihapus, tes ini akan membuka materi KEDUA dan tetap hijau, jadi ia
+        # tidak bisa menjaga dirinya sendiri.
+        bahasa = main.LANGUAGES[0]
+        judul = bahasa["materials"][0]["title"]
+        self._jalankan_menu(["1", "1", "1", "1"] + [""] * 40
+                            + ["0", "0", "0", "0", "k"])
         dibaca = p.load_progress()["materi_dibaca"]
-        self.assertIn(p.kunci("java_materi", judul), dibaca)
+        self.assertIn(p.kunci(f"{bahasa['key']}_materi", judul), dibaca)
+
+    def test_daftar_materi_lewat_layar_bab_dan_bab_terkunci_terlihat(self):
+        """Bab bukan sekadar label: ia satu layar tersendiri sebelum materinya.
+
+        Yang diuji sekaligus dua hal yang gampang hilang tanpa disadari:
+        layar babnya sendiri, dan kenyataan bahwa bab yang MASIH TERKUNCI tetap
+        ditampilkan. Menyembunyikan yang terkunci akan membuat layar ini tampak
+        normal — dan menghapus satu-satunya alasan bab ini ada, yaitu memberi
+        tahu apa yang sedang menanti di depan.
+        """
+        import main
+        import bab as modul_bab
+        bahasa = main.LANGUAGES[0]
+        daftar = modul_bab.status(bahasa, buka_semua=False)
+        self.assertGreater(len(daftar), 1, "bahasa pertama harus punya >1 bab")
+
+        teks = self._jalankan_menu(["1", "1"] + ["0", "0", "k"])
+        self.assertIn(daftar[0]["judul"], teks)
+
+        # Judul bab DIPOTONG kalau tidak muat selebar terminal, jadi yang
+        # dicari cuma awalannya. Menuntut judul utuh membuat tes ini gagal
+        # bukan karena babnya hilang, melainkan karena judulnya panjang —
+        # persis kesalahan yang bikin orang berhenti percaya pada tesnya.
+        terkunci = next(b for b in daftar if b["status"] == modul_bab.TERKUNCI)
+        self.assertIn(terkunci["judul"][:18], teks)
+        self.assertIn(f"Bab {terkunci['nomor']}", teks)
+        self.assertIn("terkunci", teks.lower())
 
     def test_menu_badge_menampilkan_deskripsi_badge(self):
         # "Baca 25 materi" hanya muncul di layar daftar badge.

@@ -1,19 +1,141 @@
 """Navigasi lintas bahasa: pencarian global, daftar bookmark, dan lanjut terakhir.
 
+Ketiganya jalan pintas: mereka membuka materi tanpa melewati daftar materi
+bahasanya sama sekali. Karena itu penguncian bab ikut ditegakkan DI SINI --
+pintu yang cuma dijaga di satu dari tiga jalan masuk bukan pintu. Yang dijaga
+hanya materi; kuis dan latihan memang tidak pernah dikunci (lihat bab.py).
+
+Yang terkunci tetap DITAMPILKAN, lengkap dengan judul dan alasannya.
+Menyembunyikannya dari hasil pencarian akan membuat orang mengira kata yang
+dicarinya memang tidak ada di mana-mana -- keliru, dan tidak ada cara baginya
+untuk tahu bahwa ia keliru.
+
 Importir: main.py. Tidak menulis berkas sendiri; semua status lewat progress.py.
 """
 
+import bab
 import tema
 from utils import (
     C, paint, clear, ask, ask_atau_eof, ask_choice, press_enter, header, rule,
-    lebar, sorot_kata,
+    lebar, bungkus_baris, sorot_kata,
 )
 from materials import render_material, teks_polos
 from exercises import show_exercise
 from quiz import menu_satu_kuis
-from progress import load_progress, kunci, bersihkan_bookmark
+from progress import load_progress, kunci, judul_kunci, bersihkan_bookmark
 
 WARNA_TIPE = {"materi": "aksen", "kuis": "subjudul", "latihan": "judul"}
+
+
+def _indeks_materi(lang, obj):
+    """Posisi sebuah materi di daftar bahasanya, atau -1 kalau bukan miliknya.
+
+    Identitas diperiksa lebih dulu, bukan `==`: satu dict materi memuat seluruh
+    isi bacaannya, dan `list.index()` akan membandingkan isi itu baris demi
+    baris untuk tiap kandidat. Semua pemanggil di dalam modul ini memang
+    mengambil objeknya dari daftar yang sama, jadi lintasan pertama ini
+    hampir selalu yang menjawab.
+
+    Judulnya jadi cadangan, dan itu bukan kemewahan: `buka()` dipanggil dari
+    luar modul ini juga. Pemanggil yang menyerahkan SALINAN dict materi -- dan
+    menyalin dict adalah hal paling wajar yang dilakukan lapisan lain --
+    dulu membuat materinya dianggap tidak dikenal, dan yang tidak dikenal
+    berarti tidak pernah terkunci. Gagal ke arah "terbuka" tepat di titik
+    penegakannya bukan pilihan. Judul materi dijamin unik dalam satu bahasa
+    (lihat AGENTS.md), jadi pencocokan cadangan ini tidak pernah ambigu.
+    """
+    for i, m in enumerate(lang["materials"]):
+        if m is obj:
+            return i
+    judul = obj.get("title") if isinstance(obj, dict) else None
+    if judul:
+        for i, m in enumerate(lang["materials"]):
+            if m.get("title") == judul:
+                return i
+    return -1
+
+
+def _tandai_kunci(hasil, data=None):
+    """Isi bidang "kunci" tiap hasil: bab yang menguncinya, atau None.
+
+    Statusnya dihitung sekali per BAHASA, bukan sekali per hasil: satu layar
+    pencarian bisa memuat empat puluh baris dari bahasa yang sama, dan
+    `bab.status()` menyusun ulang seluruh bab tiap kali dipanggil.
+
+    `buka_semua` tidak diteruskan dengan sengaja -- setelan "buka semua bab"
+    hanya dibaca bab.py, supaya daftar di sini dan daftar materi tidak pernah
+    menjawab berbeda untuk materi yang sama.
+    """
+    if data is None:
+        data = load_progress()
+    singgahan = {}
+    for h in hasil:
+        h["kunci"] = None
+        if h["tipe"] != "materi":
+            continue
+        lang = h["lang"]
+        if lang["key"] not in singgahan:
+            singgahan[lang["key"]] = bab.status(lang, data)
+        indeks = _indeks_materi(lang, h["obj"])
+        if indeks < 0:
+            continue
+        for b in singgahan[lang["key"]]:
+            if b["awal"] <= indeks < b["akhir"]:
+                if b["status"] == bab.TERKUNCI:
+                    h["kunci"] = b
+                break
+    return hasil
+
+
+def _tanda_kunci(h):
+    """Penanda "terkunci" untuk satu baris daftar; "" kalau boleh dibuka.
+
+    Berupa KATA, bukan sekadar warna: tema `mono` tidak punya warna sama
+    sekali, dan penanda yang lenyap di satu tema sama saja dengan tidak ada.
+    """
+    return ("  " + tema.cat("[terkunci]", "peringatan")) if h.get("kunci") else ""
+
+
+def _layar_terkunci(h):
+    """Ganti isi materi dengan penjelasan kenapa ia belum boleh dibuka.
+
+    Bukan penolakan kosong: judul, bab, dan tingkatnya tetap terlihat, lalu
+    satu kalimat yang menyebut BERAPA materi lagi yang kurang. Orang yang
+    sampai ke sini datang dari pencarian atau bookmark -- ia sudah tahu materi
+    ini ada, jadi yang dibutuhkannya cuma tahu apa yang harus dikerjakan dulu.
+
+    Kalimatnya dilewatkan `bungkus_baris`, bukan dicetak apa adanya. Layar ini
+    menempelkan label bahasa, nomor bab, dan judul bab dalam satu baris, dan
+    versi pertamanya meluber di terminal 80 kolom -- persis pada layar yang
+    tugasnya menenangkan orang yang baru saja ditolak.
+
+    Kalimat "kenapa" yang menyebut angka datang dari `bab.py` (`alasan`),
+    bukan disusun ulang di sini. Yang ditulis di layar ini hanya aturannya
+    secara umum plus penunjuk ke saklarnya -- kembarannya ada di
+    `materials._layar_terkunci`, jadi kalau aturan membuka bab berubah,
+    KEDUA layar itu harus ikut berubah.
+    """
+    b = h["kunci"]
+    lbr = lebar() - 2
+    clear()
+    header("MATERI TERKUNCI", h["judul"])
+    print()
+    for baris in bungkus_baris(
+            f"{h['lang']['label']} - Bab {b['nomor']}: {b['judul']}", lbr, "  "):
+        print(tema.cat(baris, "info", tema.TEBAL))
+    if b["ket"]:
+        for baris in bungkus_baris(b["ket"], lbr, "  "):
+            print(tema.cat(baris, "redup"))
+    print(tema.cat(f"  Tingkat {b['label_tingkat']} - {b['jumlah']} materi", "redup"))
+    print()
+    if b["alasan"]:
+        for baris in bungkus_baris(b["alasan"], lbr, "  "):
+            print(tema.cat(baris, "peringatan"))
+    for baris in bungkus_baris(
+            bab.KALIMAT_ATURAN + " " + bab.KALIMAT_PINTU_DARURAT,
+            lbr, "  "):
+        print(tema.cat(baris, "redup"))
+    press_enter()
 
 
 def _potongan(teks, kata, lebar_potong=None):
@@ -106,12 +228,13 @@ def cari_global(languages):
         header("HASIL PENCARIAN",
                f"'{kata}' - {len(hasil)} dari {len(semua)} hasil{judul_saring}")
 
+        _tandai_kunci(hasil)
         names = []
         for h in hasil:
             tipe = tema.cat(f"{h['tipe']:<8}", WARNA_TIPE[h["tipe"]], tema.TEBAL)
             bahasa = tema.cat(f"{h['lang']['label']:<11}", "info")
             jumlah = tema.cat(f"({h['jumlah']}x)", "redup")
-            baris = f"{tipe} {bahasa} {h['judul']}  {jumlah}"
+            baris = f"{tipe} {bahasa} {h['judul']}  {jumlah}{_tanda_kunci(h)}"
             if h["cuplikan"]:
                 baris += "\n       " + sorot_kata(tema.cat(h["cuplikan"], "redup"), kata)
             names.append(baris)
@@ -135,6 +258,15 @@ def cari_global(languages):
 def _buka(h, kata_sorot=""):
     lang = h["lang"]
     if h["tipe"] == "materi":
+        # Dihitung ulang di sini, BUKAN dibaca dari tanda yang sudah menempel
+        # di dict-nya. Dua alasan: daftar yang menandainya bisa sudah beberapa
+        # menit umurnya, dan `buka` dipanggil dari luar modul ini dengan dict
+        # yang bidang "kunci"-nya cuma klaim pemanggil. Titik penegakan yang
+        # mempercayai masukannya bukan titik penegakan.
+        _tandai_kunci([h])
+        if h["kunci"]:
+            _layar_terkunci(h)
+            return
         render_material(h["obj"], f"{lang['key']}_materi", kata_sorot=kata_sorot,
                         daftar=lang["materials"])
     elif h["tipe"] == "kuis":
@@ -156,8 +288,18 @@ def _cari_objek(languages, kategori, judul):
         koleksi = {"materi": lang["materials"], "kuis": lang["quizzes"],
                    "latihan": lang["exercises"]}.get(tipe, [])
         for obj in koleksi:
-            if obj["title"] == judul:
-                return {"tipe": tipe, "lang": lang, "obj": obj, "judul": judul}
+            # Dibandingkan lewat judul_kunci, bukan judul mentah: kunci yang
+            # tersimpan sudah tanpa nomor urut, sedangkan judul di kurikulum
+            # masih membawanya. Menyamakan keduanya apa adanya membuat SETIAP
+            # bookmark tampak basi.
+            if judul_kunci(obj["title"]) == judul_kunci(judul):
+                # Judul yang DITAMPILKAN diambil dari kurikulum, bukan dari
+                # kunci yang tersimpan. Kunci sengaja tidak membawa nomor urut
+                # supaya tahan penyisipan materi; nomor itu tetap bagian dari
+                # cara materi ini dikenali di layar, dan nomor yang benar
+                # hanya diketahui kurikulumnya sendiri.
+                return {"tipe": tipe, "lang": lang, "obj": obj,
+                        "judul": obj["title"]}
     return None
 
 
@@ -210,8 +352,14 @@ def menu_bookmark(languages):
             print(tema.cat(f"  {basi} bookmark menunjuk materi yang sudah tidak ada.",
                            "peringatan"))
 
+        # Bookmark ke materi terkunci terdengar mustahil -- menandainya memang
+        # harus membukanya lebih dulu. Jalannya lewat saklar "buka semua bab":
+        # nyalakan, tandai materi jauh di depan tanpa membacanya sampai habis,
+        # matikan lagi. Bookmark-nya tetap ada, babnya menutup kembali.
+        _tandai_kunci(entri, data)
         names = [f"{tema.cat(e['lang']['label'] + ':', 'info')} "
                  f"{tema.cat(e['tipe'], WARNA_TIPE[e['tipe']])} {e['judul']}"
+                 f"{_tanda_kunci(e)}"
                  for e in entri]
         extra = {"x": f"Bersihkan {basi} bookmark tidak valid"} if basi else None
         pilih = ask_choice(paint("  Buka bookmark:", C.BLUE, C.BOLD), names, extra=extra)
@@ -245,17 +393,24 @@ def lanjut_terakhir(languages):
         press_enter()
         return
 
+    _tandai_kunci([item], data)
+
     # Tawarkan juga yang BERIKUTNYA: membuka ulang item yang sama terus-menerus
     # adalah keluhan paling sering tentang tombol "lanjutkan".
     berikut = None
     if item["tipe"] == "materi":
         daftar = item["lang"]["materials"]
-        try:
-            posisi = daftar.index(item["obj"])
-            if posisi + 1 < len(daftar):
-                berikut = daftar[posisi + 1]
-        except ValueError:
-            berikut = None
+        posisi = _indeks_materi(item["lang"], item["obj"])
+        if 0 <= posisi < len(daftar) - 1:
+            # Disimpan sebagai hasil utuh, bukan cuma dict materinya, supaya
+            # yang membukanya nanti tetap lewat `_buka` -- satu jalan masuk,
+            # satu penegakan. Menawarkan pintu yang akan ditolak lebih buruk
+            # daripada tidak menawarkan apa pun, jadi tandanya dibaca di sini
+            # untuk memutuskan tombolnya ditawarkan atau tidak.
+            berikut = {"tipe": "materi", "lang": item["lang"],
+                       "obj": daftar[posisi + 1],
+                       "judul": daftar[posisi + 1]["title"]}
+            _tandai_kunci([berikut], data)
 
     clear()
     header("LANJUTKAN BELAJAR")
@@ -265,17 +420,37 @@ def lanjut_terakhir(languages):
     if waktu:
         print(tema.cat(f"    pada {waktu.replace('T', ' ')}", "redup"))
     print()
-    print(tema.cat("  [ENTER] buka lagi", "aksen"))
-    if berikut:
-        print(tema.cat(f"  [n] materi berikutnya: {berikut['title'][:40]}", "sukses"))
+    if item["kunci"]:
+        # Jalannya sama seperti bookmark di atas: dibuka selagi "buka semua
+        # bab" menyala, ditinggal sebelum tuntas, lalu saklarnya dimatikan.
+        # Tanpa cabang ini, tombol "lanjutkan" menawarkan pintu yang akan
+        # ditolaknya sendiri sedetik kemudian.
+        print(tema.cat(f"  {item['kunci']['alasan']}", "peringatan"))
+        print(tema.cat("  [ENTER] lihat kenapa terkunci", "aksen"))
+    else:
+        print(tema.cat("  [ENTER] buka lagi", "aksen"))
+    if berikut and not berikut["kunci"]:
+        print(tema.cat(f"  [n] materi berikutnya: {berikut['judul'][:40]}", "sukses"))
+    elif berikut and berikut["kunci"] and not item["kunci"]:
+        # Tanpa tanda kurung siku: ini keterangan, bukan pilihan yang bisa
+        # ditekan. Menuliskannya sebagai "[n]" yang lalu tidak melakukan apa-apa
+        # adalah cara tercepat membuat orang mengira aplikasinya rusak.
+        #
+        # Dilewati kalau yang sekarang pun terkunci: keduanya biasanya ada di
+        # bab yang sama, jadi alasannya akan tercetak dua kali persis sama.
+        print(tema.cat("  Materi berikutnya masih terkunci - "
+                       f"{berikut['kunci']['alasan']}", "redup"))
     print(tema.cat("  [0] batal", "redup"))
 
     pilih = ask_atau_eof("  Pilih > ")
     if pilih is None or pilih == "0":
         return
     if pilih.lower() == "n" and berikut:
-        render_material(berikut, f"{item['lang']['key']}_materi",
-                        daftar=item["lang"]["materials"])
+        # Dilewatkan `_buka` juga ketika tombolnya tidak ditawarkan: orang yang
+        # terbiasa menekan [n] tetap menekannya sesudah membaca "masih
+        # terkunci". Membuka ulang materi yang sama tanpa sepatah kata terbaca
+        # sebagai tombol rusak, sedangkan `_buka` menjawabnya dengan alasannya.
+        _buka(berikut)
         return
     _buka(item)
 

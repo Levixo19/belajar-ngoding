@@ -53,8 +53,8 @@ APLIKASI_QUIZZES = [
                                "untuk pengujian tanpa mengubah service.",
             },
             {
-                "q": "Method stokMenipis() yang cuma membandingkan field milik sendiri "
-                     "paling tepat ditaruh di?",
+                "q": "Method isStokMenipis() yang cuma membandingkan field milik "
+                     "sendiri paling tepat ditaruh di?",
                 "options": ["Entitas", "Controller", "DAO", "JSP"],
                 "answer": 0,
                 "explanation": "Pertanyaan yang bisa dijawab dari field sendiri tanpa data "

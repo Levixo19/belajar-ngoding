@@ -5,22 +5,39 @@ import tempfile
 import unittest
 from datetime import date, timedelta
 
+import konfigurasi
 import progress
 import saran
 from main import LANGUAGES
 
 
 class BasisSaran(unittest.TestCase):
+    """Progres DAN konfigurasi diarahkan ke direktori sementara.
+
+    Konfigurasinya ikut karena `saran` sekarang lewat `bab`, dan `bab` membaca
+    setelan "Buka semua bab tanpa syarat". Tanpa pengalihan ini, tes membaca
+    berkas konfigurasi milik orang yang menjalankannya: siapa pun yang pernah
+    menyalakan saklar itu akan menguji jalur yang berbeda dari CI, dan setiap
+    tes penguncian yang ditambahkan nanti lolos palsu di mesinnya sendiri.
+    Berkasnya cuma dibaca, tidak ditulis — tapi tes yang hasilnya bergantung
+    pada preferensi pribadi bukan tes.
+    """
+
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()
         self._asli = progress.PROGRESS_FILE
         self._asli_lama = progress.PROGRESS_FILE_LAMA
+        self._asli_konfig = konfigurasi.BERKAS
         progress.PROGRESS_FILE = os.path.join(self.dir.name, "p.json")
         progress.PROGRESS_FILE_LAMA = os.path.join(self.dir.name, "tidak-ada.json")
+        konfigurasi.BERKAS = os.path.join(self.dir.name, "konfig.json")
+        konfigurasi.lupakan_cache()
 
     def tearDown(self):
         progress.PROGRESS_FILE = self._asli
         progress.PROGRESS_FILE_LAMA = self._asli_lama
+        konfigurasi.BERKAS = self._asli_konfig
+        konfigurasi.lupakan_cache()
         self.dir.cleanup()
 
     def data(self):

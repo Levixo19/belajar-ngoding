@@ -13,6 +13,7 @@ from contextlib import redirect_stdout
 from unittest import mock
 
 import navigasi
+import konfigurasi
 import progress
 import utils
 from main import LANGUAGES
@@ -103,8 +104,15 @@ class BasisNavigasi(unittest.TestCase):
         self.dir = tempfile.TemporaryDirectory()
         self._asli = progress.PROGRESS_FILE
         self._asli_lama = progress.PROGRESS_FILE_LAMA
+        self._asli_konfig = konfigurasi.BERKAS
         progress.PROGRESS_FILE = os.path.join(self.dir.name, "p.json")
         progress.PROGRESS_FILE_LAMA = os.path.join(self.dir.name, "tidak-ada.json")
+        # Konfigurasi ikut dialihkan: `navigasi` sekarang lewat `bab`, yang
+        # membaca setelan "Buka semua bab tanpa syarat". Membiarkannya menunjuk
+        # berkas asli membuat hasil tes bergantung pada preferensi pribadi
+        # orang yang menjalankannya.
+        konfigurasi.BERKAS = os.path.join(self.dir.name, "konfig.json")
+        konfigurasi.lupakan_cache()
         self._patch = mock.patch.object(utils, "clear", lambda: None)
         self._patch.start()
 
@@ -112,6 +120,8 @@ class BasisNavigasi(unittest.TestCase):
         self._patch.stop()
         progress.PROGRESS_FILE = self._asli
         progress.PROGRESS_FILE_LAMA = self._asli_lama
+        konfigurasi.BERKAS = self._asli_konfig
+        konfigurasi.lupakan_cache()
         self.dir.cleanup()
 
     def jalankan(self, fungsi, masukan):

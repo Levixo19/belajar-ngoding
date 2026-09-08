@@ -1,0 +1,432 @@
+CSS_QUIZZES = [
+    {
+        "title": "Kuis 1: Dasar CSS dan Pemilih",
+        "questions": [
+            {
+                "q": "Dalam aturan p { color: red; }, bagian 'p' disebut?",
+                "options": ["Pemilih (selector)", "Properti", "Nilai", "Deklarasi"],
+                "answer": 0,
+                "explanation": "Pemilih menentukan elemen mana yang kena aturan. 'color' adalah properti, 'red' nilainya, dan pasangan keduanya disebut deklarasi.",
+            },
+            {
+                "q": "Bagaimana cara menyambungkan berkas gaya.css ke sebuah halaman HTML?",
+                "options": [
+                    "<style src=\"gaya.css\">",
+                    "<link rel=\"stylesheet\" href=\"gaya.css\">",
+                    "<css href=\"gaya.css\">",
+                    "<script src=\"gaya.css\">",
+                ],
+                "answer": 1,
+                "explanation": "Tag link ditaruh di dalam head. Tag style dipakai untuk menulis CSS langsung di halaman, bukan untuk memanggil berkas.",
+            },
+            {
+                "q": "Pemilih .kartu memilih elemen yang mana?",
+                "options": [
+                    "Elemen bernama kartu",
+                    "Elemen dengan id=\"kartu\"",
+                    "Elemen dengan class=\"kartu\"",
+                    "Semua elemen di dalam elemen kartu",
+                ],
+                "answer": 2,
+                "explanation": "Titik untuk class, pagar (#) untuk id. Satu class boleh dipakai berkali-kali dalam satu halaman, satu id hanya sekali.",
+            },
+            {
+                "q": "Apa beda 'div p' dan 'div > p'?",
+                "options": [
+                    "Tidak ada beda, hanya cara penulisan",
+                    "div p lebih cepat diproses browser",
+                    "div p hanya memilih anak langsung, div > p memilih p sedalam apa pun",
+                    "div p memilih p sedalam apa pun, div > p hanya anak langsung",
+                ],
+                "answer": 3,
+                "explanation": "Spasi berarti keturunan, sedalam apa pun letaknya. Tanda > membatasi ke anak langsung, jadi p di dalam div > section > p tidak ikut kena.",
+            },
+            {
+                "q": "Apa warna teks p kalau CSS-nya berisi p { color: red; } lalu di bawahnya p { color: blue; } ?",
+                "options": ["Biru", "Merah", "Ungu, campuran keduanya", "Error karena properti kembar"],
+                "answer": 0,
+                "explanation": "Spesifisitas kedua aturan sama persis, jadi yang menang adalah yang ditulis terakhir. Itu arti 'cascading' pada Cascading Style Sheets.",
+            },
+            {
+                "q": "Untuk elemen yang sama, mana yang menang antara #menu { color: red; } dan .menu { color: blue; } ?",
+                "options": [
+                    "Yang ditulis paling akhir",
+                    "Aturan #menu, karena pemilih id lebih spesifik",
+                    "Aturan .menu, karena class lebih fleksibel",
+                    "Keduanya dibatalkan karena bentrok",
+                ],
+                "answer": 1,
+                "explanation": "Urutan penulisan baru menentukan kalau spesifisitasnya seri. Satu id mengalahkan satu class berapa pun urutannya, dan style di atribut style= mengalahkan keduanya.",
+            },
+            {
+                "q": "Apa arti tanda koma pada h1, h2 { margin: 0; } ?",
+                "options": [
+                    "h2 yang berada di dalam h1",
+                    "h1 yang letaknya tepat sebelum h2",
+                    "Aturan itu berlaku untuk h1 dan untuk h2",
+                    "h1 dan h2 harus muncul berpasangan",
+                ],
+                "answer": 2,
+                "explanation": "Koma menyatukan beberapa pemilih ke satu blok aturan. Tanpa koma, 'h1 h2' berarti h2 di dalam h1 — arti yang sama sekali berbeda.",
+            },
+            {
+                "q": "Bagaimana cara menulis komentar di berkas CSS?",
+                "options": ["// komentar", "# komentar", "<!-- komentar -->", "/* komentar */"],
+                "answer": 3,
+                "explanation": "Hanya /* */ yang dikenali CSS. Bentuk // membuat browser menganggapnya aturan rusak dan membuang isinya sampai blok berikutnya, sedangkan <!-- --> milik HTML.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 2: Warna, Satuan, dan Teks",
+        "questions": [
+            {
+                "q": "Properti mana yang mengubah warna TEKS?",
+                "options": ["text-color", "color", "font-color", "background-color"],
+                "answer": 1,
+                "explanation": "color selalu berarti warna teks. Latarnya diatur background-color; text-color dan font-color tidak ada di CSS dan akan diabaikan diam-diam.",
+            },
+            {
+                "q": "Pada warna hex #2f6fed, tiga pasang karakternya berturut-turut menyatakan?",
+                "options": [
+                    "Terang, gelap, jenuh",
+                    "Cyan, magenta, kuning",
+                    "Merah, hijau, biru",
+                    "Lebar, tinggi, kepekatan",
+                ],
+                "answer": 2,
+                "explanation": "Tiap pasang adalah satu angka 00 sampai ff, yaitu 0 sampai 255, untuk merah, hijau, lalu biru. Karena itu #ff0000 merah penuh dan #000000 hitam.",
+            },
+            {
+                "q": "Angka keempat pada rgba(0, 0, 0, 0.5) menyatakan apa?",
+                "options": [
+                    "Kecerahan warnanya",
+                    "Ketebalan garisnya",
+                    "Warna keempat setelah biru",
+                    "Kepekatan warna alias alpha",
+                ],
+                "answer": 3,
+                "explanation": "Nilai 0 berarti tembus pandang penuh, 1 berarti pekat. Berbeda dari opacity, alpha hanya membuat warna itu transparan — teks di atasnya tetap jelas.",
+            },
+            {
+                "q": "Apa beda satuan px dan rem?",
+                "options": [
+                    "px ukuran tetap, rem kelipatan dari font-size elemen html",
+                    "px untuk lebar, rem untuk tinggi",
+                    "rem ukuran tetap, px mengikuti pengaturan pengguna",
+                    "Tidak ada beda, rem cuma nama baru untuk px",
+                ],
+                "answer": 0,
+                "explanation": "rem ikut membesar kalau pengguna menaikkan ukuran huruf di browsernya. Teks yang dikunci dalam px tetap kecil, dan itu masalah nyata buat mata yang sudah lelah.",
+            },
+            {
+                "q": "Berapa ukuran huruf h1 kalau CSS-nya: html { font-size: 16px; } h1 { font-size: 2rem; } ?",
+                "options": ["2px", "32px", "16px", "18px"],
+                "answer": 1,
+                "explanation": "1rem sama dengan font-size elemen html, jadi 2rem = 2 x 16px = 32px. Cukup ubah satu angka di html dan seluruh halaman ikut menyesuaikan.",
+            },
+            {
+                "q": "Kenapa font-family ditulis berderet, misalnya font-family: Inter, Arial, sans-serif; ?",
+                "options": [
+                    "Ketiganya dipakai bergantian tiap baris",
+                    "Ketiganya ditumpuk supaya huruf terlihat lebih tebal",
+                    "Nama berikutnya dipakai kalau font sebelumnya tidak ada di komputer itu",
+                    "Yang terakhir selalu dipakai",
+                ],
+                "answer": 2,
+                "explanation": "Browser mencoba dari kiri ke kanan. Nama umum seperti sans-serif ditaruh paling akhir sebagai jaring pengaman, karena pasti tersedia di sistem mana pun.",
+            },
+            {
+                "q": "text-align: center; pada sebuah div memusatkan apa?",
+                "options": [
+                    "Div itu sendiri ke tengah halaman",
+                    "Div beserta elemen di sekitarnya",
+                    "Hanya judul di dalamnya, bukan paragraf",
+                    "Isi teks di dalam div, sedangkan div-nya tetap di tempat",
+                ],
+                "answer": 3,
+                "explanation": "text-align mengatur isi, bukan kotaknya. Untuk memusatkan kotaknya sendiri dipakai margin: 0 auto atau flexbox pada induknya.",
+            },
+            {
+                "q": "Apa arti line-height: 1.6; yang ditulis tanpa satuan?",
+                "options": [
+                    "Tinggi baris 1,6 kali ukuran font elemen itu sendiri",
+                    "Jarak antar paragraf 1,6 piksel",
+                    "Menyisakan 1,6 baris kosong di bawah teks",
+                    "Tinggi baris 1,6 sentimeter",
+                ],
+                "answer": 0,
+                "explanation": "Angka tanpa satuan dihitung ulang di setiap elemen memakai font-size elemen itu. Kalau ditulis 1.6em, yang diwariskan ke anak adalah hasil hitungan induknya, sehingga teks kecil di dalamnya jadi terlalu renggang.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 3: Box Model dan Display",
+        "questions": [
+            {
+                "q": "Urutan lapisan box model dari yang paling dalam ke paling luar adalah?",
+                "options": [
+                    "margin, border, padding, isi",
+                    "isi, margin, border, padding",
+                    "isi, padding, border, margin",
+                    "padding, isi, border, margin",
+                ],
+                "answer": 2,
+                "explanation": "Isi ada di tengah, padding membungkusnya, border mengelilingi padding, dan margin adalah jarak dari border ke elemen lain.",
+            },
+            {
+                "q": "Apa beda padding dan margin?",
+                "options": [
+                    "padding untuk teks, margin untuk gambar",
+                    "padding di luar border, margin di dalam border",
+                    "Tidak ada beda, keduanya sama-sama membuat jarak",
+                    "padding jarak di dalam kotak, margin jarak ke elemen lain di luar kotak",
+                ],
+                "answer": 3,
+                "explanation": "Warna latar ikut mewarnai padding tapi tidak pernah mewarnai margin. Itu cara tercepat membedakan keduanya cuma dengan melihat halaman.",
+            },
+            {
+                "q": "Berapa lebar total di layar untuk div { width: 200px; padding: 20px; border: 5px solid black; } dengan box-sizing bawaan?",
+                "options": ["250px", "200px", "225px", "245px"],
+                "answer": 0,
+                "explanation": "Bawaannya content-box: width hanya mengukur isinya. 200 + padding kiri-kanan 40 + border kiri-kanan 10 = 250px, dan inilah sumber tata letak yang meluber.",
+            },
+            {
+                "q": "Apa yang dilakukan box-sizing: border-box; ?",
+                "options": [
+                    "Menambahkan border ke semua elemen",
+                    "Membuat width sudah termasuk padding dan border",
+                    "Menghapus margin bawaan browser",
+                    "Memaksa elemen jadi kotak persegi",
+                ],
+                "answer": 1,
+                "explanation": "Dengan border-box, width: 200px berarti benar-benar 200px di layar. Karena itu banyak proyek memasang * { box-sizing: border-box; } di baris pertama CSS-nya.",
+            },
+            {
+                "q": "Apa beda display: block dan display: inline?",
+                "options": [
+                    "block bisa diklik, inline tidak",
+                    "inline selalu tampil di atas block",
+                    "block memakai satu baris penuh, inline hanya selebar isinya dan berjajar",
+                    "block untuk teks, inline untuk gambar",
+                ],
+                "answer": 2,
+                "explanation": "div bawaannya block, span bawaannya inline. Karena block mengambil sisa lebar barisnya, dua div selalu bertumpuk ke bawah walau isinya cuma satu kata.",
+            },
+            {
+                "q": "Kenapa width: 200px; tidak berpengaruh apa-apa pada sebuah span?",
+                "options": [
+                    "Karena span tidak bisa diberi CSS",
+                    "Karena seharusnya ditulis max-width",
+                    "Karena span selalu selebar layar",
+                    "Karena elemen inline mengabaikan width, height, serta margin atas dan bawah",
+                ],
+                "answer": 3,
+                "explanation": "Ubah dulu ke display: inline-block atau block. inline-block tetap berjajar menyamping seperti inline, tapi sudah menerima ukuran.",
+            },
+            {
+                "q": "Apa beda display: none dan visibility: hidden?",
+                "options": [
+                    "none menghilangkan elemen beserta ruangnya, hidden menyisakan ruang kosong",
+                    "Keduanya persis sama",
+                    "hidden menghapus elemen dari halaman, none hanya menyamarkannya",
+                    "none hanya bekerja pada gambar",
+                ],
+                "answer": 0,
+                "explanation": "Pada visibility: hidden elemennya tak terlihat tapi lubang seukuran elemen itu tetap ada, sehingga elemen lain tidak bergeser mengisinya.",
+            },
+            {
+                "q": "Dua paragraf bertumpuk. Yang atas punya margin-bottom: 20px, yang bawah margin-top: 30px. Berapa jarak di antaranya?",
+                "options": ["50px", "30px", "20px", "25px"],
+                "answer": 1,
+                "explanation": "Margin vertikal yang bersentuhan saling melebur (margin collapse): yang dipakai hanya yang terbesar, bukan jumlahnya. Margin kiri-kanan tidak pernah melebur.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 4: Flexbox dan Grid",
+        "questions": [
+            {
+                "q": "Setelah sebuah wadah diberi display: flex;, bagaimana anak-anaknya tersusun secara bawaan?",
+                "options": [
+                    "Tetap bertumpuk ke bawah seperti sebelumnya",
+                    "Menumpuk jadi satu di tengah wadah",
+                    "Terbalik, dari yang terakhir ke yang pertama",
+                    "Berjajar menyamping dalam satu baris",
+                ],
+                "answer": 3,
+                "explanation": "Nilai bawaan flex-direction adalah row. Tulis flex-direction: column kalau anaknya memang ingin dibuat bertumpuk ke bawah.",
+            },
+            {
+                "q": "Pada wadah dengan flex-direction: row, justify-content mengatur posisi item ke arah mana?",
+                "options": [
+                    "Mendatar, karena itulah sumbu utamanya",
+                    "Menurun, tegak lurus terhadap sumbu utama",
+                    "Keduanya sekaligus",
+                    "Tidak mengatur posisi, hanya jarak antar item",
+                ],
+                "answer": 0,
+                "explanation": "justify-content selalu bekerja di sumbu utama. Begitu flex-direction diubah ke column, sumbu utamanya jadi vertikal dan justify-content ikut berputar mengatur atas-bawah.",
+            },
+            {
+                "q": "Apa efek align-items: center; pada wadah flex berarah row?",
+                "options": [
+                    "Item terkumpul di tengah dari kiri ke kanan",
+                    "Item ditengahkan secara vertikal di dalam wadah",
+                    "Semua item dibuat sama lebar",
+                    "Teks di dalam tiap item ditengahkan",
+                ],
+                "answer": 1,
+                "explanation": "align-items bekerja di sumbu silang, yang pada arah row berarti vertikal. Dipasangkan dengan justify-content: center, isinya jatuh tepat di titik tengah wadah.",
+            },
+            {
+                "q": "Tiga kotak di dalam .wadah { display: flex; justify-content: space-between; }. Bagaimana susunannya?",
+                "options": [
+                    "Ketiganya menempel ke kiri",
+                    "Ketiganya berkumpul di tengah",
+                    "Kotak pertama menempel kiri, terakhir menempel kanan, sisa ruang dibagi ke celah di antaranya",
+                    "Ketiganya bertumpuk jadi satu",
+                ],
+                "answer": 2,
+                "explanation": "space-between tidak menyisakan ruang di kedua ujung. Kalau tepi luarnya juga ingin berjarak, pakai space-around atau space-evenly.",
+            },
+            {
+                "q": "Apa guna flex-wrap: wrap; ?",
+                "options": [
+                    "Membungkus tiap item dengan garis tepi",
+                    "Memotong item yang terlalu panjang",
+                    "Membungkus teks panjang di dalam item",
+                    "Membuat item turun ke baris berikutnya kalau sudah tidak muat",
+                ],
+                "answer": 3,
+                "explanation": "Bawaannya nowrap: item dipaksa menyusut demi tetap satu baris, sampai isinya berdesakan tak terbaca. Dengan wrap, yang tidak muat pindah ke baris baru.",
+            },
+            {
+                "q": "gap: 16px; pada wadah flex atau grid berfungsi untuk?",
+                "options": [
+                    "Memberi jarak antar item tanpa perlu margin di tiap item",
+                    "Memberi jarak antara wadah dan tepi halaman",
+                    "Menambah padding ke setiap item",
+                    "Menggeser seluruh wadah sejauh 16px",
+                ],
+                "answer": 0,
+                "explanation": "gap hanya mengisi celah DI ANTARA item, jadi tidak ada sisa margin di tepi luar yang harus dibatalkan lagi dengan :last-child.",
+            },
+            {
+                "q": "Apa hasil dari grid-template-columns: 1fr 2fr; ?",
+                "options": [
+                    "Dua kolom yang sama lebar",
+                    "Dua kolom, yang kanan dua kali lebih lebar dari yang kiri",
+                    "Satu kolom selebar 3fr",
+                    "Tiga kolom berukuran sama",
+                ],
+                "answer": 1,
+                "explanation": "Satuan fr membagi sisa ruang menurut perbandingan. Totalnya 3 bagian, jadi kolom kiri dapat 1/3 dan kolom kanan 2/3 dari lebar yang tersedia.",
+            },
+            {
+                "q": "Kenapa grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); sering dipakai?",
+                "options": [
+                    "Karena selalu menghasilkan tepat tiga kolom",
+                    "Karena mengunci lebar setiap kolom di 200px",
+                    "Karena jumlah kolomnya menyesuaikan lebar layar sendiri, tanpa media query",
+                    "Karena item diurutkan dari yang paling pendek",
+                ],
+                "answer": 2,
+                "explanation": "minmax menetapkan lebar terkecil 200px dan membolehkan kolom melar mengisi sisa ruang, lalu auto-fit memasukkan sebanyak mungkin kolom yang masih muat dan menurunkan sisanya ke baris baru.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 5: Position, Pseudo-class, dan Responsif",
+        "questions": [
+            {
+                "q": "Apa yang terjadi pada .kotak { position: relative; top: 10px; } ?",
+                "options": [
+                    "Kotak bergeser 10px ke bawah, tapi ruang aslinya tetap dianggap terisi",
+                    "Kotak bergeser 10px ke atas dan elemen di bawahnya ikut naik",
+                    "Kotak menempel 10px dari tepi atas halaman",
+                    "Tidak terjadi apa-apa, karena top hanya bekerja pada absolute",
+                ],
+                "answer": 0,
+                "explanation": "relative menggeser tampilannya saja; dalam tata letak, tempat lamanya masih dihitung sehingga elemen sekitarnya tidak bergerak. Nilai top positif mendorong ke bawah, menjauh dari tepi atas.",
+            },
+            {
+                "q": "position: absolute; menghitung letaknya terhadap apa?",
+                "options": [
+                    "Selalu terhadap jendela browser",
+                    "Induk terdekat yang position-nya bukan static; kalau tidak ada, terhadap halaman",
+                    "Elemen yang ditulis tepat sebelumnya di HTML",
+                    "Selalu terhadap elemen body",
+                ],
+                "answer": 1,
+                "explanation": "Karena itu polanya hampir selalu berpasangan: induk diberi position: relative, anaknya position: absolute. Tanpa itu, anaknya melompat ke sudut halaman.",
+            },
+            {
+                "q": "Apa beda position: fixed dan position: absolute?",
+                "options": [
+                    "fixed tidak menerima top dan left",
+                    "fixed hanya bekerja pada gambar",
+                    "fixed diam di tempat yang sama saat halaman digulir, absolute ikut tergulir bersama halaman",
+                    "absolute selalu berada di atas fixed",
+                ],
+                "answer": 2,
+                "explanation": "fixed berpatokan pada layar (viewport), jadi cocok untuk bilah navigasi atas atau tombol yang harus selalu terlihat.",
+            },
+            {
+                "q": "Kenapa z-index: 10; kadang tidak berpengaruh sama sekali?",
+                "options": [
+                    "Karena nilai z-index maksimal 9",
+                    "Karena z-index hanya bekerja pada gambar",
+                    "Karena z-index harus ditulis dengan satuan px",
+                    "Karena elemennya masih position: static, dan pada elemen static z-index diabaikan",
+                ],
+                "answer": 3,
+                "explanation": "Beri position: relative dulu, baru urutan tumpukannya bisa diatur. Satu-satunya pengecualian adalah anak langsung wadah flex atau grid: di sana z-index tetap berlaku walau position-nya masih static.",
+            },
+            {
+                "q": "Pemilih a:hover berlaku pada saat kapan?",
+                "options": [
+                    "Saat kursor sedang berada di atas link itu",
+                    "Saat link sudah pernah diklik sebelumnya",
+                    "Saat link sedang dipilih dengan tombol Tab",
+                    "Saat halaman baru selesai dimuat",
+                ],
+                "answer": 0,
+                "explanation": "Link yang pernah diklik adalah :visited, dan yang sedang dipilih lewat keyboard adalah :focus. Karena pemakai keyboard tidak punya kursor, gaya :hover sebaiknya diberikan bersama :focus-visible.",
+            },
+            {
+                "q": "Elemen mana yang kena aturan li:nth-child(2) { color: red; } di dalam sebuah daftar?",
+                "options": [
+                    "Dua li yang pertama",
+                    "li yang kedua saja",
+                    "Setiap li bernomor genap",
+                    "li kedua dari bawah",
+                ],
+                "answer": 1,
+                "explanation": "Angka di dalam kurung adalah nomor urut, bukan jumlah. Untuk semua yang genap dipakai nth-child(even), dan yang kedua dari bawah adalah nth-last-child(2).",
+            },
+            {
+                "q": "Kenapa .kartu::before sering tidak muncul sama sekali di layar?",
+                "options": [
+                    "Karena ::before harus ditulis dengan satu titik dua",
+                    "Karena ::before hanya bekerja pada elemen inline",
+                    "Karena properti content belum diisi, dan tanpa content pseudo-element tidak pernah dibuat",
+                    "Karena ::before selalu tersembunyi di belakang elemennya",
+                ],
+                "answer": 2,
+                "explanation": "Isi minimalnya content: \"\"; walau kosong. Sesudah ada content, ::before bisa diberi ukuran, warna, dan posisi seperti elemen biasa.",
+            },
+            {
+                "q": "Kapan aturan di dalam @media (max-width: 600px) { ... } dipakai browser?",
+                "options": [
+                    "Saat lebar jendela 600px ke atas",
+                    "Saat tinggi jendela kurang dari 600px",
+                    "Saat berkas CSS-nya lebih besar dari 600px",
+                    "Saat lebar jendela 600px atau kurang",
+                ],
+                "answer": 3,
+                "explanation": "max-width adalah batas atas, jadi aturannya menyala di layar sempit. Untuk arah sebaliknya — menyala mulai dari lebar tertentu ke atas — dipakai min-width.",
+            },
+        ],
+    },
+]

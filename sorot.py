@@ -238,6 +238,97 @@ ATURAN = {
             ROW_NUMBER RANK DENSE_RANK OVER PARTITION
         """),
     ),
+    # -------------------------------------------------------------- HTML
+    #
+    # Pemindai di berkas ini berbasis TOKEN, bukan tata bahasa: ia tidak tahu
+    # apa itu tag, atribut, atau isi elemen. Untuk HTML itu ternyata sudah
+    # cukup jauh — `<`, `>`, `/` jadi operator, nilai atribut jadi string, dan
+    # nama tag dikenali lewat daftar di bawah. Yang tersisa satu kompromi:
+    # kalau teks biasa di dalam halaman kebetulan memuat kata "table" atau
+    # "form", kata itu ikut berwarna.
+    #
+    # Kompromi itu diambil dengan sadar. Alternatifnya pemindai kedua yang
+    # mengerti tata bahasa HTML — dan karena statik/js/sorot.js WAJIB
+    # menghasilkan token yang identik dengan berkas ini (lihat AGENTS.md),
+    # harganya dua implementasi baru yang harus terus dijaga tetap sama. Satu
+    # kata yang kelebihan warna jauh lebih murah daripada itu.
+    #
+    # Daftarnya ditulis KAPITAL karena `tanpa_bedakan_kapital` membandingkan
+    # `kata.upper()`; markup-nya sendiri tetap boleh huruf kecil.
+    "html": Aturan(
+        komentar_blok=(("<!--", "-->"),),
+        kutip=('"', "'"),
+        escape=False,
+        tanpa_bedakan_kapital=True,
+        kunci=_kata("""
+            HTML HEAD BODY TITLE META LINK SCRIPT STYLE BASE
+            H1 H2 H3 H4 H5 H6 P BR HR SPAN DIV SECTION ARTICLE ASIDE NAV MAIN
+            HEADER FOOTER ADDRESS BLOCKQUOTE PRE CODE EM STRONG SMALL MARK
+            SUB SUP DEL INS ABBR CITE Q TIME
+            UL OL LI DL DT DD
+            TABLE THEAD TBODY TFOOT TR TH TD CAPTION COLGROUP COL
+            FORM INPUT TEXTAREA BUTTON SELECT OPTION OPTGROUP LABEL FIELDSET
+            LEGEND DATALIST OUTPUT PROGRESS METER
+            A IMG PICTURE SOURCE FIGURE FIGCAPTION VIDEO AUDIO TRACK IFRAME
+            CANVAS SVG AREA EMBED OBJECT PARAM
+            DETAILS SUMMARY DIALOG TEMPLATE NOSCRIPT
+        """),
+        tipe=_kata("""
+            DOCTYPE CLASS ID SRC HREF ALT LANG CHARSET NAME CONTENT
+            TYPE VALUE PLACEHOLDER REQUIRED DISABLED CHECKED SELECTED READONLY
+            WIDTH HEIGHT REL TARGET ACTION METHOD FOR COLSPAN ROWSPAN
+            SRCSET SIZES LOADING AUTOCOMPLETE MAXLENGTH PATTERN
+            MIN MAX STEP MULTIPLE ACCEPT DOWNLOAD HIDDEN TABINDEX ROLE
+        """),
+        bawaan=_kata("""
+            STYLESHEET ICON PRELOAD VIEWPORT UTF CSS
+            SUBMIT RESET CHECKBOX RADIO PASSWORD EMAIL NUMBER DATE FILE
+            BLANK SELF PARENT TOP
+        """),
+    ),
+
+    # --------------------------------------------------------------- CSS
+    #
+    # Properti CSS penuh tanda hubung, dan `-` bukan bagian dari sebuah kata
+    # bagi pemindai ini — `background-color` sampai ke sini sebagai tiga token:
+    # kata, operator, kata. Jadi yang didaftarkan POTONGAN KATANYA, bukan nama
+    # properti utuhnya. Hasilnya justru lebih baik daripada mendaftar ratusan
+    # nama lengkap: properti apa pun yang tersusun dari kata-kata ini ikut
+    # berwarna, termasuk yang belum ada waktu daftar ini ditulis.
+    "css": Aturan(
+        komentar_blok=(("/*", "*/"),),
+        kutip=('"', "'"),
+        escape=False,
+        tanpa_bedakan_kapital=True,
+        kunci=_kata("""
+            COLOR BACKGROUND IMAGE REPEAT ATTACHMENT
+            FONT FAMILY SIZE WEIGHT STYLE LINE HEIGHT LETTER WORD SPACING
+            TEXT ALIGN DECORATION TRANSFORM SHADOW INDENT WHITE SPACE
+            MARGIN PADDING TOP RIGHT BOTTOM LEFT
+            BORDER WIDTH RADIUS BOX SIZING
+            DISPLAY POSITION INDEX FLOAT CLEAR OVERFLOW VISIBILITY OPACITY
+            FLEX DIRECTION WRAP GROW SHRINK BASIS
+            JUSTIFY CONTENT ITEMS SELF GAP
+            GRID TEMPLATE COLUMNS ROWS COLUMN ROW AREA PLACE
+            LIST TRANSITION ANIMATION CURSOR OUTLINE FILTER OBJECT FIT
+        """),
+        tipe=_kata("""
+            BLOCK INLINE FLEX GRID NONE HIDDEN VISIBLE AUTO
+            ABSOLUTE RELATIVE FIXED STICKY STATIC
+            CENTER JUSTIFY START END BETWEEN AROUND EVENLY
+            SOLID DASHED DOTTED DOUBLE BOLD NORMAL ITALIC UNDERLINE
+            UPPERCASE LOWERCASE CAPITALIZE
+            NOWRAP POINTER DEFAULT MOVE
+            TRANSPARENT INHERIT INITIAL UNSET CURRENTCOLOR
+            SANS SERIF MONOSPACE CURSIVE
+        """),
+        bawaan=_kata("""
+            RGB RGBA HSL HSLA URL CALC VAR CLAMP
+            IMPORTANT MEDIA SUPPORTS KEYFRAMES IMPORT CHARSET FACE ROOT
+            HOVER FOCUS ACTIVE VISITED CHILD BEFORE AFTER NOT IS WHERE HAS
+            SCREEN PRINT
+        """),
+    ),
 }
 
 # Alias yang mungkin dipakai pemanggil.
@@ -246,6 +337,7 @@ ATURAN["js"] = ATURAN["javascript"]
 ATURAN["py"] = ATURAN["python"]
 ATURAN["sh"] = ATURAN["bash"]
 ATURAN["shell"] = ATURAN["bash"]
+ATURAN["htm"] = ATURAN["html"]
 
 _POLOS = Aturan()
 
@@ -255,7 +347,25 @@ def aturan_untuk(bahasa):
 
 
 def bahasa_didukung():
-    return sorted({"java", "python", "javascript", "c", "cpp", "bash", "go", "sql"})
+    """Nama kanonik semua bahasa yang punya aturan penyorotan.
+
+    DITURUNKAN dari ATURAN, bukan ditulis ulang. Versi sebelumnya berupa daftar
+    keras berisi delapan nama, dan akibatnya persis seperti yang bisa ditebak:
+    menambahkan HTML dan CSS ke ATURAN tidak menyalakannya di editor web sama
+    sekali — karena daftar INILAH yang dikirim ke sana lewat /api/awal, dan
+    daftar itu tidak ikut diperbarui. Gejalanya pun tidak menuduh siapa-siapa:
+    penyorotannya cuma "terlihat polos", tanpa satu pun error.
+
+    Alias dibuang di sini (c++, js, py, sh, shell, htm): semuanya menunjuk
+    objek Aturan yang SAMA dengan nama kanoniknya, jadi mengirimnya lagi cuma
+    menggandakan muatan tanpa menambah apa pun. Dict Python menjaga urutan
+    penyisipan, sehingga nama kanonik — yang selalu didefinisikan lebih dulu —
+    yang menang.
+    """
+    kanonik = {}
+    for nama, aturan in ATURAN.items():
+        kanonik.setdefault(id(aturan), nama)
+    return sorted(kanonik.values())
 
 
 # ---------------------------------------------------------------- pemindai
