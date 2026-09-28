@@ -649,7 +649,18 @@ const BISA_TUNJUK = ADA_DOM && window.matchMedia
    terjadi. */
 const BISA_DITEKAN =
   ".tbl, .baris, .opsi button, .kartu[href], .palet-item, .sakelar,"
-  + " .rel-menu a, .tanda, .ikon-tombol, .medali.punya";
+  + " .rel-menu a, .tanda, .ikon-tombol, .medali.punya,"
+  // Dua permukaan navbar yang sebelumnya diam saat ditekan padahal semua
+  // tetangganya menjawab. Ditambahkan di sini, bukan dengan memanggil WAAPI
+  // dari komponennya: pasangIsyarat() yang memegang pasangan tekan/lepas,
+  // dan hanya lewat jalur itu pembatalannya dijamin.
+  + " .rel-tombol, .rel-pemicu,"
+  // `.pil[href]`, bukan `.pil`. Dari 58 pil di aplikasi ini, 56 adalah LABEL
+  // statis ("dinilai otomatis", "terkunci", "5x dikerjakan") dan hanya 2 yang
+  // berupa tautan. Memberi fisika tekan pada seluruh `.pil` membuat lima
+  // puluh enam penanda mengecil saat disentuh lalu tidak melakukan apa-apa --
+  // kebalikan dari janji bahwa yang menjawab sentuhan itu bisa ditekan.
+  + " .pil[href], .ubin";
 
 /* Animasi "sedang ditekan" milik tiap elemen, supaya bisa dibatalkan saat
    jarinya diangkat. WeakMap, bukan Map: kalau tombolnya dibuang bersama layar

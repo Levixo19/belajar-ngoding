@@ -21,7 +21,7 @@ import {
 } from "./inti.js";
 import {
   masuk, keluar, masukBerurut, tata, angkaKe, denyut, saatGulir, pasangIsyarat,
-  adaGerak, jepit, saatGerakBerubah, terbitkanKurva,
+  adaGerak, gerakPenuh, jepit, saatGerakBerubah, terbitkanKurva, vt,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
 import { pasangAturan } from "./sorot.js";
@@ -140,6 +140,46 @@ function uraikanRute() {
  * cukup. */
 const AMBANG_KERANGKA = 240;
 
+/* URUTAN PERGANTIAN LAYAR — DIWARISI S05/S06, JANGAN DISUSUN ULANG PER LAYAR.
+ *
+ * View Transitions belum dipasang di sini; bentuknya sudah ditetapkan.
+ *
+ * Yang perlu dipahami lebih dulu: pohon pseudo VT SELALU berisi RASTER —
+ * potret keadaan lama dan potret keadaan baru. Tidak ada satu pun bagiannya
+ * yang merupakan DOM hidup. Selama sebuah grup beranimasi, DOM hidup di
+ * bawahnya TERTUTUP oleh overlay grup itu.
+ *
+ * Root dijadikan no-op —
+ *
+ *   ::view-transition-group(root),
+ *   ::view-transition-old(root),
+ *   ::view-transition-new(root) { animation: none; }
+ *
+ * — dan yang membuatnya bekerja BUKAN "potret barunya hidup", melainkan
+ * durasi grup root menjadi 0s sehingga overlay-nya dilepas seketika. Sesudah
+ * dilepas, isi layar kembali jadi DOM sungguhan dan masukBerurut() berjalan
+ * normal dari t=0.
+ *
+ * Grup yang masih beranimasi hanyalah yang diberi `view-transition-name`, dan
+ * selama animasinya elemen itu terwakili raster, bukan dirinya sendiri. Maka
+ * mengeluarkannya dari stagger adalah KEHARUSAN, bukan pilihan gaya:
+ * menganimasikan DOM yang sedang tertutup raster berarti menggerakkan sesuatu
+ * yang tidak terlihat, lalu ia melompat ke keadaan akhirnya saat overlay
+ * dilepas.
+ *
+ * Empat langkah, pada urutan ini:
+ *
+ *   1. await keluar() pada DOM hidup — seperti sekarang, jangan diubah.
+ *   2. vt(() => pasang DOM baru) — dengan root no-op, jadi VT tidak pernah
+ *      menyilangkan seluruh layar.
+ *   3. masuk() + masukBerurut() pada DOM hidup, TANPA menyentuh elemen yang
+ *      punya `view-transition-name`.
+ *   4. pasangUkuran() tetap dipanggil dua kali pada urutan yang sama; layar
+ *      lama tidak boleh ditata ulang ke lebar layar baru sebelum memudar.
+ *
+ * Satu elemen tidak boleh punya `view-transition-name` DAN digerakkan tata()
+ * sekaligus — penanda rel (.rel-tanda) adalah kasus yang paling mungkin
+ * melanggarnya. Kalau itu terjadi, pilih salah satu; jangan dua-duanya. */
 async function gambarRute() {
   const { nama, params } = uraikanRute();
   const panggung = $("#layar");
@@ -541,14 +581,45 @@ function pasangIkonBilah() {
  *
  *  Hanya muncul kalau halamannya memang panjang: di layar yang muat sekali
  *  lihat, ia akan selalu penuh dan cuma jadi garis hiasan yang membingungkan. */
+/* Browser yang bisa menggerakkan bilah ini sendiri lewat scroll-timeline.
+   Diperiksa SEKALI: jawabannya tidak berubah sepanjang umur halaman, dan
+   menanyakannya tiap rute berarti membayar parse CSS di jalur navigasi. */
+const MAJU_LEWAT_CSS = typeof CSS !== "undefined" && CSS.supports
+  && CSS.supports("animation-timeline: scroll(root block)");
+
+/** Pasang bilah kemajuan baca.
+ *
+ *  SATU MESIN PER BROWSER, bukan dua yang saling menimpa. Di browser yang
+ *  mendukung scroll-timeline, `transform` bilah ini sepenuhnya milik CSS dan
+ *  pendengar gulirnya TIDAK dipasang sama sekali -- bukan dipasang lalu
+ *  dibiarkan menulis nilai yang sama diam-diam. Di browser lain, CSS-nya
+ *  tidak pernah menyala (ia di balik @supports) dan JS yang memegangnya.
+ *
+ *  Yang tidak ikut pindah: kelas `.tampak`. Ia menggerakkan `opacity`, bukan
+ *  `transform`, jadi ia bukan mesin kedua untuk properti yang sama -- dan
+ *  syaratnya ("halamannya memang cukup panjang untuk digulir") tidak bisa
+ *  dinyatakan CSS. Di jalur CSS ia dihitung sekali per rute, bukan per frame.
+ *
+ *  `data-mesin` ditulis supaya jumlah mesin yang hidup bisa DIBUKTIKAN dari
+ *  luar, bukan disimpulkan dari membaca kode ini. */
 function pasangMajuBaca() {
   const garis = $("#maju-baca");
   if (!garis) return;
-  if (lepasGulir) lepasGulir();
+  if (lepasGulir) { lepasGulir(); lepasGulir = null; }
+
+  const cukupPanjang = () =>
+    document.documentElement.scrollHeight - window.innerHeight > 260;
+
+  if (MAJU_LEWAT_CSS) {
+    garis.dataset.mesin = "css";
+    garis.style.transform = "";
+    garis.classList.toggle("tampak", cukupPanjang());
+    return;
+  }
+
+  garis.dataset.mesin = "js";
   lepasGulir = saatGulir(({ maju }) => {
-    const bisaDigulir =
-      document.documentElement.scrollHeight - window.innerHeight;
-    garis.classList.toggle("tampak", bisaDigulir > 260);
+    garis.classList.toggle("tampak", cukupPanjang());
     garis.style.transform = `scaleX(${jepit(maju).toFixed(4)})`;
   });
 }
@@ -743,14 +814,61 @@ function pasangTurun(id) {
  *  lengket. */
 let lepasTema = 0;
 
-export function gantiTema() {
+export function gantiTema(ev) {
   const akar = document.documentElement;
-  if (adaGerak()) {
-    akar.classList.add("alih-tema");
-    clearTimeout(lepasTema);
-    lepasTema = setTimeout(() => akar.classList.remove("alih-tema"), 320);
+
+  /* DUA JALUR, DAN TIDAK PERNAH BERSAMAAN.
+     View Transition memotret layar lama dan baru lalu menyilangkan keduanya,
+     sedangkan `alih-tema` memasang transisi warna pada SETIAP elemen. Kalau
+     keduanya hidup, satu properti yang sama (warna latar dan teks) digerakkan
+     dua mesin: potret "baru" terambil saat warnanya masih di tengah jalan,
+     lalu DOM hidup melanjutkan transisinya sendiri di bawah lingkaran. Yang
+     terlihat bukan satu sapuan melainkan dua crossfade bertumpuk, dan paling
+     kentara di terang <-> kontras karena jarak warnanya paling jauh.
+
+     Yang dipilih: di jalur VT temanya berganti SEKETIKA, dan lingkaranlah
+     yang membawa perubahannya -- potret lama memakai tema lama sepenuhnya,
+     potret baru memakai tema baru sepenuhnya. `alih-tema` tidak dipasang di
+     sini sama sekali. Jalur lamanya tetap utuh untuk browser tanpa VT dan
+     untuk tingkat gerak di bawah "penuh". */
+  const bisaLingkar = typeof document.startViewTransition === "function"
+    && gerakPenuh();
+
+  if (!bisaLingkar) {
+    if (adaGerak()) {
+      akar.classList.add("alih-tema");
+      clearTimeout(lepasTema);
+      // 320, bukan 260: kepala 60 md supaya kelasnya tidak dicabut di tengah
+      // transisi 260 md yang dipasangnya (gaya.css html.alih-tema).
+      lepasTema = setTimeout(() => akar.classList.remove("alih-tema"), 320);
+    }
+    sorak("Tema: " + temaBerikutnya(), "", 1.6);
+    return;
   }
-  sorak("Tema: " + temaBerikutnya(), "", 1.6);
+
+  // Pusat lingkaran adalah tombol yang diklik; jari-jarinya sudut terjauh,
+  // supaya sapuannya selalu menutup layar berapa pun posisi tombolnya.
+  const kotak = ev && ev.currentTarget && ev.currentTarget.getBoundingClientRect
+    ? ev.currentTarget.getBoundingClientRect() : null;
+  const x = kotak ? kotak.left + kotak.width / 2 : window.innerWidth;
+  const y = kotak ? kotak.top + kotak.height / 2 : 0;
+  const jari = Math.hypot(Math.max(x, window.innerWidth - x),
+                          Math.max(y, window.innerHeight - y));
+  akar.style.setProperty("--tema-x", x + "px");
+  akar.style.setProperty("--tema-y", y + "px");
+  akar.style.setProperty("--tema-r", jari + "px");
+  akar.classList.add("lingkar-tema");
+
+  vt(() => {
+    // sorak() dipanggil di dalam callback supaya pengumumannya ikut terpotret
+    // bersama tema barunya, bukan menyusul sesudah sapuannya selesai.
+    sorak("Tema: " + temaBerikutnya(), "", 1.6);
+  }).then(() => {
+    akar.classList.remove("lingkar-tema");
+    for (const n of ["--tema-x", "--tema-y", "--tema-r"]) {
+      akar.style.removeProperty(n);
+    }
+  });
 }
 
 function pasangPintasan() {

@@ -183,6 +183,20 @@
      yang terangkat. Ini sisa "bahan" yang dipakai desain ini — pengganti
      bayangan besar yang membuat kartu tampak melayang di atas halaman. */
   --kilau-tepi: inset 0 1px 0 rgba(255,255,255,.045);
+
+  /* Tiga tingkat permukaan, dinamai menurut MAKSUD, bukan menurut besar
+     bayangannya. Yang memilih tingkat menjawab "sejauh apa benda ini dari
+     halaman", bukan "berapa piksel blur yang enak".
+       datar     : menempel pada halaman -- kartu, panel, baris.
+       sedang    : sedang diangkat sesaat -- dialog, panel turun, toast.
+       terangkat : berdiri di atas segalanya -- tirai modal.
+     ATURAN KERAS: naik-turun saat HOVER tidak pernah lewat box-shadow.
+     Bayangan adalah geometri; menganimasikannya berarti mengecat ulang kotak
+     bayangan tiap frame. Yang mengangkat saat hover adalah transform
+     translateY + border-color. */
+  --naik-datar: var(--kilau-tepi);
+  --naik-sedang: var(--bayang);
+  --naik-terangkat: var(--bayang-naik);
 }
 
 /* MALAM — untuk mata yang sudah lelah. Semua dihangatkan, kontras
@@ -1641,13 +1655,27 @@ input[type="range"] { min-height: var(--sentuh); }
 
 /* ----------------------------------------------------------------- memuat */
 
+/* Sapuan skeleton memakai PSEUDO yang bergeser, bukan background-position.
+   Bentuk lamanya menganimasikan posisi latar -- properti cat, di luar daftar
+   putih -- sehingga tiap baris skeleton dicat ulang tiap frame selama layar
+   masih memuat. transform dikomposit, dan yang terlihat sama persis. */
 .denyut {
   height: 13px; border-radius: 6px; margin-bottom: 9px;
-  background: linear-gradient(90deg, var(--kartu), var(--kartu-naik), var(--kartu));
-  background-size: 200% 100%;
+  background: var(--kartu);
+  position: relative;
+  overflow: hidden;
+}
+.denyut::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--kartu-naik), transparent);
   animation: denyut 1.5s ease-in-out infinite;
 }
-@keyframes denyut { to { background-position: -200% 0; } }
+@keyframes denyut {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
 .memuat-blok { padding: var(--s5) 0; max-width: 560px; }
 
 .pusaran {
@@ -1731,14 +1759,17 @@ input[type="range"] { min-height: var(--sentuh); }
     var(--kartu);
   box-shadow: var(--kilau-tepi);
   color: inherit;
-  transition: transform var(--cepat), box-shadow var(--cepat),
-              border-color var(--cepat);
+  /* box-shadow SENGAJA tidak ada di daftar transisi: kartu ini terangkat
+     dengan bergerak, bukan dengan menumbuhkan bayangan. Bentuk lamanya
+     memuai --bayang-naik + --cahaya saat hover, dan itu mengecat ulang dua
+     kotak bayangan seluas kartu tiap frame -- pada kartu terbesar di dasbor,
+     tepat saat kursor menyapunya. */
+  transition: transform var(--cepat), border-color var(--cepat);
 }
 .lanjutkan:hover {
   text-decoration: none;
   transform: translateY(-2px);
   border-color: var(--nyala);
-  box-shadow: var(--bayang-naik), var(--cahaya);
 }
 .lanjutkan:active { transform: translateY(0); }
 /* Nomor besar di kiri kartu — patokan tempat, bukan hiasan. Ia yang membuat
@@ -2164,10 +2195,26 @@ pre.kode {
 
 /* Kode yang baru saja disalin: kilatan sekali di tepi bloknya. Umpan balik
    yang menempel pada BENDA yang disalin, bukan cuma sorak di ujung layar. */
-.blok-kode.tersalin, .editor.tersalin { animation: kilat-tepi 620ms ease-out; }
+.blok-kode, .editor { position: relative; }
+.blok-kode.tersalin::after, .editor.tersalin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: var(--tebal-garis) solid
+          color-mix(in srgb, var(--nyala) 55%, transparent);
+  animation: kilat-tepi 620ms var(--gaya-keluar) both;
+}
+/* Cincin "tersalin" memakai PSEUDO yang membesar dan memudar, bukan
+   box-shadow yang dianimasikan. Bentuk lamanya menumbuhkan spread 0 -> 9px,
+   dan spread adalah geometri: browser mengecat ulang kotak bayangannya tiap
+   frame selama 620 md. Pseudo dengan transform+opacity dikomposit, bukan
+   dicat, dan hasil akhirnya di mata sama persis -- satu cincin aksen yang
+   mengembang sekali lalu hilang. */
 @keyframes kilat-tepi {
-  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nyala) 55%, transparent); }
-  100% { box-shadow: 0 0 0 9px transparent; }
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.045); }
 }
 
 /* =============================================================== terminal */
@@ -4496,4 +4543,125 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
       }
     }
   }
+}
+
+/* ---- T5. sapuan lingkar saat ganti tema -------------------------------
+   Hanya hidup saat aplikasi.js menandai html.lingkar-tema, dan ia hanya
+   menandainya di jalur View Transition (gerak "penuh" + browser mendukung).
+   Di jalur itu `alih-tema` TIDAK dipasang, jadi warna tidak pernah digerakkan
+   dua mesin sekaligus -- lihat alasan panjangnya di gantiTema().
+
+   clip-path ada di daftar putih properti; ia tidak membayar layout. Yang
+   disapu adalah POTRET seluruh halaman, bukan elemen per elemen, jadi
+   biayanya satu komposit berapa pun isi layarnya. */
+html.lingkar-tema::view-transition-image-pair(root) { isolation: auto; }
+html.lingkar-tema::view-transition-old(root),
+html.lingkar-tema::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* Potret lama diam di tempat; yang baru dibuka dari titik tombolnya. Kalau
+   dibalik (lama menyusut), yang terlihat adalah lubang yang melebar --
+   gerakan yang membaca sebagai "sesuatu hilang", bukan "sesuatu datang". */
+html.lingkar-tema::view-transition-old(root) { z-index: 0; }
+html.lingkar-tema::view-transition-new(root) {
+  z-index: 1;
+  animation: lingkar-tema var(--pegas-halus-ms) var(--pegas-halus);
+}
+@keyframes lingkar-tema {
+  from { clip-path: circle(0 at var(--tema-x, 100%) var(--tema-y, 0)); }
+  to   { clip-path: circle(var(--tema-r, 150vmax) at var(--tema-x, 100%) var(--tema-y, 0)); }
+}
+
+/* ---- T4. bilah kemajuan baca digerakkan scroll-timeline ---------------
+   Pasangan dari MAJU_LEWAT_CSS di aplikasi.js: @supports di sini dan
+   CSS.supports() di sana menanyakan hal yang sama, jadi tepat satu dari
+   keduanya yang hidup di sebuah browser. Kalau blok ini menyala, pendengar
+   gulir JS tidak pernah dipasang -- bukan dipasang lalu diabaikan.
+
+   TIDAK dipagari prefers-reduced-motion, dan itu disengaja: bilah ini
+   penunjuk POSISI, bukan hiasan yang bergerak sendiri. Aturannya sama dengan
+   .pusaran yang juga dikecualikan -- yang dilarang bagi orang yang meminta
+   gerak mati adalah gerakan yang tidak ia minta, bukan indikator yang
+   mengikuti jarinya sendiri. */
+@supports (animation-timeline: scroll(root block)) {
+  #maju-baca {
+    animation: maju-baca linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes maju-baca {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+}
+
+/* ---- T4. digit posisi di strip konteks --------------------------------
+   Angka "materi 7 dari 33" berubah tiap kali pelajar berpindah. Tanpa
+   tabular-nums lebar tiap digit berbeda, jadi seluruh baris bergeser sedikit
+   setiap angkanya berganti -- gerakan yang tidak diminta siapa pun dan tidak
+   membawa satu pun informasi. */
+#konteks .konteks-angka { font-variant-numeric: tabular-nums; }
+
+/* ---- D. gerak masuk untuk keadaan() -----------------------------------
+   Memakai `.masuk-mandiri` dari S01; tidak ada blok @starting-style kedua.
+   Yang diatur di sini hanya BENTUK geraknya, dan bentuknya dibedakan karena
+   dua keadaan ini lahir di saat yang sangat berbeda:
+
+     · Keadaan dari proses async — hasil kuis, panel keluaran sesudah tombol
+       Jalankan — lahir SESUDAH pelajar menekan sesuatu dan sedang menatap
+       tempat itu. Blok yang berangkat dari translateY lalu menempati tinggi
+       penuhnya adalah pergeseran tata letak persis di bawah matanya. Maka:
+       OPACITY SAJA, nol transform.
+     · Keadaan kosong permanen (bookmark/catatan yang memang belum berisi)
+       lahir bersama layarnya, sebelum ada yang ditekan. Di sana geseran kecil
+       tidak menggeser apa pun yang sedang dibaca, jadi transform bawaan dari
+       S01 dibiarkan.
+
+   Bukan soal selera: yang pertama membayar CLS, yang kedua tidak. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (transition-behavior: allow-discrete) and selector(:has(*)) {
+    @starting-style {
+      .keadaan.masuk-mandiri { transform: none; }
+    }
+    /* Kosong permanen mengambil kembali geseran bawaan .masuk-mandiri. */
+    @starting-style {
+      .keadaan-kosong.masuk-mandiri { transform: translateY(8px); }
+    }
+  }
+}
+
+/* ---- E. memuat yang berhenti sendiri ----------------------------------
+   `.memuat-garis` untuk tunggu pendek yang panjangnya tidak diketahui. Ia
+   menyapu TIGA kali lalu berhenti dan tinggal diam sebagai garis tipis --
+   bukan berputar selamanya. SC 2.2.2 menuntut gerak otomatis yang lewat lima
+   detik bisa dihentikan; menghitung loopnya lebih jujur daripada memberi
+   tombol jeda pada indikator tunggu.
+
+   Keadaan DIAMNYA (sesudah animasinya habis, dan di browser tanpa animasi)
+   adalah garis yang terlihat -- jadi ia tidak pernah jadi elemen yang cuma
+   ada kalau animasinya berjalan. */
+.memuat-garis {
+  position: relative;
+  height: 2px;
+  border-radius: var(--r-penuh);
+  background: var(--garis);
+  overflow: hidden;
+}
+.memuat-garis::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--nyala);
+  transform: translateX(-100%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .memuat-garis::after {
+    animation: memuat-garis var(--pegas-panjang-ms) var(--gaya-pelan) 3 both;
+  }
+}
+@keyframes memuat-garis {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(250%); }
 }

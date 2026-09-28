@@ -1251,6 +1251,57 @@ class TestJembatanPlatform(unittest.TestCase):
                           f"{token} tidak berpasangan dengan {token}-ms")
 
 
+class TestSatuMesinPerProperti(unittest.TestCase):
+    """`#maju-baca` boleh digerakkan CSS ATAU JS, tidak pernah dua-duanya.
+
+    Bilah kemajuan baca punya dua jalur: scroll-timeline milik CSS di browser
+    yang mendukungnya, dan pendengar gulir milik JS di browser yang tidak.
+    Keduanya menulis `transform` pada elemen yang sama, jadi menghidupkan
+    keduanya berarti dua mesin pada satu properti -- dan gejalanya bukan error
+    melainkan bilah yang tersendat karena dua penulis berebut tiap frame.
+
+    `data-mesin` ditulis supaya keadaan itu bisa DIBUKTIKAN dari luar. Tes ini
+    menjaga dua hal yang tidak terlihat dari membaca kodenya sepintas:
+    nilainya tidak pernah selain "css"/"js", dan cabang CSS benar-benar
+    berhenti sebelum sampai ke cabang JS.
+    """
+
+    @staticmethod
+    def _sumber():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js", "aplikasi.js"),
+                  encoding="utf-8") as f:
+            return f.read()
+
+    def test_nilai_data_mesin_hanya_css_atau_js(self):
+        nilai = re.findall(r'dataset\.mesin\s*=\s*"([^"]*)"', self._sumber())
+        self.assertTrue(nilai, "tidak ada yang menulis data-mesin lagi")
+        self.assertEqual(sorted(set(nilai)), ["css", "js"],
+                         f"nilai data-mesin di luar css/js: {sorted(set(nilai))}")
+
+    def test_cabang_css_berhenti_sebelum_cabang_js(self):
+        src = self._sumber()
+        i_css = src.index('dataset.mesin = "css"')
+        i_js = src.index('dataset.mesin = "js"')
+        self.assertLess(i_css, i_js, "urutan cabang berubah; tes ini perlu ditulis ulang")
+        antara = src[i_css:i_js]
+        self.assertIn("return", antara,
+                      "cabang CSS tidak berhenti sebelum cabang JS: kedua mesin "
+                      "akan hidup bersamaan di browser yang mendukung "
+                      "scroll-timeline")
+
+    def test_hanya_satu_elemen_yang_membawa_data_mesin(self):
+        src = self._sumber()
+        # Keduanya harus menulis ke variabel yang sama, dan variabel itu harus
+        # berasal dari satu pencarian #maju-baca.
+        pemilik = set(re.findall(r'(\w+)\.dataset\.mesin\s*=', src))
+        self.assertEqual(len(pemilik), 1,
+                         f"data-mesin ditulis ke lebih dari satu elemen: {pemilik}")
+        nama = pemilik.pop()
+        self.assertRegex(src, rf'const {nama}\s*=\s*\$\("#maju-baca"\)',
+                         f"{nama} bukan #maju-baca")
+
+
 class TestBerkasWebLengkap(unittest.TestCase):
     """Setiap modul JS yang diimpor harus ada dan bisa disajikan server.
 

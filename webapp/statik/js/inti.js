@@ -428,9 +428,41 @@ export function konfirmasi(pesan, { judul = "Yakin?", labelYa = "Ya, lanjutkan",
  *  perayaan. Menumpuk tiga pemberitahuan untuk satu latihan yang lulus membuat
  *  yang penting (badge baru) tenggelam di antara yang biasa (+25 XP).
  */
+/** Tingkat perayaan, DISIMPULKAN dari isi `hadiah` — bukan dari parameter.
+ *
+ *  Ketiganya sudah lama ada di sini sebagai perilaku, cuma belum punya nama:
+ *
+ *    acara  : naik level, atau badge baru. Yang paling jarang terjadi, dan
+ *             satu-satunya yang memakai partikel (percikBara di dalam
+ *             tampilNaikLevel, dan itu sendiri sudah dipagari gerakPenuh).
+ *    capai  : XP bertambah dan pemanggilnya tidak meminta diam. Satu toast.
+ *    sentuh : sisanya — progres tercatat, tapi tidak ada yang dirayakan.
+ *             Ini yang dipakai pemanggil ber-`diam: true`.
+ *
+ *  Namanya disimpulkan, bukan diminta, karena keempat pemanggil `rayakan()`
+ *  hari ini ada di layar-*.js dan tidak boleh disentuh dari sini. Menambah
+ *  parameter berarti menambah sesuatu yang tidak ada yang mengisinya. */
+export function tingkatRayakan(hadiah, { diam = false } = {}) {
+  if (!hadiah) return "sentuh";
+  if (hadiah.naik_level || (hadiah.badge || []).length) return "acara";
+  if (hadiah.xp_tambah > 0 && !diam) return "capai";
+  return "sentuh";
+}
+
 export function rayakan(hadiah, { diam = false } = {}) {
   if (!hadiah) return;
 
+  const tingkat = tingkatRayakan(hadiah, { diam });
+
+  /* Alur di bawah SENGAJA dibiarkan seperti semula, bukan dipetakan ulang ke
+     `tingkat`. Sebabnya satu: hari ini toast badge berdiri DI LUAR if/else,
+     jadi sebuah hadiah yang membawa badge sekaligus XP memunculkan keduanya.
+     Menjadikan "acara" mematikan cabang XP akan menelan satu toast yang hari
+     ini muncul — perubahan perilaku yang tidak diminta siapa pun.
+
+     `tingkat` karena itu dipakai sebagai KETERANGAN, bukan sebagai saklar:
+     ia ikut di event supaya layar yang mau menanggapi bisa membacanya tanpa
+     menyimpulkan ulang dari isi hadiah. */
   if (hadiah.naik_level) {
     tampilNaikLevel(hadiah);
   } else if (hadiah.xp_tambah > 0 && !diam) {
@@ -441,7 +473,8 @@ export function rayakan(hadiah, { diam = false } = {}) {
     sorak(`Badge baru — ${b.nama}: ${b.deskripsi}`, "nyala", 6);
   }
 
-  document.dispatchEvent(new CustomEvent("progres-berubah", { detail: hadiah }));
+  document.dispatchEvent(new CustomEvent("progres-berubah",
+    { detail: { ...hadiah, tingkat } }));
 }
 
 /** Cahaya lampu kerja menguat sesaat dari bawah layar, lalu kembali tenang.
@@ -539,7 +572,12 @@ export function bilah(persen, kelas = "", { diam = false } = {}) {
  *  @param aksi   daftar elemen tombol; boleh kosong.
  */
 export function keadaan({ jenis = "", gambar = "", judul, ket = "", aksi = [] }) {
-  return h("div.keadaan" + (jenis ? ".keadaan-" + jenis : ""), {},
+  // `.masuk-mandiri` adalah util entrance dari S01, bukan mesin baru. Ia
+  // dipasang di sini supaya keempat keadaan (kosong/berhasil/gagal/terkunci)
+  // datang dengan satu bahasa yang sama, tanpa satu pun layar menulis
+  // koreografinya sendiri. Bentuk geraknya diatur gaya.css: yang lahir dari
+  // proses async memudar TANPA bergeser, yang permanen boleh bergeser.
+  return h("div.keadaan.masuk-mandiri" + (jenis ? ".keadaan-" + jenis : ""), {},
     gambar ? ikon(gambar, { ukuran: 22 }) : null,
     h("div.keadaan-isi", {},
       h("b", {}, judul),
