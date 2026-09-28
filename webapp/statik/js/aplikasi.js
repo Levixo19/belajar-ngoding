@@ -21,7 +21,7 @@ import {
 } from "./inti.js";
 import {
   masuk, keluar, masukBerurut, tata, angkaKe, denyut, saatGulir, pasangIsyarat,
-  adaGerak, jepit, saatGerakBerubah,
+  adaGerak, jepit, saatGerakBerubah, terbitkanKurva,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
 import { pasangAturan } from "./sorot.js";
@@ -810,6 +810,12 @@ function pasangPintasan() {
 
 async function mulai() {
   terapkanTampilan();
+
+  // Kurva pegas hasil solver diterbitkan sebagai token CSS sebelum apa pun
+  // digambar. gaya.css sudah punya cadangan cubic-bezier yang sah, jadi ini
+  // bukan syarat tampil — ia menyamakan kurva yang dipakai CSS dengan yang
+  // dipakai WAAPI, supaya satu gerakan tidak pernah punya dua bentuk.
+  terbitkanKurva();
 
   try {
     ctx.awal = await api.ambil("/api/awal");

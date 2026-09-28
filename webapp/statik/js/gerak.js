@@ -857,3 +857,78 @@ export function pasangIsyarat() {
   // mengecil, dan itu terlihat seperti aplikasi yang macet.
   document.addEventListener("pointerleave", selesaikan, { passive: true });
 }
+
+/* ------------------------------------------------- jembatan ke CSS 2026
+
+   Dua fungsi di bawah adalah satu-satunya tempat mesin gerak ini menyentuh
+   platform CSS modern. Keduanya sengaja ditulis di KAKI berkas: separuh atas
+   gerak.js bebas-DOM supaya bisa diimpor langsung di Node (tests/test_web.py
+   TestMesinGerak), dan janji itu hanya bertahan kalau kode ber-DOM tidak
+   pernah dijalankan saat impor. Karena itu keduanya berupa fungsi yang
+   menunggu dipanggil, bukan pernyataan tingkat modul. */
+
+/** Nama preset -> nama token CSS yang diterbitkan untuknya.
+ *
+ *  Daftar ini adalah SATU-SATUNYA sumber nama token pegas. Blok ATURAN GERAK
+ *  di kepala gaya.css menyalin daftar yang sama untuk dibaca manusia, dan
+ *  tests/test_web.py mengadu keduanya supaya salinan itu tidak pernah
+ *  melenceng diam-diam. */
+export const TOKEN_PEGAS = {
+  jawab: "--pegas-jawab",
+  halus: "--pegas-halus",
+  lentur: "--pegas-lentur",
+  berat: "--pegas-berat",
+  panjang: "--pegas-panjang",
+};
+
+let _kurvaTerbit = false;
+
+/** Terbitkan kurva pegas hasil solver sebagai token CSS, sekali saat boot.
+ *
+ *  gaya.css sudah memuat cadangan `cubic-bezier` yang sah, jadi halaman tanpa
+ *  JavaScript tetap punya kurva yang benar bentuknya. Yang ditambahkan di sini
+ *  adalah kurva `linear(...)` yang PERSIS sama dengan yang dipakai animasi
+ *  WAAPI — sehingga sebuah gerakan yang separuhnya CSS dan separuhnya JS tidak
+ *  pernah memakai dua kurva berbeda.
+ *
+ *  Tiap kurva diterbitkan bersama durasinya (`--pegas-*-ms`), karena kurva
+ *  pegas dinormalisasi terhadap durasinya sendiri: memakainya dengan durasi
+ *  lain meregangkan pegasnya jadi gerakan yang lain sama sekali. */
+export function terbitkanKurva(akar) {
+  const el = akar || (typeof document !== "undefined"
+    ? document.documentElement : null);
+  if (!el || _kurvaTerbit) return false;
+  for (const [nama, token] of Object.entries(TOKEN_PEGAS)) {
+    const k = kurvaPegas(PEGAS[nama]);
+    el.style.setProperty(token, k.easing);
+    el.style.setProperty(token + "-ms", k.durasi + "ms");
+  }
+  _kurvaTerbit = true;
+  return true;
+}
+
+/** Bungkus sebuah pemasangan DOM dengan View Transition kalau platform dan
+ *  setelan gerak mengizinkan; kalau tidak, jalankan apa adanya.
+ *
+ *  Kontraknya sengaja dibuat membosankan: `fn` SELALU dipanggil tepat sekali,
+ *  apa pun jawaban platformnya. Layar yang memakainya tidak perlu tahu apakah
+ *  transisinya terjadi — kalau ia perlu tahu, itu tanda efeknya sudah jadi
+ *  syarat kelengkapan, bukan hiasan.
+ *
+ *  Tingkat gerak ditanyakan ke `adaGerak()`, bukan dihitung ulang di sini:
+ *  satu-satunya tempat yang boleh memutuskan tingkat gerak adalah
+ *  `tingkatGerak()`. */
+export function vt(fn) {
+  if (typeof fn !== "function") return Promise.resolve();
+  const bisa = typeof document !== "undefined"
+    && typeof document.startViewTransition === "function";
+  if (!bisa || !adaGerak()) {
+    const hasil = fn();
+    return Promise.resolve(hasil);
+  }
+  const t = document.startViewTransition(fn);
+  // `.finished` menolak saat transisinya dilewati (mis. tab disembunyikan di
+  // tengah jalan). Itu bukan kegagalan yang perlu diteruskan ke pemanggil:
+  // pekerjaan DOM-nya sendiri sudah selesai.
+  return t.finished.catch(() => {});
+}

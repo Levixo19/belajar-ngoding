@@ -1110,6 +1110,147 @@ class TestMesinGerak(unittest.TestCase):
                            "terlalu sedikit sifat yang benar-benar diuji")
 
 
+_SKRIP_TANPA_DOM = r"""
+// Perangkap: apa pun yang menyentuh `document` atau `window` SAAT IMPOR akan
+// melempar dengan pesan yang menyebut jalurnya. Node memang tidak punya
+// keduanya, tapi tanpa perangkap ini sebuah `document.documentElement` di
+// tingkat modul cuma menghasilkan ReferenceError yang terbaca sama seperti
+// kesalahan ketik biasa -- dan yang ingin dijaga bukan "tidak melempar",
+// melainkan "tidak menyentuh".
+const jejak = [];
+const jebak = (nama) => new Proxy({}, {
+  get(_, k) { jejak.push(nama + "." + String(k)); return undefined; },
+  set(_, k) { jejak.push(nama + "." + String(k) + " ="); return true; },
+});
+globalThis.document = jebak("document");
+globalThis.window = jebak("window");
+
+const g = await import(process.argv[2]);
+// Potret DI SINI, sebelum satu pun fungsi dipanggil: yang diuji adalah apa
+// yang disentuh IMPOR, bukan apa yang disentuh pemakaian sesudahnya. vt()
+// memang menanyakan matchMedia -- itu justru tugasnya.
+const jejakImpor = jejak.slice();
+
+const wajib = ["terbitkanKurva", "vt", "TOKEN_PEGAS", "PEGAS", "kurvaPegas"];
+const hilang = wajib.filter((n) => g[n] === undefined);
+
+// vt() harus memanggil fungsinya TEPAT SEKALI di dua jalur: platform tanpa
+// startViewTransition, dan gerak yang dimatikan.
+let n = 0;
+await g.vt(() => { n++; });
+delete globalThis.document.startViewTransition;
+await g.vt(() => { n++; });
+
+console.log(JSON.stringify({
+  jejakSaatImpor: jejakImpor,
+  eksporHilang: hilang,
+  vtDipanggil: n,
+  tokenPegas: Object.values(g.TOKEN_PEGAS),
+  terbitTanpaAkar: g.terbitkanKurva(null),
+}));
+"""
+
+
+class TestJembatanPlatform(unittest.TestCase):
+    """Lapisan platform gerak: token pegas, `vt()`, dan janji bebas-DOM.
+
+    Dua hal yang dijaga di sini, dan keduanya sudah pernah hampir dilanggar:
+
+    1. `gerak.js` diimpor langsung di Node oleh TestMesinGerak. Janji itu
+       bertahan hanya kalau kode ber-DOM tidak pernah berjalan saat impor --
+       satu `document.documentElement` di tingkat modul cukup untuk
+       merobohkannya, dan gejalanya di Node terbaca seperti salah ketik.
+    2. Nama token pegas ditulis DUA KALI: sebagai `TOKEN_PEGAS` di gerak.js
+       dan sebagai daftar yang dibaca manusia di blok ATURAN GERAK di kepala
+       gaya.css. Dua salinan yang tidak diadu akan melenceng; prompt layar
+       berikutnya membaca yang di CSS, sedangkan yang berlaku yang di JS.
+    """
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji gerak.js")
+    def test_impor_gerak_tidak_menyentuh_dom(self):
+        jalur = os.path.join(self._akar(), "webapp", "statik", "js", "gerak.js")
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-tanpa-dom.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_TANPA_DOM)
+            hasil = subprocess.run(["node", js, jalur],
+                                   capture_output=True, text=True, timeout=60)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-1200:])
+        lap = json.loads(hasil.stdout)
+
+        # Yang dilarang bukan "menyentuh" melainkan "menyentuh tanpa pagar".
+        # gerak.js sengaja men-cache dua MediaQueryList di tingkat modul, dan
+        # keduanya berdiri di belakang ADA_DOM (`typeof document`/`typeof
+        # window`) sehingga di Node sungguhan tidak pernah dijalankan. Yang
+        # tidak boleh adalah menyentuh STRUKTUR dokumen atau MENULIS apa pun
+        # saat impor -- itulah yang akan merobohkan TestMesinGerak.
+        BOLEH_SAAT_IMPOR = {"window.matchMedia"}
+        terlarang = [j for j in lap["jejakSaatImpor"] if j not in BOLEH_SAAT_IMPOR]
+        self.assertEqual(terlarang, [],
+                         "gerak.js menyentuh DOM di luar deteksi fitur "
+                         "berpagar saat diimpor; TestMesinGerak mengimpornya "
+                         "di Node dan akan ikut mati")
+        self.assertFalse([j for j in lap["jejakSaatImpor"] if j.endswith(" =")],
+                         "ada penulisan ke DOM saat impor")
+        self.assertEqual(lap["eksporHilang"], [], "ekspor lapisan platform hilang")
+        self.assertEqual(lap["vtDipanggil"], 2,
+                         "vt() wajib memanggil fungsinya tepat sekali di tiap "
+                         "jalur, termasuk saat transisinya tidak terjadi")
+        self.assertFalse(lap["terbitTanpaAkar"],
+                         "terbitkanKurva() tanpa elemen akar harus menolak "
+                         "diam-diam, bukan melempar")
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node")
+    def test_impor_di_node_asli_tidak_melempar(self):
+        """Tanpa global palsu apa pun -- ini yang benar-benar dijalankan CI."""
+        jalur = os.path.join(self._akar(), "webapp", "statik", "js", "gerak.js")
+        hasil = subprocess.run(
+            ["node", "--input-type=module", "-e",
+             'const g = await import(process.argv[1]);'
+             'if (typeof document !== "undefined") throw new Error("document bocor");'
+             'g.terbitkanKurva(); await g.vt(() => {});'
+             'console.log(g.tingkatGerak());',
+             jalur],
+            capture_output=True, text=True, timeout=60)
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-1200:])
+        self.assertEqual(hasil.stdout.strip(), "mati")
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk membaca TOKEN_PEGAS")
+    def test_daftar_token_pegas_sama_di_js_dan_css(self):
+        akar = self._akar()
+        jalur_js = os.path.join(akar, "webapp", "statik", "js", "gerak.js")
+        hasil = subprocess.run(
+            ["node", "--input-type=module", "-e",
+             'const g = await import(process.argv[1]);'
+             'console.log(JSON.stringify(Object.values(g.TOKEN_PEGAS)));',
+             jalur_js],
+            capture_output=True, text=True, timeout=60)
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-800:])
+        dari_js = sorted(json.loads(hasil.stdout))
+
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+
+        kepala = css[:css.index("*/", css.index("ATURAN GERAK"))]
+        disebut = sorted(set(re.findall(r"--pegas-[a-z]+", kepala)))
+        self.assertEqual(disebut, dari_js,
+                         "daftar token pegas di blok ATURAN GERAK (gaya.css) "
+                         "tidak sama dengan TOKEN_PEGAS (gerak.js)")
+
+        # Tiap kurva WAJIB punya pasangan -ms-nya, di :root maupun di JS.
+        for token in dari_js:
+            self.assertIn(token + ":", css,
+                          f"{token} tidak punya cadangan di :root")
+            self.assertIn(token + "-ms:", css,
+                          f"{token} tidak berpasangan dengan {token}-ms")
+
+
 class TestBerkasWebLengkap(unittest.TestCase):
     """Setiap modul JS yang diimpor harus ada dan bisa disajikan server.
 

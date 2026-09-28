@@ -63,6 +63,23 @@
      · tidak ada animasi yang berkedip: dalam satu animasi, opacity hanya
        bergerak satu arah.
      · animasi tidak pernah jadi satu-satunya cara sebuah elemen terlihat.
+     · KURVA PEGAS DIPAKAI BERSAMA ms-NYA SENDIRI, bukan dengan --sedang.
+                        --cepat/--sedang/--pelan sudah memuat kurvanya sendiri,
+                        jadi menempelkan kurva kedua di belakangnya membuat
+                        seluruh deklarasi dibuang browser tanpa pesan apa pun.
+                          BENAR : transform var(--pegas-jawab-ms) var(--pegas-jawab)
+                          SALAH : transform var(--sedang) var(--pegas-jawab)
+                        Pasangannya: --pegas-jawab/-ms, --pegas-halus/-ms,
+                        --pegas-lentur/-ms, --pegas-berat/-ms,
+                        --pegas-panjang/-ms. Kalau butuh durasi lain, pakai
+                        tangga telanjang --d-kilat/--d-cepat/--d-sedang/--d-pelan
+                        dengan --gaya-masuk/--gaya-keluar/--gaya-pelan.
+     · properti yang boleh dianimasikan: transform, opacity, filter (statis),
+                        clip-path/mask. DILARANG di dalam @keyframes: width,
+                        height, top/left/margin, box-shadow, border-radius yang
+                        berbarengan dengan transform, letter-spacing,
+                        font-variation-settings, dan warna token kode (--k-*).
+                        Semuanya membayar layout/paint tiap frame.
 
    "Tidak bikin sakit kepala" itu syarat teknis, bukan selera: latar tidak
    pernah hitam murni (#000 di layar OLED membuat teks putih berpendar),
@@ -401,6 +418,44 @@
   --cepat: 140ms cubic-bezier(.32,.72,.36,1);
   --sedang: 220ms cubic-bezier(.32,.72,.36,1);
   --pelan: 380ms cubic-bezier(.32,.72,.36,1);
+
+  /* Tiga di atas adalah PINTASAN: nilainya durasi DAN kurva sekaligus, jadi
+     `transition: x var(--sedang)` sudah lengkap. Karena itu ia tidak pernah
+     boleh disusul kurva kedua -- `var(--sedang) var(--pegas-jawab)` mengembang
+     jadi dua fungsi easing dalam satu deklarasi, yang dibuang browser diam-
+     diam bersama seluruh deklarasinya.
+
+     Untuk itulah tangga di bawah ini ada: durasi TELANJANG, tanpa kurva, yang
+     boleh dipasangkan dengan kurva mana pun. */
+  --d-kilat: 100ms;   /* umpan balik yang tidak boleh terasa sebagai animasi  */
+  --d-cepat: 140ms;
+  --d-sedang: 220ms;
+  --d-pelan: 380ms;
+
+  /* Easing bernama, untuk arah gerakan. Masuk melambat di ujung (mata sempat
+     menangkap tempat berhentinya), keluar mempercepat (tidak ada yang perlu
+     ditunggu dari benda yang pergi). */
+  --gaya-masuk: cubic-bezier(0, 0, .2, 1);
+  --gaya-keluar: cubic-bezier(.4, 0, 1, 1);
+  --gaya-pelan: cubic-bezier(.4, 0, .2, 1);
+
+  /* Kurva pegas. Nilai di sini adalah CADANGAN yang sah tanpa JavaScript;
+     js/gerak.js menimpanya saat boot dengan kurva `linear(...)` hasil solver
+     yang sama persis dengan yang dipakai animasi WAAPI-nya. Jadi satu gerakan
+     yang setengah CSS dan setengah JS tetap memakai satu kurva.
+
+     Tiap kurva datang BERPASANGAN dengan durasinya sendiri -- lihat aturan di
+     kepala berkas. */
+  --pegas-jawab: cubic-bezier(.22, 1, .36, 1);
+  --pegas-jawab-ms: 217ms;
+  --pegas-halus: cubic-bezier(.32, .72, .36, 1);
+  --pegas-halus-ms: 317ms;
+  --pegas-lentur: cubic-bezier(.34, 1.56, .64, 1);
+  --pegas-lentur-ms: 462ms;
+  --pegas-berat: cubic-bezier(.4, 0, .2, 1);
+  --pegas-berat-ms: 454ms;
+  --pegas-panjang: cubic-bezier(.25, .8, .25, 1);
+  --pegas-panjang-ms: 671ms;
 
   /* ---- lapis (z-index) -------------------------------------------------
      Ditulis sebagai daftar supaya pertanyaan "angka berapa yang cukup besar"
@@ -856,35 +911,6 @@ code { font-family: var(--f-kode); font-size: .92em; }
 }
 .rel-panel .rel-menu .nama { flex: 1; }
 
-/* Daftar bahasa dua kolom di panel mengambang.
-   Sembilan belas kurikulum dalam satu kolom membuat panel setinggi 844px
-   terpotong jadi 536px -- delapan butir (42%) hanya bisa dicapai dengan
-   menggulir DI DALAM menu, yang berarti pelajar harus menebak bahwa isinya
-   belum habis. Dua kolom memuat ketujuh belas bahasa sekaligus tanpa satu pun
-   yang tersembunyi.
-   Hanya berlaku di panel mengambang: di bawah 860px navbar melipat jadi laci
-   menurun (lihat @media max-width:860px), dan di sana satu kolom yang benar. */
-@media (min-width: 861px) {
-  /* Panelnya menyusut ke lebar isinya kalau tidak dipatok. Pada 327px, dua
-     kolom memaksa tiap baris membungkus dan tingginya justru NAIK -- dua
-     kolom yang lebih buruk daripada satu. Lebar ini memberi tiap kolom ~200px,
-     cukup untuk label terpanjang ("Visual Basic") plus persennya dalam satu
-     baris. */
-  #rel-panel-bahasa { min-width: 424px; }
-  .rel-panel .rel-bahasa {
-    grid-template-columns: repeat(2, minmax(184px, 1fr));
-    /* Kolom diisi MENURUN dulu, bukan melintang: mata membaca daftar nama
-       secara vertikal, dan urutan kurikulumnya memang berurutan. */
-    grid-auto-flow: column;
-    grid-template-rows: repeat(9, auto);
-  }
-  /* Dua kurikulum tematik berdampingan, bukan bertumpuk. Selain sejajar dengan
-     grid di atasnya, ini memangkas satu baris -- dan satu baris itulah yang
-     memisahkan panel yang muat utuh dari panel yang menggulir di 768px. */
-  .rel-panel .rel-tematik {
-    grid-template-columns: repeat(2, minmax(184px, 1fr));
-  }
-}
 /* Judul kelompok kedua perlu jarak di atasnya; yang pertama menempel di tepi
    panel dan tidak. */
 .rel-judul-lanjutan {
@@ -4318,3 +4344,156 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
    animation dan bukan transition. Tanpa baris ini, setiap pergantian layar
    tetap menganimasikan gulir balik ke atas walaupun gerak sudah dimatikan. */
 html[data-gerak="mati"] { scroll-behavior: auto; }
+
+
+/* Panel bahasa dua kolom. Blok ini SEBELUMNYA ditulis di tengah berkas
+   (dekat .rel-panel) dan melanggar aturan urutan di kepala berkas: seluruh
+   @media tinggal di bawah. Ia kebetulan bekerja karena tidak ada aturan
+   sesudahnya yang menyentuh selector yang sama -- 'kebetulan' persis yang
+   aturan itu ada untuk menghapus. Dipindah ke sini tanpa satu pun
+   perubahan pada isinya. */
+/* Daftar bahasa dua kolom di panel mengambang.
+   Sembilan belas kurikulum dalam satu kolom membuat panel setinggi 844px
+   terpotong jadi 536px -- delapan butir (42%) hanya bisa dicapai dengan
+   menggulir DI DALAM menu, yang berarti pelajar harus menebak bahwa isinya
+   belum habis. Dua kolom memuat ketujuh belas bahasa sekaligus tanpa satu pun
+   yang tersembunyi.
+   Hanya berlaku di panel mengambang: di bawah 860px navbar melipat jadi laci
+   menurun (lihat @media max-width:860px), dan di sana satu kolom yang benar. */
+@media (min-width: 861px) {
+  /* Panelnya menyusut ke lebar isinya kalau tidak dipatok. Pada 327px, dua
+     kolom memaksa tiap baris membungkus dan tingginya justru NAIK -- dua
+     kolom yang lebih buruk daripada satu. Lebar ini memberi tiap kolom ~200px,
+     cukup untuk label terpanjang ("Visual Basic") plus persennya dalam satu
+     baris. */
+  #rel-panel-bahasa { min-width: 424px; }
+  .rel-panel .rel-bahasa {
+    grid-template-columns: repeat(2, minmax(184px, 1fr));
+    /* Kolom diisi MENURUN dulu, bukan melintang: mata membaca daftar nama
+       secara vertikal, dan urutan kurikulumnya memang berurutan. */
+    grid-auto-flow: column;
+    grid-template-rows: repeat(9, auto);
+  }
+  /* Dua kurikulum tematik berdampingan, bukan bertumpuk. Selain sejajar dengan
+     grid di atasnya, ini memangkas satu baris -- dan satu baris itulah yang
+     memisahkan panel yang muat utuh dari panel yang menggulir di 768px. */
+  .rel-panel .rel-tematik {
+    grid-template-columns: repeat(2, minmax(184px, 1fr));
+  }
+}
+
+/* ==================================================== lapisan platform 2026
+
+   Semuanya di blok ini adalah SEDIAAN, bukan pemakaian: tidak satu pun
+   selector di sini dipakai layar mana pun hari ini, dan itu memang syaratnya.
+   Lapisan ini dipasang supaya prompt layar berikutnya tidak perlu menulis
+   mesinnya sendiri — bukan supaya ada yang berubah sekarang.
+
+   Kenapa opt-in dan bukan dipasang ke .senarai/.kartu/.keadaan seperti yang
+   sempat direncanakan — tiga alasan yang diukur, bukan ditebak:
+
+     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:453 memanggil
+                     ungkap(senarai), dan ungkap() menganimasikan induk.children
+                     satu per satu. Memberinya entrance CSS berarti dua mesin
+                     pada properti yang sama di elemen yang sama.
+     · .kartu        tidak dianimasikan langsung, tapi ia duduk di dalam
+                     <section> yang IKUT masuk berurutan (masukBerurut atas
+                     anak .masuk-urut). Entrance di anak yang induknya sedang
+                     bergerak menghasilkan gerakan bertumpuk — bukan pelanggaran
+                     invarian, tapi pelanggaran anggaran gerak.
+     · .keadaan      aman dari keduanya, tapi memasangnya tetap MENGUBAH
+                     tampilan hari ini, dan lapisan ini tidak boleh.
+
+   Yang dipakai layar nanti: tambahkan `.masuk-mandiri` pada elemen yang
+   BELUM disentuh JS. Kalau elemennya sudah lewat ungkap()/masukBerurut(),
+   jangan — pilih salah satu mesin. */
+
+/* ---- 1. pagar View Transitions ---------------------------------------
+   vt() di gerak.js sudah menolak berjalan saat gerak dimatikan lewat
+   [data-gerak]. Aturan ini menutup jalur yang satunya: prefers-reduced-motion
+   dari sistem operasi, yang bisa menyala tanpa aplikasi ini tahu. Transisinya
+   tidak dihapus melainkan dipersingkat ke nol — supaya yang hilang cuma
+   gerakannya, bukan pemasangan DOM-nya. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation-duration: .01ms !important; }
+}
+[data-gerak="mati"] ::view-transition-group(*),
+[data-gerak="mati"] ::view-transition-old(*),
+[data-gerak="mati"] ::view-transition-new(*) { animation-duration: .01ms !important; }
+
+/* ---- 2. entrance deklaratif ------------------------------------------
+   Keadaan DIAM elemennya adalah TERLIHAT. Gerakannya hanya berangkat dari
+   tempat lain, dan itu sebabnya @starting-style dipakai alih-alih @keyframes:
+   browser yang tidak mengenalnya (Firefox/Safari lama) menampilkan elemennya
+   apa adanya, bukan menyisakan elemen opacity:0 yang tidak pernah muncul. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (transition-behavior: allow-discrete) and selector(:has(*)) {
+    .masuk-mandiri {
+      transition: opacity var(--pegas-halus-ms) var(--pegas-halus),
+                  transform var(--pegas-halus-ms) var(--pegas-halus),
+                  display var(--pegas-halus-ms) allow-discrete;
+    }
+    @starting-style {
+      .masuk-mandiri { opacity: 0; transform: translateY(8px); }
+    }
+    /* Urutan tanpa sibling-index(): layar yang perlu berurutan menyetel --i
+       pada tiap anak. sibling-index() baru mendarat di Safari 26.2, jadi ia
+       belum boleh jadi tulang punggung. */
+    .masuk-mandiri { transition-delay: calc(var(--i, 0) * 35ms); }
+  }
+}
+[data-gerak="halus"] .masuk-mandiri { transition-delay: 0s; }
+
+/* ---- 3. ungkap saat tergulir -----------------------------------------
+   DILARANG dipakai di dalam kolom baca (--baca) dan pada blok .kode/.pra/
+   pre.kode. Alasannya bukan selera: gerak yang berjalan mengikuti gulir pada
+   badan teks adalah sumber keluhan vestibular yang paling sering, dan pada
+   astigmatisme tepi yang bergerak di bawah teks memperparah halation. Util
+   ini untuk chrome dan kartu di luar kolom baca. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .gulir-ungkap {
+      animation: gulir-ungkap linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+    @keyframes gulir-ungkap {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+  }
+}
+
+/* ---- 4. popover + anchor ---------------------------------------------
+   Pola untuk panel yang menggantung pada pemicunya. Anchor positioning belum
+   aman di semua Firefox, jadi penempatan JS yang ada sekarang tetap jadi
+   jalur utama; blok ini hanya mengambil alih di browser yang mendukungnya
+   penuh, dan hanya untuk elemen yang menandai dirinya .pakai-jangkar. */
+@supports (anchor-name: --a) and (position-area: bottom) {
+  .pakai-jangkar > .rel-pemicu { anchor-name: --jangkar-panel; }
+  .pakai-jangkar > .rel-panel[popover] {
+    position: absolute;
+    position-anchor: --jangkar-panel;
+    position-area: bottom span-right;
+    position-try-fallbacks: bottom span-left, top span-right;
+    margin: var(--s2) 0 0;
+  }
+  .pakai-jangkar > .rel-panel[popover]:popover-open { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (transition-behavior: allow-discrete) {
+      .pakai-jangkar > .rel-panel[popover] {
+        transition: opacity var(--d-cepat) var(--gaya-masuk),
+                    transform var(--d-cepat) var(--gaya-masuk),
+                    overlay var(--d-cepat) allow-discrete,
+                    display var(--d-cepat) allow-discrete;
+      }
+      @starting-style {
+        .pakai-jangkar > .rel-panel[popover]:popover-open {
+          opacity: 0; transform: translateY(-4px);
+        }
+      }
+    }
+  }
+}
