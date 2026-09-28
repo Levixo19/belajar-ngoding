@@ -7,7 +7,7 @@ sementara gabungan setup + kode yang tidak pernah dia lihat.
 
 import unittest
 
-import galat
+from inti import galat
 
 
 class TestTerjemahkan(unittest.TestCase):

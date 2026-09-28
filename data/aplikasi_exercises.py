@@ -661,4 +661,237 @@ public class LatihanAtomik {
 }""",
         "mode": "persis",
     },
+    {
+        'title': 'Proyek Akhir: Gudang Alat Berlapis',
+        'difficulty': 'Lanjut',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Gudang Alat Berlapis',
+        '',
+        'Gudang alat sekolah dipinjam belasan orang tiap hari, dan buku',
+        'catatannya sudah tidak bisa dipercaya. Kamu diminta menuliskan',
+        'aturannya sebagai program.',
+        '',
+        'Proyek ini menutup seluruh modul: bukan satu kelas berisi segalanya,',
+        'melainkan LAPISAN yang tiap bagiannya punya satu tanggung jawab --',
+        'domain, penyimpanan, layanan, dan antarmuka. Batas antar lapisan',
+        'itulah yang diuji: layanan tidak boleh mencetak apa pun, dan',
+        'antarmuka tidak boleh memutuskan aturan apa pun.',
+        '',
+        'Alat: Obeng 8, Tang 2, Bor Listrik 1.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. Domain: enum Peran, class Alat, class Pinjam, dan DUA exception',
+        '     berbeda -- AturanDilanggar dan TidakBerhak.',
+        '  2. Repo memegang data (LinkedHashMap supaya urutannya tetap) dan',
+        '     TIDAK tahu apa pun tentang aturan.',
+        '  3. Service memeriksa SELURUH syarat lebih dulu, baru mengubah data.',
+        '     Alat tidak ada, jumlah <= 0, stok kurang, dan pinjam lebih dari 3',
+        '     tanpa peran PENYELIA.',
+        '  4. Setiap perubahan yang berhasil dicatat di jurnal.',
+        '  5. Antarmuka (main) hanya menangkap exception dan mencetak. Kedua',
+        '     jenis exception ditangkap TERPISAH dan diberi label berbeda.',
+        '  6. Permintaan yang diproses berurutan: Andi OBN 2, Andi TNG 3,',
+        '     Bunga BOR 2, Bunga OBN 4 (petugas), Bunga OBN 3 (penyelia),',
+        '     Cici XXX 1. Lalu Andi mengembalikan OBN, dan mencoba BOR.',
+        '  7. Daftar peminjam diurut alfabetis sebelum dicetak.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  GUDANG ALAT - LAPORAN HARI INI',
+        '  ==============================================',
+        '  Kode  Nama              Tersedia',
+        '  OBN   Obeng                    5',
+        '  TNG   Tang                     2',
+        '  BOR   Bor Listrik              1',
+        '  ----------------------------------------------',
+        '  Sedang dipinjam:',
+        '    Bunga : 3 alat',
+        '  ----------------------------------------------',
+        '  Jurnal (3 kejadian):',
+        '    PINJAM OBN x2 oleh Andi',
+        '    PINJAM OBN x3 oleh Bunga',
+        '    KEMBALI OBN x2 dari Andi',
+        '  ----------------------------------------------',
+        '  Permintaan ditolak (5):',
+        '    [aturan] Andi - Tang tersisa 2, diminta 3',
+        '    [aturan] Bunga - Bor Listrik tersisa 1, diminta 2',
+        '    [hak]    Bunga - pinjam lebih dari 3 butuh penyelia',
+        '    [aturan] Cici - alat tidak ada: XXX',
+        '    [aturan] Andi - tidak ada pinjaman BOR atas nama Andi',
+    ],
+        'hints': [
+        'Urutan blok catch menentukan siapa yang kena: tangkap yang lebih khusus lebih dulu. TidakBerhak dan AturanDilanggar bersaudara, jadi urutannya bebas -- tapi keduanya harus SEBELUM catch RuntimeException.',
+        'Memeriksa dulu baru mengubah bukan gaya penulisan melainkan aturan: sekali stok dikurangi lalu exception dilempar, datanya sudah rusak dan tidak ada yang mengembalikannya.',
+        'hitung.merge(p.peminjam, p.jumlah, Integer::sum) menjumlahkan tanpa perlu memeriksa apakah kuncinya sudah ada.',
+    ],
+        'solution': """import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/* ------------------------------------------------------------------ domain */
+
+enum Peran { PETUGAS, PENYELIA }
+
+class Alat {
+    final String kode;
+    final String nama;
+    int tersedia;
+
+    Alat(String kode, String nama, int tersedia) {
+        this.kode = kode;
+        this.nama = nama;
+        this.tersedia = tersedia;
+    }
+}
+
+class Pinjam {
+    final String kode;
+    final String peminjam;
+    final int jumlah;
+    boolean dikembalikan = false;
+
+    Pinjam(String kode, String peminjam, int jumlah) {
+        this.kode = kode;
+        this.peminjam = peminjam;
+        this.jumlah = jumlah;
+    }
+}
+
+class AturanDilanggar extends RuntimeException {
+    AturanDilanggar(String pesan) { super(pesan); }
+}
+
+class TidakBerhak extends RuntimeException {
+    TidakBerhak(String pesan) { super(pesan); }
+}
+
+/* ------------------------------------------------------------- penyimpanan */
+
+class GudangRepo {
+    private final Map<String, Alat> alat = new LinkedHashMap<>();
+    private final List<Pinjam> pinjaman = new ArrayList<>();
+
+    void simpan(Alat a) { alat.put(a.kode, a); }
+    Alat cari(String kode) { return alat.get(kode); }
+    List<Alat> semua() { return new ArrayList<>(alat.values()); }
+    void catat(Pinjam p) { pinjaman.add(p); }
+    List<Pinjam> pinjaman() { return pinjaman; }
+}
+
+/* ------------------------------------------------------------------ layanan */
+
+class GudangService {
+    private final GudangRepo repo;
+    private final List<String> jurnal = new ArrayList<>();
+
+    GudangService(GudangRepo repo) { this.repo = repo; }
+
+    List<String> jurnal() { return jurnal; }
+
+    /** Periksa DULU seluruh syaratnya, baru ubah apa pun. */
+    void pinjam(Peran peran, String kode, String peminjam, int jumlah) {
+        Alat a = repo.cari(kode);
+        if (a == null) throw new AturanDilanggar("alat tidak ada: " + kode);
+        if (jumlah <= 0) throw new AturanDilanggar("jumlah harus positif");
+        if (jumlah > a.tersedia) {
+            throw new AturanDilanggar(
+                    a.nama + " tersisa " + a.tersedia + ", diminta " + jumlah);
+        }
+        if (jumlah > 3 && peran != Peran.PENYELIA) {
+            throw new TidakBerhak("pinjam lebih dari 3 butuh penyelia");
+        }
+        a.tersedia -= jumlah;
+        repo.catat(new Pinjam(kode, peminjam, jumlah));
+        jurnal.add("PINJAM " + kode + " x" + jumlah + " oleh " + peminjam);
+    }
+
+    void kembalikan(String kode, String peminjam) {
+        for (Pinjam p : repo.pinjaman()) {
+            if (p.kode.equals(kode) && p.peminjam.equals(peminjam)
+                    && !p.dikembalikan) {
+                p.dikembalikan = true;
+                repo.cari(kode).tersedia += p.jumlah;
+                jurnal.add("KEMBALI " + kode + " x" + p.jumlah + " dari " + peminjam);
+                return;
+            }
+        }
+        throw new AturanDilanggar("tidak ada pinjaman " + kode + " atas nama " + peminjam);
+    }
+
+    Map<String, Integer> sedangDipinjam() {
+        Map<String, Integer> hitung = new HashMap<>();
+        for (Pinjam p : repo.pinjaman()) {
+            if (!p.dikembalikan) {
+                hitung.merge(p.peminjam, p.jumlah, Integer::sum);
+            }
+        }
+        return hitung;
+    }
+}
+
+/* -------------------------------------------------------------- antarmuka */
+
+public class ProyekPeminjaman {
+    static GudangService layanan;
+    static List<String> ditolak = new ArrayList<>();
+
+    static void coba(Peran peran, String kode, String siapa, int jumlah) {
+        try {
+            layanan.pinjam(peran, kode, siapa, jumlah);
+        } catch (TidakBerhak e) {
+            ditolak.add("[hak]    " + siapa + " - " + e.getMessage());
+        } catch (AturanDilanggar e) {
+            ditolak.add("[aturan] " + siapa + " - " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        GudangRepo repo = new GudangRepo();
+        repo.simpan(new Alat("OBN", "Obeng", 8));
+        repo.simpan(new Alat("TNG", "Tang", 2));
+        repo.simpan(new Alat("BOR", "Bor Listrik", 1));
+        layanan = new GudangService(repo);
+
+        coba(Peran.PETUGAS,  "OBN", "Andi", 2);
+        coba(Peran.PETUGAS,  "TNG", "Andi", 3);
+        coba(Peran.PETUGAS,  "BOR", "Bunga", 2);
+        coba(Peran.PETUGAS,  "OBN", "Bunga", 4);
+        coba(Peran.PENYELIA, "OBN", "Bunga", 3);
+        coba(Peran.PETUGAS,  "XXX", "Cici", 1);
+
+        try {
+            layanan.kembalikan("OBN", "Andi");
+            layanan.kembalikan("BOR", "Andi");
+        } catch (AturanDilanggar e) {
+            ditolak.add("[aturan] Andi - " + e.getMessage());
+        }
+
+        System.out.println("GUDANG ALAT - LAPORAN HARI INI");
+        System.out.println("==============================================");
+        System.out.printf("%-6s%-16s%10s%n", "Kode", "Nama", "Tersedia");
+        for (Alat a : repo.semua()) {
+            System.out.printf("%-6s%-16s%10d%n", a.kode, a.nama, a.tersedia);
+        }
+
+        System.out.println("----------------------------------------------");
+        System.out.println("Sedang dipinjam:");
+        Map<String, Integer> pinjam = layanan.sedangDipinjam();
+        List<String> nama = new ArrayList<>(pinjam.keySet());
+        nama.sort(String::compareTo);
+        for (String n : nama) System.out.println("  " + n + " : " + pinjam.get(n) + " alat");
+
+        System.out.println("----------------------------------------------");
+        System.out.println("Jurnal (" + layanan.jurnal().size() + " kejadian):");
+        for (String j : layanan.jurnal()) System.out.println("  " + j);
+
+        System.out.println("----------------------------------------------");
+        System.out.println("Permintaan ditolak (" + ditolak.size() + "):");
+        for (String d : ditolak) System.out.println("  " + d);
+    }
+}
+""",
+    },
 ]

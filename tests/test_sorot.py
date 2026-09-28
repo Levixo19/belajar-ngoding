@@ -8,8 +8,8 @@ aplikasi belajar.
 
 import unittest
 
-import sorot
-import tema
+from inti import sorot
+from inti import tema
 from main import LANGUAGES
 
 

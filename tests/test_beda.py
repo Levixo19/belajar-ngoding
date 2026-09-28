@@ -7,9 +7,9 @@ daripada diam.
 
 import unittest
 
-import beda
-import runner
-import tema
+from inti import beda
+from inti import runner
+from inti import tema
 
 
 class TestKolomPertamaBeda(unittest.TestCase):

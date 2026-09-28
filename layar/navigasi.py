@@ -10,19 +10,20 @@ Menyembunyikannya dari hasil pencarian akan membuat orang mengira kata yang
 dicarinya memang tidak ada di mana-mana -- keliru, dan tidak ada cara baginya
 untuk tahu bahwa ia keliru.
 
-Importir: main.py. Tidak menulis berkas sendiri; semua status lewat progress.py.
+Importir: main.py. Tidak menulis berkas sendiri; semua status lewat
+pelajar/progress.py.
 """
 
-import bab
-import tema
-from utils import (
+from pelajar import bab
+from inti import tema
+from layar.utils import (
     C, paint, clear, ask, ask_atau_eof, ask_choice, press_enter, header, rule,
     lebar, bungkus_baris, sorot_kata,
 )
-from materials import render_material, teks_polos
-from exercises import show_exercise
-from quiz import menu_satu_kuis
-from progress import load_progress, kunci, judul_kunci, bersihkan_bookmark
+from layar.materials import render_material, teks_polos
+from layar.exercises import show_exercise
+from layar.quiz import menu_satu_kuis
+from pelajar.progress import load_progress, kunci, judul_kunci, bersihkan_bookmark
 
 WARNA_TIPE = {"materi": "aksen", "kuis": "subjudul", "latihan": "judul"}
 

@@ -1,5 +1,5 @@
-/* Kerangka aplikasi: pemuatan awal, router, rel navigasi, palet perintah,
- * dan pintasan papan ketik.
+/* Kerangka aplikasi: pemuatan awal, router, rel navigasi, strip konteks,
+ * palet perintah, dan pintasan papan ketik.
  *
  * Router-nya berbasis fragmen URL (#/materi/java/3). Itu pilihan yang
  * disengaja: server ini menyajikan satu halaman dan sekumpulan endpoint JSON,
@@ -16,8 +16,8 @@
  */
 
 import {
-  api, h, $, kosongkan, sorak, memuat, tunda, jendela, jendelaTerbuka,
-  tutupJendelaKini, GalatApi,
+  api, h, isikan, $, kosongkan, sorak, memuat, tunda, jendela, jendelaTerbuka,
+  tutupJendelaKini, bilah, keadaan, GalatApi,
 } from "./inti.js";
 import {
   masuk, keluar, masukBerurut, tata, angkaKe, denyut, saatGulir, pasangIsyarat,
@@ -47,15 +47,45 @@ const LAYAR = {
   atur: layarAtur,
 };
 
-// Layar yang butuh ruang penuh: editor lebih enak tanpa batas lebar, dan
-// pembaca materi memakai tiga kolom (daftar materi, bacaan, peta halaman).
+// Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
+// lebih enak tanpa batas lebar.
 const LAYAR_LEBAR = new Set(["latihan", "coba", "materi"]);
+// Layar yang mengisi TINGGI jendela alih-alih tumbuh dari isinya: dua layar
+// tempat orang MENULIS KODE. Editor yang setinggi isinya berarti kerangka tiga
+// baris menyisakan empat ratus piksel kosong di bawahnya — ruang kerja yang
+// menolak dipakai bekerja. Keduanya memakai tata letak yang sama persis
+// (.kerja), karena gunanya memang sama dan dua bentuk berbeda untuk satu
+// pekerjaan berarti dua bentuk yang harus dipelajari.
+//
+// Aturan tingginya sendiri baru menyala di container yang cukup lebar (lihat
+// gaya.css) — di ponsel, bentuk yang benar tetap satu kolom yang digulir biasa.
+const LAYAR_PENUH = new Set(["latihan", "coba"]);
+
+// Layar yang isinya pada dasarnya SATU kolom daftar, dan karena itu memakai
+// ukuran halaman yang lebih sempit (lihat `#layar.kolom` di gaya.css). Yang
+// TIDAK ada di sini cuma dua: dasbor, yang memang dua kolom, dan tiga layar
+// di LAYAR_LEBAR di atas.
+//
+// Alasannya bukan kelapangan. Daftar satu kolom yang dipaksa selebar 1164 px
+// menaruh judul materi di tepi kiri dan penanda miliknya di tepi kanan dengan
+// delapan ratus piksel kosong di antaranya — dan dua ujung yang sejauh itu
+// berhenti terbaca sebagai satu baris.
+const LAYAR_KOLOM = new Set([
+  "bahasa", "kuis", "bookmark", "catatan", "cari", "statistik", "atur",
+]);
+
+// Ambang layar sempit. ANGKA INI DIPAKAI JUGA DI gaya.css (blok @media 860px)
+// untuk memutuskan apakah navigasinya berbentuk baris atau panel. Dua tempat
+// yang harus tetap cocok: kalau berubah di sini, ubah juga di sana — kalau
+// tidak, tombol menu berhenti berbuat apa-apa tepat di pita lebar tempat
+// panelnya justru satu-satunya jalan ke menu.
+const AMBANG_PANEL = 860;
 
 const MENU_UTAMA = [
   ["dasbor", "dasbor", "Dasbor", "#/dasbor"],
   ["coba", "jalankan", "Ruang Coba", "#/coba"],
 ];
-const MENU_KAKI = [
+const MENU_LAIN = [
   ["catatan", "catatan", "Catatanku", "#/catatan"],
   ["bookmark", "bookmark", "Bookmark", "#/bookmark"],
   ["statistik", "statistik", "Statistik", "#/statistik"],
@@ -116,8 +146,23 @@ async function gambarRute() {
   const giliran = ++nomorGambar;
 
   if (bersihLayar) { bersihLayar(); bersihLayar = null; }
-  panggung.classList.toggle("lebar", LAYAR_LEBAR.has(nama));
+  // Navigasi menyala SEKARANG: ia umpan balik atas klik barusan, dan umpan
+  // balik yang menunggu data datang tidak lagi terbaca sebagai jawaban.
   tandaiRel(nama, params.key);
+
+  /* Ukuran halaman baru dipasang bersama ISI yang baru, tidak sebelumnya.
+     Ada tiga ukuran (lihat LAYAR_LEBAR / LAYAR_KOLOM di atas), dan menyetelnya
+     di awal berarti layar LAMA — yang masih terlihat, masih memudar —
+     ditata ulang ke lebar layar berikutnya lebih dulu. Yang terlihat bukan
+     pergantian melainkan isi lama yang melompat melebar atau menyempit tepat
+     sebelum hilang, dan lompatan itu justru paling besar di perpindahan yang
+     paling sering dilakukan: dari halaman bahasa (960 px) ke ruang kerja
+     latihan (penuh). */
+  const pasangUkuran = () => {
+    panggung.classList.toggle("lebar", LAYAR_LEBAR.has(nama));
+    panggung.classList.toggle("kolom", LAYAR_KOLOM.has(nama));
+    panggung.classList.toggle("penuh", LAYAR_PENUH.has(nama));
+  };
 
   // Isi lama diberangkatkan lebih dulu, TAPI tidak ditunggu: permintaannya
   // jalan berbarengan. Di layar yang datanya cepat, keduanya selesai hampir
@@ -129,7 +174,11 @@ async function gambarRute() {
   const timer = setTimeout(() => {
     if (giliran !== nomorGambar) return;
     kerangka = memuat();
-    kosongkan(panggung).appendChild(kerangka);
+    kosongkan(panggung);
+    // Kerangka pemuatan sudah termasuk isi yang baru: ia berdiri di ukuran
+    // halaman tujuan, bukan di ukuran halaman yang barusan ditinggalkan.
+    pasangUkuran();
+    panggung.appendChild(kerangka);
     masuk(kerangka, { geser: 6 });
   }, AMBANG_KERANGKA);
 
@@ -154,18 +203,25 @@ async function gambarRute() {
   }
 
   kosongkan(panggung);
+  pasangUkuran();
   if (galat) {
     const el = layarGagal(galat);
     panggung.appendChild(el);
-    gambarJejak([{ label: "Tidak bisa dibuka" }]);
+    gambarKonteks(null);
     masukLayar(el);
   } else {
     panggung.appendChild(hasil.el);
     bersihLayar = hasil.saatKeluar || null;
     document.title = (hasil.judul ? hasil.judul + " · " : "") + "Belajar Ngoding";
-    gambarJejak(hasil.jejak || []);
+    gambarKonteks(hasil.konteks || null);
     panggung.focus({ preventScroll: true });
-    window.scrollTo(0, 0);
+    // Gulir balik ke atas dilakukan TANPA animasi, apa pun setelan geraknya.
+    // Ini bukan gerak yang menyampaikan sesuatu — halamannya sudah berganti —
+    // dan gulir mulus sejauh dua ribu piksel berarti isi baru yang sudah
+    // terpasang tetap tak terlihat selama hampir satu detik. Lebih buruk lagi,
+    // ia sempat ditabrak scrollIntoView milik layar berikutnya, dan yang
+    // tertinggal halaman yang berhenti entah di mana di tengah teks.
+    window.scrollTo({ top: 0, behavior: "auto" });
     masukLayar(hasil.el);
   }
   segarkanUkuran();
@@ -190,58 +246,160 @@ function masukLayar(el) {
 function layarGagal(e) {
   const serverMati = e instanceof GalatApi && e.kode === 0;
   return h("div.masuk", {},
-    h("div.kepala", {}, h("div", {},
+    h("header.kepala-besar", {},
       h("span.mata", {}, "Gagal memuat"),
       h("h1", {}, serverMati ? "Server tidak menjawab"
-                             : "Halaman tidak bisa dibuka"),
-      h("p.sub", {}, e.message))),
-    h("div.deret", {},
-      h("button.tbl.tbl-utama", { onclick: () => gambarRute() }, "Coba lagi"),
-      h("a.tbl.tbl-hantu", { href: "#/dasbor" }, "Ke dasbor")));
+                             : "Halaman tidak bisa dibuka")),
+    keadaan({
+      jenis: "salah",
+      gambar: "belum",
+      judul: e.message,
+      ket: serverMati
+        ? "Jendela terminal tempat `python3 belajar-web.py` berjalan mungkin "
+          + "sudah ditutup. Nyalakan lagi, lalu tekan Coba lagi."
+        : "Halaman ini tidak bisa diambil dari server.",
+      aksi: [
+        h("button.tbl.tbl-utama", { onclick: () => gambarRute() }, "Coba lagi"),
+        h("a.tbl.tbl-hantu", { href: "#/dasbor" }, "Ke dasbor"),
+      ],
+    }));
 }
 
-function gambarJejak(jejak) {
-  const el = kosongkan($("#jejak"));
-  el.appendChild(h("a.sembunyi-hp", { href: "#/dasbor" }, "Belajar"));
-  for (const j of jejak) {
-    el.appendChild(h("span.pisah", {}, "›"));
-    el.appendChild(j.href ? h("a", { href: j.href }, j.label)
-                          : h("span.kini", {}, j.label));
+/* --------------------------------------------------------- strip konteks
+ *
+ * Pengganti remah roti. Yang membedakan keduanya bukan bentuk melainkan ISI:
+ * remah roti mengulang judul halaman, sedangkan strip ini membawa empat hal
+ * yang TIDAK ada di halamannya sendiri — bab mana yang sedang dijalani, posisi
+ * ke berapa dari berapa, seberapa jauh bab itu, dan satu langkah ke depan.
+ *
+ * Layar yang tidak punya konteks (dasbor, statistik, pengaturan) memanggilnya
+ * dengan null, dan stripnya tidak dirender sama sekali — 44 piksel itu kembali
+ * jadi milik isinya. */
+
+function gambarKonteks(k) {
+  const el = $("#konteks");
+  const panggung = $("#panggung");
+  if (!k) {
+    el.hidden = true;
+    kosongkan(el);
+    panggung.classList.remove("berkonteks");
+    return;
   }
+
+  // Tombol langkah yang tidak punya tujuan tetap DIGAMBAR, sebagai <span>
+  // redup. Melepasnya dari DOM akan mengubah lebar strip tiap kali pindah
+  // materi, dan pergeseran sepuluh piksel di bilah yang menempel terbaca
+  // sebagai halaman yang goyang — bukan sebagai tombol yang tidak ada.
+  const langkah = (arah, href, judul) => {
+    const gambar = ikon(arah === "sebelum" ? "kembali" : "lanjut", { ukuran: 18 });
+    return href
+      ? h("a", { href, title: judul || "", "aria-label": judul || arah }, gambar)
+      : h("span", { "aria-hidden": "true" }, gambar);
+  };
+
+  isikan(el,
+    h("a.konteks-balik", { href: k.balik.href },
+      ikon("kembali", { ukuran: 16 }), k.balik.label),
+
+    h("div.konteks-tengah", {},
+      k.bab ? h("span.konteks-bab", {}, k.bab) : null,
+      k.judul ? h("span.konteks-judul", {}, k.judul) : null),
+
+    k.posisi || k.persen !== undefined
+      ? h("div.konteks-maju", {},
+          k.posisi ? h("span.konteks-angka", {}, k.posisi) : null,
+          k.persen !== undefined ? bilah(k.persen, "", { diam: true }) : null)
+      : null,
+
+    k.langkah
+      ? h("div.konteks-langkah", {},
+          langkah("sebelum", k.sebelum, k.judul_sebelum),
+          langkah("sesudah", k.sesudah, k.judul_sesudah))
+      : null);
+
+  el.hidden = false;
+  panggung.classList.add("berkonteks");
 }
 
 /* --------------------------------------------------------------------- rel */
 
+function butirMenu(nama, gambar, label, href) {
+  return h("li", {}, h("a", { href, data: { layar: nama } },
+    h("span.ikon", {}, ikon(gambar)), h("span.nama", {}, label)));
+}
+
 function bangunRel() {
   const utama = kosongkan($("#rel-utama"));
   for (const [nama, gambar, label, href] of MENU_UTAMA) {
-    utama.appendChild(h("li", {}, h("a", { href, data: { layar: nama } },
-      h("span.ikon", {}, ikon(gambar)), h("span.nama", {}, label))));
+    utama.appendChild(butirMenu(nama, gambar, label, href));
   }
+
+  /* Daftar ini tumbuh dari sebelas jadi sembilan belas butir. Satu kolom datar
+     sepanjang itu berarti 42% isinya ada di bawah lipatan panel dan harus
+     diburu dengan menggulir. Dua hal yang memperbaikinya, dan keduanya
+     struktural, bukan kosmetik:
+
+     1. Bahasa dirender dua kolom (CSS), jadi tujuh belas butir muat utuh.
+     2. Kurikulum yang BUKAN bahasa pemrograman dipisah di bawah judulnya
+        sendiri. "Bikin Aplikasi" dan "CLI Fedora" mengajarkan cara berpikir
+        dan cara mengoperasikan sistem; menaruhnya berbaris di antara Rust dan
+        Kotlin membuat pelajar mengira keduanya bahasa yang belum ia kenal.
+
+     Penandanya datang dari `b.tematik` (asalnya LANGUAGES di main.py), bukan
+     dari mencocokkan label di sini. */
+  const butirBahasa = (b) => h("li", {}, h("a", {
+    href: "#/bahasa/" + b.key,
+    data: { layar: "bahasa", key: b.key },
+    kelas: b.siap ? "" : "mati",
+    title: b.siap ? "" : `Kode ${b.label} belum bisa dijalankan: butuh `
+                         + b.hilang.join(", "),
+  },
+    h("span.nama", {}, b.label),
+    h("span.rel-persen", {}, Math.round(b.persen) + "%")));
 
   const bahasa = kosongkan($("#rel-bahasa"));
-  for (const b of ctx.awal.bahasa) {
-    bahasa.appendChild(h("li", {}, h("a", {
-      href: "#/bahasa/" + b.key,
-      data: { layar: "bahasa", key: b.key },
-      kelas: b.siap ? "" : "mati",
-      title: b.siap ? "" : `Kode ${b.label} belum bisa dijalankan: butuh `
-                           + b.hilang.join(", "),
-    },
-      h("span.nama", {}, b.label),
-      h("span.rel-persen", {}, Math.round(b.persen) + "%"))));
+  for (const b of ctx.awal.bahasa.filter((x) => !x.tematik)) {
+    bahasa.appendChild(butirBahasa(b));
   }
 
-  const kaki = kosongkan($("#rel-kaki"));
-  for (const [nama, gambar, label, href] of MENU_KAKI) {
-    kaki.appendChild(h("li", {}, h("a", { href, data: { layar: nama } },
-      h("span.ikon", {}, ikon(gambar)), h("span.nama", {}, label))));
+  const tematik = ctx.awal.bahasa.filter((x) => x.tematik);
+  const kotakTematik = $("#rel-tematik");
+  kotakTematik.hidden = tematik.length === 0;
+  const daftarTematik = kosongkan($("#rel-tematik-daftar"));
+  for (const b of tematik) {
+    daftarTematik.appendChild(butirBahasa(b));
+  }
+
+  const lain = kosongkan($("#rel-kaki"));
+  for (const [nama, gambar, label, href] of MENU_LAIN) {
+    lain.appendChild(butirMenu(nama, gambar, label, href));
   }
 }
 
-/* Tinggi penanda posisi di rel — sama dengan ::before yang digantikannya. */
-const TINGGI_TANDA = 19;
+/* Seberapa jauh penanda mendatar menjorok ke dalam dari tepi butir menu, di
+   tiap sisi. Angkanya menyamai `left/right: 22%` pada ::before yang
+   digantikannya. */
+const SISIP_TANDA = 0.22;
 
+/** Tandai di mana pemakainya sedang berada.
+ *
+ *  Dua hal yang gampang dianggap satu padahal bukan:
+ *
+ *  1. `aria-current="page"` adalah SATU-SATUNYA penanda posisi yang sampai ke
+ *     pembaca layar. Kelas `.kini` cuma mengubah warna, dan warna tidak pernah
+ *     dibacakan.
+ *
+ *  2. Butir aktif tidak selalu terlihat. Tujuh belas dari sembilan belas
+ *     sasaran navigasi di sini tinggal di dalam panel yang tertutup —
+ *     SELURUH sebelas bahasa, plus Statistik, Bookmark, Catatanku, dan
+ *     Pengaturan. Untuk butir seperti itu penanda yang meluncur tidak punya
+ *     tempat berdiri (`offsetWidth` nol), jadi versi sebelumnya
+ *     memadamkannya. Akibatnya di halaman bahasa — tujuan yang paling sering
+ *     dibuka di aplikasi ini — navigasi berhenti menjawab "aku di mana" sama
+ *     sekali: tidak ada satu butir pun yang menyala. Yang benar bukan
+ *     memadamkan penandanya melainkan memindahkannya ke PEMICU panel tempat
+ *     butir itu tinggal. Panel boleh tertutup; tombolnya tetap di layar, dan
+ *     tombol itu memang jalan menuju halaman yang sedang dibuka. */
 function tandaiRel(nama, key) {
   let aktif = null;
   for (const a of document.querySelectorAll("#rel .rel-menu a")) {
@@ -253,24 +411,47 @@ function tandaiRel(nama, key) {
       && a.dataset.layar === "bahasa" && a.dataset.key === key;
     const kini = langsung || anak;
     a.classList.toggle("kini", kini);
+    if (kini) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
     if (kini) aktif = a;
   }
-  pindahkanTanda(aktif);
-  if (window.innerWidth <= 820) $("#cangkang").classList.remove("rel-buka");
+
+  // Pemicu panel yang MEMUAT butir aktif ikut ditandai; penandanya berdiri di
+  // situ selama butir aslinya belum punya lebar.
+  let pengganti = null;
+  for (const turun of document.querySelectorAll("#rel .rel-turun")) {
+    const pemicu = $(".rel-pemicu", turun);
+    if (!pemicu) continue;
+    const memuat = aktif !== null && turun.contains(aktif);
+    pemicu.classList.toggle("kini", memuat);
+    // Bukan "page": pemicunya sendiri bukan halaman, ia jalan MENUJU halaman
+    // yang sedang dibuka. `true` nilai yang tepat untuk hubungan itu.
+    if (memuat) pemicu.setAttribute("aria-current", "true");
+    else pemicu.removeAttribute("aria-current");
+    if (memuat && !aktif.offsetWidth) pengganti = pemicu;
+  }
+
+  pindahkanTanda(pengganti || aktif);
+  if (window.innerWidth <= AMBANG_PANEL) $("#cangkang").classList.remove("rel-buka");
 }
 
 /** Geser penanda posisi ke butir menu yang sedang aktif.
  *
  *  Meluncur, bukan padam-lalu-menyala di tempat lain. Perpindahan yang
- *  terlihat itulah yang membuat rel terbaca sebagai satu daftar utuh: mata
+ *  terlihat itulah yang membuat navbar terbaca sebagai satu daftar utuh: mata
  *  mengikuti garisnya dan jadi tahu SEBERAPA JAUH ia berpindah, bukan cuma
- *  bahwa ia berpindah. */
+ *  bahwa ia berpindah.
+ *
+ *  Sejak navigasinya mendatar, yang digeser `left`/`width`, bukan
+ *  `top`/`height`. Butir yang tersembunyi di dalam panel yang sedang tertutup
+ *  tidak punya posisi yang berarti (offsetWidth-nya nol), jadi penandanya
+ *  dipadamkan alih-alih diletakkan di tempat yang salah. */
 function pindahkanTanda(aktif) {
   const rel = $("#rel");
   const tanda = $(".rel-tanda", rel);
   if (!tanda) return;
 
-  if (!aktif) {
+  if (!aktif || !aktif.offsetWidth) {
     tanda.style.opacity = "0";
     rel.classList.remove("pakai-tanda");
     return;
@@ -278,9 +459,13 @@ function pindahkanTanda(aktif) {
   rel.classList.add("pakai-tanda");
 
   const pasang = () => {
-    tanda.style.top =
-      (aktif.offsetTop + (aktif.offsetHeight - TINGGI_TANDA) / 2) + "px";
-    tanda.style.height = TINGGI_TANDA + "px";
+    // offsetLeft dihitung terhadap induk berposisi terdekat, yang belum tentu
+    // #rel. Selisih kotak batas keduanya menjawabnya tanpa perlu menebak.
+    const kiri = aktif.getBoundingClientRect().left
+      - rel.getBoundingClientRect().left;
+    const lebar = aktif.offsetWidth;
+    tanda.style.left = (kiri + lebar * SISIP_TANDA) + "px";
+    tanda.style.width = (lebar * (1 - SISIP_TANDA * 2)) + "px";
     tanda.style.opacity = "1";
   };
 
@@ -352,7 +537,7 @@ function pasangIkonBilah() {
 
 /* ------------------------------------------------------------- maju baca */
 
-/** Garis tipis di bawah bilah atas yang mengikuti posisi gulir.
+/** Garis tipis di kaki bilah navigasi yang mengikuti posisi gulir.
  *
  *  Hanya muncul kalau halamannya memang panjang: di layar yang muat sekali
  *  lihat, ia akan selalu penuh dan cuma jadi garis hiasan yang membingungkan. */
@@ -423,7 +608,7 @@ function bukaPalet() {
   function gambar(daftar) {
     baris = daftar;
     pilihan = 0;
-    hasil.replaceChildren(...(daftar.length
+    isikan(hasil, ...(daftar.length
       ? daftar.map((d, i) => h("button.palet-item", {
           onclick: () => buka(d),
           onmousemove: () => { pilihan = i; sorotPilihan(); },
@@ -434,9 +619,7 @@ function bukaPalet() {
           h("div.isi", {},
             h("div.judul", {}, d.label),
             d.ket ? h("div.cuplik", {}, d.ket) : null)))
-      : [h("div", { gaya: { padding: "22px", textAlign: "center",
-                            color: "var(--redup)" } },
-          "Tidak ada yang cocok.")]));
+      : [h("div.palet-kosong", {}, "Tidak ada yang cocok.")]));
     sorotPilihan();
     // Hanya sepuluh teratas yang dianimasikan. Sisanya ada di bawah lipatan
     // layar, dan menganimasikan yang tidak terlihat cuma membuang tenaga
@@ -499,10 +682,56 @@ function bukaPalet() {
 
 let tombolG = false;
 
+/** Buka-tutup panel menu. Sejak navigasinya mendatar, hanya ada satu hal yang
+ *  bisa dilipat — panel di layar sempit — jadi tidak ada lagi cabang "tutup
+ *  kolom kiri" untuk layar lebar. Di layar lebar tombolnya memang disembunyikan
+ *  CSS, tapi pintasan Ctrl+B tetap sampai ke sini, dan membuat pintasan itu
+ *  mengubah sesuatu yang tak terlihat lebih membingungkan daripada diam. */
 function alihRel() {
+  if (window.innerWidth > AMBANG_PANEL) return;
   const cangkang = $("#cangkang");
-  if (window.innerWidth <= 820) cangkang.classList.toggle("rel-buka");
-  else cangkang.classList.toggle("rel-tutup");
+  const buka = cangkang.classList.toggle("rel-buka");
+  $("#rel-alih").setAttribute("aria-expanded", String(buka));
+}
+
+/** Panel yang turun dari navbar: daftar bahasa dan menu "Lainnya".
+ *
+ *  Keduanya memakai satu fungsi, bukan dua yang mirip. Aturannya sama persis —
+ *  buka lewat pemicunya, tutup lewat Esc, klik di luar, atau begitu ada tautan
+ *  di dalamnya yang dipakai. Yang terakhir itu penting: aplikasi ini tidak
+ *  memuat ulang halaman, jadi panel yang dibuka tidak akan tertutup sendiri
+ *  oleh perpindahan layar.
+ *
+ *  Membuka satu panel menutup yang lain. Dua daftar yang menggantung bersamaan
+ *  dari satu baris adalah dua daftar yang saling menutupi. */
+const penutupPanel = [];
+
+function pasangTurun(id) {
+  const turun = $("#" + id);
+  if (!turun) return;
+  const pemicu = $(".rel-pemicu", turun);
+
+  const setel = (buka) => {
+    turun.classList.toggle("buka", buka);
+    pemicu.setAttribute("aria-expanded", String(buka));
+  };
+  penutupPanel.push(setel);
+
+  pemicu.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const buka = !turun.classList.contains("buka");
+    for (const tutup of penutupPanel) tutup(false);
+    setel(buka);
+  });
+  turun.addEventListener("click", (e) => {
+    if (e.target.closest("a")) setel(false);
+  });
+  document.addEventListener("click", (e) => {
+    if (!turun.contains(e.target)) setel(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setel(false);
+  });
 }
 
 /** Ganti tema tanpa kedipan.
@@ -585,7 +814,7 @@ async function mulai() {
   try {
     ctx.awal = await api.ambil("/api/awal");
   } catch (e) {
-    document.body.replaceChildren(h("div.tanpa-js", {},
+    isikan(document.body, h("div.tanpa-js", {},
       h("h1", {}, "Tidak bisa menghubungi server"),
       h("p", {}, e.message),
       h("p", {}, "Jalankan lagi dengan: ",
@@ -600,7 +829,14 @@ async function mulai() {
   pasangIsyarat();
   pasangMajuBaca();
   pasangIkonBilah();
+  pasangTurun("rel-turun-bahasa");
+  pasangTurun("rel-turun-lain");
 
+  $("#lompat-isi").addEventListener("click", () => {
+    const layar = $("#layar");
+    layar.focus();
+    layar.scrollIntoView({ block: "start", behavior: "auto" });
+  });
   $("#rel-alih").addEventListener("click", alihRel);
   $("#tombol-tema").addEventListener("click", gantiTema);
   $("#tombol-bantuan").addEventListener("click", tampilkanBantuan);

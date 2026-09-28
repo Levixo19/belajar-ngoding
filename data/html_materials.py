@@ -5521,7 +5521,130 @@ Bandung</p>"""
         ],
     },
     {
-        "title": "22. Membaca Berkas .html di Dunia Nyata",
+        "title": "22. Canvas: Menggambar Langsung di Halaman",
+        "sections": [
+            {
+                "body": [
+                    "<canvas> adalah kotak kosong yang bisa digambar - bukan gambar siap pakai",
+                    "seperti <img>, dan bukan kumpulan bentuk seperti SVG. Sebelum JavaScript",
+                    "menyentuhnya, isinya cuma piksel kosong yang tidak terlihat sama sekali.",
+                    "",
+                    "Beda dari <img>:",
+                    "  <img>     menampilkan BERKAS gambar yang sudah jadi (foto.jpg, ikon.svg)",
+                    "  <canvas>  kanvas kosong; isinya digambar baris demi baris lewat JavaScript",
+                    "            SETELAH halaman dimuat, bukan dibaca dari sebuah berkas",
+                    "",
+                    "Beda dari SVG - ini yang paling sering bikin bingung karena keduanya sama-sama",
+                    "'digambar', tapi caranya beda total:",
+                    "",
+                    "  SVG     vector, per-BENTUK. Tiap lingkaran/garis adalah elemen sendiri di",
+                    "          DOM, tetap bisa diklik, diberi event listener, diberi style CSS,",
+                    "          dan diperbesar tanpa pecah karena dihitung ulang tiap kali dirender.",
+                    "  canvas  raster, per-PIKSEL. Begitu sebuah lingkaran selesai digambar, ia",
+                    "          jadi kumpulan titik warna biasa. Tidak ada 'elemen lingkaran' yang",
+                    "          bisa dicari lagi - canvas cuma ingat WARNA tiap piksel, bukan APA",
+                    "          yang pernah digambar di situ. Mau menggeser satu bentuk berarti",
+                    "          menggambar ULANG semuanya dari awal.",
+                    "",
+                    "Konsekuensinya konkret: elemen SVG bisa kamu seleksi lewat document.querySelector",
+                    "dan dikasih onclick seperti elemen HTML biasa. Sebuah 'lingkaran' yang digambar",
+                    "di canvas tidak bisa - yang ada hanya satu elemen <canvas>, dan mengetahui",
+                    "'apakah user mengklik lingkaran itu' berarti kamu sendiri yang harus menghitung",
+                    "apakah koordinat klik berada di dalam area lingkaran.",
+                ],
+            },
+            {
+                "heading": "Kerangka minimal, dan atribut yang wajib diperhatikan",
+                "body": [
+                    "<canvas> butuh id supaya JavaScript bisa menemukannya nanti, dan dua atribut",
+                    "angka: width dan height. Bagian menggambarnya sendiri - getContext('2d'),",
+                    "lalu perintah seperti fillRect atau arc - dipelajari terpisah di materi",
+                    "JavaScript 'Canvas API: Menggambar dengan JavaScript'. Materi ini cuma",
+                    "membahas elemennya: cara menulisnya di HTML dan jebakan yang menunggu di sana,",
+                    "sebelum satu baris JavaScript pun disentuh.",
+                ],
+                "code": """<canvas id="papan" width="400" height="300">
+  Browser Anda tidak mendukung elemen canvas.
+</canvas>""",
+            },
+            {
+                "heading": "JEBAKAN: width/height ATRIBUT vs width/height CSS",
+                "body": [
+                    "Ini kesalahan yang nyaris semua orang lakukan sekali seumur hidup, dan hasilnya",
+                    "membingungkan karena TIDAK ada error - gambarnya cuma kelihatan buram atau",
+                    "gepeng, tanpa pesan apa pun di console.",
+                    "",
+                    "  width/height sebagai ATRIBUT  -> resolusi PIKSEL internal kanvas.",
+                    "                                    Ini jumlah titik yang sungguhan ada.",
+                    "  width/height lewat CSS         -> ukuran TAMPILAN di layar saja.",
+                    "                                    Jumlah piksel internalnya TIDAK berubah.",
+                    "",
+                    "Kalau cuma CSS yang diatur (atributnya dibiarkan kosong sehingga jatuh ke",
+                    "default 300x150), browser meregangkan 300x150 piksel itu supaya PAS dengan",
+                    "ukuran CSS yang jauh lebih besar - persis seperti memperbesar foto kecil jadi",
+                    "poster: pecah dan buram, bukan tambah tajam. Efeknya sama meski elemennya",
+                    "sendiri kelihatan 'benar' ukurannya di halaman.",
+                    "",
+                    "Aturan praktis: atribut width/height MENENTUKAN berapa piksel yang benar-benar",
+                    "ada untuk digambar. CSS width/height (kalau dipakai sama sekali) cuma boleh",
+                    "dipakai untuk menyesuaikan tampilan ke tata letak responsif, dan idealnya",
+                    "angkanya sama dengan atributnya supaya tidak terjadi regangan sama sekali.",
+                ],
+                "code": """<!-- BENAR: resolusi internal 800x600, tampil sesuai resolusinya -->
+<canvas id="tajam" width="800" height="600"></canvas>
+
+<!-- BURAM: resolusi internal cuma default 300x150, lalu diregangkan CSS -->
+<canvas id="buram" style="width: 800px; height: 600px;"></canvas>
+
+<!-- Kalau memang perlu skala layar tinggi (retina), atributnya SENGAJA dibuat -->
+<!-- lebih besar dari ukuran tampil, lalu diciutkan lewat CSS - bukan sebaliknya: -->
+<canvas id="tajam-retina" width="1600" height="1200"
+        style="width: 800px; height: 600px;"></canvas>""",
+            },
+            {
+                "heading": "Konten cadangan, dan kenapa itu BUKAN pengganti aria-label",
+                "body": [
+                    "Apa pun yang dituliskan di ANTARA <canvas> dan </canvas> disebut konten",
+                    "cadangan (fallback). Aturannya sempit: browser HANYA menampilkannya kalau ia",
+                    "sama sekali tidak mengenal elemen <canvas> - situasi yang nyaris punah",
+                    "sekarang. Pembaca layar modern di browser modern TETAP melihat kanvasnya",
+                    "sebagai kotak kosong tanpa makna, BUKAN membacakan teks cadangan itu, karena",
+                    "browsernya mendukung canvas dengan sempurna - syarat 'tidak mendukung' itu",
+                    "tidak terpenuhi.",
+                    "",
+                    "Jadi konten cadangan berguna untuk browser purba, tapi TIDAK cukup untuk",
+                    "aksesibilitas. Cara yang benar-benar terbaca pembaca layar: role='img' dan",
+                    "aria-label langsung di elemen <canvas>-nya sendiri.",
+                ],
+                "code": """<canvas id="grafik" width="400" height="200"
+        role="img"
+        aria-label="Grafik batang penjualan Januari sampai Juni, naik terus tiap bulan">
+  Grafik penjualan tidak dapat ditampilkan di browser ini.
+</canvas>""",
+            },
+            {
+                "heading": "Kapan pakai canvas, kapan SVG, kapan cukup CSS",
+                "body": [
+                    "  canvas  banyak elemen yang berubah tiap frame, atau digambar piksel demi",
+                    "          piksel (game, editor gambar, grafik data yang deras update-nya,",
+                    "          efek partikel ratusan titik sekaligus)",
+                    "  SVG     sedikit bentuk, perlu tetap tajam di ukuran berapa pun, dan/atau",
+                    "          perlu diklik atau diberi event satu-satu (ikon, logo, diagram",
+                    "          sederhana, peta dengan wilayah yang bisa disorot)",
+                    "  CSS     kalau yang dibutuhkan cuma kotak, bulatan, gradien, atau bayangan -",
+                    "          tidak perlu canvas maupun SVG sama sekali",
+                    "",
+                    "Alasannya balik ke sifat dasarnya: SVG mengingat APA yang digambar (masih",
+                    "berupa elemen), canvas cuma mengingat WARNA tiap piksel. Ribuan bentuk yang",
+                    "terus bergerak jadi berat kalau tiap satu adalah elemen DOM sendiri (SVG) -",
+                    "di situ canvas menang. Sebaliknya, sedikit bentuk yang perlu tetap bisa diklik",
+                    "satu-satu justru lebih gampang dan lebih murah lewat SVG.",
+                ],
+            },
+        ],
+    },
+    {
+        "title": "23. Membaca Berkas .html di Dunia Nyata",
         "sections": [
             {
                 "body": [

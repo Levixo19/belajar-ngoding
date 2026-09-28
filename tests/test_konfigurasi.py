@@ -10,8 +10,8 @@ import os
 import tempfile
 import unittest
 
-import konfigurasi
-import tema
+from pelajar import konfigurasi
+from inti import tema
 
 
 class BasisKonfig(unittest.TestCase):

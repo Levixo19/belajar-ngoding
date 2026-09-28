@@ -540,4 +540,301 @@ tampilkanUser(1);
 // Catatan: kode ini butuh koneksi internet & API sungguhan untuk benar-benar
 // mengembalikan data - fokus latihan ini pada POLA error handling-nya.""",
     },
+    {
+        "title": "Latihan 19: Lazy-Load Galeri Foto dengan IntersectionObserver",
+        "difficulty": "Menengah",
+        "question": [
+            "Buat fungsi pasangLazyLoad() yang:",
+            "  1. Mengambil semua elemen <img data-src='...'> di halaman.",
+            "  2. Membuat satu IntersectionObserver dengan threshold: 0.1 dan",
+            "     rootMargin: '50px'.",
+            "  3. Saat sebuah <img> masuk area amatan (entry.isIntersecting",
+            "     bernilai true), pindahkan nilai data-src ke src, lalu",
+            "     panggil observer.unobserve() untuk gambar itu supaya tidak",
+            "     diproses ulang.",
+            "  4. Kembalikan observer-nya, supaya bisa di-disconnect() dari luar",
+            "     kalau galerinya dibongkar.",
+        ],
+        "hints": [
+            "querySelectorAll('img[data-src]') mengembalikan NodeList, bukan array - "
+            "pakai .forEach langsung atau [...hasil] kalau butuh method array.",
+            "entries di dalam callback observer selalu berupa ARRAY, walau kamu "
+            "cuma mengamati satu elemen - tetap harus di-loop.",
+            "Jangan lupa observer.unobserve(entry.target) di dalam if, bukan di "
+            "luar - kalau di luar, gambar yang BELUM terlihat ikut berhenti diamati.",
+        ],
+        "auto_check": False,
+        "alasan_tidak_dicek": "butuh DOM/browser sungguhan (document, IntersectionObserver, elemen <img> nyata di halaman) - tidak bisa dijalankan lewat node dan hasilnya tidak bisa dibandingkan sebagai teks keluaran",
+        "solution": """function pasangLazyLoad() {
+    const gambar = document.querySelectorAll("img[data-src]");
+
+    const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                observer.unobserve(img);
+            }
+        }
+    }, {
+        threshold: 0.1,
+        rootMargin: "50px",
+    });
+
+    gambar.forEach((img) => observer.observe(img));
+
+    return observer;
+}""",
+    },
+    {
+        "title": "Latihan 20: Tombol Salin dan Tombol Lokasi",
+        "difficulty": "Menengah",
+        "question": [
+            "Buat satu berkas HTML dengan dua tombol dan satu <p id=\"hasil\"></p>:",
+            "",
+            "  1. Tombol 'Salin Teks' - saat diklik, menyalin string",
+            "     'Halo dari aplikasi belajar' ke clipboard lewat",
+            "     navigator.clipboard.writeText(), lalu menulis 'Tersalin!'",
+            "     ke dalam #hasil. Kalau gagal (ditolak/error), tulis pesan",
+            "     error ke #hasil, jangan biarkan diam saja.",
+            "",
+            "  2. Tombol 'Lokasiku' - saat diklik, memanggil",
+            "     navigator.geolocation.getCurrentPosition() dan menulis",
+            "     latitude serta longitude ke #hasil kalau berhasil, atau",
+            "     pesan yang sesuai dengan error.code kalau gagal/ditolak.",
+            "",
+            "Coba jalankan lewat server lokal (http://localhost) dan perhatikan",
+            "popup izin yang muncul dari browser untuk masing-masing tombol.",
+        ],
+        "hints": [
+            "Kedua pemanggilan harus terjadi LANGSUNG di dalam event listener "
+            "klik, bukan di dalam setTimeout atau sesudah await lain.",
+            "navigator.clipboard.writeText mengembalikan Promise - pakai "
+            "async/await plus try-catch, seperti materi fetch sebelumnya.",
+            "navigator.geolocation.getCurrentPosition memakai dua callback "
+            "terpisah (sukses, gagal), bukan Promise - jangan dibungkus await.",
+        ],
+        "auto_check": False,
+        "alasan_tidak_dicek": "butuh browser sungguhan, klik pengguna asli, dan izin lokasi/clipboard yang cuma bisa disetujui manusia - tidak bisa dijalankan headless lewat runner.py",
+        "solution": """<!doctype html>
+<html lang="id">
+<head><meta charset="utf-8"><title>Latihan Web API</title></head>
+<body>
+  <button id="btnSalin">Salin Teks</button>
+  <button id="btnLokasi">Lokasiku</button>
+  <p id="hasil"></p>
+
+  <script>
+    const hasil = document.getElementById("hasil");
+
+    document.getElementById("btnSalin").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText("Halo dari aplikasi belajar");
+        hasil.textContent = "Tersalin!";
+      } catch (error) {
+        hasil.textContent = "Gagal menyalin: " + error.message;
+      }
+    });
+
+    document.getElementById("btnLokasi").addEventListener("click", () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          hasil.textContent = `Lokasi: ${latitude}, ${longitude}`;
+        },
+        (error) => {
+          const pesan = {
+            1: "Kamu menolak izin lokasi.",
+            2: "Lokasi tidak bisa ditentukan.",
+            3: "Waktu tunggu habis.",
+          };
+          hasil.textContent = pesan[error.code] || error.message;
+        }
+      );
+    });
+  </script>
+</body>
+</html>""",
+    },
+    {
+        "title": "Latihan 21: Papan Gambar Sederhana",
+        "difficulty": "Menengah",
+        "question": [
+            "Buat halaman dengan satu <canvas width=\"300\" height=\"200\"> lalu, lewat",
+            "JavaScript:",
+            "  1. Ambil context 2d-nya.",
+            "  2. Gambar satu persegi panjang biru terisi di (20,20) berukuran 100x60.",
+            "  3. Gambar satu lingkaran penuh oranye di titik (200,50) radius 30",
+            "     (ingat: sudut lingkaran penuh 0 sampai Math.PI * 2, bukan 360).",
+            "  4. Gambar satu segitiga hijau memakai beginPath/moveTo/lineTo/closePath",
+            "     lalu fill().",
+            "  Buka halamannya di browser dan pastikan ketiga bentuk terlihat tanpa",
+            "  saling menimpa warna satu sama lain.",
+        ],
+        "hints": [
+            "fillStyle diset ULANG sebelum tiap bentuk kalau warnanya beda - context "
+            "tidak reset sendiri antar-gambar.",
+            "arc() argumen sudutnya radian: lingkaran penuh = 0 sampai Math.PI * 2.",
+            "Segitiga = tiga lineTo lalu closePath supaya sisi terakhirnya otomatis "
+            "tertutup kembali ke titik awal.",
+        ],
+        "auto_check": False,
+        "alasan_tidak_dicek": "hasilnya gambar di elemen <canvas> sungguhan di browser, tidak ada keluaran teks yang bisa diadu seperti runner.py lakukan untuk bahasa lain",
+        "solution": """<canvas id="papan" width="300" height="200"></canvas>
+<script>
+const ctx = document.getElementById("papan").getContext("2d");
+
+ctx.fillStyle = "royalblue";
+ctx.fillRect(20, 20, 100, 60);
+
+ctx.beginPath();
+ctx.arc(200, 50, 30, 0, Math.PI * 2);
+ctx.fillStyle = "orange";
+ctx.fill();
+
+ctx.beginPath();
+ctx.moveTo(50, 170);
+ctx.lineTo(120, 170);
+ctx.lineTo(85, 110);
+ctx.closePath();
+ctx.fillStyle = "seagreen";
+ctx.fill();
+</script>""",
+    },
+    {
+        'title': 'Proyek Akhir: Pembaca Log Server',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Pembaca Log Server',
+        '',
+        'Server warungmu menyimpan catatan tiap permintaan halaman, dan sekarang',
+        'berkasnya sudah ribuan baris. Pemiliknya cuma punya tiga pertanyaan:',
+        'halaman apa yang paling sering dibuka, berapa yang gagal, dan siapa',
+        'yang mencurigakan.',
+        '',
+        'Log-nya ditaruh sebagai template literal di dalam programmu (tidak',
+        'membaca berkas, tidak menyentuh jaringan). Satu barisnya sengaja rusak',
+        'dan TIDAK boleh membuat program berhenti.',
+        '',
+        'Format baris: <ip> - <METODE> <jalur> <status> <ukuran>',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. Satu regular expression dengan grup tangkap untuk mengurai baris.',
+        '     Baris yang tidak cocok masuk daftar rusak beserta nomor barisnya.',
+        '  2. Hitungan memakai Map, dibangun dengan reduce().',
+        '  3. Fungsi teratas(peta, n) mengembalikan n terbanyak. Yang jumlahnya',
+        '     SERI diurut alfabetis -- tanpa itu hasilnya bisa berubah-ubah.',
+        '  4. Sebaran status diurut dari kode terkecil.',
+        "  5. 'IP perlu diperiksa' = IP dengan 2 kegagalan atau lebih.",
+        "  6. Kolom dirapikan dengan padEnd(), garis dengan '='.repeat(46).",
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  ANALISIS LOG SERVER',
+        '  ==============================================',
+        '  Baris terbaca  : 11',
+        '  Baris rusak    : 1',
+        '    baris 6: baris rusak yang tidak sesuai format',
+        '  ----------------------------------------------',
+        '  Halaman paling sering diminta:',
+        '    1. /masuk          3x',
+        '    2. /index.html     2x',
+        '    3. /logo.png       2x',
+        '  ----------------------------------------------',
+        '  Sebaran status:',
+        '    200 : 5',
+        '    401 : 2',
+        '    403 : 1',
+        '    404 : 2',
+        '    500 : 1',
+        '  ----------------------------------------------',
+        '  Permintaan gagal (>=400) : 6',
+        '  Penyumbang kegagalan terbanyak:',
+        '    10.0.0.4    2x',
+        '    10.0.0.7    2x',
+        '    10.0.0.9    2x',
+        '  Total byte terkirim : 1026',
+        '  IP perlu diperiksa  : 10.0.0.4, 10.0.0.7, 10.0.0.9',
+    ],
+        'hints': [
+        'Destructuring hasil regex: const [, ip, metode, jalur, status, ukuran] = cocok; -- koma pertama melewati elemen ke-0 (seluruh kecocokan).',
+        'reduce dengan Map: daftar.reduce((peta, x) => peta.set(k, (peta.get(k) || 0) + 1), new Map())',
+        'Mengurutkan dengan pemutus seri: sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))',
+    ],
+        'solution': """// Pembaca Log Server -- mengubah tumpukan baris mentah jadi tiga jawaban.
+
+const LOG = `
+10.0.0.4 - GET /index.html 200 134
+10.0.0.9 - GET /gaya.css 200 12
+10.0.0.4 - GET /logo.png 404 0
+10.0.0.7 - POST /masuk 401 88
+10.0.0.4 - GET /produk 200 420
+baris rusak yang tidak sesuai format
+10.0.0.9 - GET /produk 500 0
+10.0.0.7 - POST /masuk 401 88
+10.0.0.7 - POST /masuk 200 150
+10.0.0.4 - GET /logo.png 404 0
+10.0.0.2 - GET /index.html 200 134
+10.0.0.9 - DELETE /produk/7 403 0
+`;
+
+const POLA = /^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (GET|POST|DELETE|PUT) (\\S+) (\\d{3}) (\\d+)$/;
+
+function urai(teks) {
+  const baik = [];
+  const rusak = [];
+  teks.trim().split("\\n").forEach((baris, i) => {
+    const cocok = POLA.exec(baris.trim());
+    if (!cocok) { rusak.push({ nomor: i + 1, isi: baris.trim() }); return; }
+    const [, ip, metode, jalur, status, ukuran] = cocok;
+    baik.push({ ip, metode, jalur, status: Number(status), ukuran: Number(ukuran) });
+  });
+  return { baik, rusak };
+}
+
+function hitungPer(daftar, ambil) {
+  return daftar.reduce((peta, x) => peta.set(ambil(x), (peta.get(ambil(x)) || 0) + 1),
+                       new Map());
+}
+
+/** Urut dari terbanyak; yang seri diurut alfabetis supaya hasilnya tetap sama. */
+function teratas(peta, n) {
+  return [...peta.entries()]
+    .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
+    .slice(0, n);
+}
+
+const { baik, rusak } = urai(LOG);
+const gagal = baik.filter((r) => r.status >= 400);
+
+console.log("ANALISIS LOG SERVER");
+console.log("=".repeat(46));
+console.log(`Baris terbaca  : ${baik.length}`);
+console.log(`Baris rusak    : ${rusak.length}`);
+rusak.forEach((r) => console.log(`  baris ${r.nomor}: ${r.isi}`));
+
+console.log("-".repeat(46));
+console.log("Halaman paling sering diminta:");
+teratas(hitungPer(baik, (r) => r.jalur), 3)
+  .forEach(([jalur, n], i) => console.log(`  ${i + 1}. ${jalur.padEnd(16)}${n}x`));
+
+console.log("-".repeat(46));
+console.log("Sebaran status:");
+[...hitungPer(baik, (r) => r.status).entries()]
+  .sort((a, b) => a[0] - b[0])
+  .forEach(([status, n]) => console.log(`  ${status} : ${n}`));
+
+console.log("-".repeat(46));
+const perIp = hitungPer(gagal, (r) => r.ip);
+console.log(`Permintaan gagal (>=400) : ${gagal.length}`);
+console.log("Penyumbang kegagalan terbanyak:");
+teratas(perIp, 3).forEach(([ip, n]) => console.log(`  ${ip.padEnd(12)}${n}x`));
+
+const totalByte = baik.reduce((j, r) => j + r.ukuran, 0);
+console.log(`Total byte terkirim : ${totalByte}`);
+const curiga = [...perIp.entries()].filter(([, n]) => n >= 2).map(([ip]) => ip).sort();
+console.log(`IP perlu diperiksa  : ${curiga.length ? curiga.join(", ") : "-"}`);
+""",
+    },
 ]

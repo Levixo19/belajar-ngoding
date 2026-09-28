@@ -822,4 +822,184 @@ func main() {
 	inv.Laporan()
 }""",
     },
+    {
+        'title': 'Proyek Akhir: Pemeriksa Berkas Paralel',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Pemeriksa Berkas Paralel',
+        '',
+        'Enam berkas perlu dihitung baris, kata, dan hurufnya. Sendiri-sendiri',
+        'itu pekerjaan sepele -- yang dilatih di sini bukan menghitungnya,',
+        'melainkan membagi pekerjaannya ke beberapa pekerja yang jalan bersamaan',
+        'lalu menyatukan hasilnya kembali tanpa kehilangan satu pun.',
+        '',
+        'Ini bentuk yang tidak dimiliki bahasa lain di kurikulum ini: tiga',
+        'goroutine mengambil tugas dari satu saluran, menaruh hasilnya di',
+        'saluran lain, dan program utama menunggu sampai semuanya beres.',
+        '',
+        'Dua berkas sengaja kosong dan harus dilaporkan sebagai galat.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. Tiga goroutine pekerja membaca dari `chan Tugas` dengan for-range;',
+        '     mereka berhenti sendiri saat salurannya ditutup.',
+        '  2. Pengirim tugas juga harus goroutine tersendiri, lalu close(masuk).',
+        '  3. sync.WaitGroup menghitung pekerja; close(keluar) dilakukan di',
+        '     goroutine yang menunggu wg.Wait().',
+        '  4. Kegagalan dibawa sebagai NILAI di dalam struct Hasil, bukan',
+        '     dilempar. Buat tipe galat sendiri dengan method Error() string.',
+        '  5. Hasil WAJIB diurut sebelum dicetak. Urutan kedatangan goroutine',
+        '     tidak pasti -- tanpa sort, program yang sama mencetak urutan',
+        '     berbeda tiap kali dijalankan.',
+        '  6. Laporkan total baris, total kata, dan daftar berkas bermasalah.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  PEMERIKSA BERKAS PARALEL',
+        '  ==============================================',
+        '  Berkas           Baris    Kata     Huruf',
+        '  catatan.txt          3       6        36',
+        '  data.csv             4       4        24',
+        '  puisi.txt            2       5        25',
+        '  skrip.sh             2       4        26',
+        '  ----------------------------------------------',
+        '  Berkas diperiksa : 6 oleh 3 pekerja',
+        '  Total baris      : 11',
+        '  Total kata       : 19',
+        '  Berkas bermasalah: 2',
+        '    - kosong.txt: berkas kosong',
+        '    - lain.txt: berkas kosong',
+    ],
+        'hints': [
+        'Saluran satu arah di tanda tangan fungsi memperjelas maksudnya: func pekerja(id int, masuk <-chan Tugas, keluar chan<- Hasil, wg *sync.WaitGroup)',
+        'Kalau pengiriman tugas tidak ditaruh di goroutine, program berhenti total: pengirim menunggu pembaca, pembaca belum sempat dimulai.',
+        'sort.Slice(hasil, func(i, j int) bool { return hasil[i].Nama < hasil[j].Nama }) -- ini yang membuat hasilnya bisa diuji.',
+    ],
+        'solution': """// Pemeriksa Berkas Paralel -- beberapa pekerja, satu saluran hasil.
+package main
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+	"sync"
+)
+
+// Tugas yang dikerjakan seorang pekerja.
+type Tugas struct {
+	Nama string
+	Isi  string
+}
+
+// Hasil satu pemeriksaan. Error disimpan sebagai nilai, bukan dilempar --
+// di Go, kegagalan adalah data biasa yang ikut mengalir di saluran.
+type Hasil struct {
+	Nama    string
+	Baris   int
+	Kata    int
+	Panjang int
+	Galat   error
+}
+
+type GalatKosong struct{ Nama string }
+
+func (g GalatKosong) Error() string {
+	return fmt.Sprintf("%s: berkas kosong", g.Nama)
+}
+
+func periksa(t Tugas) Hasil {
+	if strings.TrimSpace(t.Isi) == "" {
+		return Hasil{Nama: t.Nama, Galat: GalatKosong{t.Nama}}
+	}
+	baris := strings.Split(strings.TrimRight(t.Isi, "\\n"), "\\n")
+	return Hasil{
+		Nama:    t.Nama,
+		Baris:   len(baris),
+		Kata:    len(strings.Fields(t.Isi)),
+		Panjang: len(t.Isi),
+	}
+}
+
+// pekerja membaca dari `masuk` sampai salurannya ditutup, lalu berhenti.
+func pekerja(id int, masuk <-chan Tugas, keluar chan<- Hasil, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for t := range masuk {
+		keluar <- periksa(t)
+	}
+}
+
+func main() {
+	tugas := []Tugas{
+		{"catatan.txt", "rapat senin\\nrapat selasa\\nrapat rabu\\n"},
+		{"kosong.txt", "   \\n"},
+		{"data.csv", "a,b,c\\n1,2,3\\n4,5,6\\n7,8,9\\n"},
+		{"puisi.txt", "hujan turun\\ndi atap seng\\n"},
+		{"skrip.sh", "#!/bin/sh\\necho halo dunia\\n"},
+		{"lain.txt", ""},
+	}
+
+	const jumlahPekerja = 3
+	masuk := make(chan Tugas)
+	keluar := make(chan Hasil)
+	var wg sync.WaitGroup
+
+	for i := 1; i <= jumlahPekerja; i++ {
+		wg.Add(1)
+		go pekerja(i, masuk, keluar, &wg)
+	}
+
+	// Pengirim tugas juga goroutine: kalau tidak, pengiriman akan menunggu
+	// pembaca yang belum sempat dimulai, dan programnya berhenti total.
+	go func() {
+		for _, t := range tugas {
+			masuk <- t
+		}
+		close(masuk)
+	}()
+
+	// Saluran hasil ditutup SESUDAH semua pekerja selesai, dan itu satu-
+	// satunya cara `range keluar` di bawah tahu kapan harus berhenti.
+	go func() {
+		wg.Wait()
+		close(keluar)
+	}()
+
+	var hasil []Hasil
+	for h := range keluar {
+		hasil = append(hasil, h)
+	}
+
+	// Urutan kedatangan hasil TIDAK pasti -- itu sifat konkurensi, bukan bug.
+	// Karena itu hasilnya diurut sebelum dicetak; tanpa ini, program yang
+	// sama mencetak urutan berbeda tiap kali dijalankan.
+	sort.Slice(hasil, func(i, j int) bool { return hasil[i].Nama < hasil[j].Nama })
+
+	fmt.Println("PEMERIKSA BERKAS PARALEL")
+	fmt.Println(strings.Repeat("=", 46))
+	fmt.Printf("%-14s%8s%8s%10s\\n", "Berkas", "Baris", "Kata", "Huruf")
+
+	totalBaris, totalKata, gagal := 0, 0, 0
+	for _, h := range hasil {
+		if h.Galat != nil {
+			gagal++
+			continue
+		}
+		totalBaris += h.Baris
+		totalKata += h.Kata
+		fmt.Printf("%-14s%8d%8d%10d\\n", h.Nama, h.Baris, h.Kata, h.Panjang)
+	}
+
+	fmt.Println(strings.Repeat("-", 46))
+	fmt.Printf("Berkas diperiksa : %d oleh %d pekerja\\n", len(tugas), jumlahPekerja)
+	fmt.Printf("Total baris      : %d\\n", totalBaris)
+	fmt.Printf("Total kata       : %d\\n", totalKata)
+	fmt.Printf("Berkas bermasalah: %d\\n", gagal)
+	for _, h := range hasil {
+		if h.Galat != nil {
+			fmt.Println("  - " + h.Galat.Error())
+		}
+	}
+}
+""",
+    },
 ]

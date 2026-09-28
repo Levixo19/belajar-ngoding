@@ -27,11 +27,30 @@ import { token, keFragmen } from "./sorot.js";
 const INDENT = "    ";                    // 4 spasi, konsisten dengan kurikulum
 const TINGGI_MAKS = 0.62;                 // bagian dari tinggi jendela
 
+/* Di atas lebar ini, editor yang diminta `isiRuang` berhenti mengukur dirinya
+ * dari isi dan menyerahkan tingginya kepada tata letak.
+ *
+ * ANGKANYA HARUS SAMA dengan ambang `@container panggung (min-width: 1100px)`
+ * di gaya.css — di sanalah ruang kerja latihan berubah jadi dua panel setinggi
+ * jendela. Kalau keduanya berbeda, ada pita lebar tempat CSS memberi editornya
+ * satu baris grid setinggi sisa layar sementara JS tetap memaksa tinggi hasil
+ * pengukuran isi: yang terlihat editor pendek menggantung di dalam kotak
+ * tinggi, atau sebaliknya editor yang meluber melewati kakinya.
+ *
+ * #panggung membentang selebar viewport (tidak ada kolom tetap di kirinya),
+ * jadi innerWidth adalah pengganti yang cukup tepat untuk lebar containernya. */
+const AMBANG_RUANG = 1100;
+
 const PASANGAN = { "(": ")", "[": "]", "{": "}", '"': '"', "'": "'", "`": "`" };
 
 const KOMENTAR = {
   python: "# ", javascript: "// ", java: "// ", c: "// ", cpp: "// ",
   go: "// ", bash: "# ", sql: "-- ", aplikasi: "// ",
+  csharp: "// ", rust: "// ", kotlin: "// ", typescript: "// ",
+  php: "// ", ruby: "# ", fedora: "# ",
+  // Visual Basic memakai kutip TUNGGAL untuk komentar, bukan garis miring.
+  vb: "' ",
+  fedora: "# ",
 };
 
 function escapeRegex(s) {
@@ -45,12 +64,15 @@ export class Editor {
    *   kode      isi awal
    *   saatUbah  dipanggil (kode) setiap perubahan, sudah ditunda
    *   pintasan  { "ctrl+enter": fn, ... } — dijalankan sebelum perilaku bawaan
+   *   isiRuang  true = tingginya diserahkan kepada tata letak, bukan diukur
+   *             dari isi. Dipakai ruang kerja latihan; lihat _ukur().
    */
   constructor({ bahasa = "python", kode = "", saatUbah, pintasan = {},
-                label = "Editor kode" } = {}) {
+                label = "Editor kode", isiRuang = false } = {}) {
     this.bahasa = bahasa;
     this.saatUbah = saatUbah;
     this.pintasan = pintasan;
+    this.isiRuang = isiRuang;
 
     this.nomor = h("pre.editor-nomor", { "aria-hidden": "true" });
     this.sorotan = h("pre", { "aria-hidden": "true" });
@@ -149,6 +171,20 @@ export class Editor {
   }
 
   _ukur() {
+    // Di ruang kerja yang setinggi jendela, tinggi editor BUKAN urusan isinya.
+    // Kerangka latihan tiga baris di atas empat ratus piksel ruang kosong
+    // adalah ruang kerja yang menolak dipakai bekerja — jadi di sana tata
+    // letak yang memberi tinggi, dan editor cuma mengisinya. Kelas
+    // `.editor-isi-ruang` di gaya.css yang mengurus sisanya.
+    if (this.isiRuang && window.innerWidth >= AMBANG_RUANG) {
+      this.el.classList.add("editor-isi-ruang");
+      this.teks.style.height = "100%";
+      this.lapis.style.height = "100%";
+      this.nomor.style.maxHeight = "";
+      return;
+    }
+    this.el.classList.remove("editor-isi-ruang");
+
     // Tumbuh mengikuti isi sampai batas, lalu menggulir sendiri. Editor yang
     // tingginya tetap memaksa menggulir sejak baris pertama; yang tumbuh tanpa
     // batas mendorong tombol Periksa keluar layar.

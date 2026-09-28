@@ -827,4 +827,214 @@ int main() {
     return 0;
 }""",
     },
+    {
+        'title': 'Proyek Akhir: Kalkulator Ekspresi',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Kalkulator Ekspresi',
+        '',
+        'Tulis kalkulator yang menerima ekspresi sebagai TEKS dan menghitungnya',
+        'sendiri -- tanpa memanggil apa pun yang sudah bisa mengevaluasi string.',
+        '',
+        'Ini proyek yang menguji rekursi dan kepemilikan memori sekaligus.',
+        "Ekspresi dipecah jadi POHON: '2 + 3 * 4' harus jadi",
+        '(2 + (3 * 4)), bukan ((2 + 3) * 4), dan pohon itulah yang dihitung.',
+        '',
+        'Tujuh ekspresi diuji, tiga di antaranya memang salah dan harus',
+        'melaporkan galat tanpa membuat program berhenti.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. Tata bahasa tiga tingkat, masing-masing satu fungsi:',
+        "       ekspresi := suku (('+' | '-') suku)*",
+        "       suku     := faktor (('*' | '/') faktor)*",
+        "       faktor   := angka | '(' ekspresi ')' | '-' faktor",
+        '     Tingkatan inilah yang membuat * lebih kuat daripada +.',
+        '  2. Simpul pohon sebagai class abstrak dengan method virtual murni',
+        '     nilai() dan tulis(); Angka dan Operasi menurunkannya.',
+        '  3. Kepemilikan pakai std::unique_ptr -- tidak ada delete manual.',
+        '  4. class turunan std::runtime_error sendiri untuk galat sintaks.',
+        '  5. Pembagian dengan nol dan sisa karakter tak terbaca juga galat.',
+        '  6. Nilai dihitung SEBELUM baris dicetak, supaya pesan galat tidak',
+        '     muncul menggantung di tengah baris.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  KALKULATOR EKSPRESI',
+        '  ====================================================',
+        '  2 + 3 * 4           (2 + (3 * 4)) = 14',
+        '  (2 + 3) * 4         ((2 + 3) * 4) = 20',
+        '  10 / 4              (10 / 4) = 2.5',
+        '  -5 + 2 * (3 - 1)    ((0 - 5) + (2 * (3 - 1))) = -1',
+        '  8 / (3 - 3)         GALAT: pembagian dengan nol',
+        '  2 + * 3             GALAT: karakter tak terduga: *',
+        '  (1 + 2              GALAT: kurung tutup hilang',
+        '  ----------------------------------------------------',
+        '  Ekspresi diuji : 7',
+    ],
+        'hints': [
+        'using Pohon = std::unique_ptr<Simpul>; dan pindahkan kepemilikan dengan std::move(kiri) saat membentuk Operasi.',
+        'Fungsi faktor() memanggil ekspresi() untuk isi kurung -- itu rekursinya, dan itu yang membuat kurung bersarang bekerja sendirinya.',
+        'Negatif di depan angka cukup diperlakukan sebagai 0 - faktor(), jadi tidak perlu jenis simpul baru.',
+    ],
+        'solution': """// Kalkulator Ekspresi -- recursive descent parser dengan pohon sintaks.
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+class GalatSintaks : public std::runtime_error {
+public:
+    explicit GalatSintaks(const std::string& pesan)
+        : std::runtime_error(pesan) {}
+};
+
+struct Simpul {
+    virtual ~Simpul() = default;
+    virtual double nilai() const = 0;
+    virtual std::string tulis() const = 0;
+};
+
+using Pohon = std::unique_ptr<Simpul>;
+
+class Angka : public Simpul {
+    double a;
+public:
+    explicit Angka(double a) : a(a) {}
+    double nilai() const override { return a; }
+    std::string tulis() const override {
+        std::string s = std::to_string(a);
+        s.erase(s.find_last_not_of('0') + 1);
+        if (!s.empty() && s.back() == '.') s.pop_back();
+        return s;
+    }
+};
+
+class Operasi : public Simpul {
+    char op;
+    Pohon kiri, kanan;
+public:
+    Operasi(char op, Pohon kiri, Pohon kanan)
+        : op(op), kiri(std::move(kiri)), kanan(std::move(kanan)) {}
+    double nilai() const override {
+        double a = kiri->nilai(), b = kanan->nilai();
+        switch (op) {
+            case '+': return a + b;
+            case '-': return a - b;
+            case '*': return a * b;
+            case '/':
+                if (b == 0) throw GalatSintaks("pembagian dengan nol");
+                return a / b;
+        }
+        throw GalatSintaks(std::string("operator tak dikenal: ") + op);
+    }
+    std::string tulis() const override {
+        return "(" + kiri->tulis() + " " + op + " " + kanan->tulis() + ")";
+    }
+};
+
+class Pengurai {
+    std::string teks;
+    size_t i = 0;
+
+    void lewatiSpasi() { while (i < teks.size() && teks[i] == ' ') i++; }
+
+    // faktor := angka | '(' ekspresi ')' | '-' faktor
+    Pohon faktor() {
+        lewatiSpasi();
+        if (i >= teks.size()) throw GalatSintaks("ekspresi terpotong");
+        if (teks[i] == '-') {
+            i++;
+            return std::make_unique<Operasi>('-', std::make_unique<Angka>(0),
+                                             faktor());
+        }
+        if (teks[i] == '(') {
+            i++;
+            Pohon d = ekspresi();
+            lewatiSpasi();
+            if (i >= teks.size() || teks[i] != ')')
+                throw GalatSintaks("kurung tutup hilang");
+            i++;
+            return d;
+        }
+        size_t awal = i;
+        while (i < teks.size() && (isdigit(teks[i]) || teks[i] == '.')) i++;
+        if (awal == i)
+            throw GalatSintaks(std::string("karakter tak terduga: ") + teks[i]);
+        return std::make_unique<Angka>(std::stod(teks.substr(awal, i - awal)));
+    }
+
+    // suku := faktor (('*' | '/') faktor)*
+    Pohon suku() {
+        Pohon kiri = faktor();
+        while (true) {
+            lewatiSpasi();
+            if (i < teks.size() && (teks[i] == '*' || teks[i] == '/')) {
+                char op = teks[i++];
+                kiri = std::make_unique<Operasi>(op, std::move(kiri), faktor());
+            } else return kiri;
+        }
+    }
+
+public:
+    explicit Pengurai(std::string t) : teks(std::move(t)) {}
+
+    // ekspresi := suku (('+' | '-') suku)*
+    Pohon ekspresi() {
+        Pohon kiri = suku();
+        while (true) {
+            lewatiSpasi();
+            if (i < teks.size() && (teks[i] == '+' || teks[i] == '-')) {
+                char op = teks[i++];
+                kiri = std::make_unique<Operasi>(op, std::move(kiri), suku());
+            } else return kiri;
+        }
+    }
+
+    Pohon uraiPenuh() {
+        Pohon p = ekspresi();
+        lewatiSpasi();
+        if (i < teks.size())
+            throw GalatSintaks(std::string("sisa yang tak terbaca: ")
+                               + teks.substr(i));
+        return p;
+    }
+};
+
+int main() {
+    std::vector<std::string> uji = {
+        "2 + 3 * 4",
+        "(2 + 3) * 4",
+        "10 / 4",
+        "-5 + 2 * (3 - 1)",
+        "8 / (3 - 3)",
+        "2 + * 3",
+        "(1 + 2",
+    };
+
+    std::cout << "KALKULATOR EKSPRESI\\n";
+    std::cout << "====================================================\\n";
+    for (const auto& e : uji) {
+        std::cout << e;
+        for (size_t s = e.size(); s < 20; s++) std::cout << ' ';
+        try {
+            Pengurai p(e);
+            Pohon pohon = p.uraiPenuh();
+            // Nilai dihitung LEBIH DULU, baru dicetak bersama bentuk
+            // pohonnya. Kalau dibalik, ekspresi yang gagal saat dihitung
+            // (pembagian dengan nol) sudah telanjur mencetak separuh baris,
+            // dan pesan galatnya muncul menggantung di tengahnya.
+            double hasil = pohon->nilai();
+            std::cout << pohon->tulis() << " = " << hasil << '\\n';
+        } catch (const GalatSintaks& g) {
+            std::cout << "GALAT: " << g.what() << '\\n';
+        }
+    }
+    std::cout << "----------------------------------------------------\\n";
+    std::cout << "Ekspresi diuji : " << uji.size() << '\\n';
+    return 0;
+}
+""",
+    },
 ]

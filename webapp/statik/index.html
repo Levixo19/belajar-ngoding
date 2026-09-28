@@ -14,10 +14,25 @@
      panggilan API mustahil dilakukan halaman lain di browser yang sama. -->
 <script>window.TOKEN_BELAJAR = "{{TOKEN}}";</script>
 
-<div id="tungku" aria-hidden="true"></div>
+<!-- Lompat ke isi. Sebuah <button>, bukan <a href="#layar">, dan itu bukan
+     selera: alamat di aplikasi ini adalah fragmen URL (#/materi/java/3), jadi
+     tautan ke "#layar" akan dibaca router sebagai permintaan pindah halaman
+     dan mendarat di dasbor. Penangannya dipasang di aplikasi.js.
+     Tanpanya, membuka materi ke-20 lewat papan ketik berarti menekan Tab
+     belasan kali melewati menu yang sama persis yang sudah dilewati sembilan
+     belas kali sebelumnya. -->
+<button class="lompat" id="lompat-isi" type="button">Lompat ke isi</button>
+
+<div id="latar" aria-hidden="true"></div>
 
 <div id="cangkang">
 
+  <!-- Navigasi utama membentang di ATAS. Isinya dipangkas dari sebelas
+       sasaran jadi tujuh: yang sering dipakai (Dasbor, Bahasa, Ruang Coba,
+       Cari) tinggal di baris, sedangkan Catatanku, Bookmark, Statistik, dan
+       Pengaturan — empat tujuan yang dibuka beberapa kali seminggu — masuk ke
+       satu menu "Lainnya". Yang dibuang bukan fiturnya melainkan kehadiran
+       tetapnya di ruang yang sama permanennya dengan Dasbor. -->
   <nav id="rel" aria-label="Navigasi utama">
     <!-- Penanda posisi yang meluncur antar butir menu. Diurus js/gerak.js;
          kalau ia tidak jalan, ::before pada .kini tetap jadi penandanya. -->
@@ -28,42 +43,83 @@
       <span class="merek-teks"><b>Belajar</b><i>Ngoding</i></span>
     </a>
 
+    <!-- Semua yang melipat masuk ke panel hamburger di layar sempit. -->
+    <div class="rel-lipat" id="rel-lipat">
+      <ul class="rel-menu" id="rel-utama"></ul>
+
+      <div class="rel-turun" id="rel-turun-bahasa">
+        <button class="rel-pemicu" type="button" aria-expanded="false"
+                aria-controls="rel-panel-bahasa">
+          <span class="rel-label">Bahasa</span>
+          <span class="rel-panah" aria-hidden="true">▾</span>
+        </button>
+        <div class="rel-panel" id="rel-panel-bahasa">
+          <div class="rel-judul">Bahasa pemrograman</div>
+          <ul class="rel-menu rel-bahasa" id="rel-bahasa"></ul>
+          <div id="rel-tematik" hidden>
+            <div class="rel-judul rel-judul-lanjutan">Kurikulum tematik</div>
+            <ul class="rel-menu rel-tematik" id="rel-tematik-daftar"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="rel-turun rel-turun-kanan" id="rel-turun-lain">
+        <button class="rel-pemicu" type="button" aria-expanded="false"
+                aria-controls="rel-panel-lain">
+          <span class="rel-label">Lainnya</span>
+          <span class="rel-panah" aria-hidden="true">▾</span>
+        </button>
+        <div class="rel-panel" id="rel-panel-lain">
+          <div class="rel-judul">Milikmu</div>
+          <ul class="rel-menu rel-kaki" id="rel-kaki"></ul>
+        </div>
+      </div>
+    </div>
+
     <button class="rel-tombol" data-buka="palet">
       <span class="ikon" aria-hidden="true">⌕</span>
       <span class="rel-label">Cari apa saja</span>
       <kbd>Ctrl K</kbd>
     </button>
 
-    <ul class="rel-menu" id="rel-utama"></ul>
+    <div id="ukuran">
+      <button class="tanda tanda-api" id="tanda-streak" title="Streak harian">
+        <span class="tanda-ikon" aria-hidden="true"></span>
+        <span class="tanda-angka">0</span>
+      </button>
+      <button class="tanda" id="tanda-xp" title="Total XP dan level">
+        <span class="tanda-angka">0</span><span class="tanda-satuan">XP</span>
+      </button>
+      <button class="ikon-tombol" id="tombol-tema" title="Ganti tema (Ctrl+J)"
+              aria-label="Ganti tema">◐</button>
+      <button class="ikon-tombol" id="tombol-bantuan" title="Pintasan papan ketik (?)"
+              aria-label="Bantuan pintasan">?</button>
+    </div>
 
-    <div class="rel-judul">Bahasa</div>
-    <ul class="rel-menu rel-bahasa" id="rel-bahasa"></ul>
+    <button id="rel-alih" class="ikon-tombol" title="Menu (Ctrl+B)"
+            aria-label="Menu" aria-expanded="false">☰</button>
 
-    <ul class="rel-menu rel-kaki" id="rel-kaki"></ul>
+    <!-- Sejauh mana halaman ini sudah tergulir. Menjawab "masih berapa lagi?"
+         tanpa memakai satu baris teks pun. Ia menempel di kaki bilah INI,
+         bukan di bilah kedua, karena bilah kedua cuma ada di layar yang punya
+         konteks — sementara halaman panjang bisa muncul di mana saja. -->
+    <div id="maju-baca" aria-hidden="true"></div>
   </nav>
 
   <div id="panggung">
-    <header id="atas">
-      <button id="rel-alih" class="ikon-tombol" title="Sembunyikan panel (Ctrl+B)"
-              aria-label="Sembunyikan panel">☰</button>
-      <nav id="jejak" aria-label="Posisimu sekarang"></nav>
-      <div id="ukuran">
-        <button class="tanda tanda-api" id="tanda-streak" title="Streak harian">
-          <span class="tanda-ikon" aria-hidden="true"></span>
-          <span class="tanda-angka">0</span>
-        </button>
-        <button class="tanda" id="tanda-xp" title="Total XP dan level">
-          <span class="tanda-angka">0</span><span class="tanda-satuan">XP</span>
-        </button>
-        <button class="ikon-tombol" id="tombol-tema" title="Ganti tema (Ctrl+J)"
-                aria-label="Ganti tema">◐</button>
-        <button class="ikon-tombol" id="tombol-bantuan" title="Pintasan papan ketik (?)"
-                aria-label="Bantuan pintasan">?</button>
-      </div>
-      <!-- Sejauh mana halaman ini sudah tergulir. Menjawab "masih berapa
-           lagi?" tanpa memakai satu baris teks pun. -->
-      <div id="maju-baca" aria-hidden="true"></div>
-    </header>
+    <!-- TULANG PUNGGUNG. Diisi router dari `konteks` yang dikembalikan tiap
+         layar; layar yang tidak mengembalikannya (dasbor, statistik,
+         pengaturan) membuat strip ini tidak dirender sama sekali, dan 44
+         piksel itu kembali jadi milik isinya.
+
+         Ini pengganti remah roti, dan bedanya bukan gaya melainkan ISI. Remah
+         roti lama berbunyi "Belajar › HTML › 3. Struktur Dokumen": dua dari
+         tiga ruasnya mengulang apa yang sudah tertulis besar-besar di judul
+         tepat di bawahnya, dan ruas pertamanya menamai aplikasi yang jelas
+         sedang dibuka. Yang di sini membawa bab mana yang sedang dijalani,
+         posisi ke berapa dari berapa, kemajuan bab itu, dan satu tombol ke
+         langkah berikutnya — empat hal yang tidak ada di halamannya sendiri. -->
+    <div id="konteks" aria-label="Posisimu sekarang" hidden></div>
 
     <main id="layar" tabindex="-1"></main>
   </div>

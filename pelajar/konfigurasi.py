@@ -10,7 +10,7 @@ rentang, dan penjelasannya. Menu pengaturan dibangun otomatis dari deklarasi
 itu, jadi menambah opsi baru cukup menambah satu entri -- tidak perlu menyentuh
 kode antarmuka sama sekali.
 
-Importir: utils.py (lebar & tinggi halaman), main.py (menu pengaturan),
+Importir: layar/utils.py (lebar & tinggi halaman), main.py (menu pengaturan),
 quiz.py (detik per soal), exercises.py (editor & konfirmasi jawaban),
 bab.py (saklar buka semua bab).
 Berkas data: ~/.belajar_ngoding_config.json, override lewat BELAJAR_CONFIG_FILE.
@@ -20,7 +20,7 @@ import json
 import os
 import tempfile
 
-import tema
+from inti import tema
 
 VERSI_KONFIG = 1
 

@@ -32,17 +32,17 @@ import os
 import threading
 import time
 
-import bab as modul_bab
-import beda
-import berkas as modul_berkas
-import exercises
-import galat as modul_galat
-import konfigurasi
+from pelajar import bab as modul_bab
+from inti import beda
+from inti import berkas as modul_berkas
+from layar import exercises
+from inti import galat as modul_galat
+from pelajar import konfigurasi
 import main as aplikasi
-import progress
-import runner
-import saran as modul_saran
-from progress import kunci as kunci_progres
+from pelajar import progress
+from inti import runner
+from pelajar import saran as modul_saran
+from pelajar.progress import kunci as kunci_progres
 
 from webapp import VERSI_WEB
 from webapp import catatan as modul_catatan
@@ -247,6 +247,11 @@ def awal(_=None):
             "pasang": runner.perintah_instalasi(l["runner"]),
             "cara_jalan": list(l["run_info"]),
             "persen": _stat(l, data)["persen"],
+            # Kurikulum tematik (Bikin Aplikasi, CLI Fedora) bukan bahasa
+            # pemrograman. Navigasi memisahkannya supaya daftar 19 butir
+            # tetap terbaca; penandanya datang dari LANGUAGES, tidak
+            # ditebak JavaScript dari labelnya.
+            "tematik": bool(l.get("tematik")),
         } for l in LANGUAGES],
         "aturan_sorot": isi.aturan_penyorot(),
         # Kalimat aturan bab dikirim dari sini, bukan ditulis ulang di
@@ -616,7 +621,16 @@ def latihan(params):
         "indeks": idx, "jumlah": len(lang["exercises"]),
         "judul": ex["title"],
         "tingkat": ex.get("difficulty", "Menengah"),
+        "proyek": bool(ex.get("proyek")),
         "soal": list(ex.get("question") or []),
+        # Soal latihan lewat pengurai yang SAMA dengan badan materi. Sebelum
+        # ini ia dikirim sebagai satu blok teks dan digambar dengan
+        # `white-space: pre-line`, yang meruntuhkan deretan spasi -- padahal
+        # hampir semua soal di sini memuat contoh keluaran berkolom, dan
+        # perataan kolom itulah yang menerangkan apa yang harus dicetak.
+        # Yang terbaca pelajar: tabel yang kolomnya berantakan, di panel yang
+        # bahkan tidak cukup lebar untuk menampungnya.
+        "soal_blok": isi.blok_badan(list(ex.get("question") or [])),
         "hint": list(ex.get("hints") or []),
         "solusi": ex.get("solution", ""),
         "token_solusi": isi.token_kode(ex.get("solution", ""), bhs_sorot),

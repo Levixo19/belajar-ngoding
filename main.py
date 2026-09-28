@@ -17,21 +17,21 @@ import os
 import sys
 from datetime import date
 
-import bab
-import konfigurasi
-import runner
-import tema
-import utils
-from utils import (
+from pelajar import bab
+from pelajar import konfigurasi
+from inti import runner
+from inti import tema
+from layar import utils
+from layar.utils import (
     C, paint, clear, ask, ask_choice, confirm, press_enter, header, rule, bar,
     lebar, kotak,
 )
-from materials import materials_menu, render_material
-from quiz import quiz_menu, menu_satu_kuis
-from exercises import exercise_menu, show_exercise
-from navigasi import cari_global, menu_bookmark, lanjut_terakhir
-from saran import langkah_berikutnya, tantangan_harian
-from progress import (
+from layar.materials import materials_menu, render_material
+from layar.quiz import quiz_menu, menu_satu_kuis
+from layar.exercises import exercise_menu, show_exercise
+from layar.navigasi import cari_global, menu_bookmark, lanjut_terakhir
+from pelajar.saran import langkah_berikutnya, tantangan_harian
+from pelajar.progress import (
     load_progress, statistik_bahasa, info_level, gelar_dari_level, DAFTAR_BADGE,
     streak_aktif, xp_hari_ini, riwayat_harian, ekspor, impor, reset, cadangkan,
     judul_kunci, PROGRESS_FILE,
@@ -48,6 +48,14 @@ from data import (
     APLIKASI_MATERIALS, APLIKASI_QUIZZES, APLIKASI_EXERCISES,
     HTML_MATERIALS, HTML_QUIZZES, HTML_EXERCISES,
     CSS_MATERIALS, CSS_QUIZZES, CSS_EXERCISES,
+    CSHARP_MATERIALS, CSHARP_QUIZZES, CSHARP_EXERCISES,
+    RUST_MATERIALS, RUST_QUIZZES, RUST_EXERCISES,
+    PHP_MATERIALS, PHP_QUIZZES, PHP_EXERCISES,
+    RUBY_MATERIALS, RUBY_QUIZZES, RUBY_EXERCISES,
+    KOTLIN_MATERIALS, KOTLIN_QUIZZES, KOTLIN_EXERCISES,
+    TYPESCRIPT_MATERIALS, TYPESCRIPT_QUIZZES, TYPESCRIPT_EXERCISES,
+    VB_MATERIALS, VB_QUIZZES, VB_EXERCISES,
+    FEDORA_MATERIALS, FEDORA_QUIZZES, FEDORA_EXERCISES,
 )
 
 VERSI = "2.0"
@@ -126,14 +134,92 @@ LANGUAGES = [
         "run_info": ["Jalankan : go run nama_file.go", "Build    : go build nama_file.go"],
     },
     {
+        "key": "csharp", "label": "C#", "runner": "csharp",
+        "materials": CSHARP_MATERIALS, "quizzes": CSHARP_QUIZZES,
+        "exercises": CSHARP_EXERCISES,
+        "run_info": ["Buat proyek : dotnet new console -o latihan",
+                     "Jalankan    : cd latihan && dotnet run",
+                     "Di aplikasi ini berkas Program.cs-mu dibungkus proyek",
+                     "sementara, lalu dibangun dengan dotnet build."],
+    },
+    {
+        "key": "rust", "label": "Rust", "runner": "rust",
+        "materials": RUST_MATERIALS, "quizzes": RUST_QUIZZES,
+        "exercises": RUST_EXERCISES,
+        "run_info": ["Satu berkas : rustc main.rs -o program && ./program",
+                     "Proyek      : cargo new nama && cd nama && cargo run",
+                     "Periksa saja: cargo check  (jauh lebih cepat)"],
+    },
+    {
+        "key": "php", "label": "PHP", "runner": "php",
+        "materials": PHP_MATERIALS, "quizzes": PHP_QUIZZES,
+        "exercises": PHP_EXERCISES,
+        "run_info": ["Jalankan : php berkas.php",
+                     "Periksa  : php -l berkas.php",
+                     "Server   : php -S localhost:8000",
+                     "Materi ini memakai PHP 8; tutorial ber-mysql_query",
+                     "atau ereg ditulis untuk PHP 5 yang sudah lama tamat."],
+    },
+    {
+        "key": "ruby", "label": "Ruby", "runner": "ruby",
+        "materials": RUBY_MATERIALS, "quizzes": RUBY_QUIZZES,
+        "exercises": RUBY_EXERCISES,
+        "run_info": ["Jalankan   : ruby berkas.rb",
+                     "Interaktif : irb",
+                     "Periksa    : ruby -c berkas.rb"],
+    },
+    {
+        "key": "kotlin", "label": "Kotlin", "runner": "kotlin",
+        "materials": KOTLIN_MATERIALS, "quizzes": KOTLIN_QUIZZES,
+        "exercises": KOTLIN_EXERCISES,
+        "run_info": ["Kompilasi : kotlinc main.kt -d kelas",
+                     "Jalankan  : kotlin -cp kelas MainKt",
+                     "Satu jar  : kotlinc main.kt -include-runtime -d main.jar",
+                     "Nama berkas menentukan nama class: main.kt -> MainKt.",
+                     "Butuh JDK 17+ terpasang lebih dulu."],
+    },
+    {
+        "key": "typescript", "label": "TypeScript", "runner": "typescript",
+        "materials": TYPESCRIPT_MATERIALS, "quizzes": TYPESCRIPT_QUIZZES,
+        "exercises": TYPESCRIPT_EXERCISES,
+        "run_info": ["Kompilasi : tsc berkas.ts", "Jalankan  : node berkas.js",
+                     "Sekaligus : npx tsx berkas.ts",
+                     "Di aplikasi ini kodemu dikompilasi dengan --strict dan",
+                     "target ES2023, lalu hasilnya dijalankan Node."],
+    },
+    {
+        "key": "vb", "label": "Visual Basic", "runner": "vb",
+        "materials": VB_MATERIALS, "quizzes": VB_QUIZZES,
+        "exercises": VB_EXERCISES,
+        "run_info": ["Buat proyek : dotnet new console -lang VB -o latihan",
+                     "Jalankan    : cd latihan && dotnet run",
+                     "Yang dipelajari di sini VB.NET, BUKAN VB6 atau VBA.",
+                     "Option Strict dinyalakan, jadi konversi tipe harus",
+                     "ditulis dan salah tipe ketahuan saat kompilasi."],
+    },
+    {
         # Bukan bahasa pemrograman, melainkan kurikulum arsitektur aplikasi.
         # Latihannya Java murni, jadi memakai runner "java" yang sudah ada.
         "key": "aplikasi", "label": "Bikin Aplikasi", "runner": "java",
+        "tematik": True,
         "materials": APLIKASI_MATERIALS, "quizzes": APLIKASI_QUIZZES,
         "exercises": APLIKASI_EXERCISES,
         "run_info": ["Kompilasi : javac NamaFile.java", "Jalankan  : java NamaFile",
                      "Modul ini melatih cara berpikir membangun aplikasi,",
                      "bukan sintaks. Kerjakan setelah Java dasar terasa nyaman."],
+    },
+    {
+        "key": "fedora", "label": "CLI Fedora", "runner": "fedora",
+        "tematik": True,
+        "materials": FEDORA_MATERIALS, "quizzes": FEDORA_QUIZZES,
+        "exercises": FEDORA_EXERCISES,
+        "run_info": ["Jalankan : bash nama_file.sh",
+                     "Atau     : chmod +x nama_file.sh && ./nama_file.sh",
+                     "Blok perintah di materi adalah SESI TERMINAL: baca dulu,",
+                     "ketik sendiri, jangan dijalankan aplikasi. Yang berawalan",
+                     "sudo mengubah sistemmu sungguhan.",
+                     "Latihannya aman: semuanya bekerja di direktori sementara",
+                     "dengan hak pengguna biasa, tidak ada yang perlu sudo."],
     },
 ]
 
@@ -428,7 +514,13 @@ def _cara_jalan(lang):
         print(tema.cat("\n  Materi & kuis tetap bisa dipakai; latihan bisa ditandai "
                        "selesai manual.", "redup"))
     if tc and tc.catatan:
-        print(tema.cat("\n  Catatan: " + tc.catatan, "peringatan"))
+        # Dibungkus, bukan dicetak satu baris. Catatan toolchain panjangnya
+        # 90-161 huruf (SQL yang terpanjang), jadi tanpa ini lima bahasa
+        # menumpahkan barisnya keluar terminal 80 kolom -- dan yang terpotong
+        # justru bagian akhir kalimat, tempat peringatannya berada.
+        print()
+        print(tema.cat(utils.wrap("Catatan: " + tc.catatan, indent="  "),
+                       "peringatan"))
     press_enter()
 
 

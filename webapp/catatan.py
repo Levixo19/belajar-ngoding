@@ -39,7 +39,7 @@ import tempfile
 import threading
 from datetime import datetime
 
-from progress import judul_kunci
+from pelajar.progress import judul_kunci
 
 VERSI_CATATAN = 1
 

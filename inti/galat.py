@@ -20,7 +20,7 @@ Modul ini menangani ketiganya:
 Kalau tidak ada pola yang cocok, pesan aslinya tetap ditampilkan apa adanya.
 Menebak-nebak lebih berbahaya daripada diam.
 
-Importir: exercises.py (tampilan hasil uji & mode "jalankan saja").
+Importir: layar/exercises.py (tampilan hasil uji & mode "jalankan saja").
 """
 
 import re

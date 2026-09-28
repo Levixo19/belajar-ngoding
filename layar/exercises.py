@@ -15,7 +15,7 @@ Yang membedakan versi ini dari sekadar "benar/salah":
 * Latihan yang memang tidak bisa dinilai mesin sekarang bisa ditandai selesai
   secara manual, supaya progres bahasa itu tidak mentok selamanya.
 
-Importir: main.py, navigasi.py, tests/test_solutions.py.
+Importir: main.py, layar/navigasi.py, tests/test_solutions.py.
 Berkas yang ditulis: kode pelajar di ~/belajar-ngoding/kerjaanku/<kategori>/
 (override lewat BELAJAR_WORKSPACE).
 """
@@ -25,22 +25,22 @@ import re
 import shutil
 import subprocess
 
-import beda
-import berkas
-import galat as modul_galat
-import runner
-import sorot
-import tema
-from utils import (
+from inti import beda
+from inti import berkas
+from inti import galat as modul_galat
+from inti import runner
+from inti import sorot
+from inti import tema
+from layar.utils import (
     C, paint, clear, press_enter, ask, ask_choice, confirm, header, rule, lebar,
 )
-from progress import (
+from pelajar.progress import (
     record_exercise_viewed, record_exercise_passed, tandai_latihan_manual,
     batalkan_latihan_manual, load_progress, kunci,
 )
 
 try:
-    import konfigurasi
+    from pelajar import konfigurasi
 except ImportError:
     konfigurasi = None
 
@@ -124,6 +124,29 @@ def _kerangka(bahasa, ex):
         return f"#!/usr/bin/env bash\n# {judul}\n# tulis kodemu di sini\n"
     if bahasa == "sql":
         return f"-- {judul}\n-- tulis query-mu di sini\n"
+    if bahasa == "csharp":
+        return (f"// {judul}\nusing System;\n\nclass Program\n{{\n"
+                f"    static void Main()\n    {{\n"
+                f"        // tulis kodemu di sini\n    }}\n}}\n")
+    if bahasa == "vb":
+        return (f"' {judul}\nImports System\n\nModule Program\n"
+                f"    Sub Main()\n        ' tulis kodemu di sini\n"
+                f"    End Sub\nEnd Module\n")
+    if bahasa == "rust":
+        return (f"// {judul}\nfn main() {{\n"
+                f"    // tulis kodemu di sini\n}}\n")
+    if bahasa == "php":
+        return f"<?php\n// {judul}\n// tulis kodemu di sini\n"
+    if bahasa == "ruby":
+        return f"# {judul}\n# tulis kodemu di sini\n"
+    if bahasa == "kotlin":
+        return (f"// {judul}\nfun main() {{\n"
+                f"    // tulis kodemu di sini\n}}\n")
+    if bahasa == "typescript":
+        return f"// {judul}\n// tulis kodemu di sini\n"
+    if bahasa == "fedora":
+        return (f"#!/usr/bin/env bash\n#\n# {judul}\n\n"
+                f"set -euo pipefail\n\n# tulis kodemu di sini\n")
     return f"# {judul}\n# tulis kodemu di sini\n"
 
 

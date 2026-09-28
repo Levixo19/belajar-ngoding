@@ -524,4 +524,141 @@ hitung
 
 rm -f "$BERKAS" """,
     },
+    {
+        'title': 'Proyek Akhir: Perapi Folder Unduhan',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Perapi Folder Unduhan',
+        '',
+        'Folder Unduhan siapa pun akhirnya jadi tumpukan. Buat skrip yang',
+        'memilah berkas ke subfolder menurut jenisnya, melaporkan isinya, dan',
+        'menandai berkas berukuran nol -- ciri unduhan yang putus di tengah.',
+        '',
+        'Skripnya TIDAK boleh menyentuh folder Unduhan sungguhan siapa pun.',
+        'Ia membuat foldernya sendiri di direktori sementara, mengisinya dengan',
+        'berkas contoh, lalu bekerja di situ -- dan membersihkannya saat keluar.',
+        '',
+        'Berkas contoh: laporan.pdf, data.csv, rapat.txt, logo.png, foto.jpg,',
+        'pasang.sh, nilai.csv, dan kosong.txt (benar-benar kosong).',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. mktemp -d untuk folder kerja, dan trap ... EXIT untuk menghapusnya',
+        '     apa pun yang terjadi.',
+        '  2. Fungsi golongan() memakai case atas akhiran berkas:',
+        '     pdf/txt/csv -> dokumen, png/jpg -> gambar, sh -> skrip.',
+        '  3. Fungsi pilah() memindahkan tiap berkas ke rapi/<golongan>/.',
+        '  4. Laporan berkolom dengan printf: golongan, jumlah berkas, jumlah',
+        '     baris seluruh isinya.',
+        '  5. Berkas berukuran nol dicari dengan find -size 0.',
+        '  6. Tiap keluaran yang berasal dari daftar WAJIB melewati sort,',
+        '     karena urutan find dan ls tidak dijamin sama di tiap mesin.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  PERAPI FOLDER UNDUHAN',
+        '  ======================================',
+        '  Golongan    Berkas     Baris',
+        '  dokumen          5         7',
+        '  gambar           2         2',
+        '  skrip            1         2',
+        '  --------------------------------------',
+        '  Berkas kosong (unduhan gagal):',
+        '    dokumen/kosong.txt',
+        '  --------------------------------------',
+        '  Berkas .csv dan isinya:',
+        '    data.csv -> a,b,c',
+        '    nilai.csv -> x,y',
+        '  --------------------------------------',
+        '  Total berkas dipindahkan : 8',
+        '  Golongan terbentuk       : 3',
+    ],
+        'hints': [
+        'Akhiran berkas: ${nama##*.} membuang segalanya sampai titik terakhir.',
+        'trap \'rm -rf "$KERJA"\' EXIT memastikan folder sementaranya hilang walaupun skripnya berhenti di tengah.',
+        "find rapi -name '*.csv' | sort | while read -r f; do ... done -- sort-nya wajib, bukan hiasan.",
+    ],
+        'solution': """#!/usr/bin/env bash
+# Perapi Folder Unduhan -- memilah berkas, membuat laporan, mengarsipkan.
+set -u
+
+KERJA="$(mktemp -d)"
+trap 'rm -rf "$KERJA"' EXIT
+
+siapkan_contoh() {
+  cd "$KERJA" || exit 1
+  mkdir -p unduhan
+  # Berkas contoh dibuat di sini, bukan diambil dari komputer siapa pun:
+  # skrip yang hasilnya bergantung isi folder nyata tidak bisa diuji.
+  printf 'laporan tahunan\\n' > unduhan/laporan.pdf
+  printf 'a,b,c\\n1,2,3\\n' > unduhan/data.csv
+  printf 'catatan rapat\\nbaris kedua\\n' > unduhan/rapat.txt
+  printf 'PNG\\n' > unduhan/logo.png
+  printf 'JPEG\\n' > unduhan/foto.jpg
+  printf '#!/bin/sh\\necho halo\\n' > unduhan/pasang.sh
+  printf 'x,y\\n9,8\\n' > unduhan/nilai.csv
+  : > unduhan/kosong.txt
+}
+
+golongan() {
+  case "${1##*.}" in
+    pdf|txt|csv) echo dokumen ;;
+    png|jpg)     echo gambar ;;
+    sh)          echo skrip ;;
+    *)           echo lain ;;
+  esac
+}
+
+pilah() {
+  local berkas nama gol
+  for berkas in unduhan/*; do
+    nama="$(basename "$berkas")"
+    gol="$(golongan "$nama")"
+    mkdir -p "rapi/$gol"
+    mv "$berkas" "rapi/$gol/$nama"
+  done
+}
+
+laporan() {
+  local gol jumlah
+  echo "PERAPI FOLDER UNDUHAN"
+  echo "======================================"
+  printf '%-10s%8s%10s\\n' "Golongan" "Berkas" "Baris"
+  for gol in $(ls rapi | sort); do
+    jumlah=$(ls "rapi/$gol" | wc -l)
+    baris=$(cat "rapi/$gol"/* 2>/dev/null | wc -l)
+    printf '%-10s%8d%10d\\n' "$gol" "$jumlah" "$baris"
+  done
+  echo "--------------------------------------"
+}
+
+# Berkas berukuran nol sering sisa unduhan yang putus di tengah.
+cari_kosong() {
+  find rapi -type f -size 0 | sort | sed 's|^rapi/||'
+}
+
+siapkan_contoh
+pilah
+laporan
+
+echo "Berkas kosong (unduhan gagal):"
+kosong="$(cari_kosong)"
+if [ -z "$kosong" ]; then
+  echo "  -"
+else
+  echo "$kosong" | while read -r f; do echo "  $f"; done
+fi
+
+echo "--------------------------------------"
+echo "Berkas .csv dan isinya:"
+find rapi -name '*.csv' | sort | while read -r f; do
+  echo "  $(basename "$f") -> $(head -1 "$f")"
+done
+
+echo "--------------------------------------"
+total=$(find rapi -type f | wc -l)
+echo "Total berkas dipindahkan : $total"
+echo "Golongan terbentuk       : $(ls rapi | wc -l)"
+""",
+    },
 ]

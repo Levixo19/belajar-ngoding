@@ -18,6 +18,7 @@ membingungkan daripada tidak memberi instruksi sama sekali. Kalau ragu,
 kembalikan POTONGAN.
 """
 
+import json
 import re
 
 PROGRAM = "program"      # berkas mandiri, bisa langsung dijalankan
@@ -96,6 +97,9 @@ EKSTENSI = {
     "python": ".py", "javascript": ".js", "java": ".java", "c": ".c",
     "cpp": ".cpp", "go": ".go", "bash": ".sh", "sql": ".sql",
     "html": ".html", "css": ".css",
+    "csharp": ".cs", "vb": ".vb", "rust": ".rs", "php": ".php",
+    "ruby": ".rb", "kotlin": ".kt", "typescript": ".ts",
+    "fedora": ".sh",
 }
 
 
@@ -114,6 +118,19 @@ def nama_berkas(bahasa, kode, konteks=""):
         return "index.html"
     if bahasa == "css":
         return "gaya.css"
+    if bahasa == "csharp":
+        # MSBuild mengambil SEMUA berkas .cs di folder proyek; namanya bebas,
+        # dan Program.cs adalah yang dibuat `dotnet new console`.
+        return "Program.cs"
+    if bahasa == "vb":
+        return "Program.vb"
+    if bahasa == "rust":
+        # `rustc main.rs` pada satu berkas; main.rs juga nama yang dicari cargo.
+        return "main.rs"
+    if bahasa == "kotlin":
+        # Nama berkas MENENTUKAN nama kelas yang dihasilkan: main.kt -> MainKt,
+        # dan itulah yang dipanggil saat menjalankannya.
+        return "main.kt"
     return slug(konteks) + EKSTENSI.get(bahasa, ".txt")
 
 
@@ -127,7 +144,18 @@ def perintah_jalan(bahasa, nama):
         "c": [f"gcc {nama} -o {batang}", f"./{batang}"],
         "cpp": [f"g++ {nama} -o {batang}", f"./{batang}"],
         "go": [f"go run {nama}"],
+        "csharp": ["dotnet new console -o latihan  (sekali saja)",
+                   f"Salin {nama} ke folder latihan, lalu: dotnet run"],
+        "vb": ["dotnet new console -lang VB -o latihan  (sekali saja)",
+               f"Salin {nama} ke folder latihan, lalu: dotnet run"],
+        "rust": [f"rustc {nama} -o {batang}", f"./{batang}"],
+        "php": [f"php {nama}"],
+        "ruby": [f"ruby {nama}"],
+        "kotlin": [f"kotlinc {nama} -include-runtime -d {batang}.jar",
+                   f"java -jar {batang}.jar"],
+        "typescript": [f"tsc {nama}", f"node {batang}.js"],
         "bash": [f"bash {nama}"],
+        "fedora": [f"chmod +x {nama}", f"./{nama}"],
         "sql": [f"sqlite3 belajar.db < {nama}"],
         # HTML dan CSS tidak dijalankan dari terminal: keduanya dibuka browser.
         # Perintah yang benar-benar dipakai orang untuk melihat hasilnya adalah
@@ -284,6 +312,90 @@ def _js_lengkap(kode):
     return _kurung_seimbang(kode)
 
 
+def _csharp_lengkap(kode):
+    # Sejak C# 9 ada top-level statement: berkas tanpa class dan tanpa Main
+    # pun program yang sah. Jadi yang diperiksa DUA bentuk, bukan satu.
+    punya_main = bool(re.search(r"\bstatic\s+(?:async\s+)?(?:void|int|Task)"
+                                r"[\w<>\[\]]*\s+Main\s*\(", kode))
+    if punya_main:
+        return bool(re.search(r"\b(class|record|struct)\s+\w+", kode)
+                    and _kurung_seimbang(kode))
+    # Top-level: baris pertama berkode bukan deklarasi tipe, dan ada
+    # pernyataan yang benar-benar mengerjakan sesuatu.
+    ada_tipe = re.search(r"^\s*(?:public\s+|internal\s+)?"
+                         r"(?:abstract\s+|sealed\s+|static\s+)?"
+                         r"(class|interface|record|struct|enum)\s", kode,
+                         re.MULTILINE)
+    ada_panggilan = re.search(r"\w+\s*\([^)]*\)\s*;", kode)
+    return bool(ada_panggilan and not ada_tipe and _kurung_seimbang(kode))
+
+
+def _vb_lengkap(kode):
+    return bool(re.search(r"^\s*(Module|Class)\s+\w+", kode,
+                          re.MULTILINE | re.IGNORECASE)
+                and re.search(r"^\s*Sub\s+Main\b", kode,
+                              re.MULTILINE | re.IGNORECASE)
+                and re.search(r"^\s*End\s+(Module|Class)\b", kode,
+                              re.MULTILINE | re.IGNORECASE))
+
+
+def _rust_lengkap(kode):
+    return bool(re.search(r"\bfn\s+main\s*\(\s*\)", kode)
+                and _kurung_seimbang(kode))
+
+
+def _php_lengkap(kode):
+    # Berkas PHP yang bisa dijalankan WAJIB dibuka dengan <?php. Tanpa itu,
+    # seluruh isinya dicetak apa adanya sebagai teks -- bukan error, tapi juga
+    # bukan yang dimaksud siapa pun.
+    return bool(re.search(r"<\?php\b", kode) and _kurung_seimbang(kode))
+
+
+def _ruby_lengkap(kode):
+    # Ruby tidak punya titik masuk wajib: satu baris puts sudah program utuh.
+    # Yang membuatnya BUKAN program cuma blok yang menggantung tanpa penutup.
+    if not _kurung_seimbang(kode):
+        return False
+    pembuka = len(re.findall(r"^\s*(?:def|class|module|if|unless|case|while|"
+                             r"until|begin|do)\b", kode, re.MULTILINE))
+    penutup = len(re.findall(r"^\s*end\b", kode, re.MULTILINE))
+    # `x if y` satu baris tidak butuh end; hitungan pembuka hanya mengambil
+    # yang berada di AWAL baris, jadi bentuk itu tidak ikut terhitung.
+    return penutup >= pembuka - _ruby_satu_baris(kode)
+
+
+def _ruby_satu_baris(kode):
+    """Berapa banyak `if`/`while` di awal baris yang sebenarnya satu baris."""
+    n = 0
+    for baris in kode.splitlines():
+        b = baris.strip()
+        if re.match(r"^(if|unless|while|until)\b", b) and b.endswith(("end", ";")):
+            n += 1
+    return n
+
+
+def _kotlin_lengkap(kode):
+    return bool(re.search(r"\bfun\s+main\s*\(", kode)
+                and _kurung_seimbang(kode))
+
+
+def _ts_lengkap(kode):
+    # Sama seperti JavaScript: tidak ada fungsi pembungkus yang wajib.
+    #
+    # Kecuali satu hal: berkas KONFIGURASI berformat JSON (tsconfig.json,
+    # package.json) juga berupa kurung kurawal yang seimbang, dan tanpa
+    # pemeriksaan ini ia disebut "program TypeScript" -- lengkap dengan tombol
+    # Jalankan yang selalu berakhir dengan galat compiler. Isinya memang kode,
+    # tapi bukan kode yang dijalankan.
+    if kode.lstrip().startswith("{"):
+        try:
+            json.loads(kode)
+            return False
+        except ValueError:
+            pass
+    return _kurung_seimbang(kode)
+
+
 def _html_lengkap(kode):
     """Halaman utuh, bukan potongan markup.
 
@@ -319,6 +431,15 @@ def jenis_kode(bahasa, kode):
         # diketik di sesi database yang sudah berisi data.
         return PROGRAM if re.search(r"\bCREATE\s+TABLE\b", kode, re.I) else SESI
 
+    if bahasa == "fedora":
+        # Blok materi CLI berisi PERINTAH yang diketik manusia di terminal --
+        # termasuk `sudo dnf5 install` dan `systemctl enable`. Menyebutnya
+        # "program utuh" berarti aplikasi menawarkan tombol Jalankan yang
+        # benar-benar mengeksekusinya di mesin pelajar, mengubah sistemnya
+        # tanpa ia memintanya. Hanya blok yang memang berupa SKRIP -- ditandai
+        # shebang di baris pertama -- yang disebut berkas.
+        return PROGRAM if kode.lstrip().startswith("#!") else SESI
+
     if bahasa == "html":
         return PROGRAM if _html_lengkap(kode) else POTONGAN
     if bahasa == "css":
@@ -334,6 +455,13 @@ def jenis_kode(bahasa, kode):
         "cpp": _c_lengkap,
         "javascript": _js_lengkap,
         "bash": _bash_lengkap,
+        "csharp": _csharp_lengkap,
+        "vb": _vb_lengkap,
+        "rust": _rust_lengkap,
+        "php": _php_lengkap,
+        "ruby": _ruby_lengkap,
+        "kotlin": _kotlin_lengkap,
+        "typescript": _ts_lengkap,
     }.get(bahasa)
 
     if pemeriksa is None:
@@ -346,7 +474,41 @@ def jenis_kode(bahasa, kode):
 LABEL_SESI = {
     "sql": ("Ketik langsung di sesi database (mysql atau sqlite3)",
             "Perlu tabel dari materi sebelumnya, jadi bukan berkas terpisah."),
+    "fedora": ("Ketik langsung di terminal",
+               "Perintah ini mengubah sistemmu sendiri, jadi BACA dulu sebelum "
+               "menjalankannya. Yang berawalan sudo perlu hak administrator."),
 }
+
+
+# Boleh tidak APLIKASI menjalankan sebuah blok atas nama pelajar?
+#
+# PROGRAM selalu boleh: itu memang berkas utuh, dan runner menjalankannya di
+# direktori sementara dengan batas sumber daya.
+#
+# SESI yang menjebak. Namanya satu, konsekuensinya dua:
+#
+#   sql    : sesinya adalah sqlite3 yang dinyalakan aplikasi sendiri. Aman,
+#            dan memang gunanya -- pelajar bisa mencoba query dari materi.
+#   fedora : sesinya adalah TERMINAL MILIK PELAJAR. Blok seperti
+#            `sudo dnf5 install`, `systemctl enable`, dan `mkfs.ext4` hanya
+#            bermakna kalau ia sendiri yang mengetiknya. Menjalankannya atas
+#            namanya berarti mengubah sistemnya tanpa ia meminta.
+#
+# Menyamakan keduanya PERNAH terjadi: `bisa_dijalankan` dulu berbunyi
+# `jenis in (PROGRAM, SESI)`, dan halaman materi Fedora menawarkan tombol
+# Jalankan pada empat blok perintah sekaligus -- salah satunya rm. Aturannya
+# tinggal di sini, sebelah klasifikasinya, supaya tidak ada tempat kedua yang
+# bisa melenceng.
+SESI_BOLEH_DIJALANKAN = frozenset({"sql"})
+
+
+def boleh_dijalankan_aplikasi(bahasa, jenis):
+    """Boleh tidak aplikasi mengeksekusi blok ini atas nama pelajar?"""
+    if jenis == PROGRAM:
+        return True
+    if jenis == SESI:
+        return (bahasa or "").lower() in SESI_BOLEH_DIJALANKAN
+    return False
 
 
 def petunjuk_kode(bahasa, kode, konteks=""):

@@ -12,10 +12,10 @@ import unittest
 from contextlib import redirect_stdout
 from unittest import mock
 
-import navigasi
-import konfigurasi
-import progress
-import utils
+from layar import navigasi
+from pelajar import konfigurasi
+from pelajar import progress
+from layar import utils
 from main import LANGUAGES
 
 

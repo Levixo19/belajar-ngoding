@@ -26,9 +26,9 @@ import os
 import tempfile
 import unittest
 
-import bab
-import konfigurasi
-import progress
+from pelajar import bab
+from pelajar import konfigurasi
+from pelajar import progress
 from data.bab import BAB
 from main import LANGUAGES
 

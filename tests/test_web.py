@@ -40,9 +40,9 @@ import urllib.error
 import urllib.request
 from datetime import date
 
-import bab
-import konfigurasi
-import progress
+from pelajar import bab
+from pelajar import konfigurasi
+from pelajar import progress
 from webapp import api, isi, sesi
 from webapp import catatan as modul_catatan
 from webapp import server as modul_server
@@ -623,6 +623,48 @@ class TestLatihan(BasisWeb):
 
 # --------------------------------------------------------------- penyajian isi
 
+class TestBerkasStatik(unittest.TestCase):
+    """Penjagaan yang bentuknya berkas, bukan perilaku."""
+
+    AKAR_JS = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "webapp", "statik", "js")
+
+    def test_tidak_ada_replaceChildren_di_luar_inti(self):
+        """`replaceChildren` mengubah `null` jadi kata "null" di layar.
+
+        Seluruh berkas ini memakai pola `syarat ? h(...) : null`. Di dalam
+        `h()` pola itu aman -- `tambah()` menyaringnya. Dipasang langsung
+        sebagai argumen `replaceChildren`, `null` berubah jadi simpul teks dan
+        kata "null" muncul di halaman, tanpa satu pun error di konsol. Sudah
+        pernah terjadi di layar kuis (dua kali) dan bookmark.
+
+        Penggantinya `isikan()` di inti.js, yang lewat `tambah()` yang sama.
+        """
+        pelanggar = []
+        for nama in sorted(os.listdir(self.AKAR_JS)):
+            if not nama.endswith(".js") or nama == "inti.js":
+                continue
+            with open(os.path.join(self.AKAR_JS, nama), encoding="utf-8") as f:
+                for nomor, baris in enumerate(f, 1):
+                    if "replaceChildren(" in baris:
+                        pelanggar.append(f"{nama}:{nomor}")
+        self.assertEqual(pelanggar, [],
+                         "pakai isikan() dari inti.js, bukan replaceChildren")
+
+    def test_penanda_modul_es_ada(self):
+        """Tanpa berkas ini, dua tes yang menjalankan JS-nya GAGAL, bukan skip.
+
+        Node membaca *.js sebagai CommonJS kecuali package.json terdekat
+        menyatakan sebaliknya, dan tes yang merah karena alasan yang tidak ada
+        hubungannya dengan isinya adalah tes yang berhenti dibaca orang.
+        """
+        jalur = os.path.join(self.AKAR_JS, "package.json")
+        self.assertTrue(os.path.exists(jalur), "webapp/statik/js/package.json hilang")
+        with open(jalur, encoding="utf-8") as f:
+            self.assertEqual(json.load(f).get("type"), "module")
+
+
 class TestPenyajianIsi(unittest.TestCase):
     def test_blok_badan_memisahkan_prosa_pra_dan_daftar(self):
         blok = isi.blok_badan([
@@ -635,12 +677,198 @@ class TestPenyajianIsi(unittest.TestCase):
                          ["teks", "pra", "daftar", "daftar"])
         self.assertFalse(blok[2]["urut"])
         self.assertTrue(blok[3]["urut"])
-        self.assertEqual(blok[2]["butir"], ["butir satu", "butir dua"])
+        self.assertEqual([x["teks"] for x in blok[2]["butir"]],
+                         ["butir satu", "butir dua"])
 
     def test_blok_pra_mempertahankan_indentasi_relatif(self):
         """Tabel ASCII hanya terbaca kalau kolomnya tetap sejajar."""
         blok = isi.blok_badan(["  induk", "      anak"])
         self.assertEqual(blok[0]["teks"], "induk\n    anak")
+
+    def test_daftar_menjorok_tetap_daftar(self):
+        """Regresi: daftar yang ditulis menjorok jadi blok monospace.
+
+        Ini bentuk yang dipakai HAMPIR SELURUH kurikulum -- 664 dari 885
+        daftar. Karena indentasi diperiksa sebelum penanda, semuanya dulu
+        mendarat sebagai `pra`, dan halaman materi kehilangan satu-satunya
+        pembeda visual antara penjelasan dan contoh kode.
+        """
+        blok = isi.blok_badan(["  - butir satu", "  - butir dua"])
+        self.assertEqual([b["jenis"] for b in blok], ["daftar"])
+        self.assertEqual([x["teks"] for x in blok[0]["butir"]],
+                         ["butir satu", "butir dua"])
+
+    def test_baris_lanjutan_menyambung_kalimat_butirnya(self):
+        """Satu kalimat tidak boleh pecah jadi beberapa bulatan."""
+        blok = isi.blok_badan([
+            "  - Kalau kamu datang dari Python, lupakan dulu alur",
+            "    program. Di sini kamu menjelaskan sebuah dokumen.",
+        ])
+        self.assertEqual(len(blok[0]["butir"]), 1)
+        self.assertEqual(
+            blok[0]["butir"][0]["teks"],
+            "Kalau kamu datang dari Python, lupakan dulu alur program. "
+            "Di sini kamu menjelaskan sebuah dokumen.")
+
+    def test_contoh_milik_butir_tidak_diratakan_jadi_kalimat(self):
+        """Perataan kolom ADALAH isinya; menyambungnya menghapus artinya."""
+        blok = isi.blok_badan([
+            "  - Generic hanya bisa menampung objek:",
+            "      List<int> daftar;       // ERROR",
+            "      List<Integer> daftar;   // benar",
+        ])
+        butir = blok[0]["butir"][0]
+        self.assertEqual(butir["teks"], "Generic hanya bisa menampung objek:")
+        self.assertEqual([x["jenis"] for x in butir["blok"]], ["pra"])
+        self.assertEqual(butir["blok"][0]["teks"],
+                         "List<int> daftar;       // ERROR\n"
+                         "List<Integer> daftar;   // benar")
+
+    def test_urutan_prosa_dan_contoh_di_dalam_butir_dipertahankan(self):
+        """Prosa penutup sering MENUNJUK contoh di atasnya."""
+        blok = isi.blok_badan([
+            "1. INLINE - atribut style langsung di elemennya.",
+            "     <h1 style=\"color: darkred\">",
+            "   Hanya mengenai satu elemen itu.",
+        ])
+        butir = blok[0]["butir"][0]
+        self.assertEqual(butir["teks"],
+                         "INLINE - atribut style langsung di elemennya.")
+        self.assertEqual([x["jenis"] for x in butir["blok"]], ["pra", "teks"])
+
+    def test_tabel_berkolom_bintang_bukan_daftar(self):
+        """"  *  perkalian        a * b" adalah tabel, bukan butir.
+
+        Pembedanya jumlah spasi sesudah penanda: 446 dari 449 daftar sungguhan
+        memakai tepat satu, dan ketiga sisanya justru tabel seperti ini.
+        """
+        blok = isi.blok_badan([
+            "  *  perkalian        a * b",
+            "  /  pembagian        a / b",
+        ])
+        self.assertEqual([b["jenis"] for b in blok], ["pra"])
+
+    def test_paragraf_disambung_bukan_dipatahkan_ulang(self):
+        """Patahan baris di sumber cuma jejak lebar berkasnya, bukan isi."""
+        blok = isi.blok_badan([
+            "Materi ini hanya tentang yang pertama. Jangan campur dulu.",
+            "Halaman yang HTML-nya benar tapi belum diberi CSS tetap bisa",
+            "dibaca orang.",
+        ])
+        self.assertEqual(blok[0]["jenis"], "teks")
+        self.assertNotIn("\n", blok[0]["teks"])
+
+    def test_kata_terpenggal_disambung_tanpa_spasi(self):
+        """"diam-" + "diam" = "diam-diam", bukan "diam- diam".
+
+        Semua 18 pemenggalan di kurikulum adalah kata ulang, jadi tanda
+        hubungnya bagian dari katanya dan yang salah cuma spasinya.
+        """
+        blok = isi.blok_badan(["Ia menebak diam-",
+                               "diam lalu tetap menampilkan halamannya."])
+        self.assertEqual(blok[0]["teks"],
+                         "Ia menebak diam-diam lalu tetap menampilkan "
+                         "halamannya.")
+
+    def test_tanda_hubung_sebagai_jeda_tetap_berspasi(self):
+        """Hubung yang didahului spasi itu tanda baca, bukan penggalan kata."""
+        blok = isi.blok_badan(["Pakai tanda hubung -",
+                               "lalu lanjut ke berikutnya."])
+        self.assertEqual(blok[0]["teks"],
+                         "Pakai tanda hubung - lalu lanjut ke berikutnya.")
+
+    def test_paragraf_berkolom_mempertahankan_barisnya(self):
+        """"printf() -> ..." / "scanf()  -> ..." adalah dua entri, bukan satu."""
+        blok = isi.blok_badan([
+            "printf() -> menampilkan output ke layar.",
+            "scanf()  -> membaca input dari keyboard.",
+        ])
+        self.assertIn("\n", blok[0]["teks"])
+
+    def test_prosa_menjorok_bukan_blok_monospace(self):
+        """181 paragraf biasa dulu tampil sebagai kotak berhuruf mesin ketik."""
+        blok = isi.blok_badan([
+            "  Tag pembuka cuma berkata \"mulai dari sini\". Tanpa penutup,",
+            "  browser tidak tahu di mana elemennya berakhir, jadi ia menebak",
+            "  diam-diam lalu tetap menampilkan halamannya.",
+        ])
+        self.assertEqual([b["jenis"] for b in blok], ["catatan"])
+        self.assertNotIn("\n", blok[0]["teks"])
+
+    def test_kode_menjorok_tetap_monospace(self):
+        """Sisi salah yang dipilih: ragu berarti TETAP kode.
+
+        Menyangka prosa sebagai kode cuma mempertahankan keadaan lama;
+        menyangka kode sebagai prosa menghapus perataan yang jadi isinya.
+        """
+        for contoh in (
+            ["  bash --version"],                                # satu baris
+            ["  grep 'a\\+' berkas", "  grep -E 'a+' berkas"],    # tanpa titik
+            ["  module github.com/andi/tokoku", "  go 1.21"],
+            ["  Tipe   Ukuran", "  int    4 byte"],             # kolom sejajar
+        ):
+            with self.subTest(contoh=contoh[0]):
+                self.assertEqual(
+                    [b["jenis"] for b in isi.blok_badan(contoh)], ["pra"])
+
+    def test_blok_berperan_dikenali(self):
+        """"Jebakan:" dan "Aturan ..." dibaca berbeda, jadi harus TAMPIL beda.
+
+        Kurikulum sudah menulisnya sejak awal; yang hilang cuma penandanya di
+        layar, sehingga peringatan berhuruf kapital punya bobot visual yang
+        sama dengan kalimat penghubung di sebelahnya.
+        """
+        contoh = [
+            ("JEBAKAN: gambar pertama halaman justru tidak boleh lazy.",
+             "jebakan"),
+            ("Jangan pakai <br><br> untuk membuat jarak antar paragraf.",
+             "jebakan"),
+            ("Aturan yang menyelamatkanmu dari banyak kebingungan:", "aturan"),
+            ("Perhatikan letak daftar bersarang di contoh:", "aturan"),
+            ("Dua paragraf pertama isinya sama persis.", ""),
+        ]
+        for teks, harap in contoh:
+            with self.subTest(teks=teks[:30]):
+                blok = isi.blok_badan([teks])
+                self.assertEqual(blok[0].get("peran"), harap)
+
+    def test_peran_tetap_jarang(self):
+        """Kalau semuanya ditandai, tidak ada yang tertandai.
+
+        Ambangnya bukan selera: kotak berwarna yang muncul di tiap dua
+        paragraf berhenti dibaca sebagai penanda dan mulai dibaca sebagai
+        latar belakang. 6% sekarang; kalau sebuah pola baru ditambahkan dan
+        angkanya melewati 15%, yang hilang bukan kerapian melainkan seluruh
+        gunanya.
+        """
+        berperan = biasa = 0
+        for lang in api.LANGUAGES:
+            for m in lang["materials"]:
+                for bagian in m["sections"]:
+                    for b in isi.blok_badan(bagian.get("body") or []):
+                        if b["jenis"] not in ("teks", "catatan"):
+                            continue
+                        if b.get("peran"):
+                            berperan += 1
+                        else:
+                            biasa += 1
+        total = berperan + biasa
+        self.assertGreater(berperan, 100, "terlalu sedikit untuk memberi irama")
+        self.assertLess(berperan / total, 0.15,
+                        "terlalu sering; penandanya berhenti menandai apa pun")
+
+    def test_daftar_bersarang_tidak_diratakan(self):
+        blok = isi.blok_badan([
+            "  - Alasannya:",
+            "    - Satu berkas menata semua halaman.",
+            "    - Browser menyimpannya di cache.",
+        ])
+        butir = blok[0]["butir"]
+        self.assertEqual(len(butir), 1)
+        self.assertEqual(butir[0]["teks"], "Alasannya:")
+        self.assertEqual([x["teks"] for x in butir[0]["anak"]["butir"]],
+                         ["Satu berkas menata semua halaman.",
+                          "Browser menyimpannya di cache."])
 
     def test_token_semua_kode_kurikulum_utuh(self):
         """Tidak boleh ada satu karakter pun yang hilang saat kode dipecah."""
@@ -990,18 +1218,38 @@ class TestBerkasWebLengkap(unittest.TestCase):
             css = f.read()
 
         wajib = [
-            "lanjutkan", "lanjutkan-tbl", "kepala-besar", "kepala-sub",
-            "fakta", "fakta-butir", "kemajuan-baris", "tab-jumlah",
+            "lanjutkan", "lanjutkan-tbl", "lanjutkan-nomor",
+            "kepala-besar", "kepala-sub",
+            "fakta", "fakta-butir", "tab-jumlah",
             "materi-tata", "materi-rel", "materi-peta", "materi-utama",
-            "kerja-tata", "kerja-soal", "kerja-kode", "tbl-pilih",
-            "sambut", "kartu-level", "tuntas",
+            "materi-alat",
+            "kerja", "kerja-tata", "kerja-soal", "kerja-kode", "kerja-bawah",
+            "kerja-tindakan", "kerja-utama", "kerja-hasil",
+            "tbl-pilih", "tbl-set", "sambut", "kartu-level",
+            # Dasbor dua kolom, dan layar "mulai" untuk profil yang masih
+            # kosong. Tanpa aturannya, dasbor kembali jadi satu kolom
+            # bertumpuk dan tiga pintu masuk di layar pertama kehilangan
+            # bentuknya sama sekali.
+            "dasbor", "dasbor-utama", "dasbor-sisi", "mulai", "pintu",
+            # Keadaan: SATU komponen untuk kosong/berhasil/gagal/terkunci.
+            # Kalau aturannya hilang, keempatnya sekaligus jadi teks telanjang
+            # di tengah halaman — termasuk layar penolakan bab terkunci.
+            "keadaan", "keadaan-tuntas", "keadaan-kosong", "keadaan-kunci",
+            # Strip konteks: pengganti remah roti sekaligus pembawa posisi.
+            # Tanpa gayanya ia jadi setumpuk teks tak berjarak di bawah navbar.
+            "konteks-balik", "konteks-tengah", "konteks-maju", "konteks-langkah",
+            # Peta bab menggantikan gulungan lima ribu piksel sebagai jawaban
+            # atas "ada berapa bab dan aku di mana"; panel bantuan yang
+            # menjauhkan "lihat jawaban" dari "periksa jawaban".
+            "peta-bab", "bantuan", "bantuan-kepala", "bantuan-isi",
+            "bantuan-akhir",
             # Bab: tanpa aturan-aturan ini daftar materi kembali jadi satu
             # senarai rata tanpa pengelompokan, dan bab yang terkunci tampak
             # persis sama dengan yang terbuka — kegagalan diam yang justru
             # jadi alasan tes ini ada.
             "bab", "bab-daftar", "bab-kepala", "bab-nomor", "bab-ket",
-            "bab-maju", "bab-kunci", "bab-terkunci", "baris-terkunci",
-            "pil-kunci", "materi-rel-bab",
+            "bab-maju", "bab-kunci", "bab-terkunci", "bab-lipat", "bab-isi",
+            "baris-terkunci", "pil-kunci", "materi-rel-bab",
         ]
         # Dua hal harus dibereskan dulu, dan keduanya pernah membuat tes ini
         # tidak pernah bisa gagal:
@@ -1222,6 +1470,21 @@ class TestBabWeb(BasisWeb):
                              f"langkah menunjuk materi terkunci: {s['judul']}")
 
 
+def _panen_butir(butir, keluar):
+    """Kumpulkan SELURUH teks di dalam pohon butir, termasuk sarang dan contoh.
+
+    Sebuah butir menyimpan kalimat pertamanya di `teks`, sisanya di `blok`, dan
+    daftar anaknya di `anak`. Melupakan salah satunya membuat tes kesamaan isi
+    lolos untuk kalimat yang sebenarnya tidak pernah sampai ke layar.
+    """
+    for x in butir:
+        keluar.append(x.get("teks") or "")
+        for sub in x.get("blok") or []:
+            keluar.append(sub.get("teks") or "")
+        if x.get("anak"):
+            _panen_butir(x["anak"]["butir"], keluar)
+
+
 class TestIsiSamaDenganTerminal(BasisWeb):
     """Web dan terminal harus menampilkan ISI yang sama untuk materi yang sama.
 
@@ -1238,7 +1501,7 @@ class TestIsiSamaDenganTerminal(BasisWeb):
                 continue
             for blok in b["blok"]:
                 keluar.append(blok.get("teks") or "")
-                keluar.extend(blok.get("butir") or [])
+                _panen_butir(blok.get("butir") or [], keluar)
         return " ".join(keluar)
 
     def test_bagian_bercode_tidak_membuang_prosanya(self):
@@ -1280,7 +1543,7 @@ class TestIsiSamaDenganTerminal(BasisWeb):
 
     def test_seluruh_kurikulum_tampil_utuh_di_kedua_antarmuka(self):
         """Setiap baris body di SETIAP materi harus sampai ke sisi web."""
-        import materials
+        from layar import materials
         for lang in api.LANGUAGES:
             for m in lang["materials"]:
                 web = self._huruf(self._prosa_web(m, lang))

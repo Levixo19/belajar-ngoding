@@ -5,9 +5,9 @@ import tempfile
 import unittest
 from datetime import date, timedelta
 
-import konfigurasi
-import progress
-import saran
+from pelajar import konfigurasi
+from pelajar import progress
+from pelajar import saran
 from main import LANGUAGES
 
 

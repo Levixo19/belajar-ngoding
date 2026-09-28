@@ -24,7 +24,7 @@ JAVA_QUIZZES = [
                 "q": "Berapakah hasil dari 7 / 2 dalam Java (keduanya int)?",
                 "options": ["3.5", "3", "3.0", "2"],
                 "answer": 1,
-                "explanation": "int / int = int, sisa dibuang. 7/2 = 3.",
+                "explanation": "Di Java, int dibagi int SELALU menghasilkan int: bagian pecahannya dibuang, bukan dibulatkan. 7/2 = 3, dan -7/2 = -3 (dipotong ke arah nol). Yang dikira pemula: 3.5. Untuk mendapatkannya salah satu sisi harus pecahan lebih dulu -- 7 / 2.0, atau (double) a / b. Menulis double hasil = 7 / 2; tidak menolong, karena pembagiannya sudah selesai sebagai int sebelum hasilnya disalin.",
             },
             {
                 "q": "Sisa bagi dari 7 % 3 adalah?",
@@ -283,7 +283,7 @@ JAVA_QUIZZES = [
                     "SQLException",
                 ],
                 "answer": 1,
-                "explanation": "x / 0 menghasilkan ArithmeticException.",
+                "explanation": "Pembagian BILANGAN BULAT dengan nol melempar ArithmeticException. Yang sering mengagetkan: untuk bilangan pecahan ia TIDAK melempar apa pun. 1.0 / 0 menghasilkan Infinity, -1.0 / 0 menghasilkan -Infinity, dan 0.0 / 0 menghasilkan NaN. Jadi pembagian double yang salah tidak berhenti di tempat kesalahannya -- ia jalan terus membawa nilai aneh sampai jauh di kemudian.",
             },
             {
                 "q": "Untuk melemparkan exception secara sengaja, gunakan kata kunci?",
@@ -295,7 +295,7 @@ JAVA_QUIZZES = [
                 "q": "Struktur data mana yang TIDAK mengizinkan nilai duplikat?",
                 "options": ["List", "ArrayList", "Set", "Queue"],
                 "answer": 2,
-                "explanation": "Set menjamin elemen unik (misal HashSet).",
+                "explanation": "Set menolak elemen kembar; add() yang menambahkan nilai yang sudah ada mengembalikan false dan isinya tidak berubah. Yang perlu diketahui sebelum memakainya untuk objek buatan sendiri: HashSet memutuskan sudah-ada-atau-belum lewat hashCode() dan equals(), bukan lewat isi field. Dua objek dengan data identik tapi tanpa kedua method itu tetap dianggap BERBEDA, dan Set-nya akan berisi keduanya.",
             },
             {
                 "q": "Struktur data pasangan key-value di Java adalah?",
@@ -330,6 +330,45 @@ JAVA_QUIZZES = [
                 "options": ["A", "B", "A lalu B", "B lalu A"],
                 "answer": 2,
                 "explanation": "catch menangani error (A), lalu finally selalu jalan (B).",
+            },
+            {
+                "q": "Antrean panjang: masuk di belakang, keluar dari depan. Kenapa ArrayDeque lebih tepat daripada ArrayList?",
+                "options": [
+                    "ArrayList tidak punya method untuk menghapus dari depan",
+                    "remove(0) menggeser seluruh sisa isinya, ArrayDeque tidak",
+                    "ArrayDeque menjaga isinya tetap terurut, ArrayList tidak",
+                    "ArrayList menyimpan salinan, ArrayDeque menyimpan rujukan",
+                ],
+                "answer": 1,
+                "explanation": "Elemen ArrayList wajib duduk rapat mulai indeks 0, jadi remove(0) memindahkan semua sisanya satu langkah -- makin panjang antreannya, makin mahal. ArrayDeque cuma menggeser penanda ujungnya. ArrayList BISA menghapus dari depan (cuma mahal), dan tidak satu pun dari keduanya mengurutkan isinya sendiri.",
+            },
+            {
+                "q": "Deque<String> d = new ArrayDeque<>(); d.addFirst(\"A\"); d.addLast(\"B\"); d.addFirst(\"C\"); Apa hasil d.removeFirst()?",
+                "options": ["A", "B", "C", "null"],
+                "answer": 2,
+                "explanation": "addFirst menaruh di ujung depan, jadi C mendorong A ke belakangnya: isinya [C, A, B]. removeFirst() mengambil dari ujung depan, yaitu C. Salah paham yang sering terjadi: mengira removeFirst() mengambil yang paling awal DIMASUKKAN (A), padahal ia mengambil yang paling depan SEKARANG.",
+            },
+            {
+                "q": "Antreannya kosong. Apa beda removeFirst() dan pollFirst()?",
+                "options": [
+                    "Keduanya sama-sama mengembalikan null",
+                    "removeFirst() melempar exception, pollFirst() memberi null",
+                    "Keduanya melempar NoSuchElementException saat kosong",
+                    "removeFirst() memberi null, pollFirst() melempar exception",
+                ],
+                "answer": 1,
+                "explanation": "Pasangan remove/poll, get/peek, dan add/offer cuma berbeda saat koleksinya kosong: remove dan get berhenti keras dengan NoSuchElementException, poll dan peek mengembalikan null. Pakai removeFirst() kalau kosong berarti ada yang salah di programmu; pollFirst() kalau kosong memang keadaan yang wajar.",
+            },
+            {
+                "q": "Kenapa ArrayDeque menolak addLast(null) dengan NullPointerException?",
+                "options": [
+                    "Karena null bukan nilai yang sah untuk tipe objek",
+                    "Karena peekFirst() memakai null untuk menandai kosong",
+                    "Karena ArrayDeque hanya menerima tipe angka di dalamnya",
+                    "Karena null membuat ukuran antreannya tidak terhitung",
+                ],
+                "answer": 1,
+                "explanation": "peekFirst() dan pollFirst() memakai null untuk berarti 'antreannya kosong'. Kalau null boleh ikut disimpan, hasil null jadi ambigu -- kosong, atau isinya memang null? Larangan di sisi masuk menutup kebingungan itu di sisi keluar. ArrayList TIDAK punya larangan ini, jadi kebiasaan dari List tidak berlaku di sini.",
             },
         ],
     },

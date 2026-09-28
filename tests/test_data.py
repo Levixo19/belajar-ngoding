@@ -8,8 +8,8 @@ import re
 import unittest
 
 from main import LANGUAGES
-from materials import teks_polos
-import runner
+from layar.materials import teks_polos
+from inti import runner
 
 TINGKAT_URUT = ["Mudah", "Menengah", "Lanjut", "Sulit"]
 TINGKAT_VALID = set(TINGKAT_URUT)

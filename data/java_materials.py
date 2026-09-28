@@ -3225,9 +3225,9 @@ public class Main {
                 "body": [
                     "Keluarannya:",
                     "",
-                    "  Andi / 92                       <- nama() sudah ter-trim compact constructor",
-                    "  Nilai[nama=Andi, angka=92]      <- toString bawaan record",
-                    "  true                            <- equals membandingkan ISI, bukan alamat",
+                    "  Andi / 92",
+                    "  Nilai[nama=Andi, angka=92]",
+                    "  true",
                     "  A D",
                     "  Nilai[nama=Andi, angka=92] -> Nilai[nama=Andi, angka=70]",
                     "  SELECT nama, angka",
@@ -3242,6 +3242,11 @@ public class Main {
                     "  Andi    70 C",
                     "  Cici     0 E",
                     "  ditolak: nilai di luar 0-100: 120",
+                    "",
+                    "Tiga baris pertama itu masing-masing membuktikan satu hal:",
+                    "  Andi / 92                   nama() sudah ter-trim oleh compact constructor",
+                    "  Nilai[nama=Andi, angka=92]  toString bawaan record, tanpa ditulis sendiri",
+                    "  true                        equals membandingkan ISI, bukan alamat objek",
                     "",
                     "Tiga baris yang rapi berkolom itu datang dari printf, bukan println:",
                     "",
@@ -4175,7 +4180,183 @@ public class Main {
         ],
     },
     {
-        "title": "25. String & Scanner (Input)",
+        "title": "25. Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque",
+        "sections": [
+            {
+                "body": [
+                    "Materi sebelumnya mengenalkan List, Set, dan Map — tiga bentuk yang menjawab",
+                    "\"simpan banyak nilai\". Materi ini soal bentuk keempat: koleksi yang isinya MASUK",
+                    "dan KELUAR terus-menerus, bukan disimpan lalu dibaca.",
+                    "",
+                    "Setelah materi ini kamu bisa:",
+                    "  - membedakan antrean (FIFO) dari tumpukan (LIFO), dan tahu kapan butuh yang mana;",
+                    "  - memakai ArrayDeque untuk keduanya;",
+                    "  - tahu method mana yang MELEMPAR exception saat koleksinya kosong dan mana yang",
+                    "    mengembalikan null — perbedaan yang cuma terasa persis saat kosong.",
+                    "",
+                    "KENAPA BUKAN ARRAYLIST SAJA",
+                    "",
+                    "ArrayList bisa menirukan antrean. Tambah di belakang dengan add(x), ambil dari depan",
+                    "dengan remove(0). Jalan, dan untuk sepuluh elemen tidak ada yang terasa.",
+                    "",
+                    "Yang tidak kelihatan: remove(0) harus MENGGESER seluruh sisa isinya satu langkah ke",
+                    "kiri, karena elemen ArrayList wajib duduk rapat mulai dari indeks 0. Mengambil satu",
+                    "orang dari depan antrean berisi seribu berarti sembilan ratus sembilan puluh sembilan",
+                    "pemindahan — untuk pekerjaan yang seharusnya sekali sentuh.",
+                    "",
+                    "ArrayDeque tidak menyimpan isinya rapat dari indeks 0. Ia menyimpan dua penanda:",
+                    "mana ujung depan, mana ujung belakang. Menambah atau mengambil di kedua ujung cuma",
+                    "menggeser penandanya. Tidak ada isi yang ikut dipindahkan.",
+                    "",
+                    "FIFO DAN LIFO: SATU KELAS, DUA PERILAKU",
+                    "",
+                    "  FIFO (First In, First Out)  antrean kasir — yang datang duluan dilayani duluan.",
+                    "  LIFO (Last In, First Out)   tumpukan piring — yang ditaruh terakhir diambil duluan.",
+                    "",
+                    "Deque dibaca \"dek\", singkatan double ended queue: antrean berujung dua. Karena ia",
+                    "bisa menambah DAN mengambil di kedua ujung, satu kelas yang sama melayani keduanya:",
+                    "",
+                    "  antrean  : masuk di belakang (addLast),  keluar dari depan (removeFirst)",
+                    "  tumpukan : masuk di depan    (addFirst), keluar dari depan (removeFirst)",
+                    "",
+                    "Perhatikan bahwa yang berubah cuma ujung MASUKNYA. Keluarnya sama-sama dari depan.",
+                    "Itu seluruh perbedaan antrean dan tumpukan, dan sekarang kamu sudah melihatnya.",
+                    "",
+                    "QUEUE ATAU DEQUE?",
+                    "",
+                    "Queue interface yang lebih tua dan lebih sempit: ia cuma menjanjikan satu ujung",
+                    "masuk dan satu ujung keluar. Deque memperluasnya dengan ujung kedua, jadi setiap",
+                    "Deque otomatis juga Queue. Untuk kode baru tulis tipenya Deque dan isinya",
+                    "new ArrayDeque<>() — kebiasaan menulis interface di kiri dan implementasi di kanan",
+                    "berlaku sama seperti pada List dan ArrayList.",
+                ],
+            },
+            {
+                "heading": "Antrean dan tumpukan dari satu kelas yang sama",
+                "code": """import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        // ANTREAN (FIFO): masuk di belakang, keluar dari depan.
+        Deque<String> antrean = new ArrayDeque<>();
+        antrean.addLast("Ani");                    // datang pertama
+        antrean.addLast("Budi");
+        antrean.addLast("Cici");
+        System.out.println("Antrean : " + antrean);
+        System.out.println("Dilayani: " + antrean.removeFirst());
+        System.out.println("Berikut : " + antrean.peekFirst());   // dilihat, tidak diambil
+        System.out.println("Sisa    : " + antrean);
+
+        // TUMPUKAN (LIFO): masuk di DEPAN, keluar juga dari depan.
+        Deque<String> tumpukan = new ArrayDeque<>();
+        tumpukan.addFirst("piring 1");
+        tumpukan.addFirst("piring 2");
+        tumpukan.addFirst("piring 3");
+        System.out.println();
+        System.out.println("Tumpukan: " + tumpukan);
+        System.out.println("Diambil : " + tumpukan.removeFirst());
+        System.out.println("Sisa    : " + tumpukan);
+
+        // SAAT KOSONG: dua cara bertanya, dua akibat yang berbeda.
+        Deque<String> habis = new ArrayDeque<>();
+        System.out.println();
+        System.out.println("peekFirst() saat kosong: " + habis.peekFirst());
+        try {
+            habis.removeFirst();
+        } catch (java.util.NoSuchElementException e) {
+            System.out.println("removeFirst() saat kosong: " + e.getClass().getSimpleName());
+        }
+
+        // Dipakai sebagai loop: selama masih ada yang antre, layani.
+        Deque<String> loket = new ArrayDeque<>(List.of("Dita", "Eka", "Fajar"));
+        System.out.println();
+        while (!loket.isEmpty()) {
+            System.out.println("Memanggil: " + loket.removeFirst());
+        }
+
+        // Pembanding: ArrayList memang bisa, tapi remove(0) menggeser sisanya.
+        List<Integer> daftar = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+        daftar.remove(0);
+        System.out.println();
+        System.out.println("ArrayList setelah remove(0): " + daftar);
+    }
+}""",
+            },
+            {
+                "body": [
+                    "TIGA PASANG METHOD, DAN BEDANYA BARU TERASA SAAT KOSONG",
+                    "",
+                    "Tiap pekerjaan punya dua versi: satu berhenti keras, satu mengembalikan penanda.",
+                    "",
+                    "                    berhenti keras        mengembalikan penanda",
+                    "  masuk depan       addFirst(x)           offerFirst(x)  -> boolean",
+                    "  masuk belakang    addLast(x)            offerLast(x)   -> boolean",
+                    "  keluar depan      removeFirst()         pollFirst()    -> null kalau kosong",
+                    "  keluar belakang   removeLast()          pollLast()     -> null kalau kosong",
+                    "  lihat depan       getFirst()            peekFirst()    -> null kalau kosong",
+                    "  lihat belakang    getLast()             peekLast()     -> null kalau kosong",
+                    "",
+                    "Selama koleksinya berisi, kolom kiri dan kanan berperilaku persis sama. Bedanya",
+                    "muncul tepat saat kosong: removeFirst() melempar NoSuchElementException, sedangkan",
+                    "pollFirst() mengembalikan null dan program jalan terus.",
+                    "",
+                    "Mana yang dipakai bukan soal selera:",
+                    "  - Kalau kosong berarti ada yang SALAH di programmu, pakai removeFirst(). Biarkan",
+                    "    ia berhenti di tempat kesalahannya, bukan beberapa baris sesudahnya.",
+                    "  - Kalau kosong adalah keadaan yang memang wajar (\"belum ada yang antre\"), pakai",
+                    "    pollFirst() atau peekFirst(), lalu periksa null-nya.",
+                    "",
+                    "Bentuk yang paling sering ditulis justru menghindari keduanya:",
+                    "",
+                    "  while (!antrean.isEmpty()) {",
+                    "      String orang = antrean.removeFirst();",
+                    "      ...",
+                    "  }",
+                    "",
+                    "isEmpty() sudah menjamin antreannya berisi, jadi removeFirst() tidak akan pernah",
+                    "melempar apa pun di situ.",
+                    "",
+                    "JEBAKAN: ARRAYDEQUE TIDAK BOLEH BERISI null",
+                    "",
+                    "  antrean.addLast(null);   // NullPointerException, langsung",
+                    "",
+                    "Larangan ini bukan kerewelan. peekFirst() memakai null untuk berarti \"kosong\".",
+                    "Kalau null boleh ikut disimpan, hasil null tidak bisa lagi dibedakan antara",
+                    "\"antreannya kosong\" dan \"yang di depan memang null\". Larangan di sisi masuk",
+                    "menutup kebingungan itu di sisi keluar. (ArrayList tidak punya masalah ini, jadi",
+                    "ArrayList boleh berisi null — perbedaan yang gampang mengagetkan.)",
+                    "",
+                    "JANGAN PAKAI class Stack",
+                    "",
+                    "Java punya java.util.Stack sejak versi paling awal, dan namanya membuat orang",
+                    "mengira itulah cara membuat tumpukan. Dua alasan untuk tidak memakainya:",
+                    "  - Ia mewarisi Vector, yang setiap methodnya tersinkronisasi. Programmu membayar",
+                    "    ongkos penguncian antar-thread meski cuma berjalan di satu thread.",
+                    "  - Iterasinya berjalan dari DASAR tumpukan ke atas, berlawanan dengan urutan",
+                    "    pengambilan pop(). Mencetak sebuah Stack memberi urutan yang berbeda dari",
+                    "    urutan isinya akan keluar — sumber salah paham yang sulit dilacak.",
+                    "Dokumentasi Java sendiri menganjurkan Deque sebagai penggantinya.",
+                    "",
+                    "DI MANA BENTUK INI DIPAKAI",
+                    "",
+                    "  - Simulasi: siapa yang menunggu dilayani lebih dulu (antrean loket, lift, printer).",
+                    "  - Undo: langkah terakhir dibatalkan lebih dulu (tumpukan).",
+                    "  - Menelusuri peta atau jaringan lapis demi lapis (antrean), lawan dari menelusuri",
+                    "    sedalam-dalamnya dulu (tumpukan).",
+                    "  - Memeriksa tanda kurung seimbang: setiap kurung buka ditumpuk, setiap kurung",
+                    "    tutup mengambil satu dari tumpukan.",
+                    "",
+                    "Begitu sebuah program harus MENIRU sesuatu yang berjalan — bukan sekadar menghitung",
+                    "sekumpulan angka — hampir selalu ada antrean di dalamnya.",
+                ],
+            },
+        ],
+    },
+    {
+        "title": "26. String & Scanner (Input)",
         "sections": [
             {
                 "body": [
@@ -4315,7 +4496,7 @@ public class Main {
         ],
     },
     {
-        "title": "26. Tanggal & Waktu (java.time)",
+        "title": "27. Tanggal & Waktu (java.time)",
         "sections": [
             {
                 "body": [
@@ -4659,7 +4840,7 @@ public class Main {
         ],
     },
     {
-        "title": "27. Lambda Expression & Functional Interface",
+        "title": "28. Lambda Expression & Functional Interface",
         "sections": [
             {
                 "body": [
@@ -4729,7 +4910,7 @@ public class Main {
         ],
     },
     {
-        "title": "28. Mengurutkan Objek: Comparable & Comparator",
+        "title": "29. Mengurutkan Objek: Comparable & Comparator",
         "sections": [
             {
                 "body": [
@@ -5050,7 +5231,7 @@ public class Main {
         ],
     },
     {
-        "title": "29. Class di dalam Class: Nested, Inner, dan Anonymous",
+        "title": "30. Class di dalam Class: Nested, Inner, dan Anonymous",
         "sections": [
             {
                 "body": [
@@ -5268,7 +5449,7 @@ public class Sekolah {
         ],
     },
     {
-        "title": "30. Stream API",
+        "title": "31. Stream API",
         "sections": [
             {
                 "body": [
@@ -5431,7 +5612,7 @@ public class Main {
         ],
     },
     {
-        "title": "31. Generics",
+        "title": "32. Generics",
         "sections": [
             {
                 "body": [
@@ -5556,7 +5737,7 @@ public class Main {
         ],
     },
     {
-        "title": "32. Optional & Null Safety",
+        "title": "33. Optional & Null Safety",
         "sections": [
             {
                 "body": [
@@ -5624,7 +5805,7 @@ public class Main {
         ],
     },
     {
-        "title": "33. Multithreading & Concurrency Dasar",
+        "title": "34. Multithreading & Concurrency Dasar",
         "sections": [
             {
                 "body": [
@@ -5765,7 +5946,7 @@ public class Main {
         ],
     },
     {
-        "title": "34. Concurrency Lanjutan: Future, Atomic, dan Koleksi Aman-Thread",
+        "title": "35. Concurrency Lanjutan: Future, Atomic, dan Koleksi Aman-Thread",
         "sections": [
             {
                 "body": [
@@ -6066,7 +6247,7 @@ public class Main {
         ],
     },
     {
-        "title": "35. File I/O & Serialization",
+        "title": "36. File I/O & Serialization",
         "sections": [
             {
                 "body": [
@@ -6143,7 +6324,7 @@ public class Main {
         ],
     },
     {
-        "title": "36. JDBC: Menghubungkan Java ke Database",
+        "title": "37. JDBC: Menghubungkan Java ke Database",
         "sections": [
             {
                 "body": [
@@ -6215,7 +6396,7 @@ public class Main {
         ],
     },
     {
-        "title": "37. Unit Testing dengan JUnit",
+        "title": "38. Unit Testing dengan JUnit",
         "sections": [
             {
                 "body": [
@@ -6293,7 +6474,7 @@ class KalkulatorTest {
         ],
     },
     {
-        "title": "38. Design Pattern & Clean Code",
+        "title": "39. Design Pattern & Clean Code",
         "sections": [
             {
                 "body": [
@@ -6408,7 +6589,7 @@ public class Main {
         ],
     },
     {
-        "title": "39. Git, Maven/Gradle & Alur Kerja Developer",
+        "title": "40. Git, Maven/Gradle & Alur Kerja Developer",
         "sections": [
             {
                 "body": [
@@ -6459,7 +6640,7 @@ public class Main {
         ],
     },
     {
-        "title": "40. Roadmap Menjadi Programmer Handal",
+        "title": "41. Roadmap Menjadi Programmer Handal",
         "sections": [
             {
                 "body": [

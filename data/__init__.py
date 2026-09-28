@@ -51,6 +51,38 @@ from data.css_materials import CSS_MATERIALS
 from data.css_quizzes import CSS_QUIZZES as _CSS_QUIZZES
 from data.css_exercises import CSS_EXERCISES
 
+from data.csharp_materials import CSHARP_MATERIALS
+from data.csharp_quizzes import CSHARP_QUIZZES as _CSHARP_QUIZZES
+from data.csharp_exercises import CSHARP_EXERCISES
+
+from data.rust_materials import RUST_MATERIALS
+from data.rust_quizzes import RUST_QUIZZES as _RUST_QUIZZES
+from data.rust_exercises import RUST_EXERCISES
+
+from data.php_materials import PHP_MATERIALS
+from data.php_quizzes import PHP_QUIZZES as _PHP_QUIZZES
+from data.php_exercises import PHP_EXERCISES
+
+from data.ruby_materials import RUBY_MATERIALS
+from data.ruby_quizzes import RUBY_QUIZZES as _RUBY_QUIZZES
+from data.ruby_exercises import RUBY_EXERCISES
+
+from data.kotlin_materials import KOTLIN_MATERIALS
+from data.kotlin_quizzes import KOTLIN_QUIZZES as _KOTLIN_QUIZZES
+from data.kotlin_exercises import KOTLIN_EXERCISES
+
+from data.typescript_materials import TYPESCRIPT_MATERIALS
+from data.typescript_quizzes import TYPESCRIPT_QUIZZES as _TYPESCRIPT_QUIZZES
+from data.typescript_exercises import TYPESCRIPT_EXERCISES
+
+from data.vb_materials import VB_MATERIALS
+from data.vb_quizzes import VB_QUIZZES as _VB_QUIZZES
+from data.vb_exercises import VB_EXERCISES
+
+from data.fedora_materials import FEDORA_MATERIALS
+from data.fedora_quizzes import FEDORA_QUIZZES as _FEDORA_QUIZZES
+from data.fedora_exercises import FEDORA_EXERCISES
+
 # Posisi jawaban diratakan supaya kuis tidak bisa ditebak dari polanya.
 # Lihat data/normalisasi.py untuk alasan lengkapnya.
 APLIKASI_QUIZZES = seimbangkan_kuis(_APLIKASI_QUIZZES)
@@ -64,6 +96,14 @@ BASH_QUIZZES = seimbangkan_kuis(_BASH_QUIZZES)
 GO_QUIZZES = seimbangkan_kuis(_GO_QUIZZES)
 HTML_QUIZZES = seimbangkan_kuis(_HTML_QUIZZES)
 CSS_QUIZZES = seimbangkan_kuis(_CSS_QUIZZES)
+CSHARP_QUIZZES = seimbangkan_kuis(_CSHARP_QUIZZES)
+RUST_QUIZZES = seimbangkan_kuis(_RUST_QUIZZES)
+PHP_QUIZZES = seimbangkan_kuis(_PHP_QUIZZES)
+RUBY_QUIZZES = seimbangkan_kuis(_RUBY_QUIZZES)
+KOTLIN_QUIZZES = seimbangkan_kuis(_KOTLIN_QUIZZES)
+TYPESCRIPT_QUIZZES = seimbangkan_kuis(_TYPESCRIPT_QUIZZES)
+VB_QUIZZES = seimbangkan_kuis(_VB_QUIZZES)
+FEDORA_QUIZZES = seimbangkan_kuis(_FEDORA_QUIZZES)
 
 __all__ = [
     "APLIKASI_MATERIALS", "APLIKASI_QUIZZES", "APLIKASI_EXERCISES",
@@ -77,4 +117,12 @@ __all__ = [
     "GO_MATERIALS", "GO_QUIZZES", "GO_EXERCISES",
     "HTML_MATERIALS", "HTML_QUIZZES", "HTML_EXERCISES",
     "CSS_MATERIALS", "CSS_QUIZZES", "CSS_EXERCISES",
+    "CSHARP_MATERIALS", "CSHARP_QUIZZES", "CSHARP_EXERCISES",
+    "RUST_MATERIALS", "RUST_QUIZZES", "RUST_EXERCISES",
+    "PHP_MATERIALS", "PHP_QUIZZES", "PHP_EXERCISES",
+    "RUBY_MATERIALS", "RUBY_QUIZZES", "RUBY_EXERCISES",
+    "KOTLIN_MATERIALS", "KOTLIN_QUIZZES", "KOTLIN_EXERCISES",
+    "TYPESCRIPT_MATERIALS", "TYPESCRIPT_QUIZZES", "TYPESCRIPT_EXERCISES",
+    "VB_MATERIALS", "VB_QUIZZES", "VB_EXERCISES",
+    "FEDORA_MATERIALS", "FEDORA_QUIZZES", "FEDORA_EXERCISES",
 ]

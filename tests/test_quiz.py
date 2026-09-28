@@ -16,9 +16,9 @@ import unittest
 from contextlib import redirect_stdout
 from unittest import mock
 
-import progress
-import quiz
-import utils
+from pelajar import progress
+from layar import quiz
+from layar import utils
 
 
 KUIS = {

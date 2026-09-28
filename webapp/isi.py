@@ -30,11 +30,11 @@ Importir: webapp/api.py.
 
 import re
 
-import bab
-import berkas
-import runner
-import sorot
-from progress import kunci, kuis_jatuh_tempo
+from pelajar import bab
+from inti import berkas
+from inti import runner
+from inti import sorot
+from pelajar.progress import kunci, kuis_jatuh_tempo
 
 # Bahasa yang aturan penyorotannya ada di sorot.py. "aplikasi" memakai aturan
 # Java (didaftarkan di akhir sorot.py) karena contoh kodenya memang Java.
@@ -57,20 +57,245 @@ def token_kode(kode, bahasa):
 
 # ------------------------------------------------------------- badan materi
 
-_POLA_BUTIR = re.compile(r"^\s*[-*•]\s+")
-_POLA_NOMOR = re.compile(r"^\s*\d+[.)]\s+")
+# Penanda diikuti TEPAT SATU spasi, lalu isi. Angkanya bukan selera: dari 449
+# blok berpenanda di seluruh kurikulum, 446 memakai satu spasi -- dan ketiga
+# sisanya justru BUKAN daftar melainkan tabel yang kolom pertamanya kebetulan
+# sebuah bintang ("  *  perkalian        a * b" di Java Operator, "  *  di GLOB"
+# di Bash Pola). Menerima `\s+` berarti mengubah tabel operator jadi daftar
+# berbulatan dan membuang perataan kolom yang justru isi informasinya.
+_POLA_BUTIR = re.compile(r"^(\s*)[-*•] (?=\S)")
+_POLA_NOMOR = re.compile(r"^(\s*)\d+[.)] (?=\S)")
+
+# Baris yang kolomnya disejajarkan dengan spasi ganda. Di dalam sebuah daftar,
+# baris begini adalah contoh kode atau tabel milik butirnya -- bukan sambungan
+# kalimatnya -- dan menyambungnya jadi satu paragraf menghapus perataan yang
+# jadi satu-satunya alasan baris itu ditulis begitu.
+_POLA_KOLOM = re.compile(r"\S {2,}\S")
+
+# Ciri kode yang tidak pernah muncul di prosa Indonesia. Dipakai untuk
+# memutuskan apakah sebuah blok menjorok itu contoh kode atau cuma paragraf
+# yang kebetulan ditulis menjorok.
+_POLA_KODEISH = re.compile(r"[{}<>;=|@$\\]|->|::|\(\)|\[\]|/\*|//|#include|--")
+_POLA_KATA = re.compile(r"\b[A-Za-z\u00c0-\u00ff]{2,}\b")
+
+
+# Kata yang terpenggal di ujung baris. Di kurikulum ini semuanya kata ulang
+# ("diam-diam", "benar-benar", "satu-satunya", "seluk-beluk") -- 18 buah, dan
+# tanda hubungnya BAGIAN DARI KATANYA. Yang salah cuma spasi yang muncul kalau
+# barisnya disambung apa adanya: "diam- diam".
+_POLA_PENGGAL = re.compile(r"[^\W\d_]-$")
+
+
+# Blok prosa yang cara MEMBACANYA berbeda, bukan cuma isinya.
+#
+# Kurikulum ini sudah menulisnya sejak awal — 384 blok dibuka dengan kata yang
+# mengumumkan perannya ("JEBAKAN: gambar pertama halaman justru TIDAK BOLEH
+# lazy", "Aturan yang menyelamatkanmu dari banyak kebingungan:"). Yang hilang
+# cuma satu: di layar semuanya menjadi paragraf abu-abu yang sama, sehingga
+# peringatan yang ditulis penulisnya dengan huruf kapital punya bobot visual
+# yang persis sama dengan kalimat penghubung di sebelahnya.
+#
+# Sengaja DUA peran, bukan lima. Tiap warna baru yang ditambahkan mengurangi
+# arti semua warna yang sudah ada, dan halaman dengan lima jenis kotak
+# berwarna sama tidak terbacanya dengan halaman tanpa kotak sama sekali.
+# 6% dari blok prosa: cukup untuk memberi irama, terlalu jarang untuk jadi
+# wallpaper.
+_PERAN = (
+    ("jebakan", re.compile(
+        r"^(JEBAKAN|Jebakan|HATI-HATI|Hati-hati|AWAS|Awas|JANGAN|Jangan"
+        r"|KESALAHAN|Kesalahan)\b")),
+    ("aturan", re.compile(
+        r"^(ATURAN|Aturan|INGAT|Ingat|CATATAN|Catatan|PERHATIKAN|Perhatikan"
+        r"|Perlu diingat)\b")),
+)
+
+
+def _peran(teks):
+    """"jebakan", "aturan", atau "" untuk sebuah blok prosa."""
+    for nama, pola in _PERAN:
+        if pola.match(teks):
+            return nama
+    return ""
+
+
+def _sambung(baris):
+    """Sambung baris-baris sebuah paragraf jadi satu, hormati pemenggalan."""
+    keluar = ""
+    for b in baris:
+        potong = b.strip()
+        if not potong:
+            continue
+        if not keluar:
+            keluar = potong
+        elif _POLA_PENGGAL.search(keluar) and potong[:1].islower():
+            keluar += potong           # "benar-" + "benar" -> "benar-benar"
+        else:
+            keluar += " " + potong
+    return keluar
+
+
+def _prosa_menjorok(baris):
+    """Blok menjorok ini sebenarnya paragraf biasa?
+
+    Di sumbernya, penulis memakai indentasi untuk dua hal yang sangat berbeda:
+    menyejajarkan kolom (tabel, contoh kode) DAN menandai "ini penjelasan
+    tambahan di bawah kalimat tadi". Yang pertama wajib monospace; yang kedua
+    justru rusak karenanya -- 420 paragraf biasa muncul sebagai kotak abu-abu
+    berhuruf mesin ketik, dan pembaca kehilangan satu-satunya petunjuk bahwa
+    yang di depannya bukan sesuatu yang perlu diketik ulang.
+
+    Syaratnya sengaja KETAT, dan sisi salahnya dipilih: menyangka prosa sebagai
+    kode cuma mempertahankan keadaan sekarang, sedangkan menyangka kode sebagai
+    prosa MENGHAPUS perataan yang jadi isinya. Dari 420 calon, 181 lolos.
+    """
+    isi_baris = [b for b in baris if b.strip()]
+    if len(isi_baris) < 2:
+        return False                      # "bash --version" juga satu baris
+    if any(len(b) - len(b.lstrip()) for b in isi_baris):
+        return False                      # masih ada indentasi relatif
+    if any(_POLA_KOLOM.search(b) for b in isi_baris):
+        return False
+    if any(_POLA_KODEISH.search(b) for b in isi_baris):
+        return False
+    if not isi_baris[-1].rstrip().endswith((".", "?", "!", '."', ".'")):
+        return False                      # kalimat selalu ditutup
+    gabung = " ".join(isi_baris)
+    kata = _POLA_KATA.findall(gabung)
+    return (len(kata) >= 12
+            and len(kata) / max(1, len(gabung.split())) > 0.72)
+
+
+def _penanda(baris):
+    """(indentasi, urut, isi) kalau baris ini butir daftar; None kalau bukan.
+
+    Penanda diperiksa TANPA peduli baris itu menjorok atau tidak. Versi
+    sebelumnya memeriksa indentasi lebih dulu -- `if baris[:1] in (" ", "\\t")`
+    -> "pra" -- sehingga setiap daftar yang ditulis menjorok (dan hampir semua
+    daftar di kurikulum ini ditulis begitu) berakhir sebagai blok monospace
+    abu-abu. 508 daftar di 11 bahasa terkena; yang terlihat pelajar adalah
+    halaman materi yang seluruh prosanya menyerupai keluaran terminal, dan
+    tidak ada cara membedakan mana penjelasan mana contoh kode.
+    """
+    m = _POLA_BUTIR.match(baris)
+    if m:
+        return len(m.group(1)), False, baris[m.end():].strip(), m.end()
+    m = _POLA_NOMOR.match(baris)
+    if m:
+        return len(m.group(1)), True, baris[m.end():].strip(), m.end()
+    return None
 
 
 def _jenis_baris(baris):
     if not baris.strip():
         return "kosong"
+    if _penanda(baris) is not None:
+        return "daftar"
     if baris[:1] in (" ", "\t"):
         return "pra"
-    if _POLA_BUTIR.match(baris):
-        return "butir"
-    if _POLA_NOMOR.match(baris):
-        return "nomor"
     return "teks"
+
+
+def _susun_daftar(baris_list):
+    """Baris-baris bertanda -> pohon butir.
+
+    Tiga hal yang tidak boleh hilang di sini:
+
+    * **Baris lanjutan disambung ke butirnya.** Butir yang kalimatnya lebih
+      panjang dari satu baris ditulis menjorok di baris berikutnya tanpa
+      penanda. Memperlakukannya sebagai butir tersendiri memecah satu kalimat
+      jadi beberapa bulatan -- dan pemenggalannya jatuh di tempat yang cuma
+      ditentukan lebar kolom berkas sumbernya, bukan oleh artinya.
+    * **Yang menjorok LEBIH DALAM daripada kolom teks butirnya bukan lanjutan
+      kalimat, melainkan contoh milik butir itu.** Begitu juga baris yang
+      kolomnya disejajarkan spasi ganda. Keduanya disimpan apa adanya, karena
+      perataannya memang isinya: `Integer.parseInt("3.0")` dengan komentar
+      `// int tidak kenal titik desimal` di sebelahnya kehilangan seluruh
+      maksudnya kalau dijadikan satu kalimat mengalir.
+    * **Urutan asli dipertahankan.** Sebuah butir boleh berbentuk
+      prosa -> contoh -> prosa lagi (CSS materi 1 menulisnya begitu), dan
+      prosa penutupnya MENUNJUK contoh di atasnya. Menyatukan semua prosa di
+      depan lalu menaruh contohnya di bawah membuat kata "itu" menunjuk ke
+      belakang, ke sesuatu yang belum dibaca.
+    * **Sarang dibaca dari indentasi penandanya.** Cuma 8 butir di seluruh
+      kurikulum yang bersarang, tapi merataskannya berarti "syaratnya" dan
+      "pengecualian syarat itu" berdiri sejajar seolah setara.
+
+    Hasilnya:
+    [{"teks": str,                              paragraf pertama butir
+      "blok": [{"jenis": "teks"|"pra", "teks": str}],   sisanya, berurut
+      "anak": {"urut": bool, "butir": [...]} | None}]
+    """
+    butir = []           # butir tingkat ini
+    dasar = None         # indentasi penanda tingkat ini
+    kolom = 0            # kolom tempat teks butir terakhir dimulai
+    bagian = []          # [(jenis, [baris])] milik butir terakhir
+    sarang = []          # baris mentah milik sarang yang sedang dikumpulkan
+    urut_sarang = False
+
+    def tumpuk(jenis, baris):
+        if bagian and bagian[-1][0] == jenis:
+            bagian[-1][1].append(baris)
+        else:
+            bagian.append((jenis, [baris]))
+
+    def tutup_bagian():
+        """Bagian -> teks butir + blok lanjutannya."""
+        nonlocal bagian
+        if not bagian:
+            return
+        keluar = []
+        for jenis, baris in bagian:
+            if jenis == "pra":
+                umum = min(len(b) - len(b.lstrip()) for b in baris)
+                keluar.append({"jenis": "pra",
+                               "teks": "\n".join(b[umum:] for b in baris)})
+            else:
+                keluar.append({"jenis": "teks", "teks": _sambung(baris)})
+        # Prosa pertama menempel ke butirnya sendiri; ia yang dibaca sebagai
+        # "isi butir ini" oleh pencarian, peta halaman, dan pembaca layar.
+        if keluar and keluar[0]["jenis"] == "teks":
+            butir[-1]["teks"] = _sambung([butir[-1]["teks"],
+                                          keluar.pop(0)["teks"]])
+        butir[-1]["blok"] = keluar
+        bagian = []
+
+    def tutup_sarang():
+        nonlocal sarang
+        if not sarang:
+            return
+        butir[-1]["anak"] = {"urut": urut_sarang, "butir": _susun_daftar(sarang)}
+        sarang = []
+
+    for baris in baris_list:
+        tanda = _penanda(baris)
+        if tanda is None:
+            if sarang:
+                sarang.append(baris)
+            elif butir:
+                menjorok = len(baris) - len(baris.lstrip())
+                tumpuk("pra" if (menjorok > kolom
+                                 or _POLA_KOLOM.search(baris.strip()))
+                       else "teks", baris)
+            continue
+
+        indent, urut, isi_butir, kol = tanda
+        if dasar is None:
+            dasar = indent
+        if indent > dasar and butir:
+            if not sarang:
+                tutup_bagian()
+                urut_sarang = urut
+            sarang.append(baris)
+            continue
+
+        tutup_bagian()
+        tutup_sarang()
+        butir.append({"teks": isi_butir, "blok": [], "anak": None})
+        kolom = kol
+
+    tutup_bagian()
+    tutup_sarang()
+    return butir
 
 
 def blok_badan(baris_list):
@@ -79,11 +304,14 @@ def blok_badan(baris_list):
     Jenis blok yang dihasilkan:
       {"jenis": "teks",   "teks": "..."}      paragraf, baris aslinya dipertahankan
       {"jenis": "pra",    "teks": "..."}      spasi bermakna (tabel, contoh menjorok)
+      {"jenis": "catatan","teks": "..."}      paragraf yang kebetulan ditulis menjorok
       {"jenis": "daftar", "butir": [...], "urut": bool}
 
     Baris menjorok digabung apa adanya termasuk indentasi relatifnya, karena di
     situlah letak informasinya: tabel tipe data di materi Java hanya terbaca
-    kalau kolomnya tetap sejajar.
+    kalau kolomnya tetap sejajar. Kecuali satu hal: begitu sebuah daftar sedang
+    berjalan, baris menjorok tanpa penanda adalah LANJUTAN butir terakhir, bukan
+    tabel baru -- lihat `_susun_daftar`.
     """
     blok = []
     kini = []
@@ -98,16 +326,43 @@ def blok_badan(baris_list):
             # tapi pertahankan indentasi relatif antar baris.
             umum = min((len(b) - len(b.lstrip()) for b in kini if b.strip()),
                        default=0)
-            blok.append({"jenis": "pra",
-                         "teks": "\n".join(b[umum:] if b.strip() else ""
-                                           for b in kini)})
-        elif jenis_kini in ("butir", "nomor"):
-            pola = _POLA_NOMOR if jenis_kini == "nomor" else _POLA_BUTIR
+            rata = [b[umum:] if b.strip() else "" for b in kini]
+            if _prosa_menjorok(rata):
+                # Baris digabung, BUKAN dipertahankan: lebar barisnya berasal
+                # dari kolom berkas sumbernya (~62 huruf), bukan dari kolom
+                # baca di layar. Menahannya berarti paragraf yang patah di
+                # tempat yang tidak ada hubungannya dengan apa pun yang
+                # dilihat pembaca.
+                catatan = _sambung(rata)
+                blok.append({"jenis": "catatan", "teks": catatan,
+                             "peran": _peran(catatan)})
+            else:
+                blok.append({"jenis": "pra", "teks": "\n".join(rata)})
+        elif jenis_kini == "daftar":
+            tanda = _penanda(kini[0])
             blok.append({"jenis": "daftar",
-                         "urut": jenis_kini == "nomor",
-                         "butir": [pola.sub("", b).strip() for b in kini]})
+                         "urut": tanda[1],
+                         "butir": _susun_daftar(kini)})
         else:
-            blok.append({"jenis": "teks", "teks": "\n".join(kini)})
+            # Paragraf disambung jadi satu baris, bukan dipertahankan
+            # patahannya. Alasannya bisa diukur: baris di sumbernya dibungkus
+            # untuk terminal 80 kolom (median 68 huruf, p90 81), sedangkan
+            # kolom baca di layar 72ch -- jadi SEBAGIAN baris patah terlalu
+            # cepat dan sisanya justru terbungkus ulang, dan yang terlihat
+            # adalah tepi kanan yang bergerigi dengan potongan satu-dua kata
+            # menggantung. Pemenggalan itu tidak membawa satu pun informasi;
+            # ia cuma jejak lebar berkas sumbernya.
+            #
+            # Kecualinya blok yang kolomnya disejajarkan ("printf() -> ...",
+            # "scanf()  -> ..."). Cuma 7 di seluruh kurikulum, dan di situ
+            # patahan barisnya memang yang memisahkan dua entri.
+            if any(_POLA_KOLOM.search(b) for b in kini):
+                blok.append({"jenis": "teks", "teks": "\n".join(kini),
+                             "peran": _peran(kini[0])})
+            else:
+                gabung = _sambung(kini)
+                blok.append({"jenis": "teks", "teks": gabung,
+                             "peran": _peran(gabung)})
         kini = []
         jenis_kini = None
 
@@ -116,6 +371,11 @@ def blok_badan(baris_list):
         if jenis == "kosong":
             tutup()
             continue
+        # Baris menjorok tanpa penanda di TENGAH daftar adalah lanjutan butir
+        # terakhir, jadi ia tidak menutup bloknya.
+        if jenis == "pra" and jenis_kini == "daftar":
+            kini.append(baris.rstrip())
+            continue
         if jenis_kini is not None and jenis != jenis_kini:
             tutup()
         jenis_kini = jenis
@@ -123,7 +383,6 @@ def blok_badan(baris_list):
 
     tutup()
     return blok
-
 
 def _petunjuk(bahasa, kode, konteks):
     p = berkas.petunjuk_kode(bahasa, kode, konteks)
@@ -137,7 +396,9 @@ def _petunjuk(bahasa, kode, konteks):
         "perlu_berkas": p.perlu_berkas,
         # Blok yang berdiri sendiri boleh dicoba langsung dari halaman materi;
         # potongan dan ilustrasi tidak, karena pasti gagal dan itu menyesatkan.
-        "bisa_dijalankan": p.jenis in (berkas.PROGRAM, berkas.SESI),
+        # Aturannya TIDAK ditulis ulang di sini -- lihat komentar panjang di
+        # berkas.boleh_dijalankan_aplikasi soal kenapa SESI tidak seragam.
+        "bisa_dijalankan": berkas.boleh_dijalankan_aplikasi(bahasa, p.jenis),
     }
 
 
@@ -285,6 +546,12 @@ def daftar_latihan(lang, data):
             "dinilai": siap and e.get("auto_check") is not False,
             "alasan": e.get("alasan_tidak_dicek", ""),
             "hint": len(e.get("hints") or []),
+            # Proyek akhir: satu latihan penutup yang menguji apakah materinya
+            # benar-benar nyambung, bukan apakah tiap bagiannya hafal. Ia
+            # tetap latihan biasa di mata seluruh mesin — dinilai runner yang
+            # sama, XP dari progress yang sama — karena definisi "lulus" cuma
+            # boleh ada satu. Yang ditambahkan cuma penandanya.
+            "proyek": bool(e.get("proyek")),
             "bookmark": kunci(kat, e["title"]) in data["bookmark"],
         })
     return keluar

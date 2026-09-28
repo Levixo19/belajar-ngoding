@@ -21,10 +21,10 @@ import shutil
 import sys
 import textwrap
 
-import tema
+from inti import tema
 
 try:                       # konfigurasi bergantung pada tema, bukan pada utils
-    import konfigurasi
+    from pelajar import konfigurasi
 except ImportError:        # tetap bisa dipakai walau modulnya belum ada
     konfigurasi = None
 

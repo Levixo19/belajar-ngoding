@@ -16,17 +16,18 @@
  */
 
 import {
-  api, h, bilah, angka, sorak, konfirmasi, jendela, salin,
+  api, h, bilah, angka, sorak, konfirmasi, jendela, salin, keadaan,
   simpanLokal, ambilLokal, idBaru, medan,
 } from "./inti.js";
 import {
-  masuk, ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak,
+  ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak,
 } from "./gerak.js";
+import { ikon } from "./ikon.js";
 
 export const TEMA = [
-  ["gelap", "Gelap", "Biru-batu. Bawaan, untuk pemakaian sehari-hari."],
+  ["gelap", "Gelap", "Ungu-tinta. Bawaan, untuk pemakaian sehari-hari."],
   ["malam", "Malam", "Serba hangat, kontras rendah. Untuk mata yang lelah."],
-  ["terang", "Terang", "Kertas dingin. Untuk ruangan yang benderang."],
+  ["terang", "Terang", "Kertas berkabut. Untuk ruangan yang benderang."],
   ["kontras", "Kontras tinggi", "Warna dikuatkan, garis dipertebal."],
 ];
 
@@ -41,7 +42,7 @@ const UKURAN = [["kecil", 15], ["sedang", 16], ["besar", 18], ["sangat besar", 2
  * DISENTUH tetap ada, dengan jarak yang dipangkas. */
 export const GERAK = [
   ["penuh", "Penuh",
-   "Semua gerakan hidup: perpindahan berpegas, urutan masuk, bara di latar."],
+   "Semua gerakan hidup: perpindahan berpegas, urutan masuk, denyut bara."],
   ["halus", "Halus",
    "Tidak ada yang bergerak sendiri. Umpan balik sentuhan tetap ada, "
    + "jaraknya dipendekkan. Pilihan yang tepat untuk sesi panjang."],
@@ -116,7 +117,7 @@ export async function layarStatistik() {
 
     h("section", {},
       h("span.mata", {}, "Tangga gelar"),
-      h("div.kartu.deret", {}, (s.tangga_gelar || []).map((g) =>
+      h("div.kartu.deret.deret-rapat", {}, (s.tangga_gelar || []).map((g) =>
         h("span.pil" + (s.level >= g.level ? ".pil-nyala" : ""), {},
           `Lv ${g.level} · ${g.nama}`)))),
 
@@ -126,7 +127,7 @@ export async function layarStatistik() {
     blokXp(s),
     blokData(),
   );
-  return { el, judul: "Statistik", jejak: [{ label: "Statistik" }] };
+  return { el, judul: "Statistik" };
 }
 
 /** @param angkaMentah  kalau diisi, angkanya BERJALAN naik dari nol sampai ke
@@ -134,14 +135,11 @@ export async function layarStatistik() {
  *                      sebagai `nilai` tetap dipakai apa adanya untuk bentuk
  *                      yang bukan angka tunggal ("3/22"). */
 function angkaBesar(nilai, label, ket, angkaMentah) {
-  const isi = h("div", { gaya: { fontFamily: "var(--f-judul)",
-    fontSize: "2rem", fontWeight: "700", lineHeight: "1",
-    letterSpacing: "-.03em", fontVariantNumeric: "tabular-nums" } }, nilai);
-  const el = h("div.kartu.kartu-rapat", { gaya: { textAlign: "center" } },
+  const isi = h("div.angka-besar", {}, nilai);
+  const el = h("div.kartu.kartu-rapat.kartu-angka", {},
     isi,
-    h("div.mata", { gaya: { margin: "8px 0 0" } }, label),
-    ket ? h("div", { gaya: { color: "var(--redup)", fontSize: ".76rem" } }, ket)
-        : null);
+    h("div.mata", {}, label),
+    ket ? h("div.ket", {}, ket) : null);
 
   if (angkaMentah !== undefined && adaGerak()) {
     saatKartuTampak(el, () => angkaKe(isi, angkaMentah, {
@@ -165,23 +163,17 @@ function blokRingkasan(s) {
   return h("section", {},
     h("span.mata", {}, "Rincian per bahasa"),
     h("div.kartu", {},
-      h("div", { gaya: { display: "grid", gap: "13px" } },
-        s.bahasa.map((b) => h("div", {},
-          h("div", { gaya: { display: "flex", justifyContent: "space-between",
-                             fontSize: ".88rem", marginBottom: "5px",
-                             flexWrap: "wrap", gap: "8px" } },
-            h("a", { href: "#/bahasa/" + b.key,
-                     gaya: { fontWeight: "600", color: "var(--teks)" } }, b.label),
-            h("span", { gaya: { color: "var(--redup)", fontSize: ".78rem",
-                                fontFamily: "var(--f-kode)" } },
+      h("div.rinci", {},
+        s.bahasa.map((b) => h("div.rinci-baris", {},
+          h("div.rinci-atas", {},
+            h("a", { href: "#/bahasa/" + b.key }, b.label),
+            h("span.rinci-angka", {},
               `${b.materi}/${b.total_materi} materi · `
               + `${b.kuis}/${b.total_kuis} kuis · `
               + `${b.latihan_lulus + b.latihan_manual}/${b.total_latihan} latihan`
               + (b.skor_maks ? ` · skor ${b.skor}/${b.skor_maks}` : ""))),
           bilah(b.persen, b.persen >= 100 ? "tumbuh" : ""))),
-        h("div", { gaya: { borderTop: "1px solid var(--garis)",
-                           paddingTop: "13px", color: "var(--teks-2)",
-                           fontSize: ".88rem" } },
+        h("div.rinci-total", {},
           `Total: ${jml("materi")} dari ${jml("total_materi")} materi dibaca, `
           + `${jml("latihan_lulus")} latihan lulus dengan kode sendiri, dan `
           + (s.skor_kuis.maks
@@ -211,24 +203,17 @@ function blokToolchainSemua(s) {
   return h("section", {},
     h("span.mata", {}, "Ketersediaan toolchain"),
     h("div.kartu", {},
-      h("div", { gaya: { display: "grid", gap: "10px" } },
-        s.toolchain.map((t) => h("div", { gaya: { display: "flex", gap: "12px",
-          alignItems: "baseline", flexWrap: "wrap" } },
-          h("span.titik" + (t.siap ? ".selesai" : ".gagal"), {}),
-          h("b", { gaya: { minWidth: "110px", fontSize: ".9rem" } }, t.label),
-          t.siap
-            ? h("span", { gaya: { color: "var(--tumbuh)", fontSize: ".85rem" } },
-                "siap dipakai")
-            : h("span", { gaya: { color: "var(--redup)", fontSize: ".85rem" } },
-                `butuh ${t.hilang.join(", ")}`),
-          !t.siap && t.pasang
-            ? h("code", { gaya: { color: "var(--tenang)", fontSize: ".8rem" } },
-                t.pasang) : null,
-          !t.siap && t.pasang ? h("button.tbl.tbl-kecil.tbl-hantu", {
-            onclick: () => salin(t.pasang, "Perintah disalin."),
-          }, "Salin") : null))),
-      h("p", { gaya: { margin: "14px 0 0", color: "var(--redup)",
-                       fontSize: ".84rem" } },
+      h("div.rinci", {}, s.toolchain.map((t) => h("div.alat-baris", {},
+        h("span.titik" + (t.siap ? ".selesai" : ".gagal"), {}),
+        h("b", {}, t.label),
+        t.siap
+          ? h("span", { gaya: { color: "var(--tumbuh)" } }, "siap dipakai")
+          : h("span.baris-sisi", {}, `butuh ${t.hilang.join(", ")}`),
+        !t.siap && t.pasang ? h("code", {}, t.pasang) : null,
+        !t.siap && t.pasang ? h("button.tbl.tbl-kecil.tbl-hantu", {
+          onclick: () => salin(t.pasang, "Perintah disalin."),
+        }, "Salin") : null))),
+      h("p.baris-sisi", { gaya: { margin: "var(--s4) 0 0" } },
         "Toolchain itu opsional. Materi dan kuis berjalan penuh tanpa satu pun "
         + "compiler; yang mati hanya penilaian otomatis untuk bahasa itu.")));
 }
@@ -237,7 +222,7 @@ function blokXp(s) {
   const t = s.xp_tarif;
   return h("section", {},
     h("span.mata", {}, "Dari mana XP datang"),
-    h("div.kartu.deret", {},
+    h("div.kartu.deret.deret-rapat", {},
       h("span.pil", {}, `Materi tuntas +${t.materi}`),
       h("span.pil", {}, `Latihan dibuka +${t.latihan_dilihat}`),
       h("span.pil.pil-nyala", {}, `Latihan lulus +${t.latihan_lulus}`),
@@ -270,7 +255,7 @@ async function lihatLaporan() {
     judul: "Laporan kemajuan",
     lebar: true,
     isi: h("div", {},
-      h("p", { gaya: { color: "var(--redup)", fontSize: ".88rem" } },
+      h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
         "Format Markdown, siap ditempel ke mana pun."),
       h("div.pra", { gaya: { maxHeight: "50vh", overflow: "auto" } },
         r.markdown)),
@@ -330,7 +315,12 @@ export async function layarAtur(_params, ctx) {
 
   async function simpanKonfig(kunci, nilai) {
     try {
-      await api.kirim("/api/konfigurasi", { [kunci]: nilai });
+      const r = await api.kirim("/api/konfigurasi", { [kunci]: nilai });
+      // Salinan konfigurasi yang dipegang ctx diambil sekali saat aplikasi
+      // dimuat. Tanpa baris ini ia basi sampai halaman dimuat ulang — dan
+      // layar kuis yang membaca "acak bawaan" dari situ akan memakai nilai
+      // yang baru saja diubah orangnya, tapi belum ia lihat berlaku.
+      if (r && r.konfigurasi) ctx.awal.konfigurasi = r.konfigurasi;
       sorak("Tersimpan.", "tumbuh", 1.6);
       ctx.segarkanUkuran();
     } catch (e) {
@@ -338,36 +328,53 @@ export async function layarAtur(_params, ctx) {
     }
   }
 
-  const petakTema = h("div.petak.petak-2", {}, TEMA.map(([nilai, nama, ket]) =>
-    h("button.kartu.kartu-rapat", {
-      data: { temaPilihan: nilai },
+  /* Pilihan yang sedang aktif ditandai TIGA hal: kelas `.terpilih` (garis
+     aksen), sebuah pil bertanda centang di dalam kartunya, dan `aria-pressed`.
+     Warna saja tidak cukup — itu syarat WCAG 1.4.1, dan di halaman yang justru
+     memuat tema kontras tinggi, melanggarnya akan lucu sekaligus melelahkan.
+     Versi sebelumnya menandai pilihan dengan menulis `style.borderColor`
+     langsung: satu isyarat, cuma warna, dan tak terbaca pembaca layar. */
+  function kartuPilihan(nilai, nama, ket, saatPilih) {
+    const tanda = h("span.pil.pil-nyala", { hidden: true },
+      ikon("selesai", { ukuran: 13, tebal: 2 }), "dipakai");
+    const kartu = h("button.kartu.kartu-rapat", {
+      data: { pilihan: nilai },
       gaya: { textAlign: "left" },
-      onclick: () => {
-        // Warna seluruh halaman berganti dalam satu frame. Kelas alih-tema
-        // memberinya transisi 260 md supaya yang terjadi terbaca sebagai
-        // pergantian, bukan kedipan.
-        if (adaGerak()) {
-          document.documentElement.classList.add("alih-tema");
-          setTimeout(
-            () => document.documentElement.classList.remove("alih-tema"), 320);
-        }
-        tampilan = terapkanTampilan({ tema: nilai });
-        tandaiTema();
-      },
+      onclick: () => saatPilih(kartu),
     },
-      h("b", { gaya: { display: "block", fontSize: ".95rem" } }, nama),
-      h("span", { gaya: { color: "var(--redup)", fontSize: ".82rem" } }, ket))));
+      h("div.deret.deret-rapat", { gaya: { marginBottom: "var(--s1)" } },
+        h("b", {}, nama), tanda),
+      h("span.baris-sisi", {}, ket));
+    kartu.tanda = tanda;
+    return kartu;
+  }
 
-  function tandaiTema() {
-    for (const kt of petakTema.children) {
-      const ini = kt.dataset.temaPilihan === tampilan.tema;
-      kt.style.borderColor = ini ? "var(--nyala)" : "var(--garis)";
-      kt.style.boxShadow = ini ? "var(--cahaya)" : "var(--bayang)";
+  function tandaiPilihan(petak, kini) {
+    for (const kt of petak.children) {
+      if (!kt.dataset || !kt.dataset.pilihan) continue;
+      const ini = kt.dataset.pilihan === kini;
+      kt.classList.toggle("terpilih", ini);
+      kt.setAttribute("aria-pressed", String(ini));
+      if (kt.tanda) kt.tanda.hidden = !ini;
     }
   }
-  tandaiTema();
 
-  const deretUkuran = h("div.deret", {}, UKURAN.map(([nilai, px]) =>
+  const petakTema = h("div.petak.petak-2", {}, TEMA.map(([nilai, nama, ket]) =>
+    kartuPilihan(nilai, nama, ket, () => {
+      // Warna seluruh halaman berganti dalam satu frame. Kelas alih-tema
+      // memberinya transisi 260 md supaya yang terjadi terbaca sebagai
+      // pergantian, bukan kedipan.
+      if (adaGerak()) {
+        document.documentElement.classList.add("alih-tema");
+        setTimeout(
+          () => document.documentElement.classList.remove("alih-tema"), 320);
+      }
+      tampilan = terapkanTampilan({ tema: nilai });
+      tandaiPilihan(petakTema, tampilan.tema);
+    })));
+  tandaiPilihan(petakTema, tampilan.tema);
+
+  const deretUkuran = h("div.deret.deret-rapat", {}, UKURAN.map(([nilai, px]) =>
     h("button.tbl.tbl-kecil", {
       data: { ukuran: nilai },
       onclick: () => {
@@ -379,8 +386,9 @@ export async function layarAtur(_params, ctx) {
   function tandaiUkuran() {
     for (const b of deretUkuran.children) {
       const ini = b.dataset.ukuran === tampilan.ukuran;
-      b.classList.toggle("tbl-utama", ini);
+      b.classList.toggle("tbl-pilih", ini);
       b.classList.toggle("tbl-hantu", !ini);
+      b.setAttribute("aria-pressed", String(ini));
     }
   }
   tandaiUkuran();
@@ -396,6 +404,36 @@ export async function layarAtur(_params, ctx) {
     tampilan = terapkanTampilan({ lebarBaca: Number(geser.value) });
     labelLebar.textContent = "Lebar kolom baca: " + geser.value + " karakter";
   });
+
+  /* Tiga kartu tingkat gerak, dan tiap kartu MEMPERAGAKAN pilihannya.
+   *
+   * Menekan sebuah kartu langsung menjalankan gerakan contoh di titik itu
+   * juga. Kalau tidak, satu-satunya cara tahu apa arti "halus" adalah
+   * memilihnya, keluar dari Pengaturan, dan mencoba mengingat rasanya yang
+   * tadi — dan tidak ada orang yang mau melakukan itu tiga kali untuk
+   * membandingkan. */
+  const petakGerak = h("div.petak.petak-3", {}, GERAK.map(([nilai, nama, ket]) =>
+    kartuPilihan(nilai, nama, ket, (kartu) => {
+      tampilan = terapkanTampilan({ gerak: nilai });
+      tandaiPilihan(petakGerak, bacaTampilan().gerak);
+      // Peragaan dijalankan SESUDAH tingkatnya dipasang, jadi yang terlihat
+      // memang gerakan pada tingkat yang barusan dipilih.
+      if (nilai === "mati") sorak("Gerak dimatikan.", "", 1.6);
+      else denyut(kartu);
+    })));
+  tandaiPilihan(petakGerak, tampilan.gerak);
+
+  // Sistem yang menyetel "kurangi gerak" membuat pilihan di sini tak berarti.
+  // Katakan itu terus terang alih-alih membiarkan kartunya tampak berfungsi.
+  const tahanGerak = tingkatGerak() === "mati" && bacaTampilan().gerak !== "mati"
+    ? keadaan({
+        jenis: "kunci",
+        gambar: "belum",
+        judul: "Sedang ditahan sistem",
+        ket: "Sistem operasimu menyetel “kurangi gerak”, jadi gerak "
+          + "tetap mati sampai setelan itu diubah.",
+      })
+    : null;
 
   const el = h("div.masuk-urut", {},
     h("header.kepala-besar", {},
@@ -417,14 +455,15 @@ export async function layarAtur(_params, ctx) {
         h("div.medan", {},
           h("label", {}, "Gerak"),
           h("div.ket", {},
-            "Setelan sistem \u201ckurangi gerak\u201d selalu menang atas "
+            "Setelan sistem “kurangi gerak” selalu menang atas "
             + "pilihan di sini: kalau sistemmu sudah memintanya, tidak ada "
             + "yang bergerak apa pun yang kamu pilih."),
-          petakGerak(tampilan, (t) => { tampilan = t; })))),
+          petakGerak,
+          tahanGerak))),
 
     h("section", {},
       h("span.mata", {}, "Belajar — berlaku juga di aplikasi terminal"),
-      h("div.kartu", { gaya: { display: "grid", gap: "4px" } },
+      h("div.kartu", { gaya: { display: "grid", gap: "var(--s1)" } },
         // Berdiri PALING ATAS di kartu ini, dan itu disengaja. Dua layar lain
         // menjanjikannya dengan kalimat "buka semua bab di Pengaturan" — bab
         // yang terkunci dan layar penolakan 403 — jadi orang yang tiba di sini
@@ -435,7 +474,7 @@ export async function layarAtur(_params, ctx) {
             konfig.buka_semua_bab.keterangan,
             konfig.buka_semua_bab.nilai,
             (v) => simpanKonfig("buka_semua_bab", v))),
-        h("div", { gaya: { height: "9px" } }),
+        h("div", { gaya: { height: "var(--s2)" } }),
         medanTeks(konfig.nama, "Nama panggilan",
           "Dipakai untuk menyapamu di dasbor. Boleh dikosongkan.",
           (v) => simpanKonfig("nama", v)),
@@ -445,20 +484,19 @@ export async function layarAtur(_params, ctx) {
           (v) => simpanKonfig("detik_per_soal", v)),
         sakelarBaris(konfig.acak_bawaan.label, konfig.acak_bawaan.keterangan,
           konfig.acak_bawaan.nilai, (v) => simpanKonfig("acak_bawaan", v)),
-        h("div", { gaya: { height: "9px" } }),
+        h("div", { gaya: { height: "var(--s2)" } }),
         sakelarBaris(konfig.konfirmasi_jawaban.label,
           konfig.konfirmasi_jawaban.keterangan,
           konfig.konfirmasi_jawaban.nilai,
           (v) => simpanKonfig("konfirmasi_jawaban", v)),
-        h("div", { gaya: { height: "9px" } }),
+        h("div", { gaya: { height: "var(--s2)" } }),
         medanTeks(konfig.editor, "Editor teks untuk aplikasi terminal",
           "Kosongkan untuk memakai $EDITOR. Tidak berpengaruh di browser.",
           (v) => simpanKonfig("editor", v)))),
 
     h("section", {},
       h("span.mata", {}, "Letak berkas"),
-      h("div.kartu", { gaya: { display: "grid", gap: "9px",
-                               fontSize: ".85rem" } },
+      h("div.kartu", { gaya: { display: "grid", gap: "var(--s2)" } },
         barisBerkas("Progres belajar", ctx.awal.lokasi.progres),
         barisBerkas("Pengaturan", ctx.awal.lokasi.konfigurasi),
         barisBerkas("Catatan pribadi", ctx.awal.lokasi.catatan),
@@ -473,70 +511,14 @@ export async function layarAtur(_params, ctx) {
         h("p", {}, `Belajar Ngoding versi ${ctx.awal.versi} `
           + `(antarmuka web ${ctx.awal.versi_web}). Tanpa dependensi luar — `
           + "cukup Python 3.8+ dan sebuah browser."),
-        h("p", { gaya: { margin: "0", color: "var(--redup)",
-                         fontSize: ".87rem" } },
+        h("p.baris-sisi", { gaya: { margin: "0" } },
           `Kode yang kamu jalankan dibatasi ${ctx.awal.batas.waktu} detik dan `
           + `${ctx.awal.batas.memori_mb} MB memori. Ini bukan sandbox `
           + "keamanan: kode berjalan dengan hak akses yang sama denganmu, jadi "
           + "jangan menjalankan kode dari sumber yang tidak kamu percaya."))),
   );
 
-  return { el, judul: "Pengaturan", jejak: [{ label: "Pengaturan" }] };
-}
-
-/** Tiga kartu tingkat gerak, dan tiap kartu MEMPERAGAKAN pilihannya.
- *
- *  Menekan sebuah kartu langsung menjalankan gerakan contoh di titik itu juga.
- *  Kalau tidak, satu-satunya cara tahu apa arti "halus" adalah memilihnya,
- *  keluar dari Pengaturan, dan mencoba mengingat rasanya yang tadi — dan tidak
- *  ada orang yang mau melakukan itu tiga kali untuk membandingkan. */
-function petakGerak(tampilan, saatUbah) {
-  const petak = h("div.petak.petak-3", {}, GERAK.map(([nilai, nama, ket]) => {
-    const titik = h("span", { gaya: {
-      width: "13px", height: "13px", borderRadius: "50%", flex: "none",
-      background: "var(--nyala)", display: "block" } });
-
-    const kartu = h("button.kartu.kartu-rapat", {
-      data: { gerakPilihan: nilai },
-      gaya: { textAlign: "left" },
-      onclick: () => {
-        saatUbah(terapkanTampilan({ gerak: nilai }));
-        tandai();
-        // Peragaan dijalankan SESUDAH tingkatnya dipasang, jadi yang terlihat
-        // memang gerakan pada tingkat yang barusan dipilih.
-        if (nilai === "mati") sorak("Gerak dimatikan.", "", 1.6);
-        else denyut(kartu);
-      },
-    },
-      h("div.deret", { gaya: { marginBottom: "6px" } },
-        titik,
-        h("b", { gaya: { fontSize: ".95rem" } }, nama)),
-      h("span", { gaya: { color: "var(--redup)", fontSize: ".82rem" } }, ket));
-    return kartu;
-  }));
-
-  function tandai() {
-    const kini = bacaTampilan().gerak;
-    for (const kt of petak.children) {
-      const ini = kt.dataset.gerakPilihan === kini;
-      kt.style.borderColor = ini ? "var(--nyala)" : "var(--garis)";
-      kt.style.boxShadow = ini ? "var(--cahaya)" : "var(--bayang)";
-      const t = kt.querySelector("span");
-      t.style.background = ini ? "var(--nyala)" : "var(--garis-kuat)";
-      t.style.boxShadow = ini ? "0 0 10px -1px var(--nyala)" : "none";
-    }
-  }
-  tandai();
-
-  // Sistem yang menyetel "kurangi gerak" membuat pilihan di sini tak berarti.
-  // Katakan itu terus terang alih-alih membiarkan kartunya tampak berfungsi.
-  if (tingkatGerak() === "mati" && bacaTampilan().gerak !== "mati") {
-    petak.appendChild(h("div.arti", { gaya: { gridColumn: "1 / -1" } },
-      h("b", {}, "Sedang ditahan sistem"),
-      h("div", {}, "Sistem operasimu menyetel \u201ckurangi gerak\u201d, jadi "
-        + "gerak tetap mati sampai setelan itu diubah.")));
-  }
-  return petak;
+  return { el, judul: "Pengaturan" };
 }
 
 function sakelarBaris(judul, ket, awal, saatUbah) {
@@ -554,43 +536,41 @@ function sakelarBaris(judul, ket, awal, saatUbah) {
 }
 
 function medanTeks(opsi, label, ket, saatSimpan) {
-  const masuk = h("input", { type: "text", value: opsi.nilai || "" });
-  let terakhir = masuk.value;
+  const isian = h("input", { type: "text", value: opsi.nilai || "" });
+  let terakhir = isian.value;
   const kirim = () => {
-    if (masuk.value !== terakhir) {
-      terakhir = masuk.value;
-      saatSimpan(masuk.value);
+    if (isian.value !== terakhir) {
+      terakhir = isian.value;
+      saatSimpan(isian.value);
     }
   };
-  masuk.addEventListener("blur", kirim);
-  masuk.addEventListener("keydown", (e) => { if (e.key === "Enter") masuk.blur(); });
-  return medan(label, masuk, ket);
+  isian.addEventListener("blur", kirim);
+  isian.addEventListener("keydown", (e) => { if (e.key === "Enter") isian.blur(); });
+  return medan(label, isian, ket);
 }
 
 function medanAngka(opsi, label, saatSimpan) {
-  const masuk = h("input", {
+  const isian = h("input", {
     type: "number", value: String(opsi.nilai),
     min: opsi.minimum === null ? "" : String(opsi.minimum),
     max: opsi.maksimum === null ? "" : String(opsi.maksimum),
   });
-  let terakhir = masuk.value;
+  let terakhir = isian.value;
   const kirim = () => {
-    if (masuk.value !== terakhir) {
-      terakhir = masuk.value;
-      saatSimpan(Number(masuk.value));
+    if (isian.value !== terakhir) {
+      terakhir = isian.value;
+      saatSimpan(Number(isian.value));
     }
   };
-  masuk.addEventListener("blur", kirim);
-  masuk.addEventListener("keydown", (e) => { if (e.key === "Enter") masuk.blur(); });
-  return medan(label, masuk, opsi.keterangan);
+  isian.addEventListener("blur", kirim);
+  isian.addEventListener("keydown", (e) => { if (e.key === "Enter") isian.blur(); });
+  return medan(label, isian, opsi.keterangan);
 }
 
 function barisBerkas(label, jalur) {
-  return h("div", { gaya: { display: "flex", gap: "12px", flexWrap: "wrap",
-                            alignItems: "center" } },
-    h("span", { gaya: { color: "var(--redup)", minWidth: "140px" } }, label),
-    h("code", { gaya: { flex: "1", minWidth: "200px", wordBreak: "break-all" } },
-      jalur),
+  return h("div.jalur-baris", {},
+    h("span", {}, label),
+    h("code", {}, jalur),
     h("button.tbl.tbl-kecil.tbl-hantu",
       { onclick: () => salin(jalur, "Path disalin.") }, "Salin"));
 }
@@ -604,7 +584,7 @@ function blokBahaya(ctx) {
     h("span.mata", {}, "Menghapus progres"),
     h("div.kartu", { gaya: {
       borderColor: "color-mix(in srgb, var(--salah) 32%, transparent)" } },
-      h("p", { gaya: { color: "var(--teks-2)", fontSize: ".89rem" } },
+      h("p", { gaya: { color: "var(--teks-2)", fontSize: "var(--t-ui)" } },
         "Cadangan otomatis dibuat sebelum menghapus, di sebelah berkas "
         + "progresnya. Catatan pribadimu tidak ikut terhapus — ia tinggal di "
         + "berkas yang lain."),
@@ -630,7 +610,7 @@ function blokBahaya(ctx) {
 
 async function resetSemua() {
   if (!await konfirmasi(
-    "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di sembilan "
+    "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di sebelas "
     + "bahasa sekaligus.",
     { judul: "Reset seluruh progres", labelYa: "Lanjut", bahaya: true })) return;
 
@@ -661,12 +641,14 @@ async function resetSemua() {
 
 export const PINTASAN = [
   ["Ctrl K", "Palet perintah — lompat ke mana saja"],
-  ["Ctrl B", "Sembunyikan / tampilkan panel kiri"],
+  ["Ctrl B", "Buka / tutup menu (hanya di layar sempit)"],
   ["Ctrl J", "Ganti tema"],
   ["G lalu D", "Ke dasbor"],
   ["G lalu C", "Ke ruang coba"],
   ["G lalu S", "Ke statistik"],
   ["G lalu B", "Ke bookmark"],
+  ["G lalu N", "Ke catatanku"],
+  ["G lalu P", "Ke pengaturan"],
   ["?", "Tampilkan daftar ini"],
   ["Esc", "Tutup dialog"],
   ["1–9 atau A–J", "Menjawab soal kuis"],
@@ -680,12 +662,11 @@ export const PINTASAN = [
 export function tampilkanBantuan() {
   return jendela({
     judul: "Pintasan papan ketik",
-    isi: h("div", { gaya: { display: "grid", gap: "7px" } },
+    isi: h("div", { gaya: { display: "grid", gap: "var(--s2)" } },
       PINTASAN.map(([tombol, arti]) =>
-        h("div", { gaya: { display: "flex", gap: "14px",
-                           alignItems: "center" } },
-          h("kbd", { gaya: { minWidth: "104px", textAlign: "center" } }, tombol),
-          h("span", { gaya: { fontSize: ".9rem" } }, arti)))),
+        h("div.pintasan-baris", {},
+          h("kbd", {}, tombol),
+          h("span", {}, arti)))),
     aksi: [{ label: "Tutup", nilai: null, kelas: "tbl-utama" }],
   });
 }

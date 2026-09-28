@@ -856,4 +856,258 @@ HTML_EXERCISES = [
 </body>
 </html>""",
     },
+    {
+        "title": "Latihan 13: Kerangka Canvas dengan Konten Cadangan",
+        "difficulty": "Mudah",
+        "question": [
+            "Buat SATU elemen <canvas> dengan:",
+            "",
+            "  - atribut id bernilai papan",
+            "  - atribut width bernilai 400",
+            "  - atribut height bernilai 300",
+            "  - di dalamnya, satu paragraf <p> bertuliskan:",
+            "    Browser Anda tidak mendukung Canvas.",
+            "",
+            "HTML tidak dijalankan. Yang dinilai adalah POHON struktur berkasmu,",
+            "hasil pembacaan struktur.py. Cocokkan sampai ke tanda bacanya.",
+            "",
+            "Keluaran yang diharapkan:",
+            "",
+            "canvas height=\"300\" id=\"papan\" width=\"400\"",
+            "  p \"Browser Anda tidak mendukung Canvas.\"",
+        ],
+        "hints": [
+            "canvas BUKAN elemen kosong seperti img - ia wajib punya tag penutup "
+            "</canvas>, karena isinya (konten cadangan) diletakkan di ANTARA "
+            "tag buka dan tutup.",
+            "Atribut di keluaran diurutkan ABJAD oleh struktur.py, bukan mengikuti "
+            "urutan kamu menuliskannya - itu sebabnya height muncul sebelum id "
+            "walau kamu menulis id lebih dulu.",
+            "<p> di dalam canvas sama seperti <p> di mana pun - tetap butuh "
+            "tag penutup </p>.",
+        ],
+        "solution": """<canvas id="papan" width="400" height="300">
+  <p>Browser Anda tidak mendukung Canvas.</p>
+</canvas>""",
+    },
+    {
+        'title': 'Proyek Akhir: Halaman Warung Kopi',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Halaman Warung Kopi',
+        '',
+        'Warung kopi tetanggamu belum punya halaman web. Yang ia butuhkan cuma',
+        'satu halaman: menu, jam buka, dan cara memesan.',
+        '',
+        'Tidak ada CSS sama sekali di proyek ini. Yang diuji satu hal: apakah',
+        'kamu memilih ELEMEN yang tepat untuk tiap maksud. Halaman yang',
+        'elemennya benar tetap terbaca orang tanpa gaya apa pun -- dan tetap',
+        'terbaca pembaca layar, yang tidak pernah melihat gayamu sama sekali.',
+        '',
+        'Atribut dicetak berurut alfabetis oleh penilai, jadi urutan menulismu',
+        'tidak perlu sama.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. <head> lengkap: charset, viewport, title, dan meta description.',
+        "  2. Tautan 'Lewati ke isi' sebagai elemen PERTAMA di body, menuju",
+        '     id di <main>.',
+        '  3. <header> berisi h1, satu paragraf, dan <nav aria-label> berisi',
+        '     daftar tautan.',
+        '  4. Menu memakai <table> lengkap: caption, thead, tbody, dan',
+        "     th scope='col' / th scope='row' -- kolom nama pakai th, bukan td.",
+        '  5. Gambar dibungkus <figure> + <figcaption>, img wajib punya alt',
+        '     yang menjelaskan, serta width dan height.',
+        '  6. Jam buka memakai <dl> (dt/dd), bukan tabel dan bukan daftar biasa.',
+        '  7. Jam pesanan terakhir dibungkus <time datetime>.',
+        '  8. Formulir: <fieldset> + <legend>, tiap isian punya <label for>,',
+        "     ada <select> dengan dua <option>, dan <button type='submit'>.",
+        '  9. <footer> berisi <address> dan <small>.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  <!doctype html>',
+        '  html lang="id"',
+        '    head',
+        '      meta charset="utf-8"',
+        '      meta content="width=device-width, initial-scale=1" name="viewport"',
+        '      title "Warung Kopi Pagi — Menu dan Kontak"',
+        '      meta content="Warung kopi kecil di Bandung. Menu, jam buka, dan cara memesan." name="description"',
+        '    body',
+        '      a class="lewati" href="#isi" "Lewati ke isi"',
+        '      header',
+        '        h1 "Warung Kopi Pagi"',
+        '        p "Kopi tubruk dan roti bakar, buka sejak 2019."',
+        '        nav aria-label="Navigasi utama"',
+        '          ul',
+        '            li',
+        '              a href="#menu" "Menu"',
+        '            li',
+        '              a href="#jam" "Jam buka"',
+        '            li',
+        '              a href="#pesan" "Pesan"',
+        '      main id="isi"',
+        '        section id="menu"',
+        '          h2 "Menu"',
+        '          table',
+        '            caption "Harga sudah termasuk pajak"',
+        '            thead',
+        '              tr',
+        '                th scope="col" "Nama"',
+        '                th scope="col" "Ukuran"',
+        '                th scope="col" "Harga"',
+        '            tbody',
+        '              tr',
+        '                th scope="row" "Kopi Tubruk"',
+        '                td "200 ml"',
+        '                td "Rp8.000"',
+        '              tr',
+        '                th scope="row" "Kopi Susu"',
+        '                td "250 ml"',
+        '                td "Rp12.000"',
+        '              tr',
+        '                th scope="row" "Roti Bakar"',
+        '                td "1 porsi"',
+        '                td "Rp15.000"',
+        '          figure',
+        '            img alt="Secangkir kopi tubruk di atas meja kayu" height="200" src="kopi.jpg" width="320"',
+        '            figcaption "Kopi tubruk, diseduh langsung di cangkir."',
+        '        section id="jam"',
+        '          h2 "Jam buka"',
+        '          dl',
+        '            dt "Senin sampai Jumat"',
+        '            dd "06.00 - 17.00"',
+        '            dt "Sabtu"',
+        '            dd "06.00 - 21.00"',
+        '            dt "Minggu"',
+        '            dd "Tutup"',
+        '          p "Pesanan terakhir di hari kerja."',
+        '            time datetime="16:30" "16.30"',
+        '        section id="pesan"',
+        '          h2 "Pesan lebih dulu"',
+        '          form action="/pesan" method="post"',
+        '            fieldset',
+        '              legend "Data pemesan"',
+        '              p',
+        '                label for="nama" "Nama"',
+        '                input id="nama" name="nama" required type="text"',
+        '              p',
+        '                label for="minuman" "Pilih minuman"',
+        '                select id="minuman" name="minuman"',
+        '                  option value="tubruk" "Kopi Tubruk"',
+        '                  option value="susu" "Kopi Susu"',
+        '            button type="submit" "Kirim pesanan"',
+        '      footer',
+        '        address "Jalan Melati 7, Bandung"',
+        '        p',
+        '          small "© 2026 Warung Kopi Pagi"',
+    ],
+        'hints': [
+        "Elemen pemilah halaman (header, nav, main, footer) boleh muncul sekali saja masing-masing, kecuali nav. Itu yang membuat 'Lewati ke isi' bisa menunjuk satu tempat yang pasti.",
+        'th scope="row" dipakai untuk sel yang MENAMAI barisnya -- di tabel menu itu kolom nama minuman. Tanpa scope, pembaca layar harus menebak.',
+        "<dl> bukan 'definition list' lagi sejak HTML5: ia daftar PASANGAN nama-nilai, dan jam buka adalah pasangan hari-jam.",
+    ],
+        'solution': """<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Warung Kopi Pagi — Menu dan Kontak</title>
+  <meta name="description" content="Warung kopi kecil di Bandung. Menu, jam buka, dan cara memesan.">
+</head>
+<body>
+  <a class="lewati" href="#isi">Lewati ke isi</a>
+
+  <header>
+    <h1>Warung Kopi Pagi</h1>
+    <p>Kopi tubruk dan roti bakar, buka sejak 2019.</p>
+    <nav aria-label="Navigasi utama">
+      <ul>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#jam">Jam buka</a></li>
+        <li><a href="#pesan">Pesan</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="isi">
+    <section id="menu">
+      <h2>Menu</h2>
+      <table>
+        <caption>Harga sudah termasuk pajak</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nama</th>
+            <th scope="col">Ukuran</th>
+            <th scope="col">Harga</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Kopi Tubruk</th>
+            <td>200 ml</td>
+            <td>Rp8.000</td>
+          </tr>
+          <tr>
+            <th scope="row">Kopi Susu</th>
+            <td>250 ml</td>
+            <td>Rp12.000</td>
+          </tr>
+          <tr>
+            <th scope="row">Roti Bakar</th>
+            <td>1 porsi</td>
+            <td>Rp15.000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <figure>
+        <img alt="Secangkir kopi tubruk di atas meja kayu" height="200" src="kopi.jpg" width="320">
+        <figcaption>Kopi tubruk, diseduh langsung di cangkir.</figcaption>
+      </figure>
+    </section>
+
+    <section id="jam">
+      <h2>Jam buka</h2>
+      <dl>
+        <dt>Senin sampai Jumat</dt>
+        <dd>06.00 - 17.00</dd>
+        <dt>Sabtu</dt>
+        <dd>06.00 - 21.00</dd>
+        <dt>Minggu</dt>
+        <dd>Tutup</dd>
+      </dl>
+      <p>Pesanan terakhir <time datetime="16:30">16.30</time> di hari kerja.</p>
+    </section>
+
+    <section id="pesan">
+      <h2>Pesan lebih dulu</h2>
+      <form action="/pesan" method="post">
+        <fieldset>
+          <legend>Data pemesan</legend>
+          <p>
+            <label for="nama">Nama</label>
+            <input id="nama" name="nama" required type="text">
+          </p>
+          <p>
+            <label for="minuman">Pilih minuman</label>
+            <select id="minuman" name="minuman">
+              <option value="tubruk">Kopi Tubruk</option>
+              <option value="susu">Kopi Susu</option>
+            </select>
+          </p>
+        </fieldset>
+        <button type="submit">Kirim pesanan</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <address>Jalan Melati 7, Bandung</address>
+    <p><small>&copy; 2026 Warung Kopi Pagi</small></p>
+  </footer>
+</body>
+</html>
+""",
+    },
 ]

@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from datetime import date, timedelta
 
-import progress
+from pelajar import progress
 
 
 class BasisProgres(unittest.TestCase):

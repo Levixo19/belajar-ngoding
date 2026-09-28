@@ -23,7 +23,7 @@ import sys
 import tempfile
 import unittest
 
-import struktur
+from inti import struktur
 
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -250,7 +250,7 @@ h1, h2 { color: #333; text-align: center; }
                     with open(berkas, "w", encoding="utf-8") as f:
                         f.write(kode)
                     hasil = subprocess.run(
-                        [sys.executable, os.path.join(AKAR, "struktur.py"),
+                        [sys.executable, os.path.join(AKAR, "inti", "struktur.py"),
                          jenis, berkas],
                         capture_output=True, text=True, timeout=30,
                         env={**os.environ, "PYTHONHASHSEED": "random"})
@@ -305,19 +305,19 @@ class TestLewatRunner(unittest.TestCase):
     def test_keduanya_selalu_tersedia(self):
         # Tidak butuh satu program pun untuk dipasang -- itu justru alasan
         # keduanya ditaruh paling depan di daftar bahasa.
-        import runner
+        from inti import runner
         for b in ("html", "css"):
             self.assertTrue(runner.tersedia(b), b)
             self.assertEqual(runner.program_hilang(b), [])
 
     def test_jalankan_html_lewat_runner(self):
-        import runner
+        from inti import runner
         h = runner.jalankan("html", "<h1>Halo</h1>")
         self.assertTrue(h.sukses, h.galat)
         self.assertIn('h1 "Halo"', h.keluaran)
 
     def test_jalankan_css_lewat_runner(self):
-        import runner
+        from inti import runner
         h = runner.jalankan("css", "body { color: red; }")
         self.assertTrue(h.sukses, h.galat)
         self.assertIn("color: red", h.keluaran)
@@ -326,7 +326,7 @@ class TestLewatRunner(unittest.TestCase):
         # Tag yang lupa ditutup bukan alasan menyatakan seluruh berkas gagal:
         # browser pun tidak melakukannya, dan pelajar tetap perlu melihat
         # pohonnya untuk mengerti apa yang terjadi.
-        import runner
+        from inti import runner
         h = runner.jalankan("html", "<div><p>lupa ditutup")
         self.assertTrue(h.sukses)
         self.assertIn("div", h.keluaran)
@@ -413,7 +413,7 @@ class TestLatihanHtmlCss(unittest.TestCase):
             with open(berkas, "w", encoding="utf-8") as f:
                 f.write(kode)
             return subprocess.run(
-                [sys.executable, os.path.join(AKAR, "struktur.py"), jenis,
+                [sys.executable, os.path.join(AKAR, "inti", "struktur.py"), jenis,
                  berkas],
                 capture_output=True, text=True, timeout=30)
 

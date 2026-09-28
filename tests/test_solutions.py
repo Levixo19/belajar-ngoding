@@ -21,10 +21,13 @@ Untuk menguji satu bahasa saja:
 """
 
 import os
+import re
+import textwrap
 import unittest
 
-import runner
-from exercises import bangun_tests, bisa_dinilai, gabung_setup
+from inti import runner
+from inti.berkas import PROGRAM, jenis_kode
+from layar.exercises import bangun_tests, bisa_dinilai, gabung_setup
 from main import LANGUAGES
 
 LEWATI_LAMBAT = os.environ.get("BELAJAR_SKIP_LAMBAT") == "1"
@@ -48,6 +51,73 @@ def latihan_bahasa(lang):
 def _jalankan(bahasa, ex):
     return runner.jalankan(bahasa, gabung_setup(ex, ex["solution"]),
                            stdin=_stdin_pertama(ex), timeout=TIMEOUT)
+
+
+# Kepala blok keluaran yang dipakai di seluruh kurikulum. Bentuknya beragam
+# karena ditulis lintas bertahun-tahun: "Keluaran yang diharapkan:",
+# "Output yang benar:", dan varian ber-input "Untuk input 80, outputnya:".
+_KEPALA_KELUARAN = re.compile(
+    r"^(?:untuk input\s+(.+?),\s*)?"
+    r"(?:keluaran|output)(?:nya)?"
+    r"(?:\s+yang\s+(?:benar|diharapkan))?"
+    r"\s*(?:\([^)]*\))?\s*:$",
+    re.I,
+)
+
+
+def blok_janji(ex):
+    """[(petunjuk_input_atau_None, teks_yang_dijanjikan), ...] dari soal."""
+    hasil = []
+    soal = ex["question"]
+    for i, baris in enumerate(soal):
+        cocok = _KEPALA_KELUARAN.match(baris.strip())
+        if not cocok:
+            continue
+        keluar, mulai = [], False
+        for b in soal[i + 1:]:
+            if not b.strip():
+                if mulai:
+                    break
+                continue          # baris kosong SEBELUM bloknya, lewati
+            mulai = True
+            keluar.append(b.rstrip())
+        if keluar:
+            hasil.append((cocok.group(1), "\n".join(keluar)))
+    return hasil
+
+
+def _input_untuk(ex, petunjuk):
+    """Input mana yang dimaksud sebuah blok janji. None kalau tidak ketemu."""
+    daftar = ex.get("stdin_list") or ([ex["stdin"]] if ex.get("stdin") else [""])
+    if petunjuk is None:
+        return daftar[0]
+    inti_petunjuk = petunjuk.strip().strip("'\"")
+    for masukan in daftar:
+        if masukan.strip().split("\n")[0] == inti_petunjuk:
+            return masukan
+    return None
+
+
+_KEPALA_MATERI = re.compile(r"^keluaran(?:nya)?(?:\s*\([^)]*\))?\s*:?$", re.I)
+
+
+def _blok_keluaran(body):
+    """Semua blok keluaran yang dijanjikan sebuah prosa materi."""
+    hasil = []
+    for j, baris in enumerate(body):
+        if not _KEPALA_MATERI.match(baris.strip()):
+            continue
+        keluar, mulai = [], False
+        for x in body[j + 1:]:
+            if not x.strip():
+                if mulai:
+                    break
+                continue
+            mulai = True
+            keluar.append(x.rstrip())
+        if keluar:
+            hasil.append("\n".join(keluar))
+    return hasil
 
 
 def _bahasa_dipilih():
@@ -131,6 +201,82 @@ class BasisSolusi:
                         for h in hasil_uji if not h.lulus
                     )
                     self.fail(rincian)
+
+    def test_janji_keluaran_di_soal_sesuai_kenyataan(self):
+        """Blok "Keluaran yang diharapkan" di soal harus benar-benar keluar.
+
+        Hampir semua latihan menjanjikan bentuk keluarannya di dalam soal,
+        lengkap sampai lebar kolomnya. Janji itu ditulis tangan, dan lebar
+        kolom yang dihitung di kepala ternyata sangat sering meleset satu
+        spasi -- kesalahan yang tidak menggagalkan satu pun tes lain, tapi
+        membuat pelajar mengejar keluaran yang MUSTAHIL dihasilkan solusi
+        mana pun. Lima kasus seperti itu ditemukan saat tes ini pertama
+        ditulis, tersebar di tiga bahasa.
+
+        Soal boleh menampilkan CUPLIKAN, bukan seluruh keluaran; karena itu
+        janji yang lebih pendek diterima asal muncul utuh di dalam hasilnya.
+        Indentasi seluruh blok juga diabaikan (dedent) -- yang dijaga adalah
+        indentasi RELATIF antar barisnya, karena itulah yang jadi isi pada
+        keluaran berbentuk pohon atau tabel.
+        """
+        for ex in latihan_bahasa(self.lang):
+            for petunjuk, harap in blok_janji(ex):
+                masukan = _input_untuk(ex, petunjuk)
+                if masukan is None:
+                    continue
+                with self.subTest(latihan=ex["title"], input=petunjuk):
+                    hasil = runner.jalankan(
+                        self.lang["runner"], gabung_setup(ex, ex["solution"]),
+                        stdin=masukan, timeout=TIMEOUT)
+                    if not hasil.sukses:
+                        self.skipTest("sudah dilaporkan tes lain")
+
+                    nyata = textwrap.dedent(runner.normalisasi(hasil.keluaran))
+                    janji = textwrap.dedent(runner.normalisasi(harap))
+                    self.assertTrue(
+                        janji == nyata or janji in nyata,
+                        "keluaran yang dijanjikan soal tidak pernah terjadi.\n"
+                        f"  janji: {janji[:300]!r}\n"
+                        f"  nyata: {nyata[:300]!r}",
+                    )
+
+    def test_janji_keluaran_di_materi_sesuai_kenyataan(self):
+        """Blok "Keluaran:" di prosa materi harus benar-benar keluar.
+
+        Contoh kode di materi hampir selalu diikuti prosa yang menuliskan
+        keluarannya. Itu janji yang persis sama rawannya dengan janji di
+        soal latihan -- angka, lebar kolom, dan pemisah desimal yang
+        ditulis dari ingatan sering meleset. Dua puluh satu kasus seperti
+        itu ditemukan saat tes ini pertama ditulis, tersebar di lima
+        bahasa; salah satunya menjanjikan pemisah ribuan titik untuk
+        keluaran yang sebenarnya memakai koma.
+
+        Prosa boleh menampilkan CUPLIKAN; karena itu janji yang lebih
+        pendek diterima asal muncul UTUH dan BERURUTAN di dalam hasilnya.
+        """
+        for m in self.lang["materials"]:
+            bagian = m["sections"]
+            for i, s in enumerate(bagian):
+                kode = s.get("code")
+                if not kode or i + 1 >= len(bagian):
+                    continue
+                if jenis_kode(self.lang["runner"], kode) != PROGRAM:
+                    continue
+                for janji in _blok_keluaran(bagian[i + 1].get("body") or []):
+                    with self.subTest(materi=m["title"]):
+                        hasil = runner.jalankan(self.lang["runner"], kode,
+                                                timeout=TIMEOUT)
+                        if not hasil.sukses:
+                            self.fail(f"contoh kode tidak bisa dijalankan: "
+                                      f"{hasil.galat.strip()[:300]}")
+                        nyata = textwrap.dedent(runner.normalisasi(hasil.keluaran))
+                        harap = textwrap.dedent(runner.normalisasi(janji))
+                        self.assertTrue(
+                            harap == nyata or harap in nyata,
+                            "keluaran yang dijanjikan materi tidak pernah "
+                            f"terjadi.\n  janji: {harap[:300]!r}\n"
+                            f"  nyata: {nyata[:300]!r}",
+                        )
 
     def test_input_berbeda_menghasilkan_output_berbeda(self):
         """Latihan bercabang wajib diuji dengan input yang menempuh cabang beda.

@@ -29,8 +29,8 @@ Importir: main.py. Hanya membaca dict progres dari progress.load_progress().
 
 from datetime import date
 
-import bab
-from progress import kunci, kuis_jatuh_tempo, xp_hari_ini
+from pelajar import bab
+from pelajar.progress import kunci, kuis_jatuh_tempo, xp_hari_ini
 
 
 class Langkah:

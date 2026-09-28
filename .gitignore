@@ -32,3 +32,6 @@ besar.bin
 laporan-belajar.md
 progres-belajar.json
 *.json.bak
+
+# Log pemasang pihak ketiga yang kebetulan jatuh di sini
+install.log

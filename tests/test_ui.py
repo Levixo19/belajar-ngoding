@@ -7,7 +7,7 @@ import unittest
 from contextlib import redirect_stdout
 from unittest import mock
 
-import utils
+from layar import utils
 
 
 class TestPewarnaan(unittest.TestCase):
@@ -189,14 +189,14 @@ class TestSmokeAplikasi(unittest.TestCase):
 
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()
-        import progress
+        from pelajar import progress
         self._asli = progress.PROGRESS_FILE
         self._asli_lama = progress.PROGRESS_FILE_LAMA
         progress.PROGRESS_FILE = os.path.join(self.dir.name, "p.json")
         progress.PROGRESS_FILE_LAMA = os.path.join(self.dir.name, "tidak-ada.json")
 
     def tearDown(self):
-        import progress
+        from pelajar import progress
         progress.PROGRESS_FILE = self._asli
         progress.PROGRESS_FILE_LAMA = self._asli_lama
         self.dir.cleanup()
@@ -227,7 +227,7 @@ class TestSmokeAplikasi(unittest.TestCase):
 
     def test_masuk_bahasa_baca_materi_benar_benar_mencatat_progres(self):
         import main
-        import progress as p
+        from pelajar import progress as p
         # Menu "1" memilih bahasa PERTAMA di daftar, jadi kunci progresnya
         # harus diturunkan dari bahasa itu juga — bukan dari nama yang
         # kebetulan benar hari ini. Versi sebelumnya menulis "java_materi"
@@ -255,7 +255,7 @@ class TestSmokeAplikasi(unittest.TestCase):
         tahu apa yang sedang menanti di depan.
         """
         import main
-        import bab as modul_bab
+        from pelajar import bab as modul_bab
         bahasa = main.LANGUAGES[0]
         daftar = modul_bab.status(bahasa, buka_semua=False)
         self.assertGreater(len(daftar), 1, "bahasa pertama harus punya >1 bab")
@@ -278,7 +278,7 @@ class TestSmokeAplikasi(unittest.TestCase):
         self.assertIn("Baca 25 materi", teks)
 
     def test_menu_tentang_menampilkan_lokasi_berkas(self):
-        import konfigurasi
+        from pelajar import konfigurasi
         teks = self._jalankan_menu(["t", "", "k"])
         self.assertIn(konfigurasi.BERKAS, teks)
 
@@ -322,7 +322,7 @@ class TestSmokeAplikasi(unittest.TestCase):
         self.assertIn("LANGKAH BERIKUTNYA", teks.upper())
 
     def test_menu_pengaturan_menampilkan_lokasi_berkas(self):
-        import konfigurasi
+        from pelajar import konfigurasi
         teks = self._jalankan_menu(["p", "0", "k"])
         self.assertIn(konfigurasi.BERKAS, teks)
 
@@ -471,7 +471,7 @@ class TestBungkusBaris(unittest.TestCase):
 
 class TestSorotKata(unittest.TestCase):
     def test_tanpa_warna_teks_tidak_berubah(self):
-        import tema
+        from inti import tema
         asli = tema.kedalaman_aktif()
         try:
             tema.pakai_kedalaman(tema.TANPA_WARNA)
@@ -483,7 +483,7 @@ class TestSorotKata(unittest.TestCase):
         self.assertEqual(utils.sorot_kata("halo", ""), "halo")
 
     def test_semua_kemunculan_disorot(self):
-        import tema
+        from inti import tema
         asli = tema.kedalaman_aktif()
         try:
             tema.pakai_kedalaman(tema.WARNA_PENUH)
@@ -494,7 +494,7 @@ class TestSorotKata(unittest.TestCase):
             tema.pakai_kedalaman(asli)
 
     def test_tidak_membedakan_huruf_besar_kecil(self):
-        import tema
+        from inti import tema
         asli = tema.kedalaman_aktif()
         try:
             tema.pakai_kedalaman(tema.WARNA_PENUH)
@@ -549,22 +549,22 @@ class TestHeatmap(unittest.TestCase):
 
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()
-        import progress
+        from pelajar import progress
         self._asli = progress.PROGRESS_FILE
         self._asli_lama = progress.PROGRESS_FILE_LAMA
         progress.PROGRESS_FILE = os.path.join(self.dir.name, "p.json")
         progress.PROGRESS_FILE_LAMA = os.path.join(self.dir.name, "tidak-ada.json")
 
     def tearDown(self):
-        import progress
+        from pelajar import progress
         progress.PROGRESS_FILE = self._asli
         progress.PROGRESS_FILE_LAMA = self._asli_lama
         self.dir.cleanup()
 
     def test_aktivitas_hari_ini_selalu_muncul(self):
         import main
-        import progress
-        import tema
+        from pelajar import progress
+        from inti import tema
         from datetime import date
 
         asli = tema.kedalaman_aktif()
@@ -589,14 +589,14 @@ class TestHeatmap(unittest.TestCase):
 
     def test_jumlah_baris_selalu_sembilan(self):
         import main
-        import progress
+        from pelajar import progress
         baris = main.baris_heatmap(progress.load_progress())
         self.assertEqual(len(baris), 9)   # judul + 7 hari + keterangan
 
     def test_lebar_setiap_baris_hari_sama(self):
         import main
-        import progress
-        import tema
+        from pelajar import progress
+        from inti import tema
         asli = tema.kedalaman_aktif()
         try:
             tema.pakai_kedalaman(tema.TANPA_WARNA)

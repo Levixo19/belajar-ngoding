@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "description": "BUKAN proyek npm dan tidak pernah dipasang. Berkas ini satu-satunya gunanya: memberi tahu Node bahwa *.js di folder ini adalah ES module. Tanpa itu, Node membacanya sebagai CommonJS dan dua tes yang menjalankan kode ini langsung — TestMesinGerak dan TestPenyorotJavaScript — GAGAL dengan 'Cannot use import statement outside a module', bukan skip. Tes yang merah karena alasan yang tidak ada hubungannya dengan isinya adalah tes yang berhenti dibaca orang. Tidak ada dependensi dan tidak ada langkah build; browser tidak pernah mengambil berkas ini."
+}

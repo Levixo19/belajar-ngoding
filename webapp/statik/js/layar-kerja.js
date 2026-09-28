@@ -14,8 +14,8 @@
  */
 
 import {
-  api, h, bilah, sorak, rayakan, salin, konfirmasi, jendela, jamMundur,
-  kilau, tunda, medan, selisihHari,
+  api, h, isikan, kosongkan, bilah, sorak, rayakan, salin, konfirmasi, jendela,
+  jamMundur, kilau, tunda, medan, selisihHari, keadaan,
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, getar, denyut, percikBara, magnet, skala, angkaKe,
@@ -24,7 +24,12 @@ import {
 import { ikon } from "./ikon.js";
 import { praKode } from "./sorot.js";
 import { Editor } from "./editor.js";
-import { tombolBookmark, tombolCatatan } from "./layar-belajar.js";
+import {
+  tombolBookmark, tombolCatatan, kartuKeluaran, blokProsa,
+} from "./layar-belajar.js";
+import {
+  pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
+} from "./pratinjau.js";
 
 const HURUF = "ABCDEFGHIJ";
 
@@ -58,9 +63,10 @@ function buatSakelar(judul, ket, awal, saatUbah) {
 
 /* ==================================================================== kuis */
 
-export async function layarKuis({ key, indeks }) {
+export async function layarKuis({ key, indeks }, ctx) {
   const b = await api.ambil("/api/bahasa", { key });
-  const q = b.kuis[Number(indeks)];
+  const nomorKuis = Number(indeks);
+  const q = b.kuis[nomorKuis];
   if (!q) throw new Error("Kuis tidak ditemukan.");
 
   const panggung = h("div.kuis-panggung");
@@ -70,61 +76,75 @@ export async function layarKuis({ key, indeks }) {
   function gambarPersiapan() {
     if (bersihkan) { bersihkan(); bersihkan = null; }
     const persen = q.total_soal ? q.terbaik / q.total_soal * 100 : 0;
-    let acak = true;
+    // Setelan "Acak bawaan" ADA di Pengaturan dan berlaku di terminal, tapi
+    // layar ini dulu memakunya ke true — jadi mematikannya mengubah persis nol
+    // hal di browser. Setelan yang tampak berfungsi tapi tidak mengubah apa pun
+    // lebih buruk daripada setelan yang tidak ada (lihat AGENTS.md, catatan
+    // `--ukuran-teks`). Nilainya dibaca dari /api/awal, yang disegarkan
+    // layarAtur setiap kali pengaturannya disimpan.
+    const bawaanAcak = ctx && ctx.awal && ctx.awal.konfigurasi
+      && ctx.awal.konfigurasi.acak_bawaan;
+    let acak = bawaanAcak ? Boolean(bawaanAcak.nilai) : true;
     let timer = false;
 
-    panggung.replaceChildren(
+    isikan(panggung,
       h("header.kepala-besar", {},
-        h("span.mata", {}, `${b.label} · kuis`),
+        h("span.mata", {}, `${b.label} · kuis ${nomorKuis + 1} dari ${b.kuis.length}`),
         h("h1", {}, q.judul),
         h("p.kepala-sub", {}, `${q.soal} soal pilihan ganda. Jawaban yang `
           + "salah bukan kegagalan — ia yang memberi tahu bagian mana yang "
           + "perlu dibaca ulang."),
         h("div.kepala-aksi", {},
-          h("div.deret", {},
+          h("div.deret.deret-rapat", {},
             h("span.pil", {}, ikon("kuis", { ukuran: 14, tebal: 1.9 }),
               `${q.soal} soal`),
             q.pernah ? h("span.pil", {}, `${q.percobaan}× dikerjakan`) : null),
-          h("div.deret", {},
+          h("div.materi-alat", {},
             tombolBookmark(key, "kuis", indeks, q.bookmark)))),
 
-      q.pernah ? h("div.kartu", { gaya: { marginBottom: "18px" } },
-        h("div", { gaya: { display: "flex", justifyContent: "space-between",
-                           marginBottom: "8px" } },
-          h("span", { gaya: { color: "var(--redup)", fontSize: ".87rem" } },
-            "Skor terbaikmu"),
+      q.pernah ? h("div.kartu", { gaya: { marginBottom: "var(--s5)" } },
+        h("div.rinci-atas", {},
+          h("span", {}, "Skor terbaikmu"),
           h("b", { gaya: { fontFamily: "var(--f-kode)" } },
             `${q.terbaik}/${q.total_soal}`)),
         bilah(persen, persen >= 100 ? "tumbuh" : ""),
-        h("div.deret", { gaya: { marginTop: "12px" } },
-          h("span.pil", {}, `${q.percobaan}× dikerjakan`),
+        h("div.deret.deret-rapat", { gaya: { marginTop: "var(--s3)" } },
           q.jatuh_tempo ? h("span.pil.pil-ungu", {}, "sudah waktunya diulang")
             : q.jadwal ? h("span.pil", {}, jadwalRamah(q.jadwal)) : null,
           q.salah_tersisa
             ? h("span.pil.pil-salah", {}, `${q.salah_tersisa} soal masih salah`)
             : null)) : null,
 
-      h("div", { gaya: { display: "grid", gap: "9px", marginBottom: "20px" } },
-        buatSakelar("Acak urutan soal & opsi",
-          "Supaya jawaban tidak bisa dihafal dari posisinya.",
-          acak, (v) => { acak = v; }),
-        buatSakelar("Mode timer",
-          "Beri batas waktu. Berguna menjelang ujian; melelahkan untuk "
-          + "latihan harian.", timer, (v) => { timer = v; })),
-
+      // Tindakan utama berdiri PALING ATAS, setelannya menyusul di balik
+      // panel yang dilipat. Dua sakelar selebar halaman yang harus dilewati
+      // sebelum sampai ke tombol Mulai mengubah layar pembuka kuis jadi
+      // formulir — padahal keduanya sudah punya nilai bawaan yang benar untuk
+      // hampir semua orang, hampir setiap kali.
       h("div.deret", {},
         h("button.tbl.tbl-utama", {
           onclick: () => mulai({ mode: "penuh", acak, timer }),
         }, q.pernah ? "Kerjakan lagi" : "Mulai kuis"),
         q.salah_tersisa ? h("button.tbl", {
           onclick: () => mulai({ mode: "salah", acak, timer }),
-        }, `Ulangi ${q.salah_tersisa} soal yang masih salah`) : null,
-        h("a.tbl.tbl-hantu", { href: "#/bahasa/" + key }, "Kembali")),
+        }, `Ulangi ${q.salah_tersisa} soal yang masih salah`) : null),
 
-      q.salah_tersisa ? h("p", { gaya: { color: "var(--redup)", fontSize: ".84rem",
-                                         marginTop: "14px" } },
+      q.salah_tersisa ? h("p.baris-sisi", { gaya: { margin: "var(--s4) 0" } },
         "Mode ulangan tidak menyentuh skor terbaikmu — ia hanya mengurangi "
         + "daftar soal yang masih salah.") : null,
+
+      h("details.bantuan", { gaya: { marginTop: "var(--s5)" } },
+        h("summary.bantuan-kepala", {},
+          ikon("atur", { ukuran: 18 }),
+          h("b", {}, "Setelan kuis"),
+          h("span", {}, acak ? "soal diacak" : "urutan asli"),
+          h("span.bantuan-lipat", {}, ikon("lanjut", { ukuran: 18 }))),
+        h("div.bantuan-isi", {},
+          buatSakelar("Acak urutan soal & opsi",
+            "Supaya jawaban tidak bisa dihafal dari posisinya.",
+            acak, (v) => { acak = v; }),
+          buatSakelar("Mode timer",
+            "Beri batas waktu. Berguna menjelang ujian; melelahkan untuk "
+            + "latihan harian.", timer, (v) => { timer = v; }))),
     );
   }
 
@@ -146,7 +166,7 @@ export async function layarKuis({ key, indeks }) {
     const bar = bilah(0);
     const isi = h("div");
 
-    panggung.replaceChildren(
+    isikan(panggung,
       h("div.kuis-kemajuan", {}, hitung, bar, jam,
         h("button.tbl.tbl-kecil.tbl-hantu", { onclick: keluar }, "Hentikan")),
       isi);
@@ -179,17 +199,20 @@ export async function layarKuis({ key, indeks }) {
       hitung.textContent = `${nomor + 1} / ${sesi.total}`;
       bar.setel(nomor / sesi.total * 100);
 
+      // Hurufnya dibungkus <span> sendiri supaya centang/silang bisa
+      // menggantikannya lewat ::after saat jawabannya terungkap. Warna hijau
+      // dan merah saja tidak cukup untuk mata yang sulit membedakan keduanya,
+      // dan di layar ini dua warna itulah SELURUH umpan baliknya.
       const tombol = s.options.map((teks, i) => h("button", {
         onclick: () => jawab(i, tombol),
-      }, h("span.huruf", {}, HURUF[i]), h("span", {}, teks)));
+      }, h("span.huruf", {}, h("span", {}, HURUF[i])), h("span", {}, teks)));
 
       const soalEl = h("div.kuis-soal", {}, s.q);
       const opsiEl = h("div.opsi", {}, tombol);
-      isi.replaceChildren(h("div", {},
+      isikan(isi, h("div", {},
         soalEl,
         opsiEl,
-        h("div", { gaya: { marginTop: "16px", color: "var(--redup)",
-                           fontSize: ".8rem" } },
+        h("p.baris-sisi", { gaya: { marginTop: "var(--s4)" } },
           `Tekan 1–${s.options.length} atau A–${HURUF[s.options.length - 1]} `
           + "untuk menjawab.")));
 
@@ -242,7 +265,7 @@ export async function layarKuis({ key, indeks }) {
       isi.appendChild(h("div.penjelasan", {},
         h("b", {}, r.benar ? "Benar. " : "Belum tepat. "),
         r.penjelasan || (r.benar ? "" : "Jawaban yang benar disorot hijau."),
-        h("div.deret", { gaya: { marginTop: "14px" } }, lanjut)));
+        h("div.deret", { gaya: { marginTop: "var(--s3)" } }, lanjut)));
       lanjut.focus();
     }
 
@@ -309,15 +332,15 @@ export async function layarKuis({ key, indeks }) {
       angkaBenar.textContent = String(r.benar);
     }
 
-    panggung.replaceChildren(h("div.masuk", {},
+    isikan(panggung, h("div.masuk", {},
       h("header.kepala-besar", {},
         h("span.mata", {}, kehabisanWaktu ? "Waktu habis" : "Hasil"),
         h("h1", {}, angkaBenar, ` dari ${r.total} benar`),
         h("p.kepala-sub", {}, kalimat)),
 
-      h("div.kartu", { gaya: { marginBottom: "20px" } },
+      h("div.kartu", { gaya: { marginBottom: "var(--s5)" } },
         bilah(persen, persen >= 100 ? "tumbuh" : ""),
-        h("div.deret", { gaya: { marginTop: "14px" } },
+        h("div.deret.deret-rapat", { gaya: { marginTop: "var(--s3)" } },
           r.xp_tambah > 0 ? h("span.pil.pil-nyala", {}, `+${r.xp_tambah} XP`) : null,
           r.sesi_penuh
             ? h("span.pil", {}, `Terbaik ${r.terbaik}/${r.total_asli}`) : null,
@@ -326,30 +349,32 @@ export async function layarKuis({ key, indeks }) {
           r.salah_tersisa
             ? h("span.pil.pil-salah", {}, `${r.salah_tersisa} soal masih salah`)
             : h("span.pil.pil-tumbuh", {}, "tidak ada soal tersisa")),
-        !r.sesi_penuh ? h("p", { gaya: { margin: "12px 0 0",
-          color: "var(--redup)", fontSize: ".84rem" } },
+        !r.sesi_penuh ? h("p.baris-sisi", { gaya: { margin: "var(--s3) 0 0" } },
           "Ini sesi ulangan, jadi skor terbaikmu sengaja tidak disentuh.") : null),
 
-      h("span.mata", {}, "Tinjau jawaban"),
-      tinjauSemua(r),
-
-      h("div.deret", {},
+      // Tindakan berikutnya berdiri SEBELUM daftar tinjauan, bukan sesudahnya.
+      // Tinjauan lima belas soal bisa sepanjang dua layar penuh, dan tombol
+      // "Kerjakan lagi" yang tertimbun di dasarnya adalah tombol yang harus
+      // dicari — padahal ia jawaban paling umum atas layar ini.
+      h("div.deret", { gaya: { marginBottom: "var(--s6)" } },
         h("button.tbl.tbl-utama", { onclick: gambarPersiapan }, "Kerjakan lagi"),
         r.salah_tersisa ? h("button.tbl", {
           onclick: () => mulai({ mode: "salah", acak: true, timer: false }),
         }, `Ulangi ${r.salah_tersisa} yang masih salah`) : null,
         h("a.tbl.tbl-hantu", { href: "#/bahasa/" + key },
           "Kembali ke " + b.label)),
+
+      h("span.mata", {}, "Tinjau jawaban"),
+      tinjauSemua(r),
     ));
-    window.scrollTo({ top: 0, behavior: adaGerak() ? "smooth" : "auto" });
+    window.scrollTo({ top: 0, behavior: "auto" });
     // Perayaannya menyusul sesudah hasilnya terpasang, supaya baranya memercik
     // dari kartu skor yang sudah ada di layar — bukan dari ruang kosong.
     if (sempurna) kilau(panggung.querySelector(".kartu"));
   }
 
   function tinjauSemua(r) {
-    const daftar = h("div", { gaya: { display: "grid", gap: "11px",
-                                      marginBottom: "24px" } },
+    const daftar = h("div", { gaya: { display: "grid", gap: "var(--s2)" } },
       r.rincian.map((d, i) => tinjauSoal(d, i)));
     ungkap(daftar, { per: 24, maks: 240, geser: 8, pegas: "jawab" });
     return daftar;
@@ -360,9 +385,9 @@ export async function layarKuis({ key, indeks }) {
     return h("div.uji" + (d.benar ? ".lulus" : ".gagal"), {},
       h("div.uji-kepala", {},
         h("span.uji-cap", {}, d.benar ? "BENAR" : "SALAH"),
-        h("span", { gaya: { flex: "1" } }, `${i + 1}. ${d.q}`)),
+        h("span.uji-nama", {}, `${i + 1}. ${d.q}`)),
       !d.benar ? h("div.uji-badan", {},
-        h("div", { gaya: { fontSize: ".89rem" } },
+        h("div", { gaya: { fontSize: "var(--t-ui)" } },
           h("div", { gaya: { color: "var(--salah)" } },
             "Jawabanmu: " + (punya ? d.options[d.pilihanmu] : "(tidak dijawab)")),
           h("div", { gaya: { color: "var(--tumbuh)" } },
@@ -375,7 +400,16 @@ export async function layarKuis({ key, indeks }) {
 
   return {
     el, judul: q.judul,
-    jejak: [{ label: b.label, href: "#/bahasa/" + key }, { label: q.judul }],
+    konteks: {
+      balik: { label: b.label, href: "#/bahasa/" + key },
+      bab: "Kuis",
+      judul: q.judul,
+      posisi: `${nomorKuis + 1} / ${b.kuis.length}`,
+      langkah: true,
+      sebelum: nomorKuis > 0 ? `#/kuis/${key}/${nomorKuis - 1}` : null,
+      sesudah: nomorKuis + 1 < b.kuis.length
+        ? `#/kuis/${key}/${nomorKuis + 1}` : null,
+    },
     saatKeluar: () => { if (bersihkan) bersihkan(); },
   };
 }
@@ -387,9 +421,31 @@ export async function layarLatihan({ key, indeks }) {
   let hintTerbuka = 0;
   let status = x.status;
 
-  const hasil = h("div", { gaya: { marginTop: "18px" } });
-  const kotakHint = h("div");
+  // Panel hasil SELALU ADA, bahkan sebelum ada hasilnya — dan keadaan
+  // kosongnya menjelaskan apa yang akan muncul di situ. Sebelumnya panel ini
+  // baru lahir sesudah tombol ditekan, di bawah baris tombol; di layar pendek
+  // itu berarti umpan balik yang paling ditunggu muncul di luar pandangan, dan
+  // yang terlihat cuma tombol yang sekejap mati lalu hidup lagi.
+  const hasil = h("div.kerja-hasil");
+  // Pendengar `message` milik pratinjau dicabut tiap kali hasilnya diganti
+  // DAN saat layarnya ditinggalkan; tanpa itu tiap klik Jalankan menyisakan
+  // satu pendengar yang mengukur bingkai yang sudah tidak ada.
+  let lepasPratinjau = null;
+  const lepasPratinjauKini = () => {
+    if (lepasPratinjau) { lepasPratinjau(); lepasPratinjau = null; }
+  };
   const kotakStatus = h("span");
+
+  function hasilKosong() {
+    isikan(hasil, keadaan({
+      jenis: "kosong",
+      judul: x.dinilai ? "Hasil muncul di sini" : "Keluaran muncul di sini",
+      ket: x.dinilai
+        ? "Tekan Jalankan untuk melihat keluaran kodemu, atau Periksa jawaban "
+          + "untuk mengadunya dengan kunci jawaban, baris per baris."
+        : "Tekan Jalankan untuk melihat keluaran kodemu.",
+    }));
+  }
 
   // Tombol ini dirujuk dari dua tempat — dipasang di deret tombol, dan jadi
   // titik asal percikan bara saat latihannya lulus. Perayaan yang berangkat
@@ -397,13 +453,15 @@ export async function layarLatihan({ key, indeks }) {
   // perayaan yang muncul di tengah layar terbaca sebagai iklan.
   const tblPeriksa = x.dinilai
     ? h("button.tbl.tbl-utama", { onclick: () => periksa() },
-        "Periksa jawaban", h("kbd", {}, "Ctrl ⇧ ⏎"))
+        ikon("selesai", { ukuran: 17 }), "Periksa jawaban",
+        h("kbd", {}, "Ctrl ⇧ ⏎"))
     : null;
   if (tblPeriksa) magnet(tblPeriksa, { kuat: 2.5 });
 
   function gambarStatus() {
-    kotakStatus.replaceChildren(
-      status === "lulus" ? h("span.pil.pil-tumbuh", {}, "LULUS")
+    isikan(kotakStatus,
+      status === "lulus" ? h("span.pil.pil-tumbuh", {},
+          ikon("selesai", { ukuran: 13, tebal: 2 }), "LULUS")
       : status === "manual" ? h("span.pil.pil-tumbuh", {}, "ditandai selesai")
       : h("span.pil", {}, "belum selesai"));
   }
@@ -413,6 +471,9 @@ export async function layarLatihan({ key, indeks }) {
     bahasa: x.sorot,
     kode: x.kode,
     label: "Kode jawabanmu untuk " + x.judul,
+    // Ruang kerja setinggi jendela: tinggi editor datang dari tata letak,
+    // bukan dari jumlah barisnya. Lihat _ukur() di editor.js.
+    isiRuang: true,
     saatUbah: tunda((kode) => simpan(kode, true), 1200),
     pintasan: {
       "ctrl+enter": () => jalankan(),
@@ -434,19 +495,21 @@ export async function layarLatihan({ key, indeks }) {
   function sibuk(pesan) {
     const kartu = h("div.kartu.deret", {},
       h("div.pusaran"), h("span", {}, pesan));
-    hasil.replaceChildren(kartu);
+    isikan(hasil, kartu);
     masuk(kartu, { geser: 6, pegas: "jawab" });
   }
 
   async function jalankan() {
     sibuk("Menjalankan kodemu…");
     try {
-      hasil.replaceChildren(kartuJalan(
-        await api.kirim("/api/latihan/jalankan",
-                        { key, indeks, kode: editor.nilai }), x));
+      const kode = editor.nilai;
+      const r = await api.kirim("/api/latihan/jalankan",
+                                { key, indeks, kode });
+      lepasPratinjauKini();
+      isikan(hasil, kartuJalan(r, x, kode, (fn) => { lepasPratinjau = fn; }));
     } catch (e) {
       const kartu = kartuGalat(e.message);
-      hasil.replaceChildren(kartu);
+      isikan(hasil, kartu);
       masuk(kartu, { geser: 6 });
     }
   }
@@ -456,7 +519,7 @@ export async function layarLatihan({ key, indeks }) {
     try {
       const r = await api.kirim("/api/latihan/periksa",
                                 { key, indeks, kode: editor.nilai });
-      hasil.replaceChildren(kartuPeriksa(r, x));
+      isikan(hasil, kartuPeriksa(r, x));
       if (r.lulus) {
         kilau(tblPeriksa || hasil);
         status = "lulus";
@@ -472,43 +535,53 @@ export async function layarLatihan({ key, indeks }) {
                                block: "nearest" });
       }
     } catch (e) {
-      hasil.replaceChildren(kartuGalat(e.message));
+      isikan(hasil, kartuGalat(e.message));
     }
   }
 
+  /* ------------------------------------------------------------- bantuan
+   *
+   * Satu panel bertingkat, bukan empat tombol sederajat di baris tindakan.
+   *
+   * Yang lama menaruh Jalankan, Periksa jawaban, Simpan, Buka petunjuk, Lihat
+   * jawaban, dan Bandingkan dalam satu deret dengan bentuk yang hampir sama —
+   * jadi pemula harus membaca keenamnya sebelum tahu mana yang mestinya
+   * ditekan lebih dulu, dan "Lihat jawaban" duduk dua tombol dari "Periksa
+   * jawaban". Untuk orang yang buntu, jalan termudah dan jalan terburuk tidak
+   * boleh berjarak sama.
+   *
+   * Sekarang urutannya mengikuti urutan yang benar-benar menolong: petunjuk
+   * satu per satu lebih dulu, dan jalan keluar terakhir ada DI BAWAHNYA, di
+   * balik garis putus-putus. Panelnya sendiri tertutup sampai dibuka, jadi
+   * layar orang yang sedang lancar tidak memuat satu pun tawaran menyerah. */
+
+  const kotakHint = h("div");
+
   function gambarHint() {
-    kotakHint.replaceChildren(
+    isikan(kotakHint,
       hintTerbuka === 0
-        ? (x.hint.length ? h("p", { gaya: { color: "var(--redup)",
-                                            fontSize: ".87rem" } },
+        ? (x.hint.length ? h("p.baris-sisi", {},
             `Tersedia ${x.hint.length} petunjuk. Coba sendiri dulu — buntu `
             + "selama beberapa menit justru bagian yang mengajari.") : null)
-        : h("div", {},
-            h("span.mata", {}, `Petunjuk ${hintTerbuka} dari ${x.hint.length}`),
-            h("div", { gaya: { display: "grid", gap: "8px" } },
-              x.hint.slice(0, hintTerbuka).map((t, i) =>
-                h("div.arti.masuk", {}, h("b", {}, "Petunjuk " + (i + 1)),
-                  h("div", {}, t))))));
+        : h("div", { gaya: { display: "grid", gap: "var(--s2)" } },
+            x.hint.slice(0, hintTerbuka).map((t, i) =>
+              h("div.arti.masuk", {}, h("b", {}, "Petunjuk " + (i + 1)),
+                h("div", {}, t)))));
   }
   gambarHint();
 
   function hintTombol() {
     if (!x.hint.length) return null;
-    const tbl = h("button.tbl.tbl-hantu", {
+    const tbl = h("button.tbl.tbl-kecil", {
       onclick: () => {
         hintTerbuka = Math.min(hintTerbuka + 1, x.hint.length);
         gambarHint();
-        // Petunjuk yang baru muncul dibawa ke dalam pandangan. Di layar
-        // sempit ia bisa berada di bawah lipatan meskipun sekolom dengan
-        // tombolnya.
-        kotakHint.scrollIntoView({
-          block: "nearest", behavior: adaGerak() ? "smooth" : "auto" });
         tbl.textContent = hintTerbuka >= x.hint.length
           ? "Semua petunjuk terbuka"
-          : `Buka petunjuk (${hintTerbuka + 1}/${x.hint.length})`;
+          : `Buka petunjuk berikutnya (${hintTerbuka + 1}/${x.hint.length})`;
         tbl.disabled = hintTerbuka >= x.hint.length;
       },
-    }, `Buka petunjuk (1/${x.hint.length})`);
+    }, `Buka petunjuk pertama (1/${x.hint.length})`);
     return tbl;
   }
 
@@ -557,7 +630,7 @@ export async function layarLatihan({ key, indeks }) {
       judul: "Contoh solusi — " + x.judul,
       lebar: true,
       isi: h("div", {},
-        h("p", { gaya: { color: "var(--redup)", fontSize: ".88rem" } },
+        h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
           "Ini cuma SATU cara. Kode yang berbeda belum tentu salah, selama "
           + "outputnya sama."),
         h("div.blok-kode", {}, praKode(x.token_solusi))),
@@ -573,7 +646,7 @@ export async function layarLatihan({ key, indeks }) {
       judul: "Kodemu dibanding contoh solusi",
       lebar: true,
       isi: h("div", {},
-        h("p", { gaya: { color: "var(--redup)", fontSize: ".88rem" } },
+        h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
           "Baris hijau dari contoh solusi, baris merah dari kodemu. Beda "
           + "tulisan itu wajar — yang menentukan lulus cuma outputnya."),
         h("div.diff", {}, baris.length
@@ -589,21 +662,48 @@ export async function layarLatihan({ key, indeks }) {
     });
   }
 
-  const el = h("div.masuk", {},
+  const panelBantuan = h("details.bantuan", {},
+    h("summary.bantuan-kepala", {},
+      ikon("bantuan", { ukuran: 18 }),
+      h("b", {}, "Buntu?"),
+      h("span", {}, x.hint.length
+        ? `${x.hint.length} petunjuk tersedia` : "lihat contoh solusi"),
+      h("span.bantuan-lipat", {}, ikon("lanjut", { ukuran: 18 }))),
+    h("div.bantuan-isi", {},
+      kotakHint,
+      hintTombol(),
+      // Jalan keluar terakhir, dipisahkan garis putus-putus dan ditulis paling
+      // redup. Bukan untuk menyembunyikannya — ia harus ada, dan orang yang
+      // benar-benar buntu harus bisa menemukannya — melainkan supaya ia tidak
+      // pernah jadi yang pertama terbaca oleh orang yang baru dua menit
+      // mencoba.
+      h("div.bantuan-akhir", {},
+        h("button.tbl.tbl-kecil.tbl-hantu", { onclick: lihatJawaban },
+          "Lihat contoh solusi"),
+        h("button.tbl.tbl-kecil.tbl-hantu", { onclick: bandingkan },
+          "Bandingkan dengan kodeku"))));
+
+  const el = h("div.masuk.kerja", {},
     h("header.kepala-besar.kepala-latihan", {},
-      h("span.mata", {},
-        `${x.label_bahasa} · latihan ${x.indeks + 1} dari ${x.jumlah}`),
-      h("h1", {}, x.judul),
+      h("div.kepala-judul", {},
+        h("span.mata", {}, x.proyek
+          ? `${x.label_bahasa} · proyek akhir`
+          : `${x.label_bahasa} · latihan ${x.indeks + 1} dari ${x.jumlah}`),
+        h("h1", {}, x.judul),
+        x.proyek ? h("p.kepala-sub", {},
+          "Tidak ada materi baru di sini. Yang diuji cuma satu: apakah yang "
+          + "sudah kamu baca terpisah-pisah itu nyambung jadi satu program "
+          + "yang jalan.") : null),
       h("div.kepala-aksi", {},
-        h("div.deret", {},
+        h("div.deret.deret-rapat", {},
+          x.proyek ? h("span.pil.pil-nyala", {}, "PROYEK AKHIR") : null,
           h("span.pil.t-" + x.tingkat, {},
             ikon("tingkat", { ukuran: 14, tebal: 1.9 }), x.tingkat),
           kotakStatus,
           x.dinilai
-            ? h("span.pil.pil-tenang", {},
-                ikon("selesai", { ukuran: 14, tebal: 1.9 }), "dinilai otomatis")
-            : h("span.pil.pil-salah", {}, "tanpa nilai otomatis")),
-        h("div.deret", {},
+            ? h("span.pil.pil-tenang", {}, "dinilai otomatis")
+            : h("span.pil.pil-kunci", {}, "tanpa nilai otomatis")),
+        h("div.materi-alat", {},
           tombolBookmark(key, "latihan", indeks, x.bookmark),
           tombolCatatan(x.kunci, x.catatan, x.judul)))),
 
@@ -615,13 +715,15 @@ export async function layarLatihan({ key, indeks }) {
       h("div.kerja-soal", {},
         h("section", {},
           h("span.mata", {}, "Soal"),
-          h("div.kartu.prosa", {},
-            h("div.par", { gaya: { margin: "0" } }, x.soal.join("\n")))),
+          h("div.kartu.prosa.prosa-soal", {},
+            (x.soal_blok || []).map(blokProsa))),
 
-        !x.dinilai ? h("div.arti", {},
-          h("b", {}, "Kenapa latihan ini tidak dinilai mesin"),
-          h("div", {}, x.alasan),
-          h("div.deret", { gaya: { marginTop: "var(--s3)" } }, tblManual)) : null,
+        !x.dinilai ? keadaan({
+          jenis: "kunci",
+          judul: "Latihan ini tidak dinilai mesin",
+          ket: x.alasan,
+          aksi: tblManual ? [tblManual] : [],
+        }) : null,
 
         kartuBerkas(x),
 
@@ -630,108 +732,113 @@ export async function layarLatihan({ key, indeks }) {
             "Kondisi awal — sudah disiapkan, tak perlu kamu tulis"),
           h("div.blok-kode", {}, praKode(x.token_setup))) : null,
 
-        x.stdin_list.length > 1 ? h("div.arti", {},
-          h("b", {}, "Diuji dengan beberapa masukan"),
-          h("div", {}, `Kodemu dijalankan ${x.stdin_list.length} kali dengan `
-            + "input berbeda, jadi jawaban yang di-hardcode tidak akan lolos."))
-          : null),
+        x.stdin_list.length > 1 ? keadaan({
+          gambar: "bantuan",
+          judul: "Diuji dengan beberapa masukan",
+          ket: `Kodemu dijalankan ${x.stdin_list.length} kali dengan input `
+            + "berbeda, jadi jawaban yang di-hardcode tidak akan lolos.",
+        }) : null),
 
       h("div.kerja-kode", {},
-        h("section", {},
-          h("div.deret", { gaya: { marginBottom: "var(--s3)" } },
-            h("span.mata", { gaya: { margin: "0" } }, "Kodemu"),
+        editor.el,
+
+        h("div.kerja-bawah", {},
+          h("div.kerja-tindakan", {},
+            // Dua tindakan utama berdiri sendiri, di kiri. Alat-alat
+            // dikelompokkan rapat di kanan sebagai SATU benda. Jarak antar
+            // kelompok lebih lebar daripada jarak di dalam kelompok — itu yang
+            // membuat keduanya terbaca sebagai dua hal, bukan lima benda
+            // sederajat yang harus dibaca semua sebelum memilih.
+            h("div.kerja-utama", {},
+              x.bisa_jalan
+                ? h("button.tbl" + (x.dinilai ? "" : ".tbl-utama"),
+                    { onclick: jalankan },
+                    ikon("jalankan", { ukuran: 17 }), "Jalankan",
+                    h("kbd", {}, "Ctrl ⏎"))
+                : null,
+              tblPeriksa),
+
             h("span.deret-kanan"),
-            h("button.tbl.tbl-kecil.tbl-hantu", {
-              onclick: async () => {
-                if (!await konfirmasi(
-                  "Kembalikan editor ke kerangka kosong? Kodemu yang sekarang "
-                  + "hilang.",
-                  { judul: "Mulai dari nol", labelYa: "Ya, kosongkan",
-                    bahaya: true })) return;
-                const r = await api.ambil("/api/latihan/kerangka",
-                                          { key, indeks });
-                editor.nilai = r.kode;
-                simpan(r.kode, true);
-              },
-            }, "Kerangka kosong"),
-            h("button.tbl.tbl-kecil.tbl-hantu", {
-              onclick: (e) => salin(editor.nilai, "Kode disalin.",
-                                    e.currentTarget),
-            }, "Salin")),
-          editor.el),
 
-        h("div.deret.kerja-tombol", {},
-          // Kalau tidak ada "Periksa jawaban", "Jalankan" yang naik jadi
-          // tindakan utama. Latihan tanpa nilai otomatis kalau tidak begini
-          // tidak punya SATU PUN tombol yang menonjol — enam tombol abu-abu
-          // sederajat, dan pemula tidak punya cara menebak mana yang mestinya
-          // ditekan lebih dulu.
-          x.bisa_jalan
-            ? h("button.tbl" + (x.dinilai ? "" : ".tbl-utama"),
-                { onclick: jalankan },
-                ikon("jalankan", { ukuran: 17 }), "Jalankan",
-                h("kbd", {}, "Ctrl ⏎"))
-            : null,
-          tblPeriksa,
-          h("button.tbl.tbl-hantu", { onclick: () => simpan(editor.nilai, false) },
-            "Simpan"),
-          hintTombol(),
-          h("button.tbl.tbl-hantu", { onclick: lihatJawaban }, "Lihat jawaban"),
-          h("button.tbl.tbl-hantu", { onclick: bandingkan }, "Bandingkan")),
+            h("div.tbl-set", {},
+              h("button.tbl.tbl-kecil", {
+                onclick: () => simpan(editor.nilai, false),
+                title: "Simpan ke berkas (Ctrl+S)",
+              }, "Simpan"),
+              h("button.tbl.tbl-kecil", {
+                onclick: (e) => salin(editor.nilai, "Kode disalin.",
+                                      e.currentTarget),
+              }, "Salin"),
+              h("button.tbl.tbl-kecil", {
+                title: "Kembalikan editor ke kerangka kosong",
+                onclick: async () => {
+                  if (!await konfirmasi(
+                    "Kembalikan editor ke kerangka kosong? Kodemu yang "
+                    + "sekarang hilang.",
+                    { judul: "Mulai dari nol", labelYa: "Ya, kosongkan",
+                      bahaya: true })) return;
+                  const r = await api.ambil("/api/latihan/kerangka",
+                                            { key, indeks });
+                  editor.nilai = r.kode;
+                  simpan(r.kode, true);
+                },
+              }, "Kerangka"))),
 
-        // Petunjuk tinggal di kolom yang SAMA dengan tombol pembukanya.
-        // Sebelumnya ia ditempel di dasar kolom soal — kolom yang menempel
-        // dan menggulir sendiri — sementara tombolnya ada di sini. Yang
-        // terjadi pada pemula bisa ditebak: klik, tidak ada yang berubah di
-        // layar, klik lagi, masih tidak ada, lalu menyerah. Petunjuknya memang
-        // muncul; cuma di tempat yang tidak sedang dilihat.
-        kotakHint,
+          panelBantuan),
+
         hasil)),
 
-    h("nav.materi-kaki.kerja-kaki", {},
-      x.indeks > 0
-        ? h("a.tbl.tbl-hantu", { href: `#/latihan/${key}/${x.indeks - 1}` },
-            ikon("kembali", { ukuran: 17 }), "Latihan sebelumnya")
-        : h("a.tbl.tbl-hantu", { href: "#/bahasa/" + key },
-            ikon("kembali", { ukuran: 17 }), "Daftar latihan"),
-      h("span.deret-kanan"),
-      x.indeks + 1 < x.jumlah
-        ? h("a.tbl", { href: `#/latihan/${key}/${x.indeks + 1}` },
-            "Latihan berikutnya", ikon("lanjut", { ukuran: 17 })) : null),
+    // TIDAK ada kaki "latihan sebelumnya / berikutnya" di sini, dan itu bukan
+    // kelalaian. Ketiga tautannya — daftar latihan, mundur satu, maju satu —
+    // sudah dibawa strip konteks yang menempel di atas, jadi kaki ini akan
+    // mengulang tiga hal yang sudah terlihat sambil memakan sembilan puluh
+    // piksel dari ruang kerja yang justru tidak boleh digulir.
   );
+
+  hasilKosong();
 
   return {
     el, judul: x.judul,
-    jejak: [{ label: x.label_bahasa, href: "#/bahasa/" + key },
-            { label: x.judul }],
+    konteks: {
+      balik: { label: x.label_bahasa, href: "#/bahasa/" + key },
+      bab: x.proyek ? "Proyek akhir" : "Latihan",
+      judul: x.judul,
+      posisi: `${x.indeks + 1} / ${x.jumlah}`,
+      langkah: true,
+      sebelum: x.indeks > 0 ? `#/latihan/${key}/${x.indeks - 1}` : null,
+      sesudah: x.indeks + 1 < x.jumlah
+        ? `#/latihan/${key}/${x.indeks + 1}` : null,
+    },
     // Tanpa ini, tiap kunjungan ke sebuah latihan meninggalkan satu Editor
     // yang masih terdaftar sebagai pendengar `resize` di window — dan lewat
     // penutupnya, seluruh DOM layar itu beserta isi latihannya ikut tertahan
     // di memori. Dua puluh latihan dalam satu malam berarti dua puluh salinan.
-    saatKeluar: () => editor.lepas(),
+    saatKeluar: () => { editor.lepas(); lepasPratinjauKini(); },
   };
 }
 
 function kartuBerkas(x) {
-  return h("section", { gaya: { marginBottom: "20px" } },
+  return h("section", {},
     h("span.mata", {}, "Berkas jawabanmu"),
     h("div.kartu.kartu-rapat", {},
-      h("div.deret", {},
-        h("code", { gaya: { color: "var(--nyala)", fontWeight: "700" } },
-          x.berkas.nama),
-        h("span", { gaya: { color: "var(--redup)", fontSize: ".84rem" } },
-          "di " + x.berkas.folder)),
-      x.runner === "java" ? h("div", { gaya: { color: "var(--redup)",
-        fontSize: ".8rem", marginTop: "5px" } },
+      h("code", { gaya: { color: "var(--nyala)", fontWeight: "700" } },
+        x.berkas.nama),
+      // Path-nya dipatahkan di karakter mana pun, bukan digulir mendatar.
+      // Versi sebelumnya memberinya penggulir sendiri di dalam kolom selebar
+      // 360 px, dan hasilnya path yang TETAP terpotong plus satu bilah gulir
+      // tambahan di tempat yang paling sedikit ruangnya.
+      h("div.berkas-jalur", { gaya: { marginTop: "var(--s1)" } },
+        "di " + x.berkas.folder),
+      x.runner === "java" ? h("div.baris-sisi",
+        { gaya: { marginTop: "var(--s2)" } },
         `Nama kelasnya harus ${x.berkas.nama.replace(/\.java$/, "")} — javac `
         + "mewajibkannya sama dengan nama berkas.") : null,
-      x.berkas.perintah.length ? h("div", { gaya: { marginTop: "8px",
-                                                    fontSize: ".82rem" } },
-        h("span", { gaya: { color: "var(--redup)" } }, "Di terminal: "),
+      x.berkas.perintah.length ? h("div.berkas-jalur",
+        { gaya: { marginTop: "var(--s2)" } },
+        "Di terminal: ",
         h("code", { gaya: { color: "var(--tenang)" } },
           x.berkas.perintah.join("   lalu   "))) : null,
-      h("div", { gaya: { marginTop: "8px", color: "var(--redup)",
-                         fontSize: ".8rem" } },
+      h("div.baris-sisi", { gaya: { marginTop: "var(--s2)" } },
         "Kode yang kamu tulis di sini tersimpan ke berkas itu, jadi bisa "
         + "dibuka di editor mana pun dan dijalankan dari terminal.")));
 }
@@ -739,35 +846,47 @@ function kartuBerkas(x) {
 /* --------------------------------------------------------- hasil eksekusi */
 
 function kartuGalat(pesan) {
-  return h("div.kartu", { gaya: {
-    borderColor: "color-mix(in srgb, var(--salah) 45%, transparent)" } },
-    h("h3", { gaya: { color: "var(--salah)" } }, "Gagal"),
-    h("p", { gaya: { margin: "8px 0 0" } }, pesan));
+  return keadaan({ jenis: "salah", gambar: "belum", judul: "Gagal", ket: pesan });
 }
 
-function kartuJalan(r, x) {
+function kartuJalan(r, x, kode, simpanLepas) {
+  // Untuk HTML dan CSS, "keluaran" adalah pohon struktur -- benar untuk
+  // menilai, salah untuk ditonton. Di layar latihan justru di sinilah orang
+  // paling ingin melihat halamannya: ia baru saja menulisnya sendiri.
+  const dok = kode && bisaDipratinjau(x.runner)
+    ? dokumenPratinjau(x.runner, kode) : "";
+  let pv = null;
+  if (dok) {
+    pv = pratinjauHtml(dok);
+    simpanLepas(pv.lepas);
+  }
   return h("div.kartu.masuk", {},
-    h("div.deret", { gaya: { marginBottom: "12px" } },
-      h("h3", {}, "Hasil menjalankan"),
+    h("div.deret", { gaya: { marginBottom: "var(--s3)" } },
+      h("h3", {}, dok ? "Halamanmu" : "Hasil menjalankan"),
       h("span.deret-kanan"),
       h("span.pil" + (r.kode_keluar === 0 ? ".pil-tumbuh" : ".pil-salah"), {},
         `kode keluar ${r.kode_keluar}`),
       h("span.pil", {}, r.detik + " detik")),
-    r.stdin ? h("div", { gaya: { marginBottom: "10px" } },
+    r.stdin ? h("div", { gaya: { marginBottom: "var(--s2)" } },
       h("span.mata", {}, "Masukan yang dikirim"),
       h("div.terminal", {}, r.stdin)) : null,
-    h("span.mata", {}, "Keluaran"),
+    pv ? h("div", { gaya: { marginBottom: "var(--s3)" } },
+      halamanDikarang(x.runner, kode) ? h("p.pratinjau-ket", {},
+        "Halaman contoh ini dibuatkan dari pemilih di CSS-mu sendiri — ",
+        h("b", {}, "bukan"), " berkas HTML-mu.") : null,
+      pv.el) : null,
+    h("span.mata", {}, dok ? "Struktur yang dinilai" : "Keluaran"),
     h("div.terminal", {}, r.keluaran),
     r.galat ? blokGalat(r.galat, r.fase) : null,
     r.timeout ? h("div.diagnosa", {}, h("span.panah", {}, "→"),
       h("div", {}, `Program dihentikan setelah ${x.batas_waktu} detik. `
         + "Kemungkinan ada loop yang tidak pernah berhenti.")) : null,
-    r.catatan ? h("div", { gaya: { marginTop: "10px", color: "var(--redup)",
-                                   fontSize: ".84rem" } }, r.catatan) : null);
+    r.catatan ? h("div.baris-sisi", { gaya: { marginTop: "var(--s2)" } },
+      r.catatan) : null);
 }
 
 function blokGalat(g, fase) {
-  return h("div", { gaya: { marginTop: "12px" } },
+  return h("div", { gaya: { marginTop: "var(--s3)" } },
     h("span.mata", {},
       fase === "kompilasi" ? "Pesan dari compiler" : "Pesan error"),
     h("div.terminal.terminal-galat", {}, g.baris.join("\n")),
@@ -778,13 +897,12 @@ function blokGalat(g, fase) {
 
 function kartuPeriksa(r, x) {
   if (!r.bisa_dinilai) {
-    return h("div.kartu", {},
-      h("h3", { gaya: { color: "var(--nyala)" } }, "Belum bisa dinilai"),
-      h("p", { gaya: { margin: "8px 0 0" } }, r.alasan));
+    return keadaan({ jenis: "kunci", gambar: "belum",
+                     judul: "Belum bisa dinilai", ket: r.alasan });
   }
   const lulus = r.uji.filter((u) => u.lulus).length;
   return h("div.masuk", {},
-    h("div.kartu", { gaya: { marginBottom: "14px",
+    h("div.kartu", { gaya: { marginBottom: "var(--s3)",
       borderColor: r.lulus ? "var(--tumbuh)"
         : "color-mix(in srgb, var(--salah) 40%, transparent)" } },
       h("div.deret", {},
@@ -794,8 +912,9 @@ function kartuPeriksa(r, x) {
         h("span.deret-kanan"),
         h("span.pil", {}, `${lulus}/${r.uji.length} uji lulus`),
         h("span.pil", {}, r.detik + " detik")),
-      !r.lulus ? h("p", { gaya: { margin: "10px 0 0", color: "var(--teks-2)",
-                                  fontSize: ".9rem" } },
+      !r.lulus ? h("p", { gaya: { margin: "var(--s2) 0 0",
+                                  color: "var(--teks-2)",
+                                  fontSize: "var(--t-ui)" } },
         "Baris hijau bertanda − adalah yang diharapkan; baris merah bertanda + "
         + "adalah punyamu.") : null),
     deretUji(r));
@@ -815,7 +934,7 @@ function kartuUji(u) {
   return h("div.uji" + (u.lulus ? ".lulus" : ".gagal"), {},
     h("div.uji-kepala", {},
       h("span.uji-cap", {}, u.lulus ? "LULUS" : "GAGAL"),
-      h("span", { gaya: { flex: "1" } }, u.nama),
+      h("span.uji-nama", {}, u.nama),
       u.stdin ? h("span.pil", {},
         "input: " + u.stdin.replace(/\n/g, "⏎").slice(0, 24)) : null),
     !u.lulus ? h("div.uji-badan", {},
@@ -876,8 +995,8 @@ function gambarBeda(b) {
 
   return h("div", {},
     h("div.diff", {}, baris),
-    b.baris.some((d) => d.tampak) ? h("div", { gaya: { marginTop: "8px",
-      color: "var(--redup)", fontSize: ".8rem" } },
+    b.baris.some((d) => d.tampak) ? h("div.baris-sisi",
+      { gaya: { marginTop: "var(--s2)" } },
       "· menandai spasi dan → menandai tab, supaya beda yang tak terlihat "
       + "jadi terlihat.") : null,
     b.catatan.map((c) => h("div.diagnosa", {},
@@ -948,7 +1067,7 @@ export async function layarCoba(params, ctx) {
   let kode = ctx.ingat("coba.kode." + bahasa) || contohAwal(bahasa);
   let judulContoh = "";
 
-  // Dibuka dari tombol "Coba jalankan" di halaman materi: ambil blok kodenya.
+  // Dibuka dari tombol "Ruang Coba" di halaman materi: ambil blok kodenya.
   if (params.key && params.materi !== undefined) {
     try {
       const c = await api.ambil("/api/materi/contoh", {
@@ -959,10 +1078,15 @@ export async function layarCoba(params, ctx) {
     } catch (e) { sorak(e.message, "salah"); }
   }
 
-  const keluaran = h("div", {});
+  const keluaran = h("div.kerja-hasil");
+  let lepasPratinjau = null;
+  const lepasPratinjauKini = () => {
+    if (lepasPratinjau) { lepasPratinjau(); lepasPratinjau = null; }
+  };
   const masukan = h("textarea", {
     placeholder: "Masukan untuk program (stdin). Kosongkan kalau tidak dipakai.",
-    gaya: { minHeight: "62px", fontFamily: "var(--f-kode)", fontSize: ".85rem" },
+    gaya: { minHeight: "62px", fontFamily: "var(--f-kode)",
+            fontSize: "var(--t-kecil)" },
     value: ctx.ingat("coba.stdin") || "",
   });
   masukan.addEventListener("input", () => ctx.ingat("coba.stdin", masukan.value));
@@ -973,6 +1097,8 @@ export async function layarCoba(params, ctx) {
     bahasa: sorotUntuk(bahasa, ctx),
     kode,
     label: "Ruang coba",
+    // Sama seperti di layar latihan: tingginya datang dari tata letak.
+    isiRuang: true,
     // Bahasanya dibawa sebagai argumen, BUKAN dibaca dari `bahasa` saat timer
     // akhirnya jalan. Kalau tidak: ketik di Python, langsung ganti pilihan ke
     // Java dalam 700 md, dan kode Python-mu tersimpan ke kunci draf Java —
@@ -995,55 +1121,85 @@ export async function layarCoba(params, ctx) {
     { value: b.runner, selected: b.runner === bahasa }, b.label)));
 
   const tblJalan = h("button.tbl.tbl-utama", { onclick: () => jalankan() },
-    "Jalankan", h("kbd", {}, "Ctrl ⏎"));
+    ikon("jalankan", { ukuran: 17 }), "Jalankan", h("kbd", {}, "Ctrl ⏎"));
   magnet(tblJalan, { kuat: 2.5 });
 
   async function jalankan() {
     tblJalan.disabled = true;
     const menunggu = h("div.kartu.deret", {},
       h("div.pusaran"), h("span", {}, "Menjalankan…"));
-    keluaran.replaceChildren(menunggu);
+    isikan(keluaran, menunggu);
     masuk(menunggu, { geser: 6, pegas: "jawab" });
     try {
       const r = await api.kirim("/api/coba",
         { bahasa, kode: editor.nilai, stdin: masukan.value });
-      keluaran.replaceChildren(h("div.kartu.masuk", {},
-        h("div.deret", { gaya: { marginBottom: "12px" } },
-          h("h3", {}, "Keluaran"),
-          h("span.deret-kanan"),
-          h("span.pil" + (r.kode_keluar === 0 ? ".pil-tumbuh" : ".pil-salah"), {},
-            "kode keluar " + r.kode_keluar),
-          h("span.pil", {}, r.detik + " detik")),
-        h("div.terminal", {}, r.keluaran),
-        r.galat ? blokGalat(r.galat, r.fase) : null));
+      // Kartu yang sama persis dengan yang dipakai halaman materi: untuk HTML
+      // ia menampilkan HALAMANNYA lebih dulu, pohon strukturnya satu klik di
+      // sebelahnya. Dulu yang muncul di sini cuma pohonnya -- orang yang baru
+      // menulis <h1>Halo, Dunia!</h1> lalu menekan Jalankan menerima daftar
+      // nama tag yang baru saja ia ketik sendiri: jawaban yang benar untuk
+      // pertanyaan yang tidak sedang ia tanyakan.
+      lepasPratinjauKini();
+      const kartu = kartuKeluaran(r, bahasa, editor.nilai,
+        () => { lepasPratinjauKini(); kosongkan(keluaran); },
+        (fn) => { lepasPratinjau = fn; });
+      kartu.classList.add("masuk");
+      isikan(keluaran, kartu);
     } catch (e) {
-      keluaran.replaceChildren(kartuGalat(e.message));
+      isikan(keluaran, kartuGalat(e.message));
     } finally {
       tblJalan.disabled = false;
     }
   }
 
-  const el = h("div.masuk", {},
-    h("header.kepala-besar", {},
-      h("span.mata", {}, "Tanpa nilai, tanpa catatan"),
-      h("h1", {}, "Ruang Coba"),
-      h("p.kepala-sub", {}, judulContoh
-        ? `Contoh dari materi: ${judulContoh}`
-        : "Tempat mencoba apa pun. Tidak dinilai dan tidak menyentuh progres "
-          + "— justru karena itu ia berguna."),
+  // Bentuk yang sama persis dengan ruang kerja latihan: yang DIBACA di kiri,
+  // yang DIKERJAKAN di kanan, dan keduanya mengisi tinggi jendela. Dua layar
+  // yang gunanya sama — menulis kode lalu menjalankannya — tidak punya alasan
+  // untuk punya dua tata letak berbeda yang harus dipelajari terpisah.
+  const el = h("div.masuk.kerja", {},
+    h("header.kepala-besar.kepala-latihan", {},
+      h("div.kepala-judul", {},
+        h("span.mata", {}, "Tanpa nilai, tanpa catatan"),
+        h("h1", {}, "Ruang Coba")),
       h("div.kepala-aksi", {},
-        h("div.deret", {}, pilihBahasa),
-        h("div.deret", {}, tblJalan))),
+        h("div.deret.deret-rapat", {}, pilihBahasa))),
 
-    editor.el,
-    h("div", { gaya: { marginTop: "14px" } },
-      medan("Masukan program (stdin)", masukan)),
-    keluaran,
+    h("div.kerja-tata", {},
+      h("div.kerja-soal", {},
+        h("section", {},
+          h("span.mata", {}, "Apa ini"),
+          h("div.kartu", {},
+            h("p", { gaya: { margin: "0" } }, judulContoh
+              ? `Contoh dari materi: ${judulContoh}. Ubah sesukamu — yang di `
+                + "materi tidak ikut berubah."
+              : "Tempat mencoba apa pun. Tidak dinilai dan tidak menyentuh "
+                + "progres — justru karena itu ia berguna."))),
+        h("section", {}, medan("Masukan program (stdin)", masukan))),
+
+      h("div.kerja-kode", {},
+        editor.el,
+        h("div.kerja-bawah", {},
+          h("div.kerja-tindakan", {},
+            h("div.kerja-utama", {}, tblJalan),
+            h("span.deret-kanan"),
+            h("div.tbl-set", {},
+              h("button.tbl.tbl-kecil", {
+                onclick: (e) => salin(editor.nilai, "Kode disalin.",
+                                      e.currentTarget),
+              }, "Salin")))),
+        keluaran)),
   );
 
+  isikan(keluaran, keadaan({
+    jenis: "kosong",
+    judul: "Keluaran muncul di sini",
+    ket: "Tekan Jalankan (atau Ctrl+Enter) untuk menjalankan kodenya di "
+      + "komputermu sendiri.",
+  }));
+
   return {
-    el, judul: "Ruang Coba", jejak: [{ label: "Ruang Coba" }],
-    saatKeluar: () => editor.lepas(),
+    el, judul: "Ruang Coba",
+    saatKeluar: () => { editor.lepas(); lepasPratinjauKini(); },
   };
 }
 
@@ -1072,6 +1228,20 @@ function contohAwal(bahasa) {
         + '  <meta charset="utf-8">\n  <title>Halaman Pertamaku</title>\n'
         + '</head>\n<body>\n  <h1>Halo, dunia!</h1>\n'
         + '  <p>Ini paragraf pertamaku.</p>\n</body>\n</html>\n',
+    csharp: 'using System;\n\nclass Program\n{\n'
+          + '    static void Main()\n    {\n'
+          + '        Console.WriteLine("Halo, dunia!");\n    }\n}\n',
+    vb: 'Imports System\n\nModule Program\n    Sub Main()\n'
+      + '        Console.WriteLine("Halo, dunia!")\n    End Sub\nEnd Module\n',
+    rust: 'fn main() {\n    let nama = "dunia";\n'
+        + '    println!("Halo, {nama}!");\n}\n',
+    php: '<?php\n$nama = "dunia";\necho "Halo, $nama!\\n";\n',
+    ruby: 'nama = "dunia"\nputs "Halo, #{nama}!"\n',
+    kotlin: 'fun main() {\n    val nama = "dunia"\n'
+          + '    println("Halo, $nama!")\n}\n',
+    typescript: 'const nama: string = "dunia";\nconsole.log(`Halo, ${nama}!`);\n',
+    fedora: '#!/usr/bin/env bash\n\nset -euo pipefail\n\n'
+          + 'nama="dunia"\nprintf \'Halo, %s!\\n\' "$nama"\n',
     css: '/* Coba ubah warnanya, lalu Jalankan lagi. */\nbody {\n'
        + '  background-color: #f5f5f5;\n  font-family: sans-serif;\n'
        + '  margin: 0;\n}\n\nh1 {\n  color: #333;\n'

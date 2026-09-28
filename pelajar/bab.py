@@ -28,15 +28,15 @@ habis hanya untuk boleh membuka materi decorator. Semua fungsi di sini
 menerima `buka_semua`; nilai None (bawaannya) berarti "baca saklarnya
 sendiri", sehingga pemanggil yang lupa tetap menghormati setelan pemakai.
 
-Importir: main.py & materials.py (terminal), webapp/api.py & webapp/isi.py
+Importir: main.py & layar/materials.py (terminal), webapp/api.py & webapp/isi.py
 (web), tests/test_bab.py.
 """
 
-import progress
+from pelajar import progress
 from data.bab import BAB
 
 try:
-    import konfigurasi
+    from pelajar import konfigurasi
 except ImportError:                                    # pragma: no cover
     konfigurasi = None
 

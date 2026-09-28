@@ -22,23 +22,23 @@ SATU-SATUNYA pintu masuk materi di antarmuka terminal: menu bab, pencarian
 lokal, pencarian global, bookmark, "lanjutkan yang terakhir", dan antrean saran
 semuanya berakhir di fungsi itu.
 
-Importir: main.py, navigasi.py, tests/test_data.py (memakai `teks_polos`).
+Importir: main.py, layar/navigasi.py, tests/test_data.py (memakai `teks_polos`).
 """
 
-import bab
-import berkas
-import sorot
-import tema
-from utils import (
+from pelajar import bab
+from inti import berkas
+from inti import sorot
+from inti import tema
+from layar.utils import (
     C, paint, clear, paginate, ask, ask_atau_eof, ask_choice, header, rule,
     lebar, bungkus_baris, sorot_kata, tinggi_halaman, press_enter, potong,
 )
-from progress import (
+from pelajar.progress import (
     record_material_read, load_progress, kunci, toggle_bookmark, is_bookmarked,
 )
 
 try:
-    import konfigurasi
+    from pelajar import konfigurasi
 except ImportError:
     konfigurasi = None
 

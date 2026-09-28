@@ -535,4 +535,316 @@ li:first-child {
   }
 }""",
     },
+    {
+        "title": "Latihan 13: Widget yang Bereaksi ke Wadahnya",
+        "difficulty": "Menengah",
+        "question": [
+            "Buat CSS untuk sebuah widget yang tata letaknya berubah berdasarkan LEBAR",
+            "WADAHNYA (bukan lebar layar), persis seperti materi 'Container Queries dan",
+            "CSS Nesting'. Tulis aturan berikut, urut seperti ini:",
+            "",
+            "  1. .widget dengan container-type bernilai inline-size.",
+            "  2. .widget .judul dengan font-size bernilai 1rem.",
+            "  3. @container dengan syarat (min-width: 500px), isinya dua aturan:",
+            "     a. .widget diberi display: grid dan",
+            "        grid-template-columns: 1fr 1fr.",
+            "     b. .widget .judul diberi font-size 1.25rem.",
+            "",
+            "CSS tidak dijalankan. Yang dinilai adalah STRUKTUR aturannya, hasil",
+            "pembacaan struktur.py - persis seperti latihan CSS lainnya.",
+            "",
+            "Keluaran yang diharapkan:",
+            "",
+            ".widget",
+            "  container-type: inline-size",
+            ".widget .judul",
+            "  font-size: 1rem",
+            "@container (min-width: 500px)",
+            "  .widget",
+            "    display: grid",
+            "    grid-template-columns: 1fr 1fr",
+            "  .widget .judul",
+            "    font-size: 1.25rem",
+        ],
+        "hints": [
+            "container-type: inline-size ditulis di .widget, BUKAN di dalam @container.",
+            "@container (min-width: 500px) { ... } - tanpa nama container, langsung "
+            "syaratnya di dalam kurung, sama seperti @media.",
+            "Urutan dua aturan di dalam @container mengikuti urutan di soal: .widget "
+            "dulu (display + grid-template-columns), baru .widget .judul.",
+        ],
+        "solution": """.widget {
+  container-type: inline-size;
+}
+
+.widget .judul {
+  font-size: 1rem;
+}
+
+@container (min-width: 500px) {
+  .widget {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .widget .judul {
+    font-size: 1.25rem;
+  }
+}""",
+    },
+    {
+        'title': 'Proyek Akhir: Sistem Gaya Warung Kopi',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Sistem Gaya Warung Kopi',
+        '',
+        'Halaman warung kopi sudah jadi dan strukturnya benar, tapi masih polos.',
+        'Tulis SATU berkas gaya untuk seluruh halaman itu.',
+        '',
+        'Yang diuji bukan menghias, melainkan menyusun: nilai yang dipakai',
+        'berulang tinggal di satu tempat, tata letak lahir dari flex dan grid',
+        'bukan dari margin yang ditebak, dan layar sempit ditangani terakhir.',
+        '',
+        'Penilai mencetak aturanmu berurutan apa adanya -- urutan menulis',
+        'properti TIDAK diurutkan, karena di CSS urutan menentukan siapa',
+        'menimpa siapa.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. Token warna dan jarak sebagai custom property di :root, lalu',
+        '     dipakai lewat var() -- tidak ada warna mentah yang diulang.',
+        '  2. box-sizing: border-box untuk semua elemen dan pseudo-elemennya.',
+        '  3. header, main, dan footer dibatasi --baca dan ditengahkan dengan',
+        '     margin auto kiri-kanan.',
+        '  4. Navigasi: ul jadi flex, list-style dibuang, gap memakai token.',
+        '  5. Tabel: border-collapse, garis bawah tiap sel, baris genap diberi',
+        '     latar tipis dengan :nth-child(even), dan kolom TERAKHIR',
+        '     dirata-kanan dengan font-variant-numeric: tabular-nums.',
+        '  6. <dl> jadi grid dua kolom: max-content untuk istilah, 1fr untuk',
+        '     penjelasannya.',
+        '  7. Isian formulir memakai font: inherit -- tanpa itu input memakai',
+        '     huruf bawaan sistem dan halamanmu terlihat tambal sulam.',
+        '  8. Terakhir, @media (max-width: 480px): dl jadi satu kolom dan h1',
+        '     mengecil. Blok media di PALING BAWAH berkas.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  :root',
+        '    --teks: #23252b',
+        '    --redup: #6b6f76',
+        '    --aksen: #8a4b1f',
+        '    --latar: #faf7f2',
+        '    --garis: #e2ddd4',
+        '    --jarak: 16px',
+        '    --baca: 68ch',
+        '  *, *::before, *::after',
+        '    box-sizing: border-box',
+        '  body',
+        '    margin: 0',
+        '    padding: var(--jarak)',
+        '    background-color: var(--latar)',
+        '    color: var(--teks)',
+        '    font-family: system-ui, sans-serif',
+        '    line-height: 1.6',
+        '  header, main, footer',
+        '    max-width: var(--baca)',
+        '    margin-left: auto',
+        '    margin-right: auto',
+        '  h1',
+        '    color: var(--aksen)',
+        '    font-size: 2rem',
+        '    line-height: 1.2',
+        '  h2',
+        '    margin-top: 40px',
+        '    border-bottom: 2px solid var(--garis)',
+        '    padding-bottom: 6px',
+        '  nav ul',
+        '    display: flex',
+        '    flex-wrap: wrap',
+        '    gap: var(--jarak)',
+        '    margin: 0',
+        '    padding: 0',
+        '    list-style: none',
+        '  nav a',
+        '    color: var(--aksen)',
+        '    text-decoration: none',
+        '  nav a:hover',
+        '    text-decoration: underline',
+        '  table',
+        '    width: 100%',
+        '    border-collapse: collapse',
+        '  th, td',
+        '    border-bottom: 1px solid var(--garis)',
+        '    padding: 10px 8px',
+        '    text-align: left',
+        '  tbody tr:nth-child(even)',
+        '    background-color: rgba(0, 0, 0, 0.02)',
+        '  tbody td:last-child',
+        '    text-align: right',
+        '    font-variant-numeric: tabular-nums',
+        '  dl',
+        '    display: grid',
+        '    grid-template-columns: max-content 1fr',
+        '    gap: 6px var(--jarak)',
+        '  dd',
+        '    margin: 0',
+        '  input, select, textarea',
+        '    width: 100%',
+        '    border: 1px solid var(--garis)',
+        '    border-radius: 6px',
+        '    padding: 8px 10px',
+        '    font: inherit',
+        '  button',
+        '    border: 0',
+        '    border-radius: 6px',
+        '    padding: 10px 18px',
+        '    background-color: var(--aksen)',
+        '    color: #ffffff',
+        '    font: inherit',
+        '    font-weight: 600',
+        '    cursor: pointer',
+        '  footer',
+        '    margin-top: 48px',
+        '    border-top: 1px solid var(--garis)',
+        '    padding-top: var(--jarak)',
+        '    color: var(--redup)',
+        '  @media (max-width: 480px)',
+        '    dl',
+        '      grid-template-columns: 1fr',
+        '    h1',
+        '      font-size: 1.5rem',
+    ],
+        'hints': [
+        "Selector bertumpuk ditulis dengan koma: 'header, main, footer { ... }' menghasilkan satu aturan untuk tiga elemen, bukan tiga aturan.",
+        'tabular-nums membuat angka punya lebar sama, jadi kolom harga bisa dibandingkan sekilas tanpa perlu diratakan manual.',
+        'Media query ditaruh terakhir karena spesifisitasnya sama dengan aturan biasa -- yang ditulis belakangan yang menang.',
+    ],
+        'solution': """/* Sistem Gaya Warung Kopi Pagi -- token, tata letak, tabel, formulir. */
+
+:root {
+  --teks: #23252b;
+  --redup: #6b6f76;
+  --aksen: #8a4b1f;
+  --latar: #faf7f2;
+  --garis: #e2ddd4;
+  --jarak: 16px;
+  --baca: 68ch;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: var(--jarak);
+  background-color: var(--latar);
+  color: var(--teks);
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+header, main, footer {
+  max-width: var(--baca);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1 {
+  color: var(--aksen);
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin-top: 40px;
+  border-bottom: 2px solid var(--garis);
+  padding-bottom: 6px;
+}
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--jarak);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav a {
+  color: var(--aksen);
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-bottom: 1px solid var(--garis);
+  padding: 10px 8px;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+tbody td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px var(--jarak);
+}
+
+dd {
+  margin: 0;
+}
+
+input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 18px;
+  background-color: var(--aksen);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+footer {
+  margin-top: 48px;
+  border-top: 1px solid var(--garis);
+  padding-top: var(--jarak);
+  color: var(--redup);
+}
+
+@media (max-width: 480px) {
+  dl {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+""",
+    },
 ]

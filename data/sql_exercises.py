@@ -527,4 +527,170 @@ ROLLBACK;
 -- di kode aplikasi sebelum memanggil commit(), atau memakai
 -- stored procedure dengan IF/THEN untuk keputusan otomatis di DB."""
     },
+    {
+        'title': 'Proyek Akhir: Analisis Penjualan Toko Bahan Kue',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Analisis Penjualan Toko Bahan Kue',
+        '',
+        'Toko bahan kue punya tiga tabel dan nol laporan. Pemiliknya menebak-',
+        'nebak siapa pelanggan terbaiknya dan barang mana yang mati.',
+        '',
+        'Satu berkas SQL harus membangun skemanya, mengisinya, lalu menjawab',
+        'empat pertanyaan. Yang diuji bukan menulis SELECT sederhana melainkan',
+        'menyusun jawaban dari beberapa tabel sekaligus.',
+        '',
+        'Skema: pelanggan(id, nama, kota), produk(id, nama, kategori, harga),',
+        'pesanan(id, pelanggan_id, produk_id, jumlah, tanggal).',
+        'Data: 4 pelanggan, 7 produk, 9 pesanan (dua produk tak pernah dipesan).',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. CREATE TABLE dengan PRIMARY KEY, NOT NULL, CHECK, dan REFERENCES.',
+        '  2. Pertanyaan 1: total belanja per pelanggan (JOIN tiga tabel +',
+        '     GROUP BY), urut dari terbesar.',
+        '  3. Pertanyaan 2: produk terlaris PER KATEGORI. Pakai CTE + window',
+        '     function RANK() OVER (PARTITION BY ... ORDER BY ...).',
+        '  4. Pertanyaan 3: kota yang totalnya di atas rata-rata seluruh kota.',
+        '     Rata-ratanya dihitung dari hasil agregat, jadi butuh CTE juga.',
+        '  5. Pertanyaan 4: produk yang TIDAK pernah dipesan -- LEFT JOIN lalu',
+        '     WHERE ... IS NULL, bukan NOT IN.',
+        '  6. Tiap pengurutan wajib punya pemutus seri, supaya hasilnya tidak',
+        '     berubah-ubah. Judul bagian dicetak dengan .print.',
+        '  7. Awali keluaran dengan .headers on dan .mode column.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  ',
+        '  == 1. Belanja per pelanggan (terbesar dulu) ==',
+        '  pelanggan      kota     transaksi  total ',
+        '  -------------  -------  ---------  ------',
+        '  Toko Melati    Bandung  3          358000',
+        '  Roti Anggrek   Bandung  2          356000',
+        '  Warung Bu Sri  Bandung  2          312000',
+        '  Kue Pak Dedi   Cimahi   2          144000',
+        '  ',
+        '  == 2. Produk terlaris per kategori ==',
+        '  kategori      nama           unit',
+        '  ------------  -------------  ----',
+        '  Bahan Basah   Telur          8   ',
+        '  Bahan Kering  Tepung Terigu  21  ',
+        '  ',
+        '  == 3. Kota yang belanjanya di atas rata-rata ==',
+        '  kota     total  ',
+        '  -------  -------',
+        '  Bandung  1026000',
+        '  ',
+        '  == 4. Produk yang tidak pernah dipesan ==',
+        '  nama          kategori    ',
+        '  ------------  ------------',
+        '  Susu Cair     Bahan Basah ',
+        '  Vanili Bubuk  Bahan Kering',
+    ],
+        'hints': [
+        'Window function butuh CTE kalau kamu mau MENYARING hasilnya: RANK() tidak bisa dipakai di WHERE pada kueri yang sama.',
+        'Anti-join: SELECT ... FROM produk pr LEFT JOIN pesanan ps ON ps.produk_id = pr.id WHERE ps.id IS NULL.',
+        'Rata-rata dari agregat: WITH per_kota AS (SELECT ... GROUP BY kota) SELECT * FROM per_kota WHERE total > (SELECT AVG(total) FROM per_kota)',
+    ],
+        'solution': """-- Analisis Penjualan Toko Bahan Kue -- dari tabel mentah jadi tiga keputusan.
+
+CREATE TABLE pelanggan (
+  id     INTEGER PRIMARY KEY,
+  nama   TEXT NOT NULL,
+  kota   TEXT NOT NULL
+);
+
+CREATE TABLE produk (
+  id       INTEGER PRIMARY KEY,
+  nama     TEXT NOT NULL,
+  kategori TEXT NOT NULL,
+  harga    INTEGER NOT NULL CHECK (harga > 0)
+);
+
+CREATE TABLE pesanan (
+  id          INTEGER PRIMARY KEY,
+  pelanggan_id INTEGER NOT NULL REFERENCES pelanggan(id),
+  produk_id    INTEGER NOT NULL REFERENCES produk(id),
+  jumlah       INTEGER NOT NULL CHECK (jumlah > 0),
+  tanggal      TEXT NOT NULL
+);
+
+INSERT INTO pelanggan (id, nama, kota) VALUES
+  (1, 'Toko Melati',  'Bandung'),
+  (2, 'Warung Bu Sri','Bandung'),
+  (3, 'Kue Pak Dedi', 'Cimahi'),
+  (4, 'Roti Anggrek', 'Bandung');
+
+INSERT INTO produk (id, nama, kategori, harga) VALUES
+  (1, 'Tepung Terigu', 'Bahan Kering', 12000),
+  (2, 'Gula Pasir',    'Bahan Kering',  15000),
+  (3, 'Mentega',       'Bahan Basah',   28000),
+  (4, 'Cokelat Bubuk', 'Bahan Kering',  42000),
+  (5, 'Telur',         'Bahan Basah',   30000),
+  (6, 'Vanili Bubuk',  'Bahan Kering',   9000),
+  (7, 'Susu Cair',     'Bahan Basah',   18000);
+
+INSERT INTO pesanan (id, pelanggan_id, produk_id, jumlah, tanggal) VALUES
+  (1, 1, 1, 10, '2026-01-05'),
+  (2, 1, 3,  4, '2026-01-05'),
+  (3, 2, 1,  6, '2026-01-06'),
+  (4, 3, 4,  2, '2026-01-06'),
+  (5, 1, 4,  3, '2026-01-08'),
+  (6, 2, 5,  8, '2026-01-09'),
+  (7, 4, 2, 20, '2026-01-09'),
+  (8, 3, 1,  5, '2026-01-10'),
+  (9, 4, 3,  2, '2026-01-11');
+
+.headers on
+.mode column
+
+.print ''
+.print '== 1. Belanja per pelanggan (terbesar dulu) =='
+SELECT
+  pl.nama                          AS pelanggan,
+  pl.kota,
+  COUNT(*)                         AS transaksi,
+  SUM(ps.jumlah * pr.harga)        AS total
+FROM pesanan ps
+JOIN pelanggan pl ON pl.id = ps.pelanggan_id
+JOIN produk    pr ON pr.id = ps.produk_id
+GROUP BY pl.id
+ORDER BY total DESC, pelanggan;
+
+.print ''
+.print '== 2. Produk terlaris per kategori =='
+WITH laku AS (
+  SELECT pr.kategori,
+         pr.nama,
+         SUM(ps.jumlah) AS unit,
+         RANK() OVER (PARTITION BY pr.kategori
+                      ORDER BY SUM(ps.jumlah) DESC, pr.nama) AS peringkat
+  FROM pesanan ps
+  JOIN produk pr ON pr.id = ps.produk_id
+  GROUP BY pr.id
+)
+SELECT kategori, nama, unit FROM laku WHERE peringkat = 1 ORDER BY kategori;
+
+.print ''
+.print '== 3. Kota yang belanjanya di atas rata-rata =='
+WITH per_kota AS (
+  SELECT pl.kota, SUM(ps.jumlah * pr.harga) AS total
+  FROM pesanan ps
+  JOIN pelanggan pl ON pl.id = ps.pelanggan_id
+  JOIN produk    pr ON pr.id = ps.produk_id
+  GROUP BY pl.kota
+)
+SELECT kota, total FROM per_kota
+WHERE total > (SELECT AVG(total) FROM per_kota)
+ORDER BY total DESC;
+
+.print ''
+.print '== 4. Produk yang tidak pernah dipesan =='
+SELECT pr.nama, pr.kategori
+FROM produk pr
+LEFT JOIN pesanan ps ON ps.produk_id = pr.id
+WHERE ps.id IS NULL
+ORDER BY pr.nama;
+""",
+    },
 ]

@@ -16,7 +16,9 @@ karena paginasi memotong per baris; kode warna yang menggantung antar baris
 akan bocor ke seluruh layar.
 """
 
-import tema
+import copy
+
+from inti import tema
 
 # Jenis token -> peran warna di tema.
 _PERAN = {
@@ -214,6 +216,240 @@ ATURAN = {
             TrimSpace Replace sort math os bufio errors New
         """),
     ),
+    "csharp": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        praprosesor=True,   # #if, #region, #nullable
+        kunci=_kata("""
+            abstract as base bool break byte case catch char checked class
+            const continue decimal default delegate do double else enum event
+            explicit extern false finally fixed float for foreach goto if
+            implicit in int interface internal is lock long namespace new null
+            object operator out override params private protected public
+            readonly ref return sbyte sealed short sizeof stackalloc static
+            string struct switch this throw true try typeof uint ulong
+            unchecked unsafe ushort using virtual void volatile while
+            add and get global init nameof not or partial record remove
+            required set value var when where with yield async await dynamic
+            nint nuint file scoped
+        """),
+        tipe=_kata("""
+            Console String Int32 Int64 Double Decimal Boolean Char Object
+            List Dictionary HashSet Queue Stack Array IEnumerable ICollection
+            IList IDictionary IReadOnlyList IComparable IEquatable IDisposable
+            Exception ArgumentException ArgumentNullException Task ValueTask
+            Func Action Predicate Nullable DateTime TimeSpan Guid StringBuilder
+            Math File Directory Path Stream StreamReader StreamWriter Regex
+            CultureInfo StringComparer LINQ Enumerable HashCode
+        """),
+        bawaan=_kata("""
+            WriteLine Write ReadLine Read Length Count Add Remove RemoveAt
+            Insert Clear Contains ContainsKey TryGetValue TryParse Parse
+            ToString ToUpper ToLower Trim Substring IndexOf Split Join Replace
+            StartsWith EndsWith Sort Reverse Where Select SelectMany OrderBy
+            OrderByDescending ThenBy ThenByDescending GroupBy First
+            FirstOrDefault Single Last Any All Sum Average Min Max Take Skip
+            Distinct ToList ToArray Append Equals GetHashCode CompareTo
+            Invoke Dispose Combine Round Abs Sqrt Pow Sign Floor Ceiling
+        """),
+    ),
+    # Visual Basic tidak membedakan huruf besar-kecil, dan tanda kutip TUNGGAL
+    # memulai KOMENTAR, bukan string. Menyalin bawaan dari bahasa lain di sini
+    # akan membuat setiap komentar terbaca sebagai string yang tidak pernah
+    # ditutup -- seluruh baris sesudahnya ikut berubah warna.
+    # Daftarnya ditulis KAPITAL karena `tanpa_bedakan_kapital` membandingkan
+    # `kata.upper()`; kode VB-nya sendiri tetap boleh ditulis campuran.
+    "vb": Aturan(
+        komentar_baris=("'",),
+        kutip=('"',),
+        tanpa_bedakan_kapital=True,
+        kunci=_kata("""
+            ADDHANDLER ADDRESSOF ALIAS AND ANDALSO AS BOOLEAN BYREF BYTE BYVAL
+            CALL CASE CATCH CBOOL CBYTE CCHAR CDATE CDBL CDEC CHAR CINT CLASS
+            CLNG COBJ CONST CONTINUE CSBYTE CSHORT CSNG CSTR CTYPE CUINT CULNG
+            CUSHORT DATE DECIMAL DECLARE DEFAULT DELEGATE DIM DIRECTCAST DO
+            DOUBLE EACH ELSE ELSEIF END ENDIF ENUM ERASE ERROR EVENT EXIT FALSE
+            FINALLY FOR FRIEND FUNCTION GET GETTYPE GETXMLNAMESPACE GLOBAL
+            GOTO HANDLES IF IMPLEMENTS IMPORTS IN INHERITS INTEGER INTERFACE
+            IS ISNOT LET LIB LIKE LONG LOOP ME MOD MODULE MUSTINHERIT
+            MUSTOVERRIDE MYBASE MYCLASS NAMESPACE NARROWING NEW NEXT NOT
+            NOTHING NOTINHERITABLE NOTOVERRIDABLE OBJECT OF ON OPERATOR OPTION
+            OPTIONAL OR ORELSE OVERLOADS OVERRIDABLE OVERRIDES PARAMARRAY
+            PARTIAL PRIVATE PROPERTY PROTECTED PUBLIC RAISEEVENT READONLY
+            REDIM REM REMOVEHANDLER RESUME RETURN SBYTE SELECT SET SHADOWS
+            SHARED SHORT SINGLE STATIC STEP STOP STRING STRUCTURE SUB
+            SYNCLOCK THEN THROW TO TRUE TRY TRYCAST TYPEOF UINTEGER ULONG
+            USHORT USING VARIANT WEND WHEN WHILE WIDENING WITH WITHEVENTS
+            WRITEONLY XOR ASYNC AWAIT ITERATOR YIELD
+        """),
+        tipe=_kata("""
+            CONSOLE INTEGER STRING DOUBLE DECIMAL BOOLEAN CHAR OBJECT DATE
+            LIST DICTIONARY HASHSET QUEUE STACK ARRAY EXCEPTION MATH
+            STRINGBUILDER ENVIRONMENT CONVERT ENUMERABLE NULLABLE LONG SINGLE
+            BYTE SHORT
+        """),
+        bawaan=_kata("""
+            WRITELINE WRITE READLINE LENGTH COUNT ADD REMOVE REMOVEAT INSERT
+            CLEAR CONTAINS CONTAINSKEY TRYGETVALUE TRYPARSE PARSE TOSTRING
+            TOUPPER TOLOWER TRIM SUBSTRING INDEXOF SPLIT JOIN REPLACE SORT
+            WHERE SELECT ORDERBY SUM AVERAGE MIN MAX ANY ALL TOLIST TOARRAY
+            FORMAT PADLEFT PADRIGHT STARTSWITH ENDSWITH ABS SQRT ROUND
+        """),
+    ),
+    # Kutip TUNGGAL sengaja tidak terdaftar: di Rust `&'a str` adalah lifetime,
+    # dan memperlakukannya sebagai pembuka string membuat sisa barisnya ikut
+    # berubah jadi string. Literal char 'x' jadi tidak disorot -- harga yang
+    # jauh lebih murah daripada satu baris utuh yang salah warna.
+    "rust": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        kutip=('"',),
+        kunci=_kata("""
+            as async await break const continue crate dyn else enum extern
+            false fn for if impl in let loop match mod move mut pub ref return
+            self Self static struct super trait true type unsafe use where
+            while abstract become box do final macro override priv typeof
+            unsized virtual yield union
+        """),
+        tipe=_kata("""
+            bool char str String i8 i16 i32 i64 i128 isize u8 u16 u32 u64 u128
+            usize f32 f64 Vec HashMap HashSet BTreeMap VecDeque Option Result
+            Box Rc Arc RefCell Cell Mutex RwLock Iterator IntoIterator Clone
+            Copy Debug Display Default PartialEq Eq PartialOrd Ord Hash Some
+            None Ok Err
+        """),
+        bawaan=_kata("""
+            println print eprintln format vec panic assert assert_eq write
+            writeln len push pop insert remove get contains iter into_iter
+            map filter collect fold sum count min max sorted sort sort_by
+            unwrap expect unwrap_or unwrap_or_else is_some is_none ok_or
+            and_then to_string to_owned as_str parse trim split lines chars
+            bytes new from with_capacity clone matches enumerate zip rev take
+            skip last first push_str
+        """),
+    ),
+    "php": Aturan(
+        komentar_baris=("//", "#"), komentar_blok=(("/*", "*/"),),
+        kutip=('"', "'"),
+        variabel_dolar=True,
+        kunci=_kata("""
+            abstract and array as break callable case catch class clone const
+            continue declare default do echo else elseif empty enddeclare
+            endfor endforeach endif endswitch endwhile enum extends final
+            finally fn for foreach function global goto if implements include
+            include_once instanceof insteadof interface isset list match
+            namespace new or print private protected public readonly require
+            require_once return static switch throw trait try unset use var
+            while xor yield from true false null parent self this
+        """),
+        tipe=_kata("""
+            int float string bool array object mixed void never iterable
+            callable static self parent null false true ArrayObject Closure
+            Generator Exception Throwable Error TypeError ValueError PDO
+            DateTime DateTimeImmutable Stringable Countable JsonSerializable
+        """),
+        bawaan=_kata("""
+            count strlen str_replace substr strpos strtolower strtoupper trim
+            ltrim rtrim explode implode join sprintf printf number_format
+            array_map array_filter array_reduce array_keys array_values
+            array_merge array_slice array_sum in_array array_search sort rsort
+            usort ksort asort krsort array_push array_pop array_shift
+            array_unshift array_unique range max min abs round floor ceil
+            intdiv json_encode json_decode var_dump print_r file_get_contents
+            file_put_contents fopen fgets fclose is_array is_string is_int
+            is_null isset unset date time str_repeat str_pad ucfirst
+            preg_match preg_replace preg_split array_key_exists
+        """),
+    ),
+    "ruby": Aturan(
+        komentar_baris=("#",),
+        kutip=('"', "'"),
+        kunci=_kata("""
+            alias and begin BEGIN break case class def defined? do else elsif
+            end END ensure false for if in module next nil not or redo rescue
+            retry return self super then true undef unless until when while
+            yield require require_relative attr_accessor attr_reader
+            attr_writer include extend prepend private protected public raise
+            lambda proc new
+        """),
+        tipe=_kata("""
+            String Symbol Integer Float Numeric Array Hash Range Struct Set
+            Time Date Proc Method Comparable Enumerable Kernel Object Class
+            Module Exception StandardError ArgumentError TypeError RuntimeError
+            NameError IndexError KeyError ZeroDivisionError IO File Dir JSON
+        """),
+        bawaan=_kata("""
+            puts print p pp gets chomp chop strip length size count first last
+            push pop shift unshift map collect select filter reject reduce
+            inject each each_with_index each_with_object times upto downto
+            step sort sort_by min max min_by max_by sum group_by partition
+            find detect include? empty? any? all? none? nil? zero? even? odd?
+            to_s to_i to_f to_a to_sym to_h split join reverse uniq flatten
+            compact freeze frozen? dup clone keys values fetch merge delete
+            slice gsub sub match start_with? end_with? upcase downcase
+            capitalize center ljust rjust format sprintf
+        """),
+    ),
+    "kotlin": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        kutip=('"""', '"', "'"),
+        kunci=_kata("""
+            as break by catch class companion const constructor continue crossinline
+            data do dynamic else enum external false field file finally for fun get
+            if import in infix init inline inner interface internal is lateinit
+            noinline null object open operator out override package param private
+            property protected public receiver reified return sealed set setparam
+            super suspend tailrec this throw true try typealias typeof val var
+            vararg when where while it annotation abstract final actual expect
+        """),
+        tipe=_kata("""
+            Any Unit Nothing Boolean Byte Short Int Long Float Double Char
+            String Array List MutableList Map MutableMap Set MutableSet Pair
+            Triple Sequence Iterable Comparable Number Regex Exception
+            IllegalArgumentException IllegalStateException Throwable Result
+            Deferred Job CoroutineScope Flow StringBuilder
+        """),
+        bawaan=_kata("""
+            println print readLine listOf mutableListOf arrayListOf mapOf
+            mutableMapOf setOf mutableSetOf arrayOf emptyList size indices
+            first last add remove removeAt contains containsKey isEmpty
+            isNotEmpty map filter flatMap forEach forEachIndexed fold reduce
+            sumOf count any all none find firstOrNull lastOrNull sorted
+            sortedBy sortedByDescending groupBy associate associateBy joinToString
+            toList toMutableList toSet toMap toString toInt toDouble trim split
+            substring indexOf replace startsWith endsWith uppercase lowercase
+            let run apply also with require check error lazy launch async
+            await delay repeat maxOf minOf
+        """),
+    ),
+    "typescript": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        kutip=('"', "'", "`"),
+        kunci=_kata("""
+            var let const function return if else for while do switch case
+            break continue new delete typeof instanceof in of this class
+            extends super import export default from try catch finally throw
+            async await yield static get set null undefined true false void
+            with debugger interface type enum namespace declare abstract
+            implements private protected public readonly as is keyof infer
+            satisfies override accessor module require asserts unique global
+        """),
+        tipe=_kata("""
+            string number boolean bigint symbol object any unknown never void
+            null undefined Array ReadonlyArray Record Partial Required Readonly
+            Pick Omit Exclude Extract NonNullable ReturnType Parameters Awaited
+            Map Set WeakMap WeakSet Promise Date RegExp Error JSON Math Object
+            Function Iterable Iterator Generator Tuple
+        """),
+        bawaan=_kata("""
+            console log warn error info table process fetch structuredClone
+            parseInt parseFloat isNaN setTimeout setInterval push pop shift
+            unshift slice splice map filter reduce forEach find findIndex some
+            every includes indexOf join split length toString keys values
+            entries stringify parse then catch finally resolve reject all
+            allSettled race from of freeze assign hasOwnProperty trim replace
+            startsWith endsWith padStart padEnd repeat toFixed sort reverse
+            flat flatMap at
+        """),
+    ),
     "sql": Aturan(
         komentar_baris=("--", "#"), komentar_blok=(("/*", "*/"),),
         kutip=('"', "'", "`"),
@@ -338,6 +574,23 @@ ATURAN["py"] = ATURAN["python"]
 ATURAN["sh"] = ATURAN["bash"]
 ATURAN["shell"] = ATURAN["bash"]
 ATURAN["htm"] = ATURAN["html"]
+ATURAN["cs"] = ATURAN["csharp"]
+ATURAN["c#"] = ATURAN["csharp"]
+ATURAN["vb.net"] = ATURAN["vb"]
+ATURAN["vbnet"] = ATURAN["vb"]
+ATURAN["visualbasic"] = ATURAN["vb"]
+ATURAN["rs"] = ATURAN["rust"]
+ATURAN["rb"] = ATURAN["ruby"]
+ATURAN["kt"] = ATURAN["kotlin"]
+ATURAN["ts"] = ATURAN["typescript"]
+
+# Fedora memakai aturan Bash, tapi sebagai objek TERSENDIRI, bukan alias.
+# bahasa_didukung() membuang duplikat berdasarkan id() -- begitulah ia
+# menyaring alias seperti "sh" dan "shell". Fedora adalah bahasa tersendiri di
+# LANGUAGES, dan daftar dari fungsi itulah yang dikirim ke editor web lewat
+# /api/awal. Kalau ia menunjuk objek yang sama dengan bash, Fedora lenyap dari
+# daftar dan kodenya tampil polos tanpa satu pun pesan galat.
+ATURAN["fedora"] = copy.copy(ATURAN["bash"])
 
 _POLOS = Aturan()
 

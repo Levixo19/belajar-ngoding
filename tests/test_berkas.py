@@ -9,8 +9,8 @@ membingungkan daripada tidak memberi instruksi sama sekali.
 import os
 import unittest
 
-import berkas
-import runner
+from inti import berkas
+from inti import runner
 from main import LANGUAGES
 
 LEWATI_LAMBAT = os.environ.get("BELAJAR_SKIP_LAMBAT") == "1"
@@ -260,7 +260,7 @@ class TestSeluruhKontenPunyaInstruksi(unittest.TestCase):
 
     def test_nama_berkas_latihan_cocok_dengan_yang_dipakai_runner(self):
         """Instruksi yang ditampilkan harus sama dengan berkas yang benar-benar ditulis."""
-        from exercises import nama_kerja
+        from layar.exercises import nama_kerja
         for lang in LANGUAGES:
             for ex in lang["exercises"]:
                 with self.subTest(bahasa=lang["label"], latihan=ex["title"]):
@@ -271,7 +271,7 @@ class TestSeluruhKontenPunyaInstruksi(unittest.TestCase):
 
     def test_nama_kelas_java_cocok_dengan_nama_berkas_latihan(self):
         """javac menolak kalau nama kelas public beda dari nama berkas."""
-        from exercises import nama_kerja, _kerangka
+        from layar.exercises import nama_kerja, _kerangka
         lang = next(l for l in LANGUAGES if l["runner"] == "java")
         for ex in lang["exercises"]:
             with self.subTest(latihan=ex["title"]):
@@ -311,6 +311,84 @@ class TestLabelProgramTerbukti(unittest.TestCase):
             if r.fase == "kompilasi":
                 return r.galat.strip()[:300]
         return None
+
+
+class PagarPerintahSistem(unittest.TestCase):
+    """Aplikasi TIDAK BOLEH menjalankan perintah sistem atas nama pelajar.
+
+    Kurikulum CLI Fedora berisi perintah sungguhan: `sudo dnf5 install`,
+    `systemctl enable`, `mkfs.ext4`, `rm`. Semuanya hanya bermakna kalau
+    pelajar sendiri yang mengetiknya di terminalnya sendiri.
+
+    Ini pernah bocor, dan bocornya lewat jalur yang tidak terlihat dari
+    `jenis_kode`: klasifikasinya sudah benar (SESI), tapi webapp menghitung
+    `bisa_dijalankan` sebagai `jenis in (PROGRAM, SESI)` -- aturan yang ditulis
+    untuk SQL, di mana "sesi" berarti sqlite3 yang dinyalakan aplikasi sendiri
+    dan memang aman. Akibatnya halaman materi Fedora memasang tombol Jalankan
+    di empat blok perintah sekaligus, salah satunya rm.
+
+    Karena itu yang diuji di sini BUKAN klasifikasinya, melainkan keputusan
+    akhirnya: boleh atau tidak aplikasi mengeksekusi blok ini.
+    """
+
+    # Yang dilarang adalah kata kerja yang MENGUBAH, bukan nama perintahnya.
+    # `systemctl is-system-running` dan `systemctl --failed` cuma bertanya, dan
+    # skrip laporan kesehatan memang perlu bertanya. Melarang "systemctl "
+    # begitu saja membuat tes ini menolak satu-satunya contoh yang justru
+    # aman -- persis jenis pagar yang lama-lama dimatikan orang karena rewel.
+    BERBAHAYA = ("sudo ", "mkfs", "rm -rf", "rm -f", "dd if=", "dd of=",
+                 "setenforce", "cryptsetup", "chattr ", "semanage ",
+                 "systemctl start", "systemctl stop", "systemctl restart",
+                 "systemctl enable", "systemctl disable", "systemctl mask",
+                 "systemctl isolate", "systemctl kill", "systemctl set-",
+                 "firewall-cmd --add", "firewall-cmd --remove",
+                 "firewall-cmd --set", "firewall-cmd --panic",
+                 "dnf5 install", "dnf5 remove", "dnf5 upgrade",
+                 "flatpak install", "flatpak uninstall",
+                 "podman run", "podman rm", "podman system reset",
+                 "btrfs subvolume delete", "lvremove", "lvreduce", "userdel")
+
+    def test_blok_perintah_fedora_tidak_pernah_bisa_dijalankan_aplikasi(self):
+        lang = next((l for l in LANGUAGES if l["key"] == "fedora"), None)
+        if lang is None:
+            self.skipTest("kurikulum fedora tidak terpasang")
+        diperiksa = 0
+        for m in lang["materials"]:
+            for s in m["sections"]:
+                kode = s.get("code")
+                if not kode:
+                    continue
+                jenis = berkas.jenis_kode("fedora", kode)
+                boleh = berkas.boleh_dijalankan_aplikasi("fedora", jenis)
+                if not boleh:
+                    diperiksa += 1
+                    continue
+                # Yang lolos HARUS skrip berpenanda shebang, dan skrip contoh
+                # pun tidak boleh membawa perintah yang mengubah sistem.
+                with self.subTest(materi=m["title"]):
+                    self.assertTrue(
+                        kode.lstrip().startswith("#!"),
+                        f"blok tanpa shebang boleh dijalankan aplikasi:\n"
+                        f"{kode[:200]}")
+                    for kata in self.BERBAHAYA:
+                        self.assertNotIn(
+                            kata, kode,
+                            f"skrip contoh yang bisa dijalankan aplikasi memuat "
+                            f"{kata.strip()!r} -- ia akan mengubah sistem pelajar")
+                diperiksa += 1
+        self.assertGreater(diperiksa, 100, "blok materi Fedora tidak terbaca")
+
+    def test_sesi_sql_tetap_boleh_dijalankan(self):
+        """Pagar di atas tidak boleh ikut mematikan SQL.
+
+        SESI milik SQL adalah sqlite3 yang dinyalakan aplikasi sendiri, dan
+        menjalankannya memang gunanya. Tanpa tes ini, "amankan Fedora" gampang
+        berubah jadi "matikan SESI di mana-mana".
+        """
+        self.assertTrue(berkas.boleh_dijalankan_aplikasi("sql", berkas.SESI))
+        self.assertFalse(berkas.boleh_dijalankan_aplikasi("fedora", berkas.SESI))
+        self.assertTrue(berkas.boleh_dijalankan_aplikasi("fedora", berkas.PROGRAM))
+        self.assertFalse(berkas.boleh_dijalankan_aplikasi("python", berkas.POTONGAN))
 
 
 if __name__ == "__main__":

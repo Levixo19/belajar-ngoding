@@ -43,7 +43,7 @@ def _argumen(argv=None):
 
 
 def _cetak_sambutan(url, langsung_buka):
-    import runner
+    from inti import runner
     from main import LANGUAGES
 
     materi = sum(len(l["materials"]) for l in LANGUAGES)

@@ -524,4 +524,160 @@ def test_tarik_gagal_jika_saldo_tidak_cukup(rekening):
 
 # Jalankan dengan: pytest -v""",
     },
+    {
+        'title': 'Proyek Akhir: Koperasi Sekolah',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Koperasi Sekolah',
+        '',
+        'Koperasi sekolahmu mencatat penjualan di buku tulis, dan tiap sore',
+        'bendaharanya menghabiskan satu jam menghitung ulang. Kamu diminta',
+        'menggantinya dengan satu program.',
+        '',
+        'Barang di koperasi (kode, nama, harga, stok awal):',
+        '  BK01  Buku Tulis   4000   50',
+        '  PN02  Pulpen       2500   40',
+        '  PS03  Penghapus    1500   12',
+        '  SP04  Spidol       8000    6',
+        '',
+        'Permintaan yang masuk hari ini, berurutan:',
+        '  BK01 x12,  PN02 x20,  SP04 x10,  PS03 x5,  XX99 x1,  BK01 x8',
+        '',
+        'Dua di antaranya TIDAK BOLEH jadi penjualan: satu meminta lebih',
+        'banyak daripada stok, satu lagi kodenya tidak ada. Keduanya wajib',
+        'ditangani dengan exception -- bukan dengan if yang menyelinap --',
+        'dan program tidak boleh berhenti karenanya.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. class Barang dengan method nilai_stok() = harga x stok.',
+        '  2. class turunan Exception sendiri untuk kasus stok kurang.',
+        '  3. class Koperasi yang menyimpan barang dalam dict berkunci kode,',
+        '     mencatat tiap penjualan yang BERHASIL, dan bisa menghitung',
+        '     pemasukan serta jumlah laku per barang.',
+        '  4. Barang diurutkan berdasarkan KODE saat dicetak.',
+        "  5. 'Perlu dipesan lagi' berisi nama barang bersisa kurang dari 10,",
+        '     diurutkan alfabetis.',
+        '  6. Uang ditulis dengan pemisah titik: 137500 -> Rp137.500',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  LAPORAN KOPERASI SEKOLAH',
+        '  ==============================================',
+        '  Kode  Nama            Laku  Sisa    Nilai sisa',
+        '  BK01  Buku Tulis        20    30     Rp120.000',
+        '  PN02  Pulpen            20    20      Rp50.000',
+        '  PS03  Penghapus          5     7      Rp10.500',
+        '  SP04  Spidol             0     6      Rp48.000',
+        '  ----------------------------------------------',
+        '  Pemasukan hari ini : Rp137.500',
+        '  Nilai stok tersisa : Rp228.500',
+        '  Perlu dipesan lagi : Penghapus, Spidol',
+        '  Transaksi gagal    : 2',
+        '    - stok kurang - Spidol: diminta 10, tersisa 6',
+        '    - kode tidak dikenal - XX99',
+    ],
+        'hints': [
+        'Pakai dict {kode: Barang} supaya pencarian kode jadi satu langkah, dan `if kode not in self.barang: raise KeyError(kode)`.',
+        'Exception sendiri cukup: `class StokKurang(Exception): pass`. Tangkap dua-duanya terpisah: `except StokKurang as e:` lalu `except KeyError as e:` -- urutan except menentukan siapa yang kena.',
+        'Lebar kolom pakai f-string: f"{b.kode:<6}{b.nama:<14}{laku:>6}". Pemisah ribuan: f"{n:,}".replace(",", ".").',
+    ],
+        'solution': """\"\"\"Koperasi Sekolah -- laporan penjualan satu hari.\"\"\"
+
+
+class Barang:
+    def __init__(self, kode, nama, harga, stok):
+        self.kode = kode
+        self.nama = nama
+        self.harga = harga
+        self.stok = stok
+
+    def nilai_stok(self):
+        return self.harga * self.stok
+
+
+class StokKurang(Exception):
+    \"\"\"Dipakai saat penjualan meminta lebih banyak daripada yang ada.\"\"\"
+
+
+class Koperasi:
+    def __init__(self):
+        self.barang = {}
+        self.terjual = []
+
+    def tambah(self, barang):
+        self.barang[barang.kode] = barang
+
+    def jual(self, kode, jumlah):
+        if kode not in self.barang:
+            raise KeyError(kode)
+        b = self.barang[kode]
+        if jumlah > b.stok:
+            raise StokKurang(f"{b.nama}: diminta {jumlah}, tersisa {b.stok}")
+        b.stok -= jumlah
+        self.terjual.append((kode, jumlah))
+        return b.harga * jumlah
+
+    def pemasukan(self):
+        return sum(self.barang[k].harga * j for k, j in self.terjual)
+
+    def laku_per_barang(self):
+        hitung = {}
+        for kode, jumlah in self.terjual:
+            hitung[kode] = hitung.get(kode, 0) + jumlah
+        return hitung
+
+
+def rupiah(n):
+    return "Rp" + f"{n:,}".replace(",", ".")
+
+
+def main():
+    kop = Koperasi()
+    for kode, nama, harga, stok in [
+        ("BK01", "Buku Tulis", 4000, 50),
+        ("PN02", "Pulpen", 2500, 40),
+        ("PS03", "Penghapus", 1500, 12),
+        ("SP04", "Spidol", 8000, 6),
+    ]:
+        kop.tambah(Barang(kode, nama, harga, stok))
+
+    permintaan = [("BK01", 12), ("PN02", 20), ("SP04", 10),
+                  ("PS03", 5), ("XX99", 1), ("BK01", 8)]
+
+    gagal = []
+    for kode, jumlah in permintaan:
+        try:
+            kop.jual(kode, jumlah)
+        except StokKurang as e:
+            gagal.append(f"stok kurang - {e}")
+        except KeyError as e:
+            gagal.append(f"kode tidak dikenal - {e.args[0]}")
+
+    print("LAPORAN KOPERASI SEKOLAH")
+    print("=" * 46)
+
+    laku = kop.laku_per_barang()
+    print(f"{'Kode':<6}{'Nama':<14}{'Laku':>6}{'Sisa':>6}{'Nilai sisa':>14}")
+    for kode in sorted(kop.barang):
+        b = kop.barang[kode]
+        print(f"{b.kode:<6}{b.nama:<14}{laku.get(kode, 0):>6}"
+              f"{b.stok:>6}{rupiah(b.nilai_stok()):>14}")
+
+    print("-" * 46)
+    print(f"Pemasukan hari ini : {rupiah(kop.pemasukan())}")
+    print(f"Nilai stok tersisa : "
+          f"{rupiah(sum(b.nilai_stok() for b in kop.barang.values()))}")
+
+    habis = [b.nama for b in kop.barang.values() if b.stok < 10]
+    print(f"Perlu dipesan lagi : {', '.join(sorted(habis)) if habis else '-'}")
+
+    print(f"Transaksi gagal    : {len(gagal)}")
+    for g in gagal:
+        print("  - " + g)
+
+
+main()
+""",
+    },
 ]

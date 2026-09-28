@@ -10,8 +10,8 @@ ditulis tangan).
 Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
-Status: 11 bahasa, 334 materi dalam 81 bab bertingkat, 67 kuis / 532 soal,
-159 latihan (152 dinilai otomatis), 678 tes.
+Status: 19 kurikulum, 515 materi dalam 136 bab bertingkat, 116 kuis / 928 soal,
+303 latihan (293 dinilai otomatis) termasuk 19 proyek akhir, 774 tes.
 
 144 materi ditambahkan sekaligus setelah audit cakupan tiga sudut (kode nyata,
 silabus baku, dan prasyarat yang dipakai soal tapi tidak pernah diajarkan).
@@ -33,35 +33,57 @@ BELAJAR_BAHASA=go python3 -m unittest tests.test_solutions        # satu bahasa
 ```
 
 Tes lambat mengompilasi ratusan program latihan. Jalankan versi penuh sebelum
-commit apa pun yang menyentuh `data/`, `runner.py`, atau `exercises.py`.
+commit apa pun yang menyentuh `data/`, `inti/runner.py`, atau
+`layar/exercises.py`.
 
 ## Peta modul
 
+Tiga paket, dibagi menurut arah ketergantungan yang SUDAH ada di kode — bukan
+menurut selera. Tidak ada satu paket pun yang mengimpor paket di atasnya, dan
+itulah satu-satunya alasan pembagian ini berarti: begitu ada yang membaliknya,
+namanya berhenti memberi tahu apa pun.
+
 | Modul | Tanggung jawab |
 |---|---|
-| `main.py` | Registry `LANGUAGES` + menu utama & dashboard |
-| `utils.py` | Primitif tampilan: paginasi, menu, input, pembungkus baris |
-| `tema.py` | Warna diminta lewat PERAN (`"galat"`, `"kode_kunci"`), bukan ANSI mentah |
-| `sorot.py` | Penyorot sintaks 10 bahasa, pemindai token satu lintasan |
-| `berkas.py` | Menentukan sebuah blok kode itu berkas, potongan, sesi, multi, atau ilustrasi |
-| `runner.py` | Eksekusi kode berbatas waktu/memori + pencocokan output |
-| `struktur.py` | Membaca HTML & CSS jadi pohon — itu "keluaran" kedua bahasa itu |
-| `bab.py` | Bab mana yang terbuka. SATU-SATUNYA yang memutuskan penguncian |
+| `main.py` | Registry `LANGUAGES` + menu utama & dashboard. Tetap di AKAR karena ia titik masuk (`python3 main.py`) |
+| **`inti/`** | **Mesin. Tidak tahu ada antarmuka terminal atau web** |
+| `inti/runner.py` | Eksekusi kode berbatas waktu/memori + pencocokan output |
+| `inti/struktur.py` | Membaca HTML & CSS jadi pohon — itu "keluaran" kedua bahasa itu |
+| `inti/sorot.py` | Penyorot sintaks 10 bahasa, pemindai token satu lintasan |
+| `inti/berkas.py` | Menentukan sebuah blok kode itu berkas, potongan, sesi, multi, atau ilustrasi |
+| `inti/galat.py` | Menerjemahkan pesan compiler ke bahasa manusia |
+| `inti/beda.py` | Menjelaskan kenapa output pelajar berbeda |
+| `inti/tema.py` | Warna diminta lewat PERAN (`"galat"`, `"kode_kunci"`), bukan ANSI mentah |
+| **`pelajar/`** | **Keadaan & aturan yang melekat pada orangnya** |
+| `pelajar/progress.py` | Progres, XP, level, streak, badge, penjadwalan ulang |
+| `pelajar/bab.py` | Bab mana yang terbuka. SATU-SATUNYA yang memutuskan penguncian |
+| `pelajar/konfigurasi.py` | Preferensi tampilan, sengaja TERPISAH dari progres |
+| `pelajar/saran.py` | Antrean "habis ini ngapain" |
+| **`layar/`** | **Antarmuka terminal. Satu-satunya lapisan yang mencetak** |
+| `layar/utils.py` | Primitif tampilan: paginasi, menu, input, pembungkus baris |
+| `layar/materials.py` `layar/quiz.py` `layar/exercises.py` `layar/navigasi.py` | Layar-layar terminal |
 | `data/bab.py` | Pembagian materi jadi bab bertingkat. DIHASILKAN, bukan diketik |
-| `galat.py` | Menerjemahkan pesan compiler ke bahasa manusia |
-| `beda.py` | Menjelaskan kenapa output pelajar berbeda |
-| `progress.py` | Progres, XP, level, streak, badge, penjadwalan ulang |
-| `konfigurasi.py` | Preferensi tampilan, sengaja TERPISAH dari progres |
-| `saran.py` | Antrean "habis ini ngapain" |
-| `materials.py` `quiz.py` `exercises.py` `navigasi.py` | Layar-layar terminal |
 
-`materials.py` sekarang DUA TINGKAT: daftar bab dulu, baru materi di dalamnya.
-Penjagaan penguncian duduk di `render_material`, bukan di menunya, karena itulah
-satu-satunya pintu masuk materi di terminal — menu bab, pencarian lokal,
-pencarian global, bookmark, "lanjutkan yang terakhir", dan antrean saran semuanya
-berakhir di fungsi itu.
+**`inti/struktur.py` wajib tetap bersebelahan dengan `inti/runner.py`.** Runner
+memanggilnya sebagai subprocess lewat
+`os.path.join(os.path.dirname(os.path.abspath(__file__)), "struktur.py")`.
+Memisahkan keduanya tidak menimbulkan error impor di mana pun — yang terjadi
+cuma SELURUH latihan HTML dan CSS berhenti bisa dinilai, dan pesannya berupa
+"berkas tidak ditemukan" dari subprocess yang tidak ada yang membacanya.
 
-`utils.C` menyimpan ANSI mentah dan masih dipakai di beberapa tempat lama.
+**`layar/exercises.py` belum sepenuhnya "layar".** `webapp/api.py` memakainya
+untuk `bangun_tests`, `DIR_KERJA`, dan `_kerangka` — logika latihan, bukan
+tampilan. Begitu juga `main.py` yang memegang registry `LANGUAGES` sekaligus
+menu terminal. Keduanya warisan, dan memindahkan isinya sekarang berarti
+mengubah PERILAKU, bukan sekadar merapikan berkas. Catat, jangan tambal.
+
+`layar/materials.py` sekarang DUA TINGKAT: daftar bab dulu, baru materi di
+dalamnya. Penjagaan penguncian duduk di `render_material`, bukan di menunya,
+karena itulah satu-satunya pintu masuk materi di terminal — menu bab, pencarian
+lokal, pencarian global, bookmark, "lanjutkan yang terakhir", dan antrean saran
+semuanya berakhir di fungsi itu.
+
+`layar/utils.C` menyimpan ANSI mentah dan masih dipakai di beberapa tempat lama.
 Untuk kode baru pakai `tema.cat(teks, "peran")`.
 
 ### Antarmuka web
@@ -71,15 +93,16 @@ belajar sendiri — semuanya dipinjam.
 
 | Modul | Tanggung jawab |
 |---|---|
-| `belajar-web.py` | Peluncur: nyalakan server, buka browser |
+| `belajar-web.py` | Peluncur: nyalakan server, buka browser. Tetap di AKAR, sama seperti `main.py` |
 | `webapp/server.py` | HTTP, tabel rute, dan TIGA lapis penjagaan |
 | `webapp/api.py` | Endpoint JSON; membungkus hasil modul inti |
 | `webapp/isi.py` | Konten kurikulum → struktur JSON (blok, token, petunjuk) |
 | `webapp/sesi.py` | Sesi kuis di memori (pengacakan + pemetaan ulang jawaban) |
 | `webapp/catatan.py` | Catatan pribadi, berkas TERPISAH dari progres |
 | `statik/js/gerak.js` | Mesin animasi: solver pegas, urutan, pemicu, isyarat |
-| `statik/js/sorot.js` | Port `sorot.py` ke JS untuk penyorotan langsung di editor |
+| `statik/js/sorot.js` | Port `inti/sorot.py` ke JS untuk penyorotan langsung di editor |
 | `statik/js/editor.js` | Editor kode: textarea transparan di atas `<pre>` bertoken |
+| `statik/js/pratinjau.js` | Bingkai pratinjau halaman HTML/CSS pelajar (sandbox, tanpa allow-same-origin) |
 | `statik/js/layar-*.js` | Layar-layar web |
 | `statik/js/ikon.js` | 24 ikon garis SVG, satu keluarga, mewarisi currentColor |
 | `statik/gaya.css` | Satu lembar gaya; 4 tema; aturan gerak & arah desain di dalamnya |
@@ -88,6 +111,22 @@ belajar sendiri — semuanya dipinjam.
 
 Semuanya dijaga tes. Kalau salah satu gagal, itu bukan tes yang cerewet —
 itu bug yang akan menyakiti pelajar.
+
+**Blok perintah kurikulum Fedora WAJIB terklasifikasi SESI, bukan PROGRAM.**
+Ini invarian keamanan, bukan kosmetik. Materi `CLI Fedora` berisi perintah
+sungguhan seperti `sudo dnf5 install`, `systemctl enable`, dan `mkfs.ext4`.
+Kalau `jenis_kode` menyebutnya PROGRAM, dua hal terjadi sekaligus: aplikasi
+menawarkan tombol *Jalankan* yang benar-benar mengeksekusinya di mesin pelajar,
+DAN `test_solutions.test_janji_keluaran_di_materi` menjalankannya di mesin
+siapa pun yang menjalankan tes. Karena itu runner-nya diberi key `fedora`
+tersendiri meski eksekutornya tetap bash, dan `inti/berkas.py` menyebut blok
+Fedora PROGRAM hanya kalau baris pertamanya shebang. Jangan pernah mengubah
+runner Fedora jadi `bash` "karena toh sama saja" -- persis di situ pagarnya.
+
+Latihannya sendiri memang skrip sungguhan dan memang dijalankan. Itu aman
+karena semuanya bekerja di direktori `mktemp -d`, dengan hak pengguna biasa,
+dan tidak satu pun memerlukan sudo. Pertahankan sifat itu saat menambah
+latihan Fedora baru.
 
 **Solusi latihan harus deterministik.** Auto-checker menurunkan kunci jawaban
 dengan menjalankan solusi contoh. Bilangan acak, tanggal saat ini, iterasi map
@@ -210,6 +249,19 @@ situ, tapi antarmuka WEB tidak — ia menyusun barisnya satu per satu di
 setelan yang ada di API tapi tidak ada di layar, dan dua tautan "buka semua bab
 di Pengaturan" yang mendarat di halaman tanpa saklarnya.
 
+**Generatornya ada di riwayat sesi, bukan di repo — tulis ulang kalau perlu.**
+Bentuknya sederhana dan sudah terbukti: ubah `BAB` (rentang) jadi spesifikasi
+(judul, ket, tingkat, JUMLAH materi), sisipkan jumlahnya di bab yang memuat
+titik sisip, lalu hitung ulang seluruh `awal`/`akhir` dari nol dan tulis ulang
+berkasnya. Uji kewarasannya satu baris: menghasilkan ulang TANPA perubahan
+harus memberi rentang yang identik dengan yang sekarang ada di berkas.
+
+**Menyisipkan materi di tengah berarti MENOMORI ULANG judul sesudahnya.**
+Judul membawa nomornya sendiri ("25. ..."), dan dua materi bernomor sama
+terlihat salah di layar walau tidak ada tes yang gagal. Penomoran ulang aman
+terhadap progres — `progress.judul_kunci()` memangkas awalan "NN. " sebelum
+membentuk kunci — tapi judul TANPA nomor tetap wajib unik.
+
 **`data/bab.py` DIHASILKAN dari spesifikasi, bukan diketik.** Rentang indeks yang
 diketik tangan adalah kesalahan yang tidak kelihatan: satu angka meleset membuat
 seluruh bab sesudahnya bergeser tanpa satu pun tanda di layar. Generatornya
@@ -318,10 +370,12 @@ dan `adaGerak() ? "smooth" : "auto"` di JS.
 
 **Nilai dasar sebuah properti tidak boleh hanya ada di dalam `@keyframes`-nya.**
 Begitu animasinya dimatikan, properti itu kembali ke nilai BAWAAN CSS, bukan ke
-nilai pertama keyframe-nya. `#tungku` pernah kena: opacity-nya cuma ditulis di
-dalam `bara-kiri`/`bara-kanan`, jadi mematikan animasi justru membuat latarnya
+nilai pertama keyframe-nya. Latar `#tungku` yang lama pernah kena: opacity-nya
+cuma ditulis di dalam keyframe, jadi mematikan animasi justru membuat latarnya
 melompat ke opacity 1 — dua kali lebih terang, tepat pada setelan yang dipilih
-orang karena ingin layarnya lebih tenang.
+orang karena ingin layarnya lebih tenang. Latar itu sekarang sudah dibuang
+(lihat "Kertas, bukan kaca" di kepala gaya.css); yang tersisa cuma `.merek-bara`
+dan `.cincin::after`, dan keduanya menulis keadaan diamnya di aturan biasa.
 
 **Jarak diambil dari tangga `--s1`..`--s8`, bukan dari angka piksel.**
 Ruang kosong adalah bahan bangunan utama desain ini — yang membuat halaman
@@ -337,19 +391,70 @@ SELURUH halaman jadi 450 px pada layar 414 px — dan yang terlihat pemakainya
 bukan "kisinya kebesaran" melainkan "seluruh aplikasinya bisa digeser ke
 samping". Aturan pencegahnya ada di gaya.css, bagian "tidak meluber".
 
-**Ambang `@media` di sini harus DIHITUNG, bukan dikira-kira.** Media query
-mengukur seluruh viewport, sementara ruang yang benar-benar tersedia untuk isi
-jauh lebih sempit: panel kiri 270 px dan padding `#layar` 76 px tidak pernah
-ikut terhitung. Dengan ambang yang salah, akibatnya terbalik dari dugaan siapa
-pun — MELEBARKAN jendela justru MENYEMPITKAN kolom baca, karena kolom ketiga
-muncul sebelum ada ruang untuknya. Angka yang dipakai sekarang beserta
-hitungannya ditulis di komentar `gaya.css` tepat di atas tiap `@media`.
+**`max-height` BERPERSEN pada sebuah GRID ITEM diukur terhadap GRID AREA item
+itu sendiri, bukan terhadap induknya.** Ini sudah pernah merusak hal yang
+paling sering dipakai pelajar. `.kerja-hasil` dulu ditulis
+`max-height: 46%` dengan maksud "paling banyak 46% ruang kerja". Yang terjadi:
+grid memberi baris itu 180 px karena isinya memang 180 px, lalu 46% dihitung
+dari 180 dan panelnya dipangkas jadi 83 px. Artinya bukan batas melainkan
+perbandingan tetap — **"SELALU sembunyikan 54% isimu"**, berapa pun tinggi
+jendelanya, dan makin panjang keluarannya makin banyak yang hilang. Pelajar
+yang menekan Jalankan pada halaman HTML pertamanya melihat separuh bawah baris
+`<h1>` terjepit di tepi bawah layar, tanpa satu pun error di mana pun.
+
+Yang benar `46cqh`, dengan `.kerja-kode` diberi `container-type: size`.
+Dua hal yang gampang salah kalau ini disentuh lagi:
+
+* **Jangan memindahkan batasnya ke `grid-template-rows` sebagai persen.**
+  `minmax(0, 46%)` memang mengukur terhadap container — tapi persen di situ
+  nilai DEFINIT, jadi tracknya selalu selebar 46% bahkan saat panelnya masih
+  kosong. Editor kehilangan 300 px demi kalimat "Keluaran muncul di sini".
+  Tracknya wajib tetap `minmax(0, auto)`.
+* **`container-type: size` aman DI SINI karena tinggi `.kerja-kode` datang
+  dari luar** (grid `.kerja-tata` yang meregangkannya, di dalam
+  `#layar.penuh` yang tingginya `calc(100vh - ...)`). Memasangnya pada elemen
+  yang tingginya ditentukan isinya sendiri akan mengkolapskannya jadi nol.
+
+Diverifikasi di tiga keadaan yang harus tetap benar bersamaan: panel kosong
+(116 px, editor 489 px), keluaran pendek (180 px, utuh), keluaran panjang
+(310 px = atapnya, digulir di dalam, tidak meluber) — dan di jendela pendek
+700 px editor tetap di atas lantai 180 px-nya.
+
+**Ambang di sini harus DIHITUNG, bukan dikira-kira, dan diukur ke
+`#panggung`.** Media query mengukur seluruh viewport, sementara ruang yang
+benar-benar tersedia untuk isi jauh lebih sempit — padding `#layar` 76 px tidak
+pernah ikut terhitung. Dengan ambang yang salah, akibatnya terbalik dari dugaan
+siapa pun: MELEBARKAN jendela justru MENYEMPITKAN kolom baca, karena kolom
+ketiga muncul sebelum ada ruang untuknya. Karena itu semua ambang TATA LETAK
+memakai `@container panggung`, bukan `@media`; `@media` cuma dipakai untuk hal
+yang memang soal perangkatnya (navigasi melipat, jarak tepi layar). Angka yang
+dipakai sekarang beserta hitungannya ditulis di komentar `gaya.css` tepat di
+atas tiap blok.
+
+**Dua angka ambang hidup di JS dan WAJIB cocok dengan CSS.** `AMBANG_PANEL`
+(860) di `aplikasi.js` menentukan apakah tombol menu berbuat sesuatu, dan harus
+sama dengan blok `@media (max-width: 860px)`. `AMBANG_RUANG` (1100) di
+`editor.js` menentukan apakah editor berhenti mengukur dirinya dari isi, dan
+harus sama dengan `@container panggung (min-width: 1100px)`. Kalau salah satu
+meleset, ada pita lebar tempat dua mesin berpendapat berbeda soal satu tata
+letak — dan gejalanya bukan error melainkan editor pendek yang menggantung di
+dalam kotak tinggi, atau tombol menu yang diam saja padahal panelnya satu-
+satunya jalan ke menu.
 
 **Blok `@media` diletakkan di PALING BAWAH gaya.css.** CSS menyelesaikan
-spesifisitas yang sama dengan urutan: `@media (max-width: 820px) { .x { a } }`
+spesifisitas yang sama dengan urutan: `@media (max-width: 860px) { .x { a } }`
 yang ditulis di tengah berkas kalah dari `.x { a }` yang ditulis sesudahnya,
 dan yang terjadi bukan error melainkan tata letak ponsel yang diam-diam tidak
 berlaku.
+
+Ini bukan kekhawatiran teoretis. Versi sebelum perombakan punya 759 baris
+komponen SESUDAH blok media-nya, dan empat aturan layar sempit di situ memang
+mati tanpa satu pun tanda: `.lanjutkan{padding}`, `.lanjutkan-isi{min-width}`,
+`.kepala-aksi{align-items}`, dan `.fakta{gap}`. Yang terparah `.lanjutkan-isi`,
+yang tetap menuntut 260 px di dalam kolom 324 px — kartu tindakan utama jadi
+benda TERLEBAR di halaman, persis di layar tersempit. Yang mencegahnya
+terulang bukan kehati-hatian melainkan urutannya: `@media` dan `@container`
+tinggal di kaki berkas, sesudah seluruh komponen.
 
 **`--ukuran-teks` dipasang di `<html>`, bukan `<body>`.** `rem` selalu diukur
 terhadap font-size `<html>`. Memasangnya di body pernah membuat setelan
@@ -363,10 +468,190 @@ Tipe Data"). Daftar yang punya kolom nomor tersendiri wajib memangkasnya lewat
 `tanpaNomor()` — di TAMPILAN saja. Jangan pernah mengubah judulnya di data:
 judul itu bagian dari kunci progres.
 
+**`#layar` punya TIGA ukuran, dan layar baru wajib memilih salah satunya.**
+Daftarnya di `aplikasi.js`: `LAYAR_LEBAR` (ruang kerja & pembaca materi —
+beberapa kolom yang masing-masing sudah membatasi dirinya), `LAYAR_KOLOM`
+(bahasa, kuis, bookmark, catatan, cari, statistik, pengaturan — halaman
+daftar, dipatok `--kolom-maks` 1400 px), dan bawaan `--panggung-maks` 1240 px
+untuk DASBOR, satu-satunya layar yang memang dua kolom.
+
+**Ruang lebar dipakai dengan MENAMBAH KOLOM, bukan dengan meregangkan baris.**
+Ini diukur, bukan dikira: pada jendela 1920 px, melebarkan daftar materi dari
+960 px ke 1909 px tidak mengubah satu pun yang penting — tinggi halamannya
+tetap 2402 px dan yang terlihat tetap TIGA baris. Yang bertambah cuma panjang
+ruang kosong antara judul dan penandanya, sampai dua ujung satu baris berhenti
+terbaca sebagai satu baris. Yang benar-benar menambah muatan cuma kolom kedua:
+`.senarai` memakai `repeat(auto-fill, minmax(min(520px, 100%), 1fr))`, dan
+dengan itu 19 latihan Python muat dalam satu layar 1440 px — sebelumnya tiga.
+
+Dua hal yang gampang salah kalau ini disentuh lagi:
+
+* **Lantainya wajib `min(520px, 100%)`, bukan `520px` telanjang.** Track grid
+  tidak pernah menyusut di bawah minimum minmax-nya, jadi `minmax(520px, 1fr)`
+  di dalam kolom 336 px menghasilkan track 520 px — dan yang terlihat bukan
+  "kisinya kebesaran" melainkan seluruh halaman bisa digeser ke samping,
+  dengan tujuh belas elemen terdorong keluar layar di ponsel.
+* **Halaman yang melebar memaksa isinya punya measure sendiri.** Begitu
+  `--kolom-maks` naik jadi 1400 px, `.bab-teks` yang cuma `flex: 1` memelarkan
+  KOTAKNYA sampai tepi kanan sementara ISINYA berhenti di 56ch — menyisipkan
+  lima ratus piksel kosong antara judul bab dan kemajuannya. Kartu di layar
+  mulai kena hal yang sama. Kalau sebuah blok cuma memuat sebaris teks plus
+  sebuah tombol, ia wajib dipatok; yang boleh melebar cuma kisi.
+
+**Kelas ukuran dipasang bersama ISI yang baru, bukan di awal `gambarRute()`.**
+`pasangUkuran()` dipanggil dua kali — sebelum kerangka pemuatan ditempel, dan
+sesudah `kosongkan(panggung)` — tidak pernah di awal. Menyetelnya di awal
+berarti layar LAMA yang masih terlihat ditata ulang ke lebar layar berikutnya
+lebih dulu, dan yang terlihat bukan pergantian melainkan isi lama yang
+melompat melebar tepat sebelum memudar. Paling kentara di perpindahan yang
+paling sering dilakukan: halaman bahasa (960 px) ke ruang kerja latihan
+(penuh). Kalau rutenya telanjur dibatalkan, `pasangUkuran()` memang TIDAK
+pernah dipanggil — itu yang benar, lebar rute yang dibuang tidak boleh
+dipasang.
+
+**Butir navigasi aktif ditandai DUA kali: kelasnya dan `aria-current`.**
+Tujuh belas dari sembilan belas sasaran navigasi tinggal di dalam panel yang
+tertutup — seluruh sebelas bahasa, plus empat tujuan di "Lainnya". Untuk butir
+seperti itu `offsetWidth`-nya nol, jadi penanda yang meluncur tidak punya
+tempat berdiri; versi sebelumnya memadamkannya, dan akibatnya di halaman
+bahasa — tujuan yang paling sering dibuka di aplikasi ini — navigasi tidak
+menyalakan apa pun sama sekali. `tandaiRel()` sekarang menandai PEMICU panel
+yang memuat butir aktif (`.rel-pemicu.kini` + `aria-current="true"`) dan
+meletakkan penandanya di situ. Kelas `.kini` saja tidak pernah cukup: warna
+tidak dibacakan pembaca layar, jadi `aria-current="page"` wajib ikut dipasang
+DAN dilepas.
+
+**Warna teks diambil dari token TEKS, bukan dari token garis.**
+`.bab-nomor` pernah memakai `--garis-kuat` — nilai yang dipilih supaya tepi
+satu piksel terbaca, bukan supaya sebuah angka terbaca. Hasilnya 1,65:1 di
+tema gelap: bukan cuma gagal AA, tapi membatalkan alasan komponen itu ada,
+sebab nomor bab di sini justru disebut "penggaris yang dipakai mata". Token
+teks paling tenang yang boleh dipakai `--redup`.
+
+**Pil yang memakai satu warna untuk teks DAN tint latarnya diukur terhadap
+latar yang sudah ikut bergeser.** `.pil-tenang` dkk. memasang
+`color: var(--X)` bersama `background: color-mix(in srgb, var(--X) 11%,
+transparent)`, jadi menaikkan saturasi warnanya menaikkan keduanya sekaligus
+dan rasionya nyaris tidak bergerak. Yang menggerakkannya cuma GELAP-TERANG
+warna itu sendiri — itu sebabnya `--tenang` tema terang digelapkan, bukan
+dipekatkan.
+
+**Judul baris daftar MEMBUNGKUS (dua baris), tidak dipotong elipsis.** Baris
+daftar adalah tempat orang MEMILIH mau mengerjakan yang mana, dan judul
+satu-satunya pembedanya. Di 360 px kolomnya 203 px sementara judul seperti
+"Apa Itu HTML & Halaman Pertamamu" butuh 265 px — elipsis memotong justru
+bagian yang membedakannya dari tetangganya, pada seluruh sembilan belas judul
+sekaligus. Yang dibayar dengan membungkus satu baris tinggi; yang dibayar
+dengan memotong adalah kemampuan memilih.
+
+**Baris perkakas navbar tidak boleh meluber, dan yang TIDAK BOLEH menyusut
+adalah `#rel-alih`.** Di 360 px baris itu pernah 369 px di dalam 360 px layar,
+dan yang dikorbankan mesin flex justru tombol menunya — satu-satunya jalan ke
+sebelas bahasa, Pengaturan, Statistik, Bookmark, dan Catatan — sampai jadi
+20 px dengan tepi kanan di luar layar. Ia sekarang `flex: none`, dan yang
+dibuang untuk memberi ruang `#tombol-bantuan`: isinya daftar PINTASAN PAPAN
+KETIK, dan di perangkat sentuh tidak ada papan ketik. Menambah perkakas baru
+di baris itu berarti menghitung ulang 360 px.
+
+**Layar mengembalikan `konteks`, bukan `jejak`.** Remah roti sudah tidak ada.
+Penggantinya satu strip tempel (`#konteks`) yang dibangun router dari objek
+`konteks` yang dikembalikan tiap layar: `{balik, bab, judul, posisi, persen,
+langkah, sebelum, sesudah}`. Layar yang TIDAK punya posisi (dasbor, statistik,
+pengaturan, bookmark, catatan, cari, ruang coba) mengembalikannya `undefined`,
+dan stripnya tidak dirender sama sekali — 44 piksel itu kembali jadi milik
+isinya. Alasannya bukan estetika: remah roti lama berbunyi "Belajar › HTML ›
+3. Struktur Dokumen", dan dua dari tiga ruasnya mengulang judul yang sudah
+tertulis besar-besar tepat di bawahnya.
+
+Konsekuensi yang mengikat: apa pun yang sudah dibawa strip TIDAK boleh digambar
+lagi di badan halaman. Tautan "kembali ke bahasa" dan tombol maju/mundur cuma
+ada di strip — itu sebabnya pembaca materi kehilangan `.materi-balik` dan ruang
+kerja latihan kehilangan kaki "latihan sebelumnya/berikutnya".
+
+**Jangan pernah memakai `scrollIntoView` untuk menggulir jalur materi.** Ia
+menggulir SEMUA leluhur yang bisa digulir, termasuk dokumen — jadi membuka
+materi ke-13 lewat navigasi dalam aplikasi mendaratkan pembacanya sembilan
+ratus piksel di bawah judul, di tengah kalimat, pada halaman yang belum pernah
+ia lihat. Penggantinya `bawaKeTengah()` di `layar-belajar.js`, yang cuma
+menyentuh `scrollTop`/`scrollLeft` wadahnya.
+
+Pasangannya `saatSiap()`: layar dibangun UTUH sebelum router menempelkannya,
+dan router masih menunggu animasi keluar layar sebelumnya. Jadi apa pun yang
+diukur di `requestAnimationFrame` polos bisa mengembalikan nol — dan yang
+terjadi bukan error melainkan jalur yang diam-diam berhenti di butir pertama,
+cuma di sebagian pemuatan, tergantung frame mana yang menang.
+
+**Bab memakai `<details>/<summary>`, dan `@media print` wajib memaksanya
+terbuka.** Melipat adalah cara menghemat ruang LAYAR; di kertas tidak ada yang
+bisa diklik untuk membukanya lagi, jadi halaman cetak yang kehilangan separuh
+isinya adalah halaman yang salah. Aturannya di kaki gaya.css (`.bab-isi`,
+`.bantuan-isi`).
+
+Yang tertutup secara bawaan cuma bab yang BUKAN sedang dikerjakan, dan
+kepalanya tidak pernah ikut terlipat: nomor, judul, tingkat, kemajuan, dan
+alasan kuncinya semuanya ada di `<summary>`. Aturan "bab yang terkunci tetap
+DITAMPILKAN" tetap utuh — yang disembunyikan cuma daftar judul materi yang
+memang belum boleh dibuka. Peta bab (`.peta-bab`) menggantikan gulungan lima
+ribu piksel sebagai jawaban atas "ada berapa bab dan aku di mana".
+
+**Empat keadaan memakai SATU komponen: `keadaan()` di inti.js.** Kosong,
+berhasil, gagal, dan terkunci dulu punya bentuknya sendiri-sendiri — empat
+bentuk untuk satu pekerjaan yang sama ("tidak ada apa-apa di sini, dan inilah
+sebabnya"), dan tiga di antaranya cuma muncul sekali-sekali, persis frekuensi
+yang membuat sebuah bentuk tidak pernah sempat dikenali. Yang membedakan
+keempatnya sekarang cuma warna garis kiri dan ikonnya.
+
+**`--baca` dan `--t-baca` diturunkan dari satu angka, `--baca-skala`.** Satuan
+`ch` diukur terhadap font-size ELEMENNYA SENDIRI, jadi 72ch di dalam prosa
+1,06rem sama dengan 76,32ch di dalam grid 1rem. Kolom tengah pembaca materi
+dipatok tepat selebar kolom bacanya (`calc(var(--baca) * var(--baca-skala))`),
+dan satu-satunya cara angka itu tidak pernah meleset adalah dengan menurunkan
+keduanya dari satu nilai. Versi sebelumnya memberi kolom tengah SELURUH sisa
+ruang lalu membatasi prosanya di dalamnya — menyisakan 243 piksel kosong antara
+akhir kalimat dan peta di kanan, dan jurang itu melebar makin lebar jendelanya.
+
+**Dasbor punya DUA keadaan, dan yang kedua bukan hiasan.** Profil dengan
+`xp === 0` mendapat `layarMulai()`, bukan dasbor biasa yang kebetulan semua
+angkanya nol. Dasbor biasa untuk profil baru berbunyi begini: heatmap 182 hari
+yang seluruhnya dingin, sebelas kartu bahasa yang semuanya "0% · 0/44 materi",
+"streak terputus", dan "0/22 badge" — katalog kegagalan yang bahkan belum
+sempat dilakukan, dan tidak satu pun darinya menjawab pertanyaan yang sebenarnya
+dibawa orang itu, yaitu "aku mulai dari mana". Pintu pertamanya datang dari
+`saran.py`, bukan dari tebakan di JS: antrean "habis ini ngapain" sudah punya
+satu tempat tinggal.
+
+Bentuknya sekarang: satu saran yang menonjol, lalu SELURUH bahasa sebagai ubin
+yang bisa dibandingkan, lalu Ruang Coba sebagai pintu yang sengaja tenang.
+Tiga hal yang mengikat kalau layar itu disentuh lagi:
+
+* **Tidak ada penomoran pada pilihan yang saling menggantikan.** Versi
+  sebelumnya menomori tiga pintunya 1-2-3. Nomor di aplikasi ini berarti
+  URUTAN — nomor bab, nomor materi, nomor langkah — dan itulah seluruh gunanya
+  sebagai arsitektur; memakainya untuk tiga alternatif membuatnya terbaca
+  "kerjakan 1, lalu 2, lalu 3".
+* **Angkanya dihitung dari `ctx.awal.bahasa`, tidak diketik.** Kalimat
+  sambutan yang menyebut "sebelas bahasa" adalah kalimat yang suatu hari
+  berbohong tanpa satu pun tes gagal.
+* **Aturan babnya datang dari `ctx.awal.aturan_bab`, tidak ditulis ulang.**
+  Layar ini dulu memuat rumusannya sendiri — persis hal yang dilarang di
+  "Kalimat aturannya tinggal di `bab.KALIMAT_ATURAN`" di atas. Daftar
+  tingkat (Dasar/Menengah/Mahir beserta keterangannya) juga datang dari sana.
+
+Baris ketiga tiap ubin menjawab satu pertanyaan yang memang jadi sumbu
+keputusan pemula — berapa banyak yang harus dipasang sebelum kodenya bisa
+dijalankan — dan ketiga tingkatnya dihitung dari jawaban server, bukan
+ditebak: `!siap` → "butuh go"; `siap && !pasang` → "tanpa pasang apa pun"
+(cuma HTML & CSS); sisanya "siap dijalankan". Yang belum siap TETAP
+ditampilkan dan tetap bisa dibuka — materi dan kuisnya jalan penuh — dan
+ditandai sebelum diklik, bukan sesudah.
+
 **Satu layar, satu tindakan utama.** Kartu `.lanjutkan` adalah satu-satunya
-permukaan yang memakai amber sebagai LATAR, bukan sekadar garis atau teks.
-Menambah yang kedua di layar yang sama tidak membuat dua hal penting — ia
-membuat nol.
+permukaan yang memakai warna aksen sebagai LATAR, bukan sekadar garis atau
+teks. Menambah yang kedua di layar yang sama tidak membuat dua hal penting —
+ia membuat nol. Teks di atas permukaan beraksen memakai token
+`--di-atas-aksen`, bukan nilai gelap yang ditulis ulang per komponen: di tema
+terang aksennya sendiri sudah gelap, dan menuliskannya manual sudah pernah
+menghasilkan huruf gelap di atas hijau gelap — 2,5:1, praktis tak terbaca.
 
 **Tingkat "halus" harus tetap menjawab sentuhan.** Umpan balik tekan adalah
 satu-satunya alasan tingkat tengah itu ada; kalau ia ikut padam, "halus" tidak
@@ -397,6 +682,174 @@ gampang terlupa, dan melupakannya berarti tes menimpa jawaban asli pengguna di
 `~/belajar-ngoding/kerjaanku`. Lihat `test_web.BasisWeb`. Jangan lupa
 `konfigurasi.lupakan_cache()`: modul itu menyimpan isinya di memori.
 
+**Yang berlaku untuk tes berlaku juga untuk MENCOBA APLIKASINYA.** Menjalankan
+`belajar-web.py` lalu mengeklik-klik untuk memeriksa sesuatu menulis ke berkas
+progres yang SAMA dengan yang dipakai pemiliknya — satu latihan yang
+"cuma dicoba" berarti XP, badge, dan streak yang tidak pernah ia kerjakan,
+plus sebuah berkas jawaban di `~/belajar-ngoding/kerjaanku` berisi kode yang
+bukan tulisannya. Progres di sini catatan belajar sungguhan, bukan data uji.
+Untuk memeriksa apa pun, nyalakan dengan profil terpisah:
+
+```bash
+S=$(mktemp -d)
+BELAJAR_PROGRESS_FILE=$S/p.json BELAJAR_CONFIG_FILE=$S/k.json \
+BELAJAR_CATATAN_FILE=$S/c.json BELAJAR_WORKSPACE=$S/kerja \
+  python3 belajar-web.py --tanpa-browser --port 7788
+```
+
+**Jangan panggil `replaceChildren` di luar `inti.js`; pakai `isikan()`.**
+Seluruh sisi web memakai pola `syarat ? h(...) : null`, dan `h()` menyaring
+`null` lewat `tambah()`. `replaceChildren` bawaan DOM TIDAK: ia mengubah `null`
+jadi simpul teks, dan kata "null" muncul di halaman tanpa satu pun error di
+konsol. Sudah terjadi di layar kuis (dua kali) dan bookmark, dan bertahan
+sekian lama justru karena tidak ada yang rusak — cuma sebuah kata asing di
+tempat yang tidak seorang pun curigai. `isikan()` lewat `tambah()` yang sama.
+Dijaga `test_web.TestBerkasStatik`.
+
+**Komponen yang menyetel `display` sendiri wajib mengembalikan `[hidden]`.**
+`display` di sebuah kelas mengalahkan aturan `[hidden]` bawaan browser, jadi
+`el.hidden = true` pada sebuah `.tbl` tidak menyembunyikan apa pun. Akibatnya
+kebalikan dari maksud penulisnya, dan diam. Lihat baris `.tbl[hidden]` di
+gaya.css.
+
+**`webapp/statik/js/package.json` bukan proyek npm dan tidak boleh dihapus.**
+Isinya cuma `{"type": "module"}`. Tanpa itu Node membaca `*.js` di sana sebagai
+CommonJS, dan dua tes yang menjalankan kode ini langsung — `TestMesinGerak` dan
+`TestPenyorotJavaScript` — GAGAL dengan "Cannot use import statement outside a
+module" alih-alih skip. Tes yang merah karena alasan yang tidak ada hubungannya
+dengan isinya adalah tes yang berhenti dibaca, dan yang ikut tenggelam adalah
+kegagalan berikutnya yang sungguhan.
+
+**Apa yang DILIHAT pelajar tidak selalu sama dengan apa yang DINILAI.**
+HTML dan CSS dinilai lewat pohon strukturnya (`struktur.py`) karena keduanya
+tidak mencetak apa pun, dan itu keputusan yang benar untuk penilaian. Tapi
+orang yang baru menulis `<h1>Halo, Dunia!</h1>` lalu menekan Jalankan ingin
+melihat tulisan Halo Dunia — bukan daftar menjorok berisi nama tag yang baru
+saja ia ketik sendiri. Yang dibutuhkan untuk menampilkannya sudah ada di
+ruangan: browsernya sendiri.
+
+Karena itu kartu keluaran punya dua tab, Tampilan lebih dulu dan Struktur di
+sebelahnya. Pohonnya WAJIB tetap ada — ia yang dinilai, dan ia juga satu-
+satunya cara melihat apa yang browser TEBAK dari markup yang tag penutupnya
+lupa ditulis. Aturannya di `statik/js/pratinjau.js`:
+
+* **Bingkainya `sandbox="allow-scripts"` TANPA `allow-same-origin`.** Itu
+  aturan yang diajarkan kurikulum ini sendiri di materi HTML 13: memberi
+  keduanya sekaligus untuk berkas se-asal membuat sandbox-nya sia-sia.
+* **Tidak boleh `loading="lazy"`.** Kartu keluaran hampir selalu lahir di bawah
+  lipatan layar, jadi bingkai bermuat-malas menerima dokumen KOSONG lebih
+  dulu, mengukurnya, dan melapor 8px.
+* **Tidak boleh `transition: height`.** Tingginya digerakkan JS dari hasil
+  pengukuran di dalam — menambah transisi berarti dua mesin menggerakkan satu
+  properti (lihat "Satu properti, satu mesin"), dan di sini umpan baliknya
+  nyata: selama transisi, bingkai sementara lebih pendek daripada isinya,
+  pengukur di dalam melihatnya meluber, lalu meminta tumbuh lagi.
+* **Tingginya diukur dari tepi bawah anak-anak body**, bukan `scrollHeight`
+  documentElement (melingkar: `<html>` mengisi bingkainya) dan bukan kotak
+  body (margin atas `<h1>` kolaps keluar, jadi kurang).
+* **CSS murni dikenakan pada halaman yang DIBUATKAN dari pemilihnya sendiri,
+  dan halaman itu wajib mengaku dibuatkan.** Tanpa kalimat pengakuannya, yang
+  terlihat pelajar adalah markup yang tidak pernah ia tulis dan tidak akan
+  pernah ia temukan lagi di mana pun. Blok CSS yang sudah memuat markup
+  (11 dari 40) dipratinjau apa adanya.
+
+**Soal latihan lewat pengurai yang SAMA dengan badan materi.** Dulu ia dikirim
+sebagai satu blok teks dan digambar dengan `white-space: pre-line`, yang
+meruntuhkan deretan spasi — padahal hampir semua soal memuat contoh keluaran
+berkolom, dan perataan kolom itulah yang menerangkan apa yang harus dicetak.
+Dua hal yang gampang terlupa kalau ini disentuh lagi: `api.latihan` mengirim
+`soal_blok`, dan `blokProsa()` di `layar-belajar.js` adalah SATU-SATUNYA
+perender blok prosa — menyalinnya ke layar lain berarti suatu hari keduanya
+berbeda tanpa ada yang menyadarinya.
+
+### Proyek akhir
+
+Tiap bahasa ditutup satu latihan bertanda `proyek: True`. Ia latihan biasa di
+mata seluruh mesin — dinilai `runner.periksa` yang sama, XP dari `progress`
+yang sama — karena definisi "lulus" cuma boleh ada satu. Yang ditambahkan cuma
+penandanya, dan penanda itu mengalir lewat `isi.daftar_latihan` ->
+`api.latihan` -> dua permukaan di web.
+
+**Bentuknya wajib berbeda-beda, dan itu bukan soal selera.** Sebelas proyek
+yang semuanya "kumpulkan data lalu cetak laporan" menguji satu keterampilan
+sebelas kali, dan pelajar yang lulus sebelas-belasnya masih belum pernah
+menulis simulasi, parser, atau program berkonkurensi. Yang ada sekarang:
+
+| Bahasa | Bentuk |
+|---|---|
+| Python | agregasi & laporan (class, exception, dict) |
+| Java | simulasi bertahap (state machine, Deque, enum) |
+| JavaScript | pengurai teks (regex, Map, reduce) |
+| C | algoritma & pointer (BFS, malloc/free, telusur balik) |
+| C++ | parser rekursif (pohon sintaks, unique_ptr, exception) |
+| SQL | analitik (JOIN, CTE, window function, anti-join) |
+| Bash | pipeline berkas (mktemp, trap, find, case) |
+| HTML | halaman utuh (struktur semantik, aksesibilitas) |
+| CSS | sistem tata letak (token, flex, grid, media query) |
+| Go | konkurensi (goroutine, channel, WaitGroup) |
+| Bikin Aplikasi | lapisan aplikasi (domain/repo/service/antarmuka) |
+
+Semuanya dinilai otomatis dan lolos `test_solutions`. Konsekuensi yang
+mengikat: solusinya harus DETERMINISTIK, dan untuk Go itu berarti hasil dari
+goroutine WAJIB diurut sebelum dicetak — urutan kedatangannya memang tidak
+pasti, dan itu sifat konkurensi, bukan bug yang bisa diperbaiki.
+
+### Membaca badan materi (`isi.blok_badan`)
+
+Di sumbernya `body` cuma daftar baris polos, dan penulis memakai indentasi
+untuk dua hal yang sangat berbeda: **menyejajarkan kolom** (tabel, contoh kode)
+dan **menandai "ini penjelasan di bawah kalimat tadi"**. Pengurainya dulu
+memeriksa indentasi LEBIH DULU daripada penanda daftar, jadi keduanya berakhir
+sama: blok monospace abu-abu. 664 daftar dan 181 paragraf biasa tampil persis
+seperti contoh kode — dan yang hilang bukan keindahan melainkan sinyal, karena
+satu-satunya pembeda "ini perlu kamu ketik" dari "ini perlu kamu paham" adalah
+bentuknya.
+
+Aturan yang sekarang mengikat:
+
+* **Penanda diperiksa sebelum indentasi, dan harus diikuti TEPAT SATU spasi.**
+  Angkanya bukan selera: dari 449 blok berpenanda, 446 memakai satu spasi, dan
+  ketiga sisanya justru BUKAN daftar melainkan tabel yang kolom pertamanya
+  kebetulan sebuah bintang (`  *  perkalian        a * b`).
+* **Baris menjorok tanpa penanda di tengah daftar adalah LANJUTAN butirnya,
+  bukan butir baru.** Pemenggalan baris di sumber cuma jejak lebar berkasnya;
+  memperlakukannya sebagai butir memecah satu kalimat jadi beberapa bulatan di
+  tempat yang tidak ada hubungannya dengan artinya.
+* **Kecuali kalau ia menjorok lebih dalam daripada kolom teks butirnya, atau
+  kolomnya disejajarkan spasi ganda.** Itu contoh milik butir itu, dan
+  perataannya ADALAH isinya. Urutan prosa/contoh di dalam satu butir
+  dipertahankan apa adanya, karena prosa penutup sering menunjuk contoh di
+  atasnya ("Hanya mengenai satu elemen itu").
+* **Paragraf disambung jadi satu baris, bukan dipertahankan patahannya.**
+  Baris di sumber dibungkus untuk terminal 80 kolom (median 68 huruf, p90 81)
+  sedangkan kolom baca di layar 72ch — jadi sebagian patah terlalu cepat dan
+  sisanya terbungkus ulang. Kecualinya 7 blok yang kolomnya sejajar.
+* **Kata yang terpenggal di ujung baris disambung tanpa spasi.** Ke-18
+  kasusnya kata ulang ("diam-diam", "benar-benar"), jadi tanda hubungnya bagian
+  dari katanya dan yang salah cuma spasinya.
+* **Ragu berarti TETAP kode.** Sisi salahnya sengaja dipilih: menyangka prosa
+  sebagai kode cuma mempertahankan keadaan lama, sedangkan menyangka kode
+  sebagai prosa MENGHAPUS perataan yang jadi isinya. Karena itu `_prosa_menjorok`
+  menuntut minimal dua baris, ditutup tanda titik, tanpa ciri kode, dan padat
+  kata biasa — dari 420 calon cuma 181 yang lolos.
+
+Semuanya dijaga `test_web.TestPenyajianIsi`, dan
+`test_web.TestIsiSamaDenganTerminal` tetap mengadu SELURUH baris body di
+SELURUH kurikulum supaya tidak ada kalimat yang hilang saat dirapikan.
+
+**Blok kode di halaman materi bisa dijalankan dan disunting DI TEMPAT.**
+Tombolnya dulu melempar ke Ruang Coba — layar lain, alamat lain, dan kembali
+berarti kehilangan posisi baca. Untuk pertanyaan sekecil "keluarnya apa kalau
+ini dijalankan?", ongkos itu jauh lebih besar daripada pertanyaannya, dan yang
+terjadi bukan orang membayarnya melainkan orang berhenti bertanya. Dua syarat
+tombolnya, dan KEDUANYA jawaban server, bukan tebakan: `bisa_dijalankan` dari
+`berkas.py` dan `siap` dari `runner.py` — tombol yang selalu berakhir dengan
+"belum terpasang" adalah tombol yang berujung penolakan. Yang dipanggil
+`/api/coba`, yang memang tidak menyentuh progres sama sekali: definisi "lulus"
+tetap cuma satu dan tempatnya `runner.periksa`. Editor sisipannya WAJIB dilepas
+di `saatKeluar` — kalau tidak, pendengar papan ketik dan pengamat ukurannya
+hidup terus di belakang layar berikutnya.
+
 ## Menambah bahasa
 
 1. Buat `data/<key>_materials.py`, `_quizzes.py`, `_exercises.py`.
@@ -406,7 +859,12 @@ gampang terlupa, dan melupakannya berarti tes menimpa jawaban asli pengguna di
    sebagai satu bab raksasa berisi semuanya — jalur cadangan yang sengaja ada
    supaya tidak ada materi yang hilang, tapi bukan yang diinginkan.
 4. Kalau kodenya perlu dijalankan, tambah `Toolchain` di `runner.TOOLCHAINS`.
-5. Kalau perlu penyorotan, tambah aturan di `sorot.py`.
+5. Kalau perlu penyorotan, tambah aturan di `sorot.py`. Kalau aturannya sama
+   dengan bahasa lain, SALIN objeknya (`copy.copy`), jangan menunjuk objek yang
+   sama. `bahasa_didukung()` membuang duplikat berdasarkan `id()` -- begitulah
+   ia menyaring alias seperti `sh` dan `shell` -- jadi bahasa yang menunjuk
+   objek milik bahasa lain lenyap dari daftar yang dikirim ke editor web lewat
+   `/api/awal`, dan kodenya tampil polos tanpa satu pun pesan galat.
 
 `test_data.py` otomatis ikut memvalidasi konten baru.
 
@@ -415,7 +873,10 @@ gampang terlupa, dan melupakannya berarti tes menimpa jawaban asli pengguna di
 ```python
 {
     "title": "Latihan 1: ...",       # unik dalam satu bahasa
-    "difficulty": "Mudah",           # Mudah | Sedang | Menengah | Sulit
+    "difficulty": "Mudah",           # Mudah | Menengah | Lanjut | Sulit
+                                     # DAFTARNYA di TINGKAT_VALID (tests/test_data.py).
+                                     # "Sedang" TIDAK sah -- dokumen ini dulu menyebutnya,
+                                     # dan delapan latihan Fedora ditulis salah karenanya.
     "question": ["baris soal", ...],
     "hints": ["hint 1", ...],
     "solution": "...",               # program lengkap, deterministik
@@ -454,19 +915,49 @@ berjalan dengan hak akses user yang sama.
 
 ## Lingkungan mesin ini
 
-Terpasang: `python3` `node` `javac/java` `gcc` `g++` `sqlite3` `bash`.
-**Belum ada: `go`.** Latihan Go tetap ada tapi tidak terverifikasi kecuali Go
-dipasang. Kalau perlu memverifikasi konten Go, pasang sementara:
+Fedora 44 Workstation. Terpasang bawaan: `python3` `node` `javac/java` `gcc`
+`g++` `sqlite3` `bash` `ruby`.
 
-```bash
-curl -sL -o /tmp/go.tar.gz https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
-mkdir -p /tmp/goroot && tar -xzf /tmp/go.tar.gz -C /tmp/goroot --strip-components=1
-PATH=/tmp/goroot/bin:$PATH GOCACHE=/tmp/gocache python3 -m unittest tests.test_solutions
-```
+**Tujuh toolchain TIDAK ada bawaan**, dan tanpa semuanya `test_solutions`
+melewati 111 dari 303 latihan sambil tetap melaporkan OK — jadi "tesnya hijau"
+bisa berarti "tesnya tidak dijalankan":
 
-Ekstrak ke direktori BERSIH. Mengekstrak ke atas instalasi Go lain akan
+| Butuh | Untuk |
+|---|---|
+| `go` | Go |
+| `dotnet` | C# dan Visual Basic |
+| `rustc` | Rust |
+| `php` | PHP |
+| `kotlinc` + `kotlin` | Kotlin |
+| `tsc` | TypeScript |
+
+Pasang sementara ke satu direktori BERSIH, lalu satukan PATH-nya di satu
+berkas yang bisa di-source ulang. Ekstrak ke atas instalasi lain akan
 mencampur berkas antar versi dan menghasilkan error kompilasi yang menyesatkan
 di dalam standard library.
+
+```bash
+# contoh: Go
+curl -sL -o /tmp/tc/go.tgz "https://go.dev/dl/$(curl -s https://go.dev/VERSION?m=text | head -1).linux-amd64.tar.gz"
+tar -xzf /tmp/tc/go.tgz -C /tmp/tc          # menghasilkan /tmp/tc/go/bin
+```
+
+```bash
+# /tmp/tc/env.sh -- sumberkan sebelum menjalankan suite lengkap
+export DOTNET_ROOT=/tmp/tc/dotnet
+export PATH="/tmp/tc/go/bin:/tmp/tc/dotnet:/tmp/tc/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/tmp/tc/kotlinc/bin:/tmp/tc/ts/node_modules/.bin:/tmp/tc/php:$PATH"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
+export GOCACHE=/tmp/tc/gocache GOPATH=/tmp/tc/gopath
+```
+
+Dengan ketujuhnya terpasang, `python3 -m unittest discover -s tests` menjalankan
+774 tes tanpa satu pun skip dan makan **sekitar 23 menit** -- hampir semuanya
+kompilasi .NET dan Kotlin. Jalankan di latar belakang, jangan ditunggu.
+
+Catatan .NET: `DOTNET_EnableWriteXorExecute=0` sudah dipasang di
+`runner.TOOLCHAINS`. Tanpa itu .NET 7+ membuat pemetaan ganda W^X yang
+menabrak RLIMIT_FSIZE 16 MB milik runner, dan yang terlihat adalah proses
+dibunuh tanpa pesan yang menyebut memori sama sekali.
 
 ## Lokasi data pengguna
 

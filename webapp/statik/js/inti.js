@@ -18,6 +18,7 @@ import {
   animasi, masuk, keluar, tata, saatTampak, percikBara, denyut, jepit,
   adaGerak, PEGAS,
 } from "./gerak.js";
+import { ikon } from "./ikon.js";
 
 /* -------------------------------------------------------------------- API */
 
@@ -66,7 +67,7 @@ function tawarkanMuatUlang() {
   if (tawaranTampil) return;
   tawaranTampil = true;
   const kotak = sorak("", "nyala", 600);
-  kotak.replaceChildren(
+  isikan(kotak,
     h("span", {}, "Server dinyalakan ulang. Muat ulang halaman untuk lanjut."),
     h("button.tbl.tbl-kecil.tbl-utama",
       { onclick: () => location.reload() }, "Muat ulang"));
@@ -143,6 +144,22 @@ export function tambah(induk, anak) {
 export function kosongkan(el) {
   while (el.firstChild) el.removeChild(el.firstChild);
   return el;
+}
+
+/* Ganti seluruh isi sebuah elemen — versi `tambah()` dari `replaceChildren`.
+ *
+ * Bedanya cuma satu, dan itu bukan kenyamanan melainkan pencegah bug yang
+ * SUDAH pernah terjadi: `replaceChildren` bawaan DOM mengubah `null` jadi
+ * simpul teks berbunyi "null". Pola yang dipakai di seluruh berkas ini —
+ * `syarat ? h(...) : null` — karena itu aman di dalam `h()` (yang menyaringnya
+ * lewat `tambah`) tapi bocor ke layar begitu dipasang langsung sebagai
+ * argumen `replaceChildren`. Yang terlihat pelajar adalah kata "null"
+ * mengambang di halaman kuis dan bookmark, tanpa satu pun error di konsol.
+ *
+ * Aturannya: di luar berkas ini, jangan pernah panggil `replaceChildren`
+ * sendiri. Dijaga tests/test_web.TestBerkasStatik. */
+export function isikan(el, ...anak) {
+  return tambah(kosongkan(el), anak);
 }
 
 /* Penomoran id untuk menghubungkan <label> dengan medan isiannya.
@@ -478,7 +495,7 @@ function tampilNaikLevel(hadiah) {
  *  Lebarnya SELALU disetel ke nilai akhirnya di gaya inline; animasinya cuma
  *  berangkat dari 0. Jadi kalau gerak dimatikan, atau animasinya dibatalkan di
  *  tengah, yang tertinggal tetap angka yang benar. */
-export function bilah(persen, kelas = "") {
+export function bilah(persen, kelas = "", { diam = false } = {}) {
   const p = jepit(Number(persen) || 0, 0, 100);
   const isi = h("i", { gaya: { width: p + "%" } });
   const el = h("div.bilah" + (kelas ? "." + kelas : ""),
@@ -494,14 +511,51 @@ export function bilah(persen, kelas = "") {
     return el;
   };
 
-  saatTampak(el, () => {
-    animasi(isi, { width: ["0%", p + "%"] }, { pegas: "panjang" });
-  }, { bagian: 0.2 });
+  // `diam` untuk bilah yang tinggal di perkakas tetap — strip konteks. Di
+  // sana ia digambar ulang SETIAP kali halaman berganti, dan bilah yang
+  // mengisi dari nol pada tiap perpindahan bukan lagi umpan balik melainkan
+  // kedipan di sudut mata orang yang sedang membaca. Nilainya tetap benar;
+  // yang dilepas cuma gerakan masuknya.
+  if (!diam) {
+    saatTampak(el, () => {
+      animasi(isi, { width: ["0%", p + "%"] }, { pegas: "panjang" });
+    }, { bagian: 0.2 });
+  }
   return el;
 }
 
+/** Satu komponen untuk EMPAT keadaan: kosong, berhasil, gagal, terkunci.
+ *
+ *  Sebelumnya keempatnya punya bentuknya sendiri-sendiri — `.kosong`
+ *  bergaris putus-putus, `.tuntas` berbingkai hijau, kegagalan muat berupa
+ *  kepala halaman biasa, dan layar penolakan 403 berupa kartu bab. Empat
+ *  bentuk untuk satu pekerjaan yang sama ("tidak ada apa-apa di sini, dan
+ *  inilah sebabnya") berarti pelajar harus belajar membacanya empat kali —
+ *  dan tiga dari empat itu cuma muncul sekali-sekali, persis frekuensi yang
+ *  membuat sebuah bentuk tidak pernah sempat dikenali.
+ *
+ *  @param jenis  "" | "tuntas" | "salah" | "kunci" | "kosong"
+ *  @param gambar nama ikon dari ikon.js; boleh kosong.
+ *  @param aksi   daftar elemen tombol; boleh kosong.
+ */
+export function keadaan({ jenis = "", gambar = "", judul, ket = "", aksi = [] }) {
+  return h("div.keadaan" + (jenis ? ".keadaan-" + jenis : ""), {},
+    gambar ? ikon(gambar, { ukuran: 22 }) : null,
+    h("div.keadaan-isi", {},
+      h("b", {}, judul),
+      ket ? h("p", {}, ket) : null,
+      aksi.length ? h("div.deret", {}, aksi) : null));
+}
+
+/** Keadaan kosong — bentuk khusus `keadaan()` yang ditengahkan, untuk ruang
+ *  yang seharusnya berisi sebuah daftar. */
 export function kosong(judul, ket, aksi) {
-  return h("div.kosong", {}, h("b", {}, judul), ket && h("div", {}, ket), aksi);
+  return keadaan({
+    jenis: "kosong",
+    judul,
+    ket,
+    aksi: aksi ? (Array.isArray(aksi) ? aksi : [aksi]) : [],
+  });
 }
 
 export function memuat(baris = 3) {

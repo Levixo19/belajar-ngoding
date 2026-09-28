@@ -29,12 +29,17 @@ Tidak ada satu pun paket yang perlu dipasang, jadi HTML dan CSS adalah dua
 bahasa yang latihannya bisa dinilai di komputer mana pun — bahkan yang tidak
 punya satu compiler pun.
 
-Dipakai runner.py lewat subprocess:
+Dipakai `inti/runner.py` lewat subprocess. Untuk memeriksa dengan tangan,
+dijalankan dari akar proyek:
 
-    python3 struktur.py html berkas.html
-    python3 struktur.py css  berkas.css
+    python3 inti/struktur.py html berkas.html
+    python3 inti/struktur.py css  berkas.css
 
-Keluar dengan kode 1 kalau markupnya rusak sampai tidak bisa dibaca.
+Kode keluarnya 2 kalau argumennya salah atau berkasnya tidak terbaca, dan 0
+untuk segala hal lain -- TERMASUK markup yang tag penutupnya lupa. Itu bukan
+kelalaian melainkan aturan: browser pun tidak menyatakan halaman gagal karena
+sebuah tag tidak ditutup, dan pelajar justru perlu melihat pohonnya untuk
+mengerti apa yang terjadi pada markup-nya. Keluhannya lewat stderr.
 """
 
 import html.parser
@@ -374,7 +379,11 @@ def _pemilih_rapi(pemilih):
 
 def main(argv):
     if len(argv) != 3 or argv[1] not in ("html", "css"):
-        print("pemakaian: struktur.py html|css BERKAS", file=sys.stderr)
+        # Jalurnya ditulis dari akar proyek, sama seperti docstring di atas:
+        # pesan pemulihan yang menyuruh perintah yang gagal lebih buruk
+        # daripada tidak ada pesan sama sekali.
+        print("pemakaian: python3 inti/struktur.py html|css BERKAS",
+              file=sys.stderr)
         return 2
     try:
         with open(argv[2], "r", encoding="utf-8", errors="replace") as f:

@@ -4693,7 +4693,605 @@ function bacaKetikan() {
         ],
     },
     {
-        "title": "31. Membaca Repo JavaScript Sungguhan",
+        "title": "31. Web API: Observer dan Animasi di Browser",
+        "sections": [
+            {
+                "body": [
+                    "Empat API di materi ini SEMUANYA hanya ada di browser - tidak ada",
+                    "document, tidak ada window, tidak ada elemen untuk diamati kalau kamu",
+                    "menjalankannya lewat 'node namaberkas.js'. Kodenya benar dan bisa",
+                    "kamu coba sungguhan, tapi caranya beda: tempel di Console browser",
+                    "(F12 -> tab Console) sambil membuka halaman apa pun, atau taruh di",
+                    "dalam tag <script> pada berkas .html lalu buka lewat server lokal",
+                    "(lihat materi HTML 'Menjalankan Halaman Sendiri'). Jangan berharap",
+                    "melihat baris 'akan mencetak ...' seperti materi lain - di sini yang",
+                    "menentukan kapan callback-nya berjalan adalah PERISTIWA di halaman",
+                    "(elemen masuk layar, ukurannya berubah, DOM-nya diubah), bukan urutan",
+                    "baris kode dari atas ke bawah.",
+                    "",
+                    "Kesamaan keempatnya: sebelum API ini ada, satu-satunya cara tahu",
+                    "'sesuatu berubah' adalah POLLING - mengecek berulang-ulang dengan",
+                    "setInterval atau event yang menembak puluhan kali per detik (scroll,",
+                    "resize). Observer membalik arahnya: kamu daftar sekali, browser yang",
+                    "memberitahumu PERSIS saat perubahannya terjadi, tidak lebih sering.",
+                    "Lebih hemat CPU, dan kodenya lebih pendek karena tidak ada lagi",
+                    "perhitungan 'apakah ini sudah berubah dari terakhir kali aku cek'.",
+                ],
+            },
+            {
+                "heading": "IntersectionObserver: tahu kapan elemen masuk layar",
+                "body": [
+                    "Masalah lama: mau tahu kapan sebuah <img> masuk area yang terlihat",
+                    "(supaya baru dimuat saat itu - lazy load), atau kapan tombol 'muat",
+                    "lagi' di ujung daftar terlihat (infinite scroll). Cara lama:",
+                    "",
+                    "  window.addEventListener('scroll', () => {",
+                    "      const rect = elemen.getBoundingClientRect();",
+                    "      const terlihat = rect.top < window.innerHeight && rect.bottom > 0;",
+                    "      // ...lalu apa yang dilakukan kalau terlihat",
+                    "  });",
+                    "",
+                    "getBoundingClientRect() memaksa browser MENGHITUNG ULANG layout saat",
+                    "itu juga (disebut 'layout thrashing' kalau dipanggil berkali-kali",
+                    "berturutan), dan event scroll bisa menembak puluhan kali per detik",
+                    "selama jari masih menggeser. Untuk satu elemen mungkin tidak terasa;",
+                    "untuk lima puluh kartu yang masing-masing dicek sendiri, halamannya",
+                    "patah-patah.",
+                    "",
+                    "IntersectionObserver membalik arahnya: daftar elemen yang mau",
+                    "diawasi SEKALI, browser memberitahu lewat callback hanya saat status",
+                    "'terlihat/tidak terlihat'-nya benar-benar berubah - dihitung di luar",
+                    "main thread, tidak memblokir apa pun.",
+                ],
+                "code": """// threshold: 0.5 -> callback jalan saat 50% tinggi elemen sudah terlihat
+const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+        // entry.isIntersecting: true selama syarat threshold terpenuhi
+        if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src;      // baru sekarang gambar sungguhan dimuat
+            observer.unobserve(img);        // sudah dimuat, tidak perlu diawasi lagi
+        }
+    }
+}, {
+    threshold: 0.5,     // 0 = sedikit saja masuk sudah dianggap terlihat, 1 = harus penuh
+    rootMargin: "100px" // "perluas" area amatan 100px, supaya mulai dimuat SEBELUM
+                         // benar-benar terlihat - pengguna tidak sempat lihat kotak kosong
+});
+
+// Daftarkan semua gambar yang src aslinya sengaja ditaruh di data-src dulu:
+// <img data-src="foto-besar.jpg" src="placeholder-buram.jpg">
+document.querySelectorAll("img[data-src]").forEach((img) => observer.observe(img));
+
+// Pola yang sama, dipakai untuk infinite scroll: amati elemen "sentinel"
+// (biasanya <div> kosong) di ujung paling bawah daftar.
+const sentinel = document.querySelector("#sentinel-akhir-daftar");
+const pemuatObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+        muatHalamanBerikutnya();   // fungsi milikmu sendiri, memanggil API/menambah elemen
+    }
+});
+pemuatObserver.observe(sentinel);""",
+            },
+            {
+                "heading": "MutationObserver: tahu kapan DOM diubah",
+                "body": [
+                    "Beda kasus: kamu tidak peduli posisi elemen di layar, tapi ISI atau",
+                    "STRUKTUR DOM yang berubah - elemen baru ditambahkan library pihak",
+                    "ketiga, atribut class berubah karena skrip lain, atau anak sebuah",
+                    "wadah dihapus. Tidak ada event bawaan untuk itu; jawabannya",
+                    "MutationObserver.",
+                ],
+                "code": """const wadah = document.querySelector("#daftar-notifikasi");
+
+const mo = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+        if (m.type === "childList" && m.addedNodes.length > 0) {
+            console.log(`${m.addedNodes.length} elemen baru ditambahkan`);
+        }
+        if (m.type === "attributes") {
+            console.log(`atribut '${m.attributeName}' berubah pada`, m.target);
+        }
+    }
+});
+
+mo.observe(wadah, {
+    childList: true,   // amati elemen anak yang ditambah/dihapus
+    attributes: true,  // amati perubahan atribut (class, style, data-*, dst)
+    subtree: true,     // ikut amati anak dari anak, bukan cuma anak langsung
+});
+
+// Berhenti mengamati kalau sudah tidak perlu - MutationObserver TIDAK
+// otomatis berhenti sendiri walau elemennya dihapus dari halaman.
+// mo.disconnect();""",
+            },
+            {
+                "heading": "ResizeObserver: tahu kapan UKURAN elemen berubah",
+                "body": [
+                    "window.addEventListener('resize', ...) cuma menembak saat jendela",
+                    "browser berubah ukuran. Tapi sebuah elemen bisa berubah ukuran tanpa",
+                    "jendelanya sama sekali bergerak - kontennya bertambah panjang,",
+                    "font-nya baru selesai dimuat, atau elemen tetangganya di-resize lewat",
+                    "CSS 'resize: both'. Untuk itu window resize tidak pernah menembak.",
+                    "ResizeObserver mengamati elemen tertentu, apa pun sebabnya berubah.",
+                ],
+                "code": """const kotak = document.querySelector("#kotak-elastis");
+
+const ro = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+        // contentBoxSize lebih akurat dari entry.target.offsetWidth di sini,
+        // karena sudah dihitung ULANG persis saat observer ini menembak.
+        const { inlineSize, blockSize } = entry.contentBoxSize[0];
+        console.log(`Ukuran baru: ${inlineSize}px x ${blockSize}px`);
+
+        // Contoh pemakaian: sembunyikan teks kalau kotaknya jadi terlalu sempit
+        entry.target.classList.toggle("terlalu-sempit", inlineSize < 200);
+    }
+});
+
+ro.observe(kotak);
+// ro.disconnect(); saat elemen tidak lagi butuh diawasi""",
+            },
+            {
+                "heading": "requestAnimationFrame: dibuat khusus untuk animasi",
+                "body": [
+                    "setInterval(fungsi, 16) TERLIHAT masuk akal untuk animasi 60fps",
+                    "(1000ms / 60 ~ 16.7ms), tapi tiga masalahnya nyata: interval tetap",
+                    "berjalan walau tab sedang tidak aktif (baterai laptop terkuras sia-",
+                    "sia untuk animasi yang tidak terlihat siapa pun), jadwalnya TIDAK",
+                    "disinkronkan ke refresh rate layar sungguhan (di layar 120Hz,",
+                    "animasi 60fps buatan setInterval terlihat patah), dan ia tidak",
+                    "memberi tahu waktu presisi kapan frame itu benar-benar digambar.",
+                    "",
+                    "requestAnimationFrame (disingkat rAF) memperbaiki ketiganya: browser",
+                    "sendiri yang memanggil callback-nya, PERSIS sebelum frame berikutnya",
+                    "digambar, otomatis berhenti/melambat saat tab tersembunyi, dan",
+                    "callback-nya menerima satu argumen - timestamp presisi tinggi",
+                    "(mikrodetik) sejak halaman dimuat.",
+                ],
+                "code": """let posisi = 0;
+let waktuMulai = null;
+let idFrame;
+
+function animasikan(timestamp) {
+    if (waktuMulai === null) waktuMulai = timestamp;
+    const berlalu = timestamp - waktuMulai;   // milidetik sejak animasi dimulai
+
+    // Gerak 100px per detik, dihitung dari WAKTU, bukan dari jumlah frame -
+    // supaya kecepatannya tetap sama di layar 60Hz maupun 144Hz.
+    posisi = (berlalu / 1000) * 100;
+    kotak.style.transform = `translateX(${posisi}px)`;
+
+    if (posisi < 300) {
+        // Pola yang selalu dipakai: rAF memanggil DIRINYA SENDIRI tiap frame.
+        // Tanpa baris ini, animasinya cuma jalan satu frame lalu berhenti.
+        idFrame = requestAnimationFrame(animasikan);
+    }
+}
+
+const kotak = document.querySelector("#kotak-animasi");
+idFrame = requestAnimationFrame(animasikan);
+
+// Batalkan kapan pun sebelum selesai, mis. saat pengguna pindah halaman:
+// cancelAnimationFrame(idFrame);""",
+            },
+            {
+                "heading": "Kapan pakai yang mana",
+                "body": [
+                    "Keempatnya sering tertukar karena sama-sama 'menunggu sesuatu",
+                    "terjadi', padahal yang ditunggu berbeda total:",
+                    "",
+                    "  IntersectionObserver  elemen masuk/keluar AREA TERLIHAT",
+                    "                        (lazy load, infinite scroll, animasi",
+                    "                        muncul saat di-scroll ke)",
+                    "  MutationObserver      DOM berubah - elemen/atribut ditambah,",
+                    "                        dihapus, atau diubah",
+                    "  ResizeObserver        UKURAN sebuah elemen berubah, apa pun",
+                    "                        sebabnya (bukan cuma jendela browser)",
+                    "  requestAnimationFrame BUKAN observer - dipakai saat KAMU sendiri",
+                    "                        yang mengubah sesuatu berulang-ulang demi",
+                    "                        efek gerak (animasi, game, drag-and-drop)",
+                    "",
+                    "JEBAKAN yang sering: memakai MutationObserver untuk mendeteksi",
+                    "elemen yang 'masuk layar' (bisa, tapi jauh lebih mahal dan rumit -",
+                    "itu tugas IntersectionObserver), atau memakai setInterval untuk",
+                    "animasi visual halus (selalu pakai requestAnimationFrame). Dan",
+                    "keempatnya SELALU perlu 'disconnect()'/'unobserve()' saat elemennya",
+                    "tidak lagi ada di halaman - observer yang lupa dilepas terus",
+                    "menyimpan rujukan ke elemen lama dan mencegahnya dibersihkan garbage",
+                    "collector (memory leak).",
+                ],
+            },
+        ],
+    },
+    {
+        "title": "32. Web API: Geolocation, Clipboard, dan Perangkat",
+        "sections": [
+            {
+                "body": [
+                    "Dua API di materi ini - Geolocation dan Clipboard - sama-sama hidup di",
+                    "objek navigator, dan sama-sama HANYA ada di browser sungguhan. Coba",
+                    "jalankan contoh di bawah dengan 'node file.js' dan yang keluar cuma:",
+                    "'ReferenceError: navigator is not defined'. Bukan salah ketik - navigator",
+                    "memang tidak pernah ada di Node, persis seperti document dan window di",
+                    "materi DOM Manipulation.",
+                    "",
+                    "Karena itu contoh kode di materi ini TIDAK dijalankan otomatis dan TIDAK",
+                    "'mencetak' apa pun yang bisa diperiksa di sini. Untuk mencobanya sungguhan",
+                    "kamu perlu: berkas HTML dibuka lewat server (http://localhost boleh,",
+                    "tapi begitu online HARUS https://), tombol yang benar-benar diklik, dan",
+                    "izin yang kamu setujui sendiri lewat popup browser. Tiga syarat itu",
+                    "bukan detail kecil - keduanya API yang menyentuh privasi (lokasi",
+                    "sungguhanmu, isi clipboard sistemmu), jadi browser sengaja mempersulit",
+                    "kode memanggilnya diam-diam.",
+                ]
+            },
+            {
+                "heading": "Geolocation: getCurrentPosition, sekali ambil posisi",
+                "body": [
+                    "navigator.geolocation.getCurrentPosition(sukses, gagal, opsi) memakai",
+                    "pola CALLBACK GANDA, bukan Promise - beda dari fetch di materi",
+                    "sebelumnya. Argumen pertama dipanggil kalau berhasil, argumen kedua",
+                    "kalau gagal atau ditolak. Tidak ada .then(), tidak ada await.",
+                    "",
+                    "Objek position yang diterima callback sukses:",
+                    "",
+                    "  position.coords.latitude   -> lintang, angka desimal",
+                    "  position.coords.longitude  -> bujur, angka desimal",
+                    "  position.coords.accuracy   -> radius ketidakpastian, dalam METER",
+                    "                               (bukan jaminan lokasinya presisi -",
+                    "                               accuracy 50 berarti 'kemungkinan besar",
+                    "                               di dalam radius 50 meter dari titik ini')",
+                    "",
+                    "Objek error yang diterima callback gagal SELALU punya .code, dan cuma",
+                    "tiga kemungkinan - hafalkan, karena browser tidak menerjemahkannya:",
+                    "",
+                    "  code 1  PERMISSION_DENIED   pengguna menolak (atau sudah pernah",
+                    "                              menolak dan browser tidak tanya lagi)",
+                    "  code 2  POSITION_UNAVAILABLE  GPS/jaringan tidak bisa menentukan lokasi",
+                    "  code 3  TIMEOUT             lebih lama dari opsi.timeout dan belum",
+                    "                              dapat jawaban",
+                    "",
+                    "Callback gagal BUKAN opsional. Pengguna boleh menolak izin kapan saja,",
+                    "jadi kode yang cuma menyediakan callback sukses akan diam total begitu",
+                    "ditolak - tidak error, tidak crash, cuma tidak melakukan apa-apa, dan",
+                    "pengguna tidak tahu kenapa tombolnya seperti tidak berfungsi.",
+                ],
+                "code": """// Dijalankan di browser, biasanya di dalam event klik tombol.
+function ambilLokasiSekali() {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {                          // callback SUKSES
+            const { latitude, longitude, accuracy } = position.coords;
+            console.log(`Lokasi: ${latitude}, ${longitude}`);
+            console.log(`Radius ketidakpastian: ${accuracy} meter`);
+        },
+        (error) => {                             // callback GAGAL - wajib ada
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    console.log("Kamu menolak izin lokasi.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    console.log("Lokasi tidak bisa ditentukan saat ini.");
+                    break;
+                case error.TIMEOUT:
+                    console.log("Waktu tunggu habis, coba lagi.");
+                    break;
+            }
+        },
+        {
+            enableHighAccuracy: true,   // minta GPS kalau ada, bukan cuma Wi-Fi/IP (lebih lambat & boros baterai)
+            timeout: 5000,               // ms, sebelum callback gagal dipanggil dengan code TIMEOUT
+            maximumAge: 0,                // 0 = jangan pakai posisi lama yang di-cache, selalu ambil baru
+        }
+    );
+}""",
+            },
+            {
+                "heading": "watchPosition: terus memantau, dan JEBAKAN kalau lupa clearWatch",
+                "body": [
+                    "getCurrentPosition mengambil SEKALI lalu selesai. watchPosition punya",
+                    "bentuk pemanggilan yang sama, tapi callback suksesnya dipanggil BERULANG",
+                    "kali, setiap browser mendeteksi posisi berubah - cocok untuk peta yang",
+                    "mengikuti pergerakan pengguna.",
+                    "",
+                    "  getCurrentPosition(...)  -> ambil sekali, selesai",
+                    "  watchPosition(...)       -> terus memantau, mengembalikan watchId (angka)",
+                    "  clearWatch(watchId)      -> WAJIB dipanggil untuk menghentikannya",
+                    "",
+                    "JEBAKAN paling nyata di API ini: watchPosition TIDAK berhenti sendiri.",
+                    "Kalau halaman berpindah bagian (mis. keluar dari tampilan peta) dan kamu",
+                    "lupa memanggil clearWatch, browser tetap memeriksa GPS terus-menerus di",
+                    "latar belakang - menguras baterai perangkat pengguna untuk sesuatu yang",
+                    "sudah tidak dipakai siapa pun. Ini setara lupa clearInterval, tapi",
+                    "akibatnya lebih terasa karena GPS jauh lebih boros daripada timer biasa.",
+                ],
+                "code": """let watchId = null;
+
+function mulaiPantauLokasi() {
+    if (watchId !== null) return;   // sudah jalan, jangan dobel
+    watchId = navigator.geolocation.watchPosition(
+        (position) => {
+            console.log("Posisi baru:", position.coords.latitude, position.coords.longitude);
+        },
+        (error) => console.log("Gagal memantau:", error.message),
+        { enableHighAccuracy: true }
+    );
+}
+
+function berhentiPantauLokasi() {
+    if (watchId === null) return;
+    navigator.geolocation.clearWatch(watchId);   // WAJIB - lihat JEBAKAN di atas
+    watchId = null;
+}
+
+// Dipasang di tombol "Mulai" dan "Berhenti", atau di titik halaman ditinggalkan:
+// tombolMulai.addEventListener("click", mulaiPantauLokasi);
+// tombolBerhenti.addEventListener("click", berhentiPantauLokasi);""",
+            },
+            {
+                "heading": "Clipboard API: menyalin dan membaca clipboard",
+                "body": [
+                    "navigator.clipboard.writeText(teks) dan navigator.clipboard.readText()",
+                    "keduanya mengembalikan Promise - beda dari Geolocation di atas, API ini",
+                    "cocok dipakai dengan await seperti fetch.",
+                    "",
+                    "  await navigator.clipboard.writeText(teks)   -> Promise<void>",
+                    "  await navigator.clipboard.readText()        -> Promise<string>",
+                    "",
+                    "Sebelum Clipboard API ada, satu-satunya cara menyalin teks lewat kode",
+                    "adalah document.execCommand('copy') - dan itu SELALU butuh trik: bikin",
+                    "<textarea> tersembunyi, isi dengan teksnya, .select() teksnya, baru",
+                    "panggil execCommand('copy'), lalu buang lagi elemennya. execCommand kini",
+                    "berstatus deprecated; Clipboard API menggantinya dengan satu pemanggilan",
+                    "async langsung, tanpa elemen DOM buatan.",
+                    "",
+                    "JEBAKAN yang sering menjebak: Clipboard API menuntut pemanggilannya",
+                    "terjadi dalam 'user gesture' - respons LANGSUNG dari interaksi pengguna",
+                    "seperti klik. Ini AMAN:",
+                    "",
+                    "  tombol.addEventListener('click', () => navigator.clipboard.writeText(teks));",
+                    "",
+                    "Ini SERING ditolak browser (silent reject, Promise-nya berakhir dengan",
+                    "error) karena gesture-nya sudah 'basi' saat clipboard dipanggil:",
+                    "",
+                    "  tombol.addEventListener('click', () => {",
+                    "      setTimeout(() => navigator.clipboard.writeText(teks), 1000);",
+                    "  });",
+                    "",
+                    "Menunggu Promise lain lebih dulu (mis. await fetch(...)) sebelum memanggil",
+                    "clipboard punya risiko yang sama di sebagian browser - jeda tunggunya",
+                    "bisa dianggap 'terlalu lama sejak klik terakhir'. Aturan amannya: panggil",
+                    "clipboard secepat mungkin di dalam handler klik, jangan setelah await lain.",
+                ],
+                "code": """// AMAN: dipanggil langsung dari handler klik.
+tombolSalin.addEventListener("click", async () => {
+    try {
+        await navigator.clipboard.writeText("teks yang mau disalin");
+        console.log("Tersalin ke clipboard.");
+    } catch (error) {
+        // Ditolak kalau izin belum diberikan, atau dipanggil di luar user gesture.
+        console.log("Gagal menyalin:", error.message);
+    }
+});
+
+tombolTempel.addEventListener("click", async () => {
+    try {
+        const teks = await navigator.clipboard.readText();
+        console.log("Dari clipboard:", teks);
+    } catch (error) {
+        console.log("Gagal membaca clipboard:", error.message);
+    }
+});""",
+            },
+            {
+                "heading": "Pola yang sama muncul di banyak Web API lain",
+                "body": [
+                    "Geolocation dan Clipboard bukan kasus istimewa. Minta-izin-dulu-baru-pakai",
+                    "adalah pola yang dipakai ulang di hampir semua Web API yang menyentuh hal",
+                    "sensitif: kamera/mikrofon (getUserMedia), dan notifikasi:",
+                    "",
+                    "  const izin = await Notification.requestPermission();",
+                    "  // izin bernilai 'granted', 'denied', atau 'default' (belum dijawab)",
+                    "  if (izin === 'granted') {",
+                    "      new Notification('Judul', { body: 'Isi pesannya' });",
+                    "  }",
+                    "",
+                    "Begitu satu pola ini dikuasai - callback ganda ATAU Promise, error yang",
+                    "wajib ditangani, dan syarat HTTPS + user gesture - API sensitif lain yang",
+                    "belum pernah kamu sentuh akan terasa familiar, bukan asing dari nol.",
+                ],
+            },
+        ],
+    },
+    {
+        "title": "33. Canvas API: Menggambar dengan JavaScript",
+        "sections": [
+            {
+                "body": [
+                    "Materi 'Canvas' di kurikulum HTML sudah mengenalkan elemen <canvas>",
+                    "sendiri: atributnya width/height BEDA dari CSS width/height (lihat",
+                    "materi itu kalau lupa kenapa). Yang belum dijawab: bagaimana caranya",
+                    "sesuatu benar-benar muncul di dalam kotak kosong itu. Jawabannya di",
+                    "sini, dan semuanya lewat JavaScript - tidak ada satu pun atribut HTML",
+                    "yang menggambar bentuk.",
+                    "",
+                    "PERINGATAN yang sama seperti dua materi Web API sebelumnya: kode di",
+                    "sini butuh <canvas> SUNGGUHAN yang tertanam di sebuah halaman HTML",
+                    "yang dibuka browser. Menempelnya ke 'node file.js' polos akan gagal",
+                    "di baris pertama - document tidak ada di Node.",
+                ],
+            },
+            {
+                "heading": "getContext(\"2d\"): kuasnya, bukan kanvasnya",
+                "body": [
+                    "Elemen <canvas> sendiri cuma kotak kosong. Semua perintah menggambar",
+                    "dikirim lewat OBJEK LAIN yang diminta dari kanvas itu - namanya",
+                    "'rendering context'. Sampai objek ini diminta, tidak ada satu pun",
+                    "method gambar yang bisa dipanggil.",
+                    "",
+                    "  const kanvas = document.querySelector(\"canvas\");",
+                    "  const ctx = kanvas.getContext(\"2d\");",
+                    "",
+                    "'2d' menegaskan JENIS context yang diminta - ada juga 'webgl' untuk",
+                    "grafis 3D, API yang jauh lebih rumit dan tidak dibahas di sini. Semua",
+                    "yang menggambar sesudah baris ini adalah method dan properti pada ctx,",
+                    "BUKAN pada elemen kanvas-nya langsung.",
+                ],
+            },
+            {
+                "heading": "Sistem koordinat: (0,0) di pojok KIRI ATAS",
+                "body": [
+                    "JEBAKAN pertama yang menjatuhkan hampir semua orang: di pelajaran",
+                    "matematika sekolah, sumbu Y bertambah ke ATAS. Di canvas, sumbu Y",
+                    "bertambah ke BAWAH, dan titik (0,0) ada di pojok KIRI ATAS kanvas -",
+                    "bukan di tengah, bukan di kiri bawah.",
+                    "",
+                    "  (0,0) ---------> x bertambah",
+                    "    |",
+                    "    |    Titik (50, 20) ada di dekat ATAS kanvas,",
+                    "    |    bukan dekat bawah seperti intuisi grafik matematika.",
+                    "    v",
+                    "  y bertambah",
+                    "",
+                    "Akibatnya: kalau ingin sebuah bentuk 'naik', kurangi nilai y-nya,",
+                    "bukan tambahkan. Ini sumber bug diam-diam paling umum di animasi",
+                    "canvas pertama seseorang - bentuknya bergerak, tapi ke arah",
+                    "berlawanan dari yang dibayangkan.",
+                ],
+            },
+            {
+                "heading": "Bentuk langsung: fillRect, strokeRect, clearRect",
+                "body": [
+                    "Tiga method ini tidak butuh path sama sekali - satu panggilan, satu",
+                    "kotak. Keempat argumennya selalu urutan yang sama: x, y, lebar, tinggi.",
+                ],
+                "code": """const kanvas = document.querySelector("canvas");
+const ctx = kanvas.getContext("2d");
+
+ctx.fillStyle = "royalblue";
+ctx.fillRect(20, 20, 100, 60);      // kotak terisi, mulai dari (20,20)
+
+ctx.strokeStyle = "crimson";
+ctx.lineWidth = 4;
+ctx.strokeRect(140, 20, 100, 60);   // cuma garis tepinya
+
+// clearRect BUKAN "gambar putih" - ia membuat area itu transparan lagi,
+// mengembalikannya ke kondisi kosong seperti sebelum ada yang digambar.
+ctx.clearRect(50, 30, 20, 20);      // melubangi bagian dari kotak biru di atas""",
+            },
+            {
+                "heading": "Path: beginPath, moveTo, lineTo, arc",
+                "body": [
+                    "Untuk bentuk yang bukan kotak, gambar dilakukan dua tahap: RANGKAI",
+                    "dulu jalurnya (path), baru EKSEKUSI dengan fill() atau stroke(). Jalur",
+                    "yang belum dieksekusi tidak terlihat sama sekali di kanvas.",
+                    "",
+                    "  ctx.beginPath()        mulai jalur baru, buang sisa jalur lama",
+                    "  ctx.moveTo(x, y)       pindahkan 'pena' tanpa menggambar garis",
+                    "  ctx.lineTo(x, y)       gambar garis lurus dari posisi pena ke sini",
+                    "  ctx.closePath()        tutup jalur, garis balik ke titik awal",
+                    "  ctx.fill() / .stroke() BARU di sini sesuatu muncul di layar",
+                    "",
+                    "arc() untuk lingkaran/busur punya lima argumen wajib, dan argumen sudutnya",
+                    "dalam RADIAN, bukan derajat - jebakan kedua yang sama seringnya dengan",
+                    "sumbu Y terbalik:",
+                    "",
+                    "  ctx.arc(x, y, radius, sudutMulai, sudutSelesai)",
+                    "",
+                    "Lingkaran PENUH selalu ditulis 0 sampai Math.PI * 2 (bukan 360). Menulis",
+                    "0 sampai 360 tetap 'jalan' tanpa error - hasilnya lingkaran yang sudah",
+                    "berputar berkali-kali lebih dari cukup, dan karena kelipatan penuh,",
+                    "TETAP terlihat seperti lingkaran biasa. Bug ini gampang lolos tanpa",
+                    "disadari sampai seseorang mencoba busur SETENGAH lingkaran dan derajat",
+                    "180 ternyata cuma seperlima putaran radian.",
+                ],
+                "code": """ctx.beginPath();
+ctx.moveTo(50, 150);
+ctx.lineTo(120, 150);
+ctx.lineTo(85, 90);
+ctx.closePath();          // garis ketiga ke titik awal, membentuk segitiga
+ctx.fillStyle = "seagreen";
+ctx.fill();
+
+ctx.beginPath();
+// Lingkaran penuh: radius 40, dari sudut 0 sampai satu putaran penuh (2*PI radian).
+ctx.arc(220, 130, 40, 0, Math.PI * 2);
+ctx.fillStyle = "orange";
+ctx.fill();
+
+ctx.beginPath();
+// Setengah lingkaran: PI radian = 180 derajat, BUKAN 180 yang ditulis langsung.
+ctx.arc(320, 130, 40, 0, Math.PI);
+ctx.strokeStyle = "purple";
+ctx.lineWidth = 3;
+ctx.stroke();""",
+            },
+            {
+                "heading": "fillStyle dan strokeStyle: state yang MENEMPEL",
+                "body": [
+                    "Beda besar dari SVG (kalau pernah menyentuhnya): di SVG tiap bentuk",
+                    "punya atributnya sendiri-sendiri. Di canvas, fillStyle/strokeStyle/",
+                    "lineWidth adalah PROPERTI PADA CONTEXT - sekali diatur, nilainya",
+                    "berlaku untuk SEMUA gambar berikutnya sampai diubah lagi secara",
+                    "eksplisit. Tidak ada 'reset otomatis' antar bentuk.",
+                    "",
+                    "JEBAKAN: lupa mengatur ulang warna sebelum menggambar bentuk",
+                    "berikutnya membuat warna bentuk SEBELUMNYA 'bocor' ke bentuk baru -",
+                    "bukan karena bug, tapi karena context memang dirancang menyimpan",
+                    "state seperti itu. Kalau sebuah loop menggambar banyak bentuk dengan",
+                    "warna berbeda-beda, fillStyle harus diset ULANG di setiap iterasi.",
+                ],
+            },
+            {
+                "heading": "Animasi: clearRect tiap frame + requestAnimationFrame",
+                "body": [
+                    "Canvas tidak punya konsep 'gerakkan bentuk ini' - tidak ada objek",
+                    "bentuk yang tersimpan sama sekali setelah digambar, cuma piksel.",
+                    "Animasi berarti: BERSIHKAN seluruh kanvas, lalu GAMBAR ULANG semuanya",
+                    "di posisi yang sedikit berbeda, diulang puluhan kali per detik.",
+                    "",
+                    "requestAnimationFrame (rAF) dibahas detail di materi 'Web API:",
+                    "Observer dan Animasi' - di sini cukup diingat bahwa ia memanggil",
+                    "fungsi yang diberikan TEPAT sebelum browser menggambar frame",
+                    "berikutnya, dan harus dipanggil ULANG secara manual di dalam",
+                    "fungsinya sendiri untuk membuat frame selanjutnya terjadi.",
+                ],
+                "code": """const kanvas = document.querySelector("canvas");
+const ctx = kanvas.getContext("2d");
+
+let x = 20;
+const kecepatan = 3;
+
+function gambarFrame() {
+    // 1. Bersihkan SELURUH kanvas - tanpa ini, bola lama tetap tertinggal
+    //    dan hasilnya jadi garis bola yang menumpuk, bukan satu bola bergerak.
+    ctx.clearRect(0, 0, kanvas.width, kanvas.height);
+
+    // 2. Gambar ulang di posisi baru.
+    ctx.beginPath();
+    ctx.arc(x, 75, 20, 0, Math.PI * 2);
+    ctx.fillStyle = "tomato";
+    ctx.fill();
+
+    // 3. Perbarui posisi untuk frame BERIKUTNYA, lalu pantul di tepi.
+    x += kecepatan;
+    if (x > kanvas.width - 20 || x < 20) {
+        // (Contoh sengaja tidak membalik arah supaya tetap pendek -
+        //  materi 'Observer dan Animasi' membahas pola pantul penuh.)
+        x = 20;
+    }
+
+    // 4. Minta browser memanggil gambarFrame lagi sebelum frame berikutnya.
+    //    Tanpa baris ini animasinya berhenti setelah frame pertama.
+    requestAnimationFrame(gambarFrame);
+}
+
+requestAnimationFrame(gambarFrame);   // mulai loop-nya""",
+            },
+        ],
+    },
+    {
+        "title": "34. Membaca Repo JavaScript Sungguhan",
         "sections": [
             {
                 "body": [
@@ -4922,7 +5520,7 @@ describe("hargaSetelahDiskon", () => {
         ],
     },
     {
-        "title": "32. Roadmap Menjadi JavaScript Developer Handal",
+        "title": "35. Roadmap Menjadi JavaScript Developer Handal",
         "sections": [
             {
                 "body": [

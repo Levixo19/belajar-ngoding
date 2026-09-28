@@ -778,4 +778,162 @@ int main(void) {
     return 0;
 }""",
     },
+    {
+        'title': 'Proyek Akhir: Pencari Jalan Keluar Labirin',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Pencari Jalan Keluar Labirin',
+        '',
+        "Sebuah gudang digambar sebagai peta karakter: '#' tembok, '.' lorong,",
+        "'S' pintu masuk, 'K' pintu keluar. Petugas keamanan ingin tahu jalur",
+        'TERPENDEK dari S ke K, dan mana saja sudut yang tidak bisa dicapai',
+        'sama sekali.',
+        '',
+        'Ini bukan soal mencetak tabel. Yang diuji: apakah kamu bisa memilih',
+        'struktur data yang tepat, mengurus memori yang kamu minta sendiri,',
+        'dan menelusuri balik sebuah jalur.',
+        '',
+        'Peta (7 baris x 11 kolom) ditulis sebagai array of string di program.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. BFS memakai antrean buatan sendiri (array + indeks depan/belakang),',
+        '     bukan rekursi -- rekursi memberi jalur, tapi belum tentu terpendek.',
+        '  2. Dua matriks pendamping: jarak[][] dan asal[][] untuk menelusuri',
+        '     balik jalurnya dari K ke S.',
+        '  3. Urutan arah dipatok: atas, kanan, bawah, kiri.',
+        '  4. Memori diminta dengan malloc dan WAJIB di-free sebelum keluar.',
+        "  5. Peta dicetak ulang dengan jalur ditandai '*' (S dan K tetap utuh).",
+        '  6. Laporkan panjang jalur, jumlah petak terjangkau, dan jumlah petak',
+        '     kosong yang tidak terjangkau.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  PENCARI JALAN KELUAR LABIRIN',
+        '  ============================',
+        '  ###########',
+        '  #S**#*****#',
+        '  #.#*#*###*#',
+        '  #.#***#..*#',
+        '  #.#####.#*#',
+        '  #.......#K#',
+        '  ###########',
+        '  ----------------------------',
+        '  Panjang jalur terpendek : 16 langkah',
+        '  Petak yang terjangkau   : 30',
+        '  Petak kosong tak terjangkau : 0',
+    ],
+        'hints': [
+        'typedef struct { int b, k; } Titik; lalu antrean cukup Titik *antre = malloc(sizeof(Titik) * BARIS * KOLOM);',
+        'Empat arah ditulis sebagai dua array sejajar: DB[4] = {-1,0,1,0} dan DK[4] = {0,1,0,-1}.',
+        'Menelusuri balik: mulai dari K, isi jalur[i] dari belakang ke depan (for (int i = panjang; i >= 0; i--)), lalu jalurnya sudah urut.',
+    ],
+        'solution': """/* Pencari Jalan Keluar Labirin -- BFS di atas array dua dimensi. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define BARIS 7
+#define KOLOM 11
+
+typedef struct { int b, k; } Titik;
+
+static const char *PETA[BARIS] = {
+    "###########",
+    "#S..#.....#",
+    "#.#.#.###.#",
+    "#.#...#...#",
+    "#.#####.#.#",
+    "#.......#K#",
+    "###########",
+};
+
+/* Empat arah, ditulis sebagai dua larik supaya urutannya jelas dan tetap:
+   atas, kanan, bawah, kiri. Urutan ini menentukan jalur mana yang ditemukan
+   lebih dulu saat ada dua jalur sama panjang. */
+static const int DB[4] = {-1, 0, 1, 0};
+static const int DK[4] = {0, 1, 0, -1};
+
+static int cari_huruf(char huruf, Titik *keluar) {
+    for (int b = 0; b < BARIS; b++)
+        for (int k = 0; k < KOLOM; k++)
+            if (PETA[b][k] == huruf) { keluar->b = b; keluar->k = k; return 1; }
+    return 0;
+}
+
+int main(void) {
+    Titik mulai, akhir;
+    if (!cari_huruf('S', &mulai) || !cari_huruf('K', &akhir)) {
+        printf("Peta tidak punya S atau K.\\n");
+        return 1;
+    }
+
+    int jarak[BARIS][KOLOM];
+    Titik asal[BARIS][KOLOM];
+    for (int b = 0; b < BARIS; b++)
+        for (int k = 0; k < KOLOM; k++) { jarak[b][k] = -1; asal[b][k].b = -1; }
+
+    Titik *antre = malloc(sizeof(Titik) * BARIS * KOLOM);
+    if (!antre) return 1;
+    int depan = 0, belakang = 0;
+
+    antre[belakang++] = mulai;
+    jarak[mulai.b][mulai.k] = 0;
+
+    while (depan < belakang) {
+        Titik t = antre[depan++];
+        for (int i = 0; i < 4; i++) {
+            int nb = t.b + DB[i], nk = t.k + DK[i];
+            if (nb < 0 || nb >= BARIS || nk < 0 || nk >= KOLOM) continue;
+            if (PETA[nb][nk] == '#') continue;
+            if (jarak[nb][nk] != -1) continue;
+            jarak[nb][nk] = jarak[t.b][t.k] + 1;
+            asal[nb][nk] = t;
+            antre[belakang].b = nb; antre[belakang].k = nk; belakang++;
+        }
+    }
+
+    printf("PENCARI JALAN KELUAR LABIRIN\\n");
+    printf("============================\\n");
+
+    if (jarak[akhir.b][akhir.k] == -1) {
+        printf("Tidak ada jalan dari S ke K.\\n");
+        free(antre);
+        return 0;
+    }
+
+    /* Telusuri balik dari K ke S, lalu balik urutannya. */
+    int panjang = jarak[akhir.b][akhir.k];
+    Titik *jalur = malloc(sizeof(Titik) * (panjang + 1));
+    if (!jalur) { free(antre); return 1; }
+    Titik t = akhir;
+    for (int i = panjang; i >= 0; i--) { jalur[i] = t; t = asal[t.b][t.k]; }
+
+    char gambar[BARIS][KOLOM + 1];
+    for (int b = 0; b < BARIS; b++) { strcpy(gambar[b], PETA[b]); }
+    for (int i = 1; i < panjang; i++) gambar[jalur[i].b][jalur[i].k] = '*';
+
+    for (int b = 0; b < BARIS; b++) printf("%s\\n", gambar[b]);
+
+    printf("----------------------------\\n");
+    printf("Panjang jalur terpendek : %d langkah\\n", panjang);
+    int terjangkau = 0;
+    for (int b = 0; b < BARIS; b++)
+        for (int k = 0; k < KOLOM; k++)
+            if (jarak[b][k] != -1) terjangkau++;
+    printf("Petak yang terjangkau   : %d\\n", terjangkau);
+
+    int buntu = 0;
+    for (int b = 0; b < BARIS; b++)
+        for (int k = 0; k < KOLOM; k++) {
+            if (jarak[b][k] == -1 && PETA[b][k] != '#') buntu++;
+        }
+    printf("Petak kosong tak terjangkau : %d\\n", buntu);
+
+    free(jalur);
+    free(antre);
+    return 0;
+}
+""",
+    },
 ]

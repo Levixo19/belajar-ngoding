@@ -32,8 +32,9 @@ dipakai aplikasi terminal, jadi bisa dibuka di editor favoritmu kapan saja.
 
 **Ruang Coba.** Halaman kosong untuk menjalankan kode apa pun di sepuluh
 bahasa, lengkap dengan stdin. Tidak dinilai dan tidak menyentuh progres —
-justru karena itu ia berguna. Tombol *Coba jalankan* di setiap contoh kode
-materi membukanya di sini, sudah terisi.
+justru karena itu ia berguna. Bentuknya sama persis dengan ruang kerja latihan,
+karena gunanya memang sama. Tombol *Ruang Coba* di setiap contoh kode materi
+membukanya di sini, sudah terisi.
 
 **Catatanku.** Catatan pribadi per materi, kuis, dan latihan. Disimpan di
 berkas terpisah dari progres, jadi mereset progres tidak ikut menghapus
@@ -42,20 +43,65 @@ tulisanmu.
 **Palet perintah (`Ctrl+K`).** Ketik nama bahasa, judul materi, atau kata apa
 pun; ia mencari sekaligus di daftar navigasi dan di seluruh isi kurikulum.
 
+**Arah desainnya "buku kerja".** Kurikulumnya sudah bernomor sejak awal — 83
+bab, 515 materi, tiap kuis dan latihan membawa nomornya sendiri — dan nomor itu
+dijadikan arsitekturnya, bukan teks abu-abu di pojok baris: nomor bab tampil
+sebesar judulnya sendiri, di kolomnya sendiri, dan mata memakainya sebagai
+penggaris.
+
+**Satu strip konteks, bukan remah roti.** Di tiap layar belajar ada satu baris
+tempel yang menjawab empat hal sekaligus: kamu di bab mana, materi ke berapa
+dari berapa, sejauh apa bab itu, dan satu tombol ke langkah berikutnya.
+Keempatnya tidak ada di halamannya sendiri. Layar yang memang tidak punya
+posisi — dasbor, statistik, pengaturan — tidak merendernya sama sekali.
+
 **Bentuknya dipinjam dari tiga tempat yang sudah memecahkan masalah ini.**
 Pembacanya tiga kolom seperti [The Odin Project](https://www.theodinproject.com):
-daftar materi di kiri, bacaan di tengah dengan lebar 68 karakter, dan peta
-bagian di kanan yang penandanya mengikuti posisi bacamu. Kepala tiap bahasa
-memakai baris fakta berikon seperti [Codecademy](https://www.codecademy.com) —
-berapa materi, berapa kuis, berapa latihan, dan apakah kodenya bisa dijalankan
-di komputer ini. Dan seperti [freeCodeCamp](https://www.freecodecamp.org),
-tiap layar cuma punya SATU tindakan utama: kartu "Lanjutkan" adalah
-satu-satunya permukaan amber pekat di seluruh aplikasi.
+jalur materi di kiri, bacaan di tengah dengan lebar yang bisa kamu setel, dan
+peta bagian di kanan yang penandanya mengikuti posisi bacamu — dan ketiganya
+ditengahkan, jadi tidak ada ruang mati antara akhir kalimat dan peta. Kepala
+tiap bahasa memakai baris fakta berikon seperti
+[Codecademy](https://www.codecademy.com) — berapa materi, berapa kuis, berapa
+latihan, dan apakah kodenya bisa dijalankan di komputer ini. Dan seperti
+[freeCodeCamp](https://www.freecodecamp.org), tiap layar cuma punya SATU
+tindakan utama: kartu "Lanjutkan" adalah satu-satunya permukaan beraksen pekat
+di seluruh aplikasi.
 
-**Halaman latihan dibelah dua.** Soal menempel di kiri, editor di kanan. Susunan
-sebelumnya menumpuk keduanya, jadi soalnya tergulir keluar layar tepat saat
-kode mulai ditulis — dan menulis jawaban sambil lupa pertanyaannya adalah cara
-tercepat mengerjakan latihan yang salah.
+**Bab bisa dilipat, dan peta bab menggantikan gulungannya.** Satu bahasa bisa
+punya sebelas bab berisi empat puluh materi; dirender penuh semuanya, halamannya
+lima ribu piksel tanpa satu titik pun yang menjawab "ada berapa bab dan aku di
+mana". Sekarang satu baris segmen bernomor menjawabnya tanpa digulir sama
+sekali, dan yang terbuka secara bawaan cuma bab yang sedang dikerjakan. Bab yang
+terkunci tetap terlihat utuh — judul, tingkat, kemajuan, dan alasannya semuanya
+di kepala bab yang tidak pernah ikut terlipat.
+
+**Halaman latihan adalah ruang kerja setinggi layar.** Soal menempel di kiri,
+editor di kanan, dan editornya MENGISI ruangnya alih-alih tumbuh dari isinya —
+kerangka tiga baris di atas empat ratus piksel kosong adalah ruang kerja yang
+menolak dipakai bekerja. Tombolnya dikelompokkan menurut niat: dua tindakan
+utama berdiri sendiri, alat-alat jadi satu kelompok rapat, dan "lihat contoh
+solusi" turun ke panel bantuan di balik petunjuk-petunjuknya. Untuk orang yang
+buntu, jalan termudah dan jalan terburuk tidak boleh berjarak sama.
+
+**Dasbor punya layar pertama tersendiri.** Profil yang belum mengerjakan apa
+pun tidak disambut heatmap 182 hari yang dingin dan sembilan belas kartu 0% — ia
+disambut satu pertanyaan ("mau mulai dari mana?"), satu saran yang datang dari
+antrean `saran.py`, lalu katalog kesembilan belas kurikulumnya sekaligus. Tiap ubin
+menyebut berapa materi dan latihannya, serta berapa banyak yang harus dipasang
+sebelum kodenya bisa dijalankan: "tanpa pasang apa pun" untuk HTML dan CSS,
+"siap dijalankan" untuk yang compiler-nya sudah ada di komputer ini, "butuh
+go" untuk yang belum. Yang belum siap tetap bisa dibuka — materi dan kuisnya
+jalan penuh. Angka progres muncul sendiri begitu ada yang bisa dihitung.
+
+**Ruang lebar dipakai dengan menambah kolom, bukan meregangkan baris.**
+Daftar materi, kuis, dan latihan memecah diri jadi dua kolom begitu ruangnya
+cukup, jadi sembilan belas latihan Python muat dalam satu layar 1440 px —
+sebelumnya tiga layar. Meregangkan baris tidak akan pernah melakukan itu:
+melebarkan daftar dari 960 ke 1909 px membuat tinggi halamannya tetap 2402 px
+dan yang terlihat tetap tiga baris, cuma dengan delapan ratus piksel kosong
+antara judul dan penandanya. Ruang kerja dan pembaca materi tetap memakai
+lebar penuh karena tiap kolomnya sudah membatasi dirinya sendiri, dan dasbor
+tetap dua kolom.
 
 **Gerak yang menjawab, bukan yang memamerkan.** Halaman berpindah dengan
 pegas sungguhan — bukan kurva `ease-out` yang disamakan untuk semua jarak —
@@ -73,30 +119,49 @@ sistem "kurangi gerak" selalu menang atas ketiganya.
 **Empat tema** — gelap, malam (hangat, kontras rendah, untuk mata yang lelah),
 terang, dan kontras tinggi.
 
-Pintasan lain: `?` daftar pintasan · `Ctrl+B` sembunyikan panel · `Ctrl+J`
-ganti tema · `G` lalu `D`/`C`/`S`/`B` lompat antar layar · `Ctrl+⏎` jalankan
-kode · `Ctrl+⇧+⏎` periksa jawaban · `1–9` atau `A–J` menjawab soal kuis.
+Pintasan lain: `?` daftar pintasan · `Ctrl+B` buka menu di layar sempit ·
+`Ctrl+J` ganti tema · `G` lalu `D`/`C`/`S`/`B`/`N`/`P` lompat antar layar ·
+`Ctrl+⏎` jalankan kode · `Ctrl+⇧+⏎` periksa jawaban · `1–9` atau `A–J`
+menjawab soal kuis. Tombol Tab pertama di halaman selalu "Lompat ke isi", jadi
+pemakai papan ketik tidak perlu melewati menu yang sama di tiap layar.
 
 ## Isi
 
 | Bahasa | Materi | Bab | Kuis | Soal | Latihan | Dinilai otomatis | Butuh |
 |---|---:|---:|---:|---:|---:|---:|---|
-| HTML | 22 | 6 | 5 | 40 | 12 | 12 | — tidak perlu apa pun |
-| CSS | 26 | 8 | 5 | 40 | 12 | 12 | — tidak perlu apa pun |
-| Java | 40 | 8 | 7 | 60 | 15 | 13 | `javac` `java` |
-| SQL | 22 | 6 | 7 | 57 | 12 | 9 | `sqlite3` |
-| Python | 44 | 11 | 7 | 56 | 18 | 17 | `python3` |
-| JavaScript | 32 | 7 | 7 | 56 | 18 | 17 | `node` |
-| C | 34 | 8 | 7 | 56 | 18 | 18 | `gcc` |
-| C++ | 33 | 7 | 7 | 56 | 18 | 18 | `g++` |
-| Bash | 25 | 6 | 5 | 40 | 14 | 14 | `bash` |
-| Go | 28 | 7 | 6 | 48 | 14 | 14 | `go` |
-| **Total** | **306** | **74** | **63** | **509** | **151** | **144** | |
+| HTML | 23 | 6 | 5 | 40 | 14 | 14 | — tidak perlu apa pun |
+| CSS | 27 | 8 | 5 | 40 | 14 | 14 | — tidak perlu apa pun |
+| Java | 41 | 8 | 7 | 64 | 16 | 14 | `javac` `java` |
+| SQL | 22 | 6 | 7 | 57 | 13 | 10 | `sqlite3` |
+| Python | 44 | 11 | 7 | 56 | 19 | 18 | `python3` |
+| JavaScript | 35 | 9 | 7 | 56 | 22 | 18 | `node` |
+| C | 34 | 8 | 7 | 56 | 19 | 19 | `gcc` |
+| C++ | 33 | 7 | 7 | 56 | 19 | 19 | `g++` |
+| Bash | 25 | 6 | 5 | 40 | 15 | 15 | `bash` |
+| Go | 28 | 7 | 6 | 48 | 15 | 15 | `go` |
+| C# | 27 | 7 | 6 | 48 | 16 | 16 | `dotnet` |
+| Rust | 23 | 6 | 6 | 48 | 16 | 16 | `rustc` |
+| PHP | 21 | 6 | 6 | 48 | 16 | 16 | `php` |
+| Ruby | 21 | 6 | 6 | 48 | 16 | 16 | `ruby` |
+| Kotlin | 18 | 6 | 6 | 48 | 16 | 16 | `kotlinc` `kotlin` |
+| TypeScript | 16 | 6 | 6 | 48 | 16 | 16 | `tsc` `node` |
+| Visual Basic | 16 | 6 | 6 | 48 | 16 | 16 | `dotnet` |
+| **Total** | **454** | **119** | **105** | **849** | **278** | **268** | |
 
-Ditambah **Bikin Aplikasi** (28 materi, 7 bab, 4 kuis, 23 soal, 8 latihan) —
-bukan bahasa baru melainkan kurikulum cara berpikir membangun aplikasi, memakai
-Java. Seluruhnya: **334 materi dalam 81 bab, 67 kuis / 532 soal, 159 latihan**
-(152 dinilai otomatis).
+Ditambah dua kurikulum yang bukan bahasa baru:
+
+| Kurikulum | Materi | Bab | Kuis | Soal | Latihan | Dinilai otomatis | Butuh |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Bikin Aplikasi | 28 | 7 | 5 | 31 | 9 | 9 | `javac` `java` |
+| CLI Fedora | 33 | 10 | 6 | 48 | 16 | 16 | `bash` |
+
+**Bikin Aplikasi** melatih cara berpikir membangun aplikasi, bukan sintaks, dan
+memakai Java. **CLI Fedora** mengajarkan mengoperasikan Linux Fedora dari
+terminal — dari navigasi sampai SELinux, Btrfs, dan Podman.
+
+Seluruhnya: **515 materi dalam 136 bab, 116 kuis / 928 soal,
+303 latihan** (293 dinilai otomatis), ditutup **19 proyek akhir** —
+satu per kurikulum.
 
 **144 materi di antaranya baru ditambahkan setelah pemeriksaan cakupan.**
 Kurikulumnya diaudit dari tiga sudut sekaligus — apa yang muncul di kode nyata,
@@ -170,14 +235,14 @@ terlihat sama padahal tidak.
 **Pesan error diterjemahkan.** `';' expected` jadi *"Ada baris yang lupa
 diakhiri titik koma"*, path direktori sementara diganti nama berkas kerjamu,
 dan nomor barisnya digeser supaya cocok dengan berkas yang benar-benar kamu
-edit. Ada 71 pola untuk sepuluh bahasa, termasuk keluhan struktur HTML.
+edit. Ada 71 pola lintas bahasa, termasuk keluhan struktur HTML.
 
 **Kunci jawaban tidak ditulis dua kali.** Ekspektasi diturunkan dengan
 menjalankan solusi contoh, jadi soal dan kunci mustahil jadi tidak sinkron.
 Latihan bercabang diuji dengan beberapa input sekaligus, sehingga jawaban yang
 di-hardcode tidak bisa lolos.
 
-**Contoh kode bersorot sintaks** untuk kesepuluh bahasa — kata kunci, string,
+**Contoh kode bersorot sintaks** untuk kedelapan belas bahasa — kata kunci, string,
 komentar, angka, dan nama fungsi diwarnai berbeda, tanpa dependensi apa pun.
 
 **Kuis yang tidak bisa ditebak.** Urutan soal dan opsi diacak, ada mode timer,
@@ -187,7 +252,7 @@ skor terbaikmu).
 **Pengulangan terjadwal.** Kuis yang sudah dikerjakan dijadwalkan ulang dengan
 interval yang melar sesuai skormu, lalu ditandai `[saatnya diulang]`.
 
-**Materi terbagi jadi bab bertingkat, dan babnya terbuka bertahap.** 334 materi
+**Materi terbagi jadi bab bertingkat, dan babnya terbuka bertahap.** 515 materi
 yang berbaris rata dari atas ke bawah adalah daftar, bukan jalur — daftar
 sepanjang itu tidak memberi tahu apa pun tentang mana yang harus lebih dulu dan
 sudah sampai mana kamu sekarang. Tiap bahasa dibagi jadi 6–11 bab bertanda
@@ -207,7 +272,7 @@ dari progresmu sendiri — kuis yang jatuh tempo dulu, lalu materi yang berhenti
 di tengah, lalu materi/latihan/kuis berikutnya di bahasa yang sedang kamu
 pelajari. Ada juga **tantangan harian** yang berganti tiap hari.
 
-**Navigasi.** Pencarian kata kunci lintas 11 bahasa dengan saringan tipe dan
+**Navigasi.** Pencarian kata kunci lintas 19 kurikulum dengan saringan tipe dan
 kata kunci tersorot di hasilnya, bookmark, dan "lanjutkan dari terakhir" yang
 juga menawarkan materi *berikutnya*.
 
@@ -237,44 +302,56 @@ python3 main.py --impor p.json     impor progres (progres lama dicadangkan)
 
 ## Struktur
 
-```
-INTI — dipakai kedua antarmuka
-  progress.py      progres, XP, level, streak, badge, penjadwalan, ekspor/impor
-  runner.py        eksekusi kode berbatas waktu/memori + pencocokan output
-  sorot.py         penyorot sintaks 10 bahasa (pemindai token satu lintasan)
-  beda.py          diff output harapan vs hasil + diagnosis penyebabnya
-  galat.py         penerjemah pesan error compiler/runtime ke bahasa Indonesia
-  berkas.py        menentukan blok kode itu berkas utuh, potongan, atau sesi
-  saran.py         rekomendasi langkah berikutnya & tantangan harian
-  bab.py           bab mana yang terbuka -- satu-satunya yang memutuskannya
-  konfigurasi.py   preferensi pengguna yang bertahan antar sesi
-  data/            konten kurikulum, 3 berkas per bahasa
-  data/bab.py      pembagian materi jadi bab bertingkat
+Folder mengikuti arah ketergantungan, bukan selera: tidak ada satu paket pun
+yang mengimpor paket di atasnya.
 
-TERMINAL
-  main.py          registry bahasa + menu utama, dashboard, pengaturan, CLI
-  utils.py         helper tampilan terminal (lebar responsif, input, paginasi)
+```
+main.py            titik masuk terminal — juga registry LANGUAGES
+belajar-web.py     titik masuk web: nyalakan server, buka browser
+
+inti/              mesin; tidak tahu apa-apa soal antarmuka
+  runner.py        eksekusi kode berbatas waktu/memori + pencocokan output
+  struktur.py      membaca HTML & CSS jadi pohon — "keluaran" kedua bahasa itu
+  sorot.py         penyorot sintaks 10 bahasa (pemindai token satu lintasan)
+  berkas.py        menentukan blok kode itu berkas utuh, potongan, atau sesi
+  galat.py         penerjemah pesan error compiler/runtime ke bahasa Indonesia
+  beda.py          diff output harapan vs hasil + diagnosis penyebabnya
   tema.py          palet warna: deteksi kemampuan terminal + 4 tema
+
+pelajar/           keadaan & aturan yang melekat pada orangnya
+  progress.py      progres, XP, level, streak, badge, penjadwalan, ekspor/impor
+  bab.py           bab mana yang terbuka — satu-satunya yang memutuskannya
+  konfigurasi.py   preferensi pengguna yang bertahan antar sesi
+  saran.py         rekomendasi langkah berikutnya & tantangan harian
+
+layar/             antarmuka terminal; satu-satunya lapisan yang mencetak
+  utils.py         helper tampilan (lebar responsif, input, paginasi)
   materials.py     pembaca materi, bookmark, pencarian dalam satu bahasa
   quiz.py          mesin kuis
   exercises.py     latihan coding + auto-checker
   navigasi.py      pencarian global, bookmark, lanjut terakhir
 
-WEB
-  belajar-web.py   peluncur: nyalakan server, buka browser
-  webapp/server.py server HTTP + penjagaan token, Origin, dan path
-  webapp/api.py    endpoint JSON, membungkus hasil modul inti
-  webapp/isi.py    konten kurikulum → struktur JSON siap render
-  webapp/sesi.py   sesi kuis di memori (acak + pemetaan ulang jawaban)
-  webapp/catatan.py catatan pribadi, berkas terpisah dari progres
-  webapp/statik/   satu halaman, satu lembar gaya, sembilan modul JavaScript
-  webapp/statik/js/gerak.js  mesin animasi: solver pegas, urutan, pemicu
-  webapp/statik/js/ikon.js   24 ikon garis, satu keluarga, tanpa berkas gambar
+webapp/            antarmuka web di atas modul yang sama
+  server.py        server HTTP + penjagaan token, Origin, dan path
+  api.py           endpoint JSON, membungkus hasil modul inti
+  isi.py           konten kurikulum → struktur JSON siap render
+  sesi.py          sesi kuis di memori (acak + pemetaan ulang jawaban)
+  catatan.py       catatan pribadi, berkas terpisah dari progres
+  statik/          satu halaman, satu lembar gaya, sepuluh modul JavaScript
+  statik/js/gerak.js      mesin animasi: solver pegas, urutan, pemicu
+  statik/js/pratinjau.js  bingkai pratinjau halaman HTML/CSS pelajar
+  statik/js/ikon.js       24 ikon garis, satu keluarga, tanpa berkas gambar
 
-  struktur.py      membaca HTML & CSS jadi pohon — "keluaran" kedua bahasa itu
+data/              konten kurikulum, 3 berkas per bahasa
+  bab.py           pembagian materi jadi bab bertingkat (dihasilkan, bukan diketik)
 
-tests/             678 tes
+contoh/            bukan bagian aplikasi; tidak ada yang mengimpornya
+tests/             774 tes
 ```
+
+`inti/struktur.py` sengaja duduk bersebelahan dengan `inti/runner.py`: runner
+memanggilnya sebagai subprocess lewat `dirname(__file__)`, jadi memisahkan
+keduanya diam-diam mematikan penilaian seluruh latihan HTML dan CSS.
 
 ## Menambah bahasa baru
 

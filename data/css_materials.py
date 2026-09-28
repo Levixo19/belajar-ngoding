@@ -6794,7 +6794,162 @@ select {
         ],
     },
     {
-        "title": "26. Membaca CSS di Proyek Nyata",
+        "title": "26. Container Queries dan CSS Nesting",
+        "sections": [
+            {
+                "body": [
+                    "Materi 'Responsif: media query' menjawab satu pertanyaan: seberapa lebar",
+                    "LAYARNYA. Tapi komponen yang sama sering dipasang di dua tempat berbeda",
+                    "di halaman yang sama - sidebar sempit di satu sisi, area utama yang",
+                    "lebar di sisi lain. Media query tidak bisa membedakan itu: ia cuma tahu",
+                    "lebar viewport, bukan lebar KOTAK tempat komponennya berada.",
+                    "",
+                    "  @media (min-width: 600px) { .kartu { display: flex; } }",
+                    "  Kartu ini jadi flex begitu LAYAR lebih dari 600px - walau kartunya",
+                    "  sendiri dipasang di sidebar 250px yang jelas tidak muat.",
+                    "",
+                    "Container query memindahkan pertanyaannya: bukan 'seberapa lebar layar',",
+                    "tapi 'seberapa lebar WADAH komponen ini'. Materi ini juga menutup satu",
+                    "gaya penulisan CSS yang belum disebut sama sekali: menyarangkan aturan",
+                    "di dalam aturan lain, langsung didukung CSS modern, tanpa Sass/Less.",
+                ],
+            },
+            {
+                "heading": "Container queries: bereaksi ke wadah, bukan ke layar",
+                "body": [
+                    "Dua langkah wajib. Pertama, elemen INDUKnya (bukan komponennya sendiri)",
+                    "harus dinyatakan sebagai container:",
+                    "",
+                    "  .slot-widget { container-type: inline-size; }",
+                    "",
+                    "container-type: inline-size berarti 'ukur lebar elemen ini, siapkan",
+                    "untuk ditanyai'. Tanpa baris ini, @container di bawah tidak punya apa",
+                    "pun untuk diukur dan tidak akan pernah aktif.",
+                    "",
+                    "Kedua, tulis @container - bentuknya mirip @media tapi mengukur WADAH",
+                    "terdekat yang punya container-type, bukan layar:",
+                    "",
+                    "  @container (min-width: 400px) {",
+                    "      .widget .judul { font-size: 1.5rem; }",
+                    "  }",
+                    "",
+                    "Container BOLEH diberi nama lewat container-name, berguna kalau ada",
+                    "beberapa container bersarang dan kamu perlu menunjuk yang mana:",
+                    "",
+                    "  .slot-widget { container-type: inline-size; container-name: kartu; }",
+                    "  @container kartu (min-width: 400px) { ... }",
+                    "",
+                    "Satuan cqw/cqh/cqi/cqb: sepupu vw/vh, tapi relatif ke CONTAINER, bukan",
+                    "viewport. 10cqw = 10% dari lebar wadahnya. Berguna untuk font-size atau",
+                    "spacing yang harus ikut membesar/mengecil bersama wadah, bukan layar.",
+                    "",
+                    "JEBAKAN: elemen tidak bisa jadi container UNTUK DIRINYA SENDIRI - aturan",
+                    "di dalam @container mengubah ISI container, bukan container itu sendiri",
+                    "berdasarkan ukurannya sendiri (itu akan jadi lingkaran tanpa ujung, dan",
+                    "browser sengaja tidak mengizinkannya).",
+                ],
+                "code": """/* Induk jadi container: siap diukur */
+.slot-widget {
+  container-type: inline-size;
+}
+
+/* Tampilan default: sempit, ditumpuk vertikal */
+.widget .judul {
+  font-size: 1rem;
+}
+
+/* Begitu WADAHNYA (bukan layar) minimal 400px, ubah tata letak */
+@container (min-width: 400px) {
+  .widget {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .widget .judul {
+    font-size: 1.5rem;
+  }
+}""",
+            },
+            {
+                "heading": "CSS Nesting: aturan bersarang tanpa preprocessor",
+                "body": [
+                    "Kalau kamu pernah lihat kode Sass/Less, bentuk ini akan terasa familiar -",
+                    "bedanya ini CSS ASLI, langsung dibaca browser, tanpa langkah build:",
+                    "",
+                    "  .navigasi {",
+                    "      display: flex;",
+                    "",
+                    "      & a { color: inherit; }",
+                    "      &:hover { background: #f0f0f0; }",
+                    "  }",
+                    "",
+                    "& menunjuk balik ke pemilih induknya (.navigasi). Kapan & WAJIB ditulis:",
+                    "saat langsung digabung tanpa spasi dengan pseudo-class atau elemen lain",
+                    "- &:hover berarti '.navigasi:hover', BUKAN '.navigasi :hover' (dua hal",
+                    "yang beda total: yang kedua mencari keturunan yang di-hover, bukan",
+                    "dirinya sendiri). Kapan & boleh dihilangkan: untuk turunan biasa dengan",
+                    "spasi, 'a { ... }' di dalam '.navigasi' otomatis berarti '.navigasi a'.",
+                    "",
+                    "JEBAKAN spesifisitas: nesting yang dalam diam-diam menaikkan spesifisitas",
+                    "tiap aturan yang dihasilkan, sama seperti menulis pemilihnya panjang-panjang",
+                    "dengan tangan. Tiga tingkat nesting menghasilkan aturan sespesifik tiga",
+                    "class digabung - dan itu akan sulit ditimpa nanti, persis masalah yang",
+                    "sudah dibahas materi 'Pemilih Modern dan Lapisan Cascade' soal :is()/:where().",
+                    "Aturan praktis: dua tingkat nesting cukup untuk kebanyakan komponen; kalau",
+                    "sampai empat tingkat, itu tanda strukturnya perlu dipecah, bukan disarangkan.",
+                    "",
+                    "CATATAN REPO INI: pemeriksa latihan CSS di aplikasi ini (struktur.py) belum",
+                    "mendukung PENGURAIAN nesting di luar at-rule seperti @media/@container - jadi",
+                    "tidak ada latihan otomatis untuk nesting di materi ini. Di browser sungguhan,",
+                    "sintaksnya tetap sah dan berjalan normal.",
+                ],
+                "code": """.kartu-produk {
+  display: flex;
+  gap: 1rem;
+  border: 1px solid #ddd;
+
+  /* & wajib: langsung menempel ke pemilih induk, bukan keturunannya */
+  &:hover {
+    border-color: #333;
+  }
+
+  &.terjual-habis {
+    opacity: 0.5;
+  }
+
+  /* & opsional di sini: turunan dengan spasi tetap berlaku tanpa & */
+  .judul {
+    font-weight: bold;
+  }
+
+  /* nesting media query di dalam pemilih juga sah */
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}""",
+            },
+            {
+                "heading": "Kapan pakai yang mana",
+                "body": [
+                    "Media query    : layout seluruh HALAMAN berubah mengikuti ukuran layar",
+                    "                 (mis. sidebar disembunyikan di layar sempit).",
+                    "Container query: satu KOMPONEN harus tampil beda tergantung wadahnya -",
+                    "                 dipakai saat komponen yang sama dipasang di lebih dari",
+                    "                 satu tempat dengan lebar berbeda (widget, kartu, sidebar).",
+                    "Nesting        : soal PENULISAN, bukan soal kapan aktif - dipakai untuk",
+                    "                 mengelompokkan aturan yang berhubungan erat (elemen +",
+                    "                 pseudo-class + turunan langsungnya) supaya tidak mengetik",
+                    "                 ulang nama class yang sama berkali-kali.",
+                    "",
+                    "Ketiganya bisa dipakai bersamaan tanpa konflik - container query dan",
+                    "media query sering berdampingan di proyek nyata, dan aturan di dalam",
+                    "@container boleh ditulis bersarang juga.",
+                ],
+            },
+        ],
+    },
+    {
+        "title": "27. Membaca CSS di Proyek Nyata",
         "sections": [
             {
                 "body": [

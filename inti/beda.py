@@ -20,7 +20,7 @@ alih-alih mengarang.
 import difflib
 import re
 
-import tema
+from inti import tema
 
 # Karakter pengganti untuk hal yang tak terlihat, dipakai saat sebuah baris
 # terlihat identik padahal tidak.

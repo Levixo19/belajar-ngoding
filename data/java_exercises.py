@@ -618,4 +618,178 @@ class RekeningTest {
     }
 }""",
     },
+    {
+        'title': 'Proyek Akhir: Simulasi Lift Gedung',
+        'difficulty': 'Sulit',
+        'proyek': True,
+        'question': [
+        'STUDI KASUS -- Simulasi Lift Gedung',
+        '',
+        'Lift di gedung 5 lantai sering dikeluhkan: kadang naik padahal semua',
+        'yang menunggu ada di bawah. Sebelum mengganti panel kendalinya, kamu',
+        'diminta MENIRU perilakunya dulu dalam program, supaya bisa dilihat',
+        'detik demi detik apa yang sebenarnya terjadi.',
+        '',
+        'Ini bukan program yang mengumpulkan data lalu mencetak laporan. Ini',
+        'SIMULASI: ada keadaan yang berubah tiap detik, dan setiap barisnya',
+        'adalah potret keadaan itu.',
+        '',
+        'Permintaan yang masuk (detik, dari lantai, ke lantai):',
+        '  detik 0: lantai 3 -> 1',
+        '  detik 1: lantai 1 -> 5',
+        '  detik 4: lantai 4 -> 2',
+        'Simulasi berjalan 12 detik.',
+        '',
+        'Yang harus ada di programmu:',
+        '  1. enum Arah { NAIK, TURUN, DIAM }.',
+        '  2. class Lift dengan method detak() yang menjalankan SATU detik:',
+        '     turunkan penumpang yang sampai, naikkan yang menunggu di lantai',
+        '     ini, lalu bergerak satu lantai ke arah tujuan.',
+        '  3. Penumpang di dalam lift selalu didahulukan; kalau lift kosong,',
+        '     barulah ia menjemput yang menunggu paling lama.',
+        '  4. Antrean penunggu memakai Deque (addLast / removeFirst).',
+        "  5. Kolom Kejadian berisi 'naik', 'turun', 'turun naik', atau kosong.",
+        '  6. Di akhir: jumlah penumpang sampai tujuan, total lantai yang',
+        '     dilewati, dan posisi akhir lift.',
+        '',
+        'Keluaran yang diharapkan:',
+        '',
+        '  SIMULASI LIFT GEDUNG 5 LANTAI',
+        '  =============================================',
+        '  Detik Lantai  Arah    Dalam   Antre   Kejadian',
+        '  0     2       NAIK    0       1       ',
+        '  1     3       NAIK    0       2       ',
+        '  2     2       TURUN   1       1       naik',
+        '  3     1       TURUN   1       1       ',
+        '  4     2       NAIK    1       1       turun naik',
+        '  5     3       NAIK    1       1       ',
+        '  6     4       NAIK    1       1       ',
+        '  7     5       NAIK    2       0       naik',
+        '  8     4       TURUN   1       0       turun',
+        '  9     3       TURUN   1       0       ',
+        '  10    2       TURUN   1       0       ',
+        '  11    2       DIAM    0       0       turun',
+        '  ---------------------------------------------',
+        '  Penumpang sampai tujuan : 3',
+        '  Lantai yang dilewati    : 11',
+        '  Posisi akhir            : lantai 2',
+    ],
+        'hints': [
+        'Deque<Permintaan> menunggu = new ArrayDeque<>(); pakai addLast() untuk mengantre dan removeFirst() untuk mengambil yang paling lama menunggu.',
+        'Untuk memeriksa penunggu tanpa kehilangan urutannya: ambil satu per satu sebanyak ukuran antrean, yang tidak cocok dikembalikan ke belakang dengan addLast().',
+        'Menghapus dari List sambil melooping-nya harus dari BELAKANG (for (int i = size()-1; i >= 0; i--)), kalau tidak indeksnya bergeser.',
+    ],
+        'solution': """import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
+enum Arah { NAIK, TURUN, DIAM }
+
+class Permintaan {
+    final int detik;
+    final int dariLantai;
+    final int keLantai;
+
+    Permintaan(int detik, int dariLantai, int keLantai) {
+        this.detik = detik;
+        this.dariLantai = dariLantai;
+        this.keLantai = keLantai;
+    }
+
+    Arah arah() { return keLantai > dariLantai ? Arah.NAIK : Arah.TURUN; }
+}
+
+class Lift {
+    private int lantai = 1;
+    private Arah arah = Arah.DIAM;
+    private final Deque<Permintaan> menunggu = new ArrayDeque<>();
+    private final List<Permintaan> didalam = new ArrayList<>();
+    private int totalLantaiDilewati = 0;
+    private int totalDiangkut = 0;
+
+    int getLantai() { return lantai; }
+    Arah getArah() { return arah; }
+    int getDidalam() { return didalam.size(); }
+    int getMenunggu() { return menunggu.size(); }
+    int getTotalLantaiDilewati() { return totalLantaiDilewati; }
+    int getTotalDiangkut() { return totalDiangkut; }
+
+    void panggil(Permintaan p) { menunggu.addLast(p); }
+
+    /** Satu detik berlalu. Mengembalikan catatan kejadian, "" kalau sepi. */
+    String detak() {
+        StringBuilder catatan = new StringBuilder();
+
+        // 1. Turunkan yang sudah sampai.
+        for (int i = didalam.size() - 1; i >= 0; i--) {
+            if (didalam.get(i).keLantai == lantai) {
+                didalam.remove(i);
+                totalDiangkut++;
+                catatan.append("turun ");
+            }
+        }
+        // 2. Naikkan yang menunggu di lantai ini.
+        int jumlah = menunggu.size();
+        for (int i = 0; i < jumlah; i++) {
+            Permintaan p = menunggu.removeFirst();
+            if (p.dariLantai == lantai) {
+                didalam.add(p);
+                catatan.append("naik ");
+            } else {
+                menunggu.addLast(p);
+            }
+        }
+        // 3. Tentukan arah: penumpang di dalam lebih dulu, baru yang menunggu.
+        int tujuan = -1;
+        if (!didalam.isEmpty()) tujuan = didalam.get(0).keLantai;
+        else if (!menunggu.isEmpty()) tujuan = menunggu.peekFirst().dariLantai;
+
+        if (tujuan == -1 || tujuan == lantai) {
+            arah = Arah.DIAM;
+        } else if (tujuan > lantai) {
+            arah = Arah.NAIK;
+            lantai++;
+            totalLantaiDilewati++;
+        } else {
+            arah = Arah.TURUN;
+            lantai--;
+            totalLantaiDilewati++;
+        }
+        return catatan.toString().trim();
+    }
+}
+
+public class SimulasiLift {
+    public static void main(String[] args) {
+        Lift lift = new Lift();
+        Permintaan[] jadwal = {
+            new Permintaan(0, 3, 1),
+            new Permintaan(1, 1, 5),
+            new Permintaan(4, 4, 2),
+        };
+
+        System.out.println("SIMULASI LIFT GEDUNG 5 LANTAI");
+        System.out.println("=============================================");
+        System.out.printf("%-6s%-8s%-8s%-8s%-8s%s%n",
+                "Detik", "Lantai", "Arah", "Dalam", "Antre", "Kejadian");
+
+        for (int detik = 0; detik < 12; detik++) {
+            for (Permintaan p : jadwal) {
+                if (p.detik == detik) lift.panggil(p);
+            }
+            String kejadian = lift.detak();
+            System.out.printf("%-6d%-8d%-8s%-8d%-8d%s%n",
+                    detik, lift.getLantai(), lift.getArah(),
+                    lift.getDidalam(), lift.getMenunggu(), kejadian);
+        }
+
+        System.out.println("---------------------------------------------");
+        System.out.println("Penumpang sampai tujuan : " + lift.getTotalDiangkut());
+        System.out.println("Lantai yang dilewati    : " + lift.getTotalLantaiDilewati());
+        System.out.println("Posisi akhir            : lantai " + lift.getLantai());
+    }
+}
+""",
+    },
 ]

@@ -4,7 +4,7 @@ import os
 import tempfile
 import unittest
 
-import runner
+from inti import runner
 
 
 def butuh(bahasa):

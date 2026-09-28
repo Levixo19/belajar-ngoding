@@ -12,23 +12,23 @@ Dua cacat lama yang dibereskan di sini:
   bisa dipanen berulang kali. Sekarang sesi parsial hanya memperbarui daftar
   soal yang masih salah.
 
-Importir: main.py, navigasi.py.
+Importir: main.py, layar/navigasi.py.
 """
 
 import random
 
-import tema
-from utils import (
+from inti import tema
+from layar.utils import (
     C, paint, clear, press_enter, ask, ask_atau_eof, ask_choice, header, rule,
     bar, wrap, lebar, angka_pilihan, ask_timed,
 )
-from progress import (
+from pelajar.progress import (
     record_quiz_score, perbarui_soal_salah, soal_salah_terakhir, load_progress,
     kunci, kuis_jatuh_tempo,
 )
 
 try:
-    import konfigurasi
+    from pelajar import konfigurasi
 except ImportError:
     konfigurasi = None
 
