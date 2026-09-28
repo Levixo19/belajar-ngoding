@@ -2741,11 +2741,25 @@ pre.kode {
   padding: 2px 2px 6px;
   scrollbar-width: thin;
 }
+/* Pengisi depan kolom pertama memakai `.bara-kosong` dan SENGAJA tidak punya
+   aturan sendiri: item kisi mengambil ukurannya dari track (11px di
+   `grid-template-rows` / `grid-auto-columns` di atas), jadi menuliskan ulang
+   11px untuknya akan menjadi salinan ketiga dari satu angka. Ukuran eksplisit
+   di `.bara-sel` di bawah diperlukan untuk contoh di legenda, yang hidup di
+   flex, bukan di kisi ini. */
 .bara-sel {
   width: 11px; height: 11px;
   border-radius: 3px;
   background: var(--dasar-dalam);
   border: var(--tebal-garis) solid var(--garis);
+  /* HANYA `transform`, dan itu pembagian kerja yang disengaja: animasi masuk
+     tiap sel ditulis WAAPI pada properti `scale` yang mandiri
+     (layar-belajar.js, di dalam `nyalakanBara`), sementara pembesaran hover
+     ditulis CSS pada `transform`. Properti transform mandiri disusun sebelum
+     `transform`, jadi keduanya bertumpuk tanpa saling menimpa. Menambahkan
+     `scale` ke daftar transition ini akan menghidupkan mesin kedua pada
+     properti yang sudah punya mesin — invarian #2, dan gejalanya bukan galat
+     melainkan sel yang tersendat saat masuk. */
   transition: transform var(--cepat);
 }
 .bara-sel:hover { transform: scale(1.45); }
@@ -2755,11 +2769,56 @@ pre.kode {
           border-color: color-mix(in srgb, var(--nyala) 55%, transparent); }
 .bara-3 { background: var(--nyala); border-color: var(--nyala-lembut); }
 .bara-kini { outline: 1.5px solid var(--teks); outline-offset: 1.5px; }
+
+/* Tema kontras: tingkat bara dibaca dari UKURAN, bukan cuma dari warnanya.
+   Keempatnya sudah terbedakan oleh terang-gelap di semua tema (diukur: ΔL
+   OKLab terkecil 0,107 di `terang`), tapi terang-gelap masih warna, dan WCAG
+   1.4.1 menuntut saluran kedua. Di sini saluran itu adalah inti berwarna yang
+   TUMBUH: 0 → 3 → 6 → 9 px di dalam sel 11 px yang sama.
+
+   `box-shadow: inset` sebagai cincin sewarna latar, bukan elemen tambahan dan
+   bukan ukuran kotak yang berubah — kisinya tetap tujuh baris dengan tinggi
+   sama, dan tidak ada satu pun piksel tata letak yang bergeser. Aturan ini
+   statis; larangan box-shadow di repo ini berlaku untuk @keyframes, bukan
+   untuk keadaan diam.
+
+   Legenda memakai kelas yang sama, jadi rampanya ikut mengajarkan bentuknya.
+
+   ANGKA YANG DIASUMSIKAN, dan kenapa cincinnya 2px/1px dan bukan 3px/1,5px:
+   inti berwarna = 11 − 2×border − 2×cincin. `--tebal-garis` hari ini 1 px di
+   SEMUA tema, termasuk kontras: `[data-tema="kontras"] { --tebal-garis: 2px }`
+   (:335) dan `:root { --tebal-garis: 1px }` (:421) sama-sama berspesifisitas
+   0,1,0 pada elemen <html> yang sama, jadi yang belakangan menang. Token itu
+   bisa dihidupkan lagi kapan saja, dan itu bukan urusan blok ini.
+
+     border 1 px  ->  inti  0 · 5 · 7 · 9 px
+     border 2 px  ->  inti  0 · 3 · 5 · 7 px
+
+   Dengan 2px/1px langkahnya 2 px di KEDUA penafsiran dan tingkat 1 tidak
+   pernah turun di bawah 3 px. Dengan 3px/1,5px ia menjadi 1 px begitu border
+   jadi 2 px — hilang, tanpa satu pun tes yang menyadarinya. Asumsi ini dikunci
+   `TestHamparanBara.test_kanal_ukuran_kontras_bertahan_di_dua_tebal_garis`. */
+[data-tema="kontras"] .bara-1 { box-shadow: inset 0 0 0 2px var(--dasar-dalam); }
+[data-tema="kontras"] .bara-2 { box-shadow: inset 0 0 0 1px var(--dasar-dalam); }
 .bara-legenda {
   display: flex; align-items: center; gap: var(--s1);
   font-size: var(--t-mikro); color: var(--redup); margin-top: var(--s2);
   flex-wrap: wrap;
 }
+.bara-geser { color: var(--redup); }
+.bara-rampa {
+  display: flex; align-items: center; gap: var(--s1);
+  margin-left: auto;
+}
+/* Jeda dirender sebagai saudara kisi, bukan anaknya — alasan lengkapnya ada di
+   `jedaBara()`. Angkanya memakai angka bertabular supaya ia tidak bergoyang
+   saat isinya berganti dari satu digit ke dua digit. */
+.bara-jeda {
+  margin: var(--s2) 0 0;
+  font-size: var(--t-mikro); color: var(--teks-2);
+  font-variant-numeric: tabular-nums;
+}
+.bara-jeda-kapan { color: var(--redup); }
 
 /* ==================================================================== bab
 

@@ -226,26 +226,68 @@ export function jamMundur(detik) {
        + `${String(d % 60).padStart(2, "0")}`;
 }
 
+/** Urai ISO dari server menjadi Date LOKAL. Satu-satunya pintu; jangan
+ *  memanggil `new Date(iso)` langsung di mana pun lagi.
+ *
+ *  Spesifikasi ECMAScript mengurai dua bentuk dengan aturan yang BERBEDA, dan
+ *  perbedaan itu tidak pernah memberi pesan galat:
+ *
+ *    "2026-09-28"            (date-only, 10 karakter) -> tengah malam **UTC**
+ *    "2026-09-28T07:15:00"   (tanpa offset)           -> tengah malam **LOKAL**
+ *
+ *  Server ini menulis keduanya: `date.today().isoformat()` untuk tanggal
+ *  (riwayat harian, jadwal kuis, tanggal streak) dan
+ *  `datetime.now().isoformat(timespec="seconds")` untuk cap waktu (catatan,
+ *  kuis terakhir). Keduanya bermaksud waktu SETEMPAT — tidak satu pun membawa
+ *  offset. Jadi yang perlu ditolong cuma bentuk pertama, dan pertolongannya
+ *  adalah memindahkannya ke cabang parser yang satunya.
+ *
+ *  Terukur sebelum diperbaiki: `tanggalRamah("2026-09-28")` mengembalikan
+ *  27/9/2026 di TZ=Pacific/Niue. Cap waktu tidak boleh ikut disentuh — ia
+ *  sudah benar, dan menambahi apa pun padanya akan menggesernya. */
+export function tanggalLokal(iso) {
+  if (!iso) return null;
+  const s = String(iso);
+  const t = new Date(s.length === 10 ? s + "T00:00:00" : s);
+  return isNaN(t) ? null : t;
+}
+
+/** Tanggal hari ini menurut jam DINDING orang yang memakainya.
+ *
+ *  `new Date().toISOString().slice(0, 10)` memberi tanggal UTC, jadi di
+ *  Asia/Makassar (UTC+8) ia masih menyebut kemarin sampai pukul 08:00 pagi.
+ *  Dipakai untuk menandai sel "hari ini" dan menamai berkas ekspor. */
+export function hariIniISO() {
+  const t = new Date();
+  const dua = (n) => String(n).padStart(2, "0");
+  return `${t.getFullYear()}-${dua(t.getMonth() + 1)}-${dua(t.getDate())}`;
+}
+
 export function tanggalRamah(iso) {
-  if (!iso) return "";
-  const t = new Date(iso);
-  if (isNaN(t)) return iso;
+  const t = tanggalLokal(iso);
+  if (!t) return iso ? String(iso) : "";
   return t.toLocaleDateString("id-ID",
     { day: "numeric", month: "short", year: "numeric" });
 }
 
 export function jamRamah(iso) {
-  if (!iso) return "";
-  const t = new Date(iso);
-  if (isNaN(t)) return iso;
+  const t = tanggalLokal(iso);
+  if (!t) return iso ? String(iso) : "";
   return t.toLocaleString("id-ID",
     { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+/** Selisih HARI dari hari ini. Masa depan positif, masa lalu NEGATIF.
+ *
+ *  Tandanya adalah bagian dari kontraknya: `jadwalRamah()` membaca `<= 0`
+ *  sebagai "sudah waktunya", dan `celahBelajar()` membalikkannya jadi "N hari
+ *  lalu". Membalik arahnya suatu hari nanti akan menukar kedua kalimat itu
+ *  tanpa satu pun tes lain menyadarinya -- karena itu ia dikunci tes sendiri. */
 export function selisihHari(iso) {
-  if (!iso) return null;
-  const t = new Date(iso + "T00:00:00");
-  if (isNaN(t)) return null;
+  const t = tanggalLokal(iso);
+  if (!t) return null;
+  // Cap waktu dibulatkan ke tengah malam juga: yang dihitung HARI, bukan jam.
+  t.setHours(0, 0, 0, 0);
   const kini = new Date();
   kini.setHours(0, 0, 0, 0);
   return Math.round((t - kini) / 86400000);
@@ -275,6 +317,24 @@ export function ambilLokal(kunci, bawaan) {
     const mentah = localStorage.getItem("belajar." + kunci);
     return mentah === null ? bawaan : JSON.parse(mentah);
   } catch (e) { return bawaan; }
+}
+
+/** Penanda "momen ini sudah pernah dirayakan di peramban ini".
+ *
+ *  Sengaja di localStorage, BUKAN di berkas progres dan bukan di server.
+ *  Berkas progres adalah catatan belajar orang sungguhan; sebuah upacara sekali
+ *  seumur hidup bukan capaian belajar, ia cuma keadaan tampilan. Konsekuensinya
+ *  jujur dan disengaja: membersihkan data situs membuat perayaannya TERLEWAT,
+ *  bukan dobel dan bukan galat -- dan tidak ada satu pun XP yang hilang.
+ *
+ *  `sudahPernah()` menulis sekaligus membaca dengan sengaja: pemanggilnya
+ *  adalah jalur yang mau merayakan, dan dua baris "cek lalu tandai" yang
+ *  terpisah adalah dua tempat untuk lupa. */
+export function sudahPernah(kunci) {
+  const penuh = "upacara." + kunci;
+  if (ambilLokal(penuh, false) === true) return true;
+  simpanLokal(penuh, true);
+  return false;
 }
 
 /* ------------------------------------------------------------------ sorak */
@@ -435,7 +495,9 @@ export function konfirmasi(pesan, { judul = "Yakin?", labelYa = "Ya, lanjutkan",
  *    acara  : naik level, atau badge baru. Yang paling jarang terjadi, dan
  *             satu-satunya yang memakai partikel (percikBara di dalam
  *             tampilNaikLevel, dan itu sendiri sudah dipagari gerakPenuh).
- *    capai  : XP bertambah dan pemanggilnya tidak meminta diam. Satu toast.
+ *    capai  : XP bertambah dan pemanggilnya tidak meminta diam. Satu toast --
+ *             dan, HANYA kalau pemanggil menyerahkan `dari`, satu denyut plus
+ *             tujuh bara pada benda itu.
  *    sentuh : sisanya — progres tercatat, tapi tidak ada yang dirayakan.
  *             Ini yang dipakai pemanggil ber-`diam: true`.
  *
@@ -449,7 +511,7 @@ export function tingkatRayakan(hadiah, { diam = false } = {}) {
   return "sentuh";
 }
 
-export function rayakan(hadiah, { diam = false } = {}) {
+export function rayakan(hadiah, { diam = false, dari = null } = {}) {
   if (!hadiah) return;
 
   const tingkat = tingkatRayakan(hadiah, { diam });
@@ -467,6 +529,22 @@ export function rayakan(hadiah, { diam = false } = {}) {
     tampilNaikLevel(hadiah);
   } else if (hadiah.xp_tambah > 0 && !diam) {
     sorak(`+${hadiah.xp_tambah} XP`, "nyala", 2.2);
+  }
+
+  /* Tingkat `capai` boleh menempel pada BENDA yang baru saja berhasil, bukan
+     cuma melayang sebagai toast di pojok — tapi hanya kalau pemanggilnya
+     menyerahkan bendanya. Itu syarat, bukan hiasan: keempat pemanggil hari ini
+     tidak mengoper `dari`, jadi perilaku mereka nol berubah, dan tidak ada
+     tebakan "elemen mana yang dimaksud" yang dibuat dari sini.
+
+     Bukan `kilau()`: kilau adalah seluruh layar menguat, dan itu porsi `acara`.
+     Yang di sini seukuran capaian — satu denyut pada bendanya, dan tujuh bara,
+     bukan enam belas. `percikBara` memagari dirinya sendiri di `gerakPenuh`
+     (gerak.js:784) dan `denyut` ikut `skala()`, jadi tingkat gerak diputuskan
+     di satu tempat seperti biasanya. Keduanya berhenti sendiri. */
+  if (tingkat === "capai" && dari) {
+    denyut(dari);
+    percikBara(dari, { jumlah: 7 });
   }
 
   for (const b of hadiah.badge || []) {

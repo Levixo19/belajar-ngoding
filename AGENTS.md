@@ -581,6 +581,24 @@ diukur di `requestAnimationFrame` polos bisa mengembalikan nol — dan yang
 terjadi bukan error melainkan jalur yang diam-diam berhenti di butir pertama,
 cuma di sebagian pemuatan, tergantung frame mana yang menang.
 
+**Dan `saatSiap()` menjawab separuh saja: "elemennya sudah terpasang dan punya
+ukuran", BUKAN "ukurannya sudah berhenti berubah".** Hamparan bara mengukurnya:
+di 1100 px pemuatan-pertama, `clientWidth` `.bara-petak` menyusut **299 → 262
+sesudah** pemasangan, jadi pin yang dihitung pada 299 mendarat di `scrollLeft`
+**80** padahal ujung yang benar **117** — dan `saatSiap` sudah berjalan dengan
+benar, tepat sekali, pada kotak yang semenit kemudian tidak ada lagi. Apa pun
+yang MEMPIN posisi gulir karena itu butuh pengamat ukuran di atas `saatSiap`.
+
+Pengamat itu **wajib lepas**, dan ini bagian yang paling mudah dilupakan:
+posisi gulir adalah keadaan PENGGUNA, bukan keadaan komponen. Merebutnya
+kembali sesudah dia menggeser sendiri lebih buruk daripada tidak mem-pin sama
+sekali. Jadi putus pada isyarat sentuhan pertama (`wheel`/`pointerdown`/
+`keydown`) dan pada batas waktu — `pinKeHariIni()` di `layar-belajar.js` adalah
+contoh yang berlaku, dengan `PIN_BARA_MS = 4000`. Dua pagarnya di
+`test_web.py`: `TestHamparanBara.test_kisi_dibuka_pada_hari_ini` menuntut
+bentuknya, dan `test_rAF_polos_tidak_mengukur_tata_letak` menyapu seluruh
+`statik/js/layar-*.js` supaya kelas bug ini tidak lahir lagi di tempat lain.
+
 **Bab memakai `<details>/<summary>`, dan `@media print` wajib memaksanya
 terbuka.** Melipat adalah cara menghemat ruang LAYAR; di kertas tidak ada yang
 bisa diklik untuk membukanya lagi, jadi halaman cetak yang kehilangan separuh

@@ -17,7 +17,7 @@
 
 import {
   api, h, bilah, angka, sorak, konfirmasi, jendela, salin, keadaan,
-  simpanLokal, ambilLokal, idBaru, medan,
+  simpanLokal, ambilLokal, idBaru, medan, hariIniISO,
 } from "./inti.js";
 import {
   ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak,
@@ -269,7 +269,7 @@ async function lihatLaporan() {
 
 async function ekspor() {
   const r = await api.ambil("/api/data/ekspor");
-  const nama = "progres-belajar-" + new Date().toISOString().slice(0, 10) + ".json";
+  const nama = "progres-belajar-" + hariIniISO() + ".json";
   unduh(JSON.stringify(r.progres, null, 2), nama, "application/json");
   sorak("Progres diekspor ke " + nama, "tumbuh");
 }

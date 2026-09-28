@@ -1363,6 +1363,732 @@ class TestSatuMesinPerProperti(unittest.TestCase):
                          f"{nama} bukan #maju-baca")
 
 
+_SKRIP_INTI_NODE = r"""
+// Jam dibekukan SEBELUM modulnya diimpor, dan sengaja pada saat di mana tanggal
+// LOKAL berbeda dari tanggal UTC. Tanpa itu `hariIniISO()` yang salah (memakai
+// toISOString) akan lolos di sebagian besar jam dalam sehari, dan tes yang cuma
+// lolos "biasanya" lebih buruk daripada tidak ada tes.
+const ASLI = Date;
+const BEKU = Number(process.argv[3]);
+function Beku(...a) { return a.length ? new ASLI(...a) : new ASLI(BEKU); }
+Beku.now = () => BEKU;
+Beku.parse = ASLI.parse;
+Beku.UTC = ASLI.UTC;
+Beku.prototype = ASLI.prototype;
+globalThis.Date = Beku;
+
+// inti.js memang berbicara kepada DOM; yang diuji di sini bukan itu, jadi
+// permukaannya dipalsukan seadanya supaya modulnya bisa dimuat di Node.
+const boneka = () => new Proxy(function () {}, {
+  get(_, k) { return k === "then" ? undefined : boneka(); },
+  set() { return true; },
+  apply() { return boneka(); },
+  construct() { return boneka(); },
+});
+globalThis.window = boneka();
+globalThis.document = boneka();
+// localStorage sungguhan (di memori), bukan boneka yang menelan tulisan:
+// `sudahPernah()` HARUS bisa membaca kembali apa yang barusan ditulisnya,
+// dan boneka yang selalu mengembalikan null membuat tes itu selalu hijau.
+const simpanan = new Map();
+globalThis.localStorage = {
+  getItem: (k) => (simpanan.has(k) ? simpanan.get(k) : null),
+  setItem: (k, v) => simpanan.set(k, String(v)),
+  removeItem: (k) => simpanan.delete(k),
+};
+
+const m = await import(process.argv[2]);
+const hariIni = m.hariIniISO();
+const geser = (n) => {
+  const t = new ASLI(BEKU);
+  t.setDate(t.getDate() + n);
+  const dua = (x) => String(x).padStart(2, "0");
+  return `${t.getFullYear()}-${dua(t.getMonth() + 1)}-${dua(t.getDate())}`;
+};
+
+console.log(JSON.stringify({
+  zona: process.env.TZ,
+  // Pembanding bebas: `sv-SE` memformat tanggal LOKAL sebagai YYYY-MM-DD, jadi
+  // ia perhitungan kedua yang tidak memakai satu baris pun kode yang diuji.
+  hariIniISO: hariIni,
+  hariIniPembanding: new ASLI(BEKU).toLocaleDateString("sv-SE"),
+  hariIniUTC: new ASLI(BEKU).toISOString().slice(0, 10),
+  // date-only: yang dulu bergeser sehari
+  tanggalDariDateOnly: m.tanggalRamah("2026-09-28"),
+  // timestamp naive: TIDAK boleh bergeser satu jam maupun satu hari
+  tanggalDariTimestamp: m.tanggalRamah("2026-09-28T07:15:00"),
+  jamDariTimestamp: m.jamRamah("2026-09-28T07:15:00"),
+  // konvensi tanda: masa depan positif, masa lalu negatif
+  selisihHariIni: m.selisihHari(hariIni),
+  selisihBesok: m.selisihHari(geser(1)),
+  selisihKemarin: m.selisihHari(geser(-1)),
+  selisihSepekanLalu: m.selisihHari(geser(-7)),
+  // masukan rusak tetap tidak melempar
+  selisihKosong: m.selisihHari(""),
+  tanggalNgawur: m.tanggalRamah("bukan tanggal"),
+  // penanda upacara: panggilan pertama harus false, kedua true
+  upacaraPertama: m.sudahPernah("hijauPertama"),
+  upacaraKedua: m.sudahPernah("hijauPertama"),
+  upacaraLain: m.sudahPernah("upacaraLain"),
+  kunciTersimpan: [...simpanan.keys()].sort(),
+}));
+"""
+
+
+class TestKonvensiTanggalJavaScript(unittest.TestCase):
+    """Satu konvensi tanggal, diadu di dua zona waktu yang berlawanan.
+
+    Spesifikasi ECMAScript mengurai dua bentuk ISO dengan aturan berbeda:
+    `"2026-09-28"` (date-only) dibaca sebagai tengah malam **UTC**, sedangkan
+    `"2026-09-28T07:15:00"` (tanpa offset) dibaca sebagai tengah malam
+    **lokal**. Server ini menulis keduanya dan memaksudkan keduanya waktu
+    setempat, jadi hanya bentuk pertama yang perlu ditolong.
+
+    Dua bug nyata yang melahirkan tes ini, dan keduanya diam:
+
+      · `tanggalRamah("2026-09-28")` mengembalikan 27/9/2026 di bujur barat,
+        jadi setiap tooltip sel bara salah sehari bagi sebagian dunia.
+      · `new Date().toISOString().slice(0, 10)` memberi tanggal UTC, jadi sel
+        "hari ini" kehilangan cincinnya sepanjang pagi di UTC+8.
+
+    Yang dijaga bukan nilai tertentu melainkan KESAMAAN lintas zona: tanggal
+    yang sama harus terbaca sama di Asia/Makassar dan Pacific/Niue. Itu
+    membuatnya peka dua arah -- membuang `"T00:00:00"` memerahkannya, dan
+    menempelkannya ke cap waktu (yang sudah benar) juga memerahkannya.
+    """
+
+    # Jam beku dipilih supaya tanggal lokal BERBEDA dari tanggal UTC di
+    # masing-masing zona; kalau tidak, `hariIniISO()` yang salah lolos.
+    ZONA = {
+        # 2026-09-28T20:00Z -> 29/9 pukul 04:00 di UTC+8
+        "Asia/Makassar": (1790625600000, "2026-09-29"),
+        # 2026-09-28T05:00Z -> 27/9 pukul 18:00 di UTC-11
+        "Pacific/Niue": (1790571600000, "2026-09-27"),
+    }
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji inti.js")
+    def test_tanggal_sama_di_dua_zona_berlawanan(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "js", "inti.js")
+
+        hasil = {}
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-tanggal.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_INTI_NODE)
+            for zona, (beku, _) in self.ZONA.items():
+                lingkungan = dict(os.environ, TZ=zona)
+                jalan = subprocess.run(["node", js, jalur, str(beku)],
+                                       capture_output=True, text=True,
+                                       timeout=60, env=lingkungan)
+                self.assertEqual(jalan.returncode, 0, jalan.stderr[-1200:])
+                hasil[zona] = json.loads(jalan.stdout)
+
+        barat, timur = hasil["Pacific/Niue"], hasil["Asia/Makassar"]
+
+        # 1. Tanggal date-only terbaca sebagai hari yang SAMA di dua bujur.
+        self.assertEqual(barat["tanggalDariDateOnly"], timur["tanggalDariDateOnly"],
+                         "tanggal date-only bergeser antar zona: ISO date-only "
+                         "diurai sebagai tengah malam UTC")
+        self.assertIn("28", timur["tanggalDariDateOnly"])
+
+        # 2. Cap waktu naive TIDAK boleh ikut bergeser -- tidak sehari, tidak
+        #    sejam. Ia sudah benar sebelum konvensi ini ada.
+        self.assertEqual(barat["jamDariTimestamp"], timur["jamDariTimestamp"],
+                         "cap waktu bergeser antar zona; konvensinya menempel "
+                         "'T00:00:00' pada masukan yang tidak memintanya")
+        self.assertEqual(barat["tanggalDariTimestamp"], timur["tanggalDariTimestamp"])
+        self.assertIn("28", timur["tanggalDariTimestamp"])
+        self.assertIn("07", timur["jamDariTimestamp"],
+                      "jam 07:15 berubah jam; cap waktu tidak boleh disentuh")
+
+        # Keduanya harus benar-benar TERFORMAT. Tanpa dua baris ini, konvensi
+        # yang menempelkan "T00:00:00" ke SEMUA masukan tetap lolos: cap waktu
+        # jadi Invalid Date, helpernya mengembalikan string mentah apa adanya,
+        # dan string mentah itu kebetulan sama di kedua zona sekaligus memuat
+        # "28" dan "07". Versi pertama tes ini memang lolos untuk mutasi itu.
+        for nama in ("tanggalDariTimestamp", "jamDariTimestamp", "tanggalDariDateOnly"):
+            self.assertIn("Sep", timur[nama],
+                          f"{nama} tidak terformat -- masukannya diurai sebagai "
+                          "tanggal tidak sah dan dikembalikan mentah")
+            self.assertNotIn("T", timur[nama],
+                             f"{nama} masih berbentuk ISO mentah, bukan hasil format")
+
+        # 3. "Hari ini" adalah hari menurut jam DINDING, bukan menurut UTC.
+        for zona, (_, harusnya) in self.ZONA.items():
+            r = hasil[zona]
+            self.assertEqual(r["hariIniISO"], harusnya, f"hariIniISO salah di {zona}")
+            self.assertEqual(r["hariIniISO"], r["hariIniPembanding"],
+                             f"hariIniISO tidak cocok dengan tanggal lokal di {zona}")
+            self.assertNotEqual(
+                r["hariIniISO"], r["hariIniUTC"],
+                f"jam beku di {zona} tidak lagi membedakan tanggal lokal dari "
+                "UTC, jadi tes ini berhenti bisa gagal -- pilih jam lain")
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji inti.js")
+    def test_tanda_selisih_hari_masa_lalu_negatif(self):
+        """Arah `selisihHari()` adalah kontrak, bukan detail.
+
+        `jadwalRamah()` membaca `<= 0` sebagai "sudah waktunya diulang" dan
+        `celahBelajar()` membalikkannya jadi "N hari lalu". Membalik tandanya
+        suatu hari nanti akan menukar kedua kalimat itu sekaligus, dan tidak
+        ada satu pun tes lain di repo ini yang akan menyadarinya.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "js", "inti.js")
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-tanggal.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_INTI_NODE)
+            for zona, (beku, _) in self.ZONA.items():
+                jalan = subprocess.run(
+                    ["node", js, jalur, str(beku)], capture_output=True,
+                    text=True, timeout=60, env=dict(os.environ, TZ=zona))
+                self.assertEqual(jalan.returncode, 0, jalan.stderr[-1200:])
+                r = json.loads(jalan.stdout)
+                self.assertEqual(r["selisihHariIni"], 0, zona)
+                self.assertEqual(r["selisihBesok"], 1, f"{zona}: besok harus +1")
+                self.assertEqual(r["selisihKemarin"], -1,
+                                 f"{zona}: masa lalu harus NEGATIF")
+                self.assertEqual(r["selisihSepekanLalu"], -7, zona)
+                self.assertIsNone(r["selisihKosong"], zona)
+                self.assertEqual(r["tanggalNgawur"], "bukan tanggal", zona)
+
+
+class TestHamparanBara(unittest.TestCase):
+    """Hamparan 26 pekan: konversi hari, pembagian mesin, dan kata yang dipakai.
+
+    Tiga hal yang tidak terlihat dari membaca kodenya sepintas, dan ketiganya
+    sudah pernah salah di repo ini atau di paket promptnya.
+    """
+
+    @staticmethod
+    def _berkas(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    # Apa saja yang hanya bisa dijawab benar SESUDAH tata letak jadi. Semuanya
+    # mengembalikan nol pada elemen yang masih lepas dari dokumen, dan nol itu
+    # tidak pernah datang sebagai galat. `bawaKeTengah(` ikut masuk karena ia
+    # membaca ketiganya di dalam dirinya.
+    BACA_TATA_LETAK = (r"scrollWidth", r"clientWidth", r"offsetWidth",
+                       r"offsetHeight", r"scrollHeight", r"clientHeight",
+                       r"getBoundingClientRect", r"bawaKeTengah\(")
+
+    @staticmethod
+    def _telanjang(src):
+        """Buang komentar. Tanpa ini tes menghukum penjelasannya sendiri."""
+        src = re.sub(r"/\*.*?\*/", " ", src, flags=re.S)
+        return re.sub(r"//[^\n]*", " ", src)
+
+    @staticmethod
+    def _kedalaman(badan):
+        """[(indeks, kedalaman kurung)] relatif badan fungsi; badan = kedalaman 1."""
+        dalam = 0
+        peta = []
+        for i, c in enumerate(badan):
+            if c == "{":
+                dalam += 1
+            peta.append((i, dalam))
+            if c == "}":
+                dalam -= 1
+        return peta
+
+    @staticmethod
+    def _fungsi(src, nama):
+        """Badan satu fungsi tingkat-modul, dipotong dengan hitung kurung."""
+        awal = src.index(f"function {nama}(")
+        i = src.index("{", awal)
+        dalam = 0
+        for j in range(i, len(src)):
+            if src[j] == "{":
+                dalam += 1
+            elif src[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return src[awal:j + 1]
+        raise AssertionError(f"fungsi {nama} tidak tertutup")
+
+    def test_kolom_pertama_jatuh_di_senin(self):
+        """`(getDay() + 6) % 7` adalah konversi Minggu-pertama ke Senin-pertama.
+
+        `Date.getDay()` mengembalikan 0 untuk MINGGU. Kisi ini berbaris
+        Senin..Minggu, jadi angkanya harus diputar satu. Menghapus `+ 6`
+        menggeser seluruh hamparan sehari tanpa satu pun sel yang hilang --
+        kesalahan yang terlihat rapi dan karena itu tidak pernah dilaporkan.
+        """
+        badan = self._fungsi(
+            self._berkas("webapp", "statik", "js", "layar-belajar.js"), "blokBara")
+        self.assertIn("(tanggalLokal(pertama.tanggal).getDay() + 6) % 7", badan,
+                      "konversi Senin-pertama hilang atau berubah bentuk")
+
+        # Adu rumusnya dengan tabel kebenaran, supaya yang dijaga artinya dan
+        # bukan cuma teksnya: Senin -> 0 baris pengisi, Minggu -> 6.
+        for getday, harusnya in enumerate([6, 0, 1, 2, 3, 4, 5]):   # 0=Minggu
+            self.assertEqual((getday + 6) % 7, harusnya)
+
+    def test_kisi_dibuka_pada_hari_ini(self):
+        """Pin gulir harus punya BENTUK yang benar, bukan cuma ada.
+
+        Versi pertama tes ini cuma menuntut barisnya ADA, dan dua mutasi lolos
+        795 tes karenanya:
+
+          (a) pin dipindah keluar dari callback sehingga dijalankan saat
+              elemennya masih lepas dari dokumen -- `scrollWidth` nol, pin jadi
+              nol, rusak di SEMUA jalur, suite hijau;
+          (b) baris `geser.hidden = ...` dihapus -- penandanya melaporkan
+              "tidak ada yang tersembunyi" sementara lima bulan di luar kotak,
+              suite hijau.
+
+        Terukur, empat jalur pemuatan x dua lebar, sebelum perbaikan:
+
+          jalur = pemuatan-pertama | reload | kembali-lewat-rute | dari-bahasa
+          360 px :  80 v |  80 v |   0 X |   0 X
+          1100 px:  80 X | 117 v |   0 X |   0 X
+
+        `requestAnimationFrame` polos hanya menang di pemuatan yang beruntung,
+        dan di 1100 px pemuatan-pertama ia menang TERLALU CEPAT: kotaknya masih
+        menyusut 299 -> 262 sesudah itu, jadi 80 mendarat di tempat yang benar
+        untuk kotak yang sudah tidak ada.
+        """
+        js = self._berkas("webapp", "statik", "js", "layar-belajar.js")
+
+        # 1. `blokBara` mendelegasikan, dan tidak mem-pin sendiri.
+        bb = self._telanjang(self._fungsi(js, "blokBara"))
+        self.assertRegex(bb, r"pinKeHariIni\(\s*petak",
+                         "`blokBara` tidak lagi memanggil pin-nya")
+        self.assertNotIn("scrollLeft", bb, "`blokBara` mem-pin sendiri lagi")
+        self.assertNotIn("requestAnimationFrame", bb,
+                         "`blokBara` memakai rAF polos; ia kalah di jalur "
+                         "'kembali lewat rute' dan pin-nya jadi nol")
+
+        badan = self._telanjang(self._fungsi(js, "pinKeHariIni"))
+
+        # 2. TIDAK ADA pembacaan tata letak di kedalaman 1 -- yaitu langsung di
+        #    badan fungsi, sebelum satu pun callback. Ini yang menangkap mutasi
+        #    (a): memindahkan pin ke luar callback menaikkannya ke kedalaman 1.
+        peta = dict(self._kedalaman(badan))
+        for pola in self.BACA_TATA_LETAK:
+            for m in re.finditer(pola, badan):
+                self.assertGreaterEqual(
+                    peta[m.start()], 2,
+                    f"`{m.group(0)}` dibaca langsung di badan `pinKeHariIni`, "
+                    "bukan di dalam callback; pada jalur pemuatan yang lambat "
+                    "elemennya masih lepas dan nilainya nol")
+
+        # 3. SATU-SATUNYA yang dijalankan langsung di badan fungsi adalah
+        #    `saatSiap(...)`. Memeriksa token tata letak saja tidak cukup:
+        #    mutasi (a) memindahkan PEMANGGILAN `pasang()` ke kedalaman 1, dan
+        #    pemanggilan itu tidak memuat satu pun token -- versi pertama tes
+        #    ini lolos untuk mutasi tersebut.
+        panggil = sorted({m.group(1) for m in
+                          re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", badan)
+                          if peta[m.start()] == 1})
+        self.assertEqual(
+            panggil, ["saatSiap"],
+            "ada yang dijalankan langsung di badan `pinKeHariIni` selain "
+            f"`saatSiap()`: {panggil}. Apa pun di sana berjalan sebelum "
+            "elemennya punya ukuran, dan pin-nya jadi nol tanpa pesan galat")
+        self.assertNotIn("requestAnimationFrame", badan,
+                         "`pinKeHariIni` memakai rAF polos; `saatSiap` yang "
+                         "menunggu elemennya benar-benar punya ukuran")
+
+        # 4. Pin dan kondisi penanda di SATU blok kurung yang sama. Ini yang
+        #    menangkap mutasi (b) dan juga penanda yang dihitung di tempat lain
+        #    dengan kotak yang berbeda.
+        i_pin = badan.index("scrollLeft")
+        i_tanda = badan.index(".hidden")
+        awal_blok = badan.rindex("{", 0, i_pin)
+        dalam = 0
+        akhir_blok = None
+        for j in range(awal_blok, len(badan)):
+            if badan[j] == "{":
+                dalam += 1
+            elif badan[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    akhir_blok = j
+                    break
+        self.assertIsNotNone(akhir_blok)
+        self.assertTrue(
+            awal_blok < i_tanda < akhir_blok,
+            "kondisi `geser.hidden` tidak berada di blok yang sama dengan "
+            "pin-nya; ia akan menjawab pertanyaan tentang kotak yang lain")
+
+        # 5. Pengamat ukuran WAJIB bisa lepas, dan lepas karena dua sebab.
+        #    Posisi gulir adalah keadaan PENGGUNA: merebutnya kembali sesudah
+        #    dia menggeser sendiri lebih buruk daripada tidak mem-pin.
+        for potongan, pesan in (
+            ("new ResizeObserver(", "tidak ada pengamat ukuran yang dibuat; pin "
+                                    "pertama salah di 1100 px karena kotaknya "
+                                    "menyusut sesudahnya"),
+            (".observe(", "pengamat ukuran dibuat tapi tidak pernah dipasang"),
+            ("disconnect()", "pengamat ukuran tidak pernah diputus"),
+            ("removeEventListener", "pendengar pelepas tidak pernah dilepas"),
+            ("clearTimeout", "batas waktu pelepasan tidak pernah dibatalkan"),
+        ):
+            self.assertIn(potongan, badan, pesan)
+        for isyarat in ("wheel", "pointerdown", "keydown"):
+            self.assertIn(isyarat, js,
+                          f"`{isyarat}` bukan lagi isyarat bahwa pengguna sudah "
+                          "mengambil alih gulirnya")
+
+        # 6. Larangan yang sama seperti sebelumnya.
+        self.assertNotIn("scrollIntoView", badan,
+                         "`scrollIntoView` menggulir seluruh leluhur dan akan "
+                         "menggeser halaman -- lihat `bawaKeTengah()`")
+        self.assertNotIn("scrollBehavior", badan)
+        self.assertNotIn("scroll-behavior", badan)
+
+    def test_kisi_terjangkau_papan_ketik_tanpa_mengganggu_ubin(self):
+        """Wadah yang menggulir wajib bisa difokus, dan `.ubin` tidak terusik.
+
+        Di Chrome dan Safari, wadah `overflow-x: auto` tanpa `tabindex` tidak
+        bisa digulir papan ketik sama sekali. Sebelum pin, yang tak terjangkau
+        adalah bulan terbaru; sesudah pin, lima bulan pertamanya -- jadi pin
+        yang benar justru menaikkan harga kelalaian ini.
+
+        Yang menjaga `.ubin` bukan urutan tab-nya melainkan sesuatu yang lebih
+        kuat: `.bara-petak` lahir di `blokBara` (dipakai `dasborBerjalan`)
+        sedangkan `.ubin-bahasa` di `kisiUbin` (dipakai `layarMulai`), dan
+        `layarDasbor` memilih SALAH SATU lewat `d.xp === 0`. Keduanya tidak
+        pernah ada di halaman yang sama. Tes ini mengunci pemisahan itu, karena
+        begitu ia hilang, roving tabindex dan `tabindex="0"` biasa akan berbagi
+        satu urutan tab tanpa ada yang menyadarinya.
+        """
+        js = self._berkas("webapp", "statik", "js", "layar-belajar.js")
+        bb = self._telanjang(self._fungsi(js, "blokBara"))
+
+        self.assertRegex(bb, r'tabindex:\s*"0"',
+                         "`.bara-petak` tidak bisa difokus; pengguna papan ketik "
+                         "tidak punya cara menggeser kisinya")
+        self.assertRegex(bb, r'role:\s*"group"', "`.bara-petak` tanpa role")
+        m = re.search(r'"aria-label":\s*"([^"]+)"', bb)
+        self.assertIsNotNone(m, "`.bara-petak` tanpa nama yang diumumkan")
+        self.assertRegex(m.group(1).lower(), r"geser|gulir",
+                         "nama yang diumumkan tidak menyebut bahwa isinya digeser")
+
+        # Penanda menyebut ARAH: sesudah pin, yang tersembunyi ada di KIRI.
+        tanda = re.search(r'span\.bara-geser"[^)]*?,\s*\n?\s*"([^"]+)"', bb, re.S)
+        self.assertIsNotNone(tanda, "teks penanda geser tidak terbaca")
+        self.assertIn("kiri", tanda.group(1).lower(),
+                      "penanda tidak menyebut arah; sesudah pin, yang "
+                      "tersembunyi ada di kiri, dan penanda tanpa arah "
+                      "menyuruh orang mencari ke tempat yang salah")
+
+        # Pemisahan dua layar, dibaca dari pemanggilnya.
+        mulai = self._telanjang(self._fungsi(js, "layarMulai"))
+        berjalan = self._telanjang(self._fungsi(js, "dasborBerjalan"))
+        self.assertIn("kisiUbin(", mulai)
+        self.assertNotIn("blokBara(", mulai,
+                         "`layarMulai` sekarang memuat hamparan bara juga; "
+                         "roving tabindex `.ubin` dan `tabindex=0` milik "
+                         "`.bara-petak` akan berbagi satu urutan tab")
+        self.assertIn("blokBara(", berjalan)
+        self.assertNotIn("kisiUbin(", berjalan,
+                         "`dasborBerjalan` sekarang memuat kisi ubin juga; "
+                         "lihat pesan di atas")
+
+        # Roving tabindex `.ubin` masih satu titik masuk per kisi.
+        panah = self._telanjang(self._fungsi(js, "panahAntarUbin"))
+        self.assertRegex(panah, r"tabIndex\s*=\s*i === 0 \? 0 : -1",
+                         "roving tabindex `.ubin` berubah bentuk; satu kisi "
+                         "harus punya tepat satu titik masuk")
+
+    def test_rAF_polos_tidak_mengukur_tata_letak(self):
+        """Sapuan: `requestAnimationFrame` polos tidak boleh mengukur apa pun.
+
+        Ini pagar untuk KELAS bug, bukan untuk satu tempat. Satu frame tidak
+        cukup: layar dibangun utuh sebelum router menempelkannya, dan router
+        masih menunggu animasi keluar layar sebelumnya. Jadi rAF yang mengukur
+        bisa mengembalikan nol -- dan yang terjadi bukan galat melainkan diam,
+        cuma di sebagian pemuatan, tergantung frame mana yang menang.
+
+        Pembantunya sudah ada: `saatSiap()`, yang menunggu `isConnected` DAN
+        `clientWidth > 0`. Yang boleh memakai rAF polos hanyalah `saatSiap`
+        sendiri, dan callback yang tidak mengukur apa pun.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        dirjs = os.path.join(akar, "webapp", "statik", "js")
+        pelanggaran = []
+        for nama in sorted(n for n in os.listdir(dirjs)
+                           if n.startswith("layar-") and n.endswith(".js")):
+            with open(os.path.join(dirjs, nama), encoding="utf-8") as f:
+                mentah = f.read()
+            src = self._telanjang(mentah)
+
+            # Rentang badan `saatSiap` sendiri: dua rAF di dalamnya memang
+            # mesinnya, bukan pemakainya.
+            kebal = []
+            if "function saatSiap(" in src:
+                badan = self._fungsi(src, "saatSiap")
+                i = src.index(badan)
+                kebal.append((i, i + len(badan)))
+
+            for m in re.finditer(r"requestAnimationFrame\s*\(", src):
+                if any(a <= m.start() < b for a, b in kebal):
+                    continue
+                # Ambil argumennya dengan hitung kurung.
+                i, dalam = m.end() - 1, 0
+                arg = ""
+                for j in range(i, len(src)):
+                    if src[j] == "(":
+                        dalam += 1
+                    elif src[j] == ")":
+                        dalam -= 1
+                        if dalam == 0:
+                            arg = src[i + 1:j]
+                            break
+                for pola in self.BACA_TATA_LETAK:
+                    if re.search(pola, arg):
+                        baris = src[:m.start()].count("\n") + 1
+                        pelanggaran.append(f"{nama}:{baris} -> {pola}")
+                        break
+
+        self.assertEqual(
+            pelanggaran, [],
+            "requestAnimationFrame polos yang mengukur tata letak; pakai "
+            "`saatSiap()` -- satu frame tidak menjamin elemennya sudah "
+            "terpasang, dan nilainya nol tanpa pesan galat: "
+            + "; ".join(pelanggaran))
+
+    def test_kanal_ukuran_kontras_bertahan_di_dua_tebal_garis(self):
+        """Inti berwarna tetap terbedakan berapa pun `--tebal-garis` nanti.
+
+        Inti = 11 - 2*border - 2*cincin. Hari ini border 1 px di SEMUA tema,
+        termasuk kontras: `[data-tema="kontras"] { --tebal-garis: 2px }` dan
+        `:root { --tebal-garis: 1px }` sama-sama berspesifisitas 0,1,0 pada
+        elemen <html> yang sama, jadi yang belakangan menang. Token itu bisa
+        dihidupkan lagi kapan saja -- itu urusan S12, bukan blok bara -- dan
+        begitu ia hidup, cincin 3px/1,5px membuat tingkat 1 menyusut jadi 1 px.
+
+        Yang dikunci di sini bukan angka cincinnya melainkan SIFATNYA: langkah
+        antar tingkat >= 2 px dan tingkat terkecil >= 2 px, di KEDUA nilai
+        border yang mungkin.
+        """
+        css = re.sub(r"/\*.*?\*/", " ",
+                     self._berkas("webapp", "statik", "gaya.css"), flags=re.S)
+        cincin = {}
+        for m in re.finditer(
+                r'\[data-tema="kontras"\]\s*\.bara-([123])\s*\{[^}]*box-shadow:\s*'
+                r'inset\s+0\s+0\s+0\s+([\d.]+)px', css):
+            cincin[int(m.group(1))] = float(m.group(2))
+        self.assertEqual(sorted(cincin), [1, 2],
+                         "cincin kontras hanya boleh dipasang pada tingkat 1 dan 2; "
+                         f"terbaca {sorted(cincin)}")
+        cincin[3] = 0.0
+
+        SEL = 11.0
+        for border in (1.0, 2.0):
+            inti = {t: SEL - 2 * border - 2 * cincin[t] for t in (1, 2, 3)}
+            self.assertGreaterEqual(
+                inti[1], 2.0,
+                f"border {border:g}px: inti tingkat 1 tinggal {inti[1]:g}px -- "
+                "kanal ukurannya hilang justru di tema yang paling membutuhkannya")
+            for a, b in ((1, 2), (2, 3)):
+                self.assertGreaterEqual(
+                    inti[b] - inti[a], 2.0,
+                    f"border {border:g}px: inti {a}->{b} cuma beda "
+                    f"{inti[b] - inti[a]:g}px")
+
+        # Cincin tidak boleh dipakai di tema lain: di sana empat tingkat sudah
+        # terbedakan oleh terang-gelap, dan bentuk tambahan cuma jadi kebisingan.
+        for m in re.finditer(r"([^{}]*\.bara-[123][^{}]*)\{([^{}]*)\}", css):
+            if "box-shadow" in m.group(2):
+                self.assertIn('[data-tema="kontras"]', m.group(1),
+                              "cincin bentuk bocor ke tema selain kontras")
+
+    def test_sel_bara_memisahkan_scale_waapi_dari_transform_css(self):
+        """Satu properti satu mesin, dibuktikan dari kedua sisinya sekaligus.
+
+        Animasi masuk tiap sel ditulis WAAPI; pembesaran hover ditulis CSS.
+        Selama keduanya memakai `transform`, keduanya menulis properti yang
+        sama tiap frame dan gejalanya bukan galat melainkan sel yang tersendat.
+        Pemisahannya: WAAPI memakai `scale` (properti transform mandiri, yang
+        disusun sebelum `transform`), CSS tetap memakai `transform`.
+
+        Tes ini menagih kedua arah, karena memperbaiki satu sisi saja adalah
+        persis bentuk regresi yang sudah terjadi tiga kali di repo ini.
+        """
+        js = self._berkas("webapp", "statik", "js", "layar-belajar.js")
+        nyala = self._fungsi(js, "nyalakanBara")
+        self.assertIn("scale:", nyala, "animasi masuk bara tidak lagi memakai `scale`")
+        self.assertNotIn("transform:", nyala,
+                         "`nyalakanBara` menulis `transform`, properti yang sudah "
+                         "dipegang transition CSS `.bara-sel`")
+
+        css = re.sub(r"/\*.*?\*/", " ",
+                     self._berkas("webapp", "statik", "gaya.css"), flags=re.S)
+        for sel, isi in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            if not re.search(r"\.bara-(sel|1|2|3|kini|kosong)\b", sel):
+                continue
+            for pr in ("scale", "translate", "rotate"):
+                self.assertNotRegex(
+                    isi, rf"\b{pr}\s*:",
+                    f"`{sel.strip()}` menyetel `{pr}` di CSS; properti itu milik "
+                    "WAAPI di `nyalakanBara`")
+                self.assertNotRegex(
+                    isi, rf"\btransition[^;]*\b{pr}\b",
+                    f"`{sel.strip()}` menaruh `{pr}` di daftar transition; itu "
+                    "mesin kedua pada properti yang sudah punya mesin")
+
+    def test_pengisi_depan_tidak_menyalin_ukuran_sel(self):
+        """Ukuran sel hidup di CSS, satu kali.
+
+        Pengisi depan dulu menulis `width/height: 11px` lewat gaya inline --
+        salinan ketiga dari angka yang sudah ada di `.bara-petak` dan
+        `.bara-sel`. Yang akan pecah diam-diam selalu salinan yang tidak pernah
+        dilihat siapa pun.
+        """
+        badan = self._fungsi(
+            self._berkas("webapp", "statik", "js", "layar-belajar.js"), "blokBara")
+        self.assertIn("bara-kosong", badan, "pengisi depan tidak berkelas")
+        self.assertNotRegex(badan, r"(width|height)\s*:\s*[\"']?\d",
+                            "pengisi depan menyalin ukuran sel lewat gaya inline")
+
+    def test_kata_di_hamparan_menyebut_xp_bukan_hari_belajar(self):
+        """Invarian #11 sebagai kata, bukan cuma sebagai sumber data.
+
+        `riwayat_harian` hanya mencatat hari yang MENGHASILKAN XP. Hari yang
+        isinya bacaan setengah (`record_material_read(tuntas=False)`) menaikkan
+        streak tanpa meninggalkan entri apa pun, jadi selnya bernilai nol.
+        Menyebut hamparan ini "hari belajar" membuat ia membantah pil streak
+        yang berdiri beberapa piksel di sebelahnya.
+        """
+        js = self._berkas("webapp", "statik", "js", "layar-belajar.js")
+        for nama in ("blokBara", "jedaBara"):
+            badan = self._fungsi(js, nama)
+            # Komentar dibuang lebih dulu. Justru di komentarlah kedua kata
+            # terlarang itu muncul -- untuk menjelaskan kenapa keduanya TIDAK
+            # dipakai -- dan tes yang tidak membedakan penjelasan dari kalimat
+            # yang muncul di layar akan menghukum dokumentasinya sendiri.
+            badan = re.sub(r"/\*.*?\*/", " ", badan, flags=re.S)
+            badan = re.sub(r"//[^\n]*", " ", badan)
+            kutipan = re.findall(r'"([^"\\]*)"|`([^`\\]*)`', badan)
+            gabung = " ".join(a + b for a, b in kutipan).lower()
+            self.assertNotIn("hari belajar", gabung,
+                             f"`{nama}` menyebut 'hari belajar' untuk data yang "
+                             "sebenarnya mengukur XP per hari")
+            self.assertNotIn("hari menyala", gabung,
+                             f"`{nama}` masih memakai kata lama 'hari menyala'")
+        self.assertIn("hari ber-XP", js, "penghitung legenda tidak menyebut XP")
+
+
+class TestMesinPerayaan(unittest.TestCase):
+    """Mesin upacara: penanda sekali-seumur, dan cabang `capai` yang bersyarat.
+
+    Pemicunya bukan milik sesi ini -- ia tinggal di jalur hijau pertama
+    `layar-kerja.js` dan ditagih ke S08. Justru karena itu mesinnya butuh tes:
+    yang akan memasangnya adalah sesi lain yang tidak akan membaca berkas ini
+    dengan hati-hati, dan satu-satunya hal yang akan menegurnya adalah tes.
+    """
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji inti.js")
+    def test_penanda_upacara_hanya_sekali_dan_di_localstorage(self):
+        """`sudahPernah()` menjawab false sekali, lalu true selamanya.
+
+        Penandanya di localStorage dan BUKAN di berkas progres: berkas itu
+        catatan belajar orang sungguhan, dan "sudah pernah melihat animasi"
+        bukan capaian belajar. Akibat yang disengaja: membersihkan data situs
+        membuat perayaannya TERLEWAT -- bukan dobel, bukan galat, dan nol XP
+        yang hilang.
+        """
+        jalur = os.path.join(self._akar(), "webapp", "statik", "js", "inti.js")
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-inti.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_INTI_NODE)
+            jalan = subprocess.run(
+                ["node", js, jalur, "1790625600000"], capture_output=True,
+                text=True, timeout=60,
+                env=dict(os.environ, TZ="Asia/Makassar"))
+        self.assertEqual(jalan.returncode, 0, jalan.stderr[-1200:])
+        r = json.loads(jalan.stdout)
+
+        self.assertIs(r["upacaraPertama"], False,
+                      "panggilan pertama harus melaporkan BELUM pernah")
+        self.assertIs(r["upacaraKedua"], True,
+                      "panggilan kedua masih melaporkan belum pernah; penandanya "
+                      "tidak benar-benar tertulis atau tidak terbaca kembali")
+        self.assertIs(r["upacaraLain"], False,
+                      "penanda satu upacara ikut menutup upacara lain")
+        self.assertEqual(r["kunciTersimpan"],
+                         ["belajar.upacara.hijauPertama", "belajar.upacara.upacaraLain"],
+                         "kunci localStorage bukan `belajar.upacara.<kunci>`")
+
+    def test_cabang_capai_bersyarat_dua_hal_dan_pemanggil_lama_tidak_mengoper(self):
+        """Denyut + percik hanya untuk pemanggil yang menyerahkan bendanya.
+
+        Dua syarat, bukan satu. `tingkat === "capai"` saja akan menyalakannya
+        untuk keempat pemanggil hari ini -- perubahan perilaku yang tidak
+        diminta siapa pun. `dari` saja akan menyalakannya juga saat naik level,
+        di atas `tampilNaikLevel()` yang sudah punya partikelnya sendiri.
+        """
+        akar = self._akar()
+        with open(os.path.join(akar, "webapp", "statik", "js", "inti.js"),
+                  encoding="utf-8") as f:
+            inti = f.read()
+
+        syarat = re.search(r"if\s*\(([^)]*)\)\s*\{\s*\n\s*denyut\(", inti)
+        self.assertIsNotNone(syarat, "cabang denyut+percik di rayakan() hilang")
+        isi = syarat.group(1)
+        self.assertIn('tingkat === "capai"', isi,
+                      "cabang tidak lagi dibatasi tingkat `capai`")
+        self.assertRegex(isi, r"&&\s*dari\b|dari\s*&&",
+                         "cabang tidak lagi menuntut pemanggil menyerahkan `dari`; "
+                         "keempat pemanggil lama akan ikut menyalakannya")
+
+        # `dari` harus benar-benar sampai ke sana lewat parameter, bukan ditebak.
+        self.assertRegex(inti, r"export function rayakan\([^)]*dari\s*=\s*null",
+                         "`dari` bukan lagi parameter opsional rayakan()")
+
+        # Tidak satu pun pemanggil lama yang mengoper `dari`.
+        pemanggil = []
+        for nama in ("layar-belajar.js", "layar-kerja.js", "layar-lain.js"):
+            jalur = os.path.join(akar, "webapp", "statik", "js", nama)
+            if not os.path.exists(jalur):
+                continue
+            with open(jalur, encoding="utf-8") as f:
+                isi_berkas = f.read()
+            for m in re.finditer(r"(?<!tingkat)(?<![A-Za-z])rayakan\(", isi_berkas):
+                # potong sampai penutup kurungnya, dengan hitung kurung
+                i, dalam = m.end() - 1, 0
+                for j in range(i, len(isi_berkas)):
+                    if isi_berkas[j] == "(":
+                        dalam += 1
+                    elif isi_berkas[j] == ")":
+                        dalam -= 1
+                        if dalam == 0:
+                            pemanggil.append((nama, isi_berkas[m.start():j + 1]))
+                            break
+        PESAN_S08 = (
+            "\n\n  KALAU KAMU S08 DAN BARU MEMASANG PEMICU DI JALUR HIJAU "
+            "PERTAMA:\n"
+            "  tes ini memang menagihmu. Yang benar dilakukan adalah "
+            "MENDAFTARKAN\n"
+            "  panggilan barumu di sini -- naikkan angkanya, dan tulis di "
+            "komentar\n"
+            "  panggilan mana yang kamu tambahkan beserta alasannya. JANGAN "
+            "hapus\n"
+            "  tesnya: ia satu-satunya yang menjaga tiga pemanggil lain tidak "
+            "ikut\n"
+            "  menyalakan denyut+percik yang tidak diminta siapa pun.")
+
+        self.assertEqual(
+            len(pemanggil), 4,
+            f"jumlah pemanggil rayakan() berubah: {pemanggil}" + PESAN_S08)
+        for nama, panggilan in pemanggil:
+            self.assertNotRegex(
+                panggilan, r"\bdari\b",
+                f"{nama} mengoper `dari` ke rayakan(); itu perubahan perilaku "
+                "pemanggil lama." + PESAN_S08)
+
+
 class TestPagarTingkatGerak(unittest.TestCase):
     """Pagar `[data-gerak]` harus meredam properti yang MEMANG disetel sasarannya.
 
@@ -1376,11 +2102,18 @@ class TestPagarTingkatGerak(unittest.TestCase):
         `.opsi button`; pagarnya tetap meredam `transform`.
 
     Versi pertama tes ini hanya menutup `animation`, dan justru karena itulah
-    regresi kedua lolos. Sekarang keempat properti yang bisa diredam diperiksa:
-    animation, transform, translate, transition.
+    regresi kedua lolos. Sekarang KELIMA properti yang bisa diredam diperiksa:
+    animation, transform, translate, scale, transition.
+
+    `scale` masuk daftar sejak animasi masuk sel bara dipindah ke properti itu
+    (S04-B). Ia belum punya satu pun pagar `[data-gerak]` hari ini -- dan itu
+    benar, karena `scale` di sana ditulis WAAPI, bukan CSS, jadi pagar CSS
+    untuknya justru akan jadi aturan mati. Yang dijaga daftar ini adalah
+    kemungkinan berikutnya: begitu seseorang menulis `scale: none` di bawah
+    `[data-gerak]`, tes ini menagih buktinya.
     """
 
-    PROPERTI = ("animation", "transform", "translate", "transition")
+    PROPERTI = ("animation", "transform", "translate", "scale", "transition")
 
     @staticmethod
     def _css():
@@ -1434,7 +2167,7 @@ class TestPagarTingkatGerak(unittest.TestCase):
             # di sini: ia yang membuat perpindahannya terlihat bergerak.
             mt = re.search(r"\btransition(-property)?\s*:\s*([^;]+)", isi)
             if mt:
-                for pr in ("transform", "translate"):
+                for pr in ("transform", "translate", "scale"):
                     if re.search(rf"\b{pr}\b", mt.group(2)):
                         punya.add(pr)
             if not punya:

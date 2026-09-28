@@ -12,10 +12,12 @@
 
 import {
   api, h, isikan, kosongkan, bilah, bulat, angka, kosong, keadaan, sorak,
-  rayakan, salin, tanggalRamah, jamRamah, selisihHari, jendela, tandai, GalatApi,
+  rayakan, salin, tanggalRamah, jamRamah, selisihHari, tanggalLokal, hariIniISO,
+  jendela, tandai, GalatApi,
 } from "./inti.js";
 import {
-  animasi, masuk, ungkap, saatTampak, denyut, percikBara, adaGerak, berurut,
+  animasi, masuk, ungkap, saatTampak, denyut, percikBara, adaGerak, gerakPenuh,
+  berurut,
 } from "./gerak.js";
 import { ikon, ikonTipe } from "./ikon.js";
 import { praKode } from "./sorot.js";
@@ -510,15 +512,14 @@ function celahBelajar(d) {
   const tgl = d.hari_belajar_terakhir;
   if (!tgl) return null;
 
-  // Dibandingkan tanggal ke tanggal, bukan cap waktu ke cap waktu: selisih
-  // milidetik dibagi sehari lalu dibulatkan menghitung jam yang sudah berjalan
-  // hari ini sebagai satu hari penuh.
-  const hari = new Date(tgl + "T00:00:00");
-  if (Number.isNaN(hari.getTime())) return null;
-  const iniHari = new Date();
-  iniHari.setHours(0, 0, 0, 0);
-  const selisih = Math.round((iniHari - hari) / 86400000);
-  if (selisih <= 0) return null;
+  // Aritmetika tanggalnya milik `selisihHari()`, bukan milik layar ini. Versi
+  // pertama menyalin tiga barisnya ke sini, dan salinan itu langsung menjadi
+  // rumus kedua untuk pertanyaan yang sama. Tandanya sengaja dibalik di satu
+  // tempat yang terlihat: `selisihHari` menghitung dari HARI INI ke depan,
+  // jadi masa lalu negatif -- dan "12 hari lalu" adalah negatif itu dibalik.
+  const hari = tanggalLokal(tgl);
+  const selisih = -selisihHari(tgl);
+  if (!hari || !selisih || selisih <= 0) return null;
 
   return h("div.celah", {},
     h("span", {}, "Hari belajar terakhir: "),
@@ -616,7 +617,19 @@ const BARA_MAKS_ANIMASI = 48;
 function nyalakanBara(petak, menyala) {
   if (!adaGerak()) return;
   const bara = menyala.slice(-BARA_MAKS_ANIMASI);
-  const delay = berurut(bara.length, { per: 12, maks: 340, dari: "akhir" });
+
+  // Di `halus` kaskadenya dilepas, bukan dipendekkan. Empat puluh delapan sel
+  // yang menyala berurutan adalah contoh paling murni dari "bergerak SENDIRI":
+  // tidak ada yang menunggunya, tidak ada pertanyaan yang dijawabnya, ia cuma
+  // berlangsung -- dan di layar yang sama ada pil streak dan angka XP yang
+  // justru ingin dibaca. Yang tetap hidup: kisinya masuk sebagai SATU kejadian,
+  // bukan empat puluh delapan. Capnya tidak disentuh, `saatTampak` dan pengaman
+  // 2,5 detik tetap di tempatnya, dan tiap sel tetap berakhir di keadaan
+  // alaminya. Tingkatnya ditanyakan ke `gerakPenuh()`, yang meneruskan ke
+  // `tingkatGerak()` -- satu-satunya yang boleh memutuskan (invarian #3).
+  const delay = gerakPenuh()
+    ? berurut(bara.length, { per: 12, maks: 340, dari: "akhir" })
+    : () => 0;
 
   for (const el of bara) el.style.opacity = "0";
 
@@ -638,24 +651,120 @@ function nyalakanBara(petak, menyala) {
     masuk(petak, { geser: 6, zum: 1 });
     bara.forEach((el, i) => {
       el.style.opacity = "";
-      animasi(el, { opacity: [0, 1], transform: ["scale(.35)", "none"] },
+      // `scale`, BUKAN `transform`: `.bara-sel` punya `transition: transform`
+      // untuk pembesaran hover, jadi menulis transform dari sini berarti dua
+      // mesin pada satu properti (invarian #2). Properti transform mandiri
+      // disusun SEBELUM `transform`, jadi keduanya bisa hidup bersamaan tanpa
+      // saling menimpa: WAAPI memiliki `scale`, CSS memiliki `transform`.
+      animasi(el, { opacity: [0, 1], scale: ["0.35", "1"] },
               { pegas: "jawab", delay: delay(i) });
     });
   }, { bagian: 0.15 });
 }
 
+/* Batas waktu pengamat ukuran kisi bara. Terukur: penyusutan kotak yang
+   menyebabkan pin pertama salah terjadi dalam satu-dua frame sesudah
+   pemasangan, jadi empat detik adalah kelonggaran besar -- dan ia ada supaya
+   pengamatnya tidak hidup selamanya di layar yang dibuka lalu ditinggal. */
+const PIN_BARA_MS = 4000;
+
+/* Isyarat bahwa pengguna sudah mengambil alih gulirnya sendiri. `keydown`
+   hanya bisa datang karena `.bara-petak` sekarang bisa difokus. */
+const SENTUHAN_GULIR = ["wheel", "pointerdown", "keydown"];
+
+/** Pin kisi pada HARI INI, dan LEPAS begitu penggunanya menyentuhnya.
+ *
+ *  Terukur sebelum perbaikan, profil 182 hari, empat jalur pemuatan
+ *  (pemuatan-pertama | reload | kembali-lewat-rute | kembali-dari-layar-bahasa):
+ *
+ *    360 px :  80 benar | 80 benar |  0 SALAH |  0 SALAH
+ *    1100 px:  80 SALAH | 117 benar|  0 SALAH |  0 SALAH
+ *
+ *  `requestAnimationFrame` polos hanya menang pada pemuatan yang beruntung:
+ *  layar dibangun UTUH sebelum router menempelkannya, dan router masih
+ *  menunggu animasi keluar layar sebelumnya. Di jalur "kembali lewat rute"
+ *  frame itu selalu kalah, `scrollWidth` masih nol, dan pin-nya menjadi nol --
+ *  tanpa satu pun pesan galat. Itu yang diurus `saatSiap()`.
+ *
+ *  Tapi `saatSiap` menjawab "elemennya sudah terpasang dan punya ukuran",
+ *  BUKAN "ukurannya sudah berhenti berubah". Di 1100 px pemuatan pertama,
+ *  `clientWidth` petak menyusut 299 -> 262 SESUDAH pemasangan (kolom sisi
+ *  menyempit begitu isi kolom utama selesai ditata), jadi pin yang dihitung
+ *  pada 299 mendarat di 80 padahal ujung yang benar 117. Pengamat ukuran ini
+ *  yang menutup selisih itu.
+ *
+ *  Dan ia WAJIB lepas. Posisi gulir adalah keadaan PENGGUNA, bukan keadaan
+ *  komponen; merebutnya kembali sesudah dia menggeser sendiri lebih buruk
+ *  daripada tidak mem-pin sama sekali. Jadi: putus pada sentuhan pertama, dan
+ *  putus pada batas waktu.
+ *
+ *  Tanpa `scrollIntoView` (ia menggulir semua leluhur -- lihat `bawaKeTengah`)
+ *  dan tanpa animasi: `scroll-behavior` terhitung pada `.bara-petak` adalah
+ *  `auto`, karena properti itu tidak mewaris dari `html`. */
+function pinKeHariIni(petak, geser) {
+  const pasang = () => {
+    petak.scrollLeft = petak.scrollWidth;
+    // Kondisi penanda tinggal di dalam callback yang sama dengan pin-nya.
+    // Dihitung di luar, ia menjawab pertanyaan tentang kotak yang belum ada
+    // dan melaporkan "tidak ada yang tersembunyi" sementara lima bulan berada
+    // di luar kotaknya.
+    geser.hidden = petak.scrollWidth <= petak.clientWidth;
+  };
+
+  saatSiap(petak, () => {
+    pasang();
+    if (typeof ResizeObserver !== "function") return;
+
+    // Bandingkan lebarnya sendiri sebelum memasang ulang: `pasang()` menyentuh
+    // `geser.hidden`, dan pengamat yang bereaksi pada akibat tulisannya sendiri
+    // adalah lingkaran pengamat-ukuran, bukan perbaikan.
+    let lebarTerakhir = petak.clientWidth;
+    let lepas = () => {};
+    const pengamat = new ResizeObserver(() => {
+      if (petak.clientWidth === lebarTerakhir) return;
+      lebarTerakhir = petak.clientWidth;
+      pasang();
+    });
+    const jam = setTimeout(() => lepas(), PIN_BARA_MS);
+
+    lepas = () => {
+      clearTimeout(jam);
+      pengamat.disconnect();
+      for (const nama of SENTUHAN_GULIR) petak.removeEventListener(nama, lepas);
+    };
+    for (const nama of SENTUHAN_GULIR) {
+      petak.addEventListener(nama, lepas, { passive: true });
+    }
+    pengamat.observe(petak);
+  });
+}
+
 function blokBara(d) {
   const target = Math.max(1, d.target_harian);
-  const petak = h("div.bara-petak");
-  const hariIni = new Date().toISOString().slice(0, 10);
+  // Kisi ini menggulir ke samping, jadi ia WAJIB bisa difokus: tanpa
+  // `tabindex`, Chrome dan Safari tidak memberi pengguna papan ketik satu pun
+  // cara menggeser isinya, dan sesudah pin di bawah yang tidak terjangkau itu
+  // justru lima bulan pertamanya. `role="group"` + nama supaya yang diumumkan
+  // bukan "grup" kosong. `:focus-visible` global (gaya.css:599) sudah memberi
+  // cincinnya, jadi tidak ada gaya fokus baru yang perlu ditulis di sini.
+  const petak = h("div.bara-petak", {
+    tabindex: "0",
+    role: "group",
+    "aria-label": "Hamparan XP harian enam bulan terakhir, bisa digeser ke samping",
+  });
+  const hariIni = hariIniISO();
 
   // Sisipkan sel kosong supaya kolom pertama jatuh di hari yang benar. Tanpa
   // ini seluruh kisi bergeser dan barisnya tidak lagi berarti "Senin".
   const pertama = d.heatmap[0];
   if (pertama) {
-    const hari = (new Date(pertama.tanggal + "T00:00:00").getDay() + 6) % 7;
+    const hari = (tanggalLokal(pertama.tanggal).getDay() + 6) % 7;
     for (let i = 0; i < hari; i++) {
-      petak.appendChild(h("div", { gaya: { width: "11px", height: "11px" } }));
+      // Sel sungguhan berkelas, bukan div bergaya inline: ukurannya satu angka
+      // yang hidup di CSS bersama `.bara-sel` dan `.bara-petak`. Tiga salinan
+      // angka yang sama, dan yang akan pecah diam-diam adalah salinan yang
+      // tidak pernah dilihat siapa pun.
+      petak.appendChild(h("div.bara-kosong", { "aria-hidden": "true" }));
     }
   }
   const menyala = [];
@@ -669,17 +778,71 @@ function blokBara(d) {
   }
   nyalakanBara(petak, menyala);
 
+  // Penanda "kisi ini bisa digeser". Lahir tersembunyi dan baru dibuka kalau
+  // isinya memang lebih lebar dari kotaknya -- di 500 dan 860 px ia tidak
+  // muncul karena di sana tidak ada yang tersembunyi. Memakai `hidden`, bukan
+  // `display`, supaya komponen ini tidak menjadi satu lagi yang menyetel
+  // display sendiri dan lupa mengembalikannya.
+  // Arahnya disebut, bukan cuma keberadaannya. Sesudah kisinya dipin di ujung
+  // kanan, yang tersembunyi ada di KIRI — penanda tanpa arah menyuruh orang
+  // mencari ke tempat yang salah.
+  const geser = h("span.bara-geser", { hidden: true },
+    "· geser ke kiri untuk yang lebih lama");
+
+  pinKeHariIni(petak, geser);
+
   const aktif = d.heatmap.filter((s) => s.xp > 0).length;
   return h("section", {},
     h("span.mata", {}, "Bara — enam bulan terakhir"),
     h("div.kartu.kartu-rapat", {},
       petak,
+      jedaBara(d.heatmap),
       h("div.bara-legenda", {},
-        h("span", {}, `${aktif} hari menyala`),
-        h("span", { gaya: { marginLeft: "auto" } }, "dingin"),
-        h("div.bara-sel"), h("div.bara-sel.bara-1"),
-        h("div.bara-sel.bara-2"), h("div.bara-sel.bara-3"),
-        h("span", {}, "panas"))));
+        // "hari ber-XP", bukan "hari menyala" dan bukan "hari belajar".
+        // `riwayat_harian` cuma mencatat hari yang MENGHASILKAN XP; hari yang
+        // isinya bacaan setengah menaikkan streak tanpa meninggalkan entri
+        // apa pun di sini. Kalimat yang menyebut "belajar" akan berdiri di
+        // sebelah pil streak dan membantahnya (invarian #11).
+        h("span", {}, `${angka(aktif)} hari ber-XP`),
+        geser,
+        // Rampa diberi kata di kedua ujungnya, bukan angka ambang: ambangnya
+        // dihitung dari target harian yang bisa diubah, jadi angka apa pun di
+        // sini akan jadi salinan kedua yang cepat basi.
+        h("div.bara-rampa", {},
+          h("span", {}, "sedikit"),
+          h("div.bara-sel"), h("div.bara-sel.bara-1"),
+          h("div.bara-sel.bara-2"), h("div.bara-sel.bara-3"),
+          h("span", {}, "banyak XP")))));
+}
+
+/** Jeda terpanjang di dalam hamparan — dirender DI BAWAH kisi, bukan di dalamnya.
+ *
+ *  Letaknya bukan selera. `.bara-petak` adalah `grid-auto-flow: column` dengan
+ *  tujuh baris tetap yang berarti Senin..Minggu; satu sisipan teks di dalamnya
+ *  menelan satu slot dan menggeser SELURUH kolom sesudahnya — hari Rabu pindah
+ *  ke baris Selasa, tanpa satu pun pesan galat, dan komponennya berhenti
+ *  berarti sambil tetap terlihat rapi.
+ *
+ *  Kenapa jeda dan bukan total: hamparan enam bulan menunjukkan RITME. Yang
+ *  tidak bisa dibaca dari ratusan kotak kecil justru yang paling ingin
+ *  diketahui — di mana putusnya, dan apakah putusnya sudah selesai. */
+function jedaBara(heatmap) {
+  let jalan = 0, panjang = 0, akhir = -1;
+  heatmap.forEach((s, i) => {
+    if (s.xp > 0) { jalan = 0; return; }
+    jalan += 1;
+    if (jalan > panjang) { panjang = jalan; akhir = i; }
+  });
+  // Di bawah sepekan itu akhir pekan biasa, bukan jeda. Menamainya "jeda" akan
+  // membuat istirahat yang sehat terbaca sebagai kegagalan.
+  if (panjang < 7) return null;
+
+  const kapan = akhir === heatmap.length - 1
+    ? "masih berlangsung"
+    : `berakhir ${tanggalRamah(heatmap[akhir].tanggal)}`;
+  return h("p.bara-jeda", {},
+    `Jeda terpanjang — ${angka(panjang)} hari tanpa XP, `,
+    h("span.bara-jeda-kapan", {}, kapan));
 }
 
 /* ================================================================ bahasa */
