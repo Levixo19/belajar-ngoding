@@ -28,6 +28,7 @@ tidak akan terlihat sampai terlambat:
    kebetulan keluar hari ini.
 """
 
+import datetime
 import json
 import os
 import re
@@ -364,6 +365,66 @@ class TestEndpoint(BasisWeb):
 
 
 # ------------------------------------------------------------------- catatan
+
+class TestFieldPembandingDasbor(BasisWeb):
+    """Dua field read-only di `/api/dasbor`, dan semantik "kemarin" milik server.
+
+    Keduanya menjawab satu pertanyaan tampilan ("38 XP itu banyak atau sedikit
+    bagiku", "kapan terakhir aku belajar") tanpa memindahkan satu pun keputusan
+    ke JavaScript. Yang dijaga di sini justru batasnya:
+
+      · `xp_kemarin` dan `hari_belajar_terakhir` punya nilai netral yang jelas
+        untuk profil yang masih kosong, jadi layar tidak perlu menebak.
+      · `riwayat_harian(d, 2)[0]` benar-benar hari KEMARIN. Kalau urutannya
+        terbalik suatu hari, "naik 26" berubah jadi "turun 26" tanpa satu pun
+        tes lain yang merah -- dan itu angka yang dibaca pelajar tiap hari.
+    """
+
+    def test_profil_kosong_memberi_nilai_netral(self):
+        d = api.dasbor()
+        self.assertEqual(d["xp_kemarin"], 0)
+        self.assertEqual(d["hari_belajar_terakhir"], "")
+
+    def test_riwayat_indeks_nol_adalah_kemarin(self):
+        data = progress.load_progress()
+        kemarin = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+        self.assertEqual(progress.riwayat_harian(data, 2)[0][0], kemarin)
+
+    def test_xp_kemarin_benar_benar_mengambil_hari_kemarin(self):
+        """Bukan cuma semantik riwayatnya -- indeks yang DIPAKAI api.dasbor().
+
+        Menguji `riwayat_harian` saja tidak cukup: indeks yang tertukar di
+        api.py membuat "naik 26" berubah jadi "turun 26" tanpa satu pun tes
+        lain merah. Dua hari diberi nilai yang berbeda supaya tertukarnya
+        ketahuan.
+        """
+        hari = datetime.date.today()
+        kemarin = (hari - datetime.timedelta(days=1)).isoformat()
+        # Profil uji masih kosong dan berkasnya belum ada, jadi ditulis dari
+        # nol; load_progress() yang menormalkan sisanya.
+        with open(progress.PROGRESS_FILE, "w", encoding="utf-8") as f:
+            json.dump({"riwayat_harian": {kemarin: {"xp": 12},
+                                          hari.isoformat(): {"xp": 38}}}, f)
+
+        d = api.dasbor()
+        self.assertEqual(d["xp_kemarin"], 12, "xp_kemarin mengambil hari yang salah")
+        self.assertEqual(d["xp_hari_ini"], 38)
+
+    def test_hari_belajar_terakhir_ikut_streak_bukan_xp(self):
+        """Membaca materi tanpa menuntaskannya: streak hidup, XP tetap nol.
+
+        Inilah kasus yang membuat kesimpulan "hari ber-XP terakhir" salah:
+        harinya tidak punya entri riwayat sama sekali, jadi tebakan dari
+        heatmap akan bilang "belum pernah belajar" sementara streak-nya hidup.
+        """
+        progress.record_material_read("python_materi", "Contoh Uji", tuntas=False)
+        data = progress.load_progress()
+        hari_ini = datetime.date.today().isoformat()
+
+        self.assertEqual(progress.streak_aktif(data), 1)
+        self.assertEqual(progress.xp_hari_ini(data), 0)
+        self.assertEqual(api.dasbor()["hari_belajar_terakhir"], hari_ini)
+
 
 class TestCatatan(BasisWeb):
     def test_tulis_lalu_baca(self):
@@ -1302,6 +1363,125 @@ class TestSatuMesinPerProperti(unittest.TestCase):
                          f"{nama} bukan #maju-baca")
 
 
+class TestPagarTingkatGerak(unittest.TestCase):
+    """Pagar `[data-gerak]` harus meredam properti yang MEMANG disetel sasarannya.
+
+    Bug yang melahirkan tes ini terjadi dua kali, dengan bentuk yang sama:
+    sebuah gerakan dipindah ke tempat lain, pagarnya tidak ikut, dan aturannya
+    berhenti mengenai sasaran tanpa satu pun pesan galat.
+
+      · sapuan skeleton pindah dari `.denyut` ke `.denyut::after`;
+        pagarnya tetap di `.denyut`.
+      · geser hover pindah dari `transform` ke `translate` pada `.baris` dan
+        `.opsi button`; pagarnya tetap meredam `transform`.
+
+    Versi pertama tes ini hanya menutup `animation`, dan justru karena itulah
+    regresi kedua lolos. Sekarang keempat properti yang bisa diredam diperiksa:
+    animation, transform, translate, transition.
+    """
+
+    PROPERTI = ("animation", "transform", "translate", "transition")
+
+    @staticmethod
+    def _css():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            return re.sub(r"/\*.*?\*/", " ", f.read(), flags=re.S)
+
+    @staticmethod
+    def _aturan(css):
+        for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css):
+            yield m.group(1).strip(), m.group(2)
+
+    def test_pagar_gerak_menyasar_properti_yang_memang_disetel(self):
+        css = self._css()
+
+        # 1. Apa yang diredam tiap pagar [data-gerak].
+        pagar = []
+        for sel_blok, isi in self._aturan(css):
+            if "[data-gerak=" not in sel_blok:
+                continue
+            diredam = [pr for pr in self.PROPERTI
+                       if re.search(rf"\b{pr}\s*:\s*none\b", isi)]
+            if not diredam:
+                continue
+            for sel in sel_blok.split(","):
+                sel = sel.strip()
+                if "[data-gerak=" not in sel:
+                    continue
+                sisa = re.sub(r'\[data-gerak="[^"]+"\]', "", sel).strip()
+                # Selector universal memang menyapu semuanya; ia tidak menunjuk
+                # sasaran tertentu, jadi tidak bisa -- dan tidak perlu -- diadu.
+                if not sisa or sisa.startswith("*"):
+                    continue
+                for pr in diredam:
+                    pagar.append((sisa, pr))
+
+        self.assertTrue(pagar, "tidak ada pagar [data-gerak] yang terbaca")
+
+        # 2. Properti apa yang benar-benar disetel tiap selector.
+        disetel = {}
+        for sel_blok, isi in self._aturan(css):
+            if "[data-gerak=" in sel_blok:
+                continue
+            punya = set()
+            for pr in self.PROPERTI:
+                m = re.search(rf"\b{pr}(-property)?\s*:\s*([^;]+)", isi)
+                if m and m.group(2).strip() != "none":
+                    punya.add(pr)
+            # `transition: ... transform ...` juga berarti transform disetel
+            # di sini: ia yang membuat perpindahannya terlihat bergerak.
+            mt = re.search(r"\btransition(-property)?\s*:\s*([^;]+)", isi)
+            if mt:
+                for pr in ("transform", "translate"):
+                    if re.search(rf"\b{pr}\b", mt.group(2)):
+                        punya.add(pr)
+            if not punya:
+                continue
+            for sel in sel_blok.split(","):
+                disetel.setdefault(sel.strip(), set()).update(punya)
+
+        # 3. Adu keduanya.
+        #
+        # Normalisasi membuang pseudo-class dan pseudo fungsional TAPI menjaga
+        # struktur keturunannya. Versi pertama memotong di titik dua pertama,
+        # sehingga `.baris:hover .baris-panah` runtuh jadi `.baris` -- dan pagar
+        # `.baris:hover` yang sudah mati terlihat hidup karena ANAKNYA yang
+        # punya transform. Yang diadu harus elemen yang sama, bukan kerabatnya.
+        # Pseudo-KELAS (:hover, :active, :not(...)) adalah KEADAAN elemen yang
+        # sama, jadi dibuang. Pseudo-ELEMEN (::after, ::before) adalah elemen
+        # LAIN, jadi dipertahankan -- justru di situ letak regresi S03: pagar
+        # menunjuk `.denyut` sementara yang beranimasi `.denyut::after`.
+        PSEUDO_ELEMEN = ("::after", "::before", "::marker", "::placeholder",
+                         "::selection", "::backdrop", "::first-line",
+                         "::first-letter")
+
+        def pokok(sel):
+            simpan = [pe for pe in PSEUDO_ELEMEN if pe in sel]
+            for pe in simpan:
+                sel = sel.replace(pe, "\x00")
+            sel = re.sub(r":[a-z-]+\([^)]*\)", "", sel)
+            sel = re.sub(r":[a-z-]+", "", sel)
+            for pe in simpan:
+                sel = sel.replace("\x00", pe, 1)
+            return " ".join(sel.split())
+
+        peta = {}
+        for s_sel, props in disetel.items():
+            peta.setdefault(pokok(s_sel), set()).update(props)
+
+        mati = []
+        for sasaran, pr in sorted(set(pagar)):
+            if pr not in peta.get(pokok(sasaran), set()):
+                mati.append(f"{sasaran} -> {pr}")
+
+        self.assertEqual(mati, [],
+                         "pagar [data-gerak] meredam properti yang tidak pernah "
+                         "disetel sasarannya; aturannya mati tanpa pesan galat: "
+                         + "; ".join(mati))
+
+
 class TestBerkasWebLengkap(unittest.TestCase):
     """Setiap modul JS yang diimpor harus ada dan bisa disajikan server.
 
@@ -1422,7 +1602,14 @@ class TestBerkasWebLengkap(unittest.TestCase):
             # kosong. Tanpa aturannya, dasbor kembali jadi satu kolom
             # bertumpuk dan tiga pintu masuk di layar pertama kehilangan
             # bentuknya sama sekali.
-            "dasbor", "dasbor-utama", "dasbor-sisi", "mulai", "pintu",
+            # "pintu" TELANJANG tidak pernah dipancarkan JS: yang ada
+            # `pintu-tenang` (pintunya) dan `pintu-isi` (isinya). Entri lama
+            # itu lolos selama bertahun-tahun karena satu-satunya `.pintu`
+            # di gaya.css adalah pagar [data-gerak="halus"] .pintu:hover --
+            # aturan yang tidak pernah mengenai apa pun. Begitu pagar mati
+            # itu dibuang, tes ini merah dan menunjuk dirinya sendiri.
+            "dasbor", "dasbor-utama", "dasbor-sisi", "mulai",
+            "pintu-tenang", "pintu-isi",
             # Keadaan: SATU komponen untuk kosong/berhasil/gagal/terkunci.
             # Kalau aturannya hilang, keempatnya sekaligus jadi teks telanjang
             # di tengah halaman — termasuk layar penolakan bab terkunci.

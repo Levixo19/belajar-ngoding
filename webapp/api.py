@@ -336,6 +336,23 @@ def dasbor(_=None):
         "streak_rekor": data.get("streak", {}).get("terpanjang", 0),
         "streak_total": data.get("streak", {}).get("total_hari", 0),
         "xp_hari_ini": progress.xp_hari_ini(data),
+        # Pembanding untuk angka hari ini. Tanpa ini "38 XP" berdiri sendiri
+        # dan tidak menjawab "38 itu banyak atau sedikit bagiku".
+        #
+        # Dibaca, bukan dihitung: `riwayat_harian` sudah menyimpan XP per hari,
+        # dan dua hari terakhir mengembalikan [(kemarin, xp), (hari ini, xp)].
+        # Tidak ada definisi kedua untuk XP di sini, tidak ada tulisan ke
+        # berkas progres, dan karena nol mutasi ia tidak melewati
+        # _KUNCI_PROGRES.
+        "xp_kemarin": progress.riwayat_harian(data, 2)[0][1],
+        # Tanggal hari belajar terakhir, dibaca dari field yang SAMA yang
+        # dipakai `streak_aktif()` untuk memutuskan. Menyimpulkannya dari
+        # riwayat XP akan jadi definisi kedua dan langsung bertentangan:
+        # `record_material_read(..., tuntas=False)` membuat streak hidup
+        # sehari penuh tanpa menambah satu pun XP, jadi hari itu tidak punya
+        # entri riwayat sama sekali.
+        "hari_belajar_terakhir": (data.get("streak") or {}).get(
+            "tanggal_terakhir", ""),
         "target_harian": konfigurasi.ambil("target_xp_harian", 60),
         "badge_dimiliki": len(dimiliki),
         "badge_total": len(progress.DAFTAR_BADGE),

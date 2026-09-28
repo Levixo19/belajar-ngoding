@@ -1275,11 +1275,21 @@ code { font-family: var(--f-kode); font-size: .92em; }
   font-size: var(--t-ui);
   font-weight: 600;
   white-space: nowrap;
-  transition: transform var(--cepat), background var(--cepat),
-              border-color var(--cepat), box-shadow var(--cepat);
+  /* Tidak ada `transform` MAUPUN `translate` di daftar ini, dan keduanya
+     disengaja. Umpan balik tekan .tbl dipegang WAAPI lewat tekan(); aturan
+     :active yang dulu menggeser 1px sendiri sudah dibuang. Menyisakan
+     `translate` di sini berarti mentransisikan properti yang tidak ada satu
+     pun aturan menyetelnya -- entri mati, kelas yang sama dengan pagar
+     [data-gerak] yang menunjuk selector tanpa animasi. */
+  transition: background var(--cepat), border-color var(--cepat),
+              box-shadow var(--cepat);
 }
 .tbl:hover { background: var(--garis); border-color: var(--redup); }
-.tbl:active { transform: translateY(1px); }
+/* Umpan balik tekan .tbl dipegang tekan()/lepas() lewat pasangIsyarat, satu
+   mesin untuk seluruh aplikasi. Aturan :active yang dulu di sini menggeser
+   1px sendiri: di tingkat penuh dan halus ia tertimpa skala WAAPI, dan di
+   tingkat mati ia satu-satunya yang masih bergerak -- persis di tingkat
+   yang meminta tidak ada gerak. Dibuang, bukan ditandai. */
 .tbl[disabled] { opacity: .42; pointer-events: none; }
 .tbl svg { flex: none; }
 
@@ -1479,13 +1489,19 @@ code { font-family: var(--f-kode); font-size: .92em; }
   background: var(--kartu);
   color: var(--teks);
   text-align: left;
+/* `translate`, bukan `transform`: WAAPI memegang `transform` pada elemen ini
+   (tekan() di pasangIsyarat, skala saat ditekan). Menggeser lewat properti
+   yang sama berarti dua mesin pada satu properti -- yang menang cascade-nya
+   WAAPI, dan saat lepas() membatalkan, geseran hover melompat balik. Properti
+   `translate` berdiri sendiri dan dikomposisikan SEBELUM `transform`, jadi
+   keduanya hidup berdampingan tanpa saling menimpa. */
   transition: border-color var(--cepat), background var(--cepat),
-              transform var(--cepat);
+              translate var(--cepat);
 }
 .baris:hover {
   border-color: var(--garis-kuat);
   background: var(--kartu-naik);
-  transform: translateX(3px);
+  translate: 3px 0;
   text-decoration: none;
 }
 .baris .nomor {
@@ -1665,12 +1681,16 @@ input[type="range"] { min-height: var(--sentuh); }
   position: relative;
   overflow: hidden;
 }
+/* Sapuan BERHENTI SENDIRI setelah empat lintasan (1,5s x 4 = 6 detik), bukan
+   berputar selamanya. Yang tersisa sesudahnya adalah batang abu-abu .denyut
+   itu sendiri -- keadaan diamnya sama dengan keadaan alami elemennya, jadi
+   layar yang lama memuat tidak pernah terbaca "kontennya hilang". */
 .denyut::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, var(--kartu-naik), transparent);
-  animation: denyut 1.5s ease-in-out infinite;
+  animation: denyut 1.5s ease-in-out 4;
 }
 @keyframes denyut {
   from { transform: translateX(-100%); }
@@ -2534,14 +2554,20 @@ pre.kode {
   border: var(--tebal-garis) solid var(--garis);
   background: var(--kartu);
   color: inherit;
+/* `translate`, bukan `transform`: WAAPI memegang `transform` pada elemen ini
+   (tekan() di pasangIsyarat, skala saat ditekan). Menggeser lewat properti
+   yang sama berarti dua mesin pada satu properti -- yang menang cascade-nya
+   WAAPI, dan saat lepas() membatalkan, geseran hover melompat balik. Properti
+   `translate` berdiri sendiri dan dikomposisikan SEBELUM `transform`, jadi
+   keduanya hidup berdampingan tanpa saling menimpa. */
   transition: border-color var(--cepat), background var(--cepat),
-              transform var(--cepat);
+              translate var(--cepat);
 }
 .ubin:hover {
   text-decoration: none;
   border-color: var(--nyala);
   background: var(--kartu-naik);
-  transform: translateY(-2px);
+  translate: 0 -2px;
 }
 .ubin-nama {
   font-family: var(--f-judul);
@@ -3450,11 +3476,11 @@ pre.kode {
   text-align: left;
   font-size: var(--t-badan);
   transition: border-color var(--cepat), background var(--cepat),
-              transform var(--cepat);
+              translate var(--cepat);
 }
 .opsi button:hover:not([disabled]) {
   border-color: var(--nyala-gelap); background: var(--kartu-naik);
-  transform: translateX(3px);
+  translate: 3px 0;
 }
 .opsi .huruf {
   width: 28px; height: 28px; flex: none;
@@ -3904,18 +3930,26 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
 
 [data-gerak="halus"] .merek-bara,
 [data-gerak="halus"] .tanda-api.menyala .tanda-ikon,
-[data-gerak="halus"] .cincin::after,
-[data-gerak="halus"] .jam.menipis { animation: none; }
-[data-gerak="halus"] .baris:hover { transform: none; }
-[data-gerak="halus"] .opsi button:hover:not([disabled]) { transform: none; }
+[data-gerak="halus"] .cincin::after { animation: none; }
+/* .jam.menipis TIDAK ada di sini lagi: animasinya (`bernapas 1.6s`) sudah
+   dibuang sejak lama -- lihat catatan di atas .jam.menipis -- dan pagar yang
+   memadamkan animasi yang tidak ada hanyalah baris yang terlihat bekerja. */
+/* Meredam `translate`, bukan `transform`: geser hover pindah ke properti
+   itu supaya tidak berebut dengan skala tekan milik WAAPI. Pagarnya ikut
+   pindah -- kalau tidak, ia berhenti mengenai sasaran tanpa pesan galat. */
+[data-gerak="halus"] .baris:hover { translate: none; }
+[data-gerak="halus"] .opsi button:hover:not([disabled]) { translate: none; }
 [data-gerak="halus"] a.kartu:hover,
 [data-gerak="halus"] button.kartu:hover,
-[data-gerak="halus"] .pintu:hover,
 [data-gerak="halus"] .lanjutkan:hover { transform: none; }
 [data-gerak="halus"] .bara-sel:hover { transform: scale(1.2); }
 /* Sapuan gradien pada kerangka pemuatan ikut padam: ia bergerak sendiri, dan
-   batang abu-abunya tetap terbaca sebagai "sedang dimuat" tanpa sapuan itu. */
-[data-gerak="halus"] .denyut { animation: none; }
+   batang abu-abunya tetap terbaca sebagai "sedang dimuat" tanpa sapuan itu.
+   Pagarnya menempel di ::after, BUKAN di .denyut: yang beranimasi adalah
+   pseudo-nya. Bentuk sebelumnya menyasar elemen induk yang sudah tidak
+   beranimasi sama sekali, jadi aturannya mati tanpa satu pun pesan galat dan
+   sapuannya tetap berjalan di tingkat ini. */
+[data-gerak="halus"] .denyut::after { animation: none; }
 /* .pusaran SENGAJA dibiarkan berputar di tingkat ini. Ia bukan hiasan
    melainkan satu-satunya tanda bahwa kode yang barusan dijalankan masih
    berjalan — kalau ia berhenti, yang tersampaikan justru "aplikasinya macet".
@@ -4665,3 +4699,22 @@ html.lingkar-tema::view-transition-new(root) {
   from { transform: translateX(-100%); }
   to   { transform: translateX(250%); }
 }
+
+/* ---- S04-A. pembanding harian & celah hari belajar --------------------
+   Keduanya membawa angka yang berubah tiap hari, jadi tabular-nums: tanpa
+   itu lebar tiap digit berbeda dan barisnya bergeser sedikit setiap angkanya
+   berganti -- gerakan yang tidak diminta siapa pun.
+
+   Tidak ada warna peringatan di sini, dan itu disengaja. Arah naik/turun
+   dibedakan oleh KATA ("naik 26" / "turun 4"), bukan oleh merah-hijau, jadi
+   ia tetap terbaca bagi yang tidak membedakan keduanya (WCAG 1.4.1). */
+.banding, .celah {
+  margin-top: var(--s2);
+  font-size: var(--t-kecil);
+  color: var(--teks-2);
+  font-variant-numeric: tabular-nums;
+}
+.banding-arah { color: var(--redup); }
+.celah b { color: var(--teks); font-weight: 600; }
+.celah-jarak { color: var(--redup); }
+

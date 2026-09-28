@@ -169,7 +169,7 @@ function layarMulai(d, ctx) {
         h("span.bagian-ket", {},
           `${angka(bahasa.filter((b) => b.siap).length)} dari `
           + `${angka(bahasa.length)} bisa dijalankan di komputer ini`)),
-      h("div.ubin-bahasa", {}, bahasa.filter((b) => !b.tematik).map(ubinBahasa)),
+      kisiUbin(bahasa.filter((b) => !b.tematik)),
       // Dua kurikulum terakhir bukan bahasa pemrograman: satu mengajarkan cara
       // BERPIKIR membangun aplikasi, satu lagi cara MENGOPERASIKAN sistem.
       // Berbaris sebagai ubin ke-18 dan ke-19 di kisi yang sama, keduanya
@@ -181,7 +181,7 @@ function layarMulai(d, ctx) {
           h("span.mata", {}, "Bukan bahasa, tapi tetap kurikulum"),
           h("span.bagian-ket", {},
             "Cara berpikir dan cara mengoperasikan, bukan sintaks")),
-        h("div.ubin-bahasa", {}, bahasa.filter((b) => b.tematik).map(ubinBahasa)),
+        kisiUbin(bahasa.filter((b) => b.tematik)),
       ] : [])),
 
     h("a.pintu-tenang", { href: "#/coba" },
@@ -262,6 +262,57 @@ function kartuMulaiUtama(s, bahasa) {
  *  dan tetap bisa dibuka: materi dan kuisnya jalan penuh, yang mati cuma
  *  penilaian otomatis latihannya. Penandanya dipasang SEBELUM diklik —
  *  aturan yang sama dipakai bab terkunci dan antrean saran. */
+/** Panah memindah fokus antar-ubin, dengan satu ubin saja yang ikut Tab.
+ *
+ *  Kisi sembilan belas tautan berarti sembilan belas perhentian Tab sebelum
+ *  sampai ke apa pun di bawahnya. Pola roving tabindex memampatkannya jadi
+ *  satu: Tab masuk ke kisi, panah berjalan di dalamnya, Tab keluar lagi.
+ *
+ *  Jumlah kolom dihitung dari POSISI NYATA tiap ubin, bukan dari CSS: kisinya
+ *  `auto-fill`, jadi jumlah kolomnya berubah mengikuti lebar jendela dan tidak
+ *  pernah tertulis di satu tempat yang bisa dibaca. Menebaknya dari breakpoint
+ *  berarti panah bawah melompat salah tiap kali lebarnya di antara dua ambang.
+ *
+ *  Tidak ada role ARIA yang ditambahkan. Ini sekumpulan tautan, bukan grid
+ *  data; memberinya role="grid" menuntut struktur baris/sel yang tidak ada,
+ *  dan pembaca layar akan menjanjikan navigasi yang tidak pernah disediakan. */
+function kisiUbin(daftar) {
+  const petak = h("div.ubin-bahasa", {}, daftar.map(ubinBahasa));
+  panahAntarUbin(petak);
+  return petak;
+}
+
+function panahAntarUbin(petak) {
+  const ubin = [...petak.children].filter((el) => el.classList.contains("ubin"));
+  if (ubin.length < 2) return;
+  for (const [i, el] of ubin.entries()) el.tabIndex = i === 0 ? 0 : -1;
+
+  const kolom = () => {
+    const atas = ubin[0].getBoundingClientRect().top;
+    let n = 0;
+    for (const el of ubin) {
+      if (Math.abs(el.getBoundingClientRect().top - atas) > 1) break;
+      n++;
+    }
+    return Math.max(1, n);
+  };
+
+  petak.addEventListener("keydown", (e) => {
+    const i = ubin.indexOf(document.activeElement);
+    if (i < 0) return;
+    const k = kolom();
+    const tuju = { ArrowRight: i + 1, ArrowLeft: i - 1,
+                   ArrowDown: i + k, ArrowUp: i - k,
+                   Home: 0, End: ubin.length - 1 }[e.key];
+    if (tuju === undefined) return;
+    e.preventDefault();
+    const j = Math.max(0, Math.min(ubin.length - 1, tuju));
+    ubin[i].tabIndex = -1;
+    ubin[j].tabIndex = 0;
+    ubin[j].focus();
+  });
+}
+
 function ubinBahasa(b) {
   const tanda = !b.siap
     ? ["ubin-butuh", `butuh ${b.hilang.join(", ")}`]
@@ -407,14 +458,73 @@ function kartuBara(d) {
         bilah(d.xp_hari_ini / Math.max(1, d.target_harian) * 100,
               kurang ? "" : "tumbuh")),
 
+      bandingHarian(d),
+      d.streak ? null : celahBelajar(d),
+
       h("div.deret.deret-rapat", {},
         h("span.pil" + (d.streak ? ".pil-nyala" : ""), {},
           ikon("api", { ukuran: 14, tebal: 1.9 }),
-          d.streak ? `${d.streak} hari` : "streak putus"),
+          d.streak ? `${d.streak} hari belajar` : "belum ada hari berurutan"),
         h("a.pil" + (d.badge_dimiliki ? ".pil-ungu" : ""),
           { href: "#/statistik" },
           ikon("bintang", { ukuran: 14, tebal: 1.9 }),
           `${d.badge_dimiliki}/${d.badge_total}`))));
+}
+
+/** Pembanding untuk angka hari ini.
+ *
+ *  "38 XP" berdiri sendiri tidak menjawab "38 itu banyak atau sedikit BAGIKU".
+ *  Yang menjawabnya angka kemarin, dan itu datang dari server (`xp_kemarin`),
+ *  bukan dihitung ulang dari heatmap di sini.
+ *
+ *  Arahnya ditulis sebagai KATA ("naik 26"), bukan panah berwarna. Dua sebab:
+ *  keluarga ikon di repo ini tidak punya panah naik/turun, dan membedakan naik
+ *  dari turun hanya lewat warna melanggar WCAG 1.4.1 — aturan yang sama yang
+ *  sudah dipakai untuk baris terhapus di diff. */
+function bandingHarian(d) {
+  const beda = d.xp_hari_ini - (d.xp_kemarin || 0);
+  const arah = beda > 0 ? `naik ${angka(beda)}`
+             : beda < 0 ? `turun ${angka(-beda)}`
+             : "sama seperti kemarin";
+  return h("div.banding", {},
+    `Kemarin ${angka(d.xp_kemarin || 0)} XP`,
+    beda === 0 ? null : h("span.banding-arah", {}, ` · ${arah}`));
+}
+
+/** Streak yang putus ditampilkan sebagai CELAH, bukan sebagai nol merah.
+ *
+ *  Tanggalnya datang UTUH dari server (`hari_belajar_terakhir`), yaitu field
+ *  yang sama yang dipakai progress.streak_aktif() untuk memutuskan. Versi
+ *  pertama fungsi ini menyimpulkannya sendiri dari heatmap dengan mencari hari
+ *  ber-XP terakhir, dan itu definisi kedua yang langsung bertentangan dengan
+ *  pil di kartu yang sama: membaca materi tanpa menuntaskannya membuat streak
+ *  hidup sehari penuh tanpa menambah satu pun XP, jadi hari itu tidak punya
+ *  entri riwayat — heatmap akan bilang "belum pernah belajar" sementara
+ *  pilnya bilang "1 hari".
+ *
+ *  Yang dikerjakan di sini tinggal dua: memformat tanggalnya, dan menghitung
+ *  selisih TANGGAL ke TANGGAL. Tidak ada tombol memperbaiki, tidak ada freeze
+ *  yang bisa dipilih. Jalan masuk kembalinya kartu Lanjutkan di kolom sebelah,
+ *  yang isinya dari saran.py. */
+function celahBelajar(d) {
+  const tgl = d.hari_belajar_terakhir;
+  if (!tgl) return null;
+
+  // Dibandingkan tanggal ke tanggal, bukan cap waktu ke cap waktu: selisih
+  // milidetik dibagi sehari lalu dibulatkan menghitung jam yang sudah berjalan
+  // hari ini sebagai satu hari penuh.
+  const hari = new Date(tgl + "T00:00:00");
+  if (Number.isNaN(hari.getTime())) return null;
+  const iniHari = new Date();
+  iniHari.setHours(0, 0, 0, 0);
+  const selisih = Math.round((iniHari - hari) / 86400000);
+  if (selisih <= 0) return null;
+
+  return h("div.celah", {},
+    h("span", {}, "Hari belajar terakhir: "),
+    h("b", {}, hari.toLocaleDateString("id-ID",
+      { weekday: "long", day: "numeric", month: "long" })),
+    h("span.celah-jarak", {}, ` · ${angka(selisih)} hari lalu`));
 }
 
 function tautanLangkah(s) {
