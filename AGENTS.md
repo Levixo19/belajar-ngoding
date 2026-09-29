@@ -112,6 +112,20 @@ belajar sendiri — semuanya dipinjam.
 Semuanya dijaga tes. Kalau salah satu gagal, itu bukan tes yang cerewet —
 itu bug yang akan menyakiti pelajar.
 
+**Cara membaca `invarian #N` di komentar `webapp/statik/` dan `tests/test_web.py`.**
+Nomor itu lahir dari daftar periksa paket upgrade UI, dan paket itu TIDAK ikut
+ada di repo ini — yang mengikat selalu rumusan yang ditulis di bawah (atau di
+komentar itu sendiri, yang biasanya sudah menamai aturannya). Peta yang dipakai
+sekarang: **#1** = siapa yang memasang `fill: "forwards"` wajib membatalkannya;
+**#2** = satu properti, satu mesin; **#3** = `tingkatGerak()` satu-satunya yang
+memutuskan tingkat gerak, dan `prefers-reduced-motion` selalu menang; **#11** =
+satu definisi "lulus" (`runner.periksa`), dan "hari belajar" bukan "hari ada
+XP"; **#12** = penguncian bab hanya diputuskan `pelajar/bab.py`, kalimat
+aturannya juga datang dari sana; **#15a** = apa pun yang mengukur tata letak
+wajib lewat `saatSiap()`, bukan `requestAnimationFrame` polos. Kode baru
+MENAMAI aturannya, tidak menomorinya — `#3` pernah dipakai untuk dua aturan
+berbeda di berkas yang sama sebelum rujukan itu dibersihkan.
+
 **Blok perintah kurikulum Fedora WAJIB terklasifikasi SESI, bukan PROGRAM.**
 Ini invarian keamanan, bukan kosmetik. Materi `CLI Fedora` berisi perintah
 sungguhan seperti `sudo dnf5 install`, `systemctl enable`, dan `mkfs.ext4`.
@@ -779,6 +793,24 @@ Dua hal yang gampang terlupa kalau ini disentuh lagi: `api.latihan` mengirim
 `soal_blok`, dan `blokProsa()` di `layar-belajar.js` adalah SATU-SATUNYA
 perender blok prosa — menyalinnya ke layar lain berarti suatu hari keduanya
 berbeda tanpa ada yang menyadarinya.
+
+**Komentar-doc menempel pada fungsinya; komentar untuk satu penyeleksi dapat
+aturannya sendiri.** Dua bentuk yang sama-sama sah bagi parser dan sama-sama
+melukai pembacanya yang berikutnya: (i) menyisipkan fungsi baru DI ANTARA sebuah
+blok `/** ... */` dan fungsi yang blok itu dokumentasikan — komentar tersebut
+berhenti menjelaskan apa pun dan mulai menjelaskan tetangganya; (ii) menaruh
+komentar di antara koma dan penyeleksi berikutnya dalam satu daftar —
+`{ display: none; }` tidak lagi terlihat menempel pada penyeleksi yang mana, dan
+daftar pemulih `[hidden]` justru dibaca orang dengan cara itu. Yang mengikat:
+selipan baru mendarat **setelah** blok `docstring + function` yang lengkap, atau
+pindahkan seluruh blok itu bersamamu. Pagarnya `TestBentukKomentar`, dan ia
+sengaja sempit: perluasan "setiap `/**` wajib diikuti sebuah deklarasi" diukur
+memberi tiga positif-palsu nyata (`ingat()` metode objek di `aplikasi.js`,
+`lepas()` metode kelas di `editor.js`, dan sebuah blok `/* */` yang memang
+menyusul sebuah docstring), sementara predikat daftar-penyeleksi tidak boleh
+disapu ke JavaScript sama sekali — di sana tidak ada prelude, dan sapuannya
+menghasilkan dua puluh delapan kasus yang semuanya sah. Yang menjaga KELASNYA
+adalah paragraf ini, yang dibaca manusia, bukan tes itu.
 
 ### Proyek akhir
 
