@@ -660,7 +660,18 @@ const BISA_DITEKAN =
   // berupa tautan. Memberi fisika tekan pada seluruh `.pil` membuat lima
   // puluh enam penanda mengecil saat disentuh lalu tidak melakukan apa-apa --
   // kebalikan dari janji bahwa yang menjawab sentuhan itu bisa ditekan.
-  + " .pil[href], .ubin";
+  + " .pil[href], .ubin,"
+  // Kepala bab adalah `<summary>`, dan ia satu-satunya permukaan besar di
+  // halaman bahasa yang diam saat ditekan padahal seluruh tetangganya
+  // menjawab. Didaftarkan di sini, BUKAN dengan memanggil tekan() dari
+  // komponennya: `pasangIsyarat()` yang memegang pasangan tekan/lepas, dan
+  // hanya lewat jalur itu pembatalannya dijamin (invarian #1).
+  //
+  // Aman untuk papan ketik tanpa syarat tambahan: jalur ini cuma menumpang
+  // pointerdown/pointerup/pointercancel, jadi Enter pada `<summary>` — yang
+  // memang cara membukanya dengan papan ketik — tidak pernah memicu tekan()
+  // dan tidak ada animasi mengecil yang bisa tertinggal tanpa pasangannya.
+  + " .bab-kepala";
 
 /* Animasi "sedang ditekan" milik tiap elemen, supaya bisa dibatalkan saat
    jarinya diangkat. WeakMap, bukan Map: kalau tombolnya dibuang bersama layar

@@ -2874,11 +2874,39 @@ pre.kode {
    Ini kompensasi langsung dari pelipatan di atas: begitu isi bab boleh
    tertutup, harus ada satu tempat yang tetap memperlihatkan JALUR
    keseluruhannya. */
+/* Satu rail per TINGKAT, bukan satu barisan panjang. Sebelas segmen berderet
+   menjawab "ada berapa"; yang tidak dijawabnya adalah "sampai mana yang masih
+   dasar" — dan tingkat adalah pembagian yang sudah dipakai kurikulumnya
+   sendiri, jadi label dan keterangannya datang dari server, bukan dari sini. */
 .peta-bab {
+  display: grid;
+  gap: var(--s3);
+  margin-bottom: var(--s5);
+}
+.peta-tingkat { display: grid; gap: 5px; min-width: 0; }
+.peta-label {
+  display: flex; align-items: center; gap: var(--s1);
+  font-family: var(--f-kode);
+  font-size: var(--t-mikro);
+  color: var(--redup);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.peta-jml {
+  font-variant-numeric: tabular-nums;
+  color: var(--teks-2);
+}
+/* Railnya menggulir sendiri kalau babnya banyak atau layarnya sempit, dan
+   gulirnya tidak pernah bocor ke halaman. Tidak diberi `tabindex`: isinya
+   tautan, jadi Tab sudah menggulirkannya sendiri — berbeda dari `.bara-petak`,
+   yang selnya <div> tak bisa difokus dan karena itu memang butuh tabindex. */
+.peta-rel {
   display: flex;
   gap: var(--s1);
-  flex-wrap: wrap;
-  margin-bottom: var(--s5);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+  min-width: 0;
 }
 .peta-bab a {
   /* Melar mengisi lebar: yang digambarkan barisan ini adalah SELURUH jalur
@@ -2920,6 +2948,17 @@ pre.kode {
 .peta-bab .peta-terkunci { border-style: dashed; opacity: .7; }
 .peta-bab .peta-terkunci i { background: var(--garis); }
 
+/* Chip penyaring tingkat. Keadaan diamnya adalah SEMUA tampil: tidak ada
+   pilihan bawaan yang menyembunyikan sesuatu dari orang yang belum menyentuh
+   chip-nya. Hitungannya `role="status"`, jadi perubahan jumlah bab yang tampil
+   diumumkan — penyaring yang cuma mengubah gambar tidak terbaca pembaca layar. */
+.bab-saring-deret { margin-bottom: var(--s4); }
+.bab-saring-jml {
+  font-size: var(--t-mikro);
+  color: var(--redup);
+  font-variant-numeric: tabular-nums;
+}
+
 .bab-daftar { display: grid; gap: var(--s5); }
 
 .bab {
@@ -2955,6 +2994,35 @@ pre.kode {
    sebesar judulnya sendiri, di kolomnya sendiri, dengan angka tabular supaya
    sebelas bab berjajar rata. Mata memakai kolom itu sebagai penggaris — dan
    "aku di bab berapa" berhenti butuh dibaca. */
+/* Cincin persen yang memeluk nomor bab — menggantikan bilah di ujung kanan
+   kepala, bukan menemaninya. Dua gambar untuk satu angka adalah satu gambar
+   yang tidak dipercaya, dan kolom nomor sudah jadi penggaris halaman ini:
+   sebelas cincin berjajar rata pada ukuran yang sama persis.
+
+   SENGAJA TANPA `transition: stroke-dashoffset`. Busurnya digerakkan WAAPI dari
+   `cincinBab()`, jadi transition pada properti yang sama berarti dua mesin
+   (invarian #2). `.cincin .isi` milik dasbor memang punya transition seperti
+   itu dan itu aturan yang tidak pernah menggambar apa pun — ia di luar bagian
+   ini, jadi dilaporkan, bukan disalin. */
+.bab-cincin {
+  flex: none;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--t-nomor) * 1.9);
+  aspect-ratio: 1;
+}
+.bab-cincin svg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);
+}
+.bab-cincin .alur { stroke: var(--garis); }
+.bab-cincin .isi { stroke: var(--nyala); stroke-linecap: round; }
+.bab-tuntas .bab-cincin .isi { stroke: var(--tumbuh); }
+.bab-terkunci .bab-cincin .isi { stroke: var(--garis-kuat); }
+
 .bab-nomor {
   flex: none;
   font-family: var(--f-judul);
@@ -3007,8 +3075,10 @@ pre.kode {
   max-width: 56ch;
 }
 
-/* Lebar tetap supaya bilah semua bab berhenti di garis yang sama — kemajuan
-   yang panjang bilahnya ikut berubah-ubah tidak bisa dibandingkan sekilas.
+/* Lebar tetap supaya "3/8 materi" semua bab berhenti di garis yang sama —
+   angka yang titik mulanya ikut berpindah tidak bisa dibandingkan sekilas.
+   Bilahnya sendiri sudah tidak di sini: kemajuannya sekarang digambar cincin
+   yang memeluk nomor bab, supaya satu angka punya satu gambar.
    max-width menjaganya tetap masuk di layar yang lebih sempit dari itu. */
 .bab-maju { flex: none; width: 160px; max-width: 100%; align-self: center; }
 .bab-angka {

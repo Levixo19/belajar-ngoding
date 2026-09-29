@@ -1597,9 +1597,28 @@ class TestHamparanBara(unittest.TestCase):
 
     @staticmethod
     def _fungsi(src, nama):
-        """Badan satu fungsi tingkat-modul, dipotong dengan hitung kurung."""
+        """Badan satu fungsi tingkat-modul, dipotong dengan hitung kurung.
+
+        Daftar parameternya dilewati dulu. Versi pertama mengambil `{` PERTAMA
+        sesudah namanya, dan untuk `layarBahasa({ key }, ctx)` itu kurung
+        parameter yang didekonstruksi — bukan badan fungsinya. Yang dikembalikan
+        jadi potongan sepanjang `function layarBahasa({ key }`, dan asersi apa
+        pun di atasnya gagal dengan alasan yang menyesatkan.
+        """
         awal = src.index(f"function {nama}(")
-        i = src.index("{", awal)
+        buka = src.index("(", awal)
+        dalam = 0
+        tutup = None
+        for j in range(buka, len(src)):
+            if src[j] == "(":
+                dalam += 1
+            elif src[j] == ")":
+                dalam -= 1
+                if dalam == 0:
+                    tutup = j
+                    break
+        assert tutup is not None, f"daftar parameter {nama} tidak tertutup"
+        i = src.index("{", tutup)
         dalam = 0
         for j in range(i, len(src)):
             if src[j] == "{":
@@ -1973,6 +1992,330 @@ class TestHamparanBara(unittest.TestCase):
             self.assertNotIn("hari menyala", gabung,
                              f"`{nama}` masih memakai kata lama 'hari menyala'")
         self.assertIn("hari ber-XP", js, "penghitung legenda tidak menyebut XP")
+
+
+class TestLayarBahasa(unittest.TestCase):
+    """Halaman bahasa: peta bab per tingkat, penyaring FLIP, koreografi sekali.
+
+    Layar ini tujuan paling sering dibuka di aplikasi ini dan paling mudah
+    rusak oleh gerak (515 judul materi). Yang dijaga di sini adalah hal-hal
+    yang tidak terlihat dari membaca kodenya sepintas.
+    """
+
+    BACA_TATA_LETAK = TestHamparanBara.BACA_TATA_LETAK
+
+    @staticmethod
+    def _berkas(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    # Pembantu yang sama, satu definisi. Menyalinnya ke sini berarti dua
+    # pemotong fungsi yang harus tetap sepakat soal hitung kurung.
+    _telanjang = staticmethod(TestHamparanBara._telanjang)
+    _fungsi = staticmethod(TestHamparanBara._fungsi)
+
+    # Kata tingkat menurut `bab.TINGKAT`/`bab.LABEL_TINGKAT`. Satu-satunya
+    # tempat yang boleh menamainya adalah server.
+    KATA_TINGKAT = ("dasar", "menengah", "mahir")
+
+    @staticmethod
+    def _literal(src):
+        """Semua literal string/template di `src`, tanpa pembatasnya.
+
+        Dipakai untuk menjawab "apakah ada kata yang DITULIS di sini", bukan
+        "apakah ada nama variabel yang kebetulan lewat". Komentar sudah dibuang
+        `_telanjang()` sebelum ini, jadi penjelasan di komentar tidak ikut
+        tertuduh.
+        """
+        keluar = []
+        for m in re.finditer(r'"([^"\\]*)"' + r"|'([^'\\]*)'" + r"|`([^`\\]*)`", src):
+            keluar.append(next(g for g in m.groups() if g is not None))
+        return keluar
+
+    @staticmethod
+    def _argumen(src, awal):
+        """Argumen tingkat-atas sebuah panggilan yang dimulai di `awal`.
+
+        `awal` menunjuk posisi nama fungsinya; kurungnya dihitung, jadi objek
+        sifat dan panggilan `h()` bersarang tidak memecah pembagiannya.
+        """
+        buka = src.index("(", awal)
+        dalam = 0
+        bagian, kini = [], ""
+        for j in range(buka, len(src)):
+            c = src[j]
+            if c in "([{":
+                dalam += 1
+                if dalam == 1:
+                    continue
+            elif c in ")]}":
+                dalam -= 1
+                if dalam == 0:
+                    bagian.append(kini)
+                    return [b.strip() for b in bagian]
+            if dalam == 1 and c == ",":
+                bagian.append(kini)
+                kini = ""
+                continue
+            kini += c
+        raise AssertionError("panggilan tidak tertutup")
+
+    def _js(self):
+        return self._berkas("webapp", "statik", "js", "layar-belajar.js")
+
+    # ---------------------------------------------------------------- butir 4
+    def test_koreografi_daftar_hanya_sekali_per_bahasa(self):
+        """Kembali dari materi tidak mengulang reveal 44 baris.
+
+        Jalur yang paling sering dilalui di halaman ini bukan "buka pertama
+        kali" melainkan "kembali dari materi yang baru dibaca". Mengulang
+        koreografinya tiap kali menunda daftar yang sudah dihafal orangnya, dan
+        itu cara tercepat membuat aplikasi terasa lambat tanpa satu angka pun
+        jadi jelek.
+        """
+        js = self._telanjang(self._js())
+        self.assertRegex(js, r'const KUNCI_DIRENDER = "dirender\."',
+                         "prefiks kunci ingatan hilang atau berubah")
+
+        badan = self._telanjang(self._fungsi(js, "ungkapSekali"))
+        # Penjaga harus MEMBACA dulu lalu keluar, bukan menulis lalu tetap
+        # mengungkap: urutan yang terbalik membuat kunci tersimpan tapi
+        # koreografinya tetap jalan setiap kali.
+        i_baca = badan.index("ctx.ingat(KUNCI_DIRENDER + key)")
+        i_tulis = badan.index("ctx.ingat(KUNCI_DIRENDER + key, 1)")
+        i_ungkap = badan.index("ungkap(el, opsi)", i_baca)
+        self.assertLess(i_baca, i_tulis, "kunci ditulis sebelum dibaca")
+        self.assertLess(i_tulis, i_ungkap,
+                        "koreografi dijalankan sebelum kuncinya ditandai")
+        self.assertRegex(badan, r"if \(ctx\.ingat\(KUNCI_DIRENDER \+ key\)\) return el;",
+                         "tidak ada jalan keluar saat sudah pernah dirender")
+
+        # Pemanggil di luar layar bahasa (bookmark, cari) memanggil tanpa ctx dan
+        # perilakunya HARUS tetap sama persis seperti sebelumnya.
+        self.assertRegex(badan, r"if \(!ctx \|\| !key\) \{ ungkap\(el, opsi\); return el; \}",
+                         "pemanggil tanpa ctx tidak lagi mendapat ungkap() apa adanya")
+
+        # Cap 240 ms untuk daftar bab tidak dinaikkan.
+        bb = self._telanjang(self._fungsi(js, "daftarMateri"))
+        m = re.search(r"ungkapSekali\(petak, ctx, b\.key,\s*\{([^}]*)\}", bb)
+        self.assertIsNotNone(m, "daftar bab tidak lagi lewat ungkapSekali")
+        maks = re.search(r"maks:\s*(\d+)", m.group(1))
+        self.assertIsNotNone(maks)
+        self.assertLessEqual(int(maks.group(1)), 240,
+                            "cap koreografi daftar bab dinaikkan di atas 240 ms")
+
+    # ---------------------------------------------------------------- butir 5
+    def test_penyaring_tingkat_flip_tanpa_menganimasikan_geometri(self):
+        """Yang berpindah di-FLIP; yang muncul cuma memudar; geometri tidak pernah.
+
+        Menganimasikan `width`/`height` saat baris hilang membayar layout tiap
+        frame untuk sebelas kotak sekaligus. `tata()` sudah FLIP pada
+        `transform`, dan itu satu-satunya properti yang bergerak di sini.
+        """
+        js = self._telanjang(self._js())
+        badan = self._fungsi(js, "saringBab")
+        self.assertIn("tata(tetap,", badan,
+                      "perpindahan posisi tidak lagi lewat tata() (FLIP)")
+
+        # Hanya elemen yang tampak SEBELUM dan SESUDAH yang boleh masuk tata():
+        # kotak batas elemen tersembunyi nol, dan nol menghasilkan translasi
+        # sebesar seluruh halaman.
+        self.assertRegex(badan, r"tetap = semua\.filter\(\(el\) => !el\.hidden && setelah\.has\(el\)\)",
+                         "daftar FLIP tidak lagi menyaring elemen tersembunyi")
+
+        for pr in ("width", "height", "maxHeight", "max-height"):
+            self.assertNotRegex(
+                badan, rf"\b{re.escape(pr)}\s*:\s*\[",
+                f"`{pr}` dianimasikan di penyaring; itu layout per frame")
+
+        # Yang baru muncul wajib dibersihkan dari sisa `opacity` inline milik
+        # ungkap(), kalau tidak animasinya berakhir di nol dan babnya tak
+        # terlihat -- keadaan akhir animasi wajib keadaan alami (invarian #3).
+        i_bersih = badan.index('el.style.opacity = ""')
+        i_anim = badan.index("animasi(el, { opacity: [0, 1] }", i_bersih)
+        self.assertLess(i_bersih, i_anim,
+                        "sisa opacity inline tidak dibersihkan sebelum dianimasikan")
+
+        # Gambar PERTAMA tidak boleh membaca tata letak: saat itu `petak` masih
+        # lepas dari dokumen. Ini kelas bug invarian #15a, lewat jalur yang
+        # bukan requestAnimationFrame -- jadi sapuan rAF tidak melihatnya.
+        awal = self._fungsi(js, "gambarSaring")
+        for pola in self.BACA_TATA_LETAK:
+            self.assertNotRegex(
+                awal, pola,
+                f"`gambarSaring()` membaca `{pola}`; ia berjalan pada pohon yang "
+                "belum terpasang dan angkanya nol")
+        self.assertNotIn("tata(", awal,
+                         "gambar pertama memanggil tata(), yang membaca "
+                         "getBoundingClientRect pada elemen yang masih lepas")
+        self.assertRegex(badan, r"\n  gambarSaring\(\);",
+                         "gambar pertama tidak lagi lewat gambarSaring()")
+
+    # ---------------------------------------------------------------- butir 2
+    def test_cincin_bab_menyetel_keadaan_final_lebih_dulu(self):
+        """Busur berangkat dari kosong, tapi keadaan diamnya sudah benar.
+
+        Kalau gerak dimatikan, animasinya dibatalkan, atau JS tidak jalan sama
+        sekali, yang tertinggal harus tetap busur dengan panjang yang benar --
+        bukan lingkaran kosong (invarian #3).
+        """
+        js = self._telanjang(self._js())
+        badan = self._fungsi(js, "cincinBab")
+        i_final = badan.index('setAttribute("stroke-dashoffset"')
+        i_anim = badan.index("animasi(")
+        self.assertLess(i_final, i_anim,
+                        "animasi dipasang sebelum keadaan final; lingkaran akan "
+                        "kosong kalau animasinya tidak pernah berjalan")
+        self.assertRegex(badan, r"animasikan\b",
+                         "tidak ada lagi pembeda bab mana yang beranimasi")
+
+        # Satu angka, satu gambar: bilah di kepala bab digantikan, bukan
+        # ditemani.
+        kepala = self._telanjang(self._fungsi(js, "kepalaBab"))
+        self.assertNotIn("bilah(", kepala,
+                         "kepala bab punya cincin DAN bilah untuk angka yang sama")
+        self.assertIn("cincinBab(", kepala, "kepala bab tidak lagi punya cincin")
+
+        # Cincin baru tidak boleh menyalin `transition: stroke-dashoffset` milik
+        # `.cincin` dasbor: WAAPI sudah memegang properti itu (invarian #2).
+        css = re.sub(r"/\*.*?\*/", " ",
+                     self._berkas("webapp", "statik", "gaya.css"), flags=re.S)
+        for sel, isi in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            if ".bab-cincin" in sel:
+                self.assertNotIn("transition", isi,
+                                 f"`{sel.strip()}` menambahkan transition pada "
+                                 "properti yang sudah digerakkan WAAPI")
+
+    def test_isi_bab_memakai_util_entrance_yang_sudah_ada(self):
+        """Satu mesin entrance, dan bab yang sudah terbuka tidak ikut bertumpuk."""
+        js = self._telanjang(self._js())
+        bb = self._fungsi(js, "daftarMateri")
+        self.assertRegex(
+            bb, r'"div\.bab-isi" \+ \(terbuka \? "" : "\.masuk-mandiri"\)',
+            "isi bab tidak lagi memakai util entrance `.masuk-mandiri`, atau ia "
+            "dipasang juga pada bab yang sudah terbuka -- @starting-style menyala "
+            "pada render pertama dan akan bertumpuk di atas koreografi `.bab`")
+        # ::details-content sengaja TIDAK dipakai: ia Chrome-only, dan di
+        # Firefox aturannya tidak menggambar apa pun.
+        css = self._berkas("webapp", "statik", "gaya.css")
+        self.assertNotIn("::details-content", css,
+                         "`::details-content` dipakai; ia Chrome-only dan di "
+                         "peramban lain jadi aturan yang tidak menggambar apa pun")
+
+    # ---------------------------------------------------------------- butir 1
+    def test_peta_bab_per_tingkat_dan_labelnya_dari_server(self):
+        """Nama tingkat datang dari `bab.py`, bukan dikarang di layar (invarian #12)."""
+        js = self._telanjang(self._js())
+        badan = self._fungsi(js, "petaBab")
+        self.assertIn("ctx.awal.aturan_bab", badan,
+                      "peta bab tidak lagi membaca label tingkat dari server")
+        self.assertIn("peta-tingkat", badan, "tidak ada rail per tingkat")
+
+        js_telanjang = self._telanjang(self._js())
+
+        # (i) BENTUK, bukan substring. Versi pertama tes ini cuma memeriksa
+        #     `label_tingkat` HADIR di badan fungsi — dan satu interpolasi yang
+        #     masih utuh menyembunyikan yang lain: mengarang teks pil di
+        #     `kepalaBab` ATAU mengarang `title` rail di `segmenBab` sama-sama
+        #     lolos 803 tes. Yang ditagih sekarang: tidak satu pun LITERAL di
+        #     ketiga fungsi ini memuat kata tingkat.
+        for nama in ("petaBab", "segmenBab", "kepalaBab"):
+            for lit in self._literal(self._fungsi(js_telanjang, nama)):
+                for kata in self.KATA_TINGKAT:
+                    self.assertNotRegex(
+                        lit, rf"(?i)\b{kata}\b",
+                        f'`{nama}` menuliskan "{lit}" — kata tingkat dikarang di '
+                        "layar. Namanya milik bab.LABEL_TINGKAT lewat "
+                        "/api/awal.aturan_bab (invarian #12)")
+
+        # (ii) Yang TERLIHAT wajib variabelnya, bukan cuma atributnya. Sebuah
+        #      `title` yang benar di atas pil yang teksnya dikarang tetap
+        #      salah — dan `title` tidak pernah dibaca di layar sentuh.
+        kepala = self._fungsi(js_telanjang, "kepalaBab")
+        i_pil = kepala.index('h("span.pil.bab-tingkat')
+        arg = self._argumen(kepala, i_pil)
+        self.assertGreaterEqual(len(arg), 3,
+                                "pil tingkat tidak lagi punya anak teks")
+        self.assertEqual(
+            arg[2], "bab.label_tingkat",
+            "teks yang TERLIHAT di pil tingkat bukan `bab.label_tingkat` "
+            f"melainkan `{arg[2]}`")
+
+        # Rail tetap menginterpolasikannya juga, bukan menuliskannya.
+        self.assertIn("bab.label_tingkat", self._fungsi(js_telanjang, "segmenBab"),
+                      "title rail tidak lagi memakai label dari server")
+
+        # Bab terkunci tetap ditampilkan, dan alasannya ikut -- kalimatnya utuh
+        # dari bab.py, tidak dirumuskan ulang di sini.
+        seg = self._telanjang(self._fungsi(js, "segmenBab"))
+        self.assertIn("peta-terkunci", seg, "bab terkunci tidak lagi ditampilkan")
+        self.assertIn("bab.alasan", seg,
+                      "segmen terkunci tidak membawa alasannya; orang harus "
+                      "mengekliknya dulu untuk tahu kenapa")
+
+        # Rail tidak memakai pemusatan gulir: diukur, ia tidak bisa pernah
+        # berjalan (lima segmen terbanyak, 226 px, di rail 336 px).
+        self.assertNotIn("bawaKeTengah", badan,
+                         "pemusatan gulir rail kembali; ia tidak bisa pernah "
+                         "berjalan dengan data repo ini -- lihat komentarnya")
+
+    def test_kepala_bab_menjawab_tekan_lewat_pasangIsyarat(self):
+        """Fisika tekan didaftarkan, tidak dipanggil dari komponennya.
+
+        `tekan()` memakai `fill: "forwards"`, jadi siapa pun yang memanggilnya
+        bertanggung jawab membatalkannya (invarian #1). `pasangIsyarat()` yang
+        memegang pasangan tekan/lepas — termasuk `pointercancel` dan kursor yang
+        keluar sambil ditekan — dan hanya lewat jalur itu pembatalannya dijamin.
+        Presedennya `.rel-tombol`/`.rel-pemicu` dari S02.
+
+        Papan ketik tidak butuh syarat tambahan: jalur itu cuma menumpang
+        pointerdown/pointerup/pointercancel, jadi Enter pada `<summary>` — cara
+        membukanya dengan papan ketik — tidak pernah memicu `tekan()`.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        dirjs = os.path.join(akar, "webapp", "statik", "js")
+        with open(os.path.join(dirjs, "gerak.js"), encoding="utf-8") as f:
+            gerak = f.read()
+
+        daftar = re.search(r"const BISA_DITEKAN =(.*?);\n", gerak, re.S)
+        self.assertIsNotNone(daftar, "BISA_DITEKAN tidak terbaca")
+        selektor = " ".join(self._literal(self._telanjang(daftar.group(1))))
+        self.assertRegex(selektor, r"\.bab-kepala\b",
+                         "`.bab-kepala` tidak lagi terdaftar; kepala bab akan "
+                         "diam saat ditekan padahal tetangganya menjawab")
+
+        # Nol komponen memanggil tekan() sendiri. `lepas` TIDAK diperiksa di
+        # sini: nama itu dipakai juga oleh editor.lepas() dan oleh pelepas pin
+        # bara, dan menyamakan ketiganya akan membuat tes ini menuduh kode yang
+        # tidak ada hubungannya.
+        for nama in sorted(n for n in os.listdir(dirjs)
+                           if n.endswith(".js") and n != "gerak.js"):
+            with open(os.path.join(dirjs, nama), encoding="utf-8") as f:
+                src = self._telanjang(f.read())
+            impor = re.search(r"import \{([^}]*)\} from \"\./gerak\.js\";", src)
+            if impor:
+                nama_impor = [x.strip() for x in impor.group(1).split(",")]
+                self.assertNotIn("tekan", nama_impor,
+                                 f"{nama} mengimpor tekan() langsung; daftarkan "
+                                 "selektornya di BISA_DITEKAN sebagai gantinya")
+            self.assertNotRegex(
+                src, r"(?<![\w.])tekan\s*\(",
+                f"{nama} memanggil tekan() dari komponen; pembatalannya tidak "
+                "dijamin di luar pasangIsyarat() (invarian #1)")
+
+    def test_toolchain_belum_siap_ditandai_sebelum_diklik(self):
+        """Yang tidak bisa dijalankan dikatakan SEBELUM orang sampai ke sana."""
+        js = self._fungsi(self._telanjang(self._js()), "layarBahasa")
+        # Bukan cukup "pipanya ada": ia harus digerakkan `b.siap`. Versi pertama
+        # tes ini lolos untuk mutasi `const belumSiap = false;` — seluruh
+        # penandanya mati, ketiga asersi di bawah tetap hijau.
+        self.assertRegex(js, r"const belumSiap = !b\.siap;",
+                         "penanda toolchain tidak lagi berasal dari `b.siap`")
+        self.assertRegex(js, r'belumSiap && t === "latihan"',
+                         "tab Latihan tidak ditandai saat toolchain belum ada")
+        self.assertRegex(js, r"belumSiap \? capBelumSiap\(\) : null",
+                         "tautan Ruang coba tidak ditandai")
 
 
 class TestMesinPerayaan(unittest.TestCase):

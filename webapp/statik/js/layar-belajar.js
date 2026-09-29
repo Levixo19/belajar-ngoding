@@ -17,7 +17,7 @@ import {
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, saatTampak, denyut, percikBara, adaGerak, gerakPenuh,
-  berurut,
+  berurut, tata,
 } from "./gerak.js";
 import { ikon, ikonTipe } from "./ikon.js";
 import { praKode } from "./sorot.js";
@@ -855,12 +855,26 @@ export async function layarBahasa({ key }, ctx) {
   const daftarTab = ["materi", "kuis", "latihan"];
   const kunciTab = "tab." + key;
 
+  // Toolchain yang belum terpasang ditandai SEBELUM diklik, bukan sesudah.
+  // Tanpa ini satu-satunya tempat yang mengatakannya adalah blokToolchain di
+  // badan halaman — dan orang yang langsung menuju tab Latihan atau Ruang coba
+  // baru mengetahuinya setelah sampai di layar yang tidak bisa menjalankan
+  // apa pun. Keduanya TETAP bisa dibuka: materinya tetap terbaca, dan
+  // perintah pemasangannya justru ada di halaman ini.
+  const belumSiap = !b.siap;
+  const capBelumSiap = () => h("span.pil.pil-kunci", {},
+    "perlu " + (b.hilang && b.hilang.length ? b.hilang.join(", ") : "dipasang"));
+
   const tombolTab = daftarTab.map((t) => h("button.tbl.tbl-hantu", {
     onclick: () => pilih(t),
     data: { tab: t },
+    title: belumSiap && t === "latihan"
+      ? "Latihan tetap bisa dibaca, tapi kodenya belum bisa dijalankan di mesin ini."
+      : null,
   }, ikon(ikonTipe(t), { ukuran: 17 }),
      `${t[0].toUpperCase()}${t.slice(1)}`,
-     h("span.tab-jumlah", {}, String(b[t].length))));
+     h("span.tab-jumlah", {}, String(b[t].length)),
+     belumSiap && t === "latihan" ? capBelumSiap() : null));
 
   let tabKini = null;
 
@@ -879,9 +893,9 @@ export async function layarBahasa({ key }, ctx) {
       tb.classList.toggle("tbl-hantu", !ini);
       tb.setAttribute("aria-pressed", String(ini));
     }
-    const baru = t === "kuis" ? daftarKuis(b)
-      : t === "latihan" ? daftarLatihan(b)
-      : daftarMateri(b);
+    const baru = t === "kuis" ? daftarKuis(b, ctx)
+      : t === "latihan" ? daftarLatihan(b, ctx)
+      : daftarMateri(b, ctx);
 
     // Berganti tab bukan berpindah halaman: daftarnya diganti di tempat, dan
     // gerakannya sengaja lebih pendek daripada pergantian layar supaya
@@ -910,6 +924,7 @@ export async function layarBahasa({ key }, ctx) {
       // sedang tidak aktif" — padahal menekannya meninggalkan halaman ini.
       h("a.tbl.tbl-pergi.deret-kanan", { href: "#/coba?bahasa=" + b.runner },
         ikon("jalankan", { ukuran: 17 }), "Ruang coba " + b.label,
+        belumSiap ? capBelumSiap() : null,
         ikon("lanjut", { ukuran: 15 }))),
     isi,
   );
@@ -1064,7 +1079,7 @@ function blokToolchain(b) {
  *  dan alasannya, semuanya di KEPALA bab yang tidak pernah ikut terlipat. Jadi
  *  tidak ada satu keterangan pun yang hilang; yang hilang cuma empat puluh
  *  baris judul materi yang memang belum boleh dibuka. */
-function daftarMateri(b) {
+function daftarMateri(b, ctx) {
   const daftar = b.bab || [];
   const wadah = h("div", {},
     b.bab_kalimat || b.buka_semua_bab
@@ -1087,7 +1102,7 @@ function daftarMateri(b) {
   // dipakai bab.kalimat_ringkas(), yang juga diam kalau babnya cuma satu.
   if (daftar.length < 2) {
     wadah.appendChild(ungkapSenarai(
-      h("div.senarai", {}, b.materi.map((m) => barisMateri(b, m)))));
+      h("div.senarai", {}, b.materi.map((m) => barisMateri(b, m))), ctx, b.key));
     return wadah;
   }
 
@@ -1100,35 +1115,172 @@ function daftarMateri(b) {
   const pintu = daftar.find((x) => x.status === "terkunci");
   const sedang = daftar.find((x) => x.status === "terbuka");
 
-  wadah.appendChild(petaBab(daftar, sedang));
+  wadah.appendChild(petaBab(daftar, sedang, ctx));
 
-  const petak = h("div.bab-daftar", {}, daftar.map((bab) => h(
-    "details.bab"
-      + (bab.status === "terkunci" ? ".bab-terkunci"
-         : bab.status === "tuntas" ? ".bab-tuntas" : "")
-      + (bab === sedang ? ".bab-kini" : ""),
-    { id: "bab-" + bab.nomor,
-      "aria-label": `Bab ${bab.nomor}: ${bab.judul}`,
-      // Yang terbuka cuma bab yang sedang dikerjakan — dan kalau tidak ada
-      // satu pun yang berstatus "terbuka" (semuanya tuntas), bab PERTAMA yang
-      // dibuka supaya halaman ini tidak pernah tampil sebagai sebelas kepala
-      // tanpa satu pun isi.
-      open: bab === sedang || (!sedang && bab === daftar[0]) },
-    kepalaBab(bab),
-    h("div.bab-isi", {},
-      bab.status === "terkunci" ? catatanKunci(bab, bab === pintu) : null,
-      h("div.senarai", {}, bab.materi
-        .map((i) => materi.get(i))
-        .filter(Boolean)
-        .map((m) => barisMateri(b, m)))))));
+  const petak = h("div.bab-daftar", {}, daftar.map((bab) => {
+    const terbuka = bab === sedang || (!sedang && bab === daftar[0]);
+    return h(
+      "details.bab"
+        + (bab.status === "terkunci" ? ".bab-terkunci"
+           : bab.status === "tuntas" ? ".bab-tuntas" : "")
+        + (bab === sedang ? ".bab-kini" : ""),
+      { id: "bab-" + bab.nomor,
+        "aria-label": `Bab ${bab.nomor}: ${bab.judul}`,
+        // Penyaring membaca tingkat dari DOM, bukan dari array paralel: array
+        // kedua yang harus tetap seurutan dengan yang pertama adalah cara
+        // termudah membuat chip "Dasar" menyembunyikan bab yang salah.
+        data: { tingkat: bab.tingkat },
+        // Yang terbuka cuma bab yang sedang dikerjakan — dan kalau tidak ada
+        // satu pun yang berstatus "terbuka" (semuanya tuntas), bab PERTAMA yang
+        // dibuka supaya halaman ini tidak pernah tampil sebagai sebelas kepala
+        // tanpa satu pun isi.
+        open: terbuka },
+      kepalaBab(bab, sedang),
+      // `.masuk-mandiri` (util S01) dipakai apa adanya, bukan mesin entrance
+      // kedua. Ia `@starting-style` + `transition-behavior: allow-discrete`, jadi
+      // di browser tanpa dukungan itu — dan saat gerak dimatikan — isinya tetap
+      // muncul apa adanya, bukan tertinggal pada opacity nol.
+      //
+      // Bab yang SUDAH terbuka saat halaman digambar tidak mendapatkannya:
+      // `@starting-style` juga menyala pada render pertama, dan itu akan
+      // bertumpuk di atas koreografi masuk `.bab` yang membungkusnya. Bab yang
+      // tertutup tidak merender isinya, jadi ia baru menyala saat benar-benar
+      // dibuka — persis kejadian yang mau dijelaskan.
+      h("div.bab-isi" + (terbuka ? "" : ".masuk-mandiri"), {},
+        bab.status === "terkunci" ? catatanKunci(bab, bab === pintu) : null,
+        h("div.senarai", {}, bab.materi
+          .map((i) => materi.get(i))
+          .filter(Boolean)
+          .map((m) => barisMateri(b, m)))));
+  }));
 
   // Yang diungkap BAB-nya, bukan tiap barisnya. Sesudah dikelompokkan, satuan
   // yang berarti di halaman ini adalah bab — dan mengungkapkan dua puluh baris
   // satu per satu di dalam kepala bab yang sudah berdiri duluan cuma
   // memperpanjang urutannya tanpa menambah arti.
-  ungkap(petak, { per: 40, maks: 240, geser: 9, pegas: "jawab" });
+  // Cap 240 ms dipertahankan apa adanya: `berurut()` membaginya
+  // (maks / jarakMaks), jadi sebelas bab mendapat langkah ~24 ms dan totalnya
+  // tetap di bawah cap tanpa satu angka pun perlu disetel ulang.
+  ungkapSekali(petak, ctx, b.key,
+               { per: 40, maks: 240, geser: 9, pegas: "jawab" });
+
+  const saring = saringBab(petak, daftar, ctx);
+  if (saring) wadah.appendChild(saring);
   wadah.appendChild(petak);
   return wadah;
+}
+
+/** Chip tingkat yang menyaring bab yang SUDAH ADA, bukan memuat ulang apa pun.
+ *
+ *  Labelnya dari server (invarian #12). Tanpa chip yang ditekan, semuanya
+ *  tampil — jadi keadaan diamnya adalah keadaan lengkap, dan tidak ada pilihan
+ *  bawaan yang diam-diam menyembunyikan sesuatu dari orang yang belum pernah
+ *  menyentuh chip-nya.
+ *
+ *  Yang berpindah posisi digerakkan `tata()` (FLIP pada `transform`); yang
+ *  baru muncul cuma memudar masuk. `width`/`height` tidak pernah dianimasikan:
+ *  bab yang hilang menghilang dari alur kisi, dan menganimasikan tingginya
+ *  berarti membayar layout tiap frame untuk sebelas kotak sekaligus.
+ *
+ *  Yang keluar TIDAK dipudarkan, dan itu keputusan yang diukur bukan
+ *  kelalaian: memudarkan sesuatu yang berakhir di `display: none` menuntut
+ *  lintasan tata letak KEDUA, dan lintasan kedua itu membuat FLIP yang tersisa
+ *  mengukur geometri yang sudah salah. Hilangnya dijelaskan oleh bab-bab yang
+ *  meluncur menutup celahnya — itu justru seluruh guna FLIP. */
+function saringBab(petak, daftar, ctx) {
+  const tersedia = (ctx && ctx.awal && ctx.awal.aturan_bab
+    && ctx.awal.aturan_bab.tingkat) || [];
+  const kelompok = tersedia.filter((t) => daftar.some((b) => b.tingkat === t.nama));
+  // Satu tingkat berarti tidak ada yang bisa disaring; chip tunggal yang
+  // menyembunyikan segalanya atau tidak sama sekali bukan penyaring.
+  if (kelompok.length < 2) return null;
+
+  const pilih = new Set();
+  const jumlahEl = h("span.bab-saring-jml", { role: "status" }, "");
+  const tombol = [];
+
+  /** Setel keadaan tampak/tersembunyi tanpa menyentuh tata letak sama sekali.
+   *
+   *  Dipakai untuk gambar PERTAMA, saat `petak` masih lepas dari dokumen.
+   *  Versi beranimasi di bawah memanggil `tata()`, dan `tata()` membaca
+   *  `getBoundingClientRect()` — pada pohon yang belum terpasang angkanya nol,
+   *  dan nol itu tidak datang sebagai galat. Kebetulan nol-lawan-nol membuat
+   *  `tata()` menganggap semuanya diam dan tidak menganimasikan apa pun, jadi
+   *  cacatnya tidak pernah terlihat; ia tetap pembacaan tata letak di waktu
+   *  yang dilarang (invarian #15a), dan sesi berikutnya yang menambah satu
+   *  elemen bergerak di sini akan menemukannya sebagai lompatan. */
+  function gambarSaring() {
+    const semua = [...petak.children];
+    const setelah = new Set(semua.filter(
+      (el) => pilih.size === 0 || pilih.has(el.dataset.tingkat)));
+    for (const el of semua) el.hidden = !setelah.has(el);
+    tandaiTombol();
+    tulisJumlah(setelah.size, semua.length);
+    return { semua, setelah };
+  }
+
+  function tandaiTombol() {
+    for (const tb of tombol) {
+      const aktif = pilih.has(tb.dataset.tingkat);
+      tb.classList.toggle("tbl-pilih", aktif);
+      tb.classList.toggle("tbl-hantu", !aktif);
+      tb.setAttribute("aria-pressed", String(aktif));
+    }
+  }
+
+  function tulisJumlah(tampil, total) {
+    jumlahEl.textContent = pilih.size === 0
+      ? `${total} bab, semuanya ditampilkan`
+      : `${tampil} dari ${total} bab ditampilkan`;
+  }
+
+  function terapkan() {
+    const semua = [...petak.children];
+    const lolos = (el) => pilih.size === 0 || pilih.has(el.dataset.tingkat);
+    const setelah = new Set(semua.filter(lolos));
+    const tetap = semua.filter((el) => !el.hidden && setelah.has(el));
+    const baru = semua.filter((el) => el.hidden && setelah.has(el));
+
+    // `tetap` saja yang di-FLIP. Elemen tersembunyi punya kotak batas nol,
+    // jadi memasukkannya ke `tata()` akan menghasilkan translasi sebesar
+    // seluruh halaman.
+    tata(tetap, () => {
+      for (const el of semua) el.hidden = !setelah.has(el);
+    }, { pegas: "jawab" });
+
+    for (const el of baru) {
+      // `ungkap()` bisa meninggalkan `opacity: 0` inline pada bab yang belum
+      // pernah tergulir ke layar. Dibersihkan dulu: kalau tidak, animasi ini
+      // berakhir di nilai inline itu dan babnya tetap tak terlihat — keadaan
+      // akhir animasi wajib keadaan alami elemennya (invarian #3).
+      el.style.opacity = "";
+      animasi(el, { opacity: [0, 1] }, { pegas: "halus" });
+    }
+
+    tandaiTombol();
+    tulisJumlah(setelah.size, semua.length);
+  }
+
+  for (const t of kelompok) {
+    const jml = daftar.filter((b) => b.tingkat === t.nama).length;
+    const tb = h("button.tbl.tbl-hantu.bab-saring", {
+      type: "button",
+      title: t.ket,
+      "aria-pressed": "false",
+      data: { tingkat: t.nama },
+      onclick: () => {
+        if (pilih.has(t.nama)) pilih.delete(t.nama);
+        else pilih.add(t.nama);
+        terapkan();
+      },
+    }, t.label, h("span.tab-jumlah", {}, String(jml)));
+    tombol.push(tb);
+  }
+
+  gambarSaring();
+  return h("div.deret.bab-saring-deret", {},
+    h("span.mata", {}, "Saring tingkat"), tombol,
+    h("span.deret-kanan", {}, jumlahEl));
 }
 
 /** Peta bab: seluruh bab bahasa ini dalam satu baris segmen bernomor.
@@ -1137,14 +1289,18 @@ function daftarMateri(b) {
  *  tertutup, harus ada satu tempat yang tetap memperlihatkan JALUR
  *  keseluruhannya — ada berapa, sudah sampai mana, dan mana yang masih
  *  terkunci — tanpa satu gulir pun. */
-function petaBab(daftar, sedang) {
-  return h("nav.peta-bab", { "aria-label": "Peta bab" },
-    daftar.map((bab) => h("a." + (bab.status === "tuntas" ? "peta-tuntas"
-        : bab.status === "terkunci" ? "peta-terkunci"
-        : bab === sedang ? "peta-kini" : "peta-jalan"), {
+function segmenBab(bab, sedang) {
+  return h("a." + (bab.status === "tuntas" ? "peta-tuntas"
+      : bab.status === "terkunci" ? "peta-terkunci"
+      : bab === sedang ? "peta-kini" : "peta-jalan"), {
       href: "#bab-" + bab.nomor,
+      // Bab terkunci membawa ALASANNYA, bukan cuma penanda bahwa ia terkunci.
+      // Kalimatnya datang utuh dari `bab.py` (invarian #12); halaman ini tidak
+      // merumuskan ulang aturannya, cuma meneruskannya ke tempat yang bisa
+      // dibaca sebelum diklik.
       title: `Bab ${bab.nomor} · ${bab.judul} — ${bab.selesai}/${bab.jumlah} `
-        + `materi (${bab.label_tingkat.toLowerCase()})`,
+        + `materi (${bab.label_tingkat.toLowerCase()})`
+        + (bab.alasan ? " — " + bab.alasan : ""),
       // Tautan ini menunjuk id di halaman yang sama, bukan rute. Router
       // membaca fragmen sebagai alamat layar, jadi pemindahannya diurus di
       // sini dan hash-nya tidak pernah ikut berubah — kalau tidak, mengeklik
@@ -1159,7 +1315,66 @@ function petaBab(daftar, sedang) {
       },
     },
       h("span", {}, String(bab.nomor)),
-      h("i", { gaya: { opacity: String(0.35 + 0.65 * (bab.persen / 100)) } }))));
+      h("i", { gaya: { opacity: String(0.35 + 0.65 * (bab.persen / 100)) } }));
+}
+
+/** Peta bab: satu rail per tingkat, bukan satu barisan panjang tanpa batas.
+ *
+ *  Sebelas bab dalam satu deretan menjawab "ada berapa", tapi tidak menjawab
+ *  "sampai mana yang masih dasar". Tingkat adalah pembagian yang sudah dipakai
+ *  kurikulumnya sendiri — labelnya dan keterangannya datang dari server
+ *  (`ctx.awal.aturan_bab.tingkat`, yang isinya `bab.LABEL_TINGKAT` dan
+ *  `bab.KETERANGAN_TINGKAT`), jadi halaman ini tidak menamai tingkat dengan
+ *  kata-katanya sendiri (invarian #12).
+ *
+ *  Bab terkunci TETAP ditampilkan, beserta alasannya di `title` — yang
+ *  disembunyikan cuma daftar judul materinya, dan itu ada di `<details>`
+ *  di bawah, bukan di sini.
+ *
+ *  Rail tidak ikut disaring chip tingkat: yang digambarkannya adalah SELURUH
+ *  jalur bahasa itu, dan jalur yang ikut menyusut saat disaring berhenti bisa
+ *  menjawab "ada berapa seluruhnya". */
+function petaBab(daftar, sedang, ctx) {
+  const tersedia = (ctx && ctx.awal && ctx.awal.aturan_bab
+    && ctx.awal.aturan_bab.tingkat) || [];
+  const kelompok = tersedia.filter((t) => daftar.some((b) => b.tingkat === t.nama));
+
+  const nav = h("nav.peta-bab", { "aria-label": "Peta bab" },
+    kelompok.length
+      ? kelompok.map((t) => {
+          const isi = daftar.filter((b) => b.tingkat === t.nama);
+          return h("div.peta-tingkat", {},
+            h("span.peta-label", { title: t.ket }, t.label,
+              h("span.peta-jml", {}, String(isi.length))),
+            h("div.peta-rel", {}, isi.map((bab) => segmenBab(bab, sedang))));
+        })
+      // Server tanpa `aturan_bab` (atau bahasa yang semua babnya satu tingkat)
+      // tetap dapat railnya, cuma tanpa kepala tingkat. Tidak ada label yang
+      // dikarang di sini sebagai gantinya.
+      : h("div.peta-rel", {}, daftar.map((bab) => segmenBab(bab, sedang))));
+
+  /* TIDAK ADA pemusatan gulir di sini, dan itu hasil pengukuran, bukan
+   * kelalaian. Versi pertama fungsi ini memanggil `saatSiap()` +
+   * `bawaKeTengah()` untuk membawa `.peta-kini` ke tengah rail-nya. Lalu
+   * dihitung: bab terbanyak dalam SATU tingkat di seluruh 19 bahasa adalah
+   * lima (python, menengah). Lima segmen butuh 5x42 + 4x4 = 226 px; rail
+   * tersempit yang ada — kolom isi pada viewport 360 px — 336 px. Diukur di
+   * keempat ukuran huruf (15/16/18/20 px) railnya tetap tidak meluber:
+   * `scrollWidth - clientWidth = 0` di semuanya.
+   *
+   * Jadi pemusatan itu kode yang tidak bisa pernah berjalan, dan repo ini sudah
+   * empat kali kena cacat "aturan yang tidak menggambar apa pun". Yang
+   * sebenarnya menyelesaikan masalahnya adalah pengelompokan per tingkat itu
+   * sendiri: sebelas segmen berderet memang perlu digulir, tiga rail berisi
+   * empat sampai lima segmen tidak.
+   *
+   * `overflow-x: auto` di CSS TETAP ada dan itu bukan hal yang sama: ia pagar
+   * deklaratif yang menjaga `min-width: 42px` tidak menumpahkan rail ke halaman
+   * kalau suatu hari sebuah bahasa punya dua belas bab dalam satu tingkat. Yang
+   * dibuang adalah mesin yang berjalan tiap render lalu tidak melakukan apa
+   * pun — termasuk satu pembacaan `getBoundingClientRect` yang tidak
+   * dibutuhkan siapa pun. */
+  return nav;
 }
 
 /** Kepala satu bab: nomor besar, tingkat, judul, satu kalimat isi, kemajuan.
@@ -1174,9 +1389,61 @@ function petaBab(daftar, sedang) {
  *  bab yang sedang dikerjakan, dan aksen sudah dipakai untuk menandai bab itu;
  *  memberi warna yang sama kepada setiap pil "Menengah" berarti membuat
  *  penanda itu hilang di tengah keramaian. */
-function kepalaBab(bab) {
+/** Cincin persen kecil yang MEMELUK nomor bab.
+ *
+ *  Menggantikan bilah di ujung kanan kepala, bukan menemaninya: dua gambar
+ *  untuk satu angka adalah satu gambar yang tidak dipercaya. Yang dimenangkan
+ *  dengan memindahkannya ke kolom nomor adalah pembandingan — kolom itu sudah
+ *  jadi penggaris halaman ini, sebelas cincinnya berjajar rata pada ukuran yang
+ *  sama persis, dan "bab mana yang paling jauh" terbaca tanpa membaca angka.
+ *
+ *  Pola `cincinLevel`: `stroke-dashoffset` AKHIR dipasang langsung, animasinya
+ *  cuma berangkat dari lingkaran kosong. Kalau gerak dimatikan, animasinya
+ *  dibatalkan, atau JS tidak jalan sama sekali, yang tertinggal tetap busur
+ *  dengan panjang yang benar (invarian #3).
+ *
+ *  Hanya bab yang SEDANG dikerjakan yang beranimasi. Sebelas busur yang
+ *  mengisi diri bersamaan adalah sebelas gerakan yang tidak menjawab satu
+ *  pertanyaan pun — anggaran gerak halaman ini sudah dipakai koreografi masuk
+ *  daftarnya. */
+function cincinBab(bab, animasikan) {
+  const R = 15;
+  const keliling = 2 * Math.PI * R;
+  const akhir = keliling * (1 - Math.max(0, Math.min(1, bab.persen / 100)));
+  const NS = "http://www.w3.org/2000/svg";
+
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 36 36");
+  svg.setAttribute("aria-hidden", "true");
+  let isi = null;
+  for (const kelas of ["alur", "isi"]) {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", "18");
+    c.setAttribute("cy", "18");
+    c.setAttribute("r", String(R));
+    c.setAttribute("fill", "none");
+    c.setAttribute("stroke-width", "3");
+    c.setAttribute("class", kelas);
+    svg.appendChild(c);
+    if (kelas === "isi") isi = c;
+  }
+  isi.setAttribute("stroke-dasharray", String(keliling));
+  isi.setAttribute("stroke-dashoffset", String(akhir));
+
+  const el = h("div.bab-cincin", {},
+    svg, h("span.bab-nomor", {}, String(bab.nomor).padStart(2, "0")));
+  if (animasikan) {
+    saatTampak(el, () => {
+      animasi(isi, { strokeDashoffset: [String(keliling), String(akhir)] },
+              { pegas: "panjang", durasi: 700 });
+    }, { bagian: 0.4 });
+  }
+  return el;
+}
+
+function kepalaBab(bab, sedang) {
   return h("summary.bab-kepala", {},
-    h("span.bab-nomor", {}, String(bab.nomor).padStart(2, "0")),
+    cincinBab(bab, bab === sedang),
     h("div.bab-teks", {},
       h("div.bab-atas", {},
         h("span.pil.bab-tingkat.bab-" + bab.tingkat,
@@ -1190,8 +1457,7 @@ function kepalaBab(bab) {
       h("h3.bab-judul", {}, bab.judul),
       bab.ket ? h("p.bab-ket", {}, bab.ket) : null),
     h("div.bab-maju", {},
-      h("span.bab-angka", {}, `${bab.selesai}/${bab.jumlah} materi`),
-      bilah(bab.persen, bab.status === "tuntas" ? "tumbuh" : "")),
+      h("span.bab-angka", {}, `${bab.selesai}/${bab.jumlah} materi`)),
     h("span.bab-lipat", {}, ikon("lanjut", { ukuran: 18 })));
 }
 
@@ -1236,12 +1502,39 @@ function barisMateri(b, m) {
   }, isi);
 }
 
-function ungkapSenarai(el) {
-  ungkap(el, { per: 24, maks: 260, geser: 8, pegas: "jawab" });
+/* Prefiks kunci ingatan untuk "daftar bahasa ini sudah pernah dikoreografikan".
+   Ikut `belajar.ingat.*` yang sudah dipakai tab terakhir dan draf ruang coba;
+   bentuk penuhnya `belajar.ingat.dirender.<bahasa>` dan ia dikunci tes sendiri. */
+const KUNCI_DIRENDER = "dirender.";
+
+/** Ungkap sebuah daftar SEKALI per bahasa, tidak tiap kali layarnya digambar.
+ *
+ *  Halaman bahasa adalah tujuan paling sering dibuka di aplikasi ini, dan
+ *  jalur yang paling sering dilalui bukan "buka pertama kali" melainkan
+ *  "kembali dari materi yang baru dibaca". Mengulang koreografi 44 baris pada
+ *  setiap kali kembali membuat gerakan yang tadinya menyenangkan berubah jadi
+ *  pajak: ia menunda daftar yang sudah dihafal orangnya, di layar yang ia
+ *  buka justru untuk melanjutkan. Itu cara tercepat membuat aplikasi terasa
+ *  lambat, dan ia tidak muncul sebagai satu pun angka yang jelek.
+ *
+ *  Yang dimatikan HANYA gerakan masuknya. Daftarnya tetap lengkap, tetap
+ *  terbaca, tetap tanpa JS — `ungkap()` yang tidak dipanggil berarti tidak ada
+ *  yang pernah menyetel `opacity: 0`, jadi keadaan diamnya memang keadaan
+ *  akhirnya (invarian #3). */
+function ungkapSekali(el, ctx, key, opsi) {
+  if (!ctx || !key) { ungkap(el, opsi); return el; }
+  if (ctx.ingat(KUNCI_DIRENDER + key)) return el;
+  ctx.ingat(KUNCI_DIRENDER + key, 1);
+  ungkap(el, opsi);
   return el;
 }
 
-function daftarKuis(b) {
+function ungkapSenarai(el, ctx, key) {
+  return ungkapSekali(el, ctx, key,
+                      { per: 24, maks: 260, geser: 8, pegas: "jawab" });
+}
+
+function daftarKuis(b, ctx) {
   return ungkapSenarai(h("div.senarai", {}, b.kuis.map((q) => {
     const persen = q.total_soal ? q.terbaik / q.total_soal * 100 : 0;
     const hari = selisihHari(q.jadwal);
@@ -1262,10 +1555,10 @@ function daftarKuis(b) {
         ? h("span.pil.pil-salah", {}, `${q.salah_tersisa} masih salah`) : null,
       q.pernah ? h("span.sembunyi-hp", { gaya: { width: "56px", flex: "none" } },
         bilah(persen, persen >= 100 ? "tumbuh" : "")) : null);
-  })));
+  })), ctx, b.key);
 }
 
-function daftarLatihan(b) {
+function daftarLatihan(b, ctx) {
   return ungkapSenarai(h("div.senarai", {}, b.latihan.map((e) => h("a.baris", {
     href: `#/latihan/${b.key}/${e.indeks}`,
     kelas: [e.status === "lulus" || e.status === "manual" ? "selesai" : "",
@@ -1281,7 +1574,8 @@ function daftarLatihan(b) {
         : !e.dinilai && e.alasan ? h("div.ket", {}, e.alasan) : null),
     e.proyek ? h("span.pil.pil-nyala", {}, "PROYEK AKHIR") : null,
     h("span.pil.t-" + e.tingkat, {}, e.tingkat),
-    !e.dinilai ? h("span.pil.sembunyi-hp", {}, "tanpa nilai otomatis") : null))));
+    !e.dinilai ? h("span.pil.sembunyi-hp", {}, "tanpa nilai otomatis") : null))),
+    ctx, b.key);
 }
 
 /* ================================================================ materi */
