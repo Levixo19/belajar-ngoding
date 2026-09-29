@@ -2131,7 +2131,7 @@ class TestLayarBahasa(unittest.TestCase):
 
         # Yang baru muncul wajib dibersihkan dari sisa `opacity` inline milik
         # ungkap(), kalau tidak animasinya berakhir di nol dan babnya tak
-        # terlihat -- keadaan akhir animasi wajib keadaan alami (invarian #3).
+        # terlihat -- keadaan akhir animasi wajib keadaan alami elemennya.
         i_bersih = badan.index('el.style.opacity = ""')
         i_anim = badan.index("animasi(el, { opacity: [0, 1] }", i_bersih)
         self.assertLess(i_bersih, i_anim,
@@ -2158,7 +2158,7 @@ class TestLayarBahasa(unittest.TestCase):
 
         Kalau gerak dimatikan, animasinya dibatalkan, atau JS tidak jalan sama
         sekali, yang tertinggal harus tetap busur dengan panjang yang benar --
-        bukan lingkaran kosong (invarian #3).
+        bukan lingkaran kosong (keadaan akhir = keadaan alami).
         """
         js = self._telanjang(self._js())
         badan = self._fungsi(js, "cincinBab")
@@ -2624,6 +2624,160 @@ class TestVariabelDibacaDiLingkupYangSama(unittest.TestCase):
                          "peta bagian kembali memakai `scrollIntoView`; "
                          "pendaratannya lepas dari `scroll-padding-top` yang "
                          "sudah terhitung dan 26 px teratas kembali ke balik strip")
+
+
+class TestBentukKomentar(unittest.TestCase):
+    """Dua bentuk komentar yang menyesatkan pembacanya tanpa merusak apa pun.
+
+    Keduanya sah bagi parser — dan itu justru sebabnya mereka bertahan. Yang
+    rusak bukan berkasnya melainkan orang berikutnya yang membacanya.
+
+    Kedua pagar ini dipasang HANYA karena nol positif-palsunya sudah diukur
+    lebih dulu, dan cakupannya tidak sama: pola docstring disapu ke seluruh
+    `webapp/statik/` (lima kasus di `0538983`, nol sesudahnya), pola komentar-dalam-
+    daftar-penyeleksi hanya ke `gaya.css` (satu kasus, lalu nol). Yang terakhir bukan
+    pelit cakupan melainkan struktur: JavaScript tidak punya prelude, jadi predikat itu
+    kalau disapu ke `statik/js/` memberi dua puluh delapan kasus yang semuanya sah.
+    Pagar yang dipasang di atas berkas yang belum bersih adalah tes merah permanen,
+    dan itu bukan pagar.
+    """
+
+    @staticmethod
+    def _berkas():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        statik = os.path.join(akar, "webapp", "statik")
+        keluar = [os.path.join(statik, "gaya.css")]
+        js = os.path.join(statik, "js")
+        keluar += [os.path.join(js, n) for n in sorted(os.listdir(js))
+                   if n.endswith(".js")]
+        return keluar
+
+    @staticmethod
+    def _komentar_di_dalam_prelude(teks):
+        """[nomor baris] setiap komentar yang berdiri di PRELUDE sesudah koma.
+
+        Prelude = daerah antara batas sebuah aturan dan `{`-nya, tempat daftar
+        penyeleksi hidup. Komentar di dalam BADAN aturan adalah bagian dari
+        nilai, bukan dari daftar penyeleksi — dan di sanalah ia sah.
+
+        Pemindaian per karakter, bukan per baris, karena predikat per baris
+        ("baris berakhiran koma disusul baris berawalan /*") tidak bisa
+        membedakan keduanya: `gaya.css` punya 103 baris berakhiran koma dan
+        hanya sekitar 53 di antaranya daftar penyeleksi; sisanya `font-family`,
+        `transition` multi-baris, dan `linear-gradient`. S07-S12 menambah CSS
+        gerak, jadi predikat lama akan memerah karena alasan yang salah — dan
+        tes yang memerah karena alasan yang salah adalah tes yang berhenti
+        dibaca.
+        """
+        hasil, i, n = [], 0, len(teks)
+        kedalaman, prelude, koma, baris = 0, True, 0, 1
+        while i < n:
+            c = teks[i]
+            if c == "\n":
+                baris += 1; i += 1; continue
+            if teks.startswith("/*", i):
+                if prelude and koma:
+                    hasil.append(baris)
+                j = teks.find("*/", i + 2)
+                if j < 0:
+                    break
+                baris += teks.count("\n", i, j + 2); i = j + 2; continue
+            if c in "\"'":
+                q, j = c, i + 1
+                while j < n and teks[j] != q:
+                    if teks[j] == "\\":
+                        j += 1
+                    j += 1
+                baris += teks.count("\n", i, min(j + 1, n)); i = j + 1; continue
+            if c == "{":
+                kedalaman += 1; prelude, koma = False, 0
+            elif c == "}":
+                kedalaman -= 1; prelude, koma = True, 0
+            elif c == ";":
+                prelude, koma = kedalaman == 0, 0
+            elif c == "," and prelude:
+                koma += 1
+            i += 1
+        return hasil
+
+    def test_komentar_tidak_menyelinap_di_antara_koma_dan_penyeleksi(self):
+        """`display: none` harus terlihat menempel pada penyeleksi yang mana.
+
+        Komentar di antara sebuah koma dan penyeleksi berikutnya diperbolehkan
+        parser — diuji: ketujuh belas penyeleksi daftar pemulih `[hidden]` tetap
+        menghasilkan `display: none`. Yang hilang adalah kemampuan membacanya
+        sebagai daftar: badan aturannya berpindah belasan baris menjauh dari
+        penyeleksi pertamanya, dan penyeleksi terakhir terbaca seolah punya
+        aturan sendiri. Komentar untuk satu penyeleksi = aturan sendiri.
+
+        Cakupannya SENGAJA `gaya.css` saja. Menyapukan predikat ini ke
+        `statik/js/` memberi 28 kasus yang semuanya sah: empat preset pegas di
+        `gerak.js`, satu di `aplikasi.js`, dan dua puluh tiga entri path di
+        `ikon.js` yang memang diberi komentar per ikon. Di JavaScript tidak ada
+        "prelude", jadi predikatnya tidak punya arti di sana sama sekali.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "gaya.css")
+        with open(jalur, encoding="utf-8") as f:
+            teks = f.read()
+        gagal = [f"gaya.css:{n}" for n in self._komentar_di_dalam_prelude(teks)]
+        self.assertEqual(
+            gagal, [],
+            "komentar berdiri di daftar penyeleksi, sesudah sebuah koma. Pecah "
+            "penyeleksi itu jadi aturan sendiri dan taruh komentarnya di "
+            "atasnya: " + "; ".join(gagal))
+
+    def test_tidak_ada_docstring_yang_teryatim(self):
+        """Sebuah blok `/** */` mendokumentasikan hal yang ada TEPAT di bawahnya.
+
+        Begitu sebuah fungsi disisipkan di antara blok dan fungsinya, blok itu
+        berhenti menjelaskan apa pun dan mulai salah menjelaskan tetangganya —
+        dan tidak ada satu pun galat. Kelas ini ditemukan lima kali di repo ini:
+        docstring `rayakan()` menganggur di atas `tingkatRayakan`, docstring
+        `bawaKeTengah()` di atas `saatSiap`, docstring `ubinBahasa()` di atas
+        `kisiUbin`, blok "NOMOR ADALAH ARSITEKTUR" di atas `cincinBab`, dan
+        docstring `petaBagian()` di atas `bawaKeAtas`.
+
+        Bentuk yang ditangkap: sebuah blok komentar yang berakhir TEPAT di baris
+        sebelum blok `/**` berikutnya. Dua docstring yang menempel begitu berarti
+        yang atas tidak mungkin menempel pada apa pun — karena yang di bawahnya
+        adalah komentar, bukan kode.
+
+        EMPAT BENTUK YATIM YANG LOLOS TES INI, dan itu disengaja. Jangan membaca
+        kelas bug ini sebagai "sudah dijaga":
+
+          (a) sebuah fungsi TANPA docstring disisipkan di antara docstring dan
+              fungsi yang dijelaskannya;
+          (b) komentar `//` lalu fungsi, di antara keduanya;
+          (c) blok `/* */` satu bintang lalu fungsi, di antara keduanya;
+          (d) dua docstring yang dipisah satu baris kosong.
+
+        Perluasan yang jelas — "setiap `/**` wajib diikuti sebuah deklarasi" —
+        diukur dan DITOLAK: ia memberi tiga positif-palsu nyata di repo hari ini,
+        yaitu `aplikasi.js:100` `ingat(kunci, nilai) {` (metode objek),
+        `editor.js:251` `lepas() {` (metode kelas), dan `aplikasi.js:584` (blok
+        `/* */` yang memang menyusul sebuah docstring). Tes yang memerah karena
+        alasan yang salah adalah tes yang berhenti dibaca, jadi pagar ini tetap
+        sempit dengan sadar.
+
+        Yang menjaga KELASNYA bukan tes ini melainkan aturan "Komentar-doc
+        menempel pada fungsinya" di AGENTS.md, yang dibaca manusia.
+        """
+        gagal = []
+        for jalur in self._berkas():
+            with open(jalur, encoding="utf-8") as f:
+                baris = f.read().split("\n")
+            nama = os.path.basename(jalur)
+            for i in range(1, len(baris)):
+                if (baris[i - 1].rstrip().endswith("*/")
+                        and baris[i].lstrip().startswith("/**")):
+                    gagal.append(f"{nama}:{i - 1} -> :{i}")
+        self.assertEqual(
+            gagal, [],
+            "ada blok komentar yang berakhir tepat di atas blok `/**` "
+            "berikutnya, jadi ia tidak mendokumentasikan apa pun. Pindahkan ke "
+            "atas fungsi yang memang dijelaskan kalimat pertamanya: "
+            + "; ".join(gagal))
 
 
 class TestMesinPerayaan(unittest.TestCase):

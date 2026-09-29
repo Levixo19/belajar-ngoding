@@ -482,12 +482,6 @@ export function konfirmasi(pesan, { judul = "Yakin?", labelYa = "Ya, lanjutkan",
 
 /* ------------------------------------------------------------- perayaan */
 
-/** Tampilkan hadiah dari sebuah tindakan: XP, badge baru, kenaikan level.
- *
- *  Dipanggil dari mana pun progres bertambah. Aturannya: satu peristiwa, satu
- *  perayaan. Menumpuk tiga pemberitahuan untuk satu latihan yang lulus membuat
- *  yang penting (badge baru) tenggelam di antara yang biasa (+25 XP).
- */
 /** Tingkat perayaan, DISIMPULKAN dari isi `hadiah` — bukan dari parameter.
  *
  *  Ketiganya sudah lama ada di sini sebagai perilaku, cuma belum punya nama:
@@ -511,6 +505,12 @@ export function tingkatRayakan(hadiah, { diam = false } = {}) {
   return "sentuh";
 }
 
+/** Tampilkan hadiah dari sebuah tindakan: XP, badge baru, kenaikan level.
+ *
+ *  Dipanggil dari mana pun progres bertambah. Aturannya: satu peristiwa, satu
+ *  perayaan. Menumpuk tiga pemberitahuan untuk satu latihan yang lulus membuat
+ *  yang penting (badge baru) tenggelam di antara yang biasa (+25 XP).
+ */
 export function rayakan(hadiah, { diam = false, dari = null } = {}) {
   if (!hadiah) return;
 

@@ -55,18 +55,6 @@ function tanpaNomor(judul) {
   return String(judul || "").replace(/^\s*\d+\.\s*/, "");
 }
 
-/** Bawa sebuah butir ke tengah WADAHNYA, tanpa pernah menggulir dokumen.
- *
- *  Ini pengganti `scrollIntoView({block:"center"})`, dan penggantiannya bukan
- *  soal selera. `scrollIntoView` menggulir SEMUA leluhur yang bisa digulir,
- *  termasuk dokumen — jadi membuka materi ke-13 lewat navigasi dalam aplikasi
- *  mendaratkan pembacanya sembilan ratus piksel di bawah judul, di tengah
- *  kalimat, pada halaman yang belum pernah ia lihat. Yang dimaksud cuma
- *  "gulir jalurnya", dan itulah yang dilakukan di sini.
- *
- *  Dua arah diurus sekaligus karena jalur materi memang berganti arah: kolom
- *  tegak yang menggulir ke bawah di layar lebar, satu jalur yang menggulir ke
- *  samping di layar sempit. */
 /** Jalankan `fn` begitu `el` benar-benar sudah terpasang DAN punya ukuran.
  *
  *  Layar dibangun utuh sebelum router menempelkannya — dan router menunggu
@@ -87,6 +75,18 @@ function saatSiap(el, fn, maks = 40) {
   requestAnimationFrame(coba);
 }
 
+/** Bawa sebuah butir ke tengah WADAHNYA, tanpa pernah menggulir dokumen.
+ *
+ *  Ini pengganti `scrollIntoView({block:"center"})`, dan penggantiannya bukan
+ *  soal selera. `scrollIntoView` menggulir SEMUA leluhur yang bisa digulir,
+ *  termasuk dokumen — jadi membuka materi ke-13 lewat navigasi dalam aplikasi
+ *  mendaratkan pembacanya sembilan ratus piksel di bawah judul, di tengah
+ *  kalimat, pada halaman yang belum pernah ia lihat. Yang dimaksud cuma
+ *  "gulir jalurnya", dan itulah yang dilakukan di sini.
+ *
+ *  Dua arah diurus sekaligus karena jalur materi memang berganti arah: kolom
+ *  tegak yang menggulir ke bawah di layar lebar, satu jalur yang menggulir ke
+ *  samping di layar sempit. */
 function bawaKeTengah(wadah, butir) {
   if (!wadah || !butir) return;
   const w = wadah.getBoundingClientRect();
@@ -241,29 +241,6 @@ function kartuMulaiUtama(s, bahasa) {
       "Mulai", ikon("lanjut", { ukuran: 18 })));
 }
 
-/** Satu ubin bahasa di layar mulai.
- *
- *  Baris ketiganya cuma muncul untuk DUA PENGECUALIAN, dan itu keputusan yang
- *  gampang dibalik tanpa sadar:
- *
- *    "tanpa pasang apa pun"  HTML & CSS — cukup aplikasi ini dan sebuah
- *                            browser. Klaim yang lebih kuat daripada sekadar
- *                            bisa dijalankan, dan itu sebabnya keduanya
- *                            berdiri paling depan di LANGUAGES.
- *    "butuh go"              compiler-nya belum ada di komputer INI.
- *
- *  Keadaan ketiga — "compiler-nya butuh dipasang, dan sudah" — sengaja TIDAK
- *  ditulis. Ia berlaku untuk delapan dari sebelas ubin, dan label yang sama
- *  berulang delapan kali berhenti dibaca: yang membawa arti justru
- *  pengecualiannya. Garis dasarnya sudah dikatakan sekali di kepala bagian
- *  ("10 dari 11 bisa dijalankan di komputer ini"), jadi ubin tanpa penanda
- *  berarti "yang biasa" dan tidak ada yang hilang.
- *
- *  Keduanya dihitung dari jawaban server — `siap` dari runner.py, `pasang`
- *  dari registry bahasa — bukan ditebak. Yang belum siap TETAP ditampilkan
- *  dan tetap bisa dibuka: materi dan kuisnya jalan penuh, yang mati cuma
- *  penilaian otomatis latihannya. Penandanya dipasang SEBELUM diklik —
- *  aturan yang sama dipakai bab terkunci dan antrean saran. */
 /** Panah memindah fokus antar-ubin, dengan satu ubin saja yang ikut Tab.
  *
  *  Kisi sembilan belas tautan berarti sembilan belas perhentian Tab sebelum
@@ -315,6 +292,29 @@ function panahAntarUbin(petak) {
   });
 }
 
+/** Satu ubin bahasa di layar mulai.
+ *
+ *  Baris ketiganya cuma muncul untuk DUA PENGECUALIAN, dan itu keputusan yang
+ *  gampang dibalik tanpa sadar:
+ *
+ *    "tanpa pasang apa pun"  HTML & CSS — cukup aplikasi ini dan sebuah
+ *                            browser. Klaim yang lebih kuat daripada sekadar
+ *                            bisa dijalankan, dan itu sebabnya keduanya
+ *                            berdiri paling depan di LANGUAGES.
+ *    "butuh go"              compiler-nya belum ada di komputer INI.
+ *
+ *  Keadaan ketiga — "compiler-nya butuh dipasang, dan sudah" — sengaja TIDAK
+ *  ditulis. Ia berlaku untuk delapan dari sebelas ubin, dan label yang sama
+ *  berulang delapan kali berhenti dibaca: yang membawa arti justru
+ *  pengecualiannya. Garis dasarnya sudah dikatakan sekali di kepala bagian
+ *  ("10 dari 11 bisa dijalankan di komputer ini"), jadi ubin tanpa penanda
+ *  berarti "yang biasa" dan tidak ada yang hilang.
+ *
+ *  Keduanya dihitung dari jawaban server — `siap` dari runner.py, `pasang`
+ *  dari registry bahasa — bukan ditebak. Yang belum siap TETAP ditampilkan
+ *  dan tetap bisa dibuka: materi dan kuisnya jalan penuh, yang mati cuma
+ *  penilaian otomatis latihannya. Penandanya dipasang SEBELUM diklik —
+ *  aturan yang sama dipakai bab terkunci dan antrean saran. */
 function ubinBahasa(b) {
   const tanda = !b.siap
     ? ["ubin-butuh", `butuh ${b.hilang.join(", ")}`]
@@ -1271,7 +1271,7 @@ function saringBab(petak, daftar, ctx) {
       // `ungkap()` bisa meninggalkan `opacity: 0` inline pada bab yang belum
       // pernah tergulir ke layar. Dibersihkan dulu: kalau tidak, animasi ini
       // berakhir di nilai inline itu dan babnya tetap tak terlihat — keadaan
-      // akhir animasi wajib keadaan alami elemennya (invarian #3).
+      // akhir animasi wajib keadaan alami elemennya.
       el.style.opacity = "";
       animasi(el, { opacity: [0, 1] }, { pegas: "halus" });
     }
@@ -1396,18 +1396,6 @@ function petaBab(daftar, sedang, ctx) {
   return nav;
 }
 
-/** Kepala satu bab: nomor besar, tingkat, judul, satu kalimat isi, kemajuan.
- *
- *  NOMOR ADALAH ARSITEKTUR — ini penerapannya yang paling langsung. Nomor bab
- *  tampil sebesar judulnya sendiri, di kolomnya sendiri, dengan angka tabular
- *  supaya sebelas bab berjajar rata. Mata memakai kolom itu sebagai penggaris,
- *  dan "aku di bab berapa" berhenti butuh dibaca.
- *
- *  Tingkat memakai warnanya sendiri (hijau → cyan → pink) dan sengaja BUKAN
- *  aksen, walau tangga kesulitan latihan memakainya. Di halaman ini ada satu
- *  bab yang sedang dikerjakan, dan aksen sudah dipakai untuk menandai bab itu;
- *  memberi warna yang sama kepada setiap pil "Menengah" berarti membuat
- *  penanda itu hilang di tengah keramaian. */
 /** Cincin persen kecil yang MEMELUK nomor bab.
  *
  *  Menggantikan bilah di ujung kanan kepala, bukan menemaninya: dua gambar
@@ -1419,7 +1407,7 @@ function petaBab(daftar, sedang, ctx) {
  *  Pola `cincinLevel`: `stroke-dashoffset` AKHIR dipasang langsung, animasinya
  *  cuma berangkat dari lingkaran kosong. Kalau gerak dimatikan, animasinya
  *  dibatalkan, atau JS tidak jalan sama sekali, yang tertinggal tetap busur
- *  dengan panjang yang benar (invarian #3).
+ *  dengan panjang yang benar (keadaan akhir = keadaan alami).
  *
  *  Hanya bab yang SEDANG dikerjakan yang beranimasi. Sebelas busur yang
  *  mengisi diri bersamaan adalah sebelas gerakan yang tidak menjawab satu
@@ -1460,6 +1448,18 @@ function cincinBab(bab, animasikan) {
   return el;
 }
 
+/** Kepala satu bab: nomor besar, tingkat, judul, satu kalimat isi, kemajuan.
+ *
+ *  NOMOR ADALAH ARSITEKTUR — ini penerapannya yang paling langsung. Nomor bab
+ *  tampil sebesar judulnya sendiri, di kolomnya sendiri, dengan angka tabular
+ *  supaya sebelas bab berjajar rata. Mata memakai kolom itu sebagai penggaris,
+ *  dan "aku di bab berapa" berhenti butuh dibaca.
+ *
+ *  Tingkat memakai warnanya sendiri (hijau → cyan → pink) dan sengaja BUKAN
+ *  aksen, walau tangga kesulitan latihan memakainya. Di halaman ini ada satu
+ *  bab yang sedang dikerjakan, dan aksen sudah dipakai untuk menandai bab itu;
+ *  memberi warna yang sama kepada setiap pil "Menengah" berarti membuat
+ *  penanda itu hilang di tengah keramaian. */
 function kepalaBab(bab, sedang) {
   return h("summary.bab-kepala", {},
     cincinBab(bab, bab === sedang),
@@ -1539,7 +1539,7 @@ const KUNCI_DIRENDER = "dirender.";
  *  Yang dimatikan HANYA gerakan masuknya. Daftarnya tetap lengkap, tetap
  *  terbaca, tetap tanpa JS — `ungkap()` yang tidak dipanggil berarti tidak ada
  *  yang pernah menyetel `opacity: 0`, jadi keadaan diamnya memang keadaan
- *  akhirnya (invarian #3). */
+ *  akhirnya (keadaan akhir = keadaan alami). */
 function ungkapSekali(el, ctx, key, opsi) {
   if (!ctx || !key) { ungkap(el, opsi); return el; }
   if (ctx.ingat(KUNCI_DIRENDER + key)) return el;
@@ -2031,12 +2031,6 @@ function labelPeta(bg) {
   return awal;
 }
 
-/** Kolom kanan: peta bagian di halaman ini, dengan penanda yang mengikuti
- *  posisi baca.
- *
- *  Bedanya dengan daftar isi biasa: penandanya BERGERAK. Di materi sepanjang
- *  empat bagian itu mungkin berlebihan; di materi yang panjang, ia satu-satunya
- *  hal yang menjawab "aku sudah sampai mana" tanpa harus menggulir balik. */
 /** Bawa sebuah bagian ke tepi atas kolom baca, TANPA `scrollIntoView`.
  *
  *  Aturan repo: `scrollIntoView` menggulir semua leluhur yang bisa digulir —
@@ -2061,6 +2055,12 @@ function bawaKeAtas(sasaran) {
                     behavior: adaGerak() ? "smooth" : "auto" });
 }
 
+/** Kolom kanan: peta bagian di halaman ini, dengan penanda yang mengikuti
+ *  posisi baca.
+ *
+ *  Bedanya dengan daftar isi biasa: penandanya BERGERAK. Di materi sepanjang
+ *  empat bagian itu mungkin berlebihan; di materi yang panjang, ia satu-satunya
+ *  hal yang menjawab "aku sudah sampai mana" tanpa harus menggulir balik. */
 function petaBagian(m, artikel) {
   const butir = [];
   m.bagian.forEach((bg, i) => {

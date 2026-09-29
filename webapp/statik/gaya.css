@@ -1260,14 +1260,19 @@ code { font-family: var(--f-kode); font-size: .92em; }
    display sendiri wajib mengembalikan aturan itu. */
 .tbl[hidden], .ikon-tombol[hidden], .pil[hidden], .deret[hidden],
 .terminal[hidden], .pratinjau[hidden], .keadaan[hidden],
-.konteks-langkah[hidden], .tbl-set[hidden],
-/* `.bab` masuk daftar ini pada S06 karena S05 melewatkannya, dan akibatnya
-   terukur: penyaring tingkat menyetel `hidden` pada tujuh dari sebelas bab,
-   computed `display` tetap `grid`, dan tinggi `.bab-daftar` tidak bergerak satu
-   piksel pun (1623 -> 1623) sementara teks statusnya berbunyi "4 dari 11 bab
+.konteks-langkah[hidden], .tbl-set[hidden] { display: none; }
+
+/* `.bab` masuk daftar yang sama pada S06 karena S05 melewatkannya, dan
+   akibatnya terukur: penyaring tingkat menyetel `hidden` pada tujuh dari
+   sebelas bab, computed `display` tetap `grid`, dan tinggi `.bab-daftar` tidak
+   bergerak satu piksel pun sementara teks statusnya berbunyi "4 dari 11 bab
    ditampilkan". Yang lolos bukan cuma gejalanya: verifikasi S05 membaca
    `el.hidden` — atributnya — bukan render, jadi angka yang dilaporkan benar
-   sebagai atribut dan salah sebagai tampilan. */
+   sebagai atribut dan salah sebagai tampilan.
+
+   Aturan sendiri, bukan disisipkan ke dalam daftar di atas: komentar di antara
+   koma dan penyeleksi berikutnya memang sah bagi parser, tapi ia membuat
+   `{ display: none; }` berhenti terlihat menempel pada penyeleksi yang mana. */
 .bab[hidden] { display: none; }
 
 /* ----------------------------------------------------------------- tombol
