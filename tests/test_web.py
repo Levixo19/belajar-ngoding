@@ -2318,6 +2318,314 @@ class TestLayarBahasa(unittest.TestCase):
                          "tautan Ruang coba tidak ditandai")
 
 
+class TestHiddenBenarBenarMenyembunyikan(unittest.TestCase):
+    """`hidden` yang disetel JS wajib benar-benar menghilangkan elemennya.
+
+    Aturan CSS `[hidden] { display: none }` datang dari lembar UA, dan lembar
+    AUTHOR selalu menang atasnya. Jadi `.bab { display: grid }` membuat
+    `el.hidden = true` tidak melakukan apa pun selain memasang atribut — dan
+    tidak ada satu pun galat yang muncul.
+
+    Itu terjadi sungguhan di S05: penyaring tingkat menyetel `hidden` pada tujuh
+    dari sebelas bab, `.bab-daftar` tetap 1623 px, dan teks statusnya berbunyi
+    "4 dari 11 bab ditampilkan" sementara kesebelasnya ada di layar. Verifikasi
+    waktu itu membaca `el.hidden` — ATRIBUTNYA — jadi angkanya benar sebagai
+    atribut dan salah sebagai tampilan. Sesudah `.bab[hidden]` dipasang:
+    1623 -> 714 px, `display: none`, `offsetParent` null.
+
+    Batas tes ini, disebut supaya tidak dianggap lebih dari yang ia lakukan:
+    suite ini stdlib dan tidak punya mesin CSS, jadi yang dihitung di sini
+    adalah KASKADENYA, bukan piksel yang dirender. Angka render dilaporkan dari
+    peramban; yang dijaga di sini supaya tidak lahir lagi adalah bentuknya.
+    """
+
+    # Setiap penulisan `hidden` di statik/js, beserta kelas/id yang benar-benar
+    # disetel. Kuncinya (berkas, fungsi penutup, teks barisnya) dan SENGAJA
+    # bukan nomor baris: versi pertama registri ini berkunci nomor, dan
+    # penambahan dua puluh satu baris di berkas yang sama menggeser delapan
+    # entri sekaligus -- lapuk pada suntingan pertama yang tidak berhubungan.
+    REGISTRI = {
+        ('aplikasi.js', 'gambarKonteks',
+         'el.hidden = true;'):
+            ('#konteks', 'strip konteks disembunyikan router'),
+        ('aplikasi.js', 'gambarKonteks',
+         'el.hidden = false;'):
+            ('#konteks', 'pasangannya, dibuka lagi'),
+        ('aplikasi.js', 'bangunRel',
+         'kotakTematik.hidden = tematik.length === 0;'):
+            ('.rel-kotak-tematik', 'kotak bahasa tematik saat daftarnya kosong'),
+        ('inti.js', 'jendela',
+         'tirai.hidden = true;'):
+            ('#tirai', 'tirai dialog'),
+        ('inti.js', 'jendela',
+         'tirai.hidden = false;'):
+            ('#tirai', 'pasangannya'),
+        ('layar-belajar.js', 'pinKeHariIni',
+         'geser.hidden = petak.scrollWidth <= petak.clientWidth;'):
+            ('.bara-geser', 'penanda kisi bisa digeser'),
+        ('layar-belajar.js', 'blokBara',
+         'const geser = h("span.bara-geser", { hidden: true },'):
+            ('.bara-geser', 'lahir tersembunyi'),
+        ('layar-belajar.js', 'gambarSaring',
+         'for (const el of semua) el.hidden = !setelah.has(el);'):
+            ('.bab', 'penyaring tingkat, gambar pertama'),
+        ('layar-belajar.js', 'terapkan',
+         'for (const el of semua) el.hidden = !setelah.has(el);'):
+            ('.bab', 'penyaring tingkat, pembaruan beranimasi'),
+        ('layar-belajar.js', 'kartuKeluaran',
+         'pv.el.hidden = !lihat;'):
+            ('.pratinjau', 'tab pratinjau HTML/CSS'),
+        ('layar-belajar.js', 'kartuKeluaran',
+         'pohon.hidden = lihat;'):
+            ('.pra', 'pohon struktur, pasangan tab di atas'),
+        ('layar-belajar.js', 'kartuKeluaran',
+         'if (ket) ket.hidden = !lihat;'):
+            ('.pratinjau-ket', 'keterangan pratinjau'),
+        ('layar-belajar.js', 'blokKode',
+         '{ hidden: true, title: "Kembalikan ke kode aslinya" }, "Kembalikan");'):
+            ('.tbl', 'tombol Kembalikan lahir tersembunyi'),
+        ('layar-belajar.js', 'utakAtik',
+         'tblUbah.hidden = true;'):
+            ('.tbl', 'tombol Ubah'),
+        ('layar-belajar.js', 'utakAtik',
+         'tblPulih.hidden = false;'):
+            ('.tbl', 'tombol Pulih'),
+        ('layar-belajar.js', 'pulihkan',
+         'tblUbah.hidden = false;'):
+            ('.tbl', 'tombol Ubah, pasangannya'),
+        ('layar-belajar.js', 'pulihkan',
+         'tblPulih.hidden = true;'):
+            ('.tbl', 'tombol Pulih, pasangannya'),
+        ('layar-lain.js', 'kartuPilihan',
+         'const tanda = h("span.pil.pil-nyala", { hidden: true },'):
+            ('.pil', 'penanda pilihan tema/ukuran'),
+        ('layar-lain.js', 'tandaiPilihan',
+         'if (kt.tanda) kt.tanda.hidden = !ini;'):
+            ('.pil', 'pasangannya'),
+    }
+
+    POLA_TULIS = re.compile(
+        r"\.hidden\s*=|(?<![\w-])hidden\s*:\s*(?:true|false|!|[a-zA-Z])")
+    POLA_FUNGSI = re.compile(r"^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)")
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _situs(self):
+        """{(berkas, fungsi, teks baris)} setiap penulisan `hidden` di statik/js."""
+        dirjs = os.path.join(self._akar(), "webapp", "statik", "js")
+        keluar = {}
+        for nama in sorted(n for n in os.listdir(dirjs) if n.endswith(".js")):
+            with open(os.path.join(dirjs, nama), encoding="utf-8") as f:
+                baris = f.read().split("\n")
+            fungsi = "(tingkat-modul)"
+            for teks in baris:
+                m = self.POLA_FUNGSI.match(teks)
+                if m:
+                    fungsi = m.group(1)
+                tanpa = re.sub(r"//.*", "", teks)
+                if self.POLA_TULIS.search(tanpa):
+                    keluar[(nama, fungsi, teks.strip())] = True
+        return set(keluar)
+
+    def _css(self):
+        with open(os.path.join(self._akar(), "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            return re.sub(r"/\*.*?\*/", " ", f.read(), flags=re.S)
+
+    def test_registri_mencakup_setiap_penulisan_hidden(self):
+        """Setiap `hidden` baru wajib mendaftar, supaya kaskadenya ikut ditanya."""
+        situs = self._situs()
+        daftar = set(self.REGISTRI)
+        hilang = sorted(situs - daftar)
+        basi = sorted(daftar - situs)
+        self.assertEqual(
+            hilang, [],
+            "ada penulisan `hidden` yang belum terdaftar. Daftarkan di REGISTRI "
+            "beserta kelas/id yang benar-benar disetel: kalau kelas itu menyetel "
+            "`display` sendiri, `hidden` TIDAK akan menyembunyikannya dan tidak "
+            f"ada galat yang muncul. Belum terdaftar: {hilang}")
+        self.assertEqual(basi, [],
+                         f"entri REGISTRI menunjuk situs yang sudah tidak ada: {basi}")
+
+    def test_setiap_sasaran_hidden_benar_benar_jadi_display_none(self):
+        """Kaskade dihitung: siapa yang menyetel display, siapa yang memulihkan."""
+        css = self._css()
+        pemulih, display = set(), {}
+        for sel_blok, isi in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            m = re.search(r"(?<![-\w])display\s*:\s*([^;!]+)", isi)
+            for sel in sel_blok.split(","):
+                sel = sel.strip()
+                if "[hidden]" in sel:
+                    for k in re.findall(r"[.#]([A-Za-z][\w-]*)\[hidden\]", sel):
+                        pemulih.add(k)
+                    continue
+                if not m or m.group(1).strip() == "none":
+                    continue
+                # Hanya penyeleksi tunggal: `.a .b` menyetel display `.b` dalam
+                # konteks, bukan `.b` di mana pun.
+                murni = re.fullmatch(r"([.#])([A-Za-z][\w-]*)", sel)
+                if murni:
+                    display.setdefault(murni.group(2), m.group(1).strip())
+
+        gagal = []
+        for (berkas, fungsi, _teks), (sasaran, alasan) in sorted(self.REGISTRI.items()):
+            nama = sasaran.lstrip(".#")
+            d = display.get(nama)
+            if d and nama not in pemulih:
+                gagal.append(f"{berkas} {fungsi}() -> {sasaran} menyetel "
+                             f"`display: {d}` tanpa pemulih `{sasaran}[hidden]` "
+                             f"({alasan})")
+        self.assertEqual(
+            gagal, [],
+            "`hidden` tidak akan menyembunyikan sasaran ini: lembar author "
+            "mengalahkan `[hidden]` milik UA, dan gejalanya bukan galat "
+            "melainkan elemen yang tetap terlihat sementara atributnya bilang "
+            "sudah hilang. Tambahkan namanya ke daftar pemulih di gaya.css. "
+            + "; ".join(gagal))
+
+    def test_penyaring_bab_masih_memakai_atribut_hidden(self):
+        """Tes lama yang membaca `!el.hidden` TETAP berlaku, dan tidak cukup.
+
+        Ia menjaga hal yang berbeda: bahwa `tata()` cuma menerima elemen yang
+        tampak sebelum DAN sesudah. Yang ia tidak pernah bisa jawab adalah
+        apakah `hidden` benar-benar menyembunyikan — dua tes ini bersama, bukan
+        salah satunya.
+        """
+        with open(os.path.join(self._akar(), "webapp", "statik", "js",
+                               "layar-belajar.js"), encoding="utf-8") as f:
+            js = f.read()
+        self.assertRegex(js, r"tetap = semua\.filter\(\(el\) => !el\.hidden",
+                         "penjaga FLIP berbasis atribut hilang")
+        self.assertIn(".bab[hidden]", self._css(),
+                      "pemulih `.bab[hidden]` hilang dari gaya.css")
+
+
+class TestVariabelDibacaDiLingkupYangSama(unittest.TestCase):
+    """Variabel yang dibaca aturan di `html`/`:root` wajib diisi ulang di sana juga.
+
+    Kelas bug ini menggigit sekali dan tidak menghasilkan satu pun galat:
+    `--lengket-atas` dideklarasikan di `:root`, dibaca oleh
+    `html { scroll-padding-top: calc(var(--lengket-atas) + var(--s4)) }`, lalu
+    diisi ulang oleh `#panggung.berkonteks` — sebuah subtree. Leluhur tidak
+    pernah bisa melihat isian ulang di dalam keturunannya, jadi pengatur
+    pendaratan gulir tetap memakai nilai lama.
+
+    Akibatnya terukur di pembaca: `scroll-padding-top` 72 px sementara dasar
+    chrome yang menempel 98 px, jadi 26 px teratas setiap sasaran gulir
+    mendarat DI BALIK strip — termasuk baris pertama judul bagian, persis yang
+    komentar di atas aturan itu bilang tidak boleh terjadi.
+
+    Yang dijaga: setiap `var(--x)` yang dibaca aturan pada `html`/`:root` punya
+    deklarasi `--x` pada `html`/`:root` juga. Kalau sebuah variabel memang
+    tidak pernah berubah, ia didaftarkan di TETAP beserta alasannya — jadi
+    "tidak berubah" menjadi keputusan yang tertulis, bukan kelalaian.
+    """
+
+    # Variabel yang dibaca di lingkup html/:root dan memang TIDAK pernah diisi
+    # ulang di lingkup lain mana pun. Kalau suatu hari ada yang mengisinya ulang
+    # di sebuah subtree, tes di bawah akan menagihnya.
+    TETAP = {
+        "--ukuran-teks": "disetel JS pada <html> sendiri (layar-lain.js), bukan di subtree",
+        "--s4": "tangga jarak; konstan seumur aplikasi",
+        "--rel-tinggi": "tinggi navbar; konstan",
+        "--konteks-tinggi": "tinggi strip konteks; konstan",
+    }
+
+    @staticmethod
+    def _css():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            return re.sub(r"/\*.*?\*/", " ", f.read(), flags=re.S)
+
+    @staticmethod
+    def _lingkupAkar(sel):
+        """Apakah penyeleksi ini berlaku pada elemen <html> itu sendiri?"""
+        sel = sel.strip()
+        if not sel or sel.startswith("@"):
+            return False
+        # `html`, `:root`, dan variannya dengan :has()/atribut -- tapi BUKAN
+        # `html .x` atau `:root .x`, yang menyasar keturunannya.
+        inti = re.sub(r":has\([^)]*\)|\[[^\]]*\]|:not\([^)]*\)", "", sel).strip()
+        return inti in ("html", ":root", "html:root", ":root:root")
+
+    def test_var_yang_dibaca_di_akar_diisi_ulang_di_akar(self):
+        css = self._css()
+        aturan = re.findall(r"([^{}]+)\{([^{}]*)\}", css)
+
+        dibaca, ditulisDiAkar, ditulisDiLain = set(), set(), {}
+        for sel_blok, isi in aturan:
+            akar = any(self._lingkupAkar(s) for s in sel_blok.split(","))
+            for nama in re.findall(r"var\((--[\w-]+)", isi):
+                if akar:
+                    dibaca.add(nama)
+            for nama in re.findall(r"(?:^|;|\{)\s*(--[\w-]+)\s*:", isi):
+                if akar:
+                    ditulisDiAkar.add(nama)
+                else:
+                    ditulisDiLain.setdefault(nama, set()).add(sel_blok.strip()[:60])
+
+        self.assertTrue(dibaca, "tidak ada var yang terbaca di lingkup akar")
+
+        gagal = []
+        for nama in sorted(dibaca):
+            lain = ditulisDiLain.get(nama)
+            if nama in ditulisDiAkar:
+                continue          # diisi ulang di tempat yang bisa dilihat
+            if not lain:
+                if nama in self.TETAP:
+                    continue      # memang konstan, dan itu tertulis
+                gagal.append(f"{nama}: dibaca di akar, tidak pernah dideklarasikan "
+                             "di akar, dan tidak terdaftar di TETAP")
+                continue
+            gagal.append(
+                f"{nama}: dibaca oleh aturan di html/:root tapi diisi ulang HANYA "
+                f"di {sorted(lain)} -- lingkup itu tidak pernah terlihat oleh "
+                "leluhurnya, jadi pembacanya memakai nilai lama tanpa satu pun galat")
+        self.assertEqual(gagal, [], "; ".join(gagal))
+
+    def test_lengket_atas_terisi_ulang_untuk_pembaca(self):
+        """Bentuk perbaikannya, bukan angkanya: dua lingkup, satu sumber angka."""
+        css = self._css()
+        self.assertRegex(
+            css, r"#panggung\.berkonteks\s*\{\s*--lengket-atas:",
+            "isian ulang untuk kolom yang menempel di dalam #panggung hilang")
+        self.assertRegex(
+            css, r"html:has\(#panggung\.berkonteks\)\s*\{\s*--lengket-atas:",
+            "isian ulang untuk `html` hilang; `scroll-padding-top` akan kembali "
+            "memakai nilai tanpa strip dan 26 px teratas tiap sasaran gulir "
+            "mendarat di balik strip")
+        self.assertIn("@supports selector(:has(*))", css,
+                      "`:has()` tidak dipagari @supports seperti pemakai lain")
+        # Jarak pendaratan TIDAK boleh disalin ke JS sebagai angka: ia dibaca
+        # dari scrollPaddingTop yang sudah terhitung.
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js", "layar-belajar.js"),
+                  encoding="utf-8") as f:
+            js = f.read()
+        badan = TestHamparanBara._fungsi(TestHamparanBara._telanjang(js), "bawaKeAtas")
+        self.assertIn("scrollPaddingTop", badan,
+                      "jarak pendaratan tidak dibaca dari CSS; angka kedua yang "
+                      "bisa melenceng dari yang pertama")
+        self.assertNotIn("scrollIntoView", badan)
+        self.assertNotRegex(badan, r"\b(54|44|72|98|116)\b",
+                            "angka lengket ditulis sebagai konstanta di JS")
+
+        # Dan pemanggilnya WAJIB memakainya. Tanpa baris ini, mengembalikan
+        # `petaBagian` ke `scrollIntoView` tetap hijau: `bawaKeAtas()` masih
+        # benar, cuma tidak ada yang memanggilnya lagi. Mutasi itu memang lolos
+        # ronde pertama.
+        peta = TestHamparanBara._fungsi(TestHamparanBara._telanjang(js), "petaBagian")
+        self.assertIn("bawaKeAtas(sasaran)", peta,
+                      "peta bagian tidak lagi memakai `bawaKeAtas()`")
+        self.assertNotIn("scrollIntoView", peta,
+                         "peta bagian kembali memakai `scrollIntoView`; "
+                         "pendaratannya lepas dari `scroll-padding-top` yang "
+                         "sudah terhitung dan 26 px teratas kembali ke balik strip")
+
+
 class TestMesinPerayaan(unittest.TestCase):
     """Mesin upacara: penanda sekali-seumur, dan cabang `capai` yang bersyarat.
 

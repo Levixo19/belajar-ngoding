@@ -1241,9 +1241,28 @@ function saringBab(petak, daftar, ctx) {
     const tetap = semua.filter((el) => !el.hidden && setelah.has(el));
     const baru = semua.filter((el) => el.hidden && setelah.has(el));
 
-    // `tetap` saja yang di-FLIP. Elemen tersembunyi punya kotak batas nol,
-    // jadi memasukkannya ke `tata()` akan menghasilkan translasi sebesar
-    // seluruh halaman.
+    /* `tetap` saja yang di-FLIP: elemen tersembunyi punya kotak batas nol, jadi
+       memasukkannya ke `tata()` akan menghasilkan translasi sebesar seluruh
+       halaman.
+
+       Kalimat itu benar SEKARANG, dan ia tidak benar saat pertama kali ditulis.
+       S05 mengirimnya sebagai premis, bukan sebagai pengukuran — dan `.bab`
+       waktu itu tidak ada di daftar pemulih `[hidden]` (gaya.css), jadi
+       `hidden` tidak pernah menyembunyikan apa pun: kotaknya penuh, tinggi
+       `.bab-daftar` tidak bergerak (1623 -> 1623), dan `tata()` menganggap
+       semuanya diam. Seluruh koreografi di bawah tidak pernah sekali pun
+       berjalan, dan suite tetap hijau karena tesnya membaca atribut.
+
+       Sesudah `.bab[hidden]` dipasang, angkanya diukur ulang dan koreografinya
+       ternyata benar apa adanya — tidak ada yang perlu disederhanakan:
+
+         saring ke `dasar`    : tinggi 1623 -> 714,  0 transform
+                                (penyintasnya awalan DOM, memang tidak bergeser)
+         saring ke `menengah` : tinggi 1623 -> 630,  5 transform
+         saring ke `mahir`    : tinggi 1623 -> 227,  2 transform,
+                                translate3d(0, 1396px) = tepat selisih tingginya
+
+       `scale` tetap 1,0000 di semuanya, jadi tidak ada teks yang direntangkan. */
     tata(tetap, () => {
       for (const el of semua) el.hidden = !setelah.has(el);
     }, { pegas: "jawab" });
@@ -2018,6 +2037,30 @@ function labelPeta(bg) {
  *  Bedanya dengan daftar isi biasa: penandanya BERGERAK. Di materi sepanjang
  *  empat bagian itu mungkin berlebihan; di materi yang panjang, ia satu-satunya
  *  hal yang menjawab "aku sudah sampai mana" tanpa harus menggulir balik. */
+/** Bawa sebuah bagian ke tepi atas kolom baca, TANPA `scrollIntoView`.
+ *
+ *  Aturan repo: `scrollIntoView` menggulir semua leluhur yang bisa digulir —
+ *  itu sebabnya `bawaKeTengah()` ada. Di sini yang digulir memang dokumennya,
+ *  jadi masalahnya bukan leluhur melainkan PENDARATANNYA: `block: "start"`
+ *  menghormati `scroll-padding-top`, dan nilai itu terukur 26 px lebih kecil
+ *  daripada dasar chrome yang menempel di pembaca (72 px lawan 98 px) karena
+ *  `--lengket-atas` diisi ulang di subtree `#panggung`, tempat yang tidak bisa
+ *  dilihat aturan di `html`.
+ *
+ *  Sesudah CSS-nya diperbaiki, jarak itu dibaca dari `scrollPaddingTop` yang
+ *  SUDAH terhitung, bukan disalin sebagai angka. Jadi tidak ada angka kedua
+ *  yang bisa melenceng: kalau CSS-nya berubah, pendaratannya ikut.
+ *
+ *  Pembacaan tata letak di sini terjadi di dalam `onclick` — elemennya sudah
+ *  lama terpasang, jadi ia bukan kasus invarian #15(a). */
+function bawaKeAtas(sasaran) {
+  const pad = parseFloat(
+    getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+  const atas = sasaran.getBoundingClientRect().top + window.scrollY - pad;
+  window.scrollTo({ top: Math.max(0, atas),
+                    behavior: adaGerak() ? "smooth" : "auto" });
+}
+
 function petaBagian(m, artikel) {
   const butir = [];
   m.bagian.forEach((bg, i) => {
@@ -2039,10 +2082,7 @@ function petaBagian(m, artikel) {
     onclick: (e) => {
       e.preventDefault();
       const sasaran = artikel.children[x.i];
-      if (sasaran) {
-        sasaran.scrollIntoView({
-          behavior: adaGerak() ? "smooth" : "auto", block: "start" });
-      }
+      if (sasaran) bawaKeAtas(sasaran);
     },
   },
     ikon(x.jenis === "kode" ? "latihan" : "bagian", { ukuran: 14, tebal: 1.9 }),
