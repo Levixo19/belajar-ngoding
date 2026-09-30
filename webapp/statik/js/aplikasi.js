@@ -180,7 +180,7 @@ const AMBANG_KERANGKA = 240;
  * Satu elemen tidak boleh punya `view-transition-name` DAN digerakkan tata()
  * sekaligus — penanda rel (.rel-tanda) adalah kasus yang paling mungkin
  * melanggarnya. Kalau itu terjadi, pilih salah satu; jangan dua-duanya. */
-async function gambarRute() {
+async function gambarRute({ pindahFokus = true } = {}) {
   const { nama, params } = uraikanRute();
   const panggung = $("#layar");
   const giliran = ++nomorGambar;
@@ -247,6 +247,12 @@ async function gambarRute() {
   if (galat) {
     const el = layarGagal(galat);
     panggung.appendChild(el);
+    // Gerbang yang SAMA berlaku di sini, dan alasannya juga sama: layar
+    // kegagalan pun harus diumumkan pembaca layar — justru pada saat orangnya
+    // paling perlu tahu apa yang terjadi. Tanpa baris ini, "Coba lagi" yang
+    // gagal lagi meninggalkan fokus di `body` dan tidak ada yang mengabarkan
+    // apa pun.
+    if (pindahFokus) panggung.focus({ preventScroll: true });
     gambarKonteks(null);
     masukLayar(el);
   } else {
@@ -254,14 +260,31 @@ async function gambarRute() {
     bersihLayar = hasil.saatKeluar || null;
     document.title = (hasil.judul ? hasil.judul + " · " : "") + "Belajar Ngoding";
     gambarKonteks(hasil.konteks || null);
-    panggung.focus({ preventScroll: true });
+    /* Fokus pindah ke panggung di setiap navigasi, dan itu memang benar: ia
+       yang membuat pembaca layar mengumumkan layar baru alih-alih diam. Yang
+       TIDAK benar melakukannya pada render BOOT, dan bedanya bukan kerapian —
+       Chrome memulai navigasi fokus berurutan dari elemen TERAKHIR yang
+       difokuskan, bukan dari kepala dokumen. Memfokuskan panggung saat memuat
+       memindahkan titik mula Tab ke tengah dokumen, dan `#lompat-isi` — butir
+       fokus PERTAMA dokumen (`index.html:24`) — baru tercapai sesudah menab
+       seluruh halaman lalu memutar balik: terukur 32 tekan di `#/atur`.
+       Jumlah ini bergantung konfigurasi (saklar "buka semua bab", dan lebar
+       rail pada 1100 px); yang TIDAK bergantung apa pun ialah angka SESUDAH:
+       1 tekan, di semua rute.
+
+       Karena itu gerbangnya sebuah parameter, BUKAN penghapusan panggilannya:
+       yang boot mengoper `false` sekali, dan setiap navigasi sesudahnya
+       memakai default `true` sehingga pengumumannya tetap hidup. Sebuah
+       `hashchange` mengoper Event, dan Event tidak punya properti
+       `pindahFokus` — jadi di sana pun yang berlaku default itu. */
+    if (pindahFokus) panggung.focus({ preventScroll: true });
     // Gulir balik ke atas dilakukan TANPA animasi, apa pun setelan geraknya.
     // Ini bukan gerak yang menyampaikan sesuatu — halamannya sudah berganti —
     // dan gulir mulus sejauh dua ribu piksel berarti isi baru yang sudah
     // terpasang tetap tak terlihat selama hampir satu detik. Lebih buruk lagi,
     // ia sempat ditabrak scrollIntoView milik layar berikutnya, dan yang
     // tertinggal halaman yang berhenti entah di mana di tengah teks.
-    window.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "instant" });
     masukLayar(hasil.el);
   }
   segarkanUkuran();
@@ -959,7 +982,8 @@ async function mulai() {
   $("#lompat-isi").addEventListener("click", () => {
     const layar = $("#layar");
     layar.focus();
-    layar.scrollIntoView({ block: "start", behavior: "auto" });
+    layar.scrollIntoView({ block: "start",
+                           behavior: adaGerak() ? "smooth" : "auto" });
   });
   $("#rel-alih").addEventListener("click", alihRel);
   $("#tombol-tema").addEventListener("click", gantiTema);
@@ -995,7 +1019,11 @@ async function mulai() {
   // tetap terlihat, jadi kegagalan apa pun di sini tidak pernah menyisakan
   // halaman kosong.
   masuk($("#cangkang"), { geser: 0, zum: 0.994, durasi: 260 });
-  await gambarRute();
+  // Render pertama TIDAK memindahkan fokus: kalau ia memindahkannya, Tab
+  // pertama sesudah halaman termuat berangkat dari tengah dokumen dan tautan
+  // "Lompat ke isi" jadi permukaan yang ada tapi tidak bisa dipakai. Lihat
+  // gerbang `pindahFokus` di `gambarRute()`.
+  await gambarRute({ pindahFokus: false });
 }
 
 mulai();

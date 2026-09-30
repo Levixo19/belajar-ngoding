@@ -1260,7 +1260,8 @@ code { font-family: var(--f-kode); font-size: .92em; }
    display sendiri wajib mengembalikan aturan itu. */
 .tbl[hidden], .ikon-tombol[hidden], .pil[hidden], .deret[hidden],
 .terminal[hidden], .pratinjau[hidden], .keadaan[hidden],
-.konteks-langkah[hidden], .tbl-set[hidden] { display: none; }
+.konteks-langkah[hidden], .tbl-set[hidden],
+.aksi-tepi[hidden] { display: none; }
 
 /* `.bab` masuk daftar yang sama pada S06 karena S05 melewatkannya, dan
    akibatnya terukur: penyaring tingkat menyetel `hidden` pada tujuh dari
@@ -3246,6 +3247,49 @@ pre.kode {
 
 .materi-utama { min-width: 0; }
 .materi-utama .prosa { max-width: var(--baca); }
+
+/* ------------------------------------------------- kartu aksi di tepi
+   Tiga kontrol materi — tandai selesai, bookmark, catatan — dipindahkan ke
+   satu kartu yang menempel di tepi kolom. Bukan salinan: ketiganya keluar dari
+   kepala dan kaki, jadi tidak ada tombol yang muncul dua kali.
+
+   `top` memakai hitungan yang SAMA dengan `scroll-padding-top` (:538), bukan
+   angka kedua yang mirip: apa pun yang mendarat karena gulir dan kartu ini
+   berhenti di garis yang sama, dan kalau `--lengket-atas` berubah keduanya
+   ikut. `--l-lengket` adalah token yang memang bernama "kolom yang menempel".
+
+   Di `data-gerak="mati"` ia `static`: menyembunyikan diri sesudah diam adalah
+   perubahan keadaan yang terjadi SENDIRI, jadi di sana kartunya permanen — dan
+   kartu permanen yang tetap `sticky` akan menutupi baris kode yang tergulir
+   lewat di bawahnya. `static` menaruhnya kembali di aliran, tempat ia tidak
+   bisa menutupi apa pun. */
+.aksi-tepi {
+  /* `fixed`, bukan `sticky`, dan itu hasil pengukuran. Sticky menaruh kartunya
+     di ALIRAN, jadi menyembunyikannya memendekkan dokumen — dan scroll
+     anchoring Chrome menggeser gulir untuk mengimbanginya. Terukur:
+     `hidden=true` di 4318 ms, gulir bergeser 400 -> 300 di 4684 ms, dan
+     penampil yang mendengarkan gulir membatalkan penyembunyiannya sendiri di
+     4685 ms. Di luar aliran, menyembunyikan tidak mengubah tata letak siapa
+     pun, jadi lingkaran itu tidak punya tempat untuk lahir. */
+  position: fixed;
+  top: calc(var(--lengket-atas) + var(--s4));
+  right: var(--s5);
+  z-index: var(--l-lengket);
+  /* Di luar aliran elemen menyusut ke kontennya; di dalam aliran elemen
+     block-level memenuhi induknya. `fit-content` = min(max-content, tersedia):
+     menyusut seperti saat `fixed`, dan tetap tidak bisa meluber di kolom
+     sempit — yang tidak dimiliki `max-content`. */
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-width: 0;
+  padding: var(--s2);
+  border: var(--tebal-garis) solid var(--garis);
+  border-radius: var(--r);
+  background: var(--kartu);
+  box-shadow: var(--kilau-tepi);
+}
 .kepala-materi { margin-bottom: var(--s6); }
 /* Kepala materi dipangkas. Yang dulu berdiri di sini: satu baris mata, judul,
    lalu EMPAT pil ("belum tuntas", "6 bagian", "2 contoh kode", "Bab 1 · ...")
@@ -3626,8 +3670,23 @@ pre.kode {
   text-wrap: balance;
 }
 
+/* KOMBINATOR ANAK, bukan turunan, dan ini bukan kerapian. Sesudah penjelasan
+   pindah ke bawah opsi yang dipilih, `.penjelasan` beserta tombol tindakan
+   utamanya tinggal DI DALAM `.opsi` — dan `.opsi button` (0,1,1) mengalahkan
+   `.tbl-utama` (0,1,0). Yang ditelan bukan cuma bentuknya: `background`
+   milik `.tbl-utama` kalah sementara `color: var(--di-atas-aksen)` bertahan,
+   jadi huruf yang dirancang berdiri di atas aksen berdiri di atas kartu.
+   Terukur 1,00-1,06:1 di keempat tema — tombol yang tidak terbaca di mana pun,
+   pada tindakan yang paling sering ditekan di layar ini.
+
+   Menambal `color` di `.penjelasan .tbl` akan jadi perang spesifisitas ketiga
+   dan kalah lagi nanti. Yang benar mempersempit jangkauannya: opsi dibangun
+   `h("div.opsi", {}, tombol)` jadi tombol opsi ANAK LANGSUNG, sedangkan
+   `lanjut` bernaung di `.opsi > .penjelasan > .deret > button` dan karena itu
+   keluar dari jangkauan. `.opsi .huruf` sengaja TETAP turunan: ia memang di
+   dalam tombol, bukan anak langsung `.opsi`. */
 .opsi { display: grid; gap: var(--s3); }
-.opsi button {
+.opsi > button {
   display: flex; align-items: center; gap: var(--s4);
   min-height: var(--sentuh);
   padding: var(--s4);
@@ -3639,7 +3698,7 @@ pre.kode {
   transition: border-color var(--cepat), background var(--cepat),
               translate var(--cepat);
 }
-.opsi button:hover:not([disabled]) {
+.opsi > button:hover:not([disabled]) {
   border-color: var(--nyala-gelap); background: var(--kartu-naik);
   translate: 3px 0;
 }
@@ -3653,14 +3712,14 @@ pre.kode {
   transition: border-color var(--cepat), color var(--cepat),
               background var(--cepat);
 }
-.opsi button:hover:not([disabled]) .huruf {
+.opsi > button:hover:not([disabled]) .huruf {
   border-color: var(--nyala); color: var(--nyala);
 }
 /* Denyut "benar" dan getar "salah" dulu tinggal di sini sebagai @keyframes.
    Keduanya pindah ke gerak.js karena amplitudonya harus ikut tingkat gerak:
    getaran 5 px yang pas di tingkat penuh terlalu ramai di tingkat halus, dan
    CSS tidak bisa mengalikan sebuah keyframe dengan sebuah variabel. */
-.opsi button.benar {
+.opsi > button.benar {
   border-color: var(--tumbuh);
   background: color-mix(in srgb, var(--tumbuh) 12%, transparent);
 }
@@ -3669,24 +3728,24 @@ pre.kode {
    gelap, jadi hasilnya gelap di atas gelap — kontras 2,5:1, praktis tak
    terbaca. Token itu selalu berlawanan dengan warna aksen di tema mana pun,
    jadi satu nilai ini benar di keempatnya. */
-.opsi button.benar .huruf { background: var(--tumbuh); border-color: var(--tumbuh);
+.opsi > button.benar .huruf { background: var(--tumbuh); border-color: var(--tumbuh);
                             color: var(--di-atas-aksen); }
-.opsi button.salah {
+.opsi > button.salah {
   border-color: var(--salah);
   background: color-mix(in srgb, var(--salah) 12%, transparent);
 }
-.opsi button.salah .huruf { background: var(--salah); border-color: var(--salah);
+.opsi > button.salah .huruf { background: var(--salah); border-color: var(--salah);
                             color: var(--di-atas-aksen); }
 /* Bentuk, bukan cuma warna. Centang dan silang ditempel lewat ::after supaya
    "benar" dan "salah" tetap terbaca oleh mata yang sulit memisahkan hijau
    dari merah — syarat WCAG 1.4.1, dan di layar kuis ia bukan formalitas: dua
    warna itulah seluruh umpan baliknya. */
-.opsi button.benar .huruf::after { content: "✓"; }
-.opsi button.salah .huruf::after { content: "✕"; }
-.opsi button.benar .huruf > span,
-.opsi button.salah .huruf > span { display: none; }
-.opsi button[disabled] { pointer-events: none; }
-.opsi button[disabled]:not(.benar):not(.salah) { opacity: .48; }
+.opsi > button.benar .huruf::after { content: "✓"; }
+.opsi > button.salah .huruf::after { content: "✕"; }
+.opsi > button.benar .huruf > span,
+.opsi > button.salah .huruf > span { display: none; }
+.opsi > button[disabled] { pointer-events: none; }
+.opsi > button[disabled]:not(.benar):not(.salah) { opacity: .48; }
 
 .penjelasan {
   margin-top: var(--s4); padding: var(--s4);
@@ -3698,6 +3757,10 @@ pre.kode {
   animation: masuk var(--sedang) both;
 }
 .penjelasan b { color: var(--tenang); }
+/* Sesudah penjelasannya pindah ke bawah opsi yang dipilih, ia jadi anak
+   `.opsi` — dan jaraknya sudah datang dari `gap` milik kisi itu. `margin-top`
+   bawaannya akan menumpuk jarak kedua di tempat yang sama. */
+.opsi > .penjelasan { margin-top: 0; }
 
 .jam {
   font-family: var(--f-kode);
@@ -3707,9 +3770,14 @@ pre.kode {
 }
 /* Tidak berdenyut. Versi sebelumnya memakai `bernapas 1.6s infinite` — di
    bawah lantai 3 detik untuk gerak ambien, dan dipasang pada angka yang justru
-   sedang dibaca dengan tegang. Warna dan tebal huruf sudah menyampaikan
-   "waktumu tinggal sedikit" tanpa satu piksel pun bergerak. */
-.jam.menipis { color: var(--salah); font-weight: 700; }
+   sedang dibaca dengan tegang. */
+/* Dan TIDAK berubah merah. Warna merah di detik terakhir mengubah keputusan
+   jadi kecemasan: yang dibaca bukan lagi soalnya melainkan jamnya, dan yang
+   paling dihukum justru orang yang memang butuh waktu lebih. Tebal huruf
+   sudah menyampaikan "waktumu tinggal sedikit" tanpa mengganti arti warna --
+   `--salah` di layar ini berarti "jawabanmu keliru", dan memakainya untuk
+   waktu membuat satu warna punya dua arti di satu layar. */
+.jam.menipis { font-weight: 700; }
 
 /* ---------------------------------------------------------------- medali */
 
@@ -4099,7 +4167,7 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
    itu supaya tidak berebut dengan skala tekan milik WAAPI. Pagarnya ikut
    pindah -- kalau tidak, ia berhenti mengenai sasaran tanpa pesan galat. */
 [data-gerak="halus"] .baris:hover { translate: none; }
-[data-gerak="halus"] .opsi button:hover:not([disabled]) { translate: none; }
+[data-gerak="halus"] .opsi > button:hover:not([disabled]) { translate: none; }
 [data-gerak="halus"] a.kartu:hover,
 [data-gerak="halus"] button.kartu:hover,
 [data-gerak="halus"] .lanjutkan:hover { transform: none; }
@@ -4242,6 +4310,16 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
     scrollbar-width: thin;
   }
   .materi-peta-kosong { display: none; }
+
+    /* Di tier tiga kolom kartu aksi ikut ALIRAN, tidak lagi melayang.
+       Pojok kanan atas sudah dimiliki permukaan lengket permanen — `.materi-peta`
+       tepat di atas, `position: sticky` pada
+       `top: calc(var(--lengket-atas) + var(--s5))`. Alat melayang yang berdiri di
+       situ bukan menutupi teks yang kebetulan lewat di bawahnya: ia mengambil
+       alih UI orang, dan yang diambil alih justru penanda "aku sedang di bagian
+       mana". Di dalam aliran `.materi-utama` yang `display: block`, kartunya cuma
+       satu baris di atas kepala materi. */
+    .aksi-tepi { position: static; }
 }
 
 /* ---- ruang kerja ------------------------------------------------------
@@ -4378,6 +4456,8 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
 
 /* Tombol menu cuma ada kalau memang ada yang dilipat. */
 #rel-alih { display: none; }
+
+html[data-gerak="mati"] .aksi-tepi { position: static; }
 
 @media (max-width: 1040px) {
   /* Label kotak cari dibuang lebih dulu — ikonnya sendiri sudah cukup

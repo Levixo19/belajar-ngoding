@@ -657,6 +657,11 @@ export const PINTASAN = [
   ["Ctrl S", "Simpan kode"],
   ["Ctrl /", "Komentari baris di editor"],
   ["Tab atau ⇧ Tab", "Tambah atau kurangi indentasi"],
+  ["j", "Blok kode berikutnya (di halaman materi)"],
+  ["k", "Blok kode sebelumnya (di halaman materi)"],
+  ["]", "Bagian berikutnya (di halaman materi)"],
+  ["[", "Bagian sebelumnya (di halaman materi)"],
+  ["⏎", "Jalankan blok kode yang sedang difokus"],
 ];
 
 export function tampilkanBantuan() {

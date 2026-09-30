@@ -13,11 +13,11 @@
 import {
   api, h, isikan, kosongkan, bilah, bulat, angka, kosong, keadaan, sorak,
   rayakan, salin, tanggalRamah, jamRamah, selisihHari, tanggalLokal, hariIniISO,
-  jendela, tandai, GalatApi,
+  jendela, jendelaTerbuka, tandai, tunda, GalatApi,
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, saatTampak, denyut, percikBara, adaGerak, gerakPenuh,
-  berurut, tata,
+  berurut, tata, saatGulir, tingkatGerak,
 } from "./gerak.js";
 import { ikon, ikonTipe } from "./ikon.js";
 import { praKode } from "./sorot.js";
@@ -1599,6 +1599,77 @@ function daftarLatihan(b, ctx) {
 
 /* ================================================================ materi */
 
+/* ---------------------------------------------------------- posisi baca */
+
+/** Berapa lama posisi baca yang tersimpan masih berarti.
+ *
+ *  Dua belas jam: cukup untuk "aku tinggal sebentar lalu balik", terlalu
+ *  pendek untuk menarik orang ke tengah materi yang sudah ia lupakan. Posisi
+ *  yang basi lebih buruk daripada tidak ada posisi — ia mendaratkan orang di
+ *  paragraf tanpa konteks dan terbaca sebagai halaman yang rusak. */
+const BACA_KEDALUWARSA_MS = 12 * 60 * 60 * 1000;
+
+/** Berapa lama diam sebelum kartu aksi menyingkir.
+ *
+ *  Di bawah lima detik dengan sengaja: SC 2.2.2 menuntut penahan untuk apa pun
+ *  yang bergerak sendiri lebih dari lima detik, dan yang di sini berhenti
+ *  sendiri jauh sebelum itu — sekali sembunyi, ia tidak melakukan apa-apa lagi
+ *  sampai ada yang menggulir. */
+const AKSI_DIAM_MS = 4000;
+
+/** Materi yang sudah pernah digambar SEJAK DOKUMEN INI DIMUAT.
+ *
+ *  Sengaja `Set` di memori dan BUKAN localStorage: muat-ulang dan alamat yang
+ *  diketik harus berarti "mulai dari atas". Yang dipulihkan cuma perjalanan
+ *  bolak-balik di dalam satu sesi — membuka materi, melihat sesuatu di layar
+ *  lain, lalu kembali. Ini tidak memperbaiki F5, dan tidak berpura-pura. */
+const materiPernahDigambar = new Set();
+
+function kunciBaca(key, indeks) {
+  return `baca.${key}.${indeks}`;
+}
+
+/** Pulihkan posisi baca — HANYA dari dalam callback `saatSiap`.
+ *
+ *  Kenapa tidak boleh di badan pembangun layar, dan ini konstruktif bukan
+ *  selera: `gambarRute()` menjalankan `appendChild` lalu
+ *  `window.scrollTo({ top: 0 })` secara SENKRON, sementara `saatSiap()`
+ *  mem-poll lewat `requestAnimationFrame`. Jadi callback ini tidak mungkin
+ *  mendahului `scrollTo(0)` itu — sedangkan `scrollTo`/`scrollTop` yang
+ *  dipanggil senkron dari badan pembangun berjalan SEBELUM layarnya terpasang,
+ *  dan nol yang dihasilkannya diam saja (invarian #15a).
+ *
+ *  `behavior: "instant"`, BUKAN `"auto"` — dan bedanya bukan gaya penulisan.
+ *  CSSOM-View mendefinisikan `"auto"` sebagai "ikuti `scroll-behavior` kotak
+ *  yang digulir", dan `gaya.css:532` memasang `html { scroll-behavior: smooth }`.
+ *  Jadi `"auto"` MULUS di tingkat gerak `penuh` dan `halus`; yang instan cuma
+ *  `"mati"`, karena di sana `gaya.css:4588` menimpanya jadi `auto`. Terukur
+ *  sebelum diperbaiki: pemulihan ke 700 px menghasilkan sembilan cuplikan yang
+ *  berubah sepanjang ~650 ms. `"instant"` mengabaikan `scroll-behavior` dan
+ *  terjadi sinkron, apa pun setelannya.
+ *
+ *  Tetap SENGAJA tidak ditanyakan ke `adaGerak()`, dan alasan itu tidak berubah:
+ *  mengembalikan orang ke tempat ia berhenti bukan gerak yang menyampaikan
+ *  sesuatu, dan menggulir mulus dua ribu piksel berarti isi yang sudah
+ *  terpasang tetap tak terlihat selama hampir sedetik. */
+function pulihkanBaca(ctx, key, indeks) {
+  const tanda = key + "." + indeks;
+  if (!materiPernahDigambar.has(tanda)) {
+    materiPernahDigambar.add(tanda);
+    return;
+  }
+  const simpan = ctx && ctx.ingat(kunciBaca(key, indeks));
+  if (!simpan || typeof simpan.y !== "number" || simpan.y <= 0) return;
+  if (Date.now() - (simpan.t || 0) > BACA_KEDALUWARSA_MS) return;
+
+  // Dokumen bisa memendek sejak terakhir dibaca (bab terbuka, blok terlipat).
+  // Dijepit ke ujung bawahnya, bukan dikembalikan ke atas: "berhenti di bawah"
+  // jauh lebih dekat ke maksud orangnya daripada "mulai dari awal lagi".
+  const maks = Math.max(
+    0, document.documentElement.scrollHeight - window.innerHeight);
+  window.scrollTo({ top: Math.min(simpan.y, maks), behavior: "instant" });
+}
+
 export async function layarMateri({ key, indeks }, ctx) {
   // Dua permintaan sekaligus, bukan berurutan: daftar materi bahasa ini
   // dipakai untuk kolom kiri, dan menunggunya setelah materinya sendiri
@@ -1766,6 +1837,15 @@ export async function layarMateri({ key, indeks }, ctx) {
   const bersihEditor = [];
   const artikel = artikelMateri(m, key, b, bersihEditor);
   const peta = petaBagian(m, artikel);
+  /* Lapisan papan ketik dipasang SEKARANG, bukan di dalam `saatSiap`.
+     Alasannya asimetris dengan tetangganya di bawah dan itu yang mengikat:
+     `saatGulir()` memanggil fungsinya sekali saat didaftarkan, jadi mendaftar
+     terlalu awal membuatnya membaca gulir layar LAMA. `addEventListener` tidak
+     punya panggilan pertama itu — dan penjaga `artikel.isConnected` di dalam
+     penangannya sudah membuat penekanan sebelum terpasang jadi tidak berarti
+     apa-apa. Yang tersisa cuma keuntungannya: pelepasnya sudah pasti ada
+     sebelum `saatKeluar` mungkin dipanggil. */
+  const lepasTombol = pintasanPembaca(artikel, peta);
   // Dipegang di variabel, bukan ditulis langsung di dalam pohonnya: keduanya
   // masih berubah SESUDAH halaman jadi, saat materi ini ditandai tuntas dan
   // bab berikutnya ikut terbuka (lihat tawarkanPintuBaru()).
@@ -1782,16 +1862,38 @@ export async function layarMateri({ key, indeks }, ctx) {
       : h("a.tbl.tbl-hantu", { href: "#/bahasa/" + key },
           ikon("kembali", { ukuran: 17 }), "Daftar materi"),
     h("span.deret-kanan"),
-    tblSelesai,
     m.sesudah
       ? h("button.tbl.tbl-utama", { onclick: () => tandaiSelesai(true) },
           potong(m.sesudah, 26), ikon("lanjut", { ukuran: 17 }))
       : null);
 
+  /* Kartu aksi di tepi: RELOKASI, bukan duplikasi.
+   *
+   * Ketiga kontrolnya pindah, tidak disalin — `tblSelesai` keluar dari
+   * `nav.materi-kaki`, dan `tombolBookmark`/`tombolCatatan` keluar dari
+   * `div.materi-alat` yang karena itu bubar. Kaki tetap memegang tautan
+   * sebelum/sesudah dan tombol beraksen "selesai lalu lanjut", yang SENGAJA
+   * tidak ikut naik: ia satu-satunya permukaan beraksen di layar ini, dan
+   * menaikkannya membuat tindakan utama yang kedua. */
+  const kartuAksi = h("aside.aksi-tepi.masuk-mandiri",
+    { "aria-label": "Tindakan untuk materi ini" },
+    tblSelesai,
+    tombolBookmark(key, "materi", indeks, m.bookmark),
+    tombolCatatan(m.kunci, m.catatan, m.judul));
+
   const el = h("div.masuk.materi-tata", {},
     kolom,
 
     h("div.materi-utama", {},
+      /* Kartu tinggal DI SINI, bukan di antara anak `.materi-tata`.
+         `.materi-tata` adalah kisi dua kolom (>=1130) dan tiga kolom (>=1380)
+         dengan tepat tiga item tata letak: rail, kolom utama, peta bagian.
+         Selama kartunya `fixed` ia tidak memakan track — tapi begitu sebuah
+         aturan membuatnya `static`, ia jadi item keempat yang ditempatkan
+         otomatis dan MENGGESER saudara-saudaranya. Di dalam `.materi-utama`
+         (yang `display: block`) `static` cuma berarti satu baris di atas kepala
+         materi, dan `fixed` tidak berubah sama sekali. */
+      kartuAksi,
       // Kepala dipangkas. Yang dulu berdiri di sini: satu baris mata, judul,
       // lalu EMPAT pil dan dua tombol berteks penuh — dua ratus piksel
       // metadata sebelum kata pertama pelajaran. Tiga dari empat pil itu
@@ -1815,10 +1917,7 @@ export async function layarMateri({ key, indeks }, ctx) {
                     + `${m.bab.selesai} dari ${m.bab.jumlah} materi bab ini `
                     + "sudah dibaca tuntas" },
                   m.bab.label_tingkat)
-              : null),
-          h("div.materi-alat", {},
-            tombolBookmark(key, "materi", indeks, m.bookmark),
-            tombolCatatan(m.kunci, m.catatan, m.judul)))),
+              : null))),
 
       artikel,
 
@@ -1839,6 +1938,96 @@ export async function layarMateri({ key, indeks }, ctx) {
 
   setTimeout(() => pengamat.observe(penanda), 80);
 
+  /* Posisi baca: dipulihkan sekali, lalu gulirnya jadi milik pengguna.
+   *
+   * Pendengarnya sengaja didaftarkan DI DALAM callback, sesudah pemulihan.
+   * `saatGulir()` memanggil fungsinya sekali saat didaftarkan; kalau ia
+   * didaftarkan di badan pembangun, panggilan pertama itu terjadi sebelum
+   * layarnya terpasang dan yang tersimpan adalah posisi gulir layar LAMA.
+   *
+   * Tanpa `ResizeObserver` dengan sadar: ini bukan pin. Sekali pulih, tidak
+   * ada lagi yang merebut gulirnya kembali (invarian #15b). */
+  let keluarMateri = false;
+  let lepasBaca = () => {};
+  let lepasAksi = () => {};
+  saatSiap(el, () => {
+    if (keluarMateri) return;
+    pulihkanBaca(ctx, key, indeks);
+    /* Penanda bagian dapat PEMANGGIL KEDUA dari jalur gulir.
+     *
+     * Aturannya tidak disalin ke sini — yang didaftarkan `tandaiAktif()` milik
+     * `petaBagian`, fungsi yang sama yang dipanggil observernya. Pelepasnya
+     * pun tidak dipegang di sini: ia digabung ke `peta.bersihkan()`, yang sudah
+     * dipanggil `saatKeluar`, supaya layar ini tetap punya satu pintu keluar.
+     *
+     * Di dalam `saatSiap`, bukan di badan pembangun: `saatGulir()` memanggil
+     * fungsinya sekali saat pendaftaran, dan panggilan pertama di badan
+     * pembangun akan mengukur artikel yang belum terpasang (invarian #15a). */
+    peta.ikutiGulir(() => !keluarMateri);
+    /* Kartu aksi menyingkir sesudah diam, dan HANYA di luar `mati`.
+     *
+     * Menyembunyikan diri adalah perubahan keadaan yang terjadi sendiri, jadi
+     * ia milik `halus`/`penuh`. Tingkatnya ditanya ke `tingkatGerak()` — satu-
+     * satunya yang boleh memutuskannya — bukan dengan membaca `data-gerak`
+     * sendiri dari DOM.
+     *
+     * Penjaga `keluarMateri` bukan kerapian di sini, dan bedanya dengan
+     * pemulihan posisi baca itu yang mengikat: tulisan yang terlambat di sana
+     * cuma menyimpan angka milik layarnya sendiri, sedangkan callback yang
+     * terlambat DI SINI menyentuh DOM — dan `tunda()` tidak punya gagang
+     * batal, jadi sebuah penundaan yang berangkat tepat sebelum layar berganti
+     * akan mendarat sesudahnya. */
+    if (tingkatGerak() !== "mati") {
+      const sembunyikan = tunda(() => {
+        if (keluarMateri) return;
+        // Jangan pernah menyingkir saat kartunya sedang dipakai: Tab masuk ke
+        // sini, dan kartu yang hilang saat digulir mencabut fokus dari orang
+        // yang sedang memindahkannya.
+        if (kartuAksi.matches(":hover, :focus-within")) return;
+        /* Cuma sembunyikan kartu yang memang MELAYANG.
+           Di tier tiga kolom kartunya ikut aliran, dan menyembunyikan kotak
+           yang ada di aliran memendekkan dokumen — scroll anchoring lalu
+           menggeser gulir, dan penampil yang mendengar gulir memunculkannya
+           lagi. Lingkaran itu sudah dibunuh sekali lewat `fixed`; keputusan
+           tier tiga kolom melahirkannya kembali kalau gerbang ini tidak ada.
+
+           Yang ditanya HASILNYA, bukan ambang lebarnya. Menyalin `1380` ke JS
+           berarti satu angka hidup di dua bahasa — preseden repo ini
+           (`AMBANG_PANEL`, `AMBANG_RUANG`) menunjukkan bahwa itu menuntut
+           pagarnya sendiri. Dan karena ia dibaca SAAT callback berjalan, ia
+           tetap benar sesudah jendelanya diubah ukuran melintasi tier. */
+        if (getComputedStyle(kartuAksi).position === "static") return;
+        kartuAksi.hidden = true;
+      }, AKSI_DIAM_MS);
+      let atasTerakhir = null;
+      lepasAksi = saatGulir(({ atas }) => {
+        if (keluarMateri) return;
+        /* Menyembunyikan kartu MEMENDEKKAN dokumen, dan pemendekan itu sendiri
+           memicu `scroll`. Tanpa penjaga ini penyembunyian membangunkan
+           penampilnya sendiri: terukur, penundaan berangkat di 327 ms, menyala
+           di ~4327 ms, lalu dua peristiwa gulir datang di 4693 dan 4710 ms
+           tanpa satu pun jari menyentuh apa pun — dan kartunya kembali.
+
+           `atas` datang dari `saatGulir`, jadi tidak ada angka kedua yang
+           dibaca sendiri di sini. */
+        if (atas === atasTerakhir) return;
+        atasTerakhir = atas;
+        kartuAksi.hidden = false;
+        sembunyikan();
+      });
+    }
+
+    let yTerakhir = -1;
+    lepasBaca = saatGulir(tunda(({ atas }) => {
+      // `atas` datang dari `saatGulir` yang sudah menghitungnya sekali per
+      // frame; membaca `window.scrollY` lagi di sini berarti dua definisi
+      // untuk satu angka yang sama.
+      if (atas === yTerakhir) return;
+      yTerakhir = atas;
+      ctx.ingat(kunciBaca(key, indeks), { y: atas, t: Date.now() });
+    }, 400));
+  });
+
   const bab = berbab && m.bab ? m.bab : null;
   return {
     el,
@@ -1856,6 +2045,10 @@ export async function layarMateri({ key, indeks }, ctx) {
       judul_sesudah: m.sesudah || "",
     },
     saatKeluar: () => {
+      keluarMateri = true;
+      lepasBaca();
+      lepasAksi();
+      lepasTombol();
       pengamat.disconnect();
       peta.bersihkan();
       for (const lepas of bersihEditor) lepas();
@@ -2074,7 +2267,11 @@ function petaBagian(m, artikel) {
   });
 
   if (butir.length < 2) {
-    return { el: h("aside.materi-peta.materi-peta-kosong"), bersihkan() {} };
+    // `lompat` dan `ikutiGulir` tetap ada di cabang ini. Peta kosong adalah
+    // KEADAAN, bukan ketiadaan objek: pemanggilnya tidak boleh dipaksa
+    // menanyakan cabang mana yang sedang aktif sebelum berani memanggil.
+    return { el: h("aside.materi-peta.materi-peta-kosong"),
+             bersihkan() {}, lompat() { return null; }, ikutiGulir() {} };
   }
 
   const tautan = butir.map((x) => h("a", {
@@ -2096,18 +2293,39 @@ function petaBagian(m, artikel) {
   // sepertiga atas layar. Aturan "yang paling banyak terlihat" terdengar lebih
   // benar tapi terasa gelisah: penandanya melompat bolak-balik tiap kali dua
   // bagian pendek bergantian mengisi layar.
+  /** Aturan penandanya, dan ia hidup DI SINI saja — nol salinan.
+   *
+   *  Dua pemanggil, satu aturan. `IntersectionObserver` di bawah menangkap
+   *  perubahan yang terjadi TANPA gulir (tata letak yang bergeser, gambar yang
+   *  selesai dimuat, jendela yang diubah ukurannya); langganan gulir di
+   *  `layarMateri` menangkap perpindahan yang TIDAK melintasi ambang observer.
+   *  Menyalin lima baris ini ke pemanggil kedua akan membuat dua aturan yang
+   *  boleh berbeda, dan yang pertama kali berbeda tidak akan ada yang tahu. */
+  function tandaiAktif() {
+    let aktif = -1;
+    butir.forEach((x, n) => {
+      const anak = artikel.children[x.i];
+      if (anak && anak.getBoundingClientRect().top <= window.innerHeight * 0.34) {
+        aktif = n;
+      }
+    });
+    tautan.forEach((a, n) => a.classList.toggle("kini", n === aktif));
+  }
+
+  /* Kenapa observernya TIDAK cukup sendirian, dan ini terukur bukan dikira:
+     ia hanya dipanggil ulang kalau ada bagian yang MELINTASI ambangnya. Dari
+     puncak halaman ke bagian pertama (gulir 0 -> 241 px di 1440), bagian 0
+     sudah memotong pita `rootMargin` di KEDUA posisi — tidak ada ambang yang
+     dilewati, callback tidak jalan, dan `.kini` tetap -1 padahal aturan di
+     atas sudah memberi jawaban 0. Penekanan `]` berikutnya membaca -1 lagi dan
+     mendarat di tempat yang sama; tautan rail yang diklik punya gejala yang
+     persis sama, dan sudah punya jauh sebelum lapisan papan ketik ada.
+
+     Observernya tetap: ia satu-satunya yang menangkap perubahan tanpa gulir. */
   let hentikan = () => {};
   if (typeof IntersectionObserver !== "undefined") {
-    const pengamat = new IntersectionObserver(() => {
-      let aktif = -1;
-      butir.forEach((x, n) => {
-        const anak = artikel.children[x.i];
-        if (anak && anak.getBoundingClientRect().top <= window.innerHeight * 0.34) {
-          aktif = n;
-        }
-      });
-      tautan.forEach((a, n) => a.classList.toggle("kini", n === aktif));
-    }, { rootMargin: "-30% 0px -55% 0px", threshold: [0, 1] });
+    const pengamat = new IntersectionObserver(tandaiAktif,
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 1] });
 
     for (const x of butir) {
       const anak = artikel.children[x.i];
@@ -2115,7 +2333,213 @@ function petaBagian(m, artikel) {
     }
     hentikan = () => pengamat.disconnect();
   }
-  return { el, bersihkan: hentikan };
+
+  /** Pemanggil kedua: jalur gulir. Didaftarkan dari LUAR, dari dalam callback
+   *  `saatSiap` di `layarMateri` — invarian #15(a): mendaftarkannya di badan
+   *  pembangun berarti `saatGulir` memanggil fungsinya sekali saat pendaftaran,
+   *  dan panggilan pertama itu akan mengukur elemen yang belum terpasang.
+   *
+   *  `masihHidup` adalah penjaga `keluarMateri` milik layarnya, dioper sebagai
+   *  fungsi supaya nilainya dibaca SAAT frame berjalan, bukan saat berlangganan.
+   *
+   *  Pelepasnya digabung ke `bersihkan()`, jadi `saatKeluar` tetap satu pintu
+   *  dan tidak ada pelepas kedua yang bisa terlupa. */
+  let lepasGulir = () => {};
+  function ikutiGulir(masihHidup) {
+    lepasGulir();
+    lepasGulir = saatGulir(() => { if (masihHidup()) tandaiAktif(); });
+  }
+  /** Pindah satu bagian, ke arah `arah` (+1 / -1), dan kembalikan sasarannya.
+   *
+   *  Tiga hal yang SUDAH ada dipakai apa adanya, dan itu yang penting:
+   *  daftarnya `butir` (yang juga menggambar tautannya), pendaratannya
+   *  `bawaKeAtas()` (yang membaca `scroll-padding-top` terhitung, bukan angka
+   *  salinan), dan "bagian yang sedang dibaca" dibaca dari tautan ber-`.kini`
+   *  -- yaitu jawaban `tandaiAktif()` di atas, bukan hitungan kedua.
+   *
+   *  Penandanya berpindah sesudah gulir mendarat karena `tandaiAktif()`
+   *  dipanggil lagi dari jalur gulir, BUKAN karena fungsi ini menyetelnya.
+   *  Kalimat versi pertama di sini berbunyi "penandanya milik observer itu,
+   *  ia berpindah sendiri" — dan itu salah dalam satu keadaan yang terukur:
+   *  dari puncak halaman observernya tidak pernah dipanggil ulang, `.kini`
+   *  tetap -1, dan penekanan kedua mendarat di tempat yang sama. Fungsi ini
+   *  tetap tidak menyetel satu kelas pun, dan itu yang mengikat: dua mesin
+   *  yang boleh menulis satu penanda adalah dua mesin yang suatu hari menulis
+   *  dua jawaban berbeda.
+   *
+   *  Dijepit di ujung, tidak dilingkar (preseden `panahAntarUbin`). */
+  function lompat(arah) {
+    const i = tautan.findIndex((a) => a.classList.contains("kini"));
+    const tuju = Math.max(0, Math.min(butir.length - 1, i + arah));
+    const sasaran = artikel.children[butir[tuju].i];
+    if (!sasaran) return null;
+    bawaKeAtas(sasaran);
+    return sasaran;
+  }
+
+  return { el, bersihkan: () => { lepasGulir(); hentikan(); }, lompat, ikutiGulir };
+}
+
+/* Tabel pintasan pembaca materi. SATU tabel, dibaca penangan di bawah — bukan
+   deretan cabang `if` yang tersebar.
+   Kolom pertamanya lambang yang DITAMPILKAN, dan itu disengaja: daftar bantuan
+   `PINTASAN` di `layar-lain.js` adalah definisi KEDUA dari lapisan ini, dan dua
+   definisi yang tidak pernah dibandingkan adalah dua definisi yang suatu hari
+   berbeda tanpa ada yang menyadarinya. Yang membandingkannya sebuah tes bentuk,
+   bukan kesepakatan lisan.
+
+   `?` sengaja TIDAK di sini. Pemiliknya `aplikasi.js` (`tampilkanBantuan()`),
+   dan tombol yang punya dua pemilik adalah tombol yang perilakunya bergantung
+   pada urutan pendaftaran pendengar. */
+const PINTASAN_PEMBACA = [
+  ["j", "Blok kode berikutnya", (a) => a.blok(+1)],
+  ["k", "Blok kode sebelumnya", (a) => a.blok(-1)],
+  ["]", "Bagian berikutnya", (a) => a.bagian(+1)],
+  ["[", "Bagian sebelumnya", (a) => a.bagian(-1)],
+  ["⏎", "Jalankan blok kode yang sedang difokus", (a) => a.jalankan()],
+];
+
+// `e.key` untuk Enter berbunyi "Enter"; tabel di atas memakai lambang yang
+// dibaca orang di daftar bantuan. Terjemahannya tinggal di satu tempat ini.
+const TOMBOL_TAMPIL = { Enter: "⏎" };
+
+/** Lapisan papan ketik untuk halaman materi: `j`/`k` antar blok kode, `[`/`]`
+ *  antar bagian, `⏎` menjalankan blok yang sedang difokus.
+ *
+ *  Kenapa blok kode yang dapat pintasan, dan bukan paragraf: blok kode satu-
+ *  satunya hal di halaman ini yang bisa DIKERJAKAN. Menggulir prosa sudah
+ *  punya alatnya sendiri di setiap peramban; melompat ke contoh berikutnya lalu
+ *  menjalankannya tanpa melepas papan ketik tidak punya.
+ *
+ *  BENTURAN YANG DITERIMA APA ADANYA: `g` lalu `j`. `aplikasi.js` memakai
+ *  rangkaian ala Vim `g` + huruf, dan `j` bukan salah satu tujuannya — jadi
+ *  menekan `g` lalu `j` memindahkan fokus satu blok kode, sementara `tombolG`
+ *  di sana masih menyala sampai 900 ms. Menyalin keadaan `tombolG` ke layar ini
+ *  akan membuat dua salinan satu keadaan, dan itu ongkos yang lebih besar
+ *  daripada benturannya. Ditulis di sini supaya ia tercatat sebagai keputusan,
+ *  bukan ditemukan lagi sebagai kejutan.
+ *
+ *  Mengembalikan fungsi pelepas — WAJIB dipanggil `saatKeluar` (preseden
+ *  `layar-kerja.js:183`). Pendengar `keydown` di `document` yang tertinggal
+ *  membuat dua layar bereaksi terhadap satu tombol. */
+function pintasanPembaca(artikel, peta) {
+  // Urutan sasaran dihitung dari posisi VERTIKAL nyata, bukan dari urutan
+  // dokumen. Keduanya sama hari ini; yang membuat mereka berbeda adalah
+  // perubahan tata letak apa pun di kemudian hari, dan saat itu terjadi yang
+  // benar adalah yang dilihat mata.
+  const daftarBlok = () => [...artikel.querySelectorAll(".blok-kode")]
+    .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+
+  function keBlok(arah) {
+    const daftar = daftarBlok();
+    if (!daftar.length) return false;
+    let tuju;
+    const i = daftar.indexOf(document.activeElement);
+    if (i >= 0) {
+      tuju = i + arah;
+    } else {
+      // Belum ada blok yang difokus: titik mulainya POSISI BACA, bukan blok
+      // pertama halaman. Orang yang sudah menggulir ke tengah materi lalu
+      // menekan `j` bermaksud "yang berikutnya dari sini", dan melempar
+      // fokusnya ke atas halaman membuang tempat bacanya.
+      const bawah = daftar.findIndex(
+        (el) => el.getBoundingClientRect().top > window.innerHeight / 2);
+      const pertama = bawah < 0 ? daftar.length : bawah;
+      tuju = arah > 0 ? pertama : pertama - 1;
+    }
+    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:287).
+    // Melingkar berarti satu penekanan di blok terakhir memindahkan layar
+    // sejauh seluruh halaman, dan tidak ada yang meminta perpindahan sebesar
+    // itu dari tombol yang artinya "berikutnya".
+    const j = Math.max(0, Math.min(daftar.length - 1, tuju));
+    // Pendaratannya lewat `bawaKeAtas()` yang sama dengan peta bagian, lalu
+    // fokus TANPA gulir bawaan: dua mesin yang menggulir satu elemen akan
+    // saling menimpa, dan yang menang bergantung waktu.
+    bawaKeAtas(daftar[j]);
+    daftar[j].focus({ preventScroll: true });
+    return true;
+  }
+
+  function keBagian(arah) {
+    return Boolean(peta.lompat(arah));
+  }
+
+  function jalankanBlokFokus() {
+    const blok = document.activeElement;
+    if (!(blok instanceof Element) || !blok.classList.contains("blok-kode")) {
+      return false;
+    }
+    // Jalur jalannya yang SUDAH ADA, ditanya lewat tombolnya. "Bisa
+    // dijalankan" sudah punya satu definisi (`p.bisa_dijalankan && bhs.siap`
+    // di `blokKode`), dan tombol ini adalah HASIL definisi itu — menanyakannya
+    // lewat tombol berarti tidak ada definisi kedua yang bisa melenceng, dan
+    // `/api/coba` tetap disentuh dari satu tempat saja.
+    //
+    // Blok tanpa tombol tidak mengubah apa pun. Itu KEADAAN, bukan galat:
+    // ilustrasi dan potongan memang tidak bisa dijalankan, dan mengeluh soal
+    // itu berarti menyalahkan orang atas bentuk materinya sendiri.
+    const tbl = blok.querySelector(".blok-alat .tbl-utama");
+    if (!tbl) return false;
+    tbl.click();
+    return true;
+  }
+
+  const aksi = { blok: keBlok, bagian: keBagian, jalankan: jalankanBlokFokus };
+
+  function saatTombol(e) {
+    /* Tiga penjaga, berurutan, dan urutannya bukan selera.
+     *
+     * (1) `defaultPrevented`. Pemilik pintasan global `aplikasi.js`, dan
+     *     pendengarnya terdaftar di `mulai()` — jadi ia SELALU berjalan lebih
+     *     dulu daripada pendengar layar mana pun. Kasus nyatanya `Ctrl+J`:
+     *     `e.key` -nya "j", dan tanpa penjaga ini satu penekanan mengganti tema
+     *     SEKALIGUS melompat satu blok kode. `stopPropagation()` akan
+     *     "menyelesaikan" itu dari sisi yang salah — ia membungkam pemiliknya,
+     *     dan pemilik yang dibungkam tidak pernah tahu ia dibungkam.
+     * (2) Medan isian. Di editor blok kode, mengetik `jjk` harus menulis tiga
+     *     huruf. Ini satu-satunya penjaga yang kegagalannya langsung terasa.
+     * (3) `artikel.isConnected`. Pendengarnya di `document`, jadi jangkauannya
+     *     seluruh aplikasi; yang membatasinya pada layar ini cuma kalimat ini
+     *     dan pelepasan di `saatKeluar`. Dua-duanya ada, dan yang kedua saja
+     *     tidak cukup: pelepasan yang telat satu frame masih sempat
+     *     menggerakkan layar berikutnya. */
+    if (e.defaultPrevented) return;
+    /* (1b) Dialog yang terbuka. Ini BUKAN pengulangan (1), dan bedanya yang
+       membuatnya perlu: `defaultPrevented` menjawab "tombol ini sudah dipunyai
+       siapa", sedangkan yang ditanya di sini "bolehkah halaman di belakang
+       dialog bergerak". Dua pertanyaan berbeda, dan hanya satu yang dijawab
+       oleh jawaban pertama.
+
+       Terukur: `?` membuka dialog bantuan (fokus di tombol Tutup, gulir 900),
+       lalu satu `j` memindahkan fokus ke sebuah blok kode dan gulir ke 2018,
+       lalu `]` ke 2677 — sementara dialognya masih menggantung di atas halaman
+       yang barusan dipindahkan di belakangnya. Tidak ada satu pun galat.
+
+       Jalur bermodifier tidak pernah bocor lewat sini: `Ctrl+K` menaruh fokus
+       di medan isian palet, jadi ia tertahan penjaga (2) — yang bocor cuma
+       tombol satu huruf tanpa modifier, yaitu tepat lapisan ini.
+
+       `jendelaTerbuka()` diimpor dari `inti.js`, PEMILIK dialognya. Memanggil
+       milik pemilik bukan menyalin keadaan siapa pun; yang dilarang justru dua
+       hal yang menghindarinya — `stopPropagation()` (membungkam pemilik
+       pintasan) dan membaca DOM sendiri untuk menebak ada dialog (definisi
+       kedua dari "sedang ada jendela"). */
+    if (jendelaTerbuka()) return;
+    if (e.target instanceof Element
+        && e.target.matches("input, textarea, select, [contenteditable]")) return;
+    if (!artikel.isConnected) return;
+
+    const kunci = TOMBOL_TAMPIL[e.key] || e.key;
+    const baris = PINTASAN_PEMBACA.find(([tombol]) => tombol === kunci);
+    if (!baris) return;
+    // `preventDefault()` HANYA kalau benar-benar ada yang dikerjakan. `⏎` yang
+    // mendarat saat fokusnya bukan blok kode wajib tetap menekan tombol atau
+    // membuka tautan yang sedang difokus.
+    if (baris[2](aksi)) e.preventDefault();
+  }
+
+  document.addEventListener("keydown", saatTombol);
+  return () => document.removeEventListener("keydown", saatTombol);
 }
 
 /** Bagian-bagian materi muncul saat tergulir ke tempatnya.
@@ -2419,7 +2843,14 @@ function blokKode(b, i, m, key, bhs, bersih) {
   if (tblUbah) tblUbah.addEventListener("click", utakAtik);
   tblPulih.addEventListener("click", pulihkan);
 
-  return h("div.blok-kode", {},
+  /* `tabindex="-1"`, bukan `"0"`: pembungkusnya harus bisa DIFOKUS supaya
+     `j`/`k` punya sasaran dan `⏎` punya pemilik, tapi ia tidak boleh
+     menambah satu pun perhentian Tab. Tombol di `.blok-alat` sudah native dan
+     sudah ada di urutan Tab; menambahkan pembungkusnya berarti setiap contoh
+     kode menyisipkan satu perhentian kosong di antara tombol-tombol yang
+     memang berguna. Cincin fokusnya dipinjam dari `:focus-visible` global
+     (`gaya.css:599`) -- tidak ada gaya fokus baru di sini. */
+  return h("div.blok-kode", { tabindex: "-1" },
     h("div.blok-kepala", {},
       p.nama ? h("span.berkas", {}, p.nama)
              : h("span", {}, b.judul || p.instruksi),

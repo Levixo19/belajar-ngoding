@@ -171,19 +171,41 @@ export async function layarKuis({ key, indeks }, ctx) {
         h("button.tbl.tbl-kecil.tbl-hantu", { onclick: keluar }, "Hentikan")),
       isi);
 
+    const detak = () => {
+      sisaDetik -= 1;
+      jam.textContent = jamMundur(sisaDetik);
+      jam.classList.toggle("menipis", sisaDetik <= 30);
+      if (sisaDetik <= 0) { clearInterval(jamId); jamId = 0; selesai(true); }
+    };
+    const jalankanJam = () => {
+      if (!jamId && sisaDetik > 0) jamId = setInterval(detak, 1000);
+    };
+    // Jamnya BERHENTI saat tabnya di latar, dan melanjutkan dari sisa detik
+    // yang sama — bukan menghitung ulang dari penuh, dan bukan terus berjalan
+    // di belakang punggung orangnya. SC 2.2.2 menelan batas waktu yang
+    // berhitung sendiri juga: detik yang habis sementara tabnya tidak terlihat
+    // adalah detik yang tidak pernah bisa dipakai siapa pun untuk menjawab.
+    //
+    // `sisaDetik` tidak disentuh di sini, dan itu seluruh triknya: yang
+    // dihentikan pencacahnya, bukan angkanya. Melanjutkan berarti memasang
+    // interval baru di atas angka yang sama.
+    const saatTampil = () => {
+      if (document.hidden) { clearInterval(jamId); jamId = 0; } else jalankanJam();
+    };
     if (sesi.durasi) {
-      jamId = setInterval(() => {
-        sisaDetik -= 1;
-        jam.textContent = jamMundur(sisaDetik);
-        jam.classList.toggle("menipis", sisaDetik <= 30);
-        if (sisaDetik <= 0) { clearInterval(jamId); selesai(true); }
-      }, 1000);
+      jalankanJam();
+      document.addEventListener("visibilitychange", saatTampil);
     }
 
     document.addEventListener("keydown", saatTombol);
+    // Satu pintu keluar. Pendengar `visibilitychange` ikut dilepas DI SINI,
+    // bukan lewat jalur pembersih kedua: dua pembersih berarti satu di
+    // antaranya suatu hari terlupa di satu cabang keluar, dan pendengar yang
+    // tertinggal menyalakan kembali jam milik kuis yang sudah ditutup.
     bersihkan = () => {
       clearInterval(jamId);
       document.removeEventListener("keydown", saatTombol);
+      document.removeEventListener("visibilitychange", saatTampil);
     };
 
     async function keluar() {
@@ -251,9 +273,16 @@ export async function layarKuis({ key, indeks }, ctx) {
       // Dua isyarat yang berbeda BENTUKNYA, bukan cuma warnanya: yang benar
       // mengembang sekali, yang salah bergetar mendatar. Warna hijau dan merah
       // saja tidak cukup untuk mata yang sulit membedakan keduanya.
+      //
+      // Yang benar dapat `denyut` SAJA, dan partikelnya dianggarkan ke layar
+      // hasil. Sebuah percikan per jawaban benar terdengar murah sampai
+      // dikalikan dua puluh soal: yang tersisa bukan perayaan melainkan
+      // kebisingan, dan yang paling dihukum justru orang yang menjawab benar
+      // paling banyak. Ambangnya juga nyata — SC 2.3.1 menghitung <=3 pasang
+      // perubahan luminansi per detik di >25% medan pandang, dan di 360 px
+      // getar + percik + kilau bersamaan sudah mendekatinya.
       if (r.benar) {
         denyut(tombol[r.jawaban_benar]);
-        percikBara(tombol[r.jawaban_benar], { jumlah: 7 });
       } else {
         if (tombol[pilihan]) getar(tombol[pilihan]);
         denyut(tombol[r.jawaban_benar]);
@@ -262,10 +291,28 @@ export async function layarKuis({ key, indeks }, ctx) {
       const lanjut = h("button.tbl.tbl-utama", { onclick: berikutnya },
         nomor + 1 >= sesi.total ? "Lihat hasil" : "Soal berikutnya →");
 
-      isi.appendChild(h("div.penjelasan", {},
+      // Penjelasannya berdiri TEPAT DI BAWAH opsi yang dipilih, bukan di kaki
+      // daftar. Umpan balik yang menjelaskan hanya bekerja kalau ia
+      // berdampingan dengan kegagalannya: di kaki daftar, mata harus kembali
+      // ke atas untuk mencocokkan "kenapa" dengan opsi mana yang tadi ditekan,
+      // dan pada opsi kelima jarak itu sudah lebih panjang daripada
+      // penjelasannya sendiri.
+      //
+      // `r.penjelasan` datang dari RESPONS /api/kuis/jawab, bukan dari muatan
+      // soal — dan itu bukan kebetulan yang boleh "dioptimalkan": muatan soal
+      // dijaga bersih dari kunci jawaban, jadi menaruh penjelasan di sana
+      // berarti membocorkan jawabannya ke tab Network sebelum orangnya
+      // menjawab.
+      const blok = h("div.penjelasan", {},
         h("b", {}, r.benar ? "Benar. " : "Belum tepat. "),
         r.penjelasan || (r.benar ? "" : "Jawaban yang benar disorot hijau."),
-        h("div.deret", { gaya: { marginTop: "var(--s3)" } }, lanjut)));
+        h("div.deret", { gaya: { marginTop: "var(--s3)" } }, lanjut));
+      const dipilih = tombol[pilihan] || tombol[r.jawaban_benar];
+      if (dipilih && dipilih.parentNode) {
+        dipilih.parentNode.insertBefore(blok, dipilih.nextSibling);
+      } else {
+        isi.appendChild(blok);
+      }
       lanjut.focus();
     }
 
@@ -367,10 +414,24 @@ export async function layarKuis({ key, indeks }, ctx) {
       h("span.mata", {}, "Tinjau jawaban"),
       tinjauSemua(r),
     ));
-    window.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "instant" });
     // Perayaannya menyusul sesudah hasilnya terpasang, supaya baranya memercik
     // dari kartu skor yang sudah ada di layar — bukan dari ruang kosong.
-    if (sempurna) kilau(panggung.querySelector(".kartu"));
+    if (sempurna) {
+      const kartu = panggung.querySelector(".kartu");
+      // Di sinilah anggaran partikelnya dibelanjakan: SATU panggilan per
+      // kuis, pada kartu skor yang sudah ada di layar — bukan tujuh belas
+      // kali di tujuh belas tombol.
+      //
+      // Jangan menaruh `kilau(kartu)` di atas baris ini. `kilau(dari)` bukan
+      // cahaya saja: begitu diberi sebuah elemen ia ikut memanggil
+      // `percikBara(dari)` TANPA opsi (inti.js:567), jadi jumlah bawaannya
+      // — enam belas — memercik lebih dulu dan anggarannya jadi dua
+      // panggilan. Terukur di Chrome 1280px, tema gelap, data-gerak
+      // "penuh", tab terlihat: dua lapis `.bara-percik` berisi [16, 7]
+      // titik dengan kilau, satu lapis berisi 7 titik tanpanya.
+      percikBara(kartu, { jumlah: 7 });
+    }
   }
 
   function tinjauSemua(r) {
