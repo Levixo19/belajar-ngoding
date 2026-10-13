@@ -540,7 +540,7 @@ printf("%-16s%8.2f\\n", 'TOTAL', $total);""",
         ],
         "hints": [
             "Backed enum ditulis: enum Status: string { case Draf = 'draf'; ... }",
-            "Method di dalam enum memakai match($this) TANPA default supaya",
+            "Method di dalam enum memakai match($this) TANPA default supaya "
             "varian baru yang belum ditangani langsung ketahuan.",
             "$s->name memberi nama kasusnya, $s->value memberi nilainya.",
             "tryFrom mengembalikan null, bukan melempar — cetak dengan ?? 'null'.",
@@ -827,7 +827,7 @@ printf("%-10s: %s\\n", 'Termahal', $termahal['barang']);""",
             "filter_var($x, FILTER_VALIDATE_INT, ['options' => ['min_range'=>1,",
             "'max_range'=>120]]) mengembalikan false kalau di luar rentang.",
             "filter_var($x, FILTER_VALIDATE_EMAIL) untuk email.",
-            "mb_strlen menghitung KARAKTER, bukan byte — yang benar untuk",
+            "mb_strlen menghitung KARAKTER, bukan byte — yang benar untuk "
             "membatasi panjang masukan pengguna.",
             "Gabungkan galat dengan implode(' | ', ...).",
         ],
@@ -932,7 +932,7 @@ echo e($semua[2]['nama']) . "\\n";""",
             "  Cari nama \" OR \"1\"=\"1 -> 0 baris",
         ],
         "hints": [
-            "PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION wajib: tanpa itu",
+            "PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION wajib: tanpa itu "
             "query yang gagal cuma mengembalikan false.",
             "$pdo->prepare(...)->execute([...]) lalu fetchAll().",
             "fetchColumn() mengambil satu nilai saja.",
@@ -1051,7 +1051,7 @@ printf("Cari nama %s -> %d baris\\n", str_replace("'", '"', $jahat), $uji->fetch
             "usort pada array_values untuk mengurutkan hasil semua().",
             "Satu try/catch per langkah di antarmuka membuat outputnya rapi;",
             "tangkap RuntimeException lalu cetak getMessage().",
-            "Gudang yang tidak pernah mencetak bisa diuji tanpa membaca layar —",
+            "Gudang yang tidak pernah mencetak bisa diuji tanpa membaca layar — "
             "itu seluruh gunanya pemisahan ini.",
         ],
         "solution": """<?php

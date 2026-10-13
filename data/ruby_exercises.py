@@ -843,11 +843,11 @@ puts "keadaan akhir: #{d.keadaan}\"""",
         ],
         "hints": [
             "Struct.new(...) do ... end boleh memuat method sendiri.",
-            "Satu `rescue GudangError` di antarmuka cukup menangani keempat",
+            "Satu `rescue GudangError` di antarmuka cukup menangani keempat "
             "galat sekaligus, sementara bug sungguhan tetap naik dan terlihat.",
-            "include Enumerable + satu `each` langsung memberi sum, select,",
+            "include Enumerable + satu `each` langsung memberi sum, select, "
             "sort_by, dan count tanpa menulisnya.",
-            "each WAJIB mengurutkan: keluaran yang urutannya tidak pasti",
+            "each WAJIB mengurutkan: keluaran yang urutannya tidak pasti "
             "mustahil diuji.",
             "capitalize pada :masuk memberi \"Masuk\".",
         ],

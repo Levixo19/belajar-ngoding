@@ -646,7 +646,7 @@ End Module""",
         ],
         "hints": [
             "Structure tidak bisa punya constructor tanpa parameter.",
-            "[Enum].IsDefined(GetType(Status), 9) — kurung siku karena Enum",
+            "[Enum].IsDefined(GetType(Status), 9) — kurung siku karena Enum "
             "adalah kata kunci VB.",
             "Gabung izin dengan Or; buang dengan And Not.",
             "Jarak: Math.Sqrt(X * X + Y * Y), cetak dengan format F3.",
@@ -1182,7 +1182,7 @@ End Module""",
             "  stok menipis (<10): B02 Adaptor (4)",
         ],
         "hints": [
-            "Satu Catch As GudangException di antarmuka cukup menangani",
+            "Satu Catch As GudangException di antarmuka cukup menangani "
             "keempat galat, sementara bug sungguhan tetap naik dan terlihat.",
             "TryGetValue menggabungkan pencarian dan pemeriksaan sekaligus.",
             "Dictionary tidak menjamin urutan: Semua() WAJIB mengurutkan.",

@@ -130,7 +130,7 @@ suhu.forEach((c, i) => {
             "Tipe kembalian union literal: \"A\" | \"B\" | ...",
             "String(n).padStart(3) meratakan ke kanan.",
             "Union literal lebih ringan daripada enum: ia hilang saat kompilasi.",
-            "JANGAN menamainya `status`: itu variabel GLOBAL milik lib.dom,",
+            "JANGAN menamainya `status`: itu variabel GLOBAL milik lib.dom, "
             "dan mendeklarasikannya ulang menghasilkan Duplicate identifier.",
         ],
         "solution": """type Grade = "A" | "B" | "C" | "D" | "E";
@@ -939,10 +939,10 @@ main().catch((e: unknown) => {
         ],
         "hints": [
             "Barang readonly seluruhnya: perbarui dengan { ...b, stok: baru }.",
-            "#isi dengan tanda pagar adalah private field JavaScript — ia",
+            "#isi dengan tanda pagar adalah private field JavaScript — ia "
             "bertahan di runtime, berbeda dari `private` TypeScript.",
             "Map.get mengembalikan Barang | undefined; periksa === undefined.",
-            "Pemanggil TIDAK BISA membaca hasil.nilai sebelum memeriksa",
+            "Pemanggil TIDAK BISA membaca hasil.nilai sebelum memeriksa "
             "hasil.ok — compiler yang memaksanya, dan itu seluruh gunanya.",
             "Number.isInteger sekaligus menolak NaN dan pecahan.",
         ],

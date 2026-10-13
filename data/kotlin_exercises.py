@@ -863,7 +863,7 @@ fun main() {
             "linkedMapOf mempertahankan urutan penyisipan, tapi semua()",
             "tetap WAJIB mengurutkan supaya keluarannya bisa diuji.",
             "data class tidak bisa diubah: perbarui stok dengan copy(stok = baru).",
-            "when atas sealed class TIDAK butuh else, dan compiler memeriksa",
+            "when atas sealed class TIDAK butuh else, dan compiler memeriksa "
             "kelengkapannya — itu seluruh gunanya.",
             "Untuk label aksi: gerak.name.lowercase().replaceFirstChar",
             "{ it.uppercase() } menghasilkan \"Masuk\" dari MASUK.",

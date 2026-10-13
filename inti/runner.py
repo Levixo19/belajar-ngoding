@@ -132,9 +132,15 @@ def _tfm_dotnet():
     """
     if not shutil.which("dotnet"):
         return "net8.0"
+    # Jalur anak di LUAR `_lingkungan()`, jadi pagar FORCE_COLOR di sana tidak
+    # menjangkaunya -- dan di sini keluarannya DIURAI, bukan cuma dilihat
+    # returncode-nya: satu `ESC[32m` membuat `int()` gagal dan TFM jatuh diam ke
+    # fallback. `pop`, bukan `= "0"`: CPython memaksa warna untuk nilai tak-kosong.
+    lingkungan = os.environ.copy()
+    lingkungan.pop("FORCE_COLOR", None)
     try:
         hasil = subprocess.run(["dotnet", "--version"], capture_output=True,
-                               timeout=20, text=True)
+                               timeout=20, text=True, env=lingkungan)
         mayor = hasil.stdout.strip().split(".")[0]
         return f"net{int(mayor)}.0"
     except (OSError, ValueError, IndexError, subprocess.SubprocessError):
@@ -641,6 +647,13 @@ def _lingkungan(cwd, tc):
     lingkungan = dict(os.environ)
     lingkungan["HOME"] = cwd
     lingkungan.pop("PYTHONPATH", None)
+    # Saluran keluar anak SELALU berkas (lihat _proses), jadi warna yang
+    # DIPAKSAKAN lingkungan induk cuma menyisipkan kode ANSI ke teks yang
+    # ditampilkan apa adanya ke pelajar -- dan membuat regex penunjuk nomor
+    # baris di galat.py berhenti cocok, jadi "loncat ke baris" ikut hilang.
+    # Dibuang, bukan disetel "0": di CPython nilai tak-kosong apa pun
+    # (termasuk "0") justru MEMAKSA warna nyala.
+    lingkungan.pop("FORCE_COLOR", None)
     lingkungan["PYTHONDONTWRITEBYTECODE"] = "1"
     # Samakan locale supaya kompiler & program menulis/membaca UTF-8 di mesin
     # mana pun; kalau tidak, huruf beraksen di materi bisa menggagalkan javac.

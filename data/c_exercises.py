@@ -660,7 +660,7 @@ int main(void) {
         ],
         "hints": [
             "Bubble sort: nested loop, tukar jika arr[j] > arr[j+1].",
-            "Binary search: butuh array TERURUT, bandingkan dengan elemen tengah,",
+            "Binary search: butuh array TERURUT, bandingkan dengan elemen tengah, "
             "lalu persempit ke kiri/kanan berdasarkan hasil perbandingan.",
         ],
         "solution": """#include <stdio.h>

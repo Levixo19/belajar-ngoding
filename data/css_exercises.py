@@ -56,7 +56,7 @@ CSS_EXERCISES = [
         "hints": [
             "Pemilih elemen ditulis apa adanya: h1, bukan <h1> atau .h1.",
             "Satu berkas CSS boleh berisi banyak aturan; tulis berurutan.",
-            "line-height tanpa satuan (1.6) artinya 1,6 kali ukuran huruf",
+            "line-height tanpa satuan (1.6) artinya 1,6 kali ukuran huruf "
             "elemen itu sendiri — nilai yang paling aman untuk teks.",
         ],
         "solution": """h1 {
@@ -96,7 +96,7 @@ p {
         ],
         "hints": [
             "Kelas diawali titik (.tombol), id diawali pagar (#judul-utama).",
-            "Satu id hanya boleh dipakai sekali di satu halaman; kelas boleh",
+            "Satu id hanya boleh dipakai sekali di satu halaman; kelas boleh "
             "dipakai berkali-kali. Karena itu tombol memakai kelas.",
             "padding: 10px 20px berarti 10px atas-bawah, 20px kiri-kanan.",
         ],
@@ -163,9 +163,9 @@ p {
         ],
         "hints": [
             "Pisahkan pemilih dengan koma: h1, h2, h3 { ... }",
-            "Spasi di sekitar koma tidak berpengaruh — h1,h2,h3 dan",
+            "Spasi di sekitar koma tidak berpengaruh — h1,h2,h3 dan "
             "h1 , h2 , h3 menghasilkan aturan yang sama persis.",
-            "Menyalin tiga aturan yang isinya sama berarti tiga tempat yang",
+            "Menyalin tiga aturan yang isinya sama berarti tiga tempat yang "
             "harus diubah nanti; satu aturan bergabung cuma satu tempat.",
         ],
         "solution": """h1, h2, h3 {
@@ -200,7 +200,7 @@ p {
         ],
         "hints": [
             "Spasi antar-pemilih berarti 'di dalam': nav a.",
-            "Tanda > berarti 'anak langsung': .menu > li. Bedanya terasa saat",
+            "Tanda > berarti 'anak langsung': .menu > li. Bedanya terasa saat "
             "ada daftar bersarang — li di dalam li tidak ikut kena.",
             "text-decoration: none yang menghapus garis bawah tautan.",
         ],
@@ -243,7 +243,7 @@ p {
         ],
         "hints": [
             "Pseudo-class ditempel langsung tanpa spasi: a:hover, bukan a :hover.",
-            "Aturan :hover harus ditulis SESUDAH aturan a biasa — kalau",
+            "Aturan :hover harus ditulis SESUDAH aturan a biasa — kalau "
             "spesifisitasnya sama, yang belakangan yang menang.",
             ":first-child memilih elemen yang jadi anak pertama induknya.",
         ],
@@ -289,9 +289,9 @@ li:first-child {
         ],
         "hints": [
             "display: flex dipasang di WADAHNYA, bukan di isinya.",
-            "justify-content mengatur sepanjang baris (kiri-kanan),",
+            "justify-content mengatur sepanjang baris (kiri-kanan), "
             "align-items mengatur melintangnya (atas-bawah).",
-            "min-width: 0 mencegah isi yang panjang melebarkan kolomnya —",
+            "min-width: 0 mencegah isi yang panjang melebarkan kolomnya — "
             "bawaan min-width adalah auto, yang berarti 'jangan menyusut'.",
         ],
         "solution": """.baris {
@@ -331,8 +331,8 @@ li:first-child {
         "hints": [
             "Nama variabel WAJIB diawali dua tanda minus: --warna-utama.",
             "Memakainya lewat var(): background-color: var(--warna-utama);",
-            ":root adalah elemen <html>. Variabel yang ditaruh di sana",
-            "terbaca oleh seluruh halaman, jadi satu warna cukup diubah",
+            ":root adalah elemen <html>. Variabel yang ditaruh di sana "
+            "terbaca oleh seluruh halaman, jadi satu warna cukup diubah "
             "di satu tempat.",
         ],
         "solution": """:root {
@@ -375,8 +375,8 @@ li:first-child {
         "hints": [
             "Bentuknya: @media (max-width: 600px) { .wadah { ... } }",
             "Ada dua kurung kurawal yang harus ditutup, bukan satu.",
-            "Blok @media ditulis SESUDAH aturan biasa. Kalau ditulis lebih",
-            "dulu, aturan biasa yang datang belakangan justru menimpanya",
+            "Blok @media ditulis SESUDAH aturan biasa. Kalau ditulis lebih "
+            "dulu, aturan biasa yang datang belakangan justru menimpanya "
             "dan tata letak ponselnya diam-diam tidak berlaku.",
         ],
         "solution": """.wadah {
@@ -503,10 +503,10 @@ li:first-child {
             "Variabel boleh dipakai di tengah nilai gabungan:",
             "  border: 1px solid var(--garis);",
             "Tulis rgba persis dengan spasi sesudah tiap koma:",
-            "  rgba(0, 0, 0, 0.15) — koma di dalam kurung bukan pemisah",
-            "  deklarasi, jadi tidak perlu titik koma di dalamnya.",
-            "prefers-reduced-motion: reduce menyala kalau orangnya sudah",
-            "meminta sistemnya mengurangi gerak. Menghormatinya bukan fitur",
+            "  rgba(0, 0, 0, 0.15) — koma di dalam kurung bukan pemisah "
+            "deklarasi, jadi tidak perlu titik koma di dalamnya.",
+            "prefers-reduced-motion: reduce menyala kalau orangnya sudah "
+            "meminta sistemnya mengurangi gerak. Menghormatinya bukan fitur "
             "tambahan — bagi sebagian orang, gerak bikin pusing sungguhan.",
         ],
         "solution": """:root {

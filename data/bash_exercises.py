@@ -378,7 +378,7 @@ rm -f data.txt""",
         ],
         "hints": [
             "Deklarasikan dulu: declare -A stok",
-            "Urutan iterasi associative array acak, jadi urutkan kuncinya",
+            "Urutan iterasi associative array acak, jadi urutkan kuncinya "
             "dengan: for k in $(printf '%s\\n' \"${!stok[@]}\" | sort); do",
             "Format kolom dengan: printf '%-7s: %s\\n' \"$k\" \"${stok[$k]}\"",
         ],

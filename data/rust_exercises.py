@@ -971,9 +971,9 @@ fn main() {
         "hints": [
             "get_mut pada HashMap memberi &mut ke nilainya: pas untuk mengubah stok.",
             "ok_or_else mengubah Option jadi Result: .ok_or_else(|| Galat::...)?",
-            "HashMap tidak punya urutan, dan di Rust urutannya BERUBAH tiap kali",
+            "HashMap tidak punya urutan, dan di Rust urutannya BERUBAH tiap kali "
             "program dijalankan — semua() dan stok_menipis() WAJIB mengurutkan.",
-            "impl Display memisahkan bentuk galat dari kalimatnya; main cukup",
+            "impl Display memisahkan bentuk galat dari kalimatnya; main cukup "
             "mencetak {e} tanpa tahu varian apa yang terjadi.",
         ],
         "solution": """use std::collections::HashMap;

@@ -306,5 +306,74 @@ class TestLatihan(unittest.TestCase):
                         )
 
 
+# Butir A yang TIDAK menutup kalimatnya, diikuti butir B yang dibuka huruf
+# kecil, adalah satu kalimat yang terbelah dua oleh pemenggalan baris penulisnya.
+_HINT_LARANG = tuple('.!?:;)]}>"\'`”’’')
+_HINT_HURUF = re.compile(r"[A-Za-zÀ-ž]")
+
+# Lima pasangan yang memang BUKAN lanjutan: tiap butirnya langkah kode yang
+# berdiri sendiri, jadi predikat di bawah sengaja dibiarkan keliru di situ.
+HINT_HITAM = {
+    "python": ["@property def saldo"],
+    "c": ["int top = -1"],
+    "fedora": ["Mulai dengan shebang", "{ lapor a; galat b;", "if periksa_ambang"],
+}
+
+HINT_TOTAL = 1043
+
+
+def _hint_lanjut(a, b):
+    """True kalau butir a dan butir b sebetulnya satu kalimat yang terbelah."""
+    a = a.rstrip()
+    if a.endswith(_HINT_LARANG):
+        return False
+    if not (_HINT_HURUF.match(a[-1]) or a.endswith(("—", ","))):
+        return False
+    return bool(b[:1].islower()) and len(a.split()) >= 4
+
+
+def _sapu_hints():
+    """Semua pasangan hints berurutan yang kena predikat, dipisah hitam/bukan."""
+    terbelah = []
+    hitam = []
+    total = 0
+    for lang in LANGUAGES:
+        for e in lang["exercises"]:
+            butir = [h.strip() for h in (e.get("hints") or [])]
+            total += len(butir)
+            for i in range(len(butir) - 1):
+                if not _hint_lanjut(butir[i], butir[i + 1]):
+                    continue
+                iden = (lang["key"], e["title"], i)
+                if any(s in butir[i] for s in HINT_HITAM.get(lang["key"], [])):
+                    hitam.append(iden)
+                else:
+                    terbelah.append(iden)
+    return terbelah, hitam, total
+
+
+class TestHintSatuKalimat(unittest.TestCase):
+    """Penghitung petunjuk membaca len(hints) -- `HINT (n/m)` di
+    layar/exercises.py dan `Buka petunjuk berikutnya (N/M)` di layar-kerja.js.
+    Satu kalimat yang terbelah dua butir karena itu membuat KEDUA antarmuka
+    menjanjikan petunjuk yang sebetulnya tidak ada."""
+
+    def test_tidak_ada_kalimat_yang_terbelah(self):
+        terbelah, hitam, _ = _sapu_hints()
+        self.assertEqual(
+            terbelah,
+            [],
+            "butir hints ini lanjutan kalimat butir sebelumnya, gabungkan "
+            "jadi satu butir: " + "; ".join("%s %s [%d]" % p for p in terbelah),
+        )
+        # Tanpa ini, predikat yang rusak sampai tidak pernah cocok lagi akan
+        # membuat asersi di atas lulus diam-diam.
+        self.assertEqual(len(hitam), 5, "daftar pengecualian bergeser: %r" % (hitam,))
+
+    def test_cacah_butir_hints(self):
+        _, _, total = _sapu_hints()
+        self.assertEqual(total, HINT_TOTAL)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1016,7 +1016,7 @@ class Program
             "Urutan pemeriksaan di Catat menentukan pesan mana yang muncul:",
             "periksa kode dulu, lalu jumlah, baru kecukupan stok.",
             "Di Main, satu try/catch per langkah membuat outputnya rapi.",
-            "Gudang TIDAK BOLEH memanggil Console sama sekali — itu yang",
+            "Gudang TIDAK BOLEH memanggil Console sama sekali — itu yang "
             "membuatnya bisa diuji tanpa membaca layar.",
         ],
         "solution": """using System;
