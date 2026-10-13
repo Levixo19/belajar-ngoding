@@ -15,17 +15,17 @@
 
 import {
   api, h, isikan, kosongkan, bilah, sorak, rayakan, salin, konfirmasi, jendela,
-  jamMundur, kilau, tunda, medan, selisihHari, keadaan,
+  jamMundur, tunda, medan, selisihHari, keadaan,
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, getar, denyut, percikBara, magnet, skala, angkaKe,
   adaGerak,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
-import { praKode } from "./sorot.js";
+import { praKode, token } from "./sorot.js";
 import { Editor } from "./editor.js";
 import {
-  tombolBookmark, tombolCatatan, kartuKeluaran, blokProsa,
+  tombolBookmark, tombolCatatan, kartuKeluaran, blokProsa, saatSiap,
 } from "./layar-belajar.js";
 import {
   pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
@@ -229,7 +229,7 @@ export async function layarKuis({ key, indeks }, ctx) {
         onclick: () => jawab(i, tombol),
       }, h("span.huruf", {}, h("span", {}, HURUF[i])), h("span", {}, teks)));
 
-      const soalEl = h("div.kuis-soal", {}, s.q);
+      const soalEl = h("div.kuis-soal", { tabIndex: -1 }, s.q);
       const opsiEl = h("div.opsi", {}, tombol);
       isikan(isi, h("div", {},
         soalEl,
@@ -246,6 +246,22 @@ export async function layarKuis({ key, indeks }, ctx) {
         opacity: [0, 1],
         transform: [`translate3d(${jauh}px, 0, 0)`, "none"],
       }, { pegas: "jawab" });
+      // Fokus mengikuti soal yang baru datang. Sesudah `lanjut.click()` ->
+      // `berikutnya()` -> `gambarSoal()`, tombol `lanjut` sudah tidak ada di
+      // DOM dan fokus jatuh ke `<body>`: pembaca layar lalu membacakan ruang
+      // kosong, bukan pertanyaannya.
+      //
+      // `tabIndex: -1` di atas yang membuat sebuah `div` bisa menerima fokus
+      // sama sekali -- tanpa itu `focus()` diam-diam tidak memindahkan apa pun
+      // -- dan `-1`, bukan `0`, menjaganya DI LUAR urutan Tab (`inti.js:464`
+      // melewati `[tabindex="-1"]` saat menghitung penghuni perangkap fokus).
+      //
+      // `preventScroll: true` mengikuti konvensi rumah (`aplikasi.js:255`,
+      // `aplikasi.js:280`, `layar-belajar.js:2459`): memindahkan fokus tidak
+      // boleh sekaligus menggeser halaman, karena soal berikutnya sudah
+      // berada di tempat yang benar dan geseran kedua terasa seperti layar
+      // yang meloncat sendiri.
+      soalEl.focus({ preventScroll: true });
       // Opsinya menyusul satu per satu. Jarak antar opsi dijaga sangat pendek
       // (26 md): kuis adalah tempat orang menunggu, dan urutan yang panjang di
       // tempat menunggu berubah jadi hambatan.
@@ -391,6 +407,35 @@ export async function layarKuis({ key, indeks }, ctx) {
           r.xp_tambah > 0 ? h("span.pil.pil-nyala", {}, `+${r.xp_tambah} XP`) : null,
           r.sesi_penuh
             ? h("span.pil", {}, `Terbaik ${r.terbaik}/${r.total_asli}`) : null,
+          // Pembanding dengan percobaan SEBELUMNYA -- bukan dengan rekor, yang
+          // sudah diurus pil di atas. Penyebutnya `r.total_asli`: pada mode
+          // ulangan `r.total` adalah jumlah soal yang diulang, dan
+          // membandingkan `benar` sebuah subset dengan skor penuh adalah
+          // membandingkan dua hal yang lain.
+          //
+          // Dua syarat, dan keduanya punya alasan yang sama pentingnya:
+          // `sesi_penuh`, karena sesi ulangan sengaja tidak menyentuh skor;
+          // dan `terakhir_sebelum !== null`, karena `null` berarti belum ada
+          // percobaan sebelumnya -- dan "naik dari 0" untuk orang yang baru
+          // pertama menyelesaikan kuis terbaca sebagai penghukuman.
+          r.sesi_penuh && r.terakhir_sebelum !== null
+            ? h("span.pil", {},
+                r.benar > r.terakhir_sebelum ? "naik dari "
+                  : r.benar < r.terakhir_sebelum ? "sebelumnya "
+                  : "sama dengan ",
+                `${r.terakhir_sebelum}/${r.total_asli}`) : null,
+          // Percobaan PERTAMA tidak punya pembanding, dan diamnya layar di
+          // situ terbaca sebagai ketiadaan -- bukan sebagai permulaan.
+          // Cabang ini PELENGKAP pil di atas: `r.terakhir_sebelum === null`
+          // sudah berarti "belum pernah ada percobaan penuh", jadi tidak ada
+          // field baru yang dibutuhkan dan `api.py` tidak disentuh.
+          //
+          // Mode ulangan tetap DIAM di kedua cabang: `r.sesi_penuh` berdiri
+          // di sini sama seperti di pil pembanding, karena sesi ulangan
+          // sengaja tidak menyentuh skor dan "percobaan pertamamu" di sana
+          // akan berbohong tentang apa yang baru saja terjadi.
+          r.sesi_penuh && r.terakhir_sebelum === null
+            ? h("span.pil", {}, "percobaan pertamamu") : null,
           h("span.pil", {}, `${Math.round(r.detik)} detik`),
           r.jadwal ? h("span.pil.pil-ungu", {}, jadwalRamah(r.jadwal)) : null,
           r.salah_tersisa
@@ -425,7 +470,7 @@ export async function layarKuis({ key, indeks }, ctx) {
       //
       // Jangan menaruh `kilau(kartu)` di atas baris ini. `kilau(dari)` bukan
       // cahaya saja: begitu diberi sebuah elemen ia ikut memanggil
-      // `percikBara(dari)` TANPA opsi (inti.js:567), jadi jumlah bawaannya
+      // `percikBara(dari)` TANPA opsi (inti.js:593), jadi jumlah bawaannya
       // — enam belas — memercik lebih dulu dan anggarannya jadi dua
       // panggilan. Terukur di Chrome 1280px, tema gelap, data-gerak
       // "penuh", tab terlihat: dua lapis `.bara-percik` berisi [16, 7]
@@ -476,6 +521,57 @@ export async function layarKuis({ key, indeks }, ctx) {
 }
 
 /* ================================================================= latihan */
+
+/* Ambang dan atap tangga "lihat jawaban". Keduanya diukur dari kurikulum,
+ * bukan dipilih: dari 303 latihan, solusinya bermedian 21 baris, terpanjang
+ * 167 baris, dan 76 di antaranya berpanjang <= 12 baris. */
+const AMBANG_REKOR = 12;
+const LANGKAH_REKOR = 3;
+
+/** Pecah solusi jadi langkah-langkah yang bertumbuh DARI EKOR.
+ *
+ *  "Lihat contoh solusi" dulu satu pintu tanpa tangga: yang keluar seluruh
+ *  programnya, sekaligus, dan sesudah itu tidak ada lagi yang bisa dikerjakan
+ *  pelajar selain membacanya. Padahal yang paling sering dibutuhkan orang
+ *  buntu bukan seluruh solusinya melainkan BARIS TERAKHIRNYA — di situ
+ *  hasilnya dicetak, dan bentuk cetakan itulah yang biasanya tidak ketemu.
+ *  Membuka dari KEPALA menyajikan import dan deklarasi, bagian yang justru
+ *  sudah ada di editornya sendiri.
+ *
+ *  Tiap potongan adalah SUFIKS kontinu dari daftar aslinya. Rautan yang
+ *  melompat-lompat akan menyajikan kode yang tidak pernah ada sebagai
+ *  program, dan pelajar tidak punya cara tahu bagian mana yang disembunyikan.
+ *
+ *  Jumlah langkahnya ikut diukur: tiga langkah untuk solusi delapan baris
+ *  berarti tiga klik untuk empat baris — tangga yang anak-anaknya lebih
+ *  banyak daripada yang dinaiki. Jadi `<= AMBANG_REKOR` baris dapat DUA
+ *  langkah, sisanya `LANGKAH_REKOR`, berapa pun panjangnya.
+ *
+ *  Langkah yang tidak menambah satu baris pun dibuang: solusi satu baris
+ *  menghasilkan SATU potongan, bukan dua yang identik. Tombol "Lihat lebih
+ *  banyak" yang tidak mengubah apa pun adalah tombol yang berujung penolakan.
+ *
+ *  Murni, tanpa DOM — itu yang membuatnya bisa diadu dari Node, dan sifatnya
+ *  dipagari `test_web.TestRekorSolusi`.
+ */
+export function pisahRekor(baris, maksLangkah = LANGKAH_REKOR) {
+  if (!Array.isArray(baris) || baris.length === 0) return [];
+  const n = baris.length;
+  const alami = n <= AMBANG_REKOR ? 2 : LANGKAH_REKOR;
+  const langkah = Math.max(1, Math.min(alami, maksLangkah));
+  const potongan = [];
+  let panjangLalu = 0;
+  for (let i = 1; i <= langkah; i++) {
+    // Langkah terakhir dipatok ke `n` apa adanya, bukan dihitung. Pembulatan
+    // yang meleset satu baris DI SITU berarti "seluruhnya" yang bukan
+    // seluruhnya, dan yang hilang justru baris pertama programnya.
+    const panjang = i === langkah ? n : Math.ceil((n * i) / langkah);
+    if (panjang <= panjangLalu) continue;
+    potongan.push(baris.slice(n - panjang));
+    panjangLalu = panjang;
+  }
+  return potongan;
+}
 
 export async function layarLatihan({ key, indeks }) {
   const x = await api.ambil("/api/latihan", { key, indeks });
@@ -543,6 +639,16 @@ export async function layarLatihan({ key, indeks }) {
     },
   });
 
+  /* Jembatan dari tombol baris pesan galat ke editor. DUA fungsi, bukan satu:
+   * `bisa()` dipanggil saat MERENDER untuk memutuskan apakah tombolnya lahir,
+   * `ke()` saat tombolnya diklik. Keduanya membaca isi editor SAAT ITU, bukan
+   * kode yang dikirim tadi — di antara "Periksa jawaban" dan klik pada pesan
+   * galatnya, orangnya mungkin sudah menghapus setengah berkasnya. */
+  const tuju = {
+    bisa: (n) => n >= 1 && n <= editor.nilai.split("\n").length,
+    ke: (n) => editor.keBaris(n),
+  };
+
   async function simpan(kode, diam) {
     try {
       await api.kirim("/api/latihan/simpan", { key, indeks, kode });
@@ -567,7 +673,12 @@ export async function layarLatihan({ key, indeks }) {
       const r = await api.kirim("/api/latihan/jalankan",
                                 { key, indeks, kode });
       lepasPratinjauKini();
-      isikan(hasil, kartuJalan(r, x, kode, (fn) => { lepasPratinjau = fn; }));
+      isikan(hasil, kartuJalan(r, x, kode,
+                               (fn) => { lepasPratinjau = fn; }, tuju));
+      // SESUDAH dipasang, bukan di dalam `kartuJalan`: yang diukur posisi
+      // nyata di halaman, dan kartunya belum ada di halaman sebelum baris di
+      // atas selesai.
+      pinKeGalat(hasil);
     } catch (e) {
       const kartu = kartuGalat(e.message);
       isikan(hasil, kartu);
@@ -580,13 +691,62 @@ export async function layarLatihan({ key, indeks }) {
     try {
       const r = await api.kirim("/api/latihan/periksa",
                                 { key, indeks, kode: editor.nilai });
-      isikan(hasil, kartuPeriksa(r, x));
+      isikan(hasil, kartuPeriksa(r, x, tuju));
       if (r.lulus) {
-        kilau(tblPeriksa || hasil);
         status = "lulus";
         gambarStatus();
-        denyut(kotakStatus.firstChild || kotakStatus);
-        rayakan(r.hadiah);
+        // SATU PERISTIWA, SATU DENYUT — aturan mesinnya sendiri
+        // (inti.js:518). Jangan menambahkan `denyut()` di jalur ini: cabang
+        // `capai` mesin sudah mendenyutkan `dari` (inti.js:554), dan denyut
+        // kedua di sini membuat satu kali "latihan lulus" menggerakkan DUA
+        // benda.
+        //
+        // DUA pengukuran di bawah, dan keduanya menyebut keadaannya sendiri —
+        // tabel tanpa label itu angka yang suatu hari dibaca sebagai keadaan
+        // yang salah. Keduanya: Chrome 1280x800, tema gelap,
+        // `#/latihan/python/0`, identitas per ELEMEN dari `getAnimations()`
+        // dengan `Element.prototype.animate` dibungkus dan disaring pada
+        // durasi 340 ms + keyframe ber-`scale(`), lantai bising 0 benda di
+        // kesembilan sel.
+        //
+        // SESUDAH — keadaan pohon ini, penuh/halus/mati:
+        //     capai   2 / 2 / 0      acara   1 / 1 / 0      sentuh  0 / 0 / 0
+        // Partikelnya: `capai` satu lapis `.bara-percik` berisi 7 titik di
+        // `penuh`, 0 titik di `halus` (gerbang `gerakPenuh()`), 0 benda di
+        // `mati`; `acara` satu lapis 26 titik; `sentuh` nol di semua tingkat.
+        // Benda KEDUA pada `capai` bukan perayaan layar ini: `aplikasi.js:565`
+        // mendenyutkan pencacah XP navbar atas event `progres-berubah`. Itu
+        // penanda angka global, bukan penanda peristiwa lokal.
+        //
+        // SEBELUM — keadaan sewaktu denyut tangan masih ada, penuh/halus/mati:
+        //     capai   3 / 3 / 0      acara   2 / 2 / 0      sentuh  1 / 1 / 0
+        // Benda ketiga pada `capai` di tabel SEBELUM adalah pencacah XP yang
+        // sama; yang dibuang benda PERTAMA — denyut tulisan tangan pada
+        // `kotakStatus`.
+        //
+        // Yang dibuang denyut TANGAN pada `kotakStatus`, bukan `dari`-nya:
+        // pil status tetap terbaca tanpa gerak sama sekali. `gambarStatus()`
+        // di atas (:618) terukur mengubah LIMA hal serentak — teks
+        // `belum selesai` -> `LULUS`, kelas `pil` -> `pil-tumbuh`, warna
+        // rgb(179,166,198) -> rgb(52,211,153), latar rgb(29,22,48) -> tint
+        // `--tumbuh` 11%, dan ikon 0 -> 1 svg — dan kartu hasil yang baru
+        // terpasang berdiri di sebelahnya. Konsekuensi yang DISENGAJA: pada
+        // `sentuh` tidak ada yang bergerak sama sekali, dan nol partikel.
+        //
+        // Perayaannya MENEMPEL pada tombol yang baru saja lulus, bukan
+        // menyiram seluruh jendela. Jangan memasang `kilau()` di jalur ini:
+        // ia overlay `position: fixed; inset: 0` selebar viewport, dan di
+        // tema `terang` ia terukur MELEWATI syarat luas WCAG 2.3.1 — fraksi
+        // jendela kilat 341x256 px = 0,3549 > 0,25 — dengan 100% pikselnya
+        // berubah lebih GELAP (rerata -0,1603). Isyarat "selamat" yang
+        // mengelapkan kertas adalah isyarat salah arah, dan inilah jalur
+        // yang paling sering dilewati orang di layar ini.
+        //
+        // `{ dari }` bukan jalur baru: `tingkatRayakan()` menyimpulkan
+        // `capai` untuk `xp_tambah > 0 && !diam`, dan cabang itu sudah
+        // melakukan `denyut(dari)` + `percikBara(dari, { jumlah: 7 })` yang
+        // memagari dirinya sendiri di `gerakPenuh()` (gerak.js:801).
+        rayakan(r.hadiah, { dari: tblPeriksa || hasil });
       } else {
         // Belum lulus BUKAN kegagalan, jadi tidak ada getaran di sini. Yang
         // dibutuhkan cuma mata yang dibawa ke diff-nya, dan itu sudah dilakukan
@@ -680,43 +840,117 @@ export async function layarLatihan({ key, indeks }) {
     }
   }
 
+  /* Gerbangnya MENYATAKAN KEADAAN, tidak menghakimi. Kalimat sebelumnya
+   * meramalkan bahwa pelajar akan merasa menguasai sesuatu yang belum ia
+   * kuasai — sebuah tebakan tentang isi kepala orang yang menekannya, pada
+   * satu-satunya permukaan yang hanya dibuka orang yang sudah buntu. Yang
+   * tersisa sekarang cuma angkanya, plus satu kalimat yang menyebut buntu
+   * sebagai bagian dari cara kerjanya, karena memang begitu.
+   *
+   * Kalimat lamanya sengaja TIDAK dikutip di sini: pagarnya
+   * (`test_web.TestRekorSolusi.test_kalimat_menghakimi_sudah_tidak_ada`)
+   * menyapu SELURUH berkas, dan sebuah komentar yang mengutip kalimat yang
+   * dilarang akan memerahkan pagarnya sendiri. Itu bukan pagar yang cerewet —
+   * itu satu-satunya bentuk yang tidak bisa diakali dengan memindahkan
+   * kalimatnya ke tempat lain di berkas yang sama.
+   *
+   * Tangganya hidup di dalam BADAN dialog, bukan di `aksi`: setiap aksi kaki
+   * menyelesaikan janji `jendela()` dan menutupnya (inti.js:429), jadi
+   * "Lihat lebih banyak" sebagai aksi berarti tiga jendela untuk satu solusi.
+   * Satu solusi, satu jendela.
+   *
+   * Dan gerbangnya memang DILEWATI begitu semua petunjuk terbuka: sesudah
+   * petunjuk terakhir dibaca tidak ada lagi "coba sendiri dulu" yang tersisa
+   * untuk dijaga, jadi menagih konfirmasi di situ cuma menghukum yang paling
+   * gigih. Itu disengaja, bukan klausa yang lupa dibuang. */
   async function lihatJawaban() {
-    if (hintTerbuka < x.hint.length && !await konfirmasi(
-      `Masih ada ${x.hint.length - hintTerbuka} petunjuk yang belum dibuka. `
-      + "Melihat jawaban sekarang biasanya membuat latihan ini terasa mudah "
-      + "padahal belum kamu kuasai. Tetap lihat?",
-      { judul: "Lihat jawaban", labelYa: "Tetap lihat" })) return;
+    const semua = x.solusi.split("\n");
+    const rekor = pisahRekor(semua);
+    if (!rekor.length) return;
 
-    const pilih = await jendela({
+    const tafsir = hintTerbuka === 0
+      ? `${hintTerbuka} dari ${x.hint.length} petunjuk terbuka — belum ada `
+        + "yang kamu buka. Petunjuk pertama biasanya sudah cukup, dan yang "
+        + "tersisa tetap kamu yang kerjakan."
+      : `Kamu membuka ${hintTerbuka} dari ${x.hint.length} petunjuk — itu `
+        + "cara yang benar untuk buntu.";
+
+    if (hintTerbuka < x.hint.length && !await konfirmasi(
+      `${tafsir} Solusinya dibuka dari ekornya: ${rekor[0].length} baris `
+      + `terakhir dulu, bukan ${semua.length} baris sekaligus.`,
+      { judul: "Lihat contoh solusi",
+        labelYa: "Buka baris terakhir" })) return;
+
+    let langkah = 0;
+    const blok = h("div.blok-kode");
+    const kendali = h("div", {
+      gaya: {
+        display: "flex", flexWrap: "wrap", alignItems: "center",
+        gap: "var(--s2)", marginTop: "var(--s3)",
+      },
+    });
+
+    /* Keadaan akhir tiap langkah = keadaan alami DOM-nya. Nol animasi dan nol
+     * `fill: "forwards"` di sini: apa yang sudah terbuka wajib tetap terbuka
+     * pada gerak "mati", dan satu-satunya cara memastikannya adalah dengan
+     * tidak pernah menggantungkan kehadirannya pada sebuah animasi. */
+    function gambarRekor() {
+      const potongan = rekor[langkah];
+      const penuh = langkah >= rekor.length - 1;
+      // Ditokenkan ULANG per potongan, bukan diraut dari `x.token_solusi`:
+      // token bawaan server adalah token seluruh program, dan memotong
+      // deretnya di tengah bisa membelah satu string atau satu komentar
+      // jadi dua — yang terlihat pelajar kemudian warna yang terasa acak.
+      isikan(blok, praKode(token(potongan.join("\n"), x.sorot)));
+      isikan(kendali,
+        h("span.pil", {}, penuh
+          ? `seluruh ${semua.length} baris`
+          : `${potongan.length} baris terakhir dari ${semua.length}`),
+        penuh ? null : h("button.tbl.tbl-kecil", {
+          onclick: () => { langkah += 1; gambarRekor(); },
+        }, "Lihat lebih banyak"),
+        // Salin baru ADA saat seluruhnya terbuka. Menyalin separuh solusi
+        // adalah cara tercepat membuat jawaban yang salah terlihat sah: yang
+        // tertempel jalan, outputnya cuma sebagian, dan yang disalahkan
+        // pelajar adalah pemahamannya sendiri.
+        penuh ? h("button.tbl.tbl-kecil.tbl-hantu", {
+          onclick: () => salin(x.solusi),
+        }, "Salin seluruhnya") : null);
+    }
+    gambarRekor();
+
+    await jendela({
       judul: "Contoh solusi — " + x.judul,
       lebar: true,
       isi: h("div", {},
         h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
           "Ini cuma SATU cara. Kode yang berbeda belum tentu salah, selama "
-          + "outputnya sama."),
-        h("div.blok-kode", {}, praKode(x.token_solusi))),
-      aksi: [{ label: "Salin", nilai: "salin" },
-             { label: "Tutup", nilai: null, kelas: "tbl-utama" }],
+          + "outputnya sama. Yang terbuka lebih dulu baris-baris TERAKHIR — "
+          + "di situlah hasilnya dicetak, dan sering itu saja sudah cukup."),
+        blok, kendali),
+      aksi: [{ label: "Tutup", nilai: null, kelas: "tbl-utama" }],
     });
-    if (pilih === "salin") salin(x.solusi);
   }
 
   async function bandingkan() {
-    const baris = bedaBaris(x.solusi.split("\n"), editor.nilai.split("\n"));
+    const baris = pasangkanUbahan(
+      bedaBaris(x.solusi.split("\n"), editor.nilai.split("\n")));
     await jendela({
       judul: "Kodemu dibanding contoh solusi",
       lebar: true,
       isi: h("div", {},
         h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
-          "Baris hijau dari contoh solusi, baris merah dari kodemu. Beda "
-          + "tulisan itu wajar — yang menentukan lulus cuma outputnya."),
+          "Baris hijau dari contoh solusi, baris merah dari kodemu. Yang "
+          + "dicoret hilang dari kodemu, yang bergaris bawah kamu tambahkan. "
+          + "Beda tulisan itu wajar — yang menentukan lulus cuma outputnya."),
         h("div.diff", {}, baris.length
           ? baris.map((d) => h("div.diff-baris"
               + (d.tanda === "=" ? ".diff-sama"
                  : d.tanda === "-" ? ".diff-kurang" : ".diff-tambah"), {},
               h("span.diff-nomor", {}, String(d.nomor)),
               h("span.diff-tanda", {}, d.tanda === "=" ? "│" : d.tanda),
-              h("span.diff-isi", {}, d.teks)))
+              h("span.diff-isi", {},
+                d.segmen ? segmenKata(d.segmen) : d.teks)))
           : h("div.diff-baris", {},
               h("span.diff-isi", {}, "Sama persis.")))),
       aksi: [{ label: "Tutup", nilai: null, kelas: "tbl-utama" }],
@@ -910,7 +1144,82 @@ function kartuGalat(pesan) {
   return keadaan({ jenis: "salah", gambar: "belum", judul: "Gagal", ket: pesan });
 }
 
-function kartuJalan(r, x, kode, simpanLepas) {
+/* Lebar perangkat yang bisa dipilih untuk pratinjau. Urutannya dari sempit ke
+   lebar lalu "lebar penuh" di ujung, karena yang terakhir itu BUKAN sebuah
+   lebar melainkan tiadanya pilihan — keadaan bawaan, dan tempatnya di ujung
+   daftar supaya ia tidak terbaca sebagai angka keempat.
+
+   Tiga angkanya bukan karangan: 360 lebar yang dipakai seluruh audit layar
+   sempit di repo ini, 768 batas tablet, 1280 lebar laptop yang juga viewport
+   baku pengukuran di sini. */
+const LEBAR_PRATINJAU = [
+  { v: 360, nama: "360", ket: "Tata ulang halamanmu selebar ponsel, 360 px" },
+  { v: 768, nama: "768", ket: "Tata ulang halamanmu selebar tablet, 768 px" },
+  { v: 1280, nama: "1280", ket: "Tata ulang halamanmu selebar laptop, 1280 px" },
+  { v: 0, nama: "lebar penuh", ket: "Selebar panelnya sendiri" },
+];
+
+/* SATU-SATUNYA tempat lebar terpilih tinggal.
+ *
+ * Ia duduk di lingkup MODUL, bukan di dalam `kartuJalan`, dan itu bukan
+ * kemalasan: closure kartu itu lahir baru setiap kali Jalankan ditekan, jadi
+ * pilihan yang disimpan di sana lenyap tepat pada peristiwa yang paling sering
+ * terjadi di layar ini. Pelajar yang sedang memeriksa halamannya di 360 px
+ * menekan Jalankan untuk melihat akibat satu suntingan, dan menemukan
+ * pratinjaunya melompat kembali ke lebar penuh — yang hilang bukan setelan
+ * melainkan perbandingan yang sedang ia kerjakan.
+ *
+ * TIDAK di `localStorage` dan TIDAK di berkas mana pun. Ini alat periksa
+ * sesaat, bukan preferensi tampilan: orang yang pernah mengintip halamannya di
+ * 360 px tidak sedang menyatakan ia ingin selalu melihatnya begitu, dan
+ * setelan yang bertahan melewati tutup-buka browser akan membuatnya menemukan
+ * pratinjau sempit berbulan-bulan kemudian tanpa ingat pernah memintanya.
+ *
+ * `pratinjau.js` memegang nilai yang sudah DIKENAKAN, bukan salinan kedua
+ * otoritas ini — hubungannya sama dengan tinggi yang dilaporkan halaman. */
+let lebarPratinjau = 0;
+
+/** Baris pil pemilih lebar perangkat untuk sebuah pratinjau.
+ *
+ *  Keadaan terpilih ditandai DUA kali: kelasnya dan `aria-pressed`. Warna
+ *  tidak dibacakan pembaca layar, jadi `.tbl-pilih` sendirian berarti
+ *  satu-satunya pelajar yang tidak bisa tahu lebar mana yang sedang berlaku
+ *  adalah yang paling bergantung pada tahu. Bentuknya kembar dengan tab
+ *  Tampilan/Struktur di `layar-belajar.js` (`kartuKeluaran`), dan kekembaran
+ *  itu disengaja: dua pemilih yang bekerja sama di layar berbeda sebaiknya
+ *  terlihat sama.
+ */
+function barisLebarPratinjau(pv) {
+  const pil = LEBAR_PRATINJAU.map((p) => h("button.tbl.tbl-kecil", {
+    data: { lebar: String(p.v) }, title: p.ket,
+  }, p.nama));
+  const tandai = () => {
+    LEBAR_PRATINJAU.forEach((p, i) => {
+      const kini = p.v === lebarPratinjau;
+      pil[i].classList.toggle("tbl-pilih", kini);
+      pil[i].classList.toggle("tbl-hantu", !kini);
+      pil[i].setAttribute("aria-pressed", String(kini));
+    });
+  };
+  pil.forEach((b, i) => b.addEventListener("click", () => {
+    lebarPratinjau = LEBAR_PRATINJAU[i].v;
+    pv.setLebar(lebarPratinjau);
+    tandai();
+  }));
+  tandai();
+  // Jaraknya dari tangga `--s`, bukan dari angka piksel, dan inline karena
+  // baris ini tidak membawa satu pun aturan gaya BARU: pilnya sudah `.tbl`,
+  // labelnya sudah `.mata`. Presedennya `kartuJalan` di bawah, yang menyetel
+  // jarak antar-bagiannya dengan cara yang sama.
+  return h("div.pratinjau-lebar", {
+    gaya: {
+      display: "flex", flexWrap: "wrap", alignItems: "center",
+      gap: "var(--s2)", marginBottom: "var(--s2)",
+    },
+  }, h("span.mata", {}, "Lebar perangkat"), ...pil);
+}
+
+function kartuJalan(r, x, kode, simpanLepas, tuju) {
   // Untuk HTML dan CSS, "keluaran" adalah pohon struktur -- benar untuk
   // menilai, salah untuk ditonton. Di layar latihan justru di sinilah orang
   // paling ingin melihat halamannya: ia baru saja menulisnya sendiri.
@@ -918,7 +1227,11 @@ function kartuJalan(r, x, kode, simpanLepas) {
     ? dokumenPratinjau(x.runner, kode) : "";
   let pv = null;
   if (dok) {
-    pv = pratinjauHtml(dok);
+    // Lebar yang sedang berlaku dikirim SAAT DIBUAT, bukan dipasang sesudahnya
+    // lewat `setLebar`. Bedanya satu frame yang terlihat: kartu yang lahir di
+    // lebar penuh lalu disempitkan akan menggambar halamannya sekali di lebar
+    // yang salah lebih dulu.
+    pv = pratinjauHtml(dok, { lebar: lebarPratinjau });
     simpanLepas(pv.lepas);
   }
   return h("div.kartu.masuk", {},
@@ -927,7 +1240,14 @@ function kartuJalan(r, x, kode, simpanLepas) {
       h("span.deret-kanan"),
       h("span.pil" + (r.kode_keluar === 0 ? ".pil-tumbuh" : ".pil-salah"), {},
         `kode keluar ${r.kode_keluar}`),
-      h("span.pil", {}, r.detik + " detik")),
+      h("span.pil", {}, r.detik + " detik"),
+      // Sinyal overflow panel, dan ia lahir TERSEMBUNYI: yang menyalakannya
+      // cuma pengukuran di `pinKeGalat()`, bukan dugaan dari panjang keluaran.
+      // Tanpa chip ini keluaran 301 baris di tata letak lebar terbaca sebagai
+      // keluaran 8 baris — satu-satunya isyarat hari ini sebuah bilah gulir
+      // setipis `scrollbar-width: thin` (gaya.css:4568).
+      h("span.pil.pil-tenang", { hidden: true, data: { lebih: "bawah" } },
+        "keluaran lebih panjang dari panel — gulir ke bawah")),
     r.stdin ? h("div", { gaya: { marginBottom: "var(--s2)" } },
       h("span.mata", {}, "Masukan yang dikirim"),
       h("div.terminal", {}, r.stdin)) : null,
@@ -935,10 +1255,11 @@ function kartuJalan(r, x, kode, simpanLepas) {
       halamanDikarang(x.runner, kode) ? h("p.pratinjau-ket", {},
         "Halaman contoh ini dibuatkan dari pemilih di CSS-mu sendiri — ",
         h("b", {}, "bukan"), " berkas HTML-mu.") : null,
+      barisLebarPratinjau(pv),
       pv.el) : null,
     h("span.mata", {}, dok ? "Struktur yang dinilai" : "Keluaran"),
     h("div.terminal", {}, r.keluaran),
-    r.galat ? blokGalat(r.galat, r.fase) : null,
+    r.galat ? blokGalat(r.galat, r.fase, tuju, true) : null,
     r.timeout ? h("div.diagnosa", {}, h("span.panah", {}, "→"),
       h("div", {}, `Program dihentikan setelah ${x.batas_waktu} detik. `
         + "Kemungkinan ada loop yang tidak pernah berhenti.")) : null,
@@ -946,17 +1267,285 @@ function kartuJalan(r, x, kode, simpanLepas) {
       r.catatan) : null);
 }
 
-function blokGalat(g, fase) {
-  return h("div", { gaya: { marginTop: "var(--s3)" } },
+/* Isyarat bahwa pengguna sudah mengambil alih gulir panel hasil. Daftarnya
+   kembar dengan `SENTUHAN_GULIR` di layar-belajar.js dan alasannya sama:
+   `keydown` bisa datang karena panel yang bisa digulir juga bisa difokus. */
+const SENTUHAN_HASIL = ["wheel", "pointerdown", "keydown"];
+
+/* Batas waktu pengamat ukuran panel hasil. Angkanya kembar dengan
+   `PIN_BARA_MS` (layar-belajar.js:669) dan itu disengaja: keduanya menjawab
+   satu pertanyaan — berapa lama sebuah pengamat boleh hidup di layar yang
+   dibuka lalu ditinggal. */
+const PIN_HASIL_MS = 4000;
+
+/** Nyalakan sinyal "ada lebih di bawah", lalu antar panel ke pesan galatnya.
+ *
+ *  Panel hasil DIPAGARI tingginya, tapi hanya di tata letak lebar:
+ *  `gaya.css:4568` memberi `.kerja-hasil { overflow-y: auto; max-height:
+ *  46cqh }` di dalam `@container panggung (min-width: 1100px)`, dengan
+ *  `container-type: size` di `.kerja-kode` (`gaya.css:4551`). Akibatnya
+ *  keluaran panjang + blok galat di bawahnya = blok galat SELURUHNYA di luar
+ *  jendela panel sementara `scrollTop` tetap 0, dan satu-satunya isyarat
+ *  bahwa jawabannya ada di bawah sebuah bilah gulir setipis `thin`.
+ *
+ *  Dua hal yang dikerjakan di sini, dan keduanya dari PENGUKURAN:
+ *
+ *    (1) chip `[data-lebih="bawah"]` dinyalakan kalau `scrollHeight >
+ *        clientHeight`. Bukan dari panjang keluaran — di tata letak sempit
+ *        panel ini tidak dipagari sama sekali, jadi menebaknya dari jumlah
+ *        baris akan memasang sinyal palsu di layar yang tidak memotong apa pun.
+ *    (2) kalau ada blok galat DAN ia tidak muat, panel ITU SENDIRI digulir
+ *        dengan `scrollTop` sampai puncak bloknya ada di puncak jendela panel.
+ *
+ *  `scrollIntoView` DILARANG di sini: ia menggulir SEMUA leluhur termasuk
+ *  dokumen — kelas bug yang sama yang membuat `bawaKeTengah()` ada. Dan tanpa
+ *  animasi apa pun: `scroll-behavior` tidak mewaris dari `html`, jadi yang
+ *  terhitung pada `.kerja-hasil` adalah `auto` dan `scrollTop =` sudah instan
+ *  di ketiga tingkat gerak. Guliran dan sinyalnya tetap terjadi pada tingkat
+ *  `mati` — keduanya INFORMASI, bukan hiasan.
+ *
+ *  Pengukurannya lewat `saatSiap()`, bukan `requestAnimationFrame` polos:
+ *  layar dibangun utuh sebelum router menempelkannya, jadi rect yang dibaca
+ *  di frame pemasangan bisa nol (invarian #15a).
+ *
+ *  Dan `saatSiap` menjawab "sudah terpasang dan punya ukuran", BUKAN
+ *  "ukurannya sudah berhenti berubah" — untuk HTML/CSS tinggi kartu BERTAMBAH
+ *  sesudah iframe pratinjau melaporkan dirinya (`pratinjau.js`; AGENTS.md
+ *  melarang `transition: height` justru karena itu). Karena itu pengamat
+ *  ukuran mengawasi KARTUNYA, bukan cuma panelnya: panel ber-`max-height`
+ *  tidak pernah berubah ukuran ketika isinya tumbuh.
+ *
+ *  Pin-nya WAJIB lepas. Posisi gulir adalah keadaan PENGGUNA, dan merebutnya
+ *  kembali sesudah dia menggeser sendiri lebih buruk daripada tidak mem-pin
+ *  sama sekali. Bentuknya sengaja kembar dengan `pinKeHariIni()`
+ *  (layar-belajar.js:704): putus pada sentuhan pertama, dan putus pada batas
+ *  waktu. */
+function pinKeGalat(panel) {
+  const chipBawah = panel.querySelector('[data-lebih="bawah"]');
+  const blok = panel.querySelector("[data-galat]");
+  const chipAtas = blok ? blok.querySelector('[data-lebih="atas"]') : null;
+
+  /* Posisi blok galat relatif jendela panel, diambil dari KOORDINAT LAYOUT.
+   *
+   * `getBoundingClientRect()` termasuk transform, dan kartu hasilnya
+   * `div.kartu.masuk`: `@keyframes masuk` (gaya.css:1174) berangkat dari
+   * `translateY(7px)` selama `--sedang` 220 md (gaya.css:433). Mengukur dengan
+   * rect berarti menggulir ke tempat yang akan BERPINDAH tujuh piksel ke atas
+   * begitu animasinya selesai — dan `ResizeObserver` tidak akan pernah
+   * menangkapnya, karena transform tidak mengubah satu kotak layout pun.
+   *
+   * Terukur, Chrome 152, `#/latihan/python/0`, 300 baris + ZeroDivisionError:
+   * pada `penuh` residu -3 -> -6 -> -7 seiring translateY 3,39 -> 0,41 -> 0 px
+   * (animasi 50 -> 133 -> 220 md) dengan `scrollTop` 532; pada `mati`, tempat
+   * `gaya.css:4802` mematikan animasinya, `transform: none` dan `scrollTop`
+   * 525 -- tepat tujuh kurang, residu 0. Selisihnya ADALAH translateY-nya.
+   *
+   * Jalan keluarnya DUA, dan yang pertama saya coba lalu tolak: akumulasi
+   * `offsetTop` sampai akar memang buta terhadap transform, tapi `offsetTop`
+   * membulatkan ke bilangan bulat — terukur residunya pindah dari -7 ke +1,
+   * lebih baik tapi belum nol, dan sisa satu piksel itu pembulatannya sendiri.
+   *
+   * Yang dipakai: rect (sub-piksel) DIKURANGI translateY simpul yang
+   * beranimasi di antara blok dan panel. Lingkarannya naik sampai `panel`
+   * supaya ia tetap benar kalau suatu hari ada dua simpul bertransform
+   * bersarang, bukan cuma kartunya. */
+  const geserTransform = () => {
+    let dy = 0;
+    for (let n = blok; n && n !== panel; n = n.parentElement) {
+      const t = getComputedStyle(n).transform;
+      if (t && t !== "none") dy += new DOMMatrixReadOnly(t).m42;
+    }
+    return dy;
+  };
+
+  const kotak = () => {
+    const kp = panel.getBoundingClientRect();
+    const kb = blok.getBoundingClientRect();
+    const dy = geserTransform();
+    return { atas: kb.top - kp.top - dy, bawah: kb.bottom - kp.top - dy };
+  };
+
+  const pasang = () => {
+    // Chipnya DISEMBUNYIKAN lebih dulu, lalu panelnya diukur. Terukur kenapa:
+    // di 655x754 panel sempat `scroll 784 > client 777` saat kartu masih
+    // tumbuh, lalu mengendap di `817 == 817` — tidak memotong apa pun. Kalau
+    // tinggi chip ikut memutuskan, panel yang pas-pasan berkedip: chip muncul
+    // -> panelnya memotong -> chip tetap muncul, selamanya, atas keadaan yang
+    // sudah tidak ada. Keputusan ini karena itu dibuat dari keadaan TANPA
+    // chip, dan dibuat ulang setiap kali ukurannya berubah.
+    if (chipBawah) chipBawah.hidden = true;
+    if (chipAtas) chipAtas.hidden = true;
+
+    // DUA syarat, dan syarat pertama yang paling mudah dilupakan: panelnya
+    // harus benar-benar MEMOTONG. Di tata letak sempit `overflow-y` terhitung
+    // `visible`, dan di sana `scrollHeight` terukur melebihi `clientHeight`
+    // PERMANEN tujuh piksel — margin anak yang menyembul dari kotak yang tidak
+    // memotong apa pun. Selisih tinggi sendirian karena itu bukan "ada lebih
+    // di bawah"; ia cuma "ada margin". Yang menjawab "memotong" adalah
+    // propertinya, bukan selisihnya.
+    const cs = getComputedStyle(panel);
+    const memotong = cs.overflowY === "auto" || cs.overflowY === "scroll";
+    const lebih = memotong && panel.scrollHeight > panel.clientHeight;
+    if (chipBawah) chipBawah.hidden = !lebih;
+    if (!lebih || !blok) return;
+
+    let k = kotak();
+    if (k.atas >= 0 && k.bawah <= panel.clientHeight) return;
+
+    // Chipnya dinyalakan SEBELUM rect-nya dipakai menggulir. `.mata` dan chip
+    // ini masing-masing memakai barisnya sendiri, jadi reveal menggeser isi
+    // blok ke bawah — rect yang dibaca sebelum reveal akan mendarat sependek
+    // tinggi chip itu.
+    if (chipAtas) { chipAtas.hidden = false; k = kotak(); }
+
+    const geser = (d) => {
+      const maks = panel.scrollHeight - panel.clientHeight;
+      panel.scrollTop = Math.max(0, Math.min(maks, panel.scrollTop + d));
+    };
+    // SATU guliran, bukan dua. Versi sebelumnya memanggil `geser()` kedua kali
+    // dengan alasan yang terukur SALAH ("menyalakan chip menggeser isi di atas
+    // blok, jadi delta pertama 7 px kelebihan"). Tujuh piksel itu bukan dari
+    // chip melainkan dari `translateY` animasi masuk, dan koreksi kedua tidak
+    // pernah menutupnya karena ia membaca rect yang sama-sama ter-transform.
+    // Dengan `kotak()` memakai koordinat layout, `atas` sesudah guliran
+    // pertama adalah nol secara aritmetik -- guliran kedua jadi dusta yang
+    // tidak melakukan apa-apa, dan dusta yang tidak melakukan apa-apa tetap
+    // dusta.
+    geser(k.atas);
+  };
+
+  saatSiap(panel, () => {
+    pasang();
+    if (typeof ResizeObserver !== "function") return;
+
+    // Pengamatnya memanggil `pasang()` TANPA penjaga "tinggi berubah atau
+    // tidak", dan itu koreksi atas versi pertama fungsi ini: penjaga seperti
+    // itu membuat keputusan sesaat TERKUNCI — terukur, chip menyala di
+    // 655x754 atas keadaan yang hilang 180 md kemudian, dan pin di 1280x800
+    // berhenti 7 px kelebihan tanpa pernah mengoreksinya.
+    //
+    // Yang menahan lingkarannya bukan penjaga itu melainkan sifat `pasang()`
+    // sendiri: ia IDEMPOTEN — dari keadaan apa pun ia mendarat di keadaan yang
+    // sama, jadi tik kedua menghasilkan ukuran yang identik dan peramban tidak
+    // mengirim pemberitahuan ketiga. Dan karena ia dipanggil ulang, pin-nya
+    // MENUJU alih-alih menembak sekali.
+    let lepas = () => {};
+    const pengamat = new ResizeObserver(() => pasang());
+    const jam = setTimeout(() => lepas(), PIN_HASIL_MS);
+
+    lepas = () => {
+      clearTimeout(jam);
+      pengamat.disconnect();
+      for (const nama of SENTUHAN_HASIL) panel.removeEventListener(nama, lepas);
+    };
+    for (const nama of SENTUHAN_HASIL) {
+      panel.addEventListener(nama, lepas, { passive: true });
+    }
+    pengamat.observe(panel);
+    // Kartu hasilnya, bukan cuma panelnya: panel ber-`max-height` tidak pernah
+    // berubah ukuran ketika kartu di dalamnya tumbuh — dan pratinjau iframe
+    // justru tumbuh SESUDAH frame pemasangan.
+    if (panel.firstElementChild) pengamat.observe(panel.firstElementChild);
+    // Dan BLOK GALATNYA sendiri. Sejarahnya layak ditulis karena ia menandai
+    // batas pengamat ukuran: residu -7 px dulu dikira pelayangan tata letak
+    // dan blok ini ditambahkan untuk menangkapnya — TIDAK berhasil, angkanya
+    // tidak bergerak sedikit pun. Sebabnya kemudian terukur: `translateY`
+    // animasi masuk, yang tidak mengubah satu kotak layout pun sehingga
+    // `ResizeObserver` memang buta terhadapnya. Yang menutupnya `kotak()` yang
+    // kini memakai koordinat layout. Blok ini tetap diamati karena ia memang
+    // kotak yang relevan kalau ISINYA berubah tinggi (galat yang bertambah
+    // baris), bukan karena ia pernah memperbaiki residu itu.
+    if (blok) pengamat.observe(blok);
+  });
+}
+
+/* Nomor baris yang disebut SATU baris pesan galat, atau 0 kalau ia tidak
+ * menyebut satu pun.
+ *
+ * Kedua pola di bawah PORT dari `inti/galat.py` — `_POLA_BARIS_BERKAS` dan
+ * `_POLA_KATA_LINE` — dan kekembarannya disengaja. Menambah field `nomor` di
+ * responsnya berarti dua tempat membentuk satu angka, padahal geserannya
+ * sudah selesai di server: `_galat_json` memanggil `rapikan()` dengan
+ * `baris_setup`, jadi nomor yang sampai ke sini SUDAH menunjuk berkas milik
+ * pelajar. Presedennya `sorot.js` sebagai port `inti/sorot.py`; yang membayar
+ * kekembaran ini `TestLompatKeBarisGalat` (tests/test_web.py:9014), yang
+ * menjalankan `node` atas korpus `tests/test_galat.py` dan mengadu kedua pola
+ * di bawah dengan padanannya di Python — jadi kekembarannya diukur, bukan
+ * dipercaya.
+ *
+ * Baris setup tidak pernah lolos sebagai angka: `rapikan()` menukar nomor
+ * yang jatuh di bawah 1 dengan teks `[bagian KONDISI AWAL]`. Itu sebabnya
+ * tombolnya tidak bisa menunjuk baris yang bukan tulisan pelajar. */
+const POLA_BARIS_BERKAS = /[\w./\\-]+\.\w+:(\d+)/;
+const POLA_KATA_LINE = /\bline (\d+)/;
+
+function nomorDiBaris(teks) {
+  const m = POLA_BARIS_BERKAS.exec(teks) || POLA_KATA_LINE.exec(teks);
+  return m ? parseInt(m[1], 10) : 0;
+}
+
+/* Satu baris pesan galat = satu simpul. Yang menyebut nomor jadi <button>
+ * yang mengantar caret ke baris itu; yang tidak tetap teks biasa — jadi blok
+ * galat tanpa satu pun nomor terlihat PERSIS seperti sebelum tombol ini ada.
+ *
+ * Nomornya dibaca dari `g.baris`, teks yang benar-benar dirender, bukan dari
+ * `g.mentah`: `_galat_json` meringkas `mentah` jadi maksimal 14 baris, jadi
+ * nomor yang hanya hidup di `mentah` akan melahirkan tombol untuk baris yang
+ * tidak bisa dibaca siapa pun di layar ini.
+ *
+ * Tombolnya juga tidak lahir kalau editornya tidak punya baris sebanyak itu.
+ * Tombol yang berakhir "baris itu tidak ada" lebih buruk daripada tidak ada
+ * tombol — dan `tuju.bisa()` menjawabnya dari isi editor saat ini, bukan dari
+ * panjang kode yang dikirim tadi. */
+function barisGalat(baris, tuju) {
+  const simpul = [];
+  baris.forEach((teks, i) => {
+    const pisah = i < baris.length - 1 ? "\n" : "";
+    const n = tuju ? nomorDiBaris(teks) : 0;
+    if (n && tuju.bisa(n)) {
+      simpul.push(h("button", {
+        type: "button",
+        "aria-label": "Ke baris " + n,
+        onclick: () => tuju.ke(n),
+        gaya: {
+          font: "inherit", color: "inherit", background: "none",
+          border: "0", padding: "0", margin: "0", textAlign: "left",
+          whiteSpace: "inherit", cursor: "pointer",
+          borderBottom: "var(--tebal-garis) dotted currentColor",
+        },
+      }, teks));
+      if (pisah) simpul.push(pisah);
+    } else {
+      simpul.push(teks + pisah);
+    }
+  });
+  return simpul;
+}
+
+/* `denganLebih` dipakai HANYA oleh kartu Jalankan, dan bawaannya palsu supaya
+ * pemanggil di `kartuUji` berperilaku byte-identik: di sana blok galat tinggal
+ * di dalam kartu uji yang sudah pendek, dan panel tidak pernah digulir ke
+ * sana. Chipnya lahir TERSEMBUNYI — `pinKeGalat()` yang menyalakannya, dan
+ * hanya kalau panel benar-benar digulir.
+ *
+ * Yang TIDAK berubah: `barisGalat(g.baris, tuju)` dan isinya. Teks baris galat
+ * yang dirender adalah kontrak hun 3, dan chip ini berdiri di luar `.terminal`
+ * — bukan di dalamnya. */
+function blokGalat(g, fase, tuju, denganLebih) {
+  return h("div", { data: { galat: "1" }, gaya: { marginTop: "var(--s3)" } },
     h("span.mata", {},
       fase === "kompilasi" ? "Pesan dari compiler" : "Pesan error"),
-    h("div.terminal.terminal-galat", {}, g.baris.join("\n")),
+    denganLebih
+      ? h("span.pil.pil-tenang", { hidden: true, data: { lebih: "atas" } },
+          "panel digulir ke pesan ini — keluaran lengkap ada di atasnya")
+      : null,
+    h("div.terminal.terminal-galat", {}, barisGalat(g.baris, tuju)),
     g.artinya.length ? h("div.arti", {},
       h("b", {}, "Artinya"),
       g.artinya.map((t) => h("div", {}, "• " + t))) : null);
 }
 
-function kartuPeriksa(r, x) {
+function kartuPeriksa(r, x, tuju) {
   if (!r.bisa_dinilai) {
     return keadaan({ jenis: "kunci", gambar: "belum",
                      judul: "Belum bisa dinilai", ket: r.alasan });
@@ -978,20 +1567,20 @@ function kartuPeriksa(r, x) {
                                   fontSize: "var(--t-ui)" } },
         "Baris hijau bertanda − adalah yang diharapkan; baris merah bertanda + "
         + "adalah punyamu.") : null),
-    deretUji(r));
+    deretUji(r, tuju));
 }
 
 /* Hasil uji muncul satu per satu, urut dari uji pertama. Kalau uji ketiga yang
    gagal, urutan itulah yang membawa mata ke sana: dua kartu hijau lewat, lalu
    berhenti di yang merah. Muncul serentak tidak memberi arah apa pun. */
-function deretUji(r) {
+function deretUji(r, tuju) {
   const kotak = h("div", { gaya: { display: "grid", gap: "0" } },
-    r.uji.map((u) => kartuUji(u)));
+    r.uji.map((u) => kartuUji(u, tuju)));
   ungkap(kotak, { per: 60, maks: 300, geser: 8, pegas: "jawab" });
   return kotak;
 }
 
-function kartuUji(u) {
+function kartuUji(u, tuju) {
   return h("div.uji" + (u.lulus ? ".lulus" : ".gagal"), {},
     h("div.uji-kepala", {},
       h("span.uji-cap", {}, u.lulus ? "LULUS" : "GAGAL"),
@@ -999,7 +1588,7 @@ function kartuUji(u) {
       u.stdin ? h("span.pil", {},
         "input: " + u.stdin.replace(/\n/g, "⏎").slice(0, 24)) : null),
     !u.lulus ? h("div.uji-badan", {},
-      u.galat ? blokGalat(u.galat, "") : null,
+      u.galat ? blokGalat(u.galat, "", tuju) : null,
       // Output benar tapi program berakhir dengan error: kasus ini pernah
       // dinyatakan lulus, yang justru menyembunyikan bug yang sedang dipelajari.
       u.output_cocok && u.kode_keluar !== 0 ? h("div.diagnosa", {},
@@ -1038,11 +1627,54 @@ function gambarBeda(b) {
       baris.push(barisDiff(nomor, "│", d.harapan, "diff-sama", ""));
       continue;
     }
+    const kata = d.tanda === "~" ? bedaKata(d.harapan, d.aktual) : null;
+
+    // Pasangan yang berbeda HANYA pada spasi diciutkan jadi satu baris. Dua
+    // baris penuh untuk "halo··dunia" lawan "halo·dunia" tidak menambah satu
+    // pun keterangan: keduanya terbaca identik dari ujung ke ujung, dan yang
+    // sebenarnya membedakannya sudah ditandai di dalam segmennya.
+    //
+    // `d.tampak` SATU-SATUNYA yang memutuskan "bedanya cuma spasi", dan yang
+    // memilikinya `api._beda_json`: di sana `tampak` dihitung sekali dengan
+    // membandingkan kedua sisi modulo spasi, dan di sana pula `harapan` dan
+    // `aktual` lalu DITUKAR dengan hasil `beda.tampakkan` (`inti/beda.py`,
+    // `SPASI_TAMPAK`/`TAB_TAMPAK`). Konsekuensinya mengikat ke baris ini:
+    // begitu `tampak` menyala, tidak ada satu pun spasi asli yang tersisa di
+    // string yang sampai ke `bedaKata` -- semuanya sudah jadi `·` dan `→`,
+    // dan bagi `pecahToken` keduanya token BUKAN-spasi seperti huruf mana
+    // pun. Jadi jangan pernah menghitung ulang jawabannya dari teks itu:
+    // predikat kedua pernah berdiri persis di sini, menuntut "seluruh segmen
+    // yang berubah cuma spasi", dan karena teksnya sudah ditukar lebih dulu
+    // predikat itu mustahil benar -- cabang ini terukur tidak pernah menyala
+    // satu kali pun, justru pada pasangan yang jadi alasannya ditulis.
+    //
+    // Baris `=` tidak bisa sampai ke sini: ia sudah `continue` di atas, DAN
+    // `kata` null untuknya karena cuma `~` yang dihitung. Dua pagar untuk
+    // satu hal, dan itu disengaja -- `tampak` menyala untuk baris `=` juga,
+    // karena kedua sisinya memang persis sama (`inti/beda.py:189`).
+    //
+    // `kata` tetap diperiksa, dan juga bukan basa-basi: baris ciut merender
+    // `kata.gabung`, dan `bedaKata` boleh menyerah -- di atas BATAS_SEL_KATA,
+    // atau tanpa satu token jangkar. Untuk baris sepanjang itu dua baris
+    // penuh memang jawaban yang benar.
+    //
+    // Penunjuk kolom ↑ sengaja TIDAK ikut di baris ciut: segmen spasi yang
+    // dicoret menunjuk karakternya sendiri, dan itu lebih tepat daripada
+    // sebuah nomor kolom yang dihitung terhadap `harapan` lalu dipasang di
+    // bawah teks GABUNGAN yang kolomnya sudah bergeser.
+    if (kata && d.tampak) {
+      baris.push(barisDiff(nomor, "~", null, "diff-sama", "spasi saja",
+                           kata.gabung));
+      continue;
+    }
+
     if (d.tanda === "-" || d.tanda === "~") {
-      baris.push(barisDiff(nomor, "-", d.harapan, "diff-kurang", "diharapkan"));
+      baris.push(barisDiff(nomor, "-", d.harapan, "diff-kurang", "diharapkan",
+                           kata && kata.kiri));
     }
     if (d.tanda === "+" || d.tanda === "~") {
-      baris.push(barisDiff(nomor, "+", d.aktual, "diff-tambah", "punyamu"));
+      baris.push(barisDiff(nomor, "+", d.aktual, "diff-tambah", "punyamu",
+                           kata && kata.kanan));
     }
     if (d.tanda === "~" && nomor === b.nomor_beda && b.kolom_beda) {
       baris.push(h("div.diff-baris", {},
@@ -1064,11 +1696,18 @@ function gambarBeda(b) {
       h("span.panah", {}, "→"), h("div", {}, c))));
 }
 
-function barisDiff(nomor, tanda, teks, kelas, ket) {
+/* Parameter `segmen` opsional dan sengaja TERAKHIR: enam pemanggil lama
+ * memanggilnya dengan lima argumen dan harus tetap berarti persis sama. Kalau
+ * ia ada, ia yang dipakai dan `teks` diabaikan -- segmen itu sendiri sudah
+ * memuat seluruh teks barisnya, dan menggambar keduanya akan menampilkan baris
+ * yang sama dua kali. */
+function barisDiff(nomor, tanda, teks, kelas, ket, segmen) {
   return h("div.diff-baris." + kelas, {},
     h("span.diff-nomor", {}, String(nomor)),
     h("span.diff-tanda", {}, tanda),
-    h("span.diff-isi", {}, teks === null || teks === undefined ? "" : teks),
+    h("span.diff-isi", {}, segmen
+      ? segmenKata(segmen)
+      : (teks === null || teks === undefined ? "" : teks)),
     ket ? h("span.diff-ket", {}, "(" + ket + ")") : null);
 }
 
@@ -1102,6 +1741,199 @@ function bedaBaris(a, b) {
   while (i < n) { nomor += 1; keluar.push({ tanda: "-", teks: a[i++], nomor }); }
   while (j < m) { nomor += 1; keluar.push({ tanda: "+", teks: b[j++], nomor }); }
   return keluar.every((k) => k.tanda === "=") ? [] : keluar;
+}
+
+/* Atap biaya `bedaKata`, dalam SEL tabel (jumlah token kiri x kanan).
+ *
+ * Baris keluaran bisa sepanjang apa pun -- yang menulisnya pelajar, bukan
+ * kurikulum -- sementara tabel LCS-nya O(n*m). Tanpa atap, satu baris keluaran
+ * puluhan ribu huruf cukup untuk menggantung tab-nya, dan yang terlihat bukan
+ * error melainkan tombol Jalankan yang berhenti menjawab. Di atas atap ini
+ * `bedaKata` menyerah dan mengembalikan `null`, lalu pemanggilnya menggambar
+ * baris utuh seperti sebelum hun ini -- yang hilang granularitasnya, bukan
+ * diff-nya. */
+const BATAS_SEL_KATA = 40000;
+
+/* Pemecah token yang WAJIB lossless: `pecahToken(s).join("") === s`.
+ *
+ * Tiga alternatifnya menutup seluruh ruang karakter -- deretan spasi, deretan
+ * huruf/angka, lalu satu karakter apa pun yang bukan spasi -- karena diff yang
+ * kehilangan satu karakter di tengah jalan akan menggambar baris yang TIDAK
+ * pernah ditulis siapa pun, dan pelajar tidak punya cara tahu bedanya.
+ * `\p{L}` dipakai, bukan `\w`, supaya huruf beraksen tidak pecah jadi tiga
+ * token di tengah satu kata. */
+const POLA_TOKEN_KATA = /\s+|[\p{L}\p{N}_]+|[^\s]/gu;
+
+function pecahToken(s) {
+  // `match` dengan bendera /g tidak mewarisi `lastIndex`, jadi polanya boleh
+  // dibagi antar panggilan tanpa membuat hasilnya bergantung urutan panggilan.
+  return s.match(POLA_TOKEN_KATA) || [];
+}
+
+/** Diff per-KATA di dalam satu pasang baris yang sudah diketahui berubah.
+ *
+ *  `bedaBaris` di atas dan `Beda.baris` di Python sama-sama berhenti di
+ *  tingkat BARIS: keduanya bisa mengatakan "baris ini berubah", tidak satu pun
+ *  bisa mengatakan KATA MANA. Untuk baris sepanjang satu kalimat keluaran itu
+ *  berarti pekerjaan membandingkan dua baris panjang tetap diserahkan ke mata
+ *  pelajar -- padahal justru itu yang bisa dikerjakan komputer.
+ *
+ *  MURNI, dan itu syarat, bukan sifat kebetulan: dua string masuk, segmen
+ *  keluar. Tidak menyentuh DOM, tidak memanggil `h()`, tidak membaca jam,
+ *  tidak memakai acak. `tests/test_web.TestBedaKata` MENGEKSTRAK sumber fungsi
+ *  ini beserta dua tetangganya lalu menjalankannya di Node tanpa satu pun
+ *  modul lain -- jadi begitu ia mulai memanggil sesuatu dari luar, tesnya
+ *  MERAH, dan kemurniannya berhenti jadi klaim di komentar.
+ *
+ *  Keluarannya tiga daftar segmen atas token yang sama:
+ *
+ *    kiri    `=`/`-`      baris harapan, dengan yang hilang ditandai
+ *    kanan   `=`/`+`      baris pelajar, dengan yang bertambah ditandai
+ *    gabung  `=`/`-`/`+`  satu baris inline memuat kedua sisi dalam urutan
+ *                         dokumen, dipakai saat pasangannya diciutkan
+ *
+ *  Dan HANYA ketiganya. Tidak ada predikat "bedanya cuma spasi" di sini.
+ *  Pernah ada, dan ia tidak pernah bisa benar: satu-satunya yang menanyakannya
+ *  adalah `gambarBeda`, dan teks yang ia serahkan sudah ditukar `api._beda_json`
+ *  jadi versi ber-`·`/`→` lebih dulu -- jadi yang tersisa untuk diperiksa bukan
+ *  lagi spasi. Keputusan itu sekarang milik `d.tampak` seorang. Pemanggil yang
+ *  kedua, `pasangkanUbahan` di jalur diff KODE, tidak pernah menanyakannya.
+ *
+ *  Mengembalikan `null` -- artinya "gambar saja baris utuh" -- di tiga
+ *  keadaan, dan ketiganya dipilih, bukan kelalaian:
+ *
+ *  * Salah satu sisi bukan string, atau tokennya nol. Tidak ada yang
+ *    dibandingkan.
+ *  * Tabelnya melewati BATAS_SEL_KATA. Alasannya di atas.
+ *  * Nol token BUKAN-SPASI yang sama. Kalau dua baris tidak punya satu kata
+ *    pun yang sama, menyoroti semua kata sama informatifnya dengan menyoroti
+ *    seluruh baris -- cuma jauh lebih berisik. Yang diperiksa sengaja token
+ *    bukan-spasi: hampir setiap pasang baris berbagi sebuah spasi, jadi
+ *    memeriksa "ada token yang sama" saja akan membuat pagar ini tidak pernah
+ *    menyala sama sekali.
+ */
+function bedaKata(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return null;
+  const ta = pecahToken(a);
+  const tb = pecahToken(b);
+  const n = ta.length;
+  const m = tb.length;
+  if (!n || !m || n * m > BATAS_SEL_KATA) return null;
+
+  const tabel = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      tabel[i][j] = ta[i] === tb[j]
+        ? tabel[i + 1][j + 1] + 1
+        : Math.max(tabel[i + 1][j], tabel[i][j + 1]);
+    }
+  }
+
+  const kiri = [];
+  const kanan = [];
+  const gabung = [];
+  // Token bersebelahan yang bertanda sama dilebur jadi satu segmen. Bukan demi
+  // DOM yang ringkas: segmen per token membuat "dua kata berurutan berubah"
+  // tampil sebagai dua kotak dengan jeda di antaranya, dan yang terbaca jadi
+  // dua ubahan terpisah padahal cuma satu.
+  const dorong = (daftar, tanda, teks) => {
+    const akhir = daftar[daftar.length - 1];
+    if (akhir && akhir.tanda === tanda) akhir.teks += teks;
+    else daftar.push({ tanda, teks });
+  };
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (ta[i] === tb[j]) {
+      dorong(kiri, "=", ta[i]);
+      dorong(kanan, "=", tb[j]);
+      dorong(gabung, "=", ta[i]);
+      i++;
+      j++;
+    } else if (tabel[i + 1][j] >= tabel[i][j + 1]) {
+      dorong(kiri, "-", ta[i]);
+      dorong(gabung, "-", ta[i]);
+      i++;
+    } else {
+      dorong(kanan, "+", tb[j]);
+      dorong(gabung, "+", tb[j]);
+      j++;
+    }
+  }
+  while (i < n) { dorong(kiri, "-", ta[i]); dorong(gabung, "-", ta[i]); i++; }
+  while (j < m) { dorong(kanan, "+", tb[j]); dorong(gabung, "+", tb[j]); j++; }
+
+  const jangkar = kiri.filter((s) => s.tanda === "=").map((s) => s.teks).join("");
+  if (jangkar.trim() === "") return null;
+
+  return { kiri, kanan, gabung };
+}
+
+/** Segmen `bedaKata` -> anak-anak `.diff-isi`.
+ *
+ *  Yang TIDAK berubah keluar sebagai string, bukan span. Dua sebabnya: ia
+ *  tidak butuh gaya apa pun, dan dengan begitu cacah anak ELEMEN `.diff-isi`
+ *  langsung sama dengan cacah ubahan -- sebuah klaim yang bisa diadu dari
+ *  luar, bukan cuma dilihat.
+ *
+ *  Ubahan ditandai BENTUK, bukan warna: coretan untuk yang hilang, garis bawah
+ *  untuk yang bertambah. Warna di baris ini sudah dipakai habis oleh
+ *  `.diff-kurang`/`.diff-tambah` untuk membedakan SISI, jadi memakai warna
+ *  lagi untuk membedakan SEGMEN berarti satu kanal memikul dua arti -- dan
+ *  bagi orang yang tidak membedakan merah-hijau, nol di antaranya terbaca.
+ *  Tint latarnya `currentColor`, jadi ia mewarisi token baris itu sendiri dan
+ *  tetap benar di keempat tema tanpa satu nilai warna pun dituliskan di sini.
+ *
+ *  Gayanya INLINE karena `gaya.css` beku di hun ini; itu sekaligus yang
+ *  membuat coretannya tidak bisa ditimpa -- nol aturan `text-decoration` di
+ *  lembar gaya menyentuh `.diff-kata`, dan nol di antaranya `!important`. */
+function segmenKata(bagian) {
+  return bagian.map((s) => (s.tanda === "="
+    ? s.teks
+    : h("span.diff-kata", {
+        gaya: {
+          background: "color-mix(in srgb, currentColor 16%, transparent)",
+          borderRadius: "2px",
+          textDecoration: s.tanda === "-" ? "line-through" : "underline",
+          textUnderlineOffset: "2px",
+        },
+      }, s.teks)));
+}
+
+/** Pasangkan `-` dengan `+` yang menggantikannya di keluaran `bedaBaris`.
+ *
+ *  `bedaBaris` memancarkan baris yang berubah sebagai DUA butir lepas,
+ *  sementara `Beda.baris` di Python memancarkannya sebagai satu `~` berisi
+ *  kedua sisi. Perbedaan bentuk itu sengaja TIDAK diseragamkan di dalam
+ *  `bedaKata`: begitu perjodohannya ikut masuk ke sana, fungsi itu berhenti
+ *  bisa diuji sebagai fungsi atas dua string. Jadi ia tinggal di sini, dan
+ *  cuma di jalur diff KODE.
+ *
+ *  Aturannya: dalam satu deret `-` yang langsung disusul deret `+`, butir
+ *  ke-n dipasangkan dengan butir ke-n. Sisanya -- deret yang lebih panjang di
+ *  satu sisi, atau `-` tanpa `+` sesudahnya -- dibiarkan utuh tanpa segmen,
+ *  karena baris yang tidak punya lawan memang tidak punya "kata yang berubah";
+ *  ia seluruhnya hilang atau seluruhnya baru. MURNI: masuk daftar, keluar
+ *  daftar BARU; butir aslinya tidak disentuh. */
+function pasangkanUbahan(baris) {
+  const keluar = baris.map((d) => ({ ...d }));
+  let i = 0;
+  while (i < keluar.length) {
+    if (keluar[i].tanda !== "-") { i++; continue; }
+    let k = i;
+    while (k < keluar.length && keluar[k].tanda === "-") k++;
+    let t = k;
+    while (t < keluar.length && keluar[t].tanda === "+") t++;
+    const pasang = Math.min(k - i, t - k);
+    for (let p = 0; p < pasang; p++) {
+      const kata = bedaKata(keluar[i + p].teks, keluar[k + p].teks);
+      if (!kata) continue;
+      keluar[i + p].segmen = kata.kiri;
+      keluar[k + p].segmen = kata.kanan;
+    }
+    i = t > k ? t : k;
+  }
+  return keluar;
 }
 
 /* ============================================================== ruang coba */

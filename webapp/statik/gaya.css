@@ -2150,6 +2150,43 @@ pre.kode {
 .tk-khusus   { color: var(--k-khusus); }
 .tk-teks     { color: var(--k-teks); }
 
+/* Pemandu indentasi: garis setipis rambut di tepi kanan setiap tegel empat
+   kolom, digambar HANYA di bawah deretan spasi pembuka baris. Blok tersorot
+   meratakan seluruh baris ke satu kolom kiri, jadi "baris ini sedalam apa"
+   tinggal jadi hitungan yang harus diulang mata, baris demi baris.
+
+   SELURUH geometrinya di sini, dan JS tidak tahu satu pun angkanya:
+   `pisahInden()` di editor.js cuma menandai spasi MANA yang indentasi. Satu
+   tegel `4ch` adalah `INDENT` (4 spasi) di editor.js — dua angka di dua
+   berkas, dan keduanya diadu `TestPasanganKurung`. Kalau salah satu bergerak
+   sendiri, pemandu menunjuk kolom yang bukan tempat tingkatnya mulai.
+
+   Lebar tegelnya TETAP empat, jadi indentasi yang bukan kelipatan empat
+   kehilangan tingkat terakhirnya alih-alih menggeser semuanya. Arah
+   kesalahannya dipilih, bukan kebetulan: satu-satunya hal yang lebih buruk
+   daripada tidak ada penanda adalah penanda yang menunjuk tempat yang salah.
+
+   HANYA properti `background-*`, dan itu pagar, bukan kehematan. `display`,
+   `width`, `padding`, `margin`, `letter-spacing`, dan `line-height` semuanya
+   mengubah lebar ranjang tempat caret textarea di atasnya mendarat — span ini
+   duduk DI DALAM lapisan yang parity-nya dikunci karakter demi karakter
+   dengan textarea transparan (lihat `.editor-lapis > pre, > textarea` di
+   bawah). Dipagari `TestGayaPemanduIndentasi`.
+
+   Tingginya kotak-isi span INLINE, yaitu em-box-nya, bukan `line-height`
+   1,62 — jadi pemandunya putus menegak di antara baris, bukan menerus.
+   Menyambungnya menuntut salah satu properti yang dilarang di atas, jadi ia
+   TIDAK disambung di sini.
+
+   Tanpa `transition` dan tanpa `animation`: ini struktur, bukan pertunjukan.
+   Ia tidak ikut mati di `data-gerak="mati"` karena tidak ada yang bergerak,
+   dan di situlah justru gunanya. */
+.tk-indentasi {
+  background-image: linear-gradient(to left,
+    var(--garis) var(--tebal-garis), transparent var(--tebal-garis));
+  background-size: 4ch 100%;
+}
+
 /* ================================================================ editor
    Textarea transparan di atas <pre> bertoken. Keduanya WAJIB memakai font,
    ukuran, tinggi baris, padding, dan tab-size yang sama persis — satu piksel
@@ -2190,8 +2227,50 @@ pre.kode {
 }
 /* Nomor baris yang sedang disunting: warnanya berubah, bukan muncul mendadak. */
 .editor-nomor b { font-weight: 400; color: var(--nyala); transition: color var(--cepat); }
+/* Sorot sesaat baris yang dituju tombol pada pesan galat. Yang dipakai LATAR,
+   bukan `color`: baris di atas sudah menyerahkan `color` kepada `transition`,
+   dan menganimasikannya lewat WAAPI berarti dua mesin menggerakkan satu
+   properti. Keadaan diamnya transparan, jadi sorot yang tidak pernah muncul
+   tidak menyembunyikan nomor barisnya. */
+.editor-nomor b.editor-tuju {
+  background: color-mix(in srgb, var(--nyala) 24%, transparent);
+  border-radius: var(--r-kecil);
+}
 
 .editor-lapis { position: relative; overflow: hidden; }
+
+/* Pita baris aktif: satu penanda selebar lapis di belakang baris tempat caret
+   berdiri. Di berkas enam puluh baris, kolom nomor saja tidak cukup — mata
+   harus melompat ke gutter lalu kembali, dan di situlah posisi hilang.
+
+   Letaknya datang dari JS lewat dua custom property (`_gambarPita()` di
+   editor.js), dan KEDUA var() membawa bawaan `0px` dengan sebab: sebelum JS
+   menulis apa pun, properti itu belum punya nilai, dan `top: var(--pita-atas)`
+   tanpa bawaan jadi tidak sah pada waktu nilai-terhitung — `top` jatuh ke
+   `auto`, dan untuk elemen absolut itu berarti pita yang MELAR, bukan pita
+   yang belum ada. Nol dan nol berarti tinggi nol: tidak ada yang terlihat,
+   dan itulah keadaan bawaan yang benar.
+
+   Tanpa `z-index`, dan itu bukan kelupaan. `::before` datang lebih awal di
+   urutan pohon daripada `> pre` (absolut) dan `> textarea` (relatif) yang
+   sama-sama ber-`z-index: auto`, jadi pita sudah pasti di BAWAH huruf tanpa
+   satu nomor pun. Menuliskannya justru menukar urutan itu dan menutupi teks
+   yang sedang dibaca orangnya.
+
+   Tanpa `transition` dan tanpa `animation`: letak pita adalah keadaan
+   PENGGUNA (caret + gulir), dan menggerakkannya berarti dua mesin atas satu
+   properti — pita yang MENGEJAR kursor alih-alih menandainya. Karena ia
+   keadaan dan bukan pertunjukan, ia tetap ada di tingkat gerak `mati`. */
+.editor-lapis::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: var(--pita-atas, 0px);
+  height: var(--pita-tinggi, 0px);
+  background: color-mix(in srgb, var(--nyala) 8%, transparent);
+  pointer-events: none;
+}
+
 .editor-lapis > pre, .editor-lapis > textarea {
   margin: 0;
   padding: var(--s3) var(--s4);
@@ -2268,6 +2347,46 @@ pre.kode {
 @keyframes kilat-tepi {
   0%   { opacity: 1; transform: scale(1); }
   100% { opacity: 0; transform: scale(1.045); }
+}
+
+/* Kurung berpasangan: empat kedalaman, warnanya bergilir.
+   Yang paling sering menolong bukan kurung yang benar melainkan kurung yang
+   SALAH — satu penutup kurang di baris dua puluh adalah galat yang pesan
+   compiler-nya menunjuk baris empat puluh, dan di situlah pemula berhenti
+   bisa mencarinya sendiri.
+
+   Keempat warnanya TOKEN YANG SUDAH ADA, bukan nilai baru. Alasannya bukan
+   kehematan: `--k-*` sudah didefinisikan ulang di keempat blok tema, jadi
+   palet kurung ini otomatis benar di gelap, malam, terang, dan kontras tanpa
+   satu baris token pun bertambah. Empat token baru berarti enam belas angka
+   yang harus ikut disetel setiap kali sebuah tema disentuh — dan yang lupa
+   disetel tidak menimbulkan error apa pun, cuma kurung yang hilang di satu
+   tema saja.
+
+   Kedalamannya ditulis `pisahKurung()` di editor.js sebagai `data-warna`.
+   Penyeleksinya dikunci pada `.tk-operator` karena di sanalah SELURUH kurung
+   mendarat: pemindai di sorot.js tidak punya jenis `tanda-baca` sama sekali.
+   Spesifisitasnya (0,2,0) melawan (0,1,0) milik `.tk-operator` di atas, dan
+   ia juga ditulis sesudahnya — jadi tidak ada `!important` di sini, dan tidak
+   boleh ada. */
+.tk-operator[data-warna="0"] { color: var(--k-fungsi); }
+.tk-operator[data-warna="1"] { color: var(--k-tipe); }
+.tk-operator[data-warna="2"] { color: var(--k-kunci); }
+.tk-operator[data-warna="3"] { color: var(--k-bawaan); }
+
+/* Penutup tanpa pembuka. Ditandai BENTUK, bukan warna saja (WCAG 1.4.1):
+   pembedaan yang cuma warna tidak sampai ke sebagian pembaca, dan dari
+   seluruh penanda di blok ini justru yang inilah yang paling perlu sampai.
+   Garis putus-putus dipilih karena ia tidak pernah bisa dikira bagian dari
+   kodenya sendiri, sementara latar atau kotak bisa.
+
+   Tanpa `transition` dan tanpa `animation`, dan itu bukan kelalaian: ini
+   elemen DIAM. Penanda yang hanya muncul lewat gerak hilang sama sekali di
+   `data-gerak="mati"` — setelan yang dipilih justru oleh orang yang ingin
+   layarnya lebih tenang, bukan yang ingin informasinya lebih sedikit. */
+.tk-operator[data-yatim] {
+  color: var(--salah);
+  text-decoration: underline dotted;
 }
 
 /* =============================================================== terminal */
@@ -3819,6 +3938,27 @@ pre.kode {
 /* Baris rincian per bahasa & toolchain di halaman statistik. */
 .rinci { display: grid; gap: var(--s3); }
 .rinci-baris { display: grid; gap: 5px; }
+/* Tiga ruas di dalam bagian batang yang sudah terisi: materi, kuis, latihan.
+   Panjang batangnya tetap milik `persen` dari server; yang dibagi di sini
+   cuma ruang di dalamnya, dan penyebutnya jumlah ketiga pembilang itu.
+
+   Wadahnya FLEX, bukan tiga inline-block: flex bawaannya `nowrap`, sedangkan
+   tiga inline-block yang totalnya pas 100% bisa membungkus ke baris kedua
+   pada pembulatan sub-pixel — dan karena `.bilah` ber-`overflow: hidden`,
+   ruas yang terdorong turun tidak terlihat hilang, ia cuma tidak ada.
+
+   Tanpa `transition` di sini: lebarnya dianimasikan WAAPI oleh
+   `tumpukSegmen()` di js/layar-lain.js, dan dua mesin pada satu properti
+   akan saling mengejar — preseden persisnya `.bilah > i` di atas. */
+.ruas-tumpuk { display: flex; height: 100%; }
+.ruas {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 100%;
+  background: var(--nyala-lembut);
+}
+.ruas-kuis    { background: var(--nyala); }
+.ruas-latihan { background: var(--tumbuh); }
 .rinci-atas {
   display: flex; justify-content: space-between; gap: var(--s2);
   flex-wrap: wrap; font-size: var(--t-ui);
@@ -3949,22 +4089,19 @@ pre.kode {
 /* ================================================================== palet */
 
 .palet-cari {
-  width: 100%;
-  padding: var(--s4) var(--s5);
-  border: 0; background: transparent;
+  width: 100%; padding: var(--s4) var(--s5);
+  border: 0; background: transparent; outline: none; border-radius: 0;
   font-size: var(--t-baca);
-  outline: none;
-  border-radius: 0;
 }
 .palet-cari::placeholder { color: var(--redup); }
-.palet-hasil { max-height: 58vh; overflow-y: auto; padding: 7px; }
+/* Kini <ul role="listbox"> berisi <li role="option">: peredam di bawah menahan
+   bulatan dan padding bawaan, `cursor` menggantikan reset `button` di :577. */
+.palet-hasil { max-height: 58vh; overflow-y: auto; padding: 7px;
+               list-style: none; margin: 0; }
 .palet-item {
-  display: flex; align-items: center; gap: var(--s3);
-  width: 100%; padding: var(--s2) var(--s3);
-  min-height: 40px;
-  border-radius: var(--r-kecil);
-  text-align: left;
-  color: var(--teks-2);
+  display: flex; align-items: center; gap: var(--s3); width: 100%;
+  padding: var(--s2) var(--s3); min-height: 40px; cursor: pointer;
+  border-radius: var(--r-kecil); text-align: left; color: var(--teks-2);
 }
 .palet-item .isi { flex: 1; min-width: 0; }
 .palet-item .judul { color: var(--teks); font-size: var(--t-ui);
@@ -3973,6 +4110,9 @@ pre.kode {
                       overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .palet-item.pilih { background: var(--kartu-naik); }
 .palet-item.pilih .judul { color: var(--nyala); }
+.palet-grup { padding: var(--s4) var(--s3) var(--s2);
+              font-size: var(--t-mikro); color: var(--redup);
+              text-transform: uppercase; letter-spacing: .14em; }
 .palet-kosong { padding: var(--s5); text-align: center; color: var(--redup); }
 .palet-kaki {
   display: flex; gap: var(--s4); padding: var(--s3) var(--s5);
@@ -4768,31 +4908,13 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
 }
 [data-gerak="halus"] .masuk-mandiri { transition-delay: 0s; }
 
-/* ---- 3. ungkap saat tergulir -----------------------------------------
-   DILARANG dipakai di dalam kolom baca (--baca) dan pada blok .kode/.pra/
-   pre.kode. Alasannya bukan selera: gerak yang berjalan mengikuti gulir pada
-   badan teks adalah sumber keluhan vestibular yang paling sering, dan pada
-   astigmatisme tepi yang bergerak di bawah teks memperparah halation. Util
-   ini untuk chrome dan kartu di luar kolom baca. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .gulir-ungkap {
-      animation: gulir-ungkap linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 35%;
-    }
-    @keyframes gulir-ungkap {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: none; }
-    }
-  }
-}
-
 /* ---- 4. popover + anchor ---------------------------------------------
    Pola untuk panel yang menggantung pada pemicunya. Anchor positioning belum
-   aman di semua Firefox, jadi penempatan JS yang ada sekarang tetap jadi
-   jalur utama; blok ini hanya mengambil alih di browser yang mendukungnya
-   penuh, dan hanya untuk elemen yang menandai dirinya .pakai-jangkar. */
+   aman di semua Firefox, jadi penempatan CSS biasa di :897 tetap jadi jalur
+   untuk browser tanpa dukungan; blok ini mengambil alih sepenuhnya di browser
+   yang mendukungnya penuh, dan hanya untuk elemen yang menandai dirinya
+   .pakai-jangkar. Penandanya dipasang `jangkarAktif()` di aplikasi.js, yang
+   juga menolaknya di <= 860px -- lihat docstring-nya untuk alasannya. */
 @supports (anchor-name: --a) and (position-area: bottom) {
   .pakai-jangkar > .rel-pemicu { anchor-name: --jangkar-panel; }
   .pakai-jangkar > .rel-panel[popover] {
@@ -4801,6 +4923,16 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
     position-area: bottom span-right;
     position-try-fallbacks: bottom span-left, top span-right;
     margin: var(--s2) 0 0;
+    /* Elemen di top layer tetap MEWARISI `top`/`left` dari :897, dan tepi yang
+       dipatok tidak menyisakan kesempatan bagi `position-area`: tanpa baris ini
+       blok ini bukan mengambil alih penempatan, ia menabraknya. */
+    inset: auto;
+    /* `.rel-turun.buka .rel-panel` di :916 memasang `animation: masuk`,
+       sementara blok ini menganimasikan opacity/transform lewat `transition` +
+       `@starting-style` di bawah. Dua mesin atas satu properti pada satu elemen
+       -- persis tersendat yang paling sulit didiagnosis. :916 sendiri tidak
+       disentuh; spesifisitas (0,3,0 lawan 0,2,0) membuat satu baris cukup. */
+    animation: none;
   }
   .pakai-jangkar > .rel-panel[popover]:popover-open { display: block; }
   @media (prefers-reduced-motion: no-preference) {
@@ -4903,42 +5035,6 @@ html.lingkar-tema::view-transition-new(root) {
       .keadaan-kosong.masuk-mandiri { transform: translateY(8px); }
     }
   }
-}
-
-/* ---- E. memuat yang berhenti sendiri ----------------------------------
-   `.memuat-garis` untuk tunggu pendek yang panjangnya tidak diketahui. Ia
-   menyapu TIGA kali lalu berhenti dan tinggal diam sebagai garis tipis --
-   bukan berputar selamanya. SC 2.2.2 menuntut gerak otomatis yang lewat lima
-   detik bisa dihentikan; menghitung loopnya lebih jujur daripada memberi
-   tombol jeda pada indikator tunggu.
-
-   Keadaan DIAMNYA (sesudah animasinya habis, dan di browser tanpa animasi)
-   adalah garis yang terlihat -- jadi ia tidak pernah jadi elemen yang cuma
-   ada kalau animasinya berjalan. */
-.memuat-garis {
-  position: relative;
-  height: 2px;
-  border-radius: var(--r-penuh);
-  background: var(--garis);
-  overflow: hidden;
-}
-.memuat-garis::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 40%;
-  border-radius: inherit;
-  background: var(--nyala);
-  transform: translateX(-100%);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .memuat-garis::after {
-    animation: memuat-garis var(--pegas-panjang-ms) var(--gaya-pelan) 3 both;
-  }
-}
-@keyframes memuat-garis {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(250%); }
 }
 
 /* ---- S04-A. pembanding harian & celah hari belajar --------------------

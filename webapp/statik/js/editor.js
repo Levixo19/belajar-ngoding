@@ -17,15 +17,20 @@
  * mendarat di huruf yang salah pada baris panjang. Semua nilai itu dikunci
  * berdampingan di gaya.css, pada blok `.editor-lapis > pre, > textarea`.
  *
- * Importir: layar-kerja.js.
+ * Importir: layar-belajar.js, layar-kerja.js.
  */
 
 import { h, tunda } from "./inti.js";
-import { animasi, adaGerak } from "./gerak.js";
+import { animasi, adaGerak, skala } from "./gerak.js";
 import { token, keFragmen } from "./sorot.js";
 
 const INDENT = "    ";                    // 4 spasi, konsisten dengan kurikulum
 const TINGGI_MAKS = 0.62;                 // bagian dari tinggi jendela
+
+/* Berapa lama nomor baris yang baru dituju tetap tersorot. Cukup lama untuk
+ * ditemukan mata yang baru berpindah dari pesan galat ke editor, cukup pendek
+ * untuk tidak jadi penanda permanen kedua di sebelah penanda baris aktif. */
+const SOROT_TUJU_MS = 1400;
 
 /* Di atas lebar ini, editor yang diminta `isiRuang` berhenti mengukur dirinya
  * dari isi dan menyerahkan tingginya kepada tata letak.
@@ -92,6 +97,10 @@ export class Editor {
 
     this.el = h("div.editor", {}, this.nomor, this.lapis, this.kaki);
 
+    // Nomor baris yang sedang disorot `keBaris()`, atau 0. Ia FIELD, bukan
+    // kelas yang ditempel ke sebuah node: lihat alasannya di `_gambarNomor`.
+    this._tujuBaris = 0;
+
     this.teks.value = kode;
     // Chrome menaruh kursor di AKHIR teks setelah .value diisi, sehingga baris
     // terakhirlah yang tersorot di gutter sebelum editor disentuh sama sekali.
@@ -138,6 +147,72 @@ export class Editor {
     }
   }
 
+  /** Antar caret ke baris `n` (1-based); true kalau barisnya memang ada.
+   *
+   *  Dipakai tombol per baris pada blok pesan galat di ruang kerja latihan.
+   *  Mengembalikan `false` untuk nomor di luar jumlah baris TANPA melempar dan
+   *  tanpa menggeser apa pun — pemanggilnya yang memutuskan tidak menawarkan
+   *  tombol, karena tombol yang berakhir "baris itu tidak ada" lebih buruk
+   *  daripada tidak ada tombol sama sekali.
+   *
+   *  Guliran menyentuh SATU wadah lalu diselaraskan lewat `_selaraskan()`
+   *  (:286). `scrollIntoView` tidak dipakai di sini dengan sengaja: ia
+   *  menggulir setiap leluhur yang bisa digulir, termasuk dokumen — jadi
+   *  melompat ke baris 40 akan ikut memindahkan halamannya, dan pesan galat
+   *  yang baru saja diklik orangnya hilang dari pandangan.
+   *
+   *  Pada tingkat gerak `mati`, caret dan guliran TETAP pindah: keduanya
+   *  informasi, bukan hiasan. Yang padam cuma sorotnya. */
+  keBaris(n) {
+    const baris = this.teks.value.split("\n");
+    if (!Number.isInteger(n) || n < 1 || n > baris.length) return false;
+
+    let pos = 0;
+    for (let i = 0; i < n - 1; i++) pos += baris[i].length + 1;
+
+    this.teks.focus();
+    this.teks.setSelectionRange(pos, pos);
+
+    // Guliran disetel SESUDAH fokus dan caret, dan urutan itu terukur, bukan
+    // selera: `focus()` pada textarea yang belum fokus menggulir caret ke
+    // dalam pandangan sendiri, jadi menyetel `scrollTop` lebih dulu membuat
+    // Chrome menariknya kembali ke posisi caret yang LAMA. Pada panggilan
+    // pertama — editor belum disentuh, yaitu kasus paling umum di sini karena
+    // orang mengklik tombol galat tanpa mampir ke editor — `scrollTop`
+    // terukur tetap 0 dari 828 yang diminta.
+    //
+    // Tinggi baris dibaca dari gaya terhitung, bukan diketik: angkanya hidup
+    // di `gaya.css` (`line-height` pada `.editor-lapis > pre, > textarea`),
+    // dan dua tempat yang menyimpan satu angka akan berbeda suatu hari.
+    const g = getComputedStyle(this.teks);
+    const tinggiBaris = parseFloat(g.lineHeight) || 0;
+    const puncak = (parseFloat(g.paddingTop) || 0) + (n - 1) * tinggiBaris;
+    const ruang = this.teks.clientHeight;
+    const batas = Math.max(0, this.teks.scrollHeight - ruang);
+    this.teks.scrollTop = Math.min(
+      batas, Math.max(0, puncak - (ruang - tinggiBaris) / 2));
+
+    this._tujuBaris = adaGerak() ? n : 0;
+    this._segarkanTanda();
+    this._selaraskan();
+
+    if (this._tujuBaris) {
+      clearTimeout(this._tujuId);
+      this._tujuId = setTimeout(() => {
+        this._tujuBaris = 0;
+        this._segarkanTanda();
+      }, SOROT_TUJU_MS);
+      // Amplitudo dari `skala()` (gerak.js:303), bukan angka tetap: di tingkat
+      // `halus` sorotnya datang lebih tipis, bukan lebih lambat. Bingkainya
+      // berakhir di `opacity: 1` — keadaan alami elemennya — dan `animasi()`
+      // memakai `fill: "backwards"` kecuali diminta lain, jadi tidak ada nilai
+      // yang dipaksakan sesudah animasinya selesai.
+      animasi(this.nomor.querySelector("b.editor-tuju"),
+              { opacity: [1 - 0.7 * skala(), 1] }, { durasi: 180 });
+    }
+    return true;
+  }
+
   /* ----------------------------------------------------------- tampilan */
 
   gambar() {
@@ -148,7 +223,7 @@ export class Editor {
     // tambahan menutup selisih itu, dan tidak pernah kelihatan karena ia
     // memang kosong.
     this.sorotan.textContent = "";
-    this.sorotan.appendChild(keFragmen(token(isi, this.bahasa)));
+    this.sorotan.appendChild(this._fragmenKurung(token(isi, this.bahasa)));
     this.sorotan.appendChild(document.createTextNode("\n"));
 
     const baris = isi.split("\n");
@@ -160,14 +235,26 @@ export class Editor {
 
   _gambarNomor(jumlah) {
     const kini = this._barisKursor();
+    // Sorot baris tujuan dibaca DARI FIELD, di sini, pada setiap penggambaran.
+    //
+    // Baris berikutnya membuang SELURUH isi gutter lalu membangunnya ulang,
+    // dan itu terjadi pada tiap `keyup` dan tiap `click` (:318-:319) lewat
+    // `_segarkanTanda`. Menempelkan kelas sorot ke node `<b>` hasil panggilan
+    // sebelumnya karena itu tidak pernah selamat satu ketikan pun — dan
+    // `keBaris()` sendiri MEMINDAHKAN kursor, jadi penggambaran ulang terjadi
+    // tepat pada saat sorotnya baru dipasang. Yang padam oleh timer adalah
+    // nilai fieldnya; timernya memanggil penggambar ini lagi.
+    const tuju = this._tujuBaris || 0;
     this.nomor.textContent = "";
     for (let i = 1; i <= jumlah; i++) {
       const teks = i + (i < jumlah ? "\n" : "");
       // Baris yang sedang disunting ditandai — di berkas 60 baris, tanpa itu
       // mudah kehilangan jejak posisi setelah menggulir.
-      if (i === kini) this.nomor.appendChild(h("b", {}, teks));
+      if (i === tuju) this.nomor.appendChild(h("b.editor-tuju", {}, teks));
+      else if (i === kini) this.nomor.appendChild(h("b", {}, teks));
       else this.nomor.appendChild(document.createTextNode(teks));
     }
+    this._gambarPita();
   }
 
   _ukur() {
@@ -200,6 +287,7 @@ export class Editor {
     this.sorotan.scrollTop = this.teks.scrollTop;
     this.sorotan.scrollLeft = this.teks.scrollLeft;
     this.nomor.scrollTop = this.teks.scrollTop;
+    this._gambarPita();
   }
 
   _perbaruiPosisi() {
@@ -241,6 +329,83 @@ export class Editor {
     window.addEventListener("resize", this._saatUkur);
   }
 
+  /* ---------------------------------------------------- pita baris aktif */
+
+  /** Tulis letak pita baris aktif ke dua custom property di `this.lapis`.
+   *
+   *  Angkanya dibaca dari gaya TERHITUNG, bukan diketik: `line-height` dan
+   *  `padding-top` hidup di gaya.css (blok `.editor-lapis > pre, > textarea`),
+   *  dan satu angka yang disimpan di dua tempat akan berbeda suatu hari. Idiom
+   *  bacanya sama persis dengan yang sudah dipakai `keBaris()`.
+   *
+   *  Nomor barisnya datang dari `_barisKursor()` — sumber yang SAMA dengan yang
+   *  dipakai gutter. Menghitungnya ulang dari `selectionStart` di sini berarti
+   *  dua definisi "baris mana yang aktif" di dalam satu kelas, dan suatu hari
+   *  nomor yang menyala dan pita yang menyala akan menunjuk baris berbeda.
+   *
+   *  Yang ditulisi `this.lapis`, BUKAN `this.sorotan`: `set nilai()`
+   *  menganimasikan `opacity` sorotan lewat WAAPI setiap isi editor diganti,
+   *  dan menumpangkan keadaan pita pada elemen yang sedang dianimasikan berarti
+   *  dua mesin berebut satu elemen.
+   *
+   *  Dua titik panggilnya metode yang memang sudah ada, bukan pendengar baru:
+   *  `_gambarNomor()` (tiap `input`/`keyup`/`click` lewat `_segarkanTanda`) dan
+   *  `_selaraskan()` (tiap `scroll`). Semua jalur — mengetik, menggulir,
+   *  `keBaris()`, penggantian isi, kursor pindah — lewat salah satunya. */
+  _gambarPita() {
+    const g = getComputedStyle(this.teks);
+    const { atas, tinggi } = posisiPita({
+      baris: this._barisKursor(),
+      tinggiBaris: parseFloat(g.lineHeight) || 0,
+      paddingAtas: parseFloat(g.paddingTop) || 0,
+      scrollTop: this.teks.scrollTop,
+    });
+    this.lapis.style.setProperty("--pita-atas", atas + "px");
+    this.lapis.style.setProperty("--pita-tinggi", tinggi + "px");
+  }
+
+  /* ------------------------------------------------- tampilan (lanjutan) */
+
+  /** Fragmen tersorot yang kurungnya ikut membawa kedalamannya.
+   *
+   *  Pemetaan jenis token -> `<span class="tk-...">` TETAP milik `keFragmen()`
+   *  di sorot.js, satu-satunya tempatnya. Yang ditambahkan di sini cuma
+   *  ATRIBUT, dan itu sebabnya metode ini menyusuri `childNodes` hasil
+   *  `keFragmen` sejajar dengan potongannya alih-alih membangun span sendiri:
+   *  `keFragmen` menambahkan tepat satu simpul per entri, jadi potongan ke-i
+   *  selalu simpul ke-i. Menyalin pemetaan kelasnya ke sini berarti dua
+   *  tempat yang harus ingat bahwa jenis `teks` BUKAN span — dan yang kedua
+   *  tidak dipagari oleh apa pun.
+   *
+   *  Penjagaan `setAttribute` bukan kehati-hatian berlebihan: potongan
+   *  berjenis `teks` mendarat sebagai simpul teks yang tidak punya metode
+   *  itu. Potongan kurung selalu `operator`, jadi ia selalu span — tapi
+   *  syaratnya ditulis atas BENTUK simpulnya, bukan atas keyakinan itu.
+   *
+   *  Ia duduk di bawah blok peristiwa, bukan di sebelah `gambar()` tempatnya
+   *  sewajarnya, karena anchor `(:286)` dan `(:318-:319)` di komentar berkas
+   *  ini adalah klaim atas nomor baris yang diadu `TestAlamatKomentar` —
+   *  menyisipkan metode di atasnya membuat ketiganya menunjuk baris lain.
+   *
+   *  Rangkaiannya dibaca dari DALAM ke luar, dan urutan itu TIDAK mengubah
+   *  keluarannya: membaliknya diukur memberi nol beda atas seluruh korpus
+   *  kurikulum. Yang mengikat dua invarian di pagar korpusnya —
+   *  `korpusWarnaBerNewline` dan `korpusIndenRengket`, keduanya nol — dan
+   *  itulah yang diterangkan docstring `pisahInden`. */
+  _fragmenKurung(daftar) {
+    const potongan = pisahInden(pisahKurung(daftar));
+    const wadah = keFragmen(potongan);
+    const simpul = wadah.childNodes;
+    for (let i = 0; i < potongan.length; i++) {
+      const warna = potongan[i][2];
+      const el = simpul[i];
+      if (warna === null || !el || !el.setAttribute) continue;
+      if (warna === YATIM) el.setAttribute("data-yatim", "");
+      else el.setAttribute("data-warna", String(warna));
+    }
+    return wadah;
+  }
+
   /** Lepaskan editor dari halaman.
    *
    *  WAJIB dipanggil dari `saatKeluar` layar yang memakainya. Tanpa itu,
@@ -251,6 +416,10 @@ export class Editor {
   lepas() {
     window.removeEventListener("resize", this._saatUkur);
     clearTimeout(this._catatId);
+    // Timer sorot `keBaris()` memanggil `_segarkanTanda()`, yang menulis ke
+    // gutter. Dibiarkan hidup, ia menggambar ke pohon DOM layar yang sudah
+    // ditinggalkan — dan memegang instance ini selama sisa detiknya.
+    clearTimeout(this._tujuId);
   }
 
   _saatTombol(e) {
@@ -461,4 +630,235 @@ export class Editor {
     this.gambar();
     if (this.saatUbah) this.saatUbah(t.value);
   }
+}
+
+/* ======================================================= kurung berpasangan
+ *
+ * Deklarasi-deklarasi di bawah tinggal di KAKI berkas, bukan di sebelah
+ * `PASANGAN` tempatnya sewajarnya, karena nol baris boleh bertambah di atas
+ * kelas `Editor`: tiga anchor telanjang di komentar berkas ini (`(:286)`,
+ * `(:318-:319)`) adalah klaim atas nomor baris, dan `TestAlamatKomentar`
+ * mengadunya. Deklarasi `const` di tingkat modul sudah selesai dievaluasi
+ * sebelum satu pun editor menggambar, jadi urutannya tidak berpengaruh.
+ */
+
+/* Kurung = entri `PASANGAN` yang pembuka dan penutupnya BERBEDA.
+ *
+ * Tiga entri lain di sana (`"`, `'`, dan backtick) menutup DIRINYA SENDIRI,
+ * jadi mereka tidak punya kedalaman: tidak ada cara membedakan yang membuka
+ * dari yang menutup tanpa menghitung string — dan menghitung string justru
+ * yang dilarang di `pisahKurung` di bawah. Menurunkan daftarnya dari
+ * `PASANGAN` alih-alih menuliskannya ulang berarti kurung yang ditutup
+ * sendiri oleh editor dan kurung yang diwarnai di sini mustahil berbeda
+ * pendapat tentang apa yang berpasangan dengan apa. */
+const TUTUP_DARI = {};   // pembuka -> penutupnya
+const BUKA_DARI = {};    // penutup -> pembukanya
+for (const pembuka of Object.keys(PASANGAN)) {
+  if (PASANGAN[pembuka] === pembuka) continue;
+  TUTUP_DARI[pembuka] = PASANGAN[pembuka];
+  BUKA_DARI[PASANGAN[pembuka]] = pembuka;
+}
+
+/* Berapa warna yang digilir. Empat sudah cukup jauh untuk mata; kedalaman
+ * kelima memakai warna pertama lagi, dan pada kedalaman itu yang menolong
+ * memang bukan warna kelima melainkan indentasinya. */
+const WARNA_KURUNG = 4;
+
+/* Penanda kurung yatim. Ia menempati slot yang sama dengan angka kedalaman
+ * karena keduanya menjawab satu pertanyaan — "kurung ini diwarnai bagaimana"
+ * — dan dua slot untuk satu pertanyaan berarti ada keadaan yang bisa ditulis
+ * tapi tidak punya arti (yatim DAN berkedalaman 2). */
+const YATIM = "yatim";
+
+/** Pecah token kurung dari `token()` jadi potongan yang membawa kedalaman.
+ *
+ *  Masukan `[[jenis, teks], ...]` dari sorot.js, keluaran
+ *  `[[jenis, teks, warna], ...]` dengan `warna`:
+ *
+ *    null      bukan kurung — mayoritas potongan
+ *    0..3      kedalaman % 4; pembuka dan penutup SEPASANG dapat angka sama
+ *    "yatim"   penutup tanpa pembuka, atau penutup yang jenisnya tidak cocok
+ *
+ *  Angka pasangan itu keluar sendiri dari urutan pembacaannya: pembuka
+ *  membaca tinggi tumpukan SEBELUM push, penutup membacanya SESUDAH pop.
+ *
+ *  Tiga sifat yang mengikat:
+ *
+ *  1. HANYA jenis `operator` yang dihitung. Di kurikulum ini ada 2.270
+ *     kurung di dalam token `string`, 981 di `komentar`, dan 83 di `khusus`;
+ *     satu `(` di dalam komentar yang ikut dihitung meracuni kedalaman
+ *     SELURUH kode sesudahnya, dan yang terlihat pelajar cuma warna yang
+ *     terasa acak — tanpa satu pun error yang bisa dicari sebabnya.
+ *  2. Pasangannya dihitung per jenis: `]` tidak menutup `(`. Ia yatim, dan
+ *     `(`-nya tetap terbuka, karena itulah yang sebenarnya terjadi pada
+ *     kodenya.
+ *  3. Kedalaman tidak pernah negatif — tumpukan cuma dipangkas kalau
+ *     puncaknya memang pembuka yang cocok.
+ *
+ *  Dan satu syarat yang sama sekali bukan soal warna: GABUNGAN seluruh
+ *  `teks` keluaran WAJIB identik byte-per-byte dengan gabungan masukannya.
+ *  Lapisan sorot ini duduk persis di bawah textarea yang transparan (lihat
+ *  blok `.editor-lapis > pre, > textarea` di gaya.css); satu karakter
+ *  selisih dan kursor mendarat di huruf yang salah pada baris panjang, tanpa
+ *  satu pun error di mana pun. Itu pula sebabnya span `operator` DIBELAH
+ *  alih-alih diwarnai utuh: dari 40.287 token operator ber-kurung di
+ *  kurikulum ini, 9.045 rengket dengan karakter lain — `):` di ujung
+ *  `def f(a, b):` salah satunya, dan mewarnainya utuh berarti ikut mewarnai
+ *  titik duanya. */
+export function pisahKurung(daftar) {
+  const hasil = [];
+  const tumpukan = [];
+  for (const pasang of daftar || []) {
+    const jenis = pasang[0];
+    const teks = pasang[1];
+    if (jenis !== "operator") {
+      hasil.push([jenis, teks, null]);
+      continue;
+    }
+
+    let mulai = 0;
+    for (let i = 0; i < teks.length; i++) {
+      const c = teks[i];
+      const buka = TUTUP_DARI[c] !== undefined;
+      const tutup = BUKA_DARI[c] !== undefined;
+      if (!buka && !tutup) continue;
+
+      // Apa pun di antara dua kurung tetap satu potongan `operator` biasa.
+      if (i > mulai) hasil.push([jenis, teks.slice(mulai, i), null]);
+      mulai = i + 1;
+
+      if (buka) {
+        hasil.push([jenis, c, tumpukan.length % WARNA_KURUNG]);
+        tumpukan.push(c);
+      } else if (tumpukan[tumpukan.length - 1] === BUKA_DARI[c]) {
+        tumpukan.pop();
+        hasil.push([jenis, c, tumpukan.length % WARNA_KURUNG]);
+      } else {
+        hasil.push([jenis, c, YATIM]);
+      }
+    }
+    // Ekor sesudah kurung terakhir. Token tanpa kurung sama sekali lewat di
+    // sini utuh, satu potongan, persis seperti sebelum fitur ini ada.
+    if (mulai < teks.length) hasil.push([jenis, teks.slice(mulai), null]);
+  }
+  return hasil;
+}
+
+/** Letak pita baris aktif di dalam `.editor-lapis`, dalam piksel angka murni.
+ *
+ *  Murni dan tanpa DOM — itulah yang membuatnya bisa diadu dari Node tanpa
+ *  peramban sama sekali (`TestPitaBarisAktif` di tests/test_web.py). Yang
+ *  memanggilnya satu: `_gambarPita()`, yang membaca ketiga angka masukannya
+ *  dari gaya terhitung.
+ *
+ *  `tinggi` SELALU `tinggiBaris` apa adanya, dan tidak pernah dikoreksi oleh
+ *  `baris`: pita setinggi dua baris berbohong soal di mana kursornya berdiri,
+ *  dan pita setinggi nol tidak menandai apa pun.
+ *
+ *  `atas` TIDAK dijepit ke nol, dan itu syarat, bukan kelalaian. Kalau baris
+ *  kursor sudah tergulir keluar dari pandangan, hasilnya memang negatif, dan
+ *  `overflow: hidden` pada `.editor-lapis` memotongnya sampai habis — persis
+ *  yang benar, karena yang tidak terlihat memang tidak boleh ditandai.
+ *  Menjepitnya dengan `Math.max(0, ...)` justru memarkir pita di tepi atas
+ *  sebagai garis macet yang mengaku "baris aktifmu di sini" padahal kursornya
+ *  jauh di atas layar; satu-satunya hal yang lebih buruk daripada tidak ada
+ *  penanda adalah penanda yang menunjuk tempat yang salah. */
+export function posisiPita({ baris, tinggiBaris, paddingAtas, scrollTop }) {
+  const n = Math.max(1, baris);
+  return {
+    atas: paddingAtas + (n - 1) * tinggiBaris - scrollTop,
+    tinggi: tinggiBaris,
+  };
+}
+
+/* ========================================================= pemandu indentasi
+ *
+ * Banner sendiri, bukan tumpangan di blok `kurung berpasangan` di atas: yang
+ * di bawah ini tidak menghitung satu pun kurung, dan judul bagian yang
+ * menaungi fungsi yang bukan bagiannya berhenti memberi tahu apa pun.
+ */
+
+/** Belah deretan spasi pembuka baris jadi potongan ber-jenis `indentasi`.
+ *
+ *  Masukan dan keluarannya sebentuk dengan `pisahKurung()` di atas —
+ *  `[[jenis, teks, warna], ...]` — dan itu bukan kebetulan: keduanya dirangkai
+ *  jadi satu di `_fragmenKurung()`. Kelas CSS-nya lahir tanpa satu baris pun
+ *  berubah di sorot.js, karena `keFragmen()` memetakan setiap jenis yang BUKAN
+ *  `teks` jadi `<span class="tk-<jenis>">`. Melahirkannya di pemindai justru
+ *  yang dilarang: ada DUA implementasi pemindai (sorot.js dan inti/sorot.py)
+ *  dan `TestPenyorotJavaScript` mengadu keluaran keduanya byte-per-byte.
+ *
+ *  URUTANNYA — fungsi ini di LUAR, `pisahKurung` di dalam — bukan soal
+ *  benar-salah: dibalik, keluarannya diukur IDENTIK, nol beda atas 1.399 blok
+ *  kode kurikulum dan keempat belas kasus `SIFAT` pagarnya. Potongan
+ *  `indentasi` cuma berisi spasi, jadi tidak ada satu kurung pun yang bisa
+ *  bersembunyi di dalamnya.
+ *
+ *  Yang mengikat dua invarian yang MEMBUAT keduanya setara, dan keduanya
+ *  dipagar `test_invarian_slot_tiga_atas_korpus`: `korpusWarnaBerNewline` nol
+ *  (tak satu pun potongan BERWARNA memuat baris baru, jadi pembelahan di sini
+ *  mustahil menyentuh slot ketiga yang bukan `null` — dan dengan itu atribut
+ *  `data-warna` di `_fragmenKurung()` tidak perlu tahu fungsi ini ada) dan
+ *  `korpusIndenRengket` nol. Begitu salah satunya memerah, yang ditulis ulang
+ *  paragraf ini — bukan rangkaiannya.
+ *
+ *  Tiga hal yang TIDAK dikerjakannya, dan ketiganya putusan:
+ *
+ *  1. Ia tidak tahu apa pun soal lebar, satuan `ch`, atau angka 4. Geometri
+ *     tinggal di SATU tempat, dan tempat itu aturan `.tk-indentasi` di
+ *     gaya.css — yang sama yang sudah memegang `tab-size` dan `line-height`
+ *     lapisan ini. Dua tempat yang mengukur satu hal akan berbeda suatu hari.
+ *  2. Baris yang dibuka TAB tidak dibelah sama sekali. Lebar sebuah tab
+ *     ditentukan `tab-size`, bukan jumlah karakternya, jadi pemandu yang
+ *     digambar per karakter mendarat di kolom yang bukan tempat tingkatnya
+ *     mulai — penanda yang salah, bukan penanda yang kurang.
+ *  3. Deret spasi yang MENGAKHIRI barisnya bukan indentasi: kalau sesudahnya
+ *     cuma `\n` atau habis, ia sisa baris kosong dan tidak menandai kedalaman
+ *     apa pun. Korpus kurikulum tidak punya satu pun baris seperti itu, tapi
+ *     yang digambar editor ini teks PELAJAR, yang bisa memuatnya.
+ *
+ *  Dan satu syarat yang sama dengan milik `pisahKurung`: GABUNGAN seluruh
+ *  `teks` keluaran WAJIB identik byte-per-byte dengan gabungan masukannya,
+ *  karena lapisan ini duduk persis di bawah textarea transparan. Ia dipagari
+ *  pagar yang SAMA, atas seluruh blok kode dan solusi kurikulum, sebab kedua
+ *  fungsi ini memang satu rangkaian. */
+export function pisahInden(daftar) {
+  // Dihitung atas teks GABUNGAN, bukan per potongan, supaya satu deret yang
+  // telanjur terpotong dua token tetap terbaca sebagai satu deret. Lookahead
+  // `[^ \n]`-lah yang menolak spasi sisa di baris kosong (butir 3 di atas).
+  const utuh = (daftar || []).map((p) => p[1]).join("");
+  const deret = [];
+  const pola = /(^|\n)( +)(?=[^ \n])/g;
+  for (let m; (m = pola.exec(utuh)) !== null; ) {
+    const mulai = m.index + m[1].length;
+    deret.push([mulai, mulai + m[2].length]);
+  }
+
+  const hasil = [];
+  let ke = 0;                       // deret pertama yang belum terlewati
+  let pos = 0;                      // offset potongan ini di dalam `utuh`
+  for (const pasang of daftar || []) {
+    const jenis = pasang[0];
+    const teks = pasang[1];
+    const warna = pasang[2] === undefined ? null : pasang[2];
+    // Potongan berteks kosong diteruskan, bukan dibuang: susun-ulang memang
+    // tetap identik tanpanya, tapi `_fragmenKurung()` memasangkan potongan
+    // ke-i dengan simpul ke-i, dan jumlah yang berubah di tengah jalan adalah
+    // kelas kegagalan yang tidak menimbulkan error di mana pun.
+    if (!teks) { hasil.push([jenis, teks, warna]); continue; }
+
+    const ujung = pos + teks.length;
+    while (ke < deret.length && deret[ke][1] <= pos) ke++;
+    let batas = pos;
+    for (let j = ke; j < deret.length && deret[j][0] < ujung; j++) {
+      const a = Math.max(pos, deret[j][0]);
+      const b = Math.min(ujung, deret[j][1]);
+      if (a > batas) hasil.push([jenis, teks.slice(batas - pos, a - pos), warna]);
+      hasil.push(["indentasi", teks.slice(a - pos, b - pos), null]);
+      batas = b;
+    }
+    if (batas < ujung) hasil.push([jenis, teks.slice(batas - pos), warna]);
+    pos = ujung;
+  }
+  return hasil;
 }

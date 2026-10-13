@@ -575,6 +575,22 @@ def kuis_selesai(body):
         **r, **hadiah,
         "terbaik": skor.get("terbaik", 0),
         "percobaan": skor.get("percobaan", 0),
+        # Skor percobaan SEBELUM usaha ini, dibaca dari potret `sebelum` yang
+        # diambil di dalam `_KUNCI_PROGRES` (`:554`) -- yaitu sebelum
+        # `record_quiz_score` menimpa `terakhir_skor` (`progress.py:595`).
+        # Bacaan, bukan tulisan: `sebelum` sudah berupa dict di memori, jadi
+        # tidak ada penguncian baru di sini.
+        #
+        # `None`, bukan `0`. `0` berarti "percobaan sebelumnya nol benar";
+        # `None` berarti "belum pernah ada percobaan". Mencetak "naik dari
+        # 0/10" kepada orang yang baru pertama menyelesaikan kuis terbaca
+        # sebagai penghukuman, dan itu kalimat yang tidak boleh keluar dari
+        # layar hasil. `.get("terakhir_skor")` tanpa nilai bawaan yang
+        # menjaganya -- menambahkan `, 0` di situ mengembalikan cacatnya.
+        #
+        # `k` yang sama dipakai untuk kedua potret, jadi `kunci_progres` tetap
+        # dipanggil SEKALI (`:571`).
+        "terakhir_sebelum": sebelum["kuis_skor"].get(k, {}).get("terakhir_skor"),
         "jadwal": jadwal.get("jatuh_tempo", ""),
         "interval": jadwal.get("interval", 0),
         "salah_tersisa": len(progress.soal_salah_terakhir(r["kategori"], r["judul"])),
@@ -967,13 +983,43 @@ def konfigurasi_baca(_=None):
     return keluar
 
 
-# Opsi yang efeknya cuma terlihat di terminal. Mengubahnya dari browser
-# membingungkan: tidak ada apa pun di layar yang berubah.
-_KONFIG_TERMINAL = {"lebar", "tinggi_halaman", "warna"}
+# Kunci setelan yang PENYIMPANANNYA bukan urusan browser, satu alasan per
+# anggota.
+#
+# Dulu daftar ini sebuah set tanpa alasan, dan itu persis bentuk yang membuat
+# dua kunci hilang tanpa kelihatan: `tema` dan `sorot_sintaks` ada di SKEMA,
+# tidak ada di sini, dan tidak punya satu pun baris di layar Pengaturan web.
+# Akibatnya `POST /api/konfigurasi {"tema": "terang"}` DITERIMA dan DITULIS ke
+# berkas konfigurasi yang satu-satunya pembacanya terminal. Tidak ada galat di
+# mana pun, dan yang mengirimnya tidak punya cara tahu bahwa browsernya tidak
+# akan berubah sedikit pun.
+#
+# Sekarang alasannya menempel pada kuncinya, dan `TestPartisiKunciSetelan`
+# mengadu daftar ini dengan SKEMA dan dengan baris web yang sungguhan ada.
+# Menambah opsi ke SKEMA berarti memilih satu rumah dari tiga: sebuah baris di
+# `layarAtur()`, satu anggota di sini, atau localStorage lewat
+# `bacaTampilan()`. Tidak memilih berarti tes merah -- dan itu memang maunya.
+_KONFIG_TERMINAL = {
+    "lebar": "lebar kolom terminal; jendela browser mengurus lebarnya sendiri",
+    "tinggi_halaman": "baris per halaman paginasi terminal; web menggulir, "
+                      "tidak memaginasi",
+    "warna": "kedalaman warna ANSI; di browser tidak ada terminal untuk "
+             "dideteksi",
+    "sorot_sintaks": "web menyalakan penyorotannya sendiri lewat sorot.js dan "
+                     "tidak pernah menanyakan setelan ini",
+    "tema": "tema WEB hidup di localStorage lewat bacaTampilan(), bukan di "
+            "berkas konfigurasi: 'tema yang enak di terminal' dan 'tema yang "
+            "enak di browser' tidak harus sama. Ruang nilainya pun sudah "
+            "berbeda -- `malam` cuma ada di web, `mono` cuma di terminal -- "
+            "jadi memberi kunci ini sebuah baris web akan MENGHILANGKAN satu "
+            "nilai dari tiap sisi tanpa satu pun galat",
+}
 
 
 def konfigurasi_tulis(body):
-    sah = {o.kunci for o in konfigurasi.daftar_opsi()} - _KONFIG_TERMINAL
+    # `.keys()` bukan gaya: set dikurangi dict melempar TypeError, dikurangi
+    # dict_keys tidak -- pandangan kunci sebuah dict memang set.
+    sah = {o.kunci for o in konfigurasi.daftar_opsi()} - _KONFIG_TERMINAL.keys()
     diubah = {}
     for k, v in (body or {}).items():
         if k not in sah:

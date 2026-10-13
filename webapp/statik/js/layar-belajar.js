@@ -66,7 +66,7 @@ function tanpaNomor(judul) {
  *  Yang terjadi kalau itu diabaikan bukan error melainkan diam — jalur materi
  *  yang seharusnya digulir ke butir yang sedang dibaca berhenti di butir
  *  pertama, dan cuma di sebagian pemuatan, tergantung frame mana yang menang. */
-function saatSiap(el, fn, maks = 40) {
+export function saatSiap(el, fn, maks = 40) {
   let sisa = maks;
   const coba = () => {
     if (el.isConnected && el.clientWidth > 0) { fn(); return; }
@@ -1643,7 +1643,7 @@ function kunciBaca(key, indeks) {
  *  CSSOM-View mendefinisikan `"auto"` sebagai "ikuti `scroll-behavior` kotak
  *  yang digulir", dan `gaya.css:532` memasang `html { scroll-behavior: smooth }`.
  *  Jadi `"auto"` MULUS di tingkat gerak `penuh` dan `halus`; yang instan cuma
- *  `"mati"`, karena di sana `gaya.css:4588` menimpanya jadi `auto`. Terukur
+ *  `"mati"`, karena di sana `gaya.css:4808` menimpanya jadi `auto`. Terukur
  *  sebelum diperbaiki: pemulihan ke 700 px menghasilkan sembilan cuplikan yang
  *  berubah sepanjang ~650 ms. `"instant"` mengabaikan `scroll-behavior` dan
  *  terjadi sinkron, apa pun setelannya.
@@ -2420,7 +2420,7 @@ const TOMBOL_TAMPIL = { Enter: "⏎" };
  *  bukan ditemukan lagi sebagai kejutan.
  *
  *  Mengembalikan fungsi pelepas — WAJIB dipanggil `saatKeluar` (preseden
- *  `layar-kerja.js:183`). Pendengar `keydown` di `document` yang tertinggal
+ *  `layar-kerja.js:519`). Pendengar `keydown` di `document` yang tertinggal
  *  membuat dua layar bereaksi terhadap satu tombol. */
 function pintasanPembaca(artikel, peta) {
   // Urutan sasaran dihitung dari posisi VERTIKAL nyata, bukan dari urutan
@@ -2447,7 +2447,7 @@ function pintasanPembaca(artikel, peta) {
       const pertama = bawah < 0 ? daftar.length : bawah;
       tuju = arah > 0 ? pertama : pertama - 1;
     }
-    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:287).
+    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:288).
     // Melingkar berarti satu penekanan di blok terakhir memindahkan layar
     // sejauh seluruh halaman, dan tidak ada yang meminta perpindahan sebesar
     // itu dari tombol yang artinya "berikutnya".

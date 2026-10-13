@@ -17,10 +17,12 @@
 
 import {
   api, h, bilah, angka, sorak, konfirmasi, jendela, salin, keadaan,
-  simpanLokal, ambilLokal, idBaru, medan, hariIniISO,
+  simpanLokal, ambilLokal, idBaru, medan, hariIniISO, tanggalRamah,
+  SUARA, bacaSuara, bacaGetar, setelSuara, tandaiPreferensi, mainkanContoh,
+  adaHaptik,
 } from "./inti.js";
 import {
-  ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak,
+  ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak, animasi, saatTampak,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
 
@@ -67,12 +69,25 @@ export function bacaTampilan() {
     ukuran: ambilLokal("ukuran", "sedang"),
     gerak: bacaGerak(),
     lebarBaca: ambilLokal("lebarBaca", 72),
+    /* Dua medan non-visual sengaja TIDAK dibaca dengan `ambilLokal` di sini.
+       Pemiliknya `suara.js`, dan ia satu-satunya yang berhak menerjemahkan
+       kuncinya jadi nilai — persis seperti `tingkatGerak()` satu-satunya yang
+       memutuskan tingkat gerak. Pembaca kedua di layar berarti nilai rusak di
+       localStorage akan jatuh ke bawaan yang berbeda tergantung siapa yang
+       membacanya lebih dulu. */
+    suara: bacaSuara(),
+    getarPerangkat: bacaGetar(),
   };
 }
 
 export function terapkanTampilan(ubah) {
   const t = { ...bacaTampilan(), ...(ubah || {}) };
-  for (const [k, v] of Object.entries(t)) simpanLokal(k, v);
+  /* Dua medan non-visual dikeluarkan dari loop di bawah dan diserahkan ke
+     pemiliknya. Dua penulis untuk satu kunci berarti dua ejaan untuk satu
+     nilai, dan yang membacanya nanti cuma mengenali salah satunya. */
+  const { suara, getarPerangkat, ...tampak } = t;
+  for (const [k, v] of Object.entries(tampak)) simpanLokal(k, v);
+  setelSuara({ suara, getarPerangkat });
 
   const akar = document.documentElement;
   akar.dataset.tema = t.tema;
@@ -80,6 +95,12 @@ export function terapkanTampilan(ubah) {
   const px = (UKURAN.find((u) => u[0] === t.ukuran) || UKURAN[1])[1];
   akar.style.setProperty("--ukuran-teks", px + "px");
   akar.style.setProperty("--baca", t.lebarBaca + "ch");
+  /* Yang boleh terjadi di sini cuma MENCATAT preferensinya ke akar dokumen.
+     Fungsi ini berjalan saat halaman dimuat, jauh sebelum ada gestur apa pun,
+     dan AudioContext yang dibangun di luar gestur masuk ke keadaan ditolak
+     selamanya — jadi membunyikan apa pun dari sini bukan cuma tidak sopan,
+     ia menukar satu-satunya konteks yang akan pernah ada dengan konteks mati. */
+  tandaiPreferensi(akar);
   return t;
 }
 
@@ -103,15 +124,20 @@ export async function layarStatistik() {
       h("span.mata", {}, "Sejauh ini"),
       h("h1", {}, "Statistik"),
       h("p.kepala-sub", {},
-        `Level ${s.level} — ${s.gelar}. ${angka(s.xp)} XP terkumpul dari `
-        + `${s.streak_total} hari belajar.`)),
+        s.hari_belajar_terakhir
+          ? `${s.streak_total} hari belajar, terakhir `
+            + `${tanggalRamah(s.hari_belajar_terakhir)}.`
+          : "Belum ada hari belajar yang tercatat.")),
 
-    h("div.petak.petak-4", {},
-      angkaBesar(angka(s.xp), "XP total", null, s.xp),
-      angkaBesar(String(s.level), s.gelar, null, s.level),
+    h("div.petak.petak-3", {},
+      angkaBesar(angka(s.xp), "XP total",
+                 `${angka(s.xp_hari_ini)} hari ini, `
+                 + `${angka(s.xp_kemarin)} kemarin`, s.xp),
+      angkaBesar(String(s.level), s.gelar,
+                 `${angka(s.di_level)} dari ${angka(s.butuh_level)} XP `
+                 + "ke gelar berikutnya", s.level),
       angkaBesar(String(s.streak), "hari beruntun",
-                 `rekor ${s.streak_rekor} hari`, s.streak),
-      angkaBesar(`${s.badge_dimiliki}/${s.badge_total}`, "badge terbuka")),
+                 `rekor ${s.streak_rekor} hari`, s.streak)),
 
     blokRingkasan(s),
 
@@ -158,6 +184,52 @@ function saatKartuTampak(el, fn) {
   o.observe(el);
 }
 
+/* Tiga ruas DI DALAM bagian batang yang sudah terisi.
+ *
+ * Panjang batangnya sendiri tetap milik server: `bilah()` sudah menyetelnya
+ * dari `persen`, dan di sini ia tidak disentuh sama sekali. Yang dibagi cuma
+ * RUANG DI DALAMNYA, dan penyebutnya satu — jumlah ketiga pembilang itu
+ * sendiri, bukan `total_materi`/`total_kuis`/`total_latihan`. Bedanya bukan
+ * kosmetik: membagi dengan `total_*` di sini berarti sisi web mulai
+ * menghitung sendiri "berapa yang selesai", padahal `pelajar/progress.py`
+ * sudah menjawabnya dan `min(selesai, target)` di sana membuat kedua angka
+ * itu berpisah diam-diam begitu pembilangnya melewati targetnya. Satu angka,
+ * satu tempat — kembaran dari "jangan pernah menulis definisi lulus kedua".
+ *
+ * Kalau ketiga pembilangnya nol, tidak ada satu ruas pun dipasang. Batang
+ * kosong memang keadaan yang benar untuk bahasa yang belum disentuh, dan
+ * tiga ruas selebar nol cuma menambah simpul yang tidak menjelaskan apa-apa.
+ */
+function tumpukSegmen(trek, ruas) {
+  const isi = trek.firstElementChild;
+  const jumlah = ruas.reduce((a, r) => a + r.nilai, 0);
+  if (!isi || jumlah <= 0) return trek;
+
+  const tumpuk = h("div.ruas-tumpuk");
+  const segmen = ruas.map((r) => {
+    const seg = h("div.ruas." + r.kelas, { title: `${r.nama}: ${r.nilai}` });
+    // Keadaan diamnya ditulis LEBIH DULU; animasinya cuma berangkat dari nol.
+    // Jadi pada gerak yang dimatikan, atau animasi yang dibatalkan karena
+    // layarnya berganti, yang tertinggal tetap lebar yang benar. Tidak ada
+    // `fill: "forwards"` di sini justru karena pola ini — keadaan akhirnya
+    // sudah keadaan alami elemennya, jadi tidak ada yang perlu dipaksakan
+    // dan tidak ada yang perlu dibatalkan belakangan.
+    seg.style.width = (r.nilai / jumlah) * 100 + "%";
+    tumpuk.append(seg);
+    return seg;
+  });
+  isi.append(tumpuk);
+
+  if (adaGerak()) {
+    saatTampak(trek, () => {
+      for (const seg of segmen) {
+        animasi(seg, { width: ["0%", seg.style.width] }, { pegas: "panjang" });
+      }
+    }, { bagian: 0.2 });
+  }
+  return trek;
+}
+
 function blokRingkasan(s) {
   const jml = (f) => s.bahasa.reduce((a, b) => a + b[f], 0);
   return h("section", {},
@@ -172,7 +244,12 @@ function blokRingkasan(s) {
               + `${b.kuis}/${b.total_kuis} kuis · `
               + `${b.latihan_lulus + b.latihan_manual}/${b.total_latihan} latihan`
               + (b.skor_maks ? ` · skor ${b.skor}/${b.skor_maks}` : ""))),
-          bilah(b.persen, b.persen >= 100 ? "tumbuh" : ""))),
+          tumpukSegmen(bilah(b.persen, b.persen >= 100 ? "tumbuh" : ""), [
+            { kelas: "ruas-materi", nama: "materi dibaca", nilai: b.materi },
+            { kelas: "ruas-kuis", nama: "kuis lulus", nilai: b.kuis },
+            { kelas: "ruas-latihan", nama: "latihan selesai",
+              nilai: b.latihan_lulus + b.latihan_manual },
+          ]))),
         h("div.rinci-total", {},
           `Total: ${jml("materi")} dari ${jml("total_materi")} materi dibaca, `
           + `${jml("latihan_lulus")} latihan lulus dengan kode sendiri, dan `
@@ -423,6 +500,56 @@ export async function layarAtur(_params, ctx) {
     })));
   tandaiPilihan(petakGerak, tampilan.gerak);
 
+  /* Tiga kartu tingkat suara, dan tiap kartu MEMPERAGAKAN pilihannya — alasan
+   * yang sama dengan tiga kartu gerak di atas, cuma lebih kuat: bunyi tidak
+   * bisa digambarkan. "Satu nada pendek" adalah kalimat yang tidak memberi
+   * tahu siapa pun apakah ia akan terganggu olehnya di jam sebelas malam.
+   *
+   * Peragaannya berjalan lewat `mainkanContoh()` di inti.js, bukan dengan
+   * memanggil mesin bunyinya langsung. Layar ini tidak punya kosakata bunyi
+   * sendiri, dan tidak boleh punya.
+   *
+   * Klik kartunya adalah gestur asli, jadi di sinilah AudioContext pertama
+   * lahir — bukan saat halaman dimuat. */
+  const petakSuara = h("div.petak.petak-3", {}, SUARA.map(([nilai, nama, ket]) =>
+    kartuPilihan(nilai, nama, ket, () => {
+      tampilan = terapkanTampilan({ suara: nilai });
+      tandaiPilihan(petakSuara, bacaSuara());
+      // "Mati" memang hening, dan hening tidak bisa dibedakan dari rusak.
+      // Katakan dengan kata-kata apa yang tidak bisa dikatakan dengan bunyi.
+      if (nilai === "mati") sorak("Suara dimatikan.", "", 1.6);
+      else mainkanContoh();
+    })));
+  tandaiPilihan(petakSuara, tampilan.suara);
+
+  /* Perangkat tanpa motor getar bukan perangkat yang bisa diberi tahu bahwa
+     ia tidak punya motor getar. Yang bisa dilakukan cuma menandai saklarnya
+     SEBELUM ditekan — aturan "tidak boleh ada tombol yang berujung
+     penolakan" berlaku untuk saklar juga.
+     Jawabannya datang dari `adaHaptik()`, bukan dari `navigator.vibrate` yang
+     ditanyai dari sini: layar ini tidak punya pendapat sendiri tentang apa
+     yang dianggap "perangkat bisa bergetar". */
+  const adaGetarPerangkat = adaHaptik();
+  const barisGetar = sakelarBaris(
+    "Getar perangkat saat naik level",
+    adaGetarPerangkat
+      ? "Satu sentakan singkat, hanya untuk naik level dan badge baru. "
+        + "Berdiri sendiri — ia tidak ikut mati kalau suara dimatikan."
+      : "Perangkat ini tidak punya motor getar, jadi saklar ini tidak akan "
+        + "terasa apa pun di sini. Setelannya tetap tersimpan untuk perangkat "
+        + "lain yang memakai browser yang sama.",
+    tampilan.getarPerangkat,
+    (v) => {
+      tampilan = terapkanTampilan({ getarPerangkat: v });
+      /* Peragaannya lewat pintu yang SAMA dengan sentakan sungguhan, dengan
+         durasi dan syarat yang sama. Memanggil `navigator.vibrate` dari layar
+         ini akan jadi saluran haptik KEDUA — dan saluran kedua yang kebetulan
+         hari ini setuju dengan yang pertama adalah saluran kedua yang suatu
+         hari tidak. Dipanggil SESUDAH saklarnya tersimpan, karena
+         `sentuhPerangkat()` memeriksa saklar itu sebelum berbuat apa pun. */
+      if (v) mainkanContoh("getar");
+    });
+
   // Sistem yang menyetel "kurangi gerak" membuat pilihan di sini tak berarti.
   // Katakan itu terus terang alih-alih membiarkan kartunya tampak berfungsi.
   const tahanGerak = tingkatGerak() === "mati" && bacaTampilan().gerak !== "mati"
@@ -459,7 +586,23 @@ export async function layarAtur(_params, ctx) {
             + "pilihan di sini: kalau sistemmu sudah memintanya, tidak ada "
             + "yang bergerak apa pun yang kamu pilih."),
           petakGerak,
-          tahanGerak))),
+          tahanGerak),
+        /* Saluran non-visual duduk PALING BAWAH di kartu Tampilan, sesudah
+           tema, huruf, lebar baca, dan gerak. Urutannya bukan kebetulan:
+           empat yang di atas berlaku untuk semua orang setiap saat, sedangkan
+           dua yang di sini bawaannya MATI dan karena itu tidak pernah dicari
+           orang yang belum tahu ada. Menaruhnya di atas berarti menyodorkan
+           dua setelan yang hampir semua orang akan lewati sebelum sampai ke
+           yang memang mereka datangi. */
+        h("div.medan", {},
+          h("label", {}, "Suara"),
+          h("div.ket", {},
+            "Bawaannya mati, dan suara tidak pernah jadi satu-satunya cara "
+            + "mengetahui apa pun di aplikasi ini — semua yang berbunyi juga "
+            + "muncul di layar. Tidak ada bunyi per tombol dan tidak ada "
+            + "bunyi untuk jawaban yang salah."),
+          petakSuara),
+        h("div.medan", {}, barisGetar))),
 
     h("section", {},
       h("span.mata", {}, "Belajar — berlaku juga di aplikasi terminal"),

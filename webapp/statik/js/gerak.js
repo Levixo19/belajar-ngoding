@@ -622,6 +622,12 @@ export function angkaKe(el, ke, opsi = {}) {
     ? Number(String(el.textContent || "").replace(/[^\d.-]/g, "")) || 0
     : Number(opsi.dari);
 
+  // Lebar digit dipatok di MESIN dan SEBELUM cabang di bawah. Sesudahnya,
+  // tingkat `mati` dan pemanggil yang angkanya tidak berubah tetap menukar
+  // teksnya tanpa pernah mendapat properti ini — dan digit proporsional
+  // menggeser apa pun yang berdiri di sebelahnya (generator CLS).
+  el.style.fontVariantNumeric = "tabular-nums";
+
   if (!adaGerak() || awal === tujuan) {
     el.textContent = format(tujuan);
     return () => {};

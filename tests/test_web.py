@@ -527,6 +527,169 @@ class TestSesiKuis(BasisWeb):
         self.assertEqual(r["salah_tersisa"], 0)
         self.assertGreater(r["xp_tambah"], progress.XP_BONUS_KUIS_SEMPURNA)
 
+    def test_terakhir_sebelum_none_sebelum_ada_percobaan(self):
+        """`terakhir_sebelum` netral untuk profil yang belum pernah mencoba.
+
+        Nilai netralnya `None`, bukan `0` -- dan itu bukan selera. `0` berarti
+        "percobaan sebelumnya nol benar"; `None` berarti "belum pernah ada
+        percobaan". Layar hasil memakai bedanya untuk memutuskan apakah
+        pembanding dicetak sama sekali, jadi kalau nilai netralnya jadi `0`
+        orang yang baru pertama menyelesaikan kuis akan dibacakan "naik dari
+        0/10" -- kalimat yang terbaca sebagai penghukuman.
+
+        Dijalankan lewat `api`, bukan dibaca dari teks: yang diuji di sini
+        bahwa potret `sebelum` (`api.py:554`, di dalam `_KUNCI_PROGRES`)
+        benar-benar diambil SEBELUM `record_quiz_score` menimpa
+        `terakhir_skor` (`pelajar/progress.py:595`). Mengikuti preseden
+        `TestFieldPembandingDasbor` (`tests/test_web.py:369`), yang
+        mengunci nilai netral sebuah field pembanding di sisi endpoint.
+
+        Percobaan KEDUA ikut diuji, dan itu tambahan di luar tagihan: tanpa
+        itu sebuah implementasi yang selalu memulangkan `None` akan lulus
+        separuh pagar ini. Yang kedua membuktikan angkanya benar-benar milik
+        percobaan sebelumnya, bukan milik percobaan yang baru selesai.
+
+        Semua tulisan progres jatuh ke sandbox `BasisWeb`, jadi berkas
+        pelajar sungguhan tidak tersentuh.
+        """
+        def kerjakan_penuh():
+            s = api.kuis_mulai({"key": "java", "indeks": 0, "acak": False})
+            obj = sesi.ambil(s["sesi"])
+            for nomor, soal in enumerate(obj.soal):
+                api.kuis_jawab({"sesi": s["sesi"], "nomor": nomor,
+                                "pilihan": soal["jawab"]})
+            return api.kuis_selesai({"sesi": s["sesi"]})
+
+        pertama = kerjakan_penuh()
+        self.assertIn(
+            "terakhir_sebelum", pertama,
+            "`kuis_selesai` tidak mengirim `terakhir_sebelum`; layar hasil "
+            "tidak punya sumber pembanding")
+        self.assertIsNone(
+            pertama["terakhir_sebelum"],
+            "profil yang belum pernah mengerjakan kuis ini memulangkan nilai "
+            "selain `None`. `0` di situ berarti 'percobaan sebelumnya nol "
+            "benar', dan layar hasil akan mencetak 'naik dari 0' kepada orang "
+            "yang baru pertama selesai")
+        kedua = kerjakan_penuh()
+        self.assertEqual(
+            kedua["terakhir_sebelum"], pertama["benar"],
+            "`terakhir_sebelum` pada percobaan kedua bukan skor percobaan "
+            "PERTAMA. Kalau ia sama dengan skor percobaan kedua, angkanya "
+            "dibaca dari potret `sesudah` -- yaitu sesudah "
+            "`record_quiz_score` menimpanya -- dan pembandingnya "
+            "membandingkan skor ini dengan dirinya sendiri")
+
+    def test_daftar_masih_salah_menunjuk_sesi_yang_sama(self):
+        """Indeks "masih salah" yang DILAPORKAN sama dengan yang DISAJIKAN.
+
+        Tombol "ulangi N soal yang masih salah" di layar hasil berdiri di atas
+        tiga sisi yang harus memakai kunci dan penomoran yang sama, dan sampai
+        hun ini tidak ada satu pun tes yang mengadu ketiganya:
+
+          1. REKAP -- `kuis_selesai` memulangkan `salah_asli` (indeks soal
+             dalam penomoran ASLI kurikulum, bukan penomoran sesi yang sudah
+             teracak) dan `salah_tersisa` sebagai cacahnya.
+          2. SIMPANAN -- `record_quiz_score(salah_index=...)` menaruhnya di
+             bawah kunci `kategori`/`judul` yang sama, dan
+             `progress.soal_salah_terakhir(kategori, judul)` membacanya balik.
+          3. PENYUSUN ULANG -- `kuis_mulai` mode `salah` (`webapp/api.py:528`)
+             memanggil `progress.soal_salah_terakhir(kat, q["title"])`
+             (`:529`) dan menyerahkan hasilnya sebagai `hanya=` ke
+             `sesi.buat`; kalau kosong ia menolak dengan 409 (`:531`).
+
+        Kalau satu saja dari ketiganya memakai penomoran atau kunci yang lain,
+        tombol itu menyusun sesi yang berisi soal LAIN -- dan pelajar
+        mengulang soal yang sudah ia kuasai sementara yang salah tetap salah.
+        Tidak ada tes lain yang akan memerah: cacahnya tetap benar, jadi
+        tombolnya tetap menunjukkan angka yang masuk akal.
+
+        Yang dibuktikan di sini IDENTITAS keempat himpunan itu, bukan
+        cacahnya: soal yang sengaja dijawab salah, `salah_asli` dari rekap,
+        `soal_salah_terakhir` dari simpanan, dan `asli` tiap soal di sesi mode
+        `salah`.
+
+        DIJALANKAN UNTUK KEDUA NILAI `acak`, dan itu yang membuat baris-baris
+        di atas berarti. Dengan `acak: False` saja, `soal[n]["asli"] == n`
+        untuk setiap `n` -- penomoran sesi dan penomoran asli kebetulan
+        identik, jadi `salah_asli.append(i)` (indeks SESI) dan
+        `salah_asli.append(s["asli"])` (nomor ASLI) memulangkan himpunan yang
+        sama, dan tidak ada satu pun asersi yang bisa membedakannya. Cacat yang
+        dinamai paragraf di atas karena itu TIDAK TERLIHAT di data itu.
+
+        Karena pengacakan sendiri yang jadi syarat, ia ikut DIPAGARI: cacah
+        posisi yang `asli != nomor` dituntut lebih dari nol saat `acak` benar.
+        Tanpa pagar kecil itu, "sudah dua varian" bisa berarti "dua kali di
+        pohon yang sama" -- dan barisnya tidak membuktikan apa pun.
+
+        Preseden bentuknya `test_mode_ulangan_tidak_menyentuh_skor_terbaik` di
+        bawah, yang menjaga sisi lain dari mode yang sama; `subTest` mengikuti
+        pola yang sudah dipakai kelas-kelas lain di berkas ini. Semua tulisan
+        progres jatuh ke sandbox `BasisWeb`, jadi berkas pelajar sungguhan
+        tidak tersentuh -- dan sesi penuh MENIMPA daftar soal salah
+        (`_simpan_salah`, `pelajar/progress.py:566`), jadi varian kedua tidak
+        mewarisi sisa varian pertama.
+        """
+        for acak in (False, True):
+            with self.subTest(acak=acak):
+                s = api.kuis_mulai({"key": "java", "indeks": 0, "acak": acak})
+                obj = sesi.ambil(s["sesi"])
+                self.assertGreaterEqual(
+                    len(obj.soal), 3,
+                    "kuis ini terlalu pendek untuk membedakan sebagian soal "
+                    "salah dari seluruhnya")
+                pindah = sum(1 for n, q in enumerate(obj.soal)
+                             if q["asli"] != n)
+                if acak:
+                    self.assertGreater(
+                        pindah, 0,
+                        "varian `acak=True` tidak memindahkan satu soal pun: "
+                        "`asli == nomor` di semua posisi, jadi penomoran sesi "
+                        "dan penomoran asli kebetulan identik dan baris ini "
+                        "TIDAK membuktikan apa pun. Dua varian yang keduanya "
+                        "tidak teracak adalah dua kali di pohon yang sama")
+                disengaja = set()
+                for nomor, soal in enumerate(obj.soal):
+                    if nomor % 3 == 0:
+                        pilihan = 0 if soal["jawab"] != 0 else 1
+                        disengaja.add(soal["asli"])
+                    else:
+                        pilihan = soal["jawab"]
+                    api.kuis_jawab({"sesi": s["sesi"], "nomor": nomor,
+                                    "pilihan": pilihan})
+                r = api.kuis_selesai({"sesi": s["sesi"]})
+
+                self.assertEqual(
+                    set(r["salah_asli"]), disengaja,
+                    "`salah_asli` dari rekap bukan himpunan soal yang "
+                    "benar-benar dijawab salah; indeksnya kemungkinan "
+                    "penomoran SESI, bukan penomoran asli kurikulum "
+                    f"({pindah} dari {len(obj.soal)} posisi berpindah)")
+                self.assertEqual(
+                    r["salah_tersisa"], len(disengaja),
+                    "cacah `salah_tersisa` tidak sama dengan jumlah soal yang "
+                    "salah")
+                tersimpan = progress.soal_salah_terakhir(r["kategori"],
+                                                        r["judul"])
+                self.assertEqual(
+                    set(tersimpan), disengaja,
+                    "daftar yang tersimpan di bawah kunci `kategori`/`judul` "
+                    "yang dilaporkan rekap bukan himpunan yang sama; sisi "
+                    "simpanan dan sisi rekap memakai kunci atau penomoran "
+                    "yang berbeda")
+
+                u = api.kuis_mulai({"key": "java", "indeks": 0, "acak": acak,
+                                    "mode": "salah"})
+                ulang = sesi.ambil(u["sesi"])
+                self.assertEqual(
+                    {q["asli"] for q in ulang.soal}, disengaja,
+                    "sesi mode `salah` menyajikan soal yang LAIN dari yang "
+                    "tercatat masih salah. Tombol ulangi-N-soal karena itu "
+                    "menyusun kuis yang berisi soal yang sudah dikuasai, "
+                    "sementara yang salah tetap salah -- dan cacah di "
+                    "tombolnya tetap terlihat benar, jadi tidak ada tes lain "
+                    "yang memerah")
+
     def test_mode_ulangan_tidak_menyentuh_skor_terbaik(self):
         lang = _bahasa("java")
         judul = lang["quizzes"][0]["title"]
@@ -2181,8 +2344,31 @@ class TestLayarBahasa(unittest.TestCase):
         # `.cincin` dasbor: WAAPI sudah memegang properti itu (invarian #2).
         css = re.sub(r"/\*.*?\*/", " ",
                      self._berkas("webapp", "statik", "gaya.css"), flags=re.S)
+        # BATAS KATA, bukan substring. `".bab-cincin" in sel` ikut menuduh
+        # setiap kelas yang cuma BERAWALAN sama, dan itu bukan bentuk
+        # teoretis: `.bab-cincin-hati { transition: width 200ms ease; }` --
+        # kelas lain, properti lain, WAAPI tidak memegang apa pun di sana --
+        # MERAH lewat pagar ini sebelum batas ini dipasang. Pagar yang
+        # menghukum pekerjaan sah akan dihapus orang yang benar.
+        #
+        # Empat kaki populasinya, karena angka tanpa pembacanya cuma klaim:
+        #   PREDIKAT `\.bab-cincin(?![\w-])`
+        #   RUANG    `gaya.css` yang HANYA dibuang blok-komentarnya (baris di
+        #            atas). Ini BUKAN `_telanjang`: `//` tidak dibuang di sini.
+        #   PEMBACA  `([^{}]+)\{([^{}]*)\}` TANPA jangkar baris; `sel` adalah
+        #            satu PRELUDE utuh, tidak dipecah koma.
+        #   SATUAN   769 aturan / 866 selektor di ruang itu.
+        # `\.bab-cincin[\w-]` = NOL dan `\.bab-cincin` = ENAM, jadi kedua
+        # bentuk menjaring prelude yang SAMA hari ini dan batas ini gratis --
+        # ia membeli ketahanan tanpa memindahkan satu pun putusan.
+        #
+        # Tiga saudara pembaca-substring di berkas ini TIDAK punya cacat ini
+        # dan sengaja dibiarkan apa adanya: `"[hidden]" in sel`,
+        # `"[data-gerak=" not in sel`, dan `pe in sel` atas `PSEUDO_ELEMEN`.
+        # Masing-masing mengurung karakter yang tak punya ekor kata (`]`, `=`,
+        # `:`), jadi tidak ada nama yang bisa tumbuh melewatinya.
         for sel, isi in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
-            if ".bab-cincin" in sel:
+            if re.search(r"\.bab-cincin(?![\w-])", sel):
                 self.assertNotIn("transition", isi,
                                  f"`{sel.strip()}` menambahkan transition pada "
                                  "properti yang sudah digerakkan WAAPI")
@@ -2410,6 +2596,29 @@ class TestHiddenBenarBenarMenyembunyikan(unittest.TestCase):
             ('.pil', 'penanda pilihan tema/ukuran'),
         ('layar-lain.js', 'tandaiPilihan',
          'if (kt.tanda) kt.tanda.hidden = !ini;'):
+            ('.pil', 'pasangannya'),
+        # Sinyal overflow panel hasil (S08 hun 4). Keduanya `.pil`, yang sudah
+        # jadi pemulih di `gaya.css:1261` -- dan itu sebabnya `hidden` di sini
+        # benar-benar menyembunyikan, bukan cuma memasang atribut.
+        ('layar-kerja.js', 'kartuJalan',
+         'h("span.pil.pil-tenang", { hidden: true, data: { lebih: "bawah" } },'):
+            ('.pil', 'chip "keluaran lebih panjang dari panel", lahir tersembunyi'),
+        ('layar-kerja.js', 'blokGalat',
+         '? h("span.pil.pil-tenang", { hidden: true, data: { lebih: "atas" } },'):
+            ('.pil', 'chip "panel digulir ke pesan ini", lahir tersembunyi'),
+        ('layar-kerja.js', 'pinKeGalat',
+         'if (chipBawah) chipBawah.hidden = !lebih;'):
+            ('.pil', 'dinyalakan HANYA oleh scrollHeight > clientHeight'),
+        ('layar-kerja.js', 'pinKeGalat',
+         'if (chipAtas) { chipAtas.hidden = false; k = kotak(); }'):
+            ('.pil', 'dinyalakan sebelum rect dipakai menggulir'),
+        # Kedua baris di bawah MENYEMBUNYIKAN dulu supaya tinggi chip tidak
+        # ikut memutuskan apakah panelnya memotong -- tanpa itu panel yang
+        # pas-pasan menyalakan chip atas keadaan yang hilang satu frame
+        # kemudian (terukur di 655x754: scroll 784 > client 777, lalu 817==817).
+        ('layar-kerja.js', 'pinKeGalat', 'if (chipBawah) chipBawah.hidden = true;'):
+            ('.pil', 'disembunyikan sebelum panel diukur'),
+        ('layar-kerja.js', 'pinKeGalat', 'if (chipAtas) chipAtas.hidden = true;'):
             ('.pil', 'pasangannya'),
     }
 
@@ -2764,7 +2973,7 @@ class TestBentukKomentar(unittest.TestCase):
         Perluasan yang jelas — "setiap `/**` wajib diikuti sebuah deklarasi" —
         diukur dan DITOLAK: ia memberi tiga positif-palsu nyata di repo hari ini,
         yaitu `aplikasi.js:100` `ingat(kunci, nilai) {` (metode objek),
-        `editor.js:251` `lepas() {` (metode kelas), dan `aplikasi.js:584` (blok
+        `editor.js:416` `lepas() {` (metode kelas), dan `aplikasi.js:584` (blok
         `/* */` yang memang menyusul sebuah docstring). Tes yang memerah karena
         alasan yang salah adalah tes yang berhenti dibaca, jadi pagar ini tetap
         sempit dengan sadar.
@@ -4794,7 +5003,313 @@ class TestKuisUmpanBalik(unittest.TestCase):
     tidak menyala per jawaban, dan bahwa penjelasannya benar-benar berdiri di
     bawah opsi yang ditekan, hanya bisa dibuktikan dengan mengukur kotak dan
     jumlah partikel di peramban — angkanya ada di tabel render di laporan.
+
+    CAKUPAN JAM: seluruh keluarga pagar `.jam`/`.menipis`/jeda di kelas ini
+    menjaga jalur yang MATI SECARA BAWAAN. Predikatnya `k.get("durasi")` atas
+    tiap kuis di `main.LANGUAGES` (ruang: seluruh kurikulum, pembaca: impor
+    modul, satuan: cacah kuis) memberi NOL dari 116 kuis pada 2026-09-30 —
+    tidak satu pun kuis membawa durasi. `sesi.durasi` baru bernyawa kalau badan
+    permintaan mengirim `timer` (`api.py:522-525`, `per_soal` dari
+    `konfigurasi.detik_per_soal`, bawaan 30 detik, setelannya di
+    `layar-lain.js:488`), dan `if (sesi.durasi)` (`layar-kerja.js:195`) adalah
+    SATU-SATUNYA jalan masuk ke `jalankanJam()` dan pendengar
+    `visibilitychange`. Jadi pagar-pagar itu bukan tidak berguna — ia menjaga
+    batas yang dipegang orang yang nanti menyalakan timer; dan siapa pun yang
+    mengukur "jamnya tidak pernah merah" di peramban TANPA mengirim `timer`
+    sedang mengukur layar yang memang tidak punya jam.
     """
+
+    def test_angka_kuis_tidak_bergeser_karena_monospace_bukan_tabular_nums(self):
+        """Yang menahan angka kuis di tempatnya MONOSPACE-nya, bukan `tabular-nums`.
+
+        Kekhawatirannya benar — `1 / 20` yang menjadi `7 / 20` tidak boleh
+        menggeser bilah di sebelahnya — tapi obat yang pertama terpikir
+        (`font-variant-numeric: tabular-nums`) di sini adalah deklarasi yang
+        tidak mengubah satu piksel pun. Terukur di peramban sungguhan
+        (`document.visibilityState = "visible"`, Chrome tanpa-X lewat CDP),
+        pada `span` di dalam `.kuis-kemajuan`, satuan LEBAR GLIF dalam piksel
+        CSS:
+
+            "1 / 20"    -> 46,640625 px
+            "7 / 20"    -> 46,640625 px   (selisih 0 px)
+            "11111111"  -> 62,1875 px     -> 7,773 px per glif, dan luncuran
+                           itu berlaku untuk SEMUA glif, spasi dan garis miring
+                           ikut -- bukan cuma digit.
+
+        `font-variant-numeric` di sana hari ini `normal`. Jadi yang membuat
+        angkanya tidak bergeser adalah `--f-kode` yang berakhir monospace, dan
+        ITU yang dipagari di sini -- dua premis, bukan satu deklarasi hiasan:
+
+          (a) `.kuis-kemajuan` mendeklarasikan `font-family: var(--f-kode)`;
+          (b) ekor SETIAP deklarasi `--f-kode` adalah `monospace` atau
+              `ui-monospace` -- bukan deklarasi pertama, bukan yang terakhir.
+
+        Premis (a) dibaca sebagai HIMPUNAN nilai `font-family` di SEMUA aturan
+        ber-selektor tepat `.kuis-kemajuan`, bukan blok terakhir: menambah
+        aturan kedua untuk properti lain (`letter-spacing`) tidak boleh
+        memerahkannya, sementara mengganti tokennya harus.
+
+        DUA LINTASAN untuk premis (a), dan yang kedua menutup lubang terukur.
+        Pembaca berjangkar `(?m)^([^{}/@][^{}]*?)\\{([^{}]*)\\}` menolak prelude
+        yang membuka dengan `@` -- betul, supaya lengan at-rule tidak terbaca
+        sebagai selektor -- tapi harganya ia juga buta terhadap aturan yang
+        tidak MULAI di awal baris. Pada
+        `@media (max-width: 700px) { .kuis-kemajuan { font-family: var(--f-teks); } }`
+        yang ditulis SATU BARIS, `.kuis-kemajuan` tidak pernah berada di awal
+        baris: lintasan 1 memulangkan NOL aturan dan pagar ini tidak
+        melihatnya sama sekali. Bentuk multibarisnya selalu terlihat, jadi
+        yang berlubang PENULISAN SATU BARISNYA, bukan at-rule-nya.
+
+        Keadaan repo hari ini, supaya yang berikutnya tahu apa yang ia warisi:
+        blok at-rule yang BUKA dan TUTUP di satu baris terukur DUA (predikat:
+        `^\\s*@[\\w-]+[^{]*\\{.*\\{.*\\}.*\\}\\s*$` per baris, ruang: pohon
+        `_telanjang`, pembaca: `re.match` per baris, satuan: cacah baris) --
+        `@keyframes putar { to { transform: rotate(360deg); } }`
+        (`gaya.css:1741`) dan
+        `@keyframes pudar { from { opacity: 0; } to { opacity: 1; } }`
+        (`gaya.css:4050`) -- dan NOL di antaranya menyebut `.kuis-kemajuan`.
+        Jadi tidak ada yang salah di repo hari ini; yang ditambal kemampuan
+        pagarnya MELIHAT, bukan sebuah cacat yang sedang berjalan.
+
+        Populasi deklarasi `--f-kode` juga SATU (predikat:
+        `(?<![\\w-])--f-kode\\s*:` atas pohon `_telanjang`, pembaca:
+        `re.findall`, satuan: cacah deklarasi; predikat berjangkar
+        `(?m)^\\s*--f-kode\\s*:` memberi angka yang sama), di `gaya.css:354`.
+        Versi sebelumnya membaca `re.search` -- yaitu deklarasi PERTAMA -- dan
+        itu terukur HIJAU untuk deklarasi kedua non-mono yang disisipkan
+        sesudah blok `.kuis-kemajuan` (`gaya.css:3775`, baris `font-family`-nya
+        di `:3778`).
+
+        KENAPA "SETIAP" DAN BUKAN "YANG TERAKHIR": `--f-kode` boleh
+        dideklarasikan ulang di dalam blok tema, dan siapa yang menang
+        bergantung spesifisitas yang tidak bisa dihitung sebuah pagar teks.
+        "Tak ada satu pun tema boleh meninggalkan font kode non-mono" adalah
+        kalimat yang benar tanpa menghitung cascade; "yang terakhir menang"
+        adalah klaim TENTANG cascade yang tidak bisa dibuktikan di tingkat
+        teks. Jumlah deklarasi karena itu BOLEH naik -- yang tidak boleh naik
+        adalah jumlah yang bukan-mono.
+
+        YANG TIDAK DIJAGA: bahwa font monospace itu benar-benar TERPASANG di
+        mesin pembaca. Kalau tidak ada satu pun keluarga di depan daftar yang
+        terpasang, peramban jatuh ke `monospace` generiknya sendiri -- yang
+        tetap monospace, dan itulah kenapa EKORNYA yang dipagari, bukan
+        nama-nama di depannya.
+        """
+        css = TestHamparanBara._telanjang(self._css())
+        # Pembaca DUA LINTASAN. Definisinya SATU, di
+        # `TestJamKuisBertahanDiLatar._aturan_dua_lintasan`: lintasan 1
+        # berjangkar awal-baris dan menolak prelude ber-`@`; lintasan 2 tanpa
+        # jangkar, untuk aturan yang tidak mulai di awal baris (lengan `@`
+        # satu-baris), dengan segmen selektor dipotong pada `{` TERAKHIR.
+        #
+        # Rumahnya di kelas itu karena PAJAK ALAMAT, bukan selera. Kelas ini
+        # seluruhnya berada di atas `class TestLompatKeBarisGalat`, yang
+        # nomor barisnya dikutip komentar `layar-kerja.js`; satu baris
+        # pembantu yang lahir di sini menggeser nomor itu dan memerahkan
+        # `TestAlamatKomentar`. Kelas jam duduk jauh di bawahnya, dan di sana
+        # pajaknya terukur nol alamat. Yang tertinggal di sini karena itu
+        # cuma panggilannya, dan jumlah barisnya sengaja SAMA dengan pembaca
+        # yang digantikannya, supaya tidak satu nomor pun di bawahnya geser.
+        # Jangan menyalin pembacanya kembali ke sini: dua salinan pernah
+        # hidup berdampingan, dan dua definisi selalu menyimpang -- yang satu
+        # dirapikan, yang lain tidak.
+        #
+        # Lintasan 2 ikut memungut `from`/`to` di dalam `@keyframes` sebagai
+        # "selektor". Itu tidak berbahaya DAN sengaja tidak ditambal: saringan
+        # di bawah menuntut selektor SAMA DENGAN `.kuis-kemajuan`, jadi isi
+        # keyframe tidak pernah tertuduh. Kalau suatu hari saringan itu
+        # dilonggarkan jadi substring, kontrol `@keyframes putar` di baterai
+        # yang akan memerah lebih dulu.
+        aturan = TestJamKuisBertahanDiLatar._aturan_dua_lintasan(css)
+        # Kedua lintasan DIHIMPUN dulu, nilainya dibandingkan sekali. Kalau
+        # dibandingkan per lintasan, aturan yang hanya terlihat lintasan 2
+        # akan lolos karena lintasan 1 sudah hijau.
+        badan = [isi for sel, isi in aturan if sel == ".kuis-kemajuan"]
+        self.assertTrue(
+            badan,
+            "tidak ada aturan ber-selektor tepat `.kuis-kemajuan` di "
+            "`gaya.css`; pagar ini tidak bisa memilih blok yang dimaksud")
+        keluarga = {" ".join(m.split())
+                    for isi in badan
+                    for m in re.findall(r"font-family\s*:\s*([^;]+)", isi)}
+        self.assertEqual(
+            keluarga, {"var(--f-kode)"},
+            "`.kuis-kemajuan` tidak lagi memakai `var(--f-kode)` di seluruh "
+            "aturan yang menyebutnya -- termasuk yang tinggal di dalam lengan "
+            "`@media`/`@container`, baik multibaris maupun satu baris. Yang "
+            "menahan `1 / 20` dan `7 / 20` di lebar yang SAMA (46,640625 px, "
+            "terukur) adalah monospace-nya; menukar tokennya menggeser bilah "
+            "di sebelahnya tiap kali nomor soal naik. Yang terbaca: "
+            f"{sorted(keluarga)}")
+        # PREMIS (b) -- SEMUA deklarasi `--f-kode`, bukan yang pertama.
+        dek = re.findall(r"(?<![\w-])--f-kode\s*:\s*([^;]+);", css)
+        self.assertTrue(
+            dek,
+            "`--f-kode` tidak lagi dideklarasikan di `gaya.css`; premis (b) "
+            "tidak punya apa pun untuk diperiksa")
+        ekor = [(" ".join(d.split()),
+                 " ".join(d.split()).split(",")[-1].strip()) for d in dek]
+        bukan_mono = [pasangan for pasangan in ekor
+                      if pasangan[1] not in ("monospace", "ui-monospace")]
+        self.assertEqual(
+            bukan_mono, [],
+            f"{len(bukan_mono)} dari {len(dek)} deklarasi `--f-kode` berakhir "
+            "di luar keluarga monospace generik. Ekor SETIAP deklarasi yang "
+            "dijaga, bukan yang pertama dan bukan yang terakhir: `--f-kode` "
+            "boleh dideklarasikan ulang di dalam blok tema, dan siapa yang "
+            "menang bergantung spesifisitas yang tidak bisa dihitung pagar "
+            "teks. Jumlah deklarasi boleh naik; jumlah yang bukan-mono tidak. "
+            f"Yang terbaca (nilai, ekor): {bukan_mono}")
+
+    def test_bilah_menyetel_lebar_sebelum_menganimasikannya(self):
+        """`setel()` sudah benar; yang dikunci di sini URUTANNYA, bukan nilainya.
+
+        Invariannya: animasi tidak boleh jadi SATU-SATUNYA cara sebuah elemen
+        terlihat. `bilah().setel` menulis `isi.style.width` lebih dahulu lalu
+        menganimasikan ke nilai yang sama, jadi kalau gerak dimatikan, atau
+        animasinya dibatalkan di tengah, yang tertinggal tetap angka yang
+        benar.
+
+        Yang dituntut karena itu POSISI, bukan isi: baris penulis
+        `.style.width` mendahului pemanggilan `animasi(`. Pagar yang menyalin
+        `0%` atau `p` akan mengunci NILAI -- padahal nilai memang boleh
+        berubah; yang tidak boleh berubah urutannya. Properti lain boleh
+        disisipkan, dipindahkan, atau ditambah di antara maupun sesudah
+        keduanya; hari ini `aria-valuenow` memang berdiri di antara mereka.
+
+        RUANG: badan panah `el.setel = (baru) => { ... }` di `inti.js`, diambil
+        dengan pencocokan kurung berpasangan dari `{` pertama sesudah `=>`,
+        pada pohon `_telanjang` -- komentar ditanggalkan lebih dulu supaya
+        contoh di dalam komentar tidak ikut terbaca sebagai kode.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js", "inti.js"),
+                  encoding="utf-8") as f:
+            inti = TestHamparanBara._telanjang(f.read())
+        kepala = re.search(r"\.setel\s*=\s*\([^)]*\)\s*=>\s*\{", inti)
+        self.assertIsNotNone(
+            kepala,
+            "`setel` bukan lagi fungsi panah ber-badan kurung di `inti.js`; "
+            "pagar urutan ini tidak bisa memilih badan yang dimaksud")
+        awal = kepala.end() - 1
+        dalam, i = 0, awal
+        while i < len(inti):
+            if inti[i] == "{":
+                dalam += 1
+            elif inti[i] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    break
+            i += 1
+        self.assertEqual(dalam, 0, "badan `setel` tidak tertutup kurungnya")
+        badan = inti[awal:i + 1]
+        tulis = re.search(r"\.style\.width\s*=", badan)
+        gerak = re.search(r"\banimasi\s*\(", badan)
+        self.assertIsNotNone(
+            tulis,
+            "badan `setel` tidak lagi menulis `.style.width`; lebarnya jadi "
+            "milik animasi saja, dan gerak yang dimatikan atau dibatalkan di "
+            "tengah meninggalkan bilah di angka yang salah")
+        self.assertIsNotNone(
+            gerak, "badan `setel` tidak lagi memanggil `animasi(`")
+        self.assertLess(
+            tulis.start(), gerak.start(),
+            "`animasi(` mendahului penulisan `.style.width` di badan `setel`. "
+            "Urutannya yang jadi invarian, bukan angkanya: animasi tidak boleh "
+            "jadi satu-satunya cara bilah ini terlihat -- matikan gerak, atau "
+            "batalkan animasinya di tengah, dan yang tertinggal harus tetap "
+            "nilai akhirnya. Properti lain boleh berdiri di antara keduanya "
+            "atau sesudahnya; yang dua ini tidak boleh bertukar")
+
+    def test_kuis_kemajuan_tepat_dua_representasi_progres(self):
+        """Dua representasi progres soal di `.kuis-kemajuan`, bukan tiga.
+
+        Keputusan butir 3: pembaca diberi DUA cara membaca "di mana aku" --
+        pencacah `1 / <total>` dan bilah -- dan bentuk KETIGA (titik-titik
+        langkah) dilarang. Tiga representasi untuk satu keadaan membuat mata
+        mencari mana yang berwenang, dan pada kuis 20 soal deretan titik itu
+        juga yang pertama pecah di layar sempit.
+
+        PREDIKATNYA MEMBACA JS, BUKAN CSS, dan itu disengaja: yang diputuskan
+        adalah berapa banyak benda yang DIPASANG, dan itu fakta tentang
+        pemanggilan `h("div.kuis-kemajuan", ...)`, bukan tentang aturan gaya
+        yang kebetulan ada. Sebuah kelas bisa hidup di `gaya.css` tanpa satu
+        pun elemen memakainya, dan sebaliknya.
+
+        RUANG: badan `layarKuis` saja. `bilah()` diekspor `inti.js` dan dipakai
+        layar lain juga, jadi sapuan seluruh berkas akan salah tuduh persis
+        seperti preseden pagar `?` di S06.
+
+        CARA MENCACAH: anak-anak tingkat atas dari pemanggilan
+        `h("div.kuis-kemajuan", ...)` diambil dengan pencocokan kurung
+        berpasangan, lalu tiap anak yang berupa pengenal telanjang diganti
+        dengan sisi kanan `const`-nya di wilayah yang sama. Sebuah anak
+        terhitung sebagai representasi progres KECUALI ia jam (`.jam`) atau
+        tombol (`h("button...`): jam itu sisa WAKTU, bukan "di mana aku di
+        soal", dan tombol itu tindakan. Bentuk ketiga apa pun karena itu
+        terhitung, tanpa perlu menebak seperti apa ia akan ditulis.
+
+        BATAS YANG DIKETAHUI: pemecah argumen menghitung kedalaman kurung dan
+        TIDAK mengurai string, jadi anak yang memuat koma di dalam literal
+        string atau templat akan terpecah salah. Populasi bentuk itu nol hari
+        ini di pemanggilan ini.
+        """
+        kuis = self._wilayah("layarKuis")
+        self.assertIn(
+            'h("div.kuis-kemajuan"', kuis,
+            "`layarKuis` tidak lagi memasang `.kuis-kemajuan`; pagar ini tidak "
+            "bisa memilih wadah yang dimaksud")
+        buka = kuis.index("(", kuis.index('h("div.kuis-kemajuan"'))
+        dalam, i = 0, buka
+        while i < len(kuis):
+            if kuis[i] == "(":
+                dalam += 1
+            elif kuis[i] == ")":
+                dalam -= 1
+                if dalam == 0:
+                    break
+            i += 1
+        self.assertEqual(
+            dalam, 0,
+            'pemanggilan `h("div.kuis-kemajuan", ...)` tidak tertutup '
+            "kurungnya")
+        panggilan = kuis[buka + 1:i]
+        arg, tingkat, mulai = [], 0, 0
+        for k, ch in enumerate(panggilan):
+            if ch in "([{":
+                tingkat += 1
+            elif ch in ")]}":
+                tingkat -= 1
+            elif ch == "," and tingkat == 0:
+                arg.append(panggilan[mulai:k])
+                mulai = k + 1
+        arg.append(panggilan[mulai:])
+        anak = [a.strip() for a in arg[2:] if a.strip()]
+
+        def ikatan(teks):
+            if not re.fullmatch(r"[A-Za-z_$][\w$]*", teks):
+                return teks
+            m = re.search(rf"(?m)^\s*(?:const|let|var)\s+{re.escape(teks)}"
+                          r"\s*=\s*([^\n]*)", kuis)
+            return m.group(1) if m else teks
+
+        wakil = []
+        for a in anak:
+            ekspr = ikatan(a)
+            if re.search(r"\.jam(?![\w-])", ekspr):
+                continue
+            if re.search(r'h\(\s*"button', ekspr):
+                continue
+            wakil.append(a)
+        self.assertEqual(
+            len(wakil), 2,
+            f"`.kuis-kemajuan` memasang {len(wakil)} representasi progres "
+            f"soal, bukan dua: {wakil}. Yang sah tepat dua -- pencacah "
+            "`1 / <total>` dan bilah -- dan bentuk KETIGA (titik-titik "
+            "langkah) dilarang: tiga representasi untuk satu keadaan membuat "
+            "mata mencari mana yang berwenang, dan pada kuis 20 soal deretan "
+            "titik itu yang pertama pecah di layar sempit. Jam dan tombol "
+            "tidak terhitung -- jam itu sisa WAKTU, tombol itu tindakan")
 
     @staticmethod
     def _js():
@@ -4819,6 +5334,711 @@ class TestKuisUmpanBalik(unittest.TestCase):
         with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
                   encoding="utf-8") as f:
             return f.read()
+
+    @staticmethod
+    def _panggilan(teks, nama):
+        """Tiap pemanggilan `nama(...)` sebagai daftar argumen tingkat atas.
+
+        Kurung dicocokkan berpasangan, jadi argumen yang sendirinya memuat
+        koma (`translate3d(x, 0, 0)`, objek opsi) tidak terpecah. Jangkar kiri
+        `(?<![\\w$.])` wajib: tanpanya `el.animasi(` dan `xanimasi(` ikut
+        terjaring, dan yang dijaga di sini pemanggilan FUNGSI BEBAS.
+        """
+        keluar = []
+        for m in re.finditer(rf"(?<![\w$.]){re.escape(nama)}\s*\(", teks):
+            buka = teks.index("(", m.start())
+            d, i = 0, buka
+            while i < len(teks):
+                if teks[i] == "(":
+                    d += 1
+                elif teks[i] == ")":
+                    d -= 1
+                    if d == 0:
+                        break
+                i += 1
+            keluar.append(TestKuisUmpanBalik._pecah(teks[buka + 1:i]))
+        return keluar
+
+    @staticmethod
+    def _uji_null(teks, nama):
+        """Tiap uji null atas `nama` beserta OPERATORNYA, kedua urutan operand.
+
+        Memulangkan daftar `(match, bersama_bang)` urut posisi. Operatornya
+        ikut dipulangkan karena selisih `!==` dan `===` di layar kuis bukan
+        gaya: ia satu-satunya yang memisahkan pil pembanding dari cabang
+        percobaan pertama, dan keduanya bersebelahan di satu `deret`. Pagar
+        yang hanya menuntut "ada uji null" akan menghijaukan penukaran kedua
+        cabang itu.
+
+        Urutan operand TIDAK dikunci: `x !== null` dan `null !== x` boolean
+        yang sama tanpa efek samping, jadi menolak salah satunya berarti
+        menolak ejaan, bukan cacat.
+        """
+        pola = (
+            rf"(?<![\w$.]){re.escape(nama)}\s*(!==?|===?)\s*null(?![\w$])",
+            rf"(?<![\w$.])null\s*(!==?|===?)\s*{re.escape(nama)}(?![\w$])",
+        )
+        keluar = [(m, m.group(1).startswith("!"))
+                  for p in pola for m in re.finditer(p, teks)]
+        keluar.sort(key=lambda t: t[0].start())
+        return keluar
+
+    @staticmethod
+    def _pecah(teks):
+        """Pecah pada koma tingkat atas saja."""
+        out, d, mulai = [], 0, 0
+        for k, ch in enumerate(teks):
+            if ch in "([{":
+                d += 1
+            elif ch in ")]}":
+                d -= 1
+            elif ch == "," and d == 0:
+                out.append(teks[mulai:k])
+                mulai = k + 1
+        out.append(teks[mulai:])
+        return [x.strip() for x in out]
+
+    def test_transisi_soal_mewarisi_tingkat_gerak_lewat_skala(self):
+        """Soal berikutnya datang dari kanan, dan jaraknya MEWARISI tingkat gerak.
+
+        SATU ARAH, DAN ITU BUKAN UTANG. Tidak ada transisi "mundur" di layar
+        ini karena tidak ada jalan mundur: di badan `layarKuis` hanya ada
+        `lanjut.click()` (`layar-kerja.js:360`) dan `tombol[i].click()`
+        (`:368`), keduanya MAJU. Kuis menilai seketika, jadi "mundur" berarti
+        menghidupkan kembali soal yang sudah dijawab -- itu perubahan BENTUK
+        SESI di `webapp/sesi.py`, bukan perubahan gerak. Siapa pun yang
+        membaca pagar ini nanti: ketiadaan animasi mundur di sini keputusan,
+        bukan pekerjaan yang tertinggal.
+
+        TIGA PREDIKAT, dan tidak satu pun menyalin angka:
+
+          (1) jarak slide datang dari `skala()`. Yang diinvarian LEWATNYA
+              jarak itu ke `skala()`, bukan nilainya: `22` boleh jadi `26`,
+              yang tidak boleh `22` telanjang. `skala()` (`gerak.js:303`)
+              memulangkan 1 / 0,45 / 0 untuk penuh / halus / mati, jadi satu
+              pemanggilan itulah yang membuat tingkat gerak ikut ke sini tanpa
+              layar ini pernah membaca `data-gerak`. Konsekuensinya juga yang
+              membatalkan usulan "saat `halus`: hanya opacity" -- `22 * 0,45`
+              = 9,9 px, dan memendekkan JARAK memang konvensi rumah ini,
+              bukan mematikan sumbunya.
+
+          (2) keyframe `transform` TERAKHIR wajib `"none"`. Kalau ujungnya
+              sebuah `translate3d(...)`, soalnya berhenti di tempat yang bukan
+              tempat duduknya, dan `fill` apa pun sesudah itu mempertahankan
+              pergeseran yang salah.
+
+          (3) TEPAT SATU `animasi(<soal>, ...)` di badan ini. Dua panggilan
+              pada elemen yang sama adalah dua mesin yang mengejar satu
+              properti -- kelas cacat yang sama dengan pagar satu-properti di
+              bawah, cuma seluruhnya di dalam JS.
+
+        RUANG: badan `layarKuis` lewat `_wilayah` (gagal kalau definisinya
+        bukan satu), pada pohon `_telanjang` -- komentar ditanggalkan dulu
+        supaya contoh di dalam komentar tidak terbaca sebagai kode.
+        """
+        kuis = self._wilayah("layarKuis")
+        m = re.search(r'(?m)^\s*(?:const|let|var)\s+([\w$]+)\s*=\s*h\(\s*'
+                      r'"div\.kuis-soal"', kuis)
+        self.assertIsNotNone(
+            m,
+            'tidak ada pengenal yang terikat ke `h("div.kuis-soal", ...)` di '
+            "`layarKuis`; pagar ini tidak bisa memilih elemen soalnya")
+        nama_soal = m.group(1)
+        panggilan = self._panggilan(kuis, "animasi")
+        soal = [a for a in panggilan if a and a[0] == nama_soal]
+        self.assertEqual(
+            len(soal), 1,
+            f"ada {len(soal)} pemanggilan `animasi({nama_soal}, ...)` di "
+            "`layarKuis`, bukan satu. Dua animasi pada elemen yang sama "
+            "adalah dua mesin yang mengejar satu properti; yang kedua "
+            "menimpa yang pertama di tengah jalan")
+        tf = re.search(r"transform\s*:\s*\[(.*?)\]", soal[0][1], re.S)
+        self.assertIsNotNone(
+            tf, "panggilan animasi soal tidak lagi punya larik `transform`")
+        bingkai = self._pecah(tf.group(1))
+        self.assertEqual(
+            bingkai[-1], '"none"',
+            'keyframe `transform` TERAKHIR bukan `"none"`: soalnya berhenti '
+            "di tempat yang bukan tempat duduknya, dan `fill` apa pun "
+            f"sesudahnya mempertahankan pergeseran itu. Terbaca: {bingkai}")
+        idm = re.search(r"\$\{\s*-?\s*([A-Za-z_$][\w$]*)", bingkai[0])
+        self.assertIsNotNone(
+            idm,
+            "keyframe `transform` pertama tidak lagi menyisipkan sebuah "
+            "pengenal; pagar ini tidak bisa menelusuri jaraknya. Terbaca: "
+            f"{bingkai[0]}")
+        jauh = idm.group(1)
+        ikat = re.search(rf"(?m)^\s*(?:const|let|var)\s+{re.escape(jauh)}"
+                         r"\s*=\s*([^\n;]*)", kuis)
+        self.assertIsNotNone(
+            ikat, f"`{jauh}` tidak terikat di `layarKuis`")
+        self.assertRegex(
+            ikat.group(1), r"\bskala\s*\(\s*\)",
+            f"jarak slide `{jauh}` tidak lagi lewat `skala()`: tingkat gerak "
+            "berhenti diwarisi, dan `halus`/`mati` mendapat geseran penuh "
+            "yang sama dengan `penuh`. Angkanya boleh berubah; lewatnya ke "
+            f"`skala()` tidak. Terbaca: {ikat.group(1)}")
+
+    def test_transisi_kuis_lewat_pintu_animasi_bukan_animate_langsung(self):
+        """`mati` benar-benar nol -- dan itu cuma berlaku lewat pintu `animasi()`.
+
+        JALURNYA, lengkap: `data-gerak="mati"` di `<html>` -> `tingkatGerak()`
+        -> `adaGerak()` false (`gerak.js:297`) -> `animasi()` memulangkan
+        `kendaliKosong()` (`gerak.js:366`, di dalam fungsi yang dibuka `:363`)
+        -> `div.kuis-soal` (`layar-kerja.js:232`) muncul tanpa satu transisi
+        pun. `el.animate()` LANGSUNG tidak pernah bertanya: ia menjalankan
+        animasinya apa pun tingkat geraknya.
+
+        Predikat: nol kemunculan `.animate(` di badan `layarKuis` (ruang:
+        pohon `_telanjang`, pembaca: `re.search`, satuan: cacah kemunculan;
+        terukur NOL di SELURUH `layar-kerja.js` hari ini), dan elemen soal
+        maupun wadah opsi keduanya berjalan lewat `animasi(`.
+
+        Pagar ini TIDAK membaca `data-gerak` sendiri, dan itu invarian rumah:
+        `tingkatGerak()` satu-satunya yang memutuskan tingkat gerak. Pagar
+        yang membaca atributnya langsung akan tetap hijau saat seseorang
+        memindahkan keputusan itu ke tempat lain.
+
+        YANG TIDAK DIJAGA: jumlah pemanggilan `skala()`. Memanggilnya sekali
+        lalu menyinggahkannya (`const jauh = ...`, dipakai di
+        `layar-kerja.js:247` dan `:270`) dan memanggilnya dua kali sama
+        sahnya; yang dijaga SINGGAHAN-nya, bukan cacahnya.
+        """
+        kuis = self._wilayah("layarKuis")
+        langsung = re.search(r"\.animate\s*\(", kuis)
+        jendela = ("" if not langsung else
+                   " ".join(kuis[max(0, langsung.start() - 70):
+                                 langsung.start() + 50].split()))
+        self.assertIsNone(
+            langsung,
+            "ada `.animate(` langsung di `layarKuis`. `el.animate()` tidak "
+            'pernah bertanya soal tingkat gerak, jadi `data-gerak="mati"` '
+            "berhenti berarti nol di layar ini; `animasi()` yang memulangkan "
+            "`kendaliKosong()` saat `!adaGerak()` (`gerak.js:366`). Yang "
+            f"terbaca di sekitarnya: {jendela}")
+        sasaran = [a[0] for a in self._panggilan(kuis, "animasi") if a]
+        for kelas, label in ((r"div\.kuis-soal", "soal"), (r"div\.opsi", "opsi")):
+            m = re.search(rf'(?m)^\s*(?:const|let|var)\s+([\w$]+)\s*=\s*h\('
+                          rf'\s*"{kelas}"', kuis)
+            self.assertIsNotNone(
+                m, f"tidak ada pengenal yang terikat ke elemen {label} di "
+                   "`layarKuis`")
+            self.assertTrue(
+                any(m.group(1) in s for s in sasaran),
+                f"elemen {label} (`{m.group(1)}`) tidak lagi berjalan lewat "
+                "`animasi(`; transisinya berhenti mewarisi tingkat gerak. "
+                f"Sasaran yang terbaca: {sasaran}")
+
+    def test_transisi_kuis_satu_properti_satu_mesin(self):
+        """Yang dikunci PEMILIK propertinya, bukan propertinya.
+
+        Premisnya dua, keduanya diukur atas `gaya.css` di ruang `_telanjang`
+        dengan pembaca aturan berjangkar awal-baris (satuan: cacah deklarasi
+        di dalam blok):
+
+          `.kuis-soal {` (`gaya.css:3783-3790`) -> NOL `animation:` dan NOL
+              `transition:`. Isinya `font-family`, `font-size`, `line-height`,
+              `letter-spacing`, `margin-bottom`, `text-wrap`. Jadi
+              `opacity`/`transform` soal punya satu pemilik: WAAPI lewat
+              `animasi()`.
+          `.penjelasan {` (`gaya.css:3869-3877`) -> SATU `animation:`, yaitu
+              `animation: masuk var(--sedang) both;` di `:3876` (`--sedang` =
+              `220ms cubic-bezier(.32,.72,.36,1)` di `:433`). Jadi penjelasan
+              punya satu pemilik: CSS. Node `div.penjelasan` itu disisipkan JS
+              di `layar-kerja.js:322` dan TIDAK pernah lewat `animasi()`.
+
+        `both` adalah `fill` yang tidak berhenti sendiri. Pemilik KEDUA di
+        atas node yang sama karena itu bukan "dua animasi", melainkan dua
+        mesin yang menahan satu properti pada nilai berbeda -- dan yang menang
+        bergantung urutan yang tidak tertulis di mana pun.
+
+        Contoh hidup dari doktrin yang sama, dan sebabnya pagar ini tidak
+        menuduhnya: `.opsi > button` (`gaya.css:3808-3809`) memakai
+        `transition: border-color, background, TRANSLATE` -- `translate`,
+        bukan `transform`. Properti yang berbeda, jadi mesin CSS dan WAAPI
+        tidak pernah berebut sumbu yang sama.
+
+        BATAS YANG DIKETAHUI: hanya sasaran berupa PENGENAL TELANJANG yang
+        ditelusuri kelasnya. Sasaran berbentuk ekspresi -- hari ini tepat satu,
+        `[...opsiEl.children]` di `layar-kerja.js:268` -- tidak bisa dipetakan
+        ke sebuah kelas dari teks saja, karena kelas anak-anak sebuah wadah
+        tidak tertulis di tempat pemanggilan. Yang menutupinya di sana bukan
+        pagar ini melainkan pilihan properti `translate` di CSS-nya.
+        """
+        kuis = self._wilayah("layarKuis")
+        css = TestHamparanBara._telanjang(self._css())
+        bermesin = {}
+        for prelude, isi in re.findall(r"(?m)^([^{}/@][^{}]*?)\{([^{}]*)\}", css):
+            punya = []
+            if re.search(r"(?m)^\s*animation\s*:", isi):
+                punya.append("animation")
+            if re.search(r"transition\s*:[^;]*\b(?:opacity|transform)\b", isi):
+                punya.append("transition")
+            if not punya:
+                continue
+            for sel in prelude.split(","):
+                for kelas in re.findall(r"\.([\w-]+)", sel):
+                    bermesin.setdefault(kelas, set()).update(punya)
+        nakal = []
+        for arg in self._panggilan(kuis, "animasi"):
+            if len(arg) < 2 or not re.fullmatch(r"[A-Za-z_$][\w$]*", arg[0]):
+                continue
+            if not re.search(r"\b(?:opacity|transform)\s*:", arg[1]):
+                continue
+            ik = re.search(rf'(?m)^\s*(?:const|let|var)\s+{re.escape(arg[0])}'
+                           r'\s*=\s*h\(\s*"([^"]+)"', kuis)
+            if not ik:
+                continue
+            for kelas in re.findall(r"\.([\w-]+)", ik.group(1)):
+                if kelas in bermesin:
+                    nakal.append((arg[0], kelas, sorted(bermesin[kelas])))
+        self.assertEqual(
+            nakal, [],
+            "ada node di `layarKuis` yang dianimasikan `animasi(` untuk "
+            "`opacity`/`transform` padahal kelasnya SUDAH punya mesin CSS "
+            f"untuk properti itu: {nakal}. Satu properti, satu mesin -- dan "
+            "`animation: ... both` tidak berhenti sendiri, jadi yang kedua "
+            "tidak menambah gerakan melainkan berebut sumbu yang sama. "
+            "Pindahkan salah satunya, jangan jalankan keduanya")
+
+    def test_transisi_kuis_menstempel_pegas_bukan_milidetik(self):
+        """Pita durasinya dijaga di SUMBERNYA, dan pagar ini tidak menghitung kurva.
+
+        Angka-angkanya, beserta nama kaki dan satuannya:
+
+          `PEGAS.jawab` (`gerak.js:97`) = `{ durasiTampak: 0.19, pantul: 0.05 }`
+              -- satuan sumbernya DETIK, jadi kaki `durasiTampak` = 190 ms.
+              `durasiTampak` didefinisikan di kepala berkas itu (`gerak.js:71`)
+              sebagai "berapa detik sampai gerakannya TERLIHAT selesai".
+          `kurvaPegas(PEGAS.jawab).durasi` yang dikirim ke WAAPI = 217 ms.
+              Angka itu UKURAN REVIEWER (`node --input-type=module`); harness
+              sesi yang menulis pagar ini menuntut persetujuan untuk
+              menjalankan `node`, jadi ia TIDAK DIUKUR ulang di sini dan
+              ditulis sebagai atribusi, bukan sebagai ukuran sendiri.
+
+        `durasi` = `durasiTampak` + ekor pegasnya (`kurvaPegas` di
+        `gerak.js:211`, dipakai `animasi()` di `:374`). Jadi kalau `pantul`
+        digemukkan, yang lebih dulu keluar pita 160-220 ms adalah `durasi`,
+        bukan `durasiTampak` -- dan itu persis alasan kodenya men-stamp
+        `pegas`, bukan milidetik: satu nama menahan dua kaki sekaligus.
+
+        PAGAR INI KARENA ITU TIDAK MENGHITUNG KURVA. Mengimpor `gerak.js`
+        untuk memanggil `kurvaPegas` akan menyalakan jalur yang butuh Node,
+        dan tanpa Node tesnya SKIPPED -- bukan lulus (AGENTS.md). Yang dijaga
+        BENTUKNYA: `layarKuis` menstempel `pegas: "jawab"`, dan nol `durasi:`
+        literal DI DALAM panggilan `animasi(`.
+
+        Kenapa "di dalam `animasi(`" dan bukan "di badan `layarKuis`": badan
+        itu memang punya satu `durasi:` literal hari ini (predikat:
+        `(?<![\\w$.])durasi\\s*:` atas badan `layarKuis` di pohon
+        `_telanjang`, pembaca: `re.findall`, satuan: cacah kemunculan ->
+        SATU), yaitu `angkaKe(angkaBenar, r.benar, { dari: 0, durasi: 520 })`
+        di `layar-kerja.js:393`. Itu bukan transisi berpegas melainkan durasi
+        PENCACAHAN angka skor, dan `angkaKe` tidak menerima `pegas` sama
+        sekali -- menstempel nama pegas di sana tidak punya arti. Sapuan yang
+        menuduhnya akan MERAH-palsu di pohon yang benar, jadi yang disempitkan
+        predikatnya, bukan kodenya.
+
+        YANG TIDAK DIJAGA: angka `delay`-nya. `delay: (i) => 40 + i * 26`
+        (`layar-kerja.js:271`) boleh berubah; ia menjadwalkan KAPAN tiap opsi
+        berangkat, bukan berapa lama satu gerakan berlangsung.
+        """
+        kuis = self._wilayah("layarKuis")
+        self.assertRegex(
+            kuis, r'pegas\s*:\s*"jawab"',
+            '`layarKuis` tidak lagi menstempel `pegas: "jawab"`; transisi '
+            "soal berhenti memakai pita yang sudah disetel di satu tempat")
+        literal = [a for a in self._panggilan(kuis, "animasi")
+                   if any(re.search(r"(?<![\w$.])durasi\s*:", x) for x in a)]
+        self.assertEqual(
+            literal, [],
+            f"ada {len(literal)} panggilan `animasi(` di `layarKuis` yang "
+            "membawa `durasi:` literal. Durasi di transisi ini datang dari "
+            "NAMA PEGAS, bukan dari milidetik yang "
+            "diketik di tempat pemanggilan: `durasi` = `durasiTampak` + ekor "
+            "pegasnya, jadi angka yang diketik tangan memotong ekornya dan "
+            "mengubah rasa gerakannya tanpa satu pun tempat lain tahu")
+
+    @staticmethod
+    def _api():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "api.py"), encoding="utf-8") as f:
+            return f.read()
+
+    def test_pembanding_skor_dibaca_dari_potret_sebelum(self):
+        """Angka pembandingnya datang dari `sebelum`, dan hanya dirender penuh.
+
+        `kuis_selesai` memuat DUA potret progres: `sebelum` di dalam
+        `_KUNCI_PROGRES` (`api.py:554`, sebelum `record_quiz_score`
+        `:556-558`) dan `sesudah` di `:570`. `terakhir_skor` ditimpa di sisi
+        penyimpan (`pelajar/progress.py:595`, di dalam `riwayat` yang diambil
+        `:590`), jadi tepat saat `api.py:554` dijalankan nilainya masih
+        milik
+        percobaan SEBELUMNYA. Membacanya dari `sesudah` memulangkan skor
+        percobaan yang baru saja selesai -- dan pembandingnya berubah jadi
+        "naik dari angka yang sama dengan sekarang", yaitu kalimat yang selalu
+        benar dan karena itu tidak berarti apa-apa.
+
+        Tiga hal dijaga di sini, semuanya BENTUK:
+
+          (a) ekspresi nilai `"terakhir_sebelum"` menyebut `sebelum[` dan
+              TIDAK menyebut `sesudah`. Yang dibaca EKSPRESINYA, bukan
+              barisnya -- komentar di atas kunci itu memang menyebut kedua
+              nama, dan pagar yang menyapu baris akan tertipu olehnya.
+          (b) `.get("terakhir_skor")` TANPA nilai bawaan yang bukan `None`.
+              Predikatnya `get\\(\\s*"terakhir_skor"\\s*(?:,\\s*None\\s*)?\\)`
+              (ruang: teks `webapp/api.py`; pembaca: `re.search` atas ekspresi
+              nilai kuncinya saja; satuan: cocok/tidak), jadi `, None`
+              eksplisit DITERIMA -- ia ejaan lain dari makna yang sama, karena
+              `None` memang nilai bawaan `dict.get`. Yang ditolak `, 0`:
+              menambahkannya mengubah "belum pernah ada percobaan" jadi
+              "percobaan sebelumnya nol benar" -- dua kalimat berbeda, dan
+              yang kedua terbaca sebagai penghukuman bagi orang yang baru
+              pertama menyelesaikan kuis.
+
+              BUTA DENGAN SENGAJA: `.get("terakhir_skor") or 0` LOLOS
+              predikat teks ini, karena `get(...)` di situ memang ditulis
+              tanpa bawaan. Yang menangkapnya pagar RUNTIME
+              `test_terakhir_sebelum_none_sebelum_ada_percobaan` di
+              `TestSesiKuis`, yang menjalankan `api.kuis_selesai` atas profil
+              sandbox dan menuntut `None`. Melebarkan predikat teks sampai
+              menuduh seluruh ekspresi yang memuat `or` akan menolak bentuk
+              sah lain; pembagian kerjanya disengaja, bukan kelalaian.
+          (c) layar hasil merendernya hanya saat `r.sesi_penuh` DAN
+              `r.terakhir_sebelum !== null`, dengan penyebut `r.total_asli`.
+
+        Kenapa `total_asli` dan bukan `total`: pada mode ulangan `r.total`
+        adalah jumlah soal yang diulang. Membandingkan `benar` sebuah subset
+        dengan skor penuh membandingkan dua hal yang lain, dan pil
+        `Terbaik .../...` di sebelahnya sudah memakai penyebut yang benar.
+
+        YANG TIDAK DIJAGA DI SINI: nilainya saat dijalankan. Bahwa profil yang
+        belum pernah mengerjakan kuis itu benar-benar memulangkan `None`
+        diuji lewat `api` di `TestSesiKuis`, bukan lewat teks -- mengikuti
+        preseden `TestFieldPembandingDasbor` (`tests/test_web.py:369`), yang
+        mengunci "nilai netral untuk profil kosong" di sisi endpoint.
+        """
+        src = self._api()
+        # Nilai dibaca sampai akhir PERNYATAANNYA, bukan sampai akhir BARIS.
+        # `_pecah` memotong pada koma tingkat-nol dengan kurung berpasangan,
+        # jadi sebuah ekspresi sah yang dipecah jadi dua baris -- perilaku dan
+        # nilai IDENTIK -- tetap terbaca utuh. Pembaca yang berhenti di newline
+        # memulangkan `sebelum["kuis_skor"]` saja dan memerahkan PENYUSUNAN
+        # BARIS, bukan cacat.
+        kunci = re.search(r'"terakhir_sebelum"\s*:', src)
+        self.assertIsNotNone(
+            kunci, "`kuis_selesai` tidak lagi mengirim kunci "
+                   "`terakhir_sebelum`; layar hasil kehilangan satu-satunya "
+                   "sumber pembandingnya")
+        ekspr = " ".join(self._pecah(src[kunci.end():])[0].split())
+        self.assertIn(
+            "sebelum[", ekspr,
+            "nilai `terakhir_sebelum` tidak lagi dibaca dari potret "
+            f"`sebelum`. Yang terbaca: {ekspr}")
+        self.assertNotRegex(
+            ekspr, r"(?<![\w$.])sesudah(?![\w$])",
+            "nilai `terakhir_sebelum` dibaca dari potret `sesudah`, yaitu "
+            "SESUDAH `record_quiz_score` menimpa `terakhir_skor`. "
+            "Pembandingnya jadi membandingkan skor ini dengan dirinya "
+            f"sendiri. Yang terbaca: {ekspr}")
+        self.assertRegex(
+            ekspr, r'get\(\s*"terakhir_skor"\s*(?:,\s*None\s*)?\)',
+            "`terakhir_skor` dibaca dengan nilai bawaan BUKAN-None. `None` "
+            "dan `0` dua "
+            "kalimat yang berbeda: `0` berarti percobaan sebelumnya nol "
+            "benar, `None` berarti belum pernah ada percobaan -- dan "
+            '"naik dari 0/10" kepada orang yang baru pertama selesai terbaca '
+            f"sebagai penghukuman. Yang terbaca: {ekspr}")
+
+        kuis = self._wilayah("layarKuis")
+        # Yang dijaga KEBERADAAN DUA SYARAT di ekspresi yang sama -- bukan
+        # urutan operandnya dan bukan gaya uji null-nya. `!=` dan `!==`
+        # keduanya diterima, dan konjungsi yang dibalik juga: keduanya boolean
+        # yang sama tanpa efek samping, jadi pagar yang menolaknya menolak
+        # EJAAN, bukan cacat.
+        #
+        # Batas kondisinya diambil dari koma tingkat-argumen TERDEKAT sebelum
+        # uji null sampai `?` yang menyusulnya -- bukan jendela sekian
+        # karakter. Pil di atasnya juga memuat `r.sesi_penuh`, dan blok
+        # komentar di antara keduanya menjadi baris kosong sesudah
+        # `_telanjang`; sebuah jendela hitung-karakter akan menyeberang ke
+        # sana dan menghijaukan mutasi "buang `r.sesi_penuh &&`".
+        # Uji null yang MEMBAWA `!` -- itu yang memisahkan pil ini dari cabang
+        # percobaan pertama di sebelahnya. Urutan operandnya bebas.
+        berbang = [m for m, bang in self._uji_null(kuis, "r.terakhir_sebelum")
+                   if bang]
+        self.assertTrue(
+            berbang,
+            "pembanding skor tidak lagi menguji `r.terakhir_sebelum` BERBEDA "
+            "DARI `null`. Tanpa `!` ia menukar tempat dengan cabang percobaan "
+            "pertama yang bersebelahan dengannya: angka pembanding muncul "
+            "justru saat belum ada percobaan sebelumnya, dan kalimat "
+            '"percobaan pertamamu" muncul saat sudah ada')
+        nol = berbang[0]
+        tanya = kuis.find("?", nol.end())
+        self.assertNotEqual(
+            tanya, -1, "uji null pembanding skor tidak diikuti operator `?`; "
+                       "pagar ini tidak bisa menemukan batas kondisinya")
+        kondisi = kuis[kuis.rfind(",", 0, nol.start()) + 1:tanya]
+        self.assertRegex(
+            kondisi, r"r\.sesi_penuh",
+            "pembanding skor tidak lagi dipagari `r.sesi_penuh` DI EKSPRESI "
+            "YANG SAMA dengan uji null-nya. Tanpa syarat itu ia muncul di "
+            "sesi ulangan yang sengaja tidak menyentuh skor. Urutan operand "
+            "bebas; yang dituntut kehadiran keduanya. Yang terbaca: "
+            f"{' '.join(kondisi.split())}")
+        jendela = kuis[tanya:tanya + 400]
+        self.assertIn(
+            "r.total_asli", jendela,
+            "pembanding skor tidak memakai penyebut `r.total_asli`. Pada mode "
+            "ulangan `r.total` adalah jumlah soal yang diulang, jadi "
+            "penyebutnya harus skor penuh -- sama dengan pil `Terbaik` di "
+            f"sebelahnya. Yang terbaca: {' '.join(jendela[:160].split())}")
+
+    def test_percobaan_pertama_punya_kalimatnya_sendiri(self):
+        """Percobaan pertama dapat kalimatnya sendiri, bukan diam.
+
+        Pil pembanding hanya muncul saat ada percobaan sebelumnya, jadi
+        sebelum hun ini pelajar yang menyelesaikan sebuah kuis PERTAMA KALI
+        melihat angka tanpa satu pun kalimat -- dan diamnya layar di situ
+        terbaca sebagai ketiadaan, bukan sebagai permulaan. Cabang pelengkap
+        itu yang dijaga di sini.
+
+        NOL FIELD BARU, dan itu sebabnya `api.py` tidak disentuh di hun ini:
+        `r.terakhir_sebelum === null` SUDAH berarti "belum pernah ada
+        percobaan penuh". Cabang pelengkapnya lengkap di sisi klien.
+
+        SYARAT (a) TIDAK DIBALIK: `r.sesi_penuh` berdiri di cabang baru sama
+        seperti di pil pembanding, jadi mode ulangan tetap DIAM di keduanya.
+        Sesi ulangan sengaja tidak menyentuh skor; "percobaan pertamamu" di
+        sana akan berbohong tentang apa yang baru saja terjadi.
+
+        PREDIKATNYA MENERIMA EJAAN LAIN DARI MAKNA YANG SAMA: `==` dan `===`
+        sama-sama diterima untuk uji null-nya, dan urutan operand bebas --
+        batas kondisinya diambil dari koma tingkat-argumen terdekat sampai `?`
+        yang menyusul, bukan dari jendela hitung-karakter. Yang dituntut tiga
+        hal: uji null bentuk KESAMAAN pada `r.terakhir_sebelum`,
+        `r.sesi_penuh` di ekspresi yang sama, dan teks yang dirender menyebut
+        "pertama".
+
+        Ruang: badan `layarKuis` lewat `_wilayah`, pada pohon `_telanjang`.
+        """
+        kuis = self._wilayah("layarKuis")
+        # Uji null TANPA `!`. Urutan operandnya bebas; operatornya tidak --
+        # lihat `_uji_null`.
+        tanpa_bang = [m for m, bang
+                      in self._uji_null(kuis, "r.terakhir_sebelum")
+                      if not bang]
+        self.assertTrue(
+            tanpa_bang,
+            "tidak ada cabang yang menguji `r.terakhir_sebelum` SAMA DENGAN "
+            "`null` di `layarKuis`. Tanpa itu percobaan pertama tidak dapat "
+            "kalimat apa pun: pil pembanding sengaja diam di sana, dan "
+            "diamnya terbaca sebagai ketiadaan")
+        sama = tanpa_bang[0]
+        tanya = kuis.find("?", sama.end())
+        self.assertNotEqual(
+            tanya, -1,
+            "uji `=== null` percobaan pertama tidak diikuti operator `?`; "
+            "pagar ini tidak bisa menemukan batas kondisinya")
+        kondisi = kuis[kuis.rfind(",", 0, sama.start()) + 1:tanya]
+        self.assertRegex(
+            kondisi, r"r\.sesi_penuh",
+            "cabang percobaan pertama tidak dipagari `r.sesi_penuh` di "
+            "ekspresi yang sama. Mode ulangan sengaja tidak menyentuh skor, "
+            'jadi "percobaan pertamamu" di sana berbohong tentang apa yang '
+            f"baru saja terjadi. Yang terbaca: {' '.join(kondisi.split())}")
+        jendela = kuis[tanya:tanya + 300]
+        self.assertRegex(
+            jendela, r"pertama",
+            "cabang `r.terakhir_sebelum === null` tidak merender kalimat yang "
+            "menyebut percobaan pertama. Cabangnya ada tapi isinya bukan yang "
+            f"dimaksud. Yang terbaca: {' '.join(jendela[:160].split())}")
+
+    def test_fokus_pindah_ke_pertanyaan_sesudah_lanjut(self):
+        """Sesudah "Lanjut", yang dibacakan pembaca layar adalah PERTANYAANNYA.
+
+        Tanpa ini fokus jatuh ke `<body>`: `lanjut.click()` memanggil
+        `berikutnya()` -> `gambarSoal()`, dan tombol `lanjut` yang tadi
+        terfokus sudah tidak ada di DOM. Pembaca layar membacakan yang
+        terfokus, jadi yang dibacakan adalah ruang kosong -- soal berikutnya
+        sudah tampil di layar tapi tidak pernah diucapkan.
+
+        EMPAT PREDIKAT, dan tidak satu pun mencacah `.focus(`:
+
+          (i)   ada `.focus(` yang sasarannya pengenal yang SAMA dengan yang
+                diikat ke `h("div.kuis-soal", ...)`;
+          (ii)  pemanggilannya menyertakan `preventScroll: true`;
+          (iii) pengenal soal itu juga memasang `tabIndex`/`tabindex` `-1`;
+          (iv)  `lanjut.focus()` tetap ada.
+
+        (iii) bukan kerapian: sebuah `div` tanpa `tabindex` TIDAK BISA
+        menerima fokus, dan `focus()` di atasnya diam-diam tidak memindahkan
+        apa pun -- kelas cacat "setelan yang tampak berfungsi tapi tidak
+        mengubah apa pun". `-1` dan bukan `0` supaya soalnya tidak masuk
+        urutan Tab (`inti.js:464` melewati `[tabindex="-1"]`). Dua ejaan
+        diterima karena rumah ini memakai keduanya: `tabIndex: -1`
+        (`inti.js:771`, lewat jalur properti `k in el` di `inti.js:124`) dan
+        `tabindex: "-1"` (`layar-belajar.js:2853`, lewat `setAttribute`, dengan
+        alasan yang sama persis -- pembungkus yang harus bisa difokus).
+
+        (iv) berdiri karena `lanjut.focus()` (`layar-kerja.js:332`) menjawab
+        pertanyaan yang lain: sesudah JAWABAN dirender, yang berikutnya
+        ditekan orang adalah "Lanjut". Yang ditambahkan di hun ini fokus
+        sesudah SOAL dirender; keduanya hidup bersama, bukan menggantikan.
+
+        `Enter` = lanjut TIDAK bergantung fokus, dan itu penting supaya
+        pembaca tidak wajib menavigasi ke tombolnya: `saatTombol` dipasang di
+        `document` (`layar-kerja.js:200`), dilepas di `bersihkan` (`:207`), dan
+        mencari tombolnya lewat `querySelector(".penjelasan .tbl")` (`:359`) --
+        bukan lewat `document.activeElement`.
+
+        YANG TIDAK DIPASANG, dan itu keputusan: `Backspace` sebagai jalan
+        keluar. `kuis_batal` ada (`api.py:600`), tapi memanggilnya dari sebuah
+        tombol yang sering ditekan tanpa sengaja adalah cara tercepat membuat
+        orang kehilangan lima belas jawaban tanpa satu pun jejak visual.
+        """
+        kuis = self._wilayah("layarKuis")
+        m = re.search(r'(?m)^\s*(?:const|let|var)\s+([\w$]+)\s*=\s*h\(\s*'
+                      r'"div\.kuis-soal"\s*,\s*(\{[^{}]*\})', kuis)
+        self.assertIsNotNone(
+            m,
+            'tidak ada pengenal yang terikat ke `h("div.kuis-soal", { ... })` '
+            "di `layarKuis`; pagar ini tidak bisa memilih elemen soalnya")
+        nama, sifat = m.group(1), m.group(2)
+        self.assertRegex(
+            sifat, r'tab[Ii]ndex\s*:\s*"?-1"?',
+            f"`{nama}` tidak memasang `tabIndex`/`tabindex` `-1`. Sebuah `div` "
+            "tanpa itu TIDAK BISA menerima fokus, jadi `focus()` di bawah "
+            "diam-diam tidak memindahkan apa pun dan pembaca layar tetap "
+            f"membacakan ruang kosong. Yang terbaca: {sifat}")
+        fok = re.search(rf"(?<![\w$.]){re.escape(nama)}\s*\.\s*focus\s*\("
+                        r"([^()]*(?:\([^()]*\)[^()]*)*)\)", kuis)
+        self.assertIsNotNone(
+            fok,
+            f"tidak ada `{nama}.focus(...)` di `layarKuis`. Sesudah "
+            "`lanjut.click()` tombolnya sudah tidak ada di DOM dan fokus "
+            "jatuh ke `<body>`; pembaca layar lalu membacakan ruang kosong, "
+            "bukan pertanyaan yang baru datang")
+        self.assertRegex(
+            fok.group(1), r"preventScroll\s*:\s*true",
+            f"`{nama}.focus(...)` tidak menyertakan `preventScroll: true`. "
+            "Memindahkan fokus tidak boleh sekaligus menggeser halaman -- "
+            "soalnya sudah berada di tempat yang benar, dan geseran kedua "
+            "terasa seperti layar yang meloncat sendiri. Konvensi rumahnya "
+            "`aplikasi.js:255`, `aplikasi.js:280`, `layar-belajar.js:2459`. "
+            f"Yang terbaca: {fok.group(1)}")
+        self.assertRegex(
+            kuis, r"(?<![\w$.])lanjut\s*\.\s*focus\s*\(",
+            "`lanjut.focus()` hilang dari `layarKuis`. Ia menjawab pertanyaan "
+            "yang lain dari fokus soal: sesudah JAWABAN dirender, yang "
+            "berikutnya ditekan orang adalah tombol Lanjut. Keduanya hidup "
+            "bersama; yang baru tidak menggantikan yang lama")
+
+    def test_transisi_kuis_tidak_punya_kantung_pelarian_paksa(self):
+        """`paksa: true` adalah kantung pelarian, dan layar kuis tidak memakainya.
+
+        `animasi()` memulangkan `kendaliKosong()` saat `!adaGerak()` KECUALI
+        pemanggilnya meminta `paksa` (`gerak.js:366`), dan kantung itu
+        didokumentasikan di `gerak.js:355-357` untuk gerak yang MENGGANTIKAN
+        teks -- bukan untuk transisi hiasan. Satu `paksa: true` di `layarKuis`
+        cukup untuk membatalkan klaim "saat `mati`, transisi soal nol" tanpa
+        satu pun pagar lain memerah.
+
+        Populasi hari ini NOL: predikat `paksa` diikuti titik dua di dalam
+        argumen opsi pemanggilan `animasi(` pada badan `layarKuis` (ruang:
+        pohon `_telanjang`, pembaca: `_panggilan` + `_pecah`, satuan: cacah
+        pemanggilan). Di seluruh `webapp/statik/js/` pun terukur NOL hari ini,
+        jadi yang dijaga bukan cacat yang sedang berjalan melainkan pintunya.
+
+        WILAYAH, dan itu yang membuat pagar ini bukan larangan seumur berkas:
+        layar lain di berkas yang sama BOLEH memakai `paksa` kalau memang
+        geraknya menggantikan teks. Yang dilarang hanya di dalam `layarKuis`.
+        """
+        kuis = self._wilayah("layarKuis")
+        nakal = [a for a in self._panggilan(kuis, "animasi")
+                 if any(re.search(r"(?<![\w$.])paksa\s*:", x) for x in a[1:])]
+        self.assertEqual(
+            nakal, [],
+            f"ada {len(nakal)} pemanggilan `animasi(` di `layarKuis` yang "
+            "membawa `paksa`. Kantung itu melewati gerbang `!adaGerak()` "
+            "(`gerak.js:366`) dan disediakan untuk gerak yang MENGGANTIKAN "
+            "teks, bukan untuk transisi soal -- satu saja cukup untuk membuat "
+            '`data-gerak="mati"` berhenti berarti nol di layar ini')
+
+    def test_angka_skor_punya_keadaan_akhir_di_dua_cabang(self):
+        """Angka skor punya nilai akhir walau geraknya mati.
+
+        Invarian rumah: animasi tidak boleh jadi SATU-SATUNYA cara sebuah
+        elemen terlihat. Angka benar di layar hasil dihitung naik dari nol
+        lewat `angkaKe` di dalam `if (adaGerak())` (`layar-kerja.js:391-393`),
+        dan cabang `else` (`:395`) menyetelnya langsung. Buang cabang `else`
+        itu dan `data-gerak="mati"` menampilkan "0 dari 20 benar" selamanya --
+        tidak ada satu tes pun yang memerah sebelum hun ini.
+
+        DUA PREDIKAT, bentuk bukan angka:
+
+          (i)  cabang `else` menyetel `textContent` pengenal yang SAMA dengan
+               sasaran `angkaKe`, dan nilainya berasal dari `r.benar` -- bukan
+               sebuah literal. `= "0"` akan lolos pagar yang cuma mencari
+               `textContent =`, dan cacatnya identik dengan menghapus
+               cabangnya.
+          (ii) `angkaKe` itu berdiri DI DALAM `if (adaGerak())`, dibuktikan
+               dengan pencocokan kurung berpasangan, bukan dengan kedekatan
+               baris.
+
+        Angka `520` dan `180` BOLEH berubah; yang diinvarian keberadaan dua
+        cabangnya, bukan pitanya. Untuk catatan pembaca berikutnya: `520`
+        meng-OVERRIDE bawaan `angkaKe`, yaitu `opsi.durasi || 620`
+        (`gerak.js:636`) -- satuan MILIDETIK di kedua tempat. Dan dua angka
+        pita pegas yang sering disebut bersamanya, `durasiTampak` 190 md (dari
+        `durasiTampak: 0.19` di `gerak.js:97`, satuan sumbernya DETIK) dan
+        `kurvaPegas(...).durasi` 217 md, adalah UKURAN REVIEWER -- bukan
+        ukuran tes ini, yang tidak mengimpor `gerak.js` dan tidak menghitung
+        satu kurva pun.
+        """
+        kuis = self._wilayah("layarKuis")
+        ak = self._panggilan(kuis, "angkaKe")
+        self.assertEqual(
+            len(ak), 1,
+            f"ada {len(ak)} pemanggilan `angkaKe(` di `layarKuis`, bukan "
+            "satu; pagar ini tidak bisa memilih angka yang dimaksud")
+        nama = ak[0][0]
+        tc = re.search(rf"(?<![\w$.]){re.escape(nama)}\s*\.\s*textContent"
+                       r"\s*=\s*([^\n;]*)", kuis)
+        self.assertIsNotNone(
+            tc,
+            f"tidak ada cabang yang menyetel `{nama}.textContent` di "
+            '`layarKuis`. Tanpa itu `data-gerak="mati"` menampilkan angka '
+            "awalnya selamanya: animasi jadi satu-satunya cara angka skor "
+            "terlihat")
+        self.assertRegex(
+            tc.group(1), r"(?<![\w$.])r\.benar(?![\w$])",
+            f"cabang `{nama}.textContent` tidak lagi mengambil nilainya dari "
+            "`r.benar`. Menyetelnya ke sebuah literal cacatnya identik dengan "
+            f"menghapus cabangnya. Yang terbaca: {tc.group(1)}")
+        panggil = re.search(r"(?<![\w$.])angkaKe\s*\(", kuis)
+        posisi = panggil.start()
+        dalam = False
+        for g in re.finditer(r"if\s*\(\s*adaGerak\s*\(\s*\)\s*\)\s*\{", kuis):
+            awal = g.end() - 1
+            d, i = 0, awal
+            while i < len(kuis):
+                if kuis[i] == "{":
+                    d += 1
+                elif kuis[i] == "}":
+                    d -= 1
+                    if d == 0:
+                        break
+                i += 1
+            if awal < posisi < i:
+                dalam = True
+                break
+        self.assertTrue(
+            dalam,
+            "`angkaKe(` tidak berdiri di dalam `if (adaGerak())`. Di luar "
+            "gerbang itu ia berjalan juga saat gerak dimatikan, dan cabang "
+            "`else` yang menyetel nilai akhirnya jadi tidak pernah dipakai")
 
     def test_tombol_di_dalam_opsi_tidak_mewarisi_gaya_opsi(self):
         """`.opsi > button`, bukan `.opsi button` — dan itu bukan kerapian.
@@ -4863,7 +6083,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
             gaya.css:1406  `.deret`
             gaya.css:1632  `.keadaan-isi .deret`
             gaya.css:2050  `.keluaran-kartu.deret`
-            gaya.css:4633  `.deret`, di dalam daftar `#rel, #konteks, …`
+            gaya.css:4773  `.deret`, di dalam daftar `#rel, #konteks, …`
 
         LIMA baris prelude, EMPAT selector-string berbeda — `.deret` sendirian
         muncul di dua baris. Bedakan kedua cacah itu sebelum memakainya, dan
@@ -4908,8 +6128,8 @@ class TestKuisUmpanBalik(unittest.TestCase):
                 di pohon `_telanjang` -> NOL
                 di ruang MENTAH       -> SATU, dan itu bukan aturan: contoh
                   di dalam blok komentar yang MEMBUKA dengan
-                  `/* ==== @media` — hari ini `gaya.css:4436`, contohnya di
-                  `:4441`. Cari teks pembukanya, bukan nomor barisnya:
+                  `/* ==== @media` — hari ini `gaya.css:4469`, contohnya di
+                  `:4474`. Cari teks pembukanya, bukan nomor barisnya:
                   nomornya bergeser tiap kali berkas ini tumbuh.
               predikat yang SAMA tanpa batas baris (`[^{]`, `[^{}]`)
                 di pohon `_telanjang` -> EMPAT BELAS = 9 `@media` + 5
@@ -5070,35 +6290,61 @@ class TestKuisUmpanBalik(unittest.TestCase):
         disentuh — terukur, dan seluruh suite tetap OK sebelum pagar itu ada.
 
         NORMALISASI YANG DIPAKAI, DAN YANG TIDAK. Tiap populasi di bawah
-        ditulis dengan TIGA kaki — PREDIKAT, RUANG, dan PEMBACA — karena di
-        kelas ini DUA pembaca aturan hidup berdampingan dan angkanya berbeda.
-        Angka tanpa pembacanya bukan ukuran; ia klaim.
+        ditulis dengan PREDIKAT, RUANG dan PEMBACA — ditambah SATUAN di mana
+        satu pembaca bisa mengeluarkan lebih dari satu angka (aturan vs
+        selektor). Di kelas ini DUA pembaca aturan hidup berdampingan dan
+        angkanya berbeda. Angka tanpa pembacanya bukan ukuran, ia klaim; dan
+        angka tanpa satuannya bisa BENAR sambil menyesatkan.
 
-        DUA PEMBACA, DAN SELISIHNYA TEPAT 30.
-          SATU-GRUP  `(?m)^([^{}/@][^{}]*?)\\{`  — dipakai sapuan wadah (b):
-            892 fragmen tak-kosong di pohon `_telanjang`.
+        DUA PEMBACA, DUA SATUAN, DAN SELISIH YANG TEPAT 30. Tiap angka di
+        bawah ditulis dengan EMPAT kaki — PREDIKAT, RUANG, PEMBACA, SATUAN —
+        karena di kelas ini sebuah angka bisa COCOK sekaligus BERLABEL SALAH,
+        dan label yang salah lolos tiap pemeriksaan aritmetika. Mekanismenya
+        sederhana: `re.findall` mengembalikan satu cocokan per ATURAN, lalu
+        `prelude.split(",")` memekarkannya jadi SELEKTOR. Di `gaya.css` selisih
+        itu +97 pada KEDUA pembaca — jadi sebuah angka selektor yang disebut
+        "cacah aturan" tetap konsisten dengan dirinya sendiri selamanya.
+
+          SATU-GRUP  `(?m)^([^{}/@][^{}]*?)\\{`  — dipakai sapuan wadah (b).
+            RUANG `_telanjang`, SATUAN: 795 aturan / 892 selektor.
           DUA-GRUP   `(?m)^([^{}/@][^{}]*?)\\{([^{}]*)\\}`  — dipakai pagar
-            keluarga `.jam` di bawah: 862 fragmen tak-kosong, ruang sama.
-        Tiga puluh selisihnya SELURUHNYA prelude at-rule: `@media` 11,
-        `@supports` 7, `@keyframes` 4, `@container` 4, `@starting-style` 4.
-        Sebabnya BUKAN `@` diizinkan — `[^{}/@]` memang menolaknya — melainkan
-        bahwa kelas itu MENERIMA `\\n` sementara `[^{}]*?` melintasi baris:
-        sebuah baris KOSONG sebelum at-rule menjadi titik mulai yang sah, dan
-        cocokannya literal `'\\n@media (max-width: 1040px) '`. Pembaca dua-grup
-        tidak bisa menyelesaikannya karena badan at-rule memuat `{`.
-        Karena itu 892 BUKAN "cacah selektor". Cacah selektor yang benar-benar
-        dibayar pagar adalah 862 — fragmen yang punya badan kurung-kosong.
+            keluarga `.jam` di bawah. RUANG `_telanjang`, SATUAN: 765 aturan /
+            862 selektor. Karena itu variabel bernama `aturan` di badan tes ini
+            sebenarnya memegang SELEKTOR — ia hasil `prelude.split(",")`.
 
-        KESIMPULAN YANG TIDAK BERGERAK di kedua pembaca, dan inilah yang
-        menopang keputusan di bawah: fragmen dibuka [A-Z] = NOL, di 892 maupun
-        di 862; fragmen membawa [A-Z] = EMPAT di keduanya, dan keempatnya nama
-        kelas sungguhan — `.t-Mudah`, `.t-Menengah`, `.t-Lanjut`, `.t-Sulit`.
+        SELISIH 30 ITU SAMA DI KEDUA SATUAN (795−765 = 892−862 = 30) dan
+        seluruhnya prelude at-rule: `@media` 11, `@supports` 7, `@keyframes` 4,
+        `@container` 4, `@starting-style` 4 — angka taraf selektor, dan taraf
+        aturannya sama persis karena tidak satu pun prelude at-rule ini memuat
+        koma. MEKANISMENYA DUA BENTUK, bukan satu: `[^{}/@]` melarang `@` HANYA
+        di karakter PERTAMA fragmen, jadi apa pun di depannya sudah cukup untuk
+        membukanya.
+          20 menyilang baris — kelas itu menerima `\\n`, cocokannya literal
+            `'\\n@keyframes kilat-tepi '`.
+          10 satu-baris berindentasi — spasi di depan `@` sudah cukup, dan
+            tidak ada baris baru yang terlibat sama sekali:
+            `'  @starting-style '`, `'  @supports (transition-behavior:
+            allow-discrete) and selector(:has(*)) '`.
+        Pembaca dua-grup tidak bisa menyelesaikan satu pun dari ketiga puluh
+        itu, karena badan at-rule memuat `{`.
+
+        KESIMPULAN YANG TIDAK BERGERAK di kedua pembaca MAUPUN kedua satuan,
+        dan inilah yang menopang keputusan di bawah: dibuka [A-Z] = NOL;
+        membawa [A-Z] = EMPAT, dan keempatnya nama kelas sungguhan —
+        `.t-Mudah`, `.t-Menengah`, `.t-Lanjut`, `.t-Sulit`.
 
         KONTRALABEL ruang MENTAH — ini BUKAN populasi pagar, ia justru alasan
-        `_telanjang` ada: satu-grup 1548 apa adanya / 1547 tak-kosong;
-        dua-grup 1460 / 1459 tak-kosong; 19 fragmen dibuka [A-Z]; fragmen
-        membawa [A-Z] 477 (satu-grup) dan 426 (dua-grup). Kesembilan belas dan
-        ratusan itu prosa komentar yang terbaca sebagai prelude.
+        `_telanjang` ada.
+          SATU-GRUP: 803 aturan / 1548 ruas apa adanya / 1547 ruas tak-kosong;
+            477 selektor membawa [A-Z], 19 membukanya; 188 aturan membawa,
+            3 membuka.
+          DUA-GRUP : 772 aturan / 1460 ruas apa adanya / 1459 tak-kosong;
+            426 selektor membawa [A-Z], 19 membuka; 172 aturan membawa,
+            3 membuka.
+        Perhatikan kedua satuan berpisah JAUH di sini — +744 dan +687, bukan
+        +97 — karena yang terbaca prosa komentar, dan prosa penuh koma. Itu
+        juga sebabnya angka MENTAH tidak pernah boleh dipakai sebagai
+        pembanding langsung bagi angka `_telanjang`.
 
         DUA ASERSI `.opsi` DI ATAS BUKAN PEMBACA ATURAN: keduanya `re.findall`
         atas SELURUH teks `_telanjang`, tanpa jangkar baris. Label itu penting
@@ -5146,11 +6392,12 @@ class TestKuisUmpanBalik(unittest.TestCase):
             (`(?<![\\w-])(?i:button)(?![\\w-])`). Nama elemen abai-kasus di CSS,
             jadi `.opsi BUTTON` dan `.penjelasan BUTTON` selektor HIDUP yang
             sebelumnya lolos (HIJAU-palsu). Nama WADAH tetap peka-kasus.
-            PREDIKAT `[A-Z]` pada karakter pertama fragmen · RUANG `_telanjang`
-            · PEMBACA keduanya, dan hasilnya sama: NOL dari 892 (satu-grup) dan
-            NOL dari 862 (dua-grup). Harga penambalannya juga nol: fragmen yang
-            memuat kata `button` tetap 21 di kedua pembaca, peka-kasus maupun
-            abai-kasus.
+            PREDIKAT `[A-Z]` pada karakter pertama · RUANG `_telanjang` ·
+            PEMBACA keduanya · SATUAN SELEKTOR, dan hasilnya sama: NOL dari
+            892 (satu-grup) dan NOL dari 862 (dua-grup). Harga penambalannya
+            juga nol: SELEKTOR yang memuat kata `button` tetap 21 di kedua
+            pembaca, peka-kasus maupun abai-kasus — 20 kalau dihitung per
+            ATURAN, dan itu satuan lain, bukan angka lain.
 
           DIPAKAI — kasus NAMA FUNGSI: token nama yang TEPAT mendahului `(`
             dikecilkan, sehingga `VAR(--teks-2)` tidak lagi MERAH-palsu. Isi
@@ -5221,11 +6468,12 @@ class TestKuisUmpanBalik(unittest.TestCase):
         (v) aturan yang ditulis SATU BARIS bersama `@media`/`@supports` tidak
             terlihat PEMBACA BARIS. `aturan` di atas dibaca dengan
             `(?m)^([^{}/@][^{}]*?)\\{`. Jangkarnya TIDAK menolak `@` sebulat
-            yang terdengar: `[^{}/@]` menerima `\\n`, jadi 30 prelude at-rule
-            ikut terbaca lewat baris kosong di depannya (lihat "DUA PEMBACA" di
-            atas). Yang benar-benar tidak terbaca adalah aturan yang tidak
-            MULAI di awal baris, dan aturan dalam sebuah at-rule satu baris
-            memang tidak. Akibatnya
+            yang terdengar: `[^{}/@]` melarangnya HANYA di karakter PERTAMA,
+            jadi 30 prelude at-rule ikut terbaca — 20 lewat `\\n` di depannya,
+            10 lewat spasi indentasi saja (lihat "DUA PEMBACA" di atas). Yang
+            benar-benar tidak terbaca adalah aturan yang tidak MULAI di awal
+            baris, dan aturan dalam sebuah at-rule satu baris memang tidak.
+            Akibatnya
             `@media (max-width: 700px) { .menipis { color: #dc2626; } }`
             LOLOS sementara bentuk multi-barisnya MERAH. Yang lolos bukan
             at-rule-nya — bentuk multi-baris tetap terjaga — melainkan
@@ -5243,8 +6491,8 @@ class TestKuisUmpanBalik(unittest.TestCase):
                 di pohon `_telanjang` -> NOL
                 di ruang MENTAH       -> SATU, dan itu bukan aturan: contoh
                   di dalam blok komentar yang MEMBUKA dengan
-                  `/* ==== @media` — hari ini `gaya.css:4436`, contohnya di
-                  `:4441`. Cari teks pembukanya, bukan nomor barisnya:
+                  `/* ==== @media` — hari ini `gaya.css:4469`, contohnya di
+                  `:4474`. Cari teks pembukanya, bukan nomor barisnya:
                   nomornya bergeser tiap kali berkas ini tumbuh.
               predikat yang SAMA tanpa batas baris (`[^{]`, `[^{}]`)
                 di pohon `_telanjang` -> EMPAT BELAS = 9 `@media` + 5
@@ -5299,10 +6547,10 @@ class TestKuisUmpanBalik(unittest.TestCase):
         # `jam.classList.toggle("menipis", sisaDetik <= 30)`
         # (`layar-kerja.js:177`) adalah SATU-SATUNYA pemakaian `menipis`
         # sebagai kelas di seluruh `webapp/statik/js/`, dan `.jam.menipis`
-        # (`gaya.css:3780`) satu-satunya prelude yang menyebutnya. Mengunci
-        # `.jam` sendirian karena itu meloloskan `.menipis { color:
-        # var(--salah) }` — cacat yang persis sama dengan yang ditutup untuk
-        # tombol `lanjut`, cuma di layar sebelah.
+        # (`gaya.css:3899`) satu-satunya prelude yang menyebutnya. Mengunci
+        # `.jam` sendirian karena itu meloloskan `.menipis { background:
+        # #dc2626 }` (`color` tetap tertangkap `berwarna`) — cacat yang
+        # persis sama dengan yang ditutup untuk tombol `lanjut`.
         #
         # Jangkar kiri `(^|[\s,>+~(])` DIBUANG dengan sengaja: `\.` sendiri
         # sudah batas kiri sebuah kelas, sementara jangkar itu meloloskan
@@ -5327,14 +6575,14 @@ class TestKuisUmpanBalik(unittest.TestCase):
         # Untuk predikat KETAT ketiga pembacaan itu kebetulan memberi angka
         # yang SAMA: 44, 44, dan 44. Kebetulan itulah yang membuat label "per
         # selektor" bertahan tanpa pernah diuji — kalau angkanya dipakai
-        # sebagai alasan, sebut pembacaannya, bukan cuma predikatnya. Pakai
-        # yang ketat kalau angkanya
-        # dipakai sebagai alasan.
+        # sebagai alasan, sebut pembacaannya, bukan cuma predikatnya.
+        # Pakai yang ketat kalau angkanya dipakai sebagai alasan.
         # Terukur: kedua bentuk menjaring selektor yang SAMA hari ini
         # (`.jam`, `.jam.menipis`), jadi bentuk yang lebih ketat gratis.
         # `(?![\w-])` tetap wajib: tanpanya `.jamu-x` dan `.menipis-x` —
         # kelas lain yang cuma berawalan sama — ikut tertuduh.
         KELUARGA_JAM = r"\.(?:jam|menipis)(?![\w-])"
+        self.assertRegex(".menipis", KELUARGA_JAM, "contoh `background` di atas lolos")
         # `blok` sengaja LEBIH SEMPIT daripada keluarga: ia memilih aturan
         # yang menyebut `.menipis`, karena asersi berikutnya melarang `color`
         # di sana BERAPA PUN tokennya. Melebarkannya ke seluruh keluarga akan
@@ -5802,7 +7050,30 @@ class TestMesinPerayaan(unittest.TestCase):
         self.assertRegex(inti, r"export function rayakan\([^)]*dari\s*=\s*null",
                          "`dari` bukan lagi parameter opsional rayakan()")
 
-        # Tidak satu pun pemanggil lama yang mengoper `dari`.
+        # Tidak satu pun pemanggil lama yang mengoper `dari` — KECUALI yang
+        # DIDAFTARKAN di `IZIN_DARI`. Daftar itu mengenali sasarannya lewat
+        # POLA, bukan nomor baris: (berkas, nama fungsi pembungkus), dengan
+        # rentang badan fungsinya dihitung ulang dari kurung kurawalnya tiap
+        # kali tes jalan. Nomor baris bergeser tiap kali berkas tumbuh; nama
+        # fungsinya tidak, dan itulah satu-satunya alasan bentuk ini dipakai.
+        IZIN_DARI = {("layar-kerja.js", "periksa")}
+
+        def badan_fungsi(teks, nama_fungsi):
+            """Rentang [awal, akhir) badan `function <nama>()`, hitung kurung."""
+            m = re.search(r"(?:async\s+)?function\s+" + re.escape(nama_fungsi)
+                          + r"\s*\([^)]*\)\s*\{", teks)
+            if not m:
+                return None
+            dalam = 0
+            for j in range(m.end() - 1, len(teks)):
+                if teks[j] == "{":
+                    dalam += 1
+                elif teks[j] == "}":
+                    dalam -= 1
+                    if dalam == 0:
+                        return (m.start(), j + 1)
+            return None
+
         pemanggil = []
         for nama in ("layar-belajar.js", "layar-kerja.js", "layar-lain.js"):
             jalur = os.path.join(akar, "webapp", "statik", "js", nama)
@@ -5810,6 +7081,17 @@ class TestMesinPerayaan(unittest.TestCase):
                 continue
             with open(jalur, encoding="utf-8") as f:
                 isi_berkas = f.read()
+            rentang = {}
+            for berkas_izin, fungsi_izin in IZIN_DARI:
+                if berkas_izin != nama:
+                    continue
+                r_f = badan_fungsi(isi_berkas, fungsi_izin)
+                self.assertIsNotNone(
+                    r_f,
+                    f"fungsi `{fungsi_izin}()` tidak ada lagi di {nama}, "
+                    "padahal daftar-putih `dari` menunjuk ke sana. Daftar yang "
+                    "sasarannya hilang berhenti menyaring apa pun")
+                rentang[fungsi_izin] = r_f
             for m in re.finditer(r"(?<!tingkat)(?<![A-Za-z])rayakan\(", isi_berkas):
                 # potong sampai penutup kurungnya, dengan hitung kurung
                 i, dalam = m.end() - 1, 0
@@ -5819,7 +7101,10 @@ class TestMesinPerayaan(unittest.TestCase):
                     elif isi_berkas[j] == ")":
                         dalam -= 1
                         if dalam == 0:
-                            pemanggil.append((nama, isi_berkas[m.start():j + 1]))
+                            induk = next((f for f, (a, b) in rentang.items()
+                                          if a <= m.start() < b), None)
+                            pemanggil.append(
+                                (nama, isi_berkas[m.start():j + 1], induk))
                             break
         PESAN_S08 = (
             "\n\n  KALAU KAMU S08 DAN BARU MEMASANG PEMICU DI JALUR HIJAU "
@@ -5837,11 +7122,1294 @@ class TestMesinPerayaan(unittest.TestCase):
         self.assertEqual(
             len(pemanggil), 4,
             f"jumlah pemanggil rayakan() berubah: {pemanggil}" + PESAN_S08)
-        for nama, panggilan in pemanggil:
+        for nama, panggilan, induk in pemanggil:
+            if (nama, induk) in IZIN_DARI:
+                # S08 K1 — DIDAFTARKAN, bukan dikecualikan diam-diam.
+                # Perayaan "latihan lulus" menempel pada tombol yang baru saja
+                # lulus. Yang dibuang dari jalur itu `kilau()`: overlay
+                # `position: fixed; inset: 0` yang di tema `terang` terukur
+                # melewati syarat luas WCAG 2.3.1 (fraksi jendela kilat
+                # 0,3549 > 0,25) dengan 100% pikselnya berubah lebih GELAP
+                # (rerata -0,1603) — isyarat "selamat" yang mengelapkan
+                # kertas.
+                #
+                # Daftarnya POSITIF, dan itu yang membuatnya bukan lubang:
+                # yang terdaftar WAJIB benar-benar mengoper `dari`. Tanpa
+                # tuntutan ini, daftar-putih tetap hijau kalau K1 dibatalkan,
+                # DAN tetap hijau kalau seseorang melebarkannya ke seluruh
+                # berkas — dua cara paling mudah membuat pagar berhenti
+                # menjaga tanpa satu pun tes memerah.
+                self.assertRegex(
+                    panggilan, r"\bdari\b",
+                    f"{nama}:{induk}() terdaftar BOLEH mengoper `dari`, tapi "
+                    f"tidak mengopernya: {panggilan!r}. Entri daftar-putih "
+                    "yang menunjuk pemanggil yang tidak memakainya adalah "
+                    "lubang yang diam — hapus entrinya, atau kembalikan "
+                    "`{ dari }`-nya." + PESAN_S08)
+                continue
             self.assertNotRegex(
                 panggilan, r"\bdari\b",
                 f"{nama} mengoper `dari` ke rayakan(); itu perubahan perilaku "
                 "pemanggil lama." + PESAN_S08)
+
+    def test_satu_peristiwa_satu_denyut_di_jalur_lulus(self):
+        """`periksa()` tidak mendenyutkan apa pun sendiri — mesinnya yang punya.
+
+        Dulu jalur ini menggerakkan DUA benda untuk satu kejadian: denyut
+        tangan pada `kotakStatus` plus `denyut(dari)` di cabang `capai` mesin
+        (`inti.js:554`). Docstring mesinnya sendiri melarang bentuk itu
+        (`inti.js:518`): satu peristiwa, satu perayaan.
+
+        Dua pengukuran, dan masing-masing menyebut keadaannya: Chrome
+        1280x800, tema gelap, `#/latihan/python/0`, identitas per ELEMEN dari
+        `getAnimations()` dengan `Element.prototype.animate` dibungkus dan
+        disaring pada durasi 340 ms + keyframe ber-`scale(`), lantai bising 0
+        benda di kesembilan sel.
+
+        SESUDAH denyut tangan dibuang — keadaan pohon ini, penuh/halus/mati:
+        `capai` 2/2/0, `acara` 1/1/0, `sentuh` 0/0/0; partikelnya `capai` satu
+        lapis `.bara-percik` berisi 7 titik di `penuh`, 0 di `halus`, 0 benda
+        di `mati`, `acara` satu lapis 26 titik, `sentuh` nol di semua tingkat.
+        Benda KEDUA pada `capai` adalah penanda angka global, bukan perayaan
+        layar ini: `aplikasi.js:565` mendenyutkan pencacah XP navbar.
+
+        SEBELUM denyut tangan dibuang, penuh/halus/mati: `capai` 3/3/0,
+        `acara` 2/2/0, `sentuh` 1/1/0 — dan benda ketiga pada `capai` di sana
+        adalah pencacah XP yang sama, jadi yang bisa dikonvergensikan dari
+        sini DUA menjadi SATU.
+
+        YANG TIDAK DIJAGA: berapa benda yang benar-benar berdenyut saat
+        dijalankan. Itu `getAnimations()` di peramban; suite stdlib tidak
+        punya mesin animasi. Yang dijaga di sini BENTUK — tidak ada pemanggil
+        `denyut` di dalam `periksa()` — dan bahwa perayaannya tidak ikut
+        hilang bersama denyutnya.
+        """
+        akar = self._akar()
+        jalur = os.path.join(akar, "webapp", "statik", "js", "layar-kerja.js")
+        with open(jalur, encoding="utf-8") as f:
+            isi = TestHamparanBara._telanjang(f.read())
+        m = re.search(r"async\s+function\s+periksa\s*\([^)]*\)\s*\{", isi)
+        self.assertIsNotNone(
+            m, "`periksa()` tidak ada lagi di layar-kerja.js; pagar yang "
+               "sasarannya hilang berhenti menjaga apa pun")
+        dalam, akhir = 0, None
+        for j in range(m.end() - 1, len(isi)):
+            if isi[j] == "{":
+                dalam += 1
+            elif isi[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    akhir = j + 1
+                    break
+        self.assertIsNotNone(akhir, "badan `periksa()` tidak tertutup kurungnya")
+        badan = isi[m.start():akhir]
+        self.assertEqual(
+            re.findall(r"(?<![\w$.])denyut\s*\(", badan), [],
+            "`periksa()` memanggil `denyut()` sendiri. Satu kejadian 'latihan "
+            "lulus' lalu menggerakkan DUA benda, karena cabang `capai` mesin "
+            "sudah mendenyutkan `dari` (inti.js:554) — dan itu bentuk yang "
+            "dilarang docstring mesinnya sendiri (inti.js:518). Kalau sebuah "
+            "denyut memang perlu di sini, yang benar MEMINDAHKAN sasaran "
+            "`dari`, bukan menambah pemanggil kedua")
+        self.assertRegex(
+            badan, r"rayakan\s*\(\s*r\.hadiah\s*,\s*\{[^}]*\bdari\b",
+            "`periksa()` berhenti mengoper `dari` ke rayakan(). Konvergensi "
+            "denyut hanya sah kalau perayaannya PINDAH ke mesin, bukan kalau "
+            "ia hilang: tanpa `dari`, cabang `capai` tidak menempel pada "
+            "benda apa pun dan jalur lulus jadi diam sama sekali")
+
+    def test_kilau_tidak_dipanggil_dari_layar_kerja(self):
+        """Nol panggilan `kilau(` di SELURUH `layar-kerja.js`.
+
+        Yang dijaga PINTUNYA, bukan satu pemanggilnya. K1 membuang satu
+        pemanggil; memasang kembali `kilau(tblPeriksa || hasil)` di jalur
+        lulus terukur HIJAU di baterai reviewer — dan jalur lulus adalah jalur
+        tersering di layar ini.
+
+        KENAPA, dengan angka: `.kilau` adalah overlay `position: fixed;
+        inset: 0`, dan di tema `terang` ia terukur MELEWATI syarat luas
+        SC 2.3.1 — fraksi jendela kilat 341x256 px = 0,3549 > 0,25 — dengan
+        100% pikselnya berubah lebih GELAP (rerata -0,1603). Diukur di
+        viewport 1280x800. Isyarat "selamat" yang mengelapkan kertas adalah
+        isyarat salah arah.
+
+        BERLAKU SE-BERKAS, bukan per fungsi: `kilau(hasil)` di `jalankan()`
+        membawa cacat yang sama persis ke layar yang sama.
+
+        DIBACA SETELAH KOMENTAR DILEPAS, dan itu bukan kerapian: dua blok
+        komentar di berkas ini menyebut `kilau(` justru untuk melarangnya.
+        Sapuan atas teks mentah akan menghukum penjelasannya sendiri.
+
+        TIDAK ikut melarang `inti.js`: ekspor `kilau` dan pemanggilnya saat
+        NAIK LEVEL adalah keputusan yang diambil dengan mata terbuka — naik
+        level jarang, dan di sana kilatnya memang porsinya. Pagar ini karena
+        itu menuntut keduanya TETAP ADA; pager yang puas dengan menghapus
+        mesinnya bukan pager.
+
+        Dibuangnya `kilau` dari daftar impor berkas ini BUKAN pagarnya —
+        siapa pun yang memanggil ulang tinggal menulis ulang impornya. Yang
+        menjaga asersi-asersi di bawah.
+        """
+        js = os.path.join(self._akar(), "webapp", "statik", "js")
+        with open(os.path.join(js, "layar-kerja.js"), encoding="utf-8") as f:
+            mentah = f.read()
+        telanjang = TestHamparanBara._telanjang(mentah)
+        self.assertEqual(
+            re.findall(r"(?<![\w$.])kilau\s*\(", telanjang), [],
+            "ada panggilan `kilau(` di layar-kerja.js. Overlay itu menutup "
+            "seluruh viewport dan di tema `terang` terukur melewati syarat "
+            "luas SC 2.3.1 (fraksi jendela kilat 0,3549 > 0,25) dengan 100% "
+            "pikselnya berubah lebih GELAP (rerata -0,1603) pada viewport "
+            "1280x800 — di jalur yang paling sering dilewati orang di layar "
+            "ini. Yang menempel pada benda yang baru berhasil sudah ada: "
+            "cabang `capai` mesin lewat `{ dari }`")
+        # Kontrol yang membuat sapuan di atas bukan sapuan kosong: berkas ini
+        # MEMANG menyebut `kilau(` di komentarnya, dan itu harus tetap boleh.
+        self.assertRegex(
+            mentah, r"kilau\s*\(",
+            "layar-kerja.js tidak lagi menyebut `kilau(` sama sekali — "
+            "bahkan di komentar. Larangannya jadi tidak terbaca siapa pun, "
+            "dan sapuan di atas berhenti membuktikan bahwa pelepasan komentar "
+            "benar-benar bekerja")
+        with open(os.path.join(js, "inti.js"), encoding="utf-8") as f:
+            inti = f.read()
+        self.assertRegex(
+            inti, r"export function kilau\s*\(",
+            "`kilau` tidak lagi diekspor dari inti.js. Pagar di atas melarang "
+            "PEMANGGILNYA di layar-kerja.js, bukan mesinnya: naik level masih "
+            "memakainya, dan menghapus mesinnya adalah cara termudah membuat "
+            "pagar ini hijau tanpa menjaga apa pun")
+        self.assertRegex(
+            TestHamparanBara._telanjang(inti),
+            r"(?<![\w$.])kilau\s*\(\s*\)",
+            "tidak ada lagi pemanggil `kilau()` di inti.js. Jalur naik level "
+            "adalah satu-satunya tempat kilatan itu sah, dan kalau ia hilang "
+            "yang tersisa cuma ekspor mati")
+
+
+class TestAlamatKomentar(unittest.TestCase):
+    """Alamat `berkas:NNN` di komentar adalah KLAIM ATAS ISI SATU BARIS.
+
+    Sapuan atas seluruh `webapp/statik/js/*.js` menemukan setiap alamat di
+    dalam komentar lalu mengadunya ke `TABEL`. Tiga alamat pernah salah di
+    pohon ini sekaligus, dan DUA di antaranya salah sejak ditulis — jadi
+    "koreksi pergeseran baris" bukan bentuk yang cukup:
+
+        inti.js            `gerak.js:784`       -> `}`
+        layar-belajar.js   `gaya.css` baris 4625 -> `align-items: stretch;`
+        layar-belajar.js   `layar-kerja.js:183` -> komentar jam kuis
+
+    Empat lapis, dan hitungan inilah yang membuat lapis keempat WAJIB: cek
+    (i) berkas-ada dan (ii) nomor-dalam-rentang menangkap 0 dari 3; cek
+    (iii) baris-sasaran-bukan-tanda-baca menangkap 1 dari 3 (`}`); cek
+    (iv) POTONGAN BARIS yang dipotret di `TABEL` menangkap 3 dari 3. Tanpa
+    (iv) pagar ini akan hijau untuk ketiga alamat yang salah.
+
+    `TABEL` dikunci pada ALAMAT SASARAN (`berkas:NNN`), bukan pada nomor
+    baris komentarnya: nomor baris sumber bergeser tiap kali berkasnya tumbuh,
+    sementara alamat sasarannya tidak. Alamat yang tidak ada di `TABEL` MERAH
+    beserta namanya — menambah komentar beralamat memang harus jadi tindakan
+    yang disengaja.
+
+    Pagar ini TIDAK menyentuh berkas sasaran. Pagar yang memperbaiki dunianya
+    sendiri bukan pagar.
+    """
+
+    TABEL = {
+        "gaya.css:532": "scroll-behavior: smooth",
+        "gaya.css:599": ":focus-visible",
+        # Keempat alamat `gaya.css` di bawah 2203 bergeser +33 di hun 12: blok
+        # `.editor-lapis::before` (pita baris aktif) menyisip di blok editor,
+        # tepat sesudah `.editor-lapis`. Nomornya yang bergerak, bukan
+        # klaimnya — dulu `:4717`, `:4460`, `:4477`, `:4711`.
+        # Keempatnya bergeser +37 sekali lagi di hun 14: aturan `.tk-indentasi`
+        # (pemandu indentasi) menyisip di akhir palet `.tk-*`, tepat sesudah
+        # `.tk-teks` — jauh di atas keempat sasaran ini. Dulu `:4750`, `:4493`,
+        # `:4510`, `:4744`. Sasarannya sama, nomornya saja yang bergerak.
+        "gaya.css:4808": "scroll-behavior: auto",
+        # `gerak.js:801` dulu `:795`: enam baris D5 di `angkaKe()` memindahkan
+        # isinya, dan kunci lamanya DIHAPUS atas putusan reviewer — sebuah
+        # kunci yang sasarannya sudah bukan isi itu lagi adalah klaim basi,
+        # bukan pagar. Aturan "TABEL hanya boleh bertambah" dicabut khusus
+        # untuk kasus itu.
+        "gerak.js:801": "!gerakPenuh() || !ADA_DOM",
+        # Kelima alamat `inti.js` di bawah bergeser di S11-a, saat saluran
+        # umpan balik non-visual dipasang: delapan baris (klausa impor
+        # `suara.js` plus komentarnya) mendarat di kepala berkas dan menggeser
+        # SEMUANYA +8, lalu delapan belas baris pengait di dalam `rayakan()`
+        # menggeser yang di bawahnya +18 sekali lagi. Dulu `:456`, `:510`,
+        # `:546`, `:567`, `:421`. Sasarannya sama, nomornya saja yang bergerak.
+        #
+        # Lima rujukan di `layar-kerja.js` (`:256`, `:473`, `:699`, `:700`,
+        # `:858`) ikut dibetulkan di sana — perubahan ANGKA di dalam komentar,
+        # nol baris kode. Ini kelas pajak yang tidak bisa dihindari: pagar ini
+        # menyapu komentar di SELURUH pohon, jadi setiap sisipan di kepala
+        # `inti.js` menagih pembetulan di berkas lain yang kebetulan
+        # merujuknya. Doktrinnya datang dari pesan kegagalan pagar ini sendiri
+        # -- perbaiki NOMORNYA, jangan menyunting berkas sasaran supaya hijau.
+        "inti.js:464": '[tabindex="-1"]',
+        "inti.js:518": "satu peristiwa, satu",
+        "inti.js:554": "denyut(dari)",
+        "inti.js:593": "percikBara(dari)",
+        "aplikasi.js:255": "preventScroll: true",
+        "aplikasi.js:280": "preventScroll: true",
+        "aplikasi.js:565": "denyut(xp)",
+        "layar-kerja.js:519": "if (bersihkan) bersihkan()",
+        "layar-belajar.js:2459": "preventScroll: true",
+        "gerak.js:303": "export function skala()",
+        # Kaki akibat panel hasil (S08 hun 4): keempat alamat ini dirujuk dari
+        # `pinKeGalat()` di layar-kerja.js dan dari chip sinyalnya.
+        "gaya.css:4551": "container-type: size",
+        "gaya.css:4568": "overflow-y: auto; scrollbar-width: thin",
+        "layar-belajar.js:669": "const PIN_BARA_MS = 4000",
+        "layar-belajar.js:704": "function pinKeHariIni(petak, geser)",
+        # Klaim bernama yang dibetulkan di hun 4: komentar port nomor baris
+        # dulu menyebut `TestPortNomorBarisGalat`, kelas yang tidak pernah ada.
+        # Dulu `:8951`. Entri `beda.py:189` di kaki tabel ini menyisip di ATAS
+        # kelasnya dan menggeser enam baris -- persis pergeseran yang pagar ini
+        # ada untuk menangkap, dan ia menangkapnya.
+        # Dulu `:8960`. Tiga sisipan hun 11 di tabel ini -- `inti.js:429` plus
+        # dua blok komentar pembetul -- mendarat di ATAS kelasnya dan
+        # menggesernya 15 baris. Sebab yang sama dengan yang dicatat di atas
+        # untuk `beda.py:189`, ditangkap pagar yang sama.
+        # Dulu `:8975`. Sembilan baris komentar pergeseran hun 12 di tabel ini
+        # -- empat untuk `gaya.css`, lima untuk `editor.js` -- plus empat baris
+        # ini sendiri mendarat di ATAS kelasnya dan menggesernya 13 baris.
+        # Sebab yang sama dengan dua yang dicatat di atas, pagar yang sama.
+        # Dulu `:8988`. Empat baris komentar pergeseran hun 14 di tabel ini --
+        # untuk keempat alamat `gaya.css` di atas -- plus empat baris ini
+        # sendiri mendarat di ATAS kelasnya dan menggesernya 8 baris. Sebab yang
+        # sama dengan tiga yang dicatat di atas, ditangkap pagar yang sama.
+        # Dulu `:8996`. Empat belas baris komentar pergeseran S11-a di tabel
+        # ini -- untuk kelima alamat `inti.js` di atas -- mendarat di ATAS
+        # kelasnya dan menggesernya 14 baris. Sebab yang sama dengan keempat
+        # yang dicatat di atas, ditangkap pagar yang sama.
+        "test_web.py:9014": "class TestLompatKeBarisGalat",
+        # ANCHOR TELANJANG `(:NNN)`, nama berkasnya IMPLISIT dari berkas yang
+        # memuat komentarnya. Sebelum hun 4 tak satu pun dipegang pagar apa
+        # pun: `ALAMAT` menuntut nama berkas berekstensi, jadi `(:285)` tidak
+        # pernah tersentuh sapuan mana pun (doktrin 71 butir b).
+        # Dulu `:285`, `:316`, `:317`. Satu baris panggil `_gambarPita()` di
+        # ujung `_gambarNomor()` menggeser ketiganya +1, dan satu lagi di ujung
+        # `_selaraskan()` menggeser dua yang terakhir +1 sekali lagi. Tiga
+        # rujukan anchor telanjang di editor.js ikut dibetulkan -- yang bergerak
+        # nomornya, bukan klaimnya.
+        "editor.js:286": "_selaraskan() {",
+        "editor.js:318": 'addEventListener("keyup"',
+        "editor.js:319": 'addEventListener("click"',
+        # Dulu `:567`: sisipan `pisahRekor()` di hun 11 mendarat di ATAS
+        # `layarLatihan` dan menggeser isinya 51 baris. Komentar `(:618)`
+        # di layar-kerja.js ikut dibetulkan -- nomornya yang bergerak, bukan
+        # klaimnya.
+        "layar-kerja.js:618": "function gambarStatus()",
+        # Dulu `:287` (`e.preventDefault();`) sementara klaim komentarnya soal
+        # PENJEPITAN; reviewer membuka alamatnya di hun 5 dan komentarnya kini
+        # menunjuk penjepit yang sebenarnya. Kunci lamanya dihapus karena ia
+        # jadi YATIM, dan kunci yatim dipagari metode di bawah.
+        "layar-belajar.js:288": "Math.max(0, Math.min(",
+        # R1: tiga koordinat yang menopang diagnosis residu -7 px. Komentar
+        # `kotak()` menyebut ketiganya, jadi ketiganya ikut diadu.
+        "gaya.css:1174": "transform: translateY(7px)",
+        "gaya.css:433": "--sedang: 220ms",
+        "gaya.css:4802": "animation: none !important",
+        # H9-A: `gambarBeda` menciutkan pasangan yang cuma beda spasi, dan
+        # syaratnya `tanda === "~"` DAN `tampak` -- bukan `tampak` sendirian.
+        # Komentarnya menopang klaim itu dengan menunjuk baris yang mengisi
+        # KEDUA sisi untuk tag `equal`, dan dari situlah `tampak` ikut menyala
+        # di baris `=`. Alamatnya diadu supaya klaim itu tidak bisa jadi basi.
+        "beda.py:189": 'baris.append(("=", h[h1 + offset]',
+        # H11: tangga "lihat contoh solusi" tinggal di BADAN dialog, bukan di
+        # `aksi`, dan komentarnya menopang alasannya dengan menunjuk baris
+        # tempat setiap aksi kaki menutup jendelanya. Tanpa alamat itu,
+        # kalimat "satu solusi, satu jendela" cuma klaim; dengan alamat itu,
+        # ia bisa diadu -- dan kalau suatu hari `jendela()` berhenti menutup
+        # diri pada aksi, pagar inilah yang memerah lebih dulu.
+        "inti.js:429": "onclick: () => tutup(a.nilai",
+    }
+
+    CARI = ("webapp/statik/js", "webapp/statik", "webapp", "pelajar", "inti",
+            "layar", "tests", "")
+
+    KOMENTAR = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+    ALAMAT = re.compile(r"([\w.-]+\.(?:js|py|css)):(\d+)")
+    # Anchor TELANJANG: `(:285)` dan `(:316-:317)`. Nama berkasnya tidak
+    # pernah tertulis — ia IMPLISIT, yaitu berkas yang memuat komentarnya.
+    # `ALAMAT` di atas tidak bisa melihatnya sama sekali (ia menuntut nama
+    # berkas berekstensi), jadi sebelum pagar ini empat anchor hidup di pohon
+    # tanpa satu pun pemegang: `editor.js:159 (:285)`, `editor.js:241
+    # (:316-:317)`, `layar-belajar.js:2450 (:287)`, `layar-kerja.js:674
+    # (:567)`. Keempatnya kebetulan benar hari ini, dan `editor.js` sendiri
+    # tumbuh 92 baris dalam satu hun — satu sisipan di atas `:285` akan
+    # membuat klaimnya menunjuk `}` tanpa satu tes pun memerah.
+    TELANJANG = re.compile(r"\(\s*:\s*(\d+)(?:\s*-\s*:?\s*(\d+))?\s*\)")
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @staticmethod
+    def _kanon(s):
+        """Runtuhkan spasi dan samakan ragam kutip sebelum potongan diadu.
+
+        Yang diklaim sebuah alamat adalah ISI barisnya, bukan ejaan spasinya.
+        Tanpa normalisasi ini, merapikan `!gerakPenuh()  ||  !ADA_DOM` jadi
+        satu spasi — atau menukar `'` dengan `"` — memerahkan pagar untuk
+        suntingan yang tidak mengubah apa pun, dan pagar yang memerah untuk
+        kerapian akan dilonggarkan orang berikutnya, bukan dibaca.
+        """
+        return re.sub(r"\s+", " ", s.replace("'", '"')).strip()
+
+    def _baris_sasaran(self, nama):
+        for d in self.CARI:
+            p = os.path.join(self._akar(), d, nama)
+            if os.path.isfile(p):
+                with open(p, encoding="utf-8") as f:
+                    return p, f.read().split("\n")
+        return None, None
+
+    def test_tiap_kunci_tabel_benar_benar_dirujuk_dari_suatu_tempat(self):
+        """Kunci yatim sama busuknya dengan alamat yang menunjuk ruang kosong.
+
+        Yang satu memberi rasa aman tanpa membayar apa pun; yang lain membayar
+        dengan klaim palsu. Keduanya membuat pembaca berikutnya percaya ada
+        pagar di tempat yang tidak dijaga siapa pun.
+
+        Kejadiannya nyata di hun 5: `layar-belajar.js:287` tinggal di `TABEL`
+        sesudah komentarnya dibetulkan ke `:288`, dan tak satu pun asersi
+        memerah — kuncinya cuma duduk di sana, menjaga alamat yang tidak lagi
+        diklaim siapa pun.
+        """
+        js = os.path.join(self._akar(), "webapp", "statik", "js")
+        dipakai = set()
+        for nama in sorted(os.listdir(js)):
+            if not nama.endswith(".js"):
+                continue
+            with open(os.path.join(js, nama), encoding="utf-8") as f:
+                isi = f.read()
+            for k in self.KOMENTAR.finditer(isi):
+                for a in self.ALAMAT.finditer(k.group(0)):
+                    dipakai.add(a.group(1) + ":" + a.group(2))
+                for a in self.TELANJANG.finditer(k.group(0)):
+                    for g in a.groups():
+                        if g:
+                            dipakai.add(nama + ":" + g)
+
+        self.assertTrue(
+            dipakai, "nol alamat terbaca; sapuan yang tidak menemukan apa pun "
+                     "tidak bisa membuktikan satu kunci pun dipakai")
+        yatim = sorted(set(self.TABEL) - dipakai)
+        self.assertEqual(
+            yatim, [],
+            "ada kunci `TABEL` yang tidak dirujuk komentar mana pun: "
+            + str([(k, self.TABEL[k]) for k in yatim]) + ". Kunci yatim "
+            "memberi rasa aman tanpa membayar apa pun — hapus kuncinya, atau "
+            "kembalikan rujukan yang dulu memakainya")
+
+    def test_tiap_alamat_di_komentar_menunjuk_baris_yang_masih_berisi_itu(self):
+        js = os.path.join(self._akar(), "webapp", "statik", "js")
+        temuan = []
+        for nama in sorted(os.listdir(js)):
+            if not nama.endswith(".js"):
+                continue
+            with open(os.path.join(js, nama), encoding="utf-8") as f:
+                isi = f.read()
+            for k in self.KOMENTAR.finditer(isi):
+                for a in self.ALAMAT.finditer(k.group(0)):
+                    no = isi[:k.start() + a.start()].count("\n") + 1
+                    temuan.append((nama, no, a.group(1), int(a.group(2))))
+                # Anchor telanjang: berkas sasarannya BERKAS INI SENDIRI.
+                # Rentang `(:316-:317)` jadi DUA klaim, bukan satu — keduanya
+                # menunjuk baris yang berbeda dan keduanya bisa basi sendiri.
+                for a in self.TELANJANG.finditer(k.group(0)):
+                    no = isi[:k.start() + a.start()].count("\n") + 1
+                    for g in a.groups():
+                        if g:
+                            temuan.append((nama, no, nama, int(g)))
+        self.assertTrue(
+            temuan, "nol alamat terbaca di webapp/statik/js/*.js; sapuan yang "
+                    "tidak menemukan apa pun tidak menjaga apa pun")
+
+        tak_terdaftar, salah = [], []
+        for sumber, no_sumber, berkas, no in temuan:
+            alamat = berkas + ":" + str(no)
+            if alamat not in self.TABEL:
+                tak_terdaftar.append(sumber + ":" + str(no_sumber) + " -> "
+                                     + alamat)
+                continue
+            _, baris = self._baris_sasaran(berkas)
+            if baris is None:                                   # cek (i)
+                salah.append((sumber, no_sumber, alamat,
+                              "berkas sasaran tidak ditemukan"))
+                continue
+            if not 1 <= no <= len(baris):                       # cek (ii)
+                salah.append((sumber, no_sumber, alamat,
+                              "nomor di luar rentang 1.." + str(len(baris))))
+                continue
+            teks = baris[no - 1]
+            if not re.search(r"[A-Za-z0-9_-]{2,}", teks):       # cek (iii)
+                salah.append((sumber, no_sumber, alamat,
+                              "baris sasaran tanda baca/kosong: " + repr(teks)))
+                continue
+            potongan = self.TABEL[alamat]                       # cek (iv)
+            if self._kanon(potongan) not in self._kanon(teks):
+                salah.append((sumber, no_sumber, alamat,
+                              "potongan " + repr(potongan) + " tidak ada di "
+                              "baris itu: " + repr(teks.strip())))
+
+        self.assertEqual(
+            tak_terdaftar, [],
+            "ada alamat di komentar yang tidak terdaftar di `TABEL`: "
+            + str(tak_terdaftar) + ". Menambah komentar beralamat adalah "
+            "tindakan yang disengaja: daftarkan alamatnya beserta POTONGAN "
+            "baris yang kamu maksud, supaya klaimnya bisa diadu nanti")
+        self.assertEqual(
+            salah, [],
+            "ada alamat di komentar yang klaimnya tidak lagi benar: "
+            + str(salah) + ". Alamat di komentar adalah klaim atas ISI satu "
+            "baris, bukan sekadar nomor: perbaiki nomornya ATAU potongannya "
+            "di `TABEL` — jangan menyunting berkas sasaran supaya pagar ini "
+            "hijau")
+
+
+class TestNamaSimbolDiKomentar(unittest.TestCase):
+    """Komentar yang MENAMAI sebuah simbol membuat klaim, dan klaim bisa salah.
+
+    `TestAlamatKomentar` mengadu `berkas:NNN` -> potongan baris. Ia tidak
+    tahu-menahu soal IDENTIFIER, dan itulah lubang yang membiarkan
+    `layar-kerja.js` memuat "yang membayar kekembaran ini
+    `TestPortNomorBarisGalat` di tests/test_web.py" selama satu hun penuh
+    sambil HIJAU: kelas itu tidak ada di seluruh repo, yang nyata
+    `TestLompatKeBarisGalat`. Nama yang salah lebih mahal daripada nomor yang
+    salah — pembaca berikutnya mencari pagar yang tidak pernah ada, lalu
+    menyimpulkan bagian itu tidak dijaga.
+
+    TIGA SUMBU, dan ketiganya dipilih dari POPULASI yang diukur lebih dulu atas
+    1246 komentar di sepuluh berkas `webapp/statik/js/*.js`:
+
+        (1) `Test[A-Z]` + kata      -> 3 nama berbeda, nol derau
+        (2) `test_` + huruf kecil   -> 1 nama (`test_web`, nama MODUL), nol derau
+        (3) KAPITAL ber-underscore  -> 8 nama, semuanya konstanta nyata
+
+    Sumbu keempat yang DITOLAK beserta angkanya: kapital TANPA underscore
+    memberi 250 nama, dan mayoritasnya kata penegas Bahasa Indonesia —
+    `ADALAH`, `BUKAN`, `BENTUKNYA`. Memagarinya menuntut allowlist yang lebih
+    panjang daripada daftar simbol yang dijaganya, dan allowlist sepanjang itu
+    liabilitas, bukan pagar.
+
+    Pesan galatnya menyebut NAMA SIMBOLNYA, bukan nama tes ini: yang perlu
+    dicari pembacanya identifier itu, dan nama tes tidak membantunya sedikit
+    pun (doktrin 71 butir a).
+
+    Yang TIDAK dijaga di sini, disebut supaya tidak dianggap lebih: bahwa
+    kalimat di sekeliling nama itu benar. Pagar ini menjawab "simbolnya ada",
+    bukan "ia benar-benar membayar apa yang diklaim komentarnya".
+    """
+
+    KOMENTAR = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+    SUMBU = (
+        ("kelas tes", re.compile(r"\bTest[A-Z]\w+")),
+        ("tes/modul", re.compile(r"\btest_[a-z0-9_]+")),
+        ("konstanta", re.compile(r"\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b")),
+    )
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _sumber_repo(self):
+        """[(nama berkas, isi)] seluruh `.js`/`.py` tempat simbol bisa tinggal."""
+        keluar = []
+        for d in ("webapp", "pelajar", "inti", "layar", "tests"):
+            for jalur, _, berkas in os.walk(os.path.join(self._akar(), d)):
+                if "__pycache__" in os.path.relpath(jalur, self._akar()).split(os.sep):
+                    continue  # KOMPONEN jalur, bukan substring: TestSaksiSumberSimbol
+                for n in sorted(berkas):
+                    if n.endswith((".js", ".py")):
+                        with open(os.path.join(jalur, n), encoding="utf-8") as f:
+                            keluar.append((n, f.read()))
+        with open(os.path.join(self._akar(), "main.py"), encoding="utf-8") as f:
+            keluar.append(("main.py", f.read()))
+        return keluar
+
+    @staticmethod
+    def _ada_deklarasi(nama, sumber):
+        """Benar kalau ada SATU tempat yang mendeklarasikan `nama`.
+
+        Bentuk yang diterima sengaja lebar — `class`, `def`, `function`,
+        `const`/`let`/`var`, dan penugasan di kolom nol (konstanta Python) —
+        karena yang ditanya pagar ini "simbolnya ada", bukan "ia dideklarasikan
+        dengan gaya yang saya sukai".
+        """
+        pola = re.compile(
+            r"(?:^|\n)\s*(?:export\s+)?(?:async\s+)?"
+            r"(?:class|def|function|const|let|var)\s+" + re.escape(nama)
+            + r"\b|(?:^|\n)" + re.escape(nama) + r"\s*=")
+        return any(pola.search(isi) for _, isi in sumber)
+
+    def test_setiap_simbol_yang_disebut_komentar_benar_benar_ada(self):
+        js = os.path.join(self._akar(), "webapp", "statik", "js")
+        sumber = self._sumber_repo()
+        nama_berkas = {n for n, _ in sumber}
+        sebutan = {}
+        for nama in sorted(os.listdir(js)):
+            if not nama.endswith(".js"):
+                continue
+            with open(os.path.join(js, nama), encoding="utf-8") as f:
+                isi = f.read()
+            for k in self.KOMENTAR.finditer(isi):
+                for label, pola in self.SUMBU:
+                    for m in pola.finditer(k.group(0)):
+                        no = isi[:k.start() + m.start()].count("\n") + 1
+                        sebutan.setdefault((m.group(0), label), set()).add(
+                            nama + ":" + str(no))
+
+        self.assertTrue(
+            sebutan, "nol nama simbol terbaca di komentar webapp/statik/js/"
+                     "*.js; sapuan yang tidak menemukan apa pun tidak menjaga "
+                     "apa pun")
+
+        hantu = []
+        for (simbol, label), tempat in sorted(sebutan.items()):
+            if self._ada_deklarasi(simbol, sumber):
+                continue
+            # `test_web` dan kawannya nama MODUL, bukan fungsi: berkasnya
+            # sendiri yang jadi buktinya.
+            if label == "tes/modul" and simbol + ".py" in nama_berkas:
+                continue
+            hantu.append(simbol + " (" + label + ") disebut di "
+                         + ", ".join(sorted(tempat)))
+
+        self.assertEqual(
+            hantu, [],
+            "ada komentar yang MENAMAI simbol yang tidak ada di repo: "
+            + str(hantu) + ". Nama di komentar adalah klaim, dan klaim yang "
+            "salah mengirim pembaca berikutnya mencari pagar yang tidak "
+            "pernah ada — perbaiki NAMANYA, jangan menambah simbolnya supaya "
+            "pagar ini hijau")
+
+
+class TestRujukanAntarBerkasTidakMenunjukRuangKosong(unittest.TestCase):
+    """Sisipan baris memindahkan SETIAP alamat di bawah titik sisipnya.
+
+    Ini sapuan KEEMPAT, dan cakupnya lebih lebar bukan karena tiga yang lain
+    kurang ketat melainkan karena yang tertangkap di sini berkas yang memang
+    tidak mereka jangkau:
+
+        `TestAlamatKomentar`        -> alamat di KOMENTAR `statik/js/*.js`,
+                                      diadu ke `TABEL` beserta POTONGAN barisnya
+        `TestNamaSimbolDiKomentar`  -> NAMA SIMBOL di komentar yang sama
+        `TestBentukKomentar`        -> bentuk blok komentarnya
+        yang ini                    -> SETIAP rujukan `berkas:NNN` di
+                                      `statik/js/*.js` DAN di `tests/test_web.py`,
+                                      termasuk yang hidup di prosa Python
+
+    Kenapa ia ada, dengan kejadiannya:
+
+      (1) Enam baris D5 di `angkaKe()` memindahkan rujukan `opsi.durasi || 620`
+          di `gerak.js` dari baris 630 ke baris 636. Klaim itu hidup di docstring
+          Python, menunjuk baris KOSONG selama satu hun penuh, dan tidak satu
+          pagar pun memerah: `TABEL` cuma menjangkau komentar JS, dan kunci
+          untuknya pun tidak ada.
+      (2) Sembilan baris CSS hun 2 memindahkan lima rujukan `gaya.css` sekaligus
+          (baris 3656, 3664-3671, 3750-3758, 3910, dan 4633 dalam penomoran
+          lamanya). TIGA di antaranya baru ketemu lewat sapuan ini — bukan lewat
+          mata, dan bukan dari daftar siapa pun.
+      (3) BEKUNYA sebuah berkas bisa membuat perbaikannya ILEGAL (doktrin 71):
+          sebuah komentar di `inti.js` memegang alamat `gerak.js` baris 795
+          sementara `inti.js` beku byte-per-byte, jadi satu-satunya tambalan yang
+          sah butuh izin pemiliknya lebih dulu. Pagar yang menemukannya karena
+          itu harus berdiri SEBELUM izin, bukan sesudah.
+
+    Dan satu hal yang pagar ini ajarkan tentang dirinya sendiri: docstring yang
+    MENARASIKAN alamat basi ikut tersapu, karena sapuan tidak bisa membedakan
+    "ini klaim" dari "ini contoh". Angka historis karena itu ditulis sebagai
+    `gerak.js` baris 630, bukan sebagai rujukan berkolon — bukan dengan
+    menambah pengecualian, sebab daftar pengecualian yang tumbuh demi
+    kenyamanan adalah cara pagar ini berhenti menjaga.
+
+    YANG DIJAGA: bahwa barisnya masih BERISI SESUATU. Rujukan ke baris kosong
+    atau ke lanjutan tanda baca adalah rujukan yang sudah pasti salah, dan
+    itulah bentuk yang paling sering dihasilkan sebuah sisipan.
+
+    YANG TIDAK DIJAGA, dan angkanya yang menolaknya: ISI barisnya. Idiom prosa
+    di repo ini menulis `` `cuplikan` (`berkas:NNN`) ``, dan predikat "cuplikan
+    itu ada di baris sasaran" saya ukur atas 35 lokasi beridiom: 26 cocok,
+    sembilan POSITIF-PALSU — `PEGAS.jawab` (jalur bertitik, bukan teks baris),
+    `.kerja-kode` (cuplikan yang dimaksud `container-type: size`, bukan
+    selektornya), `pinKeHariIni()` (berkurung, sementara barisnya
+    `function pinKeHariIni(petak, geser) {`), `timer`/`_KUNCI_PROGRES` (nama
+    yang diterangkan satu BLOK, bukan satu baris). Tingkat palsu 26% menuntut
+    allowlist yang lebih panjang daripada daftar yang dijaganya — liabilitas,
+    bukan pagar. Aduan ISI tetap tugas `TestAlamatKomentar.TABEL`, dan ia hanya
+    berlaku untuk alamat di komentar JS.
+
+    UJUNG RENTANG dibedakan secara STRUKTURAL, bukan lewat pengecualian:
+    `` `.kuis-soal {` (`gaya.css:3783-3790`) `` menunjuk `}` di ujungnya karena
+    itulah penutup bloknya. Jadi untuk bentuk `NNN-MMM`, baris MMM boleh berupa
+    tanda baca penutup — tapi tidak boleh KOSONG, karena baris kosong bukan
+    penutup apa pun. `PENGECUALIAN` di bawah untuk sisanya, dan ia kosong hari
+    ini: sebuah daftar pengecualian yang tumbuh tanpa alasan tertulis adalah
+    cara pagar ini berhenti menjaga.
+    """
+
+    RUJUK = re.compile(r"([\w.-]+\.(?:js|py|css)):(\d+)(?:\s*-\s*:?(\d+))?")
+    SEPI = re.compile(r"^[\s*{}()\[\];,.:'\"<>/|+-]*$")
+    TUTUP = re.compile(r"^\s*[}\)\]]+[\s;,]*$")
+    CARI = ("webapp/statik/js", "webapp/statik", "webapp", "pelajar", "inti",
+            "layar", "tests", "")
+    # alamat -> alasan. KOSONG hari ini, dan itu bagian dari klaimnya.
+    PENGECUALIAN = {}
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _sumber(self):
+        akar = self._akar()
+        with open(os.path.join(akar, "tests", "test_web.py"),
+                  encoding="utf-8") as f:
+            keluar = [("tests/test_web.py", f.read())]
+        dirjs = os.path.join(akar, "webapp", "statik", "js")
+        for n in sorted(os.listdir(dirjs)):
+            if n.endswith(".js"):
+                with open(os.path.join(dirjs, n), encoding="utf-8") as f:
+                    keluar.append(("webapp/statik/js/" + n, f.read()))
+        return keluar
+
+    def _baris_sasaran(self, nama, cache):
+        if nama not in cache:
+            cache[nama] = None
+            for d in self.CARI:
+                p = os.path.join(self._akar(), d, nama)
+                if os.path.isfile(p):
+                    with open(p, encoding="utf-8") as f:
+                        cache[nama] = f.read().split("\n")
+                    break
+        return cache[nama]
+
+    def test_tiap_pengecualian_membawa_alasannya(self):
+        """Pengecualian tanpa alasan adalah pelonggaran yang tidak tercatat.
+
+        Daftar yang boleh tumbuh tanpa menjelaskan diri akan tumbuh, dan
+        temuan berikutnya lolos di dalamnya tanpa seorang pun melihat. Jadi
+        bentuk entri-nya dipagari: alamatnya `berkas.ext:NNN`, alasannya
+        kalimat yang benar-benar menerangkan kenapa baris itu sah menunjuk
+        penutup atau ruang kosong.
+        """
+        for alamat, alasan in sorted(self.PENGECUALIAN.items()):
+            self.assertRegex(
+                alamat, r"^[\w.-]+\.(?:js|py|css):\d+$",
+                "kunci `PENGECUALIAN` bukan alamat `berkas.ext:NNN`: "
+                + repr(alamat))
+            self.assertTrue(
+                isinstance(alasan, str) and len(alasan.strip()) >= 20,
+                "pengecualian `" + alamat + "` tidak membawa alasan yang bisa "
+                "dibaca: " + repr(alasan) + ". Satu baris yang menerangkan "
+                "KENAPA alamat itu sah menunjuk penutup/ruang kosong — tanpa "
+                "itu daftar ini jadi tempat temuan berikutnya bersembunyi")
+
+    def test_tiap_rujukan_berkas_nomor_menunjuk_baris_yang_berisi_sesuatu(self):
+        cache = {}
+        total = 0
+        salah = []
+        for asal, isi in self._sumber():
+            for m in self.RUJUK.finditer(isi):
+                nama = m.group(1)
+                ujung = m.group(3)
+                for g, akhir in ((m.group(2), False),
+                                 *( ((ujung, True),) if ujung else () )):
+                    total += 1
+                    alamat = nama + ":" + g
+                    no_sumber = isi[:m.start()].count("\n") + 1
+                    if alamat in self.PENGECUALIAN:
+                        continue
+                    baris = self._baris_sasaran(nama, cache)
+                    if baris is None:
+                        salah.append((asal, no_sumber, alamat,
+                                      "berkas sasaran tidak ditemukan"))
+                        continue
+                    no = int(g)
+                    if not 1 <= no <= len(baris):
+                        salah.append((asal, no_sumber, alamat,
+                                      "di luar rentang 1..%d" % len(baris)))
+                        continue
+                    teks = baris[no - 1]
+                    if not self.SEPI.match(teks):
+                        continue
+                    # Ujung rentang boleh penutup, tidak boleh kosong.
+                    if akhir and self.TUTUP.match(teks) and teks.strip():
+                        continue
+                    salah.append((asal, no_sumber, alamat,
+                                  "baris sasaran kosong/tanda baca: "
+                                  + repr(teks.strip())))
+
+        self.assertGreaterEqual(
+            total, 100,
+            "cuma %d rujukan `berkas:NNN` terbaca; sapuan yang kehilangan "
+            "populasinya tidak menjaga apa pun -- periksa `RUJUK`" % total)
+        self.assertEqual(
+            salah, [],
+            "ada rujukan `berkas:NNN` yang menunjuk baris kosong atau lanjutan "
+            "tanda baca: " + str(salah) + ". Sebuah sisipan baris memindahkan "
+            "SETIAP alamat di bawah titik sisipnya, dan alamat yang mendarat "
+            "di ruang kosong sudah pasti salah. Perbaiki nomornya; kalau "
+            "rujukannya memang sah menunjuk penutup, daftarkan di "
+            "`PENGECUALIAN` BESERTA alasannya")
+
+
+class TestKakiAkibatPanelHasil(unittest.TestCase):
+    """Panel hasil memotong, dan sebelum hun ini ia memotong TANPA SATU TANDA.
+
+    `gaya.css:4568` memberi `.kerja-hasil { overflow-y: auto; max-height:
+    46cqh }` di dalam `@container panggung (min-width: 1100px)`, dengan
+    `container-type: size` di `.kerja-kode` (`gaya.css:4551`). Diukur di tata
+    letak lebar: keluaran 301 baris + `ZeroDivisionError` di bawahnya =
+    `scrollTop` tetap 0 dan blok galatnya seluruhnya di luar jendela panel.
+    Satu-satunya isyarat bahwa jawabannya ada di bawah sebuah bilah gulir
+    setipis `scrollbar-width: thin`.
+
+    Yang dijaga di sini BENTUK — suite ini stdlib dan tidak punya mesin CSS
+    maupun DOM. Angka pikselnya dilaporkan dari peramban; yang tidak boleh
+    lahir lagi adalah bentuknya:
+
+      (1) sinyalnya datang dari `scrollHeight > clientHeight`, bukan dari
+          panjang keluaran — di tata letak sempit panel ini TIDAK dipagari
+          sama sekali, jadi menebaknya dari jumlah baris memasang sinyal palsu
+          di layar yang tidak memotong apa pun;
+      (2) gulirannya `scrollTop` pada SATU wadah, dan `scrollIntoView`
+          dilarang karena ia menggulir semua leluhur termasuk dokumen;
+      (3) pengukurannya lewat `saatSiap()`, dan pengamat ukurannya mengawasi
+          KARTUNYA — panel ber-`max-height` tidak pernah berubah ukuran saat
+          isinya tumbuh, dan untuk HTML/CSS tinggi kartu bertambah SESUDAH
+          iframe pratinjau melaporkan dirinya;
+      (4) pin-nya lepas pada sentuhan pertama DAN pada batas waktu, karena
+          posisi gulir keadaan PENGGUNA;
+      (5) nol animasi: `scroll-behavior` tidak mewaris dari `html`, jadi
+          `scrollTop =` sudah instan di ketiga tingkat gerak.
+    """
+
+    @staticmethod
+    def _kerja():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-kerja.js"), encoding="utf-8") as f:
+            return f.read()
+
+    def _badan(self):
+        return TestHamparanBara._fungsi(
+            TestHamparanBara._telanjang(self._kerja()), "pinKeGalat")
+
+    @staticmethod
+    def _panah(badan):
+        """[(nama, param, isi, awal, akhir)] setiap `const X = (p) => { ... }`.
+
+        Dipotong dengan hitung kurung, bukan regex atas seluruh badan: arrow
+        bersarang di dalam arrow adalah bentuk normal di berkas ini, dan regex
+        yang berhenti di `}` pertama akan memotong fungsi di tengah.
+        """
+        keluar = []
+        for m in re.finditer(
+                r"(?:const|let|var)\s+(\w+)\s*=\s*\(([^)]*)\)\s*=>\s*\{", badan):
+            i = badan.index("{", m.end() - 1)
+            dalam = 0
+            for j in range(i, len(badan)):
+                if badan[j] == "{":
+                    dalam += 1
+                elif badan[j] == "}":
+                    dalam -= 1
+                    if dalam == 0:
+                        keluar.append((m.group(1), m.group(2).strip(),
+                                       badan[i:j + 1], m.start(), j + 1))
+                        break
+        return keluar
+
+    def test_nilai_penggulir_mengandung_suku_dari_transform(self):
+        """Angka yang menggerakkan `scrollTop` wajib BEBAS-TRANSFORM.
+
+        Ini pagar atas sebuah perbaikan yang sebelumnya tidak dijaga satu tes
+        pun. `getBoundingClientRect()` TERMASUK transform, dan kartu hasil
+        memakai `.masuk` yang berangkat dari sebuah `translateY`. Mengukur
+        dengan rect telanjang berarti menggulir ke tempat yang akan berpindah
+        begitu animasinya selesai -- dan `ResizeObserver` tidak akan pernah
+        menangkapnya, karena transform tidak mengubah satu kotak layout pun.
+        Terukur di peramban: membuang suku transformnya mengembalikan
+        `scrollTop` ke nilai yang lebih jauh di tingkat `penuh` sementara `mati`
+        tidak berubah, DAN seluruh suite tetap hijau. Celah itu yang ditutup.
+
+        YANG DIJAGA: nilai yang dioper ke penulis `panel.scrollTop` datang dari
+        fungsi yang memakai hasil pembacaan `getComputedStyle(...).transform`
+        DI DALAM `return`-nya.
+
+        Pagar ini mengikat lewat KODE, bukan lewat ejaan. Keempat identifier --
+        penulis `scrollTop`, variabel yang diopernya, fungsi sumbernya, dan
+        variabel suku transformnya -- semuanya DIBACA dari sumber, jadi
+        mengganti nama apa pun tetap HIJAU. Sengaja pula ia TIDAK menyebut
+        angka tujuh maupun `translateY(7px)`: yang diuji "pengukurannya tidak
+        memakai rect telanjang", bukan "animasi itu tujuh piksel". `--sedang`
+        dan keyframe-nya boleh berubah besok dan pagar ini tidak boleh ikut
+        mati; yang mengadu angka-angka itu kunci `TABEL` yang sudah ada.
+        """
+        badan = self._badan()
+        panah = self._panah(badan)
+        self.assertTrue(
+            panah, "nol arrow function terbaca di `pinKeGalat`; pembaca bentuk "
+                   "yang tidak menemukan apa pun tidak menjaga apa pun")
+
+        # Penulisnya yang TERDALAM: arrow bersarang membuat badan induknya ikut
+        # memuat penulisan anaknya, jadi pilih yang tidak membungkus penulis
+        # lain. Dipilih lewat rentang indeks, bukan lewat nama.
+        semua = [f for f in panah if re.search(r"panel\.scrollTop\s*=", f[2])]
+        tulis = [f for f in semua
+                 if not any(g[3] > f[3] and g[4] <= f[4] for g in semua)]
+        self.assertEqual(
+            len(tulis), 1,
+            "jumlah fungsi di `pinKeGalat` yang MENULIS `panel.scrollTop` bukan "
+            "satu melainkan " + str(len(tulis)) + ": " + str([f[0] for f in tulis])
+            + ". Dua penggerak pada satu sumbu berarti dua mesin, dan pagar ini "
+            "tidak bisa lagi menunjuk mana yang diadu")
+        nama_tulis, _param, _isi, awal, akhir = tulis[0]
+
+        # Argumennya dibaca dari pemanggil DI LUAR badannya sendiri.
+        luar = badan[:awal] + badan[akhir:]
+        arg = re.findall(re.escape(nama_tulis) + r"\s*\(\s*([^)]+?)\s*\)", luar)
+        self.assertTrue(
+            arg, "`" + nama_tulis + "()` tidak pernah dipanggil dengan argumen; "
+                 "penggulir yang tidak diberi nilai tidak menggulir ke mana pun")
+        basis = sorted({re.match(r"(\w+)", a).group(1) for a in arg
+                        if re.match(r"(\w+)", a)})
+        self.assertTrue(
+            basis, "argumen `" + nama_tulis + "()` bukan nilai yang bisa dilacak "
+                   "ke sumbernya: " + str(arg))
+
+        sumber = set()
+        for b in basis:
+            for m in re.finditer(r"(?:const|let|var)?\s*" + re.escape(b)
+                                 + r"\s*=\s*(\w+)\s*\(\s*\)", badan):
+                sumber.add(m.group(1))
+        self.assertTrue(
+            sumber, "nilai yang dioper ke `" + nama_tulis + "()` (" + str(basis)
+                    + ") tidak datang dari pemanggilan fungsi mana pun di "
+                      "`pinKeGalat`, jadi tidak ada yang bisa diadu soal "
+                      "transformnya")
+
+        baca = {f[0] for f in panah if re.search(
+            r"getComputedStyle\s*\([^)]*\)\s*\.\s*transform", f[2])}
+        self.assertTrue(
+            baca, "nol fungsi di `pinKeGalat` yang membaca "
+                  "`getComputedStyle(...).transform`. Tanpa itu pengukurannya "
+                  "memakai rect telanjang, dan rect termasuk transform")
+
+        bukti = []
+        for nama, _p, isi, _a, _z in panah:
+            if nama not in sumber:
+                continue
+            for m in re.finditer(
+                    r"(?:const|let|var)\s+(\w+)\s*=\s*(\w+)\s*\(\s*\)", isi):
+                if m.group(2) not in baca:
+                    continue
+                kembali = re.search(r"return\b([^;]*);", isi, re.S)
+                if kembali and re.search(
+                        r"(?<![\w$])" + re.escape(m.group(1)) + r"(?![\w$])",
+                        kembali.group(1)):
+                    bukti.append((nama, m.group(2), m.group(1)))
+        self.assertTrue(
+            bukti,
+            "nilai yang menggerakkan `panel.scrollTop` tidak memakai suku dari "
+            "`getComputedStyle(...).transform`. Fungsi sumbernya "
+            + str(sorted(sumber)) + ", pembaca transformnya " + str(sorted(baca))
+            + " -- tapi tak satu pun hasil pembacaan itu muncul di `return` "
+            "fungsi sumbernya. Memanggil pembacanya lalu tidak memakai hasilnya "
+            "adalah bentuk yang terukur mengembalikan cacatnya: `scrollTop` "
+            "melompat sejauh translasi animasi masuk di tingkat `penuh`, tidak "
+            "berubah di `mati`, dan seluruh suite tetap hijau")
+
+    def test_sinyal_overflow_diukur_bukan_ditebak(self):
+        badan = self._badan()
+        self.assertRegex(
+            badan, r"scrollHeight\s*>\s*\w+\.clientHeight",
+            "`pinKeGalat` tidak lagi membandingkan `scrollHeight` dengan "
+            "`clientHeight`. Sinyal overflow yang disimpulkan dari panjang "
+            "keluaran akan menyala di tata letak sempit, tempat panel ini "
+            "justru tidak dipagari sama sekali")
+        banding = badan.index("scrollHeight >")
+        sembunyi = [m.start() for m in
+                    re.finditer(r"\.hidden\s*=\s*true", badan)]
+        nyala = [m.start() for m in
+                 re.finditer(r"\.hidden\s*=\s*(?:false|!)", badan)]
+        self.assertTrue(
+            sembunyi and min(sembunyi) < banding,
+            "chip sinyalnya tidak DISEMBUNYIKAN dulu sebelum panel diukur. "
+            "Kalau tinggi chip ikut memutuskan apakah panelnya memotong, "
+            "panel yang pas-pasan menyalakan chip lalu mengunci keputusan itu "
+            "atas keadaan yang hilang satu frame kemudian — terukur di "
+            "655x754: `scroll 784 > client 777` saat kartu masih tumbuh, lalu "
+            "mengendap di `817 == 817` tanpa memotong apa pun")
+        self.assertTrue(
+            nyala, "nol chip yang pernah DINYALAKAN di `pinKeGalat`; chipnya "
+                   "lahir tersembunyi, jadi tanpa ini sinyalnya tidak pernah "
+                   "sampai ke mata siapa pun")
+        self.assertTrue(
+            all(i > banding for i in nyala),
+            "ada chip sinyal yang dinyalakan SEBELUM panel diukur: "
+            + str([i for i in nyala if i <= banding])
+            + ". Chip yang menyala tanpa pengukuran adalah dugaan")
+        self.assertNotIn(
+            "tinggiTerakhir", badan,
+            "`pinKeGalat` memakai penjaga 'tinggi berubah atau tidak' lagi. "
+            "Penjaga itu MENGUNCI keputusan sesaat: terukur, chip menyala di "
+            "655x754 atas keadaan yang hilang 180 md kemudian, dan pin di "
+            "1280x800 berhenti 7 px kelebihan tanpa pernah mengoreksinya. "
+            "Yang menahan lingkarannya sifat IDEMPOTEN `pasang()`, bukan "
+            "perbandingan tinggi")
+        # Chipnya WAJIB lahir tersembunyi di kedua tempat yang melahirkannya.
+        kerja = self._kerja()
+        for mana in ('data: { lebih: "bawah" }', 'data: { lebih: "atas" }'):
+            self.assertIn(
+                mana, kerja,
+                "chip sinyal `" + mana + "` hilang dari layar-kerja.js")
+        for m in re.finditer(r'\{ hidden: true, data: \{ lebih: "(\w+)" \} \}',
+                             kerja):
+            self.assertIn(m.group(1), ("bawah", "atas"))
+        self.assertEqual(
+            len(re.findall(r'hidden: true, data: \{ lebih:', kerja)), 2,
+            "jumlah chip sinyal yang lahir tersembunyi bukan dua. Chip yang "
+            "lahir TERLIHAT akan mengaku ada lanjutan di panel yang tidak "
+            "memotong apa pun")
+
+    def test_guliran_satu_wadah_dan_scrollintoview_dilarang(self):
+        badan = self._badan()
+        self.assertRegex(
+            badan, r"panel\.scrollTop\s*=",
+            "`pinKeGalat` tidak lagi menggulir panelnya sendiri lewat "
+            "`scrollTop`")
+        self.assertNotIn(
+            "scrollIntoView", badan,
+            "`pinKeGalat` memakai `scrollIntoView`. Ia menggulir SEMUA "
+            "leluhur termasuk dokumen — kelas bug yang sama yang membuat "
+            "`bawaKeTengah()` ada")
+        # Cacah pemanggil `scrollIntoView` di berkas ini dipatok pada SATU,
+        # yaitu yang sudah ada di HEAD di cabang "belum sesuai" `periksa()`.
+        # Angkanya dipatok bukan karena ia benar, tapi supaya ia tidak
+        # berkembang biak diam-diam sementara ia menunggu putusan.
+        telanjang = TestHamparanBara._telanjang(self._kerja())
+        panggil = [telanjang[:m.start()].count("\n") + 1
+                   for m in re.finditer(r"\.scrollIntoView\s*\(", telanjang)]
+        self.assertEqual(
+            len(panggil), 1,
+            "jumlah pemanggil `scrollIntoView` di layar-kerja.js bukan satu, "
+            "melainkan " + str(len(panggil)) + " di baris " + str(panggil)
+            + ". Yang satu itu temuan yang sedang menunggu putusan reviewer; "
+            "yang kedua tidak punya izin lahir")
+
+    def test_pengukuran_lewat_saatsiap_dan_mengamati_kartunya(self):
+        badan = self._badan()
+        self.assertRegex(
+            badan, r"saatSiap\s*\(\s*panel\s*,",
+            "`pinKeGalat` tidak lagi mengukur di dalam `saatSiap()`. Layar "
+            "dibangun utuh sebelum router menempelkannya, jadi rect yang "
+            "dibaca di frame pemasangan bisa nol (invarian #15a)")
+        self.assertNotIn(
+            "requestAnimationFrame", badan,
+            "`pinKeGalat` memakai `requestAnimationFrame` polos untuk "
+            "mengukur tata letak")
+        self.assertIn(
+            "new ResizeObserver", badan,
+            "`pinKeGalat` tidak punya pengamat ukuran. `saatSiap` menjawab "
+            "'sudah terpasang dan punya ukuran', BUKAN 'ukurannya sudah "
+            "berhenti berubah' — dan tinggi kartu HTML/CSS bertambah sesudah "
+            "iframe pratinjau melaporkan dirinya")
+        self.assertRegex(
+            badan, r"observe\s*\(\s*panel\.firstElementChild\s*\)",
+            "pengamat ukurannya tidak mengawasi KARTUNYA. Panel ini "
+            "ber-`max-height`, jadi kotaknya sendiri tidak pernah berubah "
+            "ukuran ketika isinya tumbuh — mengamati panel saja berarti "
+            "keputusan 'terpotong atau tidak' diambil sekali di frame "
+            "pemasangan lalu tidak pernah ditinjau lagi")
+
+    def test_pin_lepas_pada_sentuhan_dan_pada_batas_waktu(self):
+        kerja = self._telanjang_kerja()
+        m = re.search(r"const SENTUHAN_HASIL = \[([^\]]*)\]", kerja)
+        self.assertIsNotNone(
+            m, "`SENTUHAN_HASIL` hilang; tanpa daftar isyarat, pin panel "
+               "hasil tidak punya cara lepas")
+        for isyarat in ("wheel", "pointerdown", "keydown"):
+            self.assertIn(
+                isyarat, m.group(1),
+                "isyarat `" + isyarat + "` hilang dari `SENTUHAN_HASIL`. "
+                "Posisi gulir adalah keadaan PENGGUNA: merebutnya kembali "
+                "sesudah dia menggeser sendiri lebih buruk daripada tidak "
+                "mem-pin sama sekali")
+        badan = self._badan()
+        self.assertRegex(
+            badan, r"removeEventListener\s*\(\s*nama\s*,\s*lepas\s*\)",
+            "pin panel hasil tidak melepas pendengarnya")
+        self.assertRegex(
+            badan, r"setTimeout\s*\(\s*\(\)\s*=>\s*lepas\(\)\s*,\s*PIN_HASIL_MS\s*\)",
+            "pin panel hasil tidak punya batas waktu")
+        self.assertIn(
+            "clearTimeout(jam)", badan,
+            "batas waktunya tidak dibatalkan saat pengguna menyentuh lebih "
+            "dulu; jam yang tertinggal memanggil `lepas()` pada pengamat yang "
+            "sudah terputus")
+        self.assertIn(
+            "pengamat.disconnect()", badan,
+            "pengamat ukurannya tidak diputus; ia akan hidup di belakang "
+            "layar berikutnya")
+        angka = {}
+        for nama, berkas in (("PIN_HASIL_MS", "layar-kerja.js"),
+                             ("PIN_BARA_MS", "layar-belajar.js")):
+            akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            with open(os.path.join(akar, "webapp", "statik", "js", berkas),
+                      encoding="utf-8") as f:
+                mm = re.search(r"const " + nama + r" = (\d+);", f.read())
+            self.assertIsNotNone(mm, nama + " hilang dari " + berkas)
+            angka[nama] = int(mm.group(1))
+        self.assertEqual(
+            angka["PIN_HASIL_MS"], angka["PIN_BARA_MS"],
+            "batas waktu pin panel hasil tidak lagi sama dengan pin kisi "
+            "bara: " + str(angka) + ". Keduanya menjawab satu pertanyaan — "
+            "berapa lama sebuah pengamat boleh hidup di layar yang dibuka "
+            "lalu ditinggal — jadi dua angka berbeda berarti salah satunya "
+            "tidak punya alasan")
+
+    def _telanjang_kerja(self):
+        return TestHamparanBara._telanjang(self._kerja())
+
+    def test_nol_animasi_di_jalur_gulir_panel(self):
+        badan = self._badan()
+        for kata in ("smooth", "behavior"):
+            self.assertNotIn(
+                kata, badan,
+                "`pinKeGalat` menyebut `" + kata + "`. `scroll-behavior` "
+                "tidak mewaris dari `html`, jadi yang terhitung pada "
+                "`.kerja-hasil` adalah `auto` dan `scrollTop =` sudah instan "
+                "di ketiga tingkat gerak. Guliran dan sinyalnya memang tetap "
+                "terjadi pada tingkat `mati` — keduanya informasi, bukan "
+                "hiasan — dan justru karena itu ia tidak boleh dianimasikan")
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = re.sub(r"/\*.*?\*/", " ", f.read(), flags=re.S)
+        nakal = [sel.strip() for sel, isi in re.findall(r"([^{}]+)\{([^{}]*)\}", css)
+                 if "kerja-hasil" in sel and "scroll-behavior" in isi]
+        self.assertEqual(
+            nakal, [],
+            "ada aturan `.kerja-hasil` yang menyetel `scroll-behavior`: "
+            + str(nakal) + ". Klaim 'guliran panel sudah instan tanpa "
+            "menyebut behavior' berdiri di atas properti itu TIDAK ada di "
+            "sini")
+
+
+class TestLebarDigitDiMesin(unittest.TestCase):
+    """`angkaKe()` memiliki lebar digitnya sendiri, dan SEBELUM cabang gerak.
+
+    `layar-kerja.js` membuat `const angkaBenar = h("span", {}, "0")` tanpa
+    kelas apa pun lalu menganimasikannya; selama hitungan naik, digit
+    proporsional melebar dan judul hasil di sebelahnya bergeser — generator
+    CLS pada satu-satunya angka yang benar-benar ditunggu orang di layar itu.
+
+    Perbaikannya di MESIN, satu tempat, bukan per pemanggil — dan posisinya
+    bagian dari perbaikan: kalau properti itu dipasang SESUDAH cabang
+    `if (!adaGerak() || awal === tujuan)`, maka tingkat `mati` dan pemanggil
+    yang angkanya tidak berubah tetap menukar teksnya tanpa pernah
+    mendapatkannya. Itu bukan perbaikan melainkan keberuntungan.
+
+    Pasangannya invarian #2 (satu properti, satu mesin): gaya inline menang
+    atas kelas, jadi keempat pemanggil lama kini memegang properti yang sama
+    dari dua tempat. Yang membuat itu aman cuma satu hal, dan ia diukur di
+    sini — NILAINYA sama di semua claimant.
+    """
+
+    @staticmethod
+    def _baca(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    def test_properti_dipasang_sebelum_cabang_gerak(self):
+        badan = TestHamparanBara._fungsi(
+            self._baca("webapp", "statik", "js", "gerak.js"), "angkaKe")
+        self.assertIn(
+            "fontVariantNumeric", badan,
+            "`angkaKe()` tidak lagi memasang `font-variant-numeric`. Tanpa "
+            "itu `angkaBenar` di layar-kerja.js — satu-satunya pemanggil yang "
+            "tidak punya kelas — menggeser judul hasil selama hitungan")
+        self.assertRegex(
+            badan, r'fontVariantNumeric\s*=\s*"tabular-nums"',
+            "nilainya bukan `tabular-nums`; yang memangkas geseran digit "
+            "hanya angka berlebar tetap")
+        i_prop = badan.index("fontVariantNumeric")
+        i_cabang = badan.index("if (!adaGerak() || awal === tujuan)")
+        self.assertLess(
+            i_prop, i_cabang,
+            "`font-variant-numeric` dipasang SESUDAH cabang early-return. "
+            "Pada tingkat `mati` dan pada pemanggil yang angkanya tidak "
+            "berubah, cabang itu menukar teks lalu keluar — jadi propertinya "
+            "tidak pernah terpasang justru di jalur yang paling mudah "
+            "dilewati")
+
+    def test_satu_properti_satu_nilai_di_seluruh_claimant(self):
+        css = self._baca("webapp", "statik", "gaya.css")
+        dek = [v.strip() for v in
+               re.findall(r"font-variant-numeric\s*:\s*([^;}]+)", css)]
+        self.assertEqual(
+            sorted(set(dek)), ["tabular-nums"],
+            "ada aturan CSS yang menyetel `font-variant-numeric` dengan nilai "
+            "LAIN: " + str(sorted(set(dek))) + ". Gaya inline dari `angkaKe()` "
+            "menang atas kelas, jadi dua nilai berbeda pada elemen yang sama "
+            "berarti yang terlihat bukan yang ditulis di CSS (invarian #2)")
+        self.assertEqual(
+            len(dek), 23,
+            "jumlah aturan `font-variant-numeric` di gaya.css bukan 23 "
+            "melainkan " + str(len(dek)) + ". Angkanya dinaikkan BERSAMA "
+            "suntingannya: setiap claimant baru wajib diadu nilainya terhadap "
+            "gaya inline yang dipasang `angkaKe()`")
+        self.assertEqual(
+            re.findall(r"transition:[^;}]*font-variant", css), [],
+            "ada `transition` atas `font-variant`. Properti itu sekarang "
+            "disetel mesin lewat gaya inline; menambahkan transisi CSS di "
+            "atasnya membuat dua mesin menggerakkan satu properti")
+
+
+class TestKilauSatuKejutan(unittest.TestCase):
+    """`.kilau` lolos SC 2.3.1 HANYA lewat syarat frekuensi — jaga syarat itu.
+
+    SC 2.3.1 menolak sebuah kilatan kalau TIGA syarat terpenuhi BERSAMAAN:
+    lebih dari tiga pasang perubahan luminansi per detik, DI wilayah lebih
+    dari 25% medan pandang, DAN lewat ambang gambar-gelap. Overlay ini lolos
+    bukan karena dua syarat pertama meleset — keduanya justru KENA, terukur di
+    tema `terang`:
+
+      · luas  : fraksi jendela kilat 341x256 px = 0,3549  >  0,25
+      · gelap : 0,7493 dan 0,7908 — keduanya DI BAWAH ambang 0,80
+
+    Yang menahannya cuma syarat ketiga: `.kilau` TIDAK BERULANG. Satu
+    `div.kilau` per panggilan, animasinya sekali jalan, elemennya dibuang
+    sesudah itu — empat panggilan nyata berjarak 250 md terukur menghasilkan
+    SATU bukit, yaitu 1 pasang/detik, jauh di bawah ambang "lebih dari tiga".
+
+    Jadi "tidak berulang" di sini properti yang DIPERTAHANKAN, bukan kebetulan
+    yang kebetulan menyelamatkan (doktrin 45/64). Begitu syarat ketiga ikut
+    terpenuhi, ketiganya terpenuhi sekaligus — dan tidak ada syarat cadangan
+    yang tersisa untuk menolongnya.
+
+    DUA ANGKA YANG GAMPANG TERTUKAR, dan keduanya dikunci di sini:
+      · 1500 md = umur ANIMASINYA  (`animation` di blok `.kilau`, gaya.css)
+      · 1600 md = umur ELEMENNYA   (`setTimeout(() => el.remove(), 1600)` di
+                                    `kilau()`, inti.js)
+    Elemennya wajib hidup TIDAK KURANG dari animasinya — kalau tidak, animasi
+    terpotong di tengah dan "sekali jalan" berhenti berarti apa pun — dan umur
+    elemennya wajib tidak melewati 1600 md.
+
+    YANG TIDAK DIJAGA DI SINI: berapa kali `kilau()` DIPANGGIL. Pagar ini
+    mengunci bentuk satu-kejutan PER PANGGILAN; yang mengunci jalur mana saja
+    yang boleh memanggil perayaan adalah daftar-putih `dari` di
+    `TestMesinPerayaan`.
+    """
+
+    UMUR_MAKS_MS = 1600
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @staticmethod
+    def _tanpa_fungsi(nilai):
+        """Buang notasi fungsi sebelum mencari angka telanjang.
+
+        `cubic-bezier(.2,.8,.3,1)` memuat `1`, dan tanpa langkah ini angka itu
+        terbaca sebagai cacah pengulangan — pagar yang selalu hijau karena
+        salah baca lebih buruk daripada tidak ada pagar.
+        """
+        return re.sub(r"[\w-]+\([^()]*\)", " ", nilai)
+
+    def _animasi_kilau(self):
+        """(isi blok `.kilau`, nilai deklarasi `animation` yang dirapikan)."""
+        with open(os.path.join(self._akar(), "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = TestHamparanBara._telanjang(f.read())
+        blok = re.search(r"(?m)^\.kilau\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(
+            blok, "aturan `.kilau` tidak ada lagi di gaya.css; pagar ini tidak "
+                  "bisa memeriksa apa pun, dan diam bukan hijau")
+        isi = blok.group(1)
+        anim = re.search(r"(?m)^\s*animation\s*:\s*([^;]+);", isi)
+        self.assertIsNotNone(
+            anim, "blok `.kilau` tidak lagi punya deklarasi `animation`, jadi "
+                  "cacah pengulangannya tidak bisa dibaca dari sini. Kalau "
+                  "animasinya dipindah, pagar ini wajib ikut pindah — bukan "
+                  f"dibiarkan hijau. Blok terbaca: {' '.join(isi.split())!r}")
+        return isi, " ".join(anim.group(1).split())
+
+    def test_animasi_kilau_berjalan_tepat_sekali(self):
+        """Nol atau satu pengulangan; `infinite` menghidupkan syarat ketiga."""
+        isi, nilai = self._animasi_kilau()
+        token = self._tanpa_fungsi(nilai).split()
+        ulang = [t for t in token
+                 if t == "infinite" or re.fullmatch(r"\d+(?:\.\d+)?", t)]
+        self.assertIn(
+            ulang, ([], ["1"]),
+            f"cacah pengulangan `.kilau` bukan sekali jalan: {ulang} terbaca "
+            f"di `animation: {nilai}`. Overlay ini sudah melewati syarat luas "
+            "(0,3549 > 0,25) dan syarat gambar-gelap di tema `terang`; satu-"
+            "satunya yang menahannya dari melanggar SC 2.3.1 adalah bahwa ia "
+            "TIDAK BERULANG. Mengulangnya membuat ketiga syarat terpenuhi "
+            "sekaligus.")
+        for mm in re.finditer(r"(?m)^\s*animation-iteration-count\s*:\s*([^;]+);",
+                              isi):
+            self.assertEqual(
+                " ".join(mm.group(1).split()), "1",
+                "`animation-iteration-count` di `.kilau` bukan 1: "
+                f"{mm.group(1).strip()!r}")
+
+    def test_elemen_kilau_dibuang_dan_umurnya_menutup_animasinya(self):
+        """Timer penghapus wajib ada, >= durasi animasi, dan <= 1600 md."""
+        _, nilai = self._animasi_kilau()
+        d = re.search(r"(\d+(?:\.\d+)?)\s*(ms|s)(?![\w-])",
+                      self._tanpa_fungsi(nilai))
+        self.assertIsNotNone(
+            d, f"durasi animasi `.kilau` tidak terbaca dari `animation: {nilai}`")
+        durasi = float(d.group(1)) * (1 if d.group(2) == "ms" else 1000)
+
+        with open(os.path.join(self._akar(), "webapp", "statik", "js", "inti.js"),
+                  encoding="utf-8") as f:
+            inti = TestHamparanBara._telanjang(f.read())
+        mk = re.search(r"export function kilau\s*\([^)]*\)\s*\{", inti)
+        self.assertIsNotNone(mk, "fungsi `kilau()` tidak ada lagi di inti.js")
+        dalam, akhir = 0, None
+        for j in range(mk.end() - 1, len(inti)):
+            if inti[j] == "{":
+                dalam += 1
+            elif inti[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    akhir = j
+                    break
+        self.assertIsNotNone(akhir, "badan `kilau()` tidak tertutup kurungnya")
+        badan = inti[mk.end():akhir]
+
+        t = re.search(r"setTimeout\s*\(\s*\(\s*\)\s*=>\s*\w+\.remove\s*\(\s*\)"
+                      r"\s*,\s*(\d+)\s*\)", badan)
+        self.assertIsNotNone(
+            t, "timer penghapus di `kilau()` hilang. Tanpa dia elemen `.kilau` "
+               "tidak pernah keluar dari DOM: overlay layar-penuh itu menumpuk "
+               "satu per panggilan, dan \"tidak berulang\" — satu-satunya "
+               "syarat SC 2.3.1 yang masih menahannya — berhenti benar. Badan "
+               f"terbaca: {' '.join(badan.split())!r}")
+        umur = int(t.group(1))
+
+        self.assertLessEqual(
+            durasi, umur,
+            f"animasi `.kilau` {durasi:.0f} md lebih panjang daripada umur "
+            f"elemennya {umur} md, jadi ia dipotong di tengah. 1500 md adalah "
+            "umur ANIMASINYA dan 1600 md umur ELEMENNYA — dua angka berbeda, "
+            "dan yang kedua wajib menutup yang pertama")
+        self.assertLessEqual(
+            umur, self.UMUR_MAKS_MS,
+            f"elemen `.kilau` hidup {umur} md, melewati {self.UMUR_MAKS_MS} md. "
+            "Makin lama ia berdiri, makin besar peluang panggilan berikutnya "
+            "bertemu pendahulunya di layar — dan dua overlay yang bertumpuk "
+            "adalah awal dari berulang")
 
 
 class TestPagarTingkatGerak(unittest.TestCase):
@@ -6430,6 +8998,13255 @@ class TestIsiSamaDenganTerminal(BasisWeb):
                                           "baris ini terbaca di terminal tapi "
                                           "tidak pernah sampai ke web")
                 self.assertIn(m["title"], materials.teks_polos(m))
+
+
+# ------------------------------------------- lompat ke baris dari pesan galat
+
+_SKRIP_NOMOR_BARIS = """\
+const fs = require("fs");
+const muat = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+const nomorDiBaris = new Function(
+  muat.pola.join("\\n") + "\\n" + muat.fungsi + "\\nreturn nomorDiBaris;")();
+console.log(JSON.stringify(muat.korpus.map((t) => nomorDiBaris(t))));
+"""
+
+
+class TestLompatKeBarisGalat(unittest.TestCase):
+    """Tombol per baris pada pesan galat, dan jebakan di sekelilingnya.
+
+    Setiap baris pesan galat yang menyebut nomor jadi tombol yang mengantar
+    caret ke baris itu di editor. Yang dijaga di sini BENTUK — suite stdlib
+    tidak punya DOM maupun mesin animasi — kecuali satu hal yang memang bisa
+    diadu sungguhan: PORT pola nomor baris ke JS, yang dijalankan `node` dan
+    dibandingkan dengan `inti/galat.py` atas korpus nyata. Kalau node tidak
+    terpasang, baris itu SKIPPED, bukan lulus diam-diam.
+
+    Lima pagar, masing-masing menutup satu jalan masuk yang berbeda:
+
+      (1) port pola JS <-> Python setara atas korpus `tests/test_galat.py`;
+      (2) tombol lahir HANYA untuk baris yang bernomor DAN yang nomornya ada
+          di editor — tombol yang berujung penolakan dilarang invarian repo;
+      (3) nomornya dibaca dari `g.baris` (yang dirender), bukan `g.mentah`
+          (yang diringkas jadi maksimal 14 baris oleh `api._galat_json`);
+      (4) keadaan sorot tinggal di FIELD dan dibaca DI DALAM `_gambarNomor`,
+          karena penggambar itu membuang seluruh gutter pada tiap ketikan —
+          kelas yang ditempel ke node tidak selamat satu ketikan pun;
+      (5) satu properti satu mesin, DUA ARAH: `color` pada `.editor-nomor b`
+          dipegang `transition` di gaya.css, jadi WAAPI tidak boleh menyentuh
+          properti itu — dan kalau `transition`-nya dilepas, harus ada yang
+          mengambil alih. Pagar satu arah akan hijau untuk pohon yang tidak
+          menggerakkan warna itu sama sekali.
+
+    YANG TIDAK DIJAGA: bahwa caret benar-benar mendarat di baris itu dan
+    guliran benar-benar bergerak. Itu `setSelectionRange` dan `scrollTop` di
+    peramban; tempatnya tabel ukur di laporan, bukan tes ini.
+    """
+
+    KORPUS_EKSTRA = (
+        "Halo.java:3: error: ';' expected",
+        "prog.c:5:5: warning: implicit declaration",
+        "line 3: syntax error near unexpected token `='",
+        "Parse error near line 15:",
+        '  File "prog.py", line 7',
+        "./main.go:7:2: undefined: x",
+        "Latihan.sql:17: error",
+        "[bagian KONDISI AWAL] error: x",
+        "Traceback (most recent call last):",
+        "tidak ada nomor di baris ini",
+        "    print(nilai)",
+        "prog.cpp:12:9: error: expected ';'",
+        "at Halo.main(Halo.java:4)",
+        "line 1:",
+    )
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _baca(self, *bagian):
+        with open(os.path.join(self._akar(), *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    def _js(self):
+        return TestHamparanBara._telanjang(
+            self._baca("webapp", "statik", "js", "layar-kerja.js"))
+
+    def _editor(self):
+        return TestHamparanBara._telanjang(
+            self._baca("webapp", "statik", "js", "editor.js"))
+
+    @staticmethod
+    def _badan(src, pola):
+        """Badan fungsi/metode pertama yang preludenya cocok `pola`, utuh."""
+        m = re.search(pola, src)
+        if m is None:
+            return None
+        dalam = 0
+        for i in range(m.end() - 1, len(src)):
+            if src[i] == "{":
+                dalam += 1
+            elif src[i] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return src[m.start():i + 1]
+        return None
+
+    def _korpus(self):
+        """Baris pesan galat nyata, dikumpulkan dari `tests/test_galat.py`."""
+        src = self._baca("tests", "test_galat.py")
+        kand = (re.findall(r'"([^"\n]{3,})"', src)
+                + re.findall(r"'([^'\n]{3,})'", src))
+        pilih = [k for k in kand
+                 if re.search(r"\w+\.\w+:\d+", k) or re.search(r"\bline \d+", k)]
+        pilih += list(self.KORPUS_EKSTRA)
+        baris = []
+        for k in pilih:
+            baris += [b for b in k.replace("\\n", "\n").split("\n") if b.strip()]
+        return sorted(set(baris))
+
+    @unittest.skipUnless(shutil.which("node"),
+                         "butuh node untuk mengadu port pola nomor baris")
+    def test_port_nomor_baris_setara_dengan_galat_py(self):
+        """Port JS dari dua pola `inti/galat.py` memberi angka yang SAMA.
+
+        Ekstraksinya di klien dengan sadar: geseran `baris_setup` sudah
+        selesai di server (`api._galat_json` -> `galat.rapikan`), jadi
+        menambah field `nomor` berarti dua tempat membentuk satu angka.
+        Harga kekembaran itu dibayar di sini — dan POLA-nya DIMUAT dari
+        `layar-kerja.js`, bukan disalin ke tes ini, supaya mutasi pada polanya
+        memerahkan baris ini alih-alih lolos.
+        """
+        from inti import galat as modul_galat
+
+        js = self._js()
+        pola = re.findall(r"(?m)^const POLA_[A-Z_]+\s*=\s*/.*/;\s*$", js)
+        self.assertEqual(
+            len(pola), 2,
+            "jumlah konstanta pola nomor baris di `layar-kerja.js` bukan dua: "
+            f"{pola}. Aduan ini memuat polanya DARI sumber; kalau bentuknya "
+            "berubah, perbarui pemuatnya bersama suntinganmu — jangan "
+            "menyalin polanya ke tes ini, karena salinan tidak pernah ikut "
+            "termutasi")
+        fungsi = self._badan(js, r"function\s+nomorDiBaris\s*\([^)]*\)\s*\{")
+        self.assertIsNotNone(
+            fungsi, "`nomorDiBaris` tidak ada lagi di `layar-kerja.js`; aduan "
+                    "port yang sasarannya hilang tidak mengadu apa pun")
+
+        korpus = self._korpus()
+        self.assertGreater(
+            len(korpus), 18,
+            f"korpus terlalu kecil ({len(korpus)} baris); aduan port yang "
+            "cuma menyentuh beberapa bentuk tidak membuktikan kesetaraan")
+
+        def nomor_python(teks):
+            m = (modul_galat._POLA_BARIS_BERKAS.search(teks)
+                 or modul_galat._POLA_KATA_LINE.search(teks))
+            return int(m.group(2)) if m else 0
+
+        harap = [nomor_python(t) for t in korpus]
+        self.assertGreater(
+            len([n for n in harap if n]), 10,
+            "korpus nyaris tidak punya baris bernomor; yang diadu jadi "
+            "'keduanya sama-sama menjawab nol'")
+
+        with tempfile.TemporaryDirectory() as d:
+            skrip = os.path.join(d, "banding_nomor.js")
+            data = os.path.join(d, "muat.json")
+            with open(skrip, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_NOMOR_BARIS)
+            with open(data, "w", encoding="utf-8") as f:
+                json.dump({"pola": pola, "fungsi": fungsi, "korpus": korpus}, f)
+            hasil = subprocess.run(["node", skrip, data],
+                                   capture_output=True, text=True, timeout=60)
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-800:])
+        dapat = json.loads(hasil.stdout)
+
+        beda = [(t, p, j) for t, p, j in zip(korpus, harap, dapat) if p != j]
+        self.assertEqual(
+            beda, [],
+            "port JS berbeda dari `inti/galat.py` pada: "
+            + repr(beda[:6]) + ". Tombol lompat memakai angka JS, jadi selisih "
+            "di sini berarti tombol yang menunjuk baris yang salah — dan yang "
+            "terlihat pelajar bukan error melainkan caret yang mendarat di "
+            "tempat yang tidak ada hubungannya dengan pesannya")
+
+    def test_tombol_lahir_hanya_untuk_baris_bernomor_yang_ada_di_editor(self):
+        """Satu baris = satu simpul; yang tanpa nomor tetap TEKS.
+
+        Dua syarat, bukan satu. `n` menjaga agar baris tanpa nomor tidak jadi
+        tombol — blok galat tanpa satu pun nomor harus terlihat persis seperti
+        sebelum tombol ini ada. `tuju.bisa(n)` menjaga agar tombolnya tidak
+        berujung penolakan: nomor di luar jumlah baris editor tidak melahirkan
+        tombol sama sekali.
+        """
+        badan = self._badan(self._js(),
+                            r"function\s+barisGalat\s*\([^)]*\)\s*\{")
+        self.assertIsNotNone(
+            badan, "`barisGalat` tidak ada di `layar-kerja.js`; pagar yang "
+                   "sasarannya hilang berhenti menjaga apa pun")
+        self.assertRegex(
+            badan, r"nomorDiBaris\s*\(",
+            "`barisGalat` tidak lagi menanyakan nomor barisnya; tanpa itu "
+            "tidak ada yang memutuskan baris mana yang boleh jadi tombol")
+        self.assertRegex(
+            badan, r"if\s*\(\s*n\s*&&\s*tuju\.bisa\s*\(\s*n\s*\)\s*\)",
+            "gerbang tombol bukan lagi `n && tuju.bisa(n)`. Melepas `n` "
+            "membuat SETIAP baris galat jadi tombol — termasuk 'Traceback "
+            "(most recent call last):' yang tidak menunjuk baris mana pun. "
+            "Melepas `tuju.bisa(n)` melahirkan tombol yang berakhir 'baris "
+            "itu tidak ada', dan itu dilarang invarian 'tidak boleh ada "
+            "tombol yang berujung penolakan'")
+        self.assertRegex(
+            badan, r"else\s*\{[^{}]*simpul\.push\s*\(\s*teks",
+            "baris tanpa nomor tidak lagi didorong sebagai teks biasa; blok "
+            "galat yang nol baris bernomor harus terlihat seperti sebelum "
+            "tombol ini ada")
+        self.assertRegex(
+            badan, r'h\(\s*"button"',
+            "tombolnya bukan elemen `<button>` sungguhan. `div` ber-onclick "
+            "tidak bisa difokus, tidak menjawab Enter/Space, dan tidak "
+            "dibacakan sebagai tombol")
+        self.assertRegex(
+            badan, r'type\s*:\s*"button"',
+            "`type: \"button\"` hilang; di dalam sebuah form, tombol tanpa "
+            "type default `submit`")
+        self.assertRegex(
+            badan, r'"aria-label"\s*:\s*"Ke baris "\s*\+\s*n',
+            "`aria-label` yang menyebut nomor tujuannya hilang. Teks tombolnya "
+            "adalah seluruh baris pesan compiler; dibacakan apa adanya ia "
+            "tidak pernah menyebut apa yang akan terjadi kalau ditekan")
+
+    def test_nomor_dibaca_dari_baris_yang_dirender_bukan_mentah(self):
+        """`g.baris`, bukan `g.mentah`.
+
+        `api._galat_json` mengirim keduanya: `mentah` adalah pesan utuh,
+        `baris` adalah `ringkas(mentah, maks_baris=14)`. Nomor yang hanya
+        hidup di `mentah` menghasilkan tombol untuk baris yang tidak bisa
+        dibaca siapa pun di layar ini.
+        """
+        js = self._js()
+        blok = self._badan(js, r"function\s+blokGalat\s*\([^)]*\)\s*\{")
+        self.assertIsNotNone(blok, "`blokGalat` tidak ada di `layar-kerja.js`")
+        self.assertRegex(
+            blok, r"barisGalat\s*\(\s*g\.baris\b",
+            "`blokGalat` tidak lagi meneruskan `g.baris` ke pembuat simpulnya")
+        self.assertEqual(
+            re.findall(r"\bg\.mentah\b", js), [],
+            "`layar-kerja.js` membaca `g.mentah`. Yang dirender `g.baris` "
+            "(maksimal 14 baris); mengambil nomor dari `mentah` berarti "
+            "tombol untuk baris yang tidak ada di layar — dan `mentah` sendiri "
+            "tidak pernah ditampilkan di mana pun")
+
+    def test_sorot_baris_tuju_tinggal_di_field_dan_dibaca_penggambar(self):
+        """Sorot itu FIELD, bukan kelas yang ditempel ke sebuah node.
+
+        `_gambarNomor` melakukan `this.nomor.textContent = ""` lalu membangun
+        ulang seluruh gutter, dan itu terjadi pada tiap `keyup` dan tiap
+        `click`. `keBaris()` sendiri memindahkan kursor, jadi penggambaran
+        ulang terjadi tepat pada saat sorotnya baru dipasang: kelas yang
+        ditempel ke node hasil panggilan sebelumnya tidak selamat satu
+        ketikan pun.
+        """
+        ed = self._editor()
+        gn = self._badan(ed, r"_gambarNomor\s*\([^)]*\)\s*\{")
+        self.assertIsNotNone(gn, "`_gambarNomor` tidak ada di `editor.js`")
+        self.assertRegex(
+            gn, r"this\._tujuBaris",
+            "`_gambarNomor` tidak membaca `this._tujuBaris`. Sorot yang tidak "
+            "dibaca di dalam penggambar ini akan dihapus oleh penggambar ini")
+        self.assertEqual(
+            re.findall(r"querySelector", gn), [],
+            "`_gambarNomor` mencari node. Ia PENULIS gutter, bukan pembacanya: "
+            "mencari node di sini berarti mencari sesuatu yang baru saja "
+            "dibuang baris di atasnya")
+
+        kb = self._badan(ed, r"\bkeBaris\s*\([^)]*\)\s*\{")
+        self.assertIsNotNone(kb, "`keBaris` tidak ada di `editor.js`")
+        self.assertRegex(
+            kb, r"this\._tujuBaris\s*=",
+            "`keBaris` tidak menyetel field sorotnya")
+        m = re.search(r"setTimeout\s*\(\s*\(\s*\)\s*=>\s*\{(.*?)\}\s*,", kb,
+                      re.S)
+        self.assertIsNotNone(
+            m, "`keBaris` tidak memasang timer pemadam sorot; sorot yang tidak "
+               "pernah padam jadi penanda permanen KEDUA di sebelah penanda "
+               "baris aktif")
+        self.assertRegex(
+            m.group(1), r"this\._tujuBaris\s*=\s*0",
+            "timer tidak menolkan fieldnya")
+        self.assertRegex(
+            m.group(1), r"_segarkanTanda\s*\(|_gambarNomor\s*\(",
+            "timer menolkan field tapi tidak menggambar ulang gutternya, jadi "
+            "sorotnya tetap terlihat sampai ketikan berikutnya kebetulan "
+            "memicu penggambaran")
+
+        lp = self._badan(ed, r"\blepas\s*\(\s*\)\s*\{")
+        self.assertIsNotNone(lp, "`lepas()` tidak ada di `editor.js`")
+        self.assertRegex(
+            lp, r"clearTimeout\s*\(\s*this\._tujuId",
+            "timer sorot tidak dilepas bersama editornya. Ia menulis ke gutter "
+            "lewat `_segarkanTanda`, jadi dibiarkan hidup ia menggambar ke "
+            "pohon DOM layar yang sudah ditinggalkan — dan memegang instance "
+            "ini selama sisa detiknya")
+
+    def test_satu_mesin_yang_memegang_color_gutter_nomor(self):
+        """`color` pada `.editor-nomor b`: CSS atau WAAPI, tidak keduanya.
+
+        Dan tidak NOL juga — itu arah kedua pagar ini. Aturan di gaya.css
+        sudah menyerahkan `color` kepada `transition`; menganimasikan properti
+        yang sama lewat WAAPI membuat keduanya saling mengejar. Tapi melepas
+        `transition`-nya tanpa ada yang mengambil alih meninggalkan penanda
+        baris aktif yang berganti warna mendadak.
+        """
+        css = self._baca("webapp", "statik", "gaya.css")
+        m = re.search(r"(?m)^\.editor-nomor b\s*\{([^}]*)\}", css)
+        self.assertIsNotNone(
+            m, "aturan `.editor-nomor b` tidak ada lagi di `gaya.css`; pagar "
+               "dua arah ini tidak bisa menimbang apa pun")
+        transisi = bool(re.search(r"transition\s*:[^;]*\bcolor\b", m.group(1)))
+        waapi = bool(re.search(r"animasi\s*\((?:[^;]*?)\bcolor\s*:",
+                               self._editor(), re.S))
+
+        self.assertFalse(
+            transisi and waapi,
+            "`color` pada `.editor-nomor b` digerakkan DUA mesin: "
+            "`transition` di `gaya.css` dan `animasi()` di `editor.js`. "
+            "Keduanya akan saling mengejar, dan gejalanya bukan error "
+            "melainkan warna yang tersendat — pilih satu dan tulis yang mana")
+        self.assertTrue(
+            transisi or waapi,
+            "nol mesin memegang `color` pada `.editor-nomor b`. Kalau "
+            "`transition: color` dilepas, yang harus mengambil alih mesin "
+            "gerak — bukan tidak ada: penanda baris aktif yang berganti warna "
+            "mendadak adalah kedipan di bawah mata orang yang sedang mengetik")
+
+    def test_keBaris_menolak_di_luar_rentang_dan_tidak_menggulir_dokumen(self):
+        """Penolakan lebih dulu, lalu SATU wadah yang digulir.
+
+        `scrollIntoView` menggulir setiap leluhur yang bisa digulir, termasuk
+        dokumen — melompat ke baris 40 akan ikut memindahkan halamannya, dan
+        pesan galat yang baru saja diklik orangnya hilang dari pandangan.
+        """
+        ed = self._editor()
+        self.assertEqual(
+            re.findall(r"scrollIntoView", ed), [],
+            "`editor.js` memakai `scrollIntoView`; yang benar menyentuh "
+            "`scrollTop` wadahnya sendiri lalu `_selaraskan()`")
+        kb = self._badan(ed, r"\bkeBaris\s*\([^)]*\)\s*\{")
+        self.assertIsNotNone(kb, "`keBaris` tidak ada di `editor.js`")
+
+        i_tolak = kb.find("return false")
+        i_gulir = kb.find("scrollTop")
+        self.assertNotEqual(
+            i_tolak, -1,
+            "`keBaris` tidak menolak nomor di luar rentang. Pemanggilnya "
+            "memakai nilai baliknya untuk memutuskan apakah tombolnya lahir")
+        self.assertNotEqual(
+            i_gulir, -1, "`keBaris` tidak menggulir wadahnya sama sekali; "
+                         "caret yang pindah ke baris yang tidak terlihat tidak "
+                         "membawa mata ke mana pun")
+        self.assertLess(
+            i_tolak, i_gulir,
+            "penolakan datang SESUDAH guliran. Nomor di luar rentang lalu "
+            "menggeser gulir dulu baru menyerah, dan yang terlihat orangnya "
+            "adalah editor yang melompat tanpa alasan")
+        self.assertRegex(
+            kb, r"setSelectionRange\s*\(",
+            "`keBaris` tidak menaruh caret; tanpa itu ia cuma menggulir")
+        self.assertRegex(
+            kb, r"this\.teks\.focus\s*\(",
+            "`keBaris` tidak memindahkan fokus ke editor; ketikan berikutnya "
+            "akan mendarat di tombol galat, bukan di kodenya")
+        self.assertRegex(
+            kb, r"this\._selaraskan\s*\(",
+            "`keBaris` menggulir textarea tanpa menyelaraskan lapis sorot dan "
+            "gutternya; nomor baris lalu berbeda dari teks di sebelahnya")
+        self.assertLess(
+            kb.find("this.teks.focus("), i_gulir,
+            "`scrollTop` disetel SEBELUM `focus()`, dan itu terukur tidak "
+            "bekerja: `focus()` pada textarea yang belum fokus menggulir "
+            "caret ke dalam pandangan sendiri, jadi Chrome menarik gulirnya "
+            "kembali ke posisi caret yang LAMA. Terukur di Chrome 152, "
+            "1280x800, berkas 80 baris, `tinggiKlien` 150 px: panggilan "
+            "PERTAMA `keBaris(40)` meninggalkan `scrollTop` di 0 dari 828 "
+            "yang diminta — dan panggilan pertama justru kasus yang paling "
+            "sering terjadi, karena orang mengklik tombol galat tanpa mampir "
+            "ke editor lebih dulu")
+        self.assertNotRegex(
+            kb, r"isi\s*:\s*[\"']forwards[\"']",
+            "sorotnya memakai `fill: forwards`. Nilai akhir yang dipaksakan "
+            "selamanya adalah sumber dua bug yang sudah pernah terjadi di repo "
+            "ini; keadaan akhir sorot memang keadaan alami elemennya")
+
+
+_SKRIP_BEDA_KATA = r"""
+// Baterai `bedaKata` -- dijalankan Node atas sumber yang DIEKSTRAK dari
+// layar-kerja.js, bukan atas salinan di tes ini. Alasannya satu: salinan akan
+// terus lulus sesudah aslinya berubah, dan pagar yang lulus untuk kode yang
+// sudah tidak ada lebih buruk daripada tidak ada pagar.
+//
+// Enam nama global DIBAJAK jadi perangkap yang melempar begitu disentuh:
+// document, window, Date, Intl, h, performance -- plus Math yang dipangkas
+// jadi {max, min} saja sehingga `Math.random` melempar. Dengan begitu
+// "fungsinya murni" berhenti jadi klaim di komentar dan jadi sifat yang diuji:
+// satu panggilan ke luar, dan seluruh baterai ini LEMPAR, bukan lulus.
+import fs from "node:fs";
+
+const blok = fs.readFileSync(process.argv[2], "utf8");
+const barisPanjang = fs.readFileSync(process.argv[3], "utf8");
+
+const jebak = (nama) => new Proxy(function () {}, {
+  get(_, k) { throw new Error("menyentuh " + nama + "." + String(k)); },
+  set(_, k) { throw new Error("menulis " + nama + "." + String(k)); },
+  apply() { throw new Error("memanggil " + nama + "()"); },
+  construct() { throw new Error("new " + nama + "()"); },
+});
+
+const MathAman = {
+  max: Math.max,
+  min: Math.min,
+  get random() { throw new Error("memakai Math.random -- hasilnya tak tentu"); },
+};
+
+const buat = new Function(
+  "document", "window", "Date", "Intl", "Math", "h", "performance",
+  '"use strict";\n' + blok
+  + "\nreturn { bedaKata, pecahToken, pasangkanUbahan, segmenKata,"
+  + " BATAS_SEL_KATA, POLA_TOKEN_KATA };");
+
+const M = buat(jebak("document"), jebak("window"), jebak("Date"),
+               jebak("Intl"), MathAman, jebak("h"), jebak("performance"));
+
+const lolos = [];
+const gagal = [];
+const uji = (nama, fn) => {
+  let r;
+  try { r = fn(); } catch (e) { gagal.push(nama + " -> LEMPAR " + e.message); return; }
+  if (r === true) lolos.push(nama);
+  else gagal.push(nama + " -> " + r);
+};
+const teksnya = (daftar, tanda) =>
+  daftar.filter((s) => s.tanda === tanda).map((s) => s.teks);
+const sama = (dapat, mau) => (JSON.stringify(dapat) === JSON.stringify(mau)
+  ? true : "dapat " + JSON.stringify(dapat) + ", mau " + JSON.stringify(mau));
+
+/* ---------------------------------------------------- pemecah token lossless */
+
+// Sengaja memuat huruf beraksen, tab, spasi ganda, tanda baca rapat, dan dua
+// lambang yang dipakai `beda.tampakkan` (titik-tengah dan panah) -- kalau salah
+// satunya tidak tertangkap satu pun alternatif pola, diff-nya akan menggambar
+// baris yang tidak pernah ditulis siapa pun.
+const CONTOH = [
+  "", "a", "halo dunia", "Total: 12 item", "  menjorok", "a\tb\tc",
+  "x  y", "naïve café", "f(x) = x*2 + 1;", "·→·", "  <li>satu</li>",
+  "SELECT * FROM t WHERE a=1;", "a b", "12,5 %", "\t\t", "é",
+];
+for (const s of CONTOH) {
+  uji("lossless " + JSON.stringify(s), () =>
+    M.pecahToken(s).join("") === s
+    || "join() != asli: " + JSON.stringify(M.pecahToken(s)));
+  uji("token tidak pernah kosong " + JSON.stringify(s), () =>
+    M.pecahToken(s).every((t) => t.length > 0) || "ada token kosong");
+}
+
+/* ------------------------------------- sifat yang WAJIB berlaku tiap pasangan */
+
+// Pasangan dengan EJAAN bermacam-macam tapi satu makna yang sama: apa pun
+// isinya, kedua sisi harus bisa disusun ulang persis dari segmennya. Itu
+// invarian yang tidak bergantung pada tebakan siapa pun soal LCS mana yang
+// "benar" -- dan karena itu ia yang paling tajam menangkap mutasi.
+const PASANG = [
+  ["Total: 12 item", "Total: 15 item"],
+  ["halo dunia", "halo Dunia"],
+  ["halo  dunia", "halo dunia"],
+  ["halo\tdunia", "halo dunia"],
+  ["nilai = 10;", "nilai = 11;"],
+  ["satu dua tiga", "satu tiga"],
+  ["satu tiga", "satu dua tiga"],
+  ["  <li>satu</li>", "<li>satu</li>"],
+  ["Rata-rata: 7.5", "Rata-rata: 7,5"],
+  ["café naïve", "café naive"],
+  ["a b c d e", "a x c y e"],
+  ["print('halo')", 'print("halo")'],
+];
+for (const [a, b] of PASANG) {
+  const nama = JSON.stringify(a) + " vs " + JSON.stringify(b);
+  const r = M.bedaKata(a, b);
+  uji("ada hasil " + nama, () => (r !== null) || "null padahal ada jangkar");
+  if (r === null) continue;
+
+  uji("kiri menyusun ulang a " + nama, () =>
+    r.kiri.map((s) => s.teks).join("") === a || "tidak sama dengan a");
+  uji("kanan menyusun ulang b " + nama, () =>
+    r.kanan.map((s) => s.teks).join("") === b || "tidak sama dengan b");
+  uji("gabung =/- menyusun ulang a " + nama, () =>
+    r.gabung.filter((s) => s.tanda !== "+").map((s) => s.teks).join("") === a
+    || "tidak sama dengan a");
+  uji("gabung =/+ menyusun ulang b " + nama, () =>
+    r.gabung.filter((s) => s.tanda !== "-").map((s) => s.teks).join("") === b
+    || "tidak sama dengan b");
+
+  // Inilah yang mati kalau `kurang`/`tambah` dibalik pada satu segmen: sisi
+  // kiri adalah baris HARAPAN, jadi ia tidak pernah boleh memuat sesuatu yang
+  // "bertambah" -- di baris itu tidak ada yang bertambah.
+  uji("kiri hanya =/- " + nama, () =>
+    r.kiri.every((s) => s.tanda === "=" || s.tanda === "-")
+    || "ada tanda lain: " + JSON.stringify(r.kiri.map((s) => s.tanda)));
+  uji("kanan hanya =/+ " + nama, () =>
+    r.kanan.every((s) => s.tanda === "=" || s.tanda === "+")
+    || "ada tanda lain: " + JSON.stringify(r.kanan.map((s) => s.tanda)));
+
+  for (const [sisi, daftar] of [["kiri", r.kiri], ["kanan", r.kanan],
+                                ["gabung", r.gabung]]) {
+    uji("tanpa segmen kosong " + sisi + " " + nama, () =>
+      daftar.every((s) => s.teks.length > 0) || "ada segmen berteks kosong");
+    uji("tanpa dua segmen bertanda sama bersebelahan " + sisi + " " + nama, () =>
+      daftar.every((s, i) => i === 0 || daftar[i - 1].tanda !== s.tanda)
+      || "ada yang belum dilebur: " + JSON.stringify(daftar.map((s) => s.tanda)));
+  }
+
+  uji("deterministik " + nama, () => sama(M.bedaKata(a, b), r));
+  uji("deterministik sesudah pasangan lain " + nama, () => {
+    M.bedaKata("pengganggu satu", "pengganggu dua");
+    return sama(M.bedaKata(a, b), r);
+  });
+}
+
+/* ------------------------------------------- segmen persis, dihitung tangan */
+
+uji("satu angka berubah -> satu segmen tiap sisi", () => {
+  const r = M.bedaKata("Total: 12 item", "Total: 15 item");
+  return sama([teksnya(r.kiri, "-"), teksnya(r.kanan, "+")],
+              [["12"], ["15"]]);
+});
+uji("beda kapital -> kata utuh ditandai, bukan hurufnya", () => {
+  const r = M.bedaKata("halo dunia", "halo Dunia");
+  return sama([teksnya(r.kiri, "-"), teksnya(r.kanan, "+")],
+              [["dunia"], ["Dunia"]]);
+});
+uji("jangkar tetap dilebur jadi segmen utuh", () => {
+  const r = M.bedaKata("Total: 12 item", "Total: 15 item");
+  return sama(teksnya(r.kiri, "="), ["Total: ", " item"]);
+});
+
+/* ------------------------------------------------- tiga jalan pulang `null` */
+
+uji("null kalau salah satu sisi bukan string", () =>
+  sama([M.bedaKata(null, "a"), M.bedaKata("a", undefined),
+        M.bedaKata(7, "a"), M.bedaKata("a", ["a"])],
+       [null, null, null, null]));
+uji("null kalau salah satu sisi kosong", () =>
+  sama([M.bedaKata("", "a"), M.bedaKata("a", "")], [null, null]));
+uji("null kalau nol kata yang sama", () =>
+  // Pasangan ketiga terukur mengejutkan dan karena itu ikut dicatat di sini:
+  // "naïve café" lawan "naive cafe" TIDAK punya satu kata pun yang sama --
+  // kedua katanya berubah, dan yang bersisa cuma spasi di antaranya. Jadi
+  // diff per-kata di situ memang tidak punya jangkar untuk berdiri.
+  sama([M.bedaKata("abc", "xyz"), M.bedaKata("satu dua", "tiga empat"),
+        M.bedaKata("naïve café", "naive cafe")],
+       [null, null, null]));
+uji("spasi bersama saja BUKAN jangkar", () =>
+  // Hampir setiap pasang baris berbagi sebuah spasi. Kalau spasi dihitung
+  // jangkar, pagar "nol kata yang sama" tidak akan pernah menyala.
+  M.bedaKata("a b", "c d") === null || "dapat hasil, bukan null");
+uji("null di atas BATAS_SEL_KATA", () => {
+  const kata = [];
+  for (let i = 0; i < 300; i++) kata.push("k" + i);
+  const a = kata.join(" ");
+  const b = a.replace("k7 ", "k7x ");
+  const n = M.pecahToken(a).length;
+  if (n * M.pecahToken(b).length <= M.BATAS_SEL_KATA) {
+    return "contohnya belum melewati atap (" + n + " token)";
+  }
+  return M.bedaKata(a, b) === null || "dapat hasil padahal di atas atap";
+});
+uji("tepat DI BAWAH atap masih dikerjakan", () => {
+  const kata = [];
+  for (let i = 0; i < 60; i++) kata.push("k" + i);
+  const a = kata.join(" ");
+  const b = a.replace("k7", "k7x");
+  return M.bedaKata(a, b) !== null || "null padahal di bawah atap";
+});
+
+/* ------------------------------------------------------- pasangkanUbahan */
+
+const MASUK = [
+  { tanda: "=", teks: "awal", nomor: 1 },
+  { tanda: "-", teks: "nilai = 10;", nomor: 2 },
+  { tanda: "+", teks: "nilai = 11;", nomor: 3 },
+  { tanda: "=", teks: "akhir", nomor: 4 },
+];
+uji("pasangan -/+ bersebelahan dapat segmen dua-duanya", () => {
+  const k = M.pasangkanUbahan(MASUK);
+  return sama([teksnya(k[1].segmen, "-"), teksnya(k[2].segmen, "+")],
+              [["10"], ["11"]]);
+});
+uji("baris = tidak pernah dapat segmen", () => {
+  const k = M.pasangkanUbahan(MASUK);
+  return (k[0].segmen === undefined && k[3].segmen === undefined)
+    || "baris = ikut dapat segmen";
+});
+uji("MURNI: butir masukan tidak disentuh", () => {
+  M.pasangkanUbahan(MASUK);
+  return MASUK.every((d) => d.segmen === undefined)
+    || "pasangkanUbahan menulis ke daftar masukan";
+});
+uji("- tanpa + sesudahnya tidak dapat segmen", () => {
+  const k = M.pasangkanUbahan([{ tanda: "-", teks: "nilai = 10;", nomor: 1 }]);
+  return k[0].segmen === undefined || "dapat segmen padahal tanpa lawan";
+});
+uji("deret tak seimbang: cuma yang berpasangan dapat segmen", () => {
+  const k = M.pasangkanUbahan([
+    { tanda: "-", teks: "nilai = 10;", nomor: 1 },
+    { tanda: "-", teks: "lain = 20;", nomor: 2 },
+    { tanda: "+", teks: "nilai = 11;", nomor: 3 },
+  ]);
+  return (k[0].segmen !== undefined && k[1].segmen === undefined
+          && k[2].segmen !== undefined)
+    || "perjodohan ke-n dengan ke-n tidak berlaku";
+});
+uji("+ lebih dulu, tanpa - sebelumnya", () => {
+  const k = M.pasangkanUbahan([{ tanda: "+", teks: "baru = 1;", nomor: 1 }]);
+  return k[0].segmen === undefined || "dapat segmen padahal tanpa lawan";
+});
+uji("dua pasangan berurutan dua-duanya dapat segmen", () => {
+  const k = M.pasangkanUbahan([
+    { tanda: "-", teks: "a = 10;", nomor: 1 },
+    { tanda: "+", teks: "a = 11;", nomor: 2 },
+    { tanda: "-", teks: "b = 20;", nomor: 3 },
+    { tanda: "+", teks: "b = 21;", nomor: 4 },
+  ]);
+  return sama([teksnya(k[0].segmen, "-"), teksnya(k[1].segmen, "+"),
+               teksnya(k[2].segmen, "-"), teksnya(k[3].segmen, "+")],
+              [["10"], ["11"], ["20"], ["21"]]);
+});
+uji("daftar kosong tetap daftar kosong", () => sama(M.pasangkanUbahan([]), []));
+
+/* ------------------------------------------------------------- ongkos waktu */
+
+// Dua titik, dan keduanya perlu. Baris LOGIS terpanjang yang benar-benar ada
+// di kurikulum terukur 139 token -- 19.599 sel, jadi ia masih DI BAWAH atap dan
+// benar-benar dikerjakan. Itu angka yang perlu dicatat: atapnya tidak pernah
+// menyala pada konten kurikulum sama sekali, ia semata pelindung terhadap baris
+// raksasa yang DIKETIK PELAJAR. Titik kedua karena itu sintetis: tepat di bawah
+// atap, tempat tabel LCS-nya sebesar yang masih mungkin dikerjakan.
+const ukur = (a, b, putaran) => {
+  const t0 = process.hrtime.bigint();
+  for (let i = 0; i < putaran; i++) M.bedaKata(a, b);
+  const t1 = process.hrtime.bigint();
+  return Number(t1 - t0) / 1e6 / putaran;
+};
+const kataAtap = [];
+for (let i = 0; i < 100; i++) kataAtap.push("kata" + i);
+const atapA = kataAtap.join(" ");
+const atapB = atapA.replace("kata7", "kata7x");
+
+const waktu = {
+  sel_atap: M.pecahToken(atapA).length * M.pecahToken(atapB).length,
+  batas: M.BATAS_SEL_KATA,
+  ms_terburuk_dikerjakan: ukur(atapA, atapB, 200),
+  ms_baris_terpanjang_kurikulum: ukur(barisPanjang, barisPanjang + " x", 200),
+  huruf_baris_terpanjang: barisPanjang.length,
+  token_baris_terpanjang: M.pecahToken(barisPanjang).length,
+  sel_baris_terpanjang:
+    M.pecahToken(barisPanjang).length * M.pecahToken(barisPanjang + " x").length,
+  terpanjang_dikerjakan: M.bedaKata(barisPanjang, barisPanjang + " x") !== null,
+};
+
+console.log(JSON.stringify({ lolos, gagal, waktu }));
+"""
+
+
+class TestBedaKata(unittest.TestCase):
+    """Baterai `bedaKata` -- granularitas KATA di dalam baris yang berubah.
+
+    Dua pemancar diff di aplikasi ini sama-sama berhenti di tingkat BARIS:
+    `bedaBaris` di `layar-kerja.js` dan `Beda.baris` di `inti/beda.py`. Yang
+    ditambahkan satu lapis di bawahnya, dan lapisan itu tinggal SELURUHNYA di
+    JS -- `_diagnosa` dan seluruh kalimat "kenapa bedanya" tetap milik Python,
+    karena definisi KEDUA atas hal yang sama adalah tepat kelas bug yang
+    AGENTS.md melarang.
+
+    JALUR YANG DIPILIH, dan sebabnya. Fungsinya dijalankan di NODE atas sumber
+    yang DIEKSTRAK dari berkasnya -- bukan diimpor sebagai modul seperti
+    `TestMesinGerak`, dan bukan pula disalin ke tes ini. `layar-kerja.js`
+    mengimpor tujuh modul dan beberapa di antaranya menyentuh `document` saat
+    impor, jadi `await import` akan merah karena sebab yang tidak ada
+    hubungannya dengan `bedaKata` -- dan tes yang merah karena sebab asing
+    adalah tes yang berhenti dibaca. Menyalin sumbernya ke sini lebih buruk
+    lagi: salinan terus lulus sesudah aslinya berubah.
+
+    Ekstraksinya sekaligus memagari KEMURNIAN. Enam global dibajak jadi
+    perangkap yang melempar -- `document`, `window`, `Date`, `Intl`, `h`,
+    `performance` -- dan `Math` dipangkas jadi `{max, min}` sehingga
+    `Math.random` melempar juga. Begitu `bedaKata` memanggil satu saja di
+    antaranya, baterai ini LEMPAR, bukan lulus diam-diam.
+
+    Tanpa Node tesnya `skipped`, sesuai aturan repo. Yang TIDAK ikut skip:
+    keempat `test_bentuk_sumber_*` di bawah, yang membaca berkasnya sebagai
+    teks -- jadi mesin tanpa Node tetap memagari apa yang bisa dipagari
+    tanpa Node.
+    """
+
+    PENANDA_AWAL = "const BATAS_SEL_KATA"
+    PENANDA_AKHIR = "ruang coba */"
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _layar_kerja(self):
+        with open(os.path.join(self._akar(), "webapp", "statik", "js",
+                              "layar-kerja.js"), encoding="utf-8") as f:
+            return f.read()
+
+    def _blok_murni(self):
+        """Potongan sumber dari `BATAS_SEL_KATA` sampai sebelum banner berikutnya.
+
+        Batasnya penanda TEKS, bukan nomor baris, supaya menyisipkan apa pun di
+        atasnya tidak membuat tes ini diam-diam menguji potongan yang salah.
+        """
+        src = self._layar_kerja()
+        i = src.find(self.PENANDA_AWAL)
+        self.assertNotEqual(i, -1,
+                            "`BATAS_SEL_KATA` tidak ada lagi di layar-kerja.js; "
+                            "baterai ini perlu ditulis ulang, bukan dihapus")
+        j = src.find(self.PENANDA_AKHIR, i)
+        self.assertNotEqual(j, -1, "banner `ruang coba` tidak ada sesudah blok")
+        blok = src[i:src.rindex("/*", i, j)]
+        for nama in ("function pecahToken", "function bedaKata",
+                     "function segmenKata", "function pasangkanUbahan"):
+            self.assertIn(nama, blok,
+                          f"{nama} tidak ada di dalam blok yang diekstrak; "
+                          "keempatnya harus bersebelahan supaya bisa diuji "
+                          "sebagai satu unit murni")
+        return blok
+
+    def _baris_terpanjang_kurikulum(self):
+        """Baris LOGIS terpanjang di seluruh `data/`.
+
+        Yang diukur bukan baris SUMBERNYA melainkan baris yang bisa sampai ke
+        mata pelajar sebagai satu baris keluaran -- karena itu `\\n` di dalam
+        literal ikut dipecah.
+        """
+        panjang = ""
+        d = os.path.join(self._akar(), "data")
+        for nama in sorted(os.listdir(d)):
+            if not nama.endswith(".py"):
+                continue
+            with open(os.path.join(d, nama), encoding="utf-8") as f:
+                isi = f.read()
+            for potong in isi.replace("\\n", "\n").split("\n"):
+                if len(potong) > len(panjang):
+                    panjang = potong
+        return panjang
+
+    @unittest.skipUnless(shutil.which("node"),
+                         "butuh node untuk menguji bedaKata")
+    def test_baterai_bedakata_di_node(self):
+        with tempfile.TemporaryDirectory() as d:
+            blok = os.path.join(d, "blok.js")
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._blok_murni())
+            panjang = os.path.join(d, "panjang.txt")
+            with open(panjang, "w", encoding="utf-8") as f:
+                f.write(self._baris_terpanjang_kurikulum())
+            js = os.path.join(d, "uji-beda-kata.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_BEDA_KATA)
+            hasil = subprocess.run(["node", js, blok, panjang],
+                                   capture_output=True, text=True, timeout=120)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-2000:])
+        laporan = json.loads(hasil.stdout)
+        self.assertEqual(laporan["gagal"], [], "sifat `bedaKata` yang dilanggar")
+        self.assertGreater(len(laporan["lolos"]), 100,
+                           "terlalu sedikit sifat yang benar-benar diuji")
+
+        w = laporan["waktu"]
+        self.assertLessEqual(w["sel_atap"], w["batas"],
+                             "contoh 'terburuk yang dikerjakan' justru di atas "
+                             "atap, jadi yang terukur ongkos MENOLAK")
+        # Terukur 139 token / 19.599 sel: atapnya TIDAK pernah menyala pada
+        # konten kurikulum. Yang dijaga di sini bukan "atapnya bekerja"
+        # (sintetis di atas sudah menjaganya) melainkan kebalikannya -- bahwa
+        # atap itu tidak diturunkan sampai memakan baris keluaran yang nyata,
+        # dan pelajar kehilangan granularitas pada baris yang justru paling
+        # butuh. Dua arah sumbu yang sama, keduanya dipagari.
+        self.assertTrue(w["terpanjang_dikerjakan"],
+                        "baris terpanjang kurikulum jatuh ke `null`: "
+                        f"{w['token_baris_terpanjang']} token / "
+                        f"{w['sel_baris_terpanjang']} sel sudah melewati "
+                        f"BATAS_SEL_KATA {w['batas']}. Atapnya terlalu rendah "
+                        "-- diff per-kata mati justru di baris terpanjang")
+        self.assertLess(w["ms_baris_terpanjang_kurikulum"], 50.0,
+                        "baris terpanjang kurikulum terlalu mahal: "
+                        f"{w['ms_baris_terpanjang_kurikulum']:.3f} ms")
+        # Atapnya bukan tebakan: 200 putaran pada kasus terburuk yang masih
+        # dikerjakan. Yang dijaga bukan angka persisnya melainkan bahwa biaya
+        # per pemanggilan tidak pernah sampai terasa sebagai jeda -- diff ini
+        # digambar di dalam satu frame, bersama seluruh kartu keluaran.
+        self.assertLess(w["ms_terburuk_dikerjakan"], 50.0,
+                        "bedaKata terlalu mahal di kasus terburuk yang masih "
+                        f"dikerjakan: {w['ms_terburuk_dikerjakan']:.3f} ms "
+                        f"untuk {w['sel_atap']} sel")
+
+    _DRIVER_RANTAI = r"""
+// Gerbang penciutan `gambarBeda`, dijalankan atas PAYLOAD SUNGGUHAN:
+// `beda.bandingkan` -> `api._beda_json` -> JSON -> sini. Yang diadu bukan
+// `bedaKata` atas dua string pilihan tes melainkan dua syarat gerbang itu atas
+// teks yang sudah dilewatkan SELURUH rantainya -- termasuk penukaran
+// `harapan`/`aktual` jadi versi ber-`·`, yang membuat predikat berbasis teks
+// mustahil benar di sisi ini.
+//
+// Perangkapnya sama dengan baterai di atas: enam global melempar begitu
+// disentuh, jadi kemurnian `bedaKata` ikut dipagari di jalur ini juga.
+import fs from "node:fs";
+
+const blok = fs.readFileSync(process.argv[2], "utf8");
+const kasus = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
+
+const jebak = (nama) => new Proxy(function () {}, {
+  get(_, k) { throw new Error("menyentuh " + nama + "." + String(k)); },
+  set(_, k) { throw new Error("menulis " + nama + "." + String(k)); },
+  apply() { throw new Error("memanggil " + nama + "()"); },
+  construct() { throw new Error("new " + nama + "()"); },
+});
+const MathAman = {
+  max: Math.max,
+  min: Math.min,
+  get random() { throw new Error("memakai Math.random -- hasilnya tak tentu"); },
+};
+const M = new Function(
+  "document", "window", "Date", "Intl", "Math", "h", "performance",
+  '"use strict";\n' + blok + "\nreturn { bedaKata };")(
+  jebak("document"), jebak("window"), jebak("Date"), jebak("Intl"),
+  MathAman, jebak("h"), jebak("performance"));
+
+// Dua baris di dalam `map` adalah CERMIN `gambarBeda`: panggilan `bedaKata`
+// yang dibatasi `~`, lalu syarat gerbangnya. Yang dicerminkan cuma BENTUK
+// pemanggilnya; jawabannya tetap dihitung fungsi yang diekstrak dari berkas,
+// dan `test_bentuk_sumber_penciutan_menuntut_tanda_gelombang` yang memagari
+// bahwa cermin ini masih sama bunyinya dengan aslinya.
+const keluar = {};
+for (const k of kasus) {
+  keluar[k.nama] = k.baris.map((d) => {
+    const kata = d.tanda === "~" ? M.bedaKata(d.harapan, d.aktual) : null;
+    return { tanda: d.tanda, tampak: d.tampak, kata_null: kata === null,
+             ciut: !!(kata && d.tampak) };
+  });
+}
+process.stdout.write(JSON.stringify(keluar));
+"""
+
+    @unittest.skipUnless(shutil.which("node"),
+                         "butuh node untuk menguji gerbang penciutan")
+    def test_rantai_payload_menyalakan_penciutan(self):
+        """Gerbang penciutan diadu dari payload server, bukan dari teks mentah.
+
+        Baterai di atas menyuapkan string pilihannya sendiri ke `bedaKata`.
+        Bentuk itu tidak pernah dikirim satu pun pemanggil: `gambarBeda`
+        menerima `harapan`/`aktual` dari `api._beda_json`, yang MENUKAR
+        keduanya dengan hasil `beda.tampakkan` tepat ketika `tampak` menyala.
+        Jadi "apakah gerbangnya bisa menyala" cuma bisa dijawab dari ujung ke
+        ujung -- dan di celah itulah sebuah predikat kedua (`spasiSaja`,
+        dihitung dari teks yang sudah ditukar) pernah berdiri mati berbulan
+        tanpa satu pun tes merah, karena setiap tes yang menyentuhnya
+        memanggilnya dengan spasi yang di produksi sudah tidak ada lagi.
+
+        Kasus negatifnya WAJIB ikut. Tanpa "Total: 12/15 item" yang menuntut
+        `tampak is False`, sebuah gerbang yang SELALU menyala akan lulus tes
+        ini dengan nilai sempurna -- dan yang terbaca pelajar adalah baris yang
+        isinya benar-benar salah ditulisi "spasi saja".
+        """
+        # Lokal, dan cuma tes ini yang memakainya: `inti.beda` di sini bukan
+        # permukaan yang diuji berkas ini, melainkan lapisan yang dilewati
+        # untuk sampai ke payload `api` yang bentuknya sungguhan.
+        from inti import beda
+
+        panjang = " ".join("kata%03d" % n for n in range(200))
+        kasus = [
+            ("spasi ganda", "halo  dunia", "halo dunia"),
+            ("tab lawan spasi", "halo\tdunia", "halo dunia"),
+            ("spasi di depan", "  halo dunia", "halo dunia"),
+            ("angka berubah", "Total: 12 item", "Total: 15 item"),
+            ("kapital berubah", "halo dunia", "halo Dunia"),
+            ("di atas atap", panjang.replace("kata100 ", "kata100  "), panjang),
+        ]
+        muatan = [{"nama": nama,
+                   "baris": api._beda_json(beda.bandingkan(h, a))["baris"]}
+                  for nama, h, a in kasus]
+
+        with tempfile.TemporaryDirectory() as d:
+            blok = os.path.join(d, "blok.js")
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._blok_murni())
+            muat = os.path.join(d, "muatan.json")
+            with open(muat, "w", encoding="utf-8") as f:
+                json.dump(muatan, f)
+            js = os.path.join(d, "uji-rantai.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(self._DRIVER_RANTAI)
+            hasil = subprocess.run(["node", js, blok, muat],
+                                   capture_output=True, text=True, timeout=120)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-2000:])
+        laporan = json.loads(hasil.stdout)
+
+        def satu(nama):
+            ubah = [d for d in laporan[nama] if d["tanda"] == "~"]
+            self.assertEqual(len(ubah), 1,
+                             f"{nama}: {len(ubah)} baris `~`, mau tepat satu")
+            return ubah[0]
+
+        for nama in ("spasi ganda", "tab lawan spasi", "spasi di depan"):
+            d = satu(nama)
+            self.assertIs(d["tampak"], True,
+                          f"{nama}: `api._beda_json` tidak menyalakan `tampak` "
+                          "untuk pasangan yang cuma beda spasi")
+            self.assertIs(d["kata_null"], False,
+                          f"{nama}: `bedaKata` menyerah atas teks yang sudah "
+                          "ditampakkan, jadi gerbangnya tidak bisa menyala")
+            self.assertIs(d["ciut"], True,
+                          f"{nama}: gerbang penciutan MATI pada pasangan yang "
+                          "jadi satu-satunya alasan ia ada")
+
+        for nama in ("angka berubah", "kapital berubah"):
+            d = satu(nama)
+            self.assertIs(d["tampak"], False,
+                          f"{nama}: `tampak` menyala padahal yang berbeda "
+                          "bukan spasinya")
+            self.assertIs(d["ciut"], False,
+                          f"{nama}: baris yang isinya benar-benar berbeda "
+                          "diciutkan jadi satu baris bertulis spasi saja")
+
+        d = satu("di atas atap")
+        self.assertIs(d["tampak"], True,
+                      "pasangan panjang itu memang cuma beda spasi; `tampak` "
+                      "harus menyala, kalau tidak yang diuji di bawah bukan "
+                      "lagi syarat `kata` melainkan syarat `tampak`")
+        self.assertIs(d["kata_null"], True,
+                      "pasangan di atas BATAS_SEL_KATA tidak lagi `null`; "
+                      "atapnya naik, dan ongkos per frame ikut naik")
+        self.assertIs(d["ciut"], False,
+                      "baris tanpa segmen ikut diciutkan; `kata.gabung` yang "
+                      "dirender baris ciut tidak ada, dan yang terlihat "
+                      "pelajar bukan diff melainkan baris kosong")
+
+    def test_bentuk_sumber_coretan_untuk_delesi(self):
+        """Delesi ditandai BENTUK, bukan warna saja (WCAG 1.4.1).
+
+        Dipagari dari SUMBER, bukan dari peramban, dan itu cukup di sini karena
+        pagar kedua di bawah membuktikan tidak ada yang bisa menimpanya: nol
+        aturan `text-decoration` di `gaya.css` menyentuh `.diff-kata`, dan nol
+        di antaranya `!important`.
+        """
+        src = self._layar_kerja()
+        i = src.index("function segmenKata")
+        badan = src[i:src.index("\n}", i)]
+        self.assertIn("line-through", badan,
+                      "segmen yang hilang tidak lagi dicoret; warna sendirian "
+                      "jadi satu-satunya pembeda, dan bagi orang yang tidak "
+                      "membedakan merah-hijau itu berarti nol pembeda")
+        self.assertRegex(
+            badan, r'tanda === "-" \? "line-through"',
+            "coretan tidak lagi terikat pada tanda `-`. Mencoret yang "
+            "BERTAMBAH membalik artinya: pelajar akan membuang kata yang "
+            "justru harus ia tulis")
+        self.assertIn("currentColor", badan,
+                      "tint segmen memakai warna yang dituliskan sendiri, "
+                      "bukan `currentColor`. Nilai warna yang ditulis di JS "
+                      "tidak ikut bergeser saat tema berganti")
+
+    def test_bentuk_sumber_gaya_css_tidak_bisa_menimpa_coretan(self):
+        """Nol aturan `gaya.css` yang bisa membunuh coretan `.diff-kata`."""
+        with open(os.path.join(self._akar(), "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+        self.assertNotIn("diff-kata", css,
+                         "`.diff-kata` sudah punya aturan di gaya.css; begitu "
+                         "ia ada, gaya inline di segmenKata berhenti jadi "
+                         "satu-satunya penulis dan tes ini harus mengukur "
+                         "hasil cascade-nya, bukan sumbernya")
+        for m in re.finditer(r"text-decoration[^;}]*", css):
+            self.assertNotIn("!important", m.group(0),
+                             "ada `text-decoration` ber-!important di "
+                             "gaya.css; ia bisa membatalkan coretan inline "
+                             "tanpa satu pun tanda di layar")
+
+    def test_bentuk_sumber_dua_permukaan_memakai_bedakata(self):
+        """`bedaKata` wajib dipakai di DUA permukaan, bukan satu.
+
+        Diff keluaran (`gambarBeda`) dan diff kode (`bandingkan`) selama ini
+        sama-sama berteriak "beda" tanpa menunjuk mana. Memasang granularitas di
+        salah satunya saja menghasilkan hal yang lebih buruk daripada tidak
+        memasangnya: dua tampilan diff di satu aplikasi yang berbeda ketelitian
+        tanpa sebab yang bisa diterangkan ke pelajar.
+        """
+        src = self._layar_kerja()
+        self.assertIn('const kata = d.tanda === "~" ? bedaKata(', src,
+                      "`gambarBeda` tidak lagi memanggil bedaKata untuk `~`")
+        self.assertRegex(
+            src, r"const baris = pasangkanUbahan\(\s*\n?\s*bedaBaris\(",
+            "diff KODE tidak lagi lewat pasangkanUbahan, jadi `-`/`+` di sana "
+            "kembali tanpa granularitas kata")
+        self.assertEqual(
+            len(re.findall(r"\bsegmenKata\(", src)), 3,
+            "jumlah pemakai `segmenKata` bukan tiga (definisinya sendiri, "
+            "barisDiff, dan bandingkan); permukaan ketiga yang menggambar "
+            "segmen sendiri berarti definisi kedua atas tampilan yang sama")
+
+    def test_bentuk_sumber_penciutan_menuntut_tanda_gelombang(self):
+        """Penciutan spasi menuntut `kata` DAN `d.tampak`, tanpa predikat kedua.
+
+        `api._beda_json` menyalakan `tampak` untuk SETIAP baris yang kedua
+        sisinya ada dan sama modulo spasi -- dan baris `=` memenuhi itu, karena
+        kedua sisinya memang persis sama. Yang menahan baris `=` bukan `tampak`
+        melainkan `kata`, yang cuma dihitung untuk `~`.
+
+        Pagar keduanya menolak kelahiran ulang `spasiSaja`. Predikat "bedanya
+        cuma spasi" yang dihitung dari TEKS tidak pernah bisa benar di sisi ini:
+        `_beda_json` sudah menukar teksnya jadi versi ber-`·` sebelum
+        mengirimnya, jadi yang tersisa untuk diperiksa bukan lagi spasi. Diadu
+        atas payload sungguhan di `test_rantai_payload_menyalakan_penciutan`.
+        """
+        src = self._layar_kerja()
+        self.assertIn("if (kata && d.tampak) {", src,
+                      "gerbang penciutan bukan lagi `kata && d.tampak`")
+        self.assertIn('d.tanda === "~" ? bedaKata', src,
+                      "`kata` tidak lagi dibatasi pada baris `~`, jadi "
+                      "penciutan bisa menyala di baris `=`")
+        self.assertNotIn("spasiSaja", src,
+                         "`spasiSaja` lahir lagi di layar-kerja.js. Predikat "
+                         "itu dihitung atas teks yang `_beda_json` sudah "
+                         "menukar, jadi ia mustahil benar dan cabangnya mati")
+
+
+# -------------------------------------------------------- kurung berpasangan
+
+_SKRIP_KURUNG = r"""
+// DRIVER, BUKAN CERMIN. Ia tidak menghitung satu pun kedalaman sendiri; yang
+// dikerjakannya cuma memanggil `pisahKurung()` yang SUNGGUHAN lalu melaporkan
+// apa adanya. Seluruh harapan tinggal di Python, di kelas yang memuat skrip
+// ini. Satu kolom yang dihitung di dua tempat adalah satu kolom yang tidak
+// dijaga oleh salah satu pun.
+//
+// Stub DOM-nya ada karena editor.js mengimpor inti.js dan gerak.js, bukan
+// karena `pisahKurung` memerlukannya: fungsi itu sendiri tidak menyentuh DOM
+// sama sekali, dan itulah sebabnya ia bisa diadu dari sini.
+globalThis.window = {
+  TOKEN_BELAJAR: "x", innerWidth: 1200, innerHeight: 900,
+  addEventListener() {}, removeEventListener() {},
+  matchMedia: () => ({ matches: false, addEventListener() {} }),
+};
+globalThis.document = {
+  documentElement: { dataset: {}, style: {},
+                     classList: { add() {}, remove() {}, contains: () => false } },
+  createElement: () => ({ style: {}, dataset: {},
+                          classList: { add() {}, remove() {} },
+                          appendChild() {}, setAttribute() {},
+                          addEventListener() {} }),
+  createTextNode: () => ({}),
+  createDocumentFragment: () => ({ appendChild() {} }),
+  querySelector: () => null, querySelectorAll: () => [], addEventListener() {},
+};
+const fs = await import("node:fs");
+const { pasangAturan, token } = await import(process.argv[2]);
+const { pisahKurung, pisahInden } = await import(process.argv[3]);
+const muat = JSON.parse(fs.readFileSync(process.argv[4], "utf8"));
+pasangAturan(muat.aturan);
+
+const lapor = (kode, bahasa) => {
+  const potongan = pisahInden(pisahKurung(token(kode, bahasa)));
+  const warna = potongan.filter((p) => p[2] !== null);
+  // Rangkaian TERBALIK, dijalankan atas token yang baru supaya tidak ada
+  // sarang yang berbagi objek dengan jalur maju. Yang dilaporkan cuma
+  // "identik atau tidak"; putusannya di Python, seperti semua yang lain.
+  const balik = pisahKurung(pisahInden(token(kode, bahasa)));
+  return {
+    samaUrutan: JSON.stringify(potongan) === JSON.stringify(balik),
+    ulang: potongan.map((p) => p[1]).join(""),
+    kurung: warna.map((p) => [p[1], p[2]]),
+    jenisWarna: [...new Set(warna.map((p) => p[0]))].sort(),
+    panjangWarna: [...new Set(warna.map((p) => p[1].length))].sort(),
+    // Potongan indentasi APA ADANYA, teks plus slot ketiganya. Yang diadu di
+    // Python bukan cacahnya melainkan ISInya: deret yang kelebihan atau
+    // kekurangan satu spasi tetap berjumlah satu potongan, jadi cacah saja
+    // hijau untuk pemandu yang menunjuk kolom yang salah.
+    inden: potongan.filter((p) => p[0] === "indentasi").map((p) => [p[1], p[2]]),
+  };
+};
+
+const sifat = {};
+for (const k of muat.sifat) sifat[k.label] = lapor(k.kode, k.bahasa);
+
+// Korpus: `ulang` penuh supaya Python bisa mengadunya byte-per-byte sendiri,
+// plus himpunan karakter/jenis/panjang yang PERNAH diwarnai di seluruh
+// kurikulum. Yang dikirim himpunan, bukan putusan.
+const borong = [];
+const kar = new Set(), jenis = new Set(), panjang = new Set(), warna = new Set();
+// Empat ukuran untuk invarian slot ketiga: berapa slot yang dimiliki setiap
+// potongan, slot ketiga apa yang pernah dipasang pada potongan `indentasi`,
+// berapa potongan BERWARNA yang teksnya memuat baris baru, dan berapa kali dua
+// potongan `indentasi` berdiri BERSEBELAHAN. Yang dikirim himpunan dan cacah,
+// bukan putusan — seluruh harapan tetap di Python.
+const slot = new Set(), indenSlot = new Set(), indenPanjang = new Set();
+let cacahInden = 0, warnaBerNewline = 0, indenRengket = 0, bedaUrutan = 0;
+for (const k of muat.borong) {
+  const potongan = pisahInden(pisahKurung(token(k.kode, k.bahasa)));
+  // Ukuran kelima: berapa blok yang keluarannya BERBEDA kalau rangkaiannya
+  // dibalik. Angka ini yang dirujuk komentar urutan di editor.js, jadi ia
+  // diukur, bukan diasumsikan.
+  if (JSON.stringify(potongan)
+      !== JSON.stringify(pisahKurung(pisahInden(token(k.kode, k.bahasa))))) {
+    bedaUrutan++;
+  }
+  borong.push({ label: k.label, ulang: potongan.map((p) => p[1]).join("") });
+  for (let i = 0; i < potongan.length; i++) {
+    const p = potongan[i];
+    slot.add(p.length);
+    if (p[0] === "indentasi") {
+      cacahInden++;
+      indenSlot.add(String(p[2]));
+      indenPanjang.add(p[1].length);
+      if (i > 0 && potongan[i - 1][0] === "indentasi") indenRengket++;
+    }
+    if (p[2] !== null && p[1].includes("\n")) warnaBerNewline++;
+    if (p[2] === null) continue;
+    kar.add(p[1]); jenis.add(p[0]); panjang.add(p[1].length);
+    warna.add(String(p[2]));
+  }
+}
+const angka = (a, b) => a - b;
+console.log(JSON.stringify({
+  sifat, borong,
+  korpusKarakter: [...kar].sort(),
+  korpusJenis: [...jenis].sort(),
+  korpusPanjang: [...panjang].sort(),
+  korpusWarna: [...warna].sort(),
+  korpusSlot: [...slot].sort(angka),
+  korpusIndenSlot: [...indenSlot].sort(),
+  korpusIndenPanjang: [...indenPanjang].sort(angka),
+  korpusInden: cacahInden,
+  korpusWarnaBerNewline: warnaBerNewline,
+  korpusIndenRengket: indenRengket,
+  korpusBedaUrutan: bedaUrutan,
+}));
+"""
+
+
+@unittest.skipUnless(shutil.which("node"),
+                     "butuh node untuk menguji pisahKurung()")
+class TestPasanganKurung(unittest.TestCase):
+    """`pisahKurung()` di editor.js, dijalankan di Node atas token sungguhan.
+
+    Pewarnaan kurung di editor ini bukan hiasan: yang paling sering menolong
+    bukan kurung yang benar melainkan kurung yang SALAH, karena satu penutup
+    kurang di baris dua puluh adalah galat yang pesan compiler-nya menunjuk
+    baris empat puluh. Tapi justru karena ia menghitung, ia punya satu kelas
+    kegagalan yang tidak menimbulkan error di mana pun — kedalaman yang
+    meleset cuma terlihat sebagai warna yang terasa acak.
+
+    Tiga sumber kegagalan itu, dan ketiganya diadu di bawah:
+
+    1. **Kurung di dalam string dan komentar.** Di pohon ini ada 2.270 kurung
+       di dalam token `string`, 981 di `komentar`, dan 83 di `khusus`. Satu
+       `(` di dalam komentar yang ikut dihitung meracuni kedalaman SELURUH
+       kode sesudahnya.
+    2. **Penutup yang jenisnya tidak cocok.** `]` tidak boleh menutup `(`, dan
+       penutup tanpa pembuka tidak boleh membuat kedalaman negatif — dari
+       situ seluruh warna sesudahnya melenceng satu putaran.
+    3. **Span operator yang RENGKET.** `def f(a, b):` menghasilkan token
+       `["operator", "):"]` — satu span yang memuat kurung DAN titik dua.
+       Membelahnya wajib bebas-kehilangan, karena lapisan `<pre>` ini duduk
+       persis di bawah textarea yang transparan: satu karakter selisih dan
+       kursor mendarat di huruf yang salah, tanpa satu pun error di mana pun.
+
+    Ditambah satu yang bukan soal hitungan sama sekali, dan tetap punya kelas
+    kegagalan yang sama: **palet `WARNA_KURUNG` di JS dan aturan
+    `.tk-operator[data-warna]` di CSS adalah dua angka di dua berkas.** Ia
+    tinggal di sini karena laporan korpusnya sudah dibangun di `setUpClass`;
+    memindahkannya ke kelas CSS berarti menjalankan Node dua kali untuk satu
+    pertanyaan.
+
+    Semua asersi tinggal DI SINI, di Python. Skrip Node-nya cuma memanggil
+    `pisahKurung` yang nyata dan melaporkan apa adanya — kalau ia menghitung
+    `warna` sendiri ia jadi cermin, dan cermin tidak menjaga apa pun.
+    """
+
+    # (label, bahasa, kode)
+    SIFAT = [
+        ("bertingkat", "python", "f((a), b)"),
+        ("bertingkat-java", "java", "class A { void f(int[] a) { } }"),
+        ("campur-jenis", "python", "[{(x)}]"),
+        ("tutup-tak-cocok", "python", "f(a])"),
+        ("yatim", "python", "a) (b)"),
+        ("di-string-dan-komentar", "python", 's = "(" # ('),
+        ("sesudah-string-dan-komentar", "python", 's = "(" # (\nt = (1)'),
+        ("rengket", "python", "def f(a, b):\n    return (a + b) * 2\n"),
+        ("tanpa-kurung", "python", "x = 1"),
+        ("inden-bertingkat", "python", "if a:\n    if b:\n        x = 1\n"),
+        ("inden-tab", "python", "\tif x:\n\t\treturn\n"),
+        ("inden-dalam-string", "python", 's = """a\n    b"""\n'),
+        ("inden-baris-kosong-berisi", "python", "x = 1\n    \nreturn\n"),
+        ("inden-mendahuluan-baris-pertama", "python", "    x = 1"),
+    ]
+
+    # Dua potongan kalimat dari klaim LAMA soal urutan rangkaian, yang
+    # menamakan akibat yang tidak pernah terjadi: "dibalik urutannya ... kurung
+    # di dalam baris yang sama sudah lewat tanpa dihitung". Keduanya dipilih
+    # karena tidak punya pembacaan sah mana pun di berkas ini — potongan
+    # `indentasi` cuma berisi spasi, jadi tidak ada kurung yang bisa terlewat,
+    # dan `pisahKurung` tidak pernah "tidak mengenal" sebuah jenis.
+    FRASA_PALSU = (
+        "lewat tanpa dihitung",
+        "sebagai jenis yang tak dikenalnya",
+    )
+
+    # Nama invarian yang BOLEH dipakai keterangan urutan sebagai sebabnya,
+    # karena ia nyata: kunci laporan yang diadu di
+    # `test_invarian_slot_tiga_atas_korpus`.
+    INVARIAN_URUTAN = "korpusWarnaBerNewline"
+
+    laporan = None
+
+    @classmethod
+    def setUpClass(cls):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        borong = []
+        for lang in api.LANGUAGES:
+            b = isi.bahasa_sorot(lang)
+            for m in lang["materials"]:
+                for bagian in m["sections"]:
+                    if "code" in bagian:
+                        borong.append({"bahasa": b, "kode": bagian["code"],
+                                       "label": f"{lang['key']}/{m['title']}"})
+            for e in lang["exercises"]:
+                borong.append({"bahasa": b, "kode": e["solution"],
+                               "label": f"{lang['key']}/{e['title']}"})
+        muat = {
+            "aturan": isi.aturan_penyorot(),
+            "sifat": [{"label": l, "bahasa": b, "kode": k}
+                      for l, b, k in cls.SIFAT],
+            "borong": borong,
+        }
+        cls._borong_urut = borong
+
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "kurung.mjs")
+            data = os.path.join(d, "muat.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_KURUNG)
+            with open(data, "w", encoding="utf-8") as f:
+                json.dump(muat, f)
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "sorot.js"),
+                 os.path.join(akar, "webapp", "statik", "js", "editor.js"),
+                 data],
+                capture_output=True, text=True, timeout=180)
+        if hasil.returncode != 0:
+            raise AssertionError("driver Node gagal:\n" + hasil.stderr[-1500:])
+        cls.laporan = json.loads(hasil.stdout)
+
+    def _sifat(self, label):
+        return self.laporan["sifat"][label]
+
+    @staticmethod
+    def _baca(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    @staticmethod
+    def _blok_doc_sebelum(isi, tanda):
+        """Blok `/** ... */` yang MENEMPEL di atas `tanda`.
+
+        Dicari mundur dari `tanda`, bukan maju dari awal berkas: yang ditanya
+        pagar pemakainya "apa yang dibaca orang tepat sebelum deklarasi ini",
+        dan itu cuma berarti blok terakhir yang ditutup sebelum deklarasinya.
+        Mencarinya maju akan memungut blok tetangga begitu ada satu komentar
+        tersisip di antaranya — persis bentuk yang dilarang aturan
+        "komentar-doc menempel pada fungsinya" di AGENTS.md.
+        """
+        i = isi.index(tanda)
+        tutup = isi.rindex("*/", 0, i)
+        buka = isi.rindex("/**", 0, tutup)
+        return isi[buka:tutup + 2]
+
+    def test_bertingkat_pembuka_dan_penutup_sepasang(self):
+        """Pasangan dapat angka SAMA, dan saudara sebelah memakai angka ulang.
+
+        Angka yang sama untuk sepasang bukan kebetulan implementasi: pembuka
+        membaca tinggi tumpukan SEBELUM push, penutup membacanya SESUDAH pop,
+        jadi keduanya membaca panjang yang identik. Kalau penutupnya dibaca
+        sebelum pop, `f((a), b)` akan berbunyi 0-1-2-1 dan pelajar yang
+        mencari pasangan sebuah kurung justru dituntun ke kurung yang salah.
+        """
+        self.assertEqual(
+            self._sifat("bertingkat")["kurung"],
+            [["(", 0], ["(", 1], [")", 1], [")", 0]])
+        # Dua blok BERSAUDARA di kedalaman sama memakai angka sama — itu yang
+        # membuat kedalaman terbaca sebagai tingkat, bukan sebagai urutan.
+        self.assertEqual(
+            self._sifat("bertingkat-java")["kurung"],
+            [["{", 0], ["(", 1], ["[", 2], ["]", 2], [")", 1],
+             ["{", 1], ["}", 1], ["}", 0]])
+
+    def test_campur_jenis_dan_penutup_tak_cocok(self):
+        """Tiga jenis kurung bersarang, dan `]` tidak menutup `(`.
+
+        Pasangan diambil dari `PASANGAN` di editor.js — satu-satunya sumber,
+        yang juga dipakai auto-close saat mengetik. Kalau penutup apa pun
+        boleh memangkas tumpukan, `f(a])` akan melaporkan `(` sudah tertutup
+        padahal belum, dan yang dibutuhkan pelajar di situ justru tanda bahwa
+        ada kurung yang masih terbuka.
+        """
+        self.assertEqual(
+            self._sifat("campur-jenis")["kurung"],
+            [["[", 0], ["{", 1], ["(", 2], [")", 2], ["}", 1], ["]", 0]])
+        # `]` yatim, dan `(`-nya TETAP terbuka — dibuktikan oleh `)` sesudahnya
+        # yang masih mendapat angka 0, bukan angka yang sudah bergeser.
+        self.assertEqual(
+            self._sifat("tutup-tak-cocok")["kurung"],
+            [["(", 0], ["]", "yatim"], [")", 0]])
+
+    def test_penutup_yatim_tidak_pernah_negatif(self):
+        """Penutup tanpa pembuka ditandai, dan tidak merusak yang sesudahnya.
+
+        Kedalaman negatif tidak melempar apa pun di JavaScript: `-1 % 4` =
+        `-1`, yang jadi `data-warna="-1"` — penyeleksi yang tidak ada, jadi
+        kurungnya diam-diam kembali ke warna operator biasa. Yang terlihat
+        pelajar bukan galat melainkan fitur yang mati di baris tertentu saja.
+        """
+        self.assertEqual(
+            self._sifat("yatim")["kurung"],
+            [[")", "yatim"], ["(", 0], [")", 0]])
+
+    def test_kurung_di_string_dan_komentar_tidak_dihitung(self):
+        """Kurung di dalam string/komentar: nol warna, dan nol pengaruh.
+
+        Dua asersi yang berbeda, dan keduanya perlu. Yang pertama menuntut
+        kurung di dalamnya tidak DIWARNAI; yang kedua menuntut ia tidak
+        MENGHITUNG — dan cuma yang kedua yang menangkap bug yang sebenarnya,
+        karena racun kedalaman muncul di kode SESUDAHNYA, bukan di tempat
+        kurungnya.
+        """
+        s = self._sifat("di-string-dan-komentar")
+        self.assertEqual(s["kurung"], [])
+        self.assertEqual(s["jenisWarna"], [])
+        # Kalau `(` di string dan di komentar ikut dihitung, kedalaman di sini
+        # sudah 2 dan `(1)` akan berbunyi 2, bukan 0.
+        self.assertEqual(
+            self._sifat("sesudah-string-dan-komentar")["kurung"],
+            [["(", 0], [")", 0]])
+
+    def test_span_rengket_dibelah_dan_susun_ulang_identik(self):
+        """Span `"):"` terbelah, dan tidak ada satu byte pun yang hilang.
+
+        Ini syarat yang sama sekali bukan soal warna. Lapisan sorot duduk
+        persis di bawah textarea transparan (blok `.editor-lapis > pre, >
+        textarea` di gaya.css) dengan font, padding, dan tab-size yang
+        dikunci sama; satu karakter selisih dan kursor mendarat di huruf yang
+        salah pada baris panjang — tanpa error di mana pun, dan tanpa cara
+        bagi pelajar untuk menduga sebabnya.
+        """
+        kode = dict((l, k) for l, _, k in self.SIFAT)["rengket"]
+        s = self._sifat("rengket")
+        self.assertEqual(s["ulang"], kode, "susun-ulang bukan masukannya")
+        self.assertEqual(s["kurung"],
+                         [["(", 0], [")", 0], ["(", 0], [")", 0]])
+        # Setiap potongan berwarna panjangnya TEPAT satu karakter. Inilah
+        # bentuk "rengket terbelah" yang bisa diukur: `):` yang diwarnai utuh
+        # akan muncul di sini sebagai panjang 2.
+        self.assertEqual(s["panjangWarna"], [1])
+
+    def test_kode_tanpa_kurung_tidak_menghasilkan_warna(self):
+        """`x = 1` nol potongan berwarna.
+
+        Tanpa asersi ini seluruh baterai di atas tetap hijau untuk editor yang
+        mencat SEMUA token — setiap harapan di atas menyebut apa yang HARUS
+        berwarna, tidak satu pun menyebut apa yang tidak boleh.
+        """
+        s = self._sifat("tanpa-kurung")
+        self.assertEqual(s["kurung"], [])
+        self.assertEqual(s["panjangWarna"], [])
+
+    def test_seluruh_kurikulum_disusun_ulang_byte_per_byte(self):
+        """Nol byte hilang atas SELURUH blok kode dan solusi kurikulum.
+
+        Sembilan kasus sifat di atas dipilih tangan, jadi mereka cuma menjaga
+        bentuk yang sudah dibayangkan. Yang menjaga bentuk yang BELUM
+        dibayangkan adalah korpusnya: seluruh blok kode nyata plus setiap
+        solusi latihan, sebelas bahasa, lewat pemindai yang sungguhan.
+
+        Dua himpunan di bawahnya menutup celah terakhir: apa pun yang pernah
+        diwarnai di seluruh korpus itu wajib berupa SATU karakter kurung dari
+        token berjenis `operator`. Satu `:` yang ikut terwarnai, atau satu
+        kurung yang lolos dari token `string`, akan muncul di situ.
+        """
+        # Dicocokkan POSISIONAL, bukan lewat label. Satu materi bisa punya
+        # beberapa blok kode, jadi `key/judul` bukan kunci unik — versi
+        # pertama tes ini memakainya sebagai kunci dict dan blok kedua menelan
+        # yang pertama, sehingga yang diadu susun-ulang blok A melawan sumber
+        # blok B. Ia MERAH, tapi untuk sebab yang tidak ada hubungannya
+        # dengan apa yang diuji: label dipakai sekarang hanya untuk menyebut
+        # nama saat gagal.
+        hasil = self.laporan["borong"]
+        self.assertGreater(len(hasil), 200,
+                           "korpus terlalu sedikit untuk berarti")
+        self.assertEqual(len(hasil), len(self._borong_urut),
+                         "driver Node mengembalikan jumlah blok yang berbeda")
+        for jawab, minta in zip(hasil, self._borong_urut):
+            self.assertEqual(jawab["ulang"], minta["kode"],
+                             f"susun-ulang berbeda di {minta['label']}")
+        self.assertEqual(self.laporan["korpusJenis"], ["operator"],
+                         "ada potongan berwarna yang BUKAN dari token "
+                         "`operator` — kurung di dalam string atau komentar "
+                         "ikut terhitung")
+        self.assertEqual(self.laporan["korpusPanjang"], [1],
+                         "ada potongan berwarna yang lebih panjang dari satu "
+                         "karakter; span rengket tidak terbelah seluruhnya")
+        self.assertEqual(self.laporan["korpusKarakter"], sorted("()[]{}"),
+                         "himpunan karakter berwarna bukan enam kurung")
+
+    def test_kedalaman_yang_dipakai_js_punya_aturan_di_css(self):
+        """Nol `data-warna` yang meluncur tanpa penyeleksi.
+
+        `WARNA_KURUNG` (editor.js) dan blok `.tk-operator[data-warna="N"]`
+        (gaya.css) adalah DUA angka di DUA berkas, dan ia jawab satu pertanyaan
+        yang sama. Ini pasangan dari ambang 860/1100 yang sudah dipagari
+        AGENTS.md: yang salah bukan salah satu berkas, melainkan hubungannya,
+        dan tak ada tes yang mengadu keduanya sebelum ini.
+
+        Kegagalannya diam, bukan melempar: nilai tanpa penyeleksi kembali ke
+        warna operator biasa — keadaan yang persis sama yang dijelaskan
+        `pisahKurung()` untuk kedalaman negatif. Bedanya sekarang sumbernya bukan
+        kode pelajar yang rusak melainkan paletnya sendiri, dan yang kena cuma
+        kurung berkedalaman besar, yaitu yang muncul sesekali.
+
+        Dua arah di bawah karena dua hal yang bisa tidak cocok: apa yang
+        SUNGGUHAN pernah dipakai di korpus ini, dan apa yang dijanjikan
+        deklarasi paletnya. Yang pertama tidak cukup sendiri — kurung
+        berkedalaman lima jarang muncul di korpus, tapi begitu muncul ia sudah
+        kebagian warna yang tidak ada. Yang kedua tidak menangkap korpus yang
+        meleset sendiri, karena tumpukan juga bisa dalam tanpa palet melebar.
+
+        Arah sebaliknya TIDAK dituntut, dan itu putusan: `WARNA_KURUNG` lebih
+        sempit dari jumlah aturan CSS (3 warna dipakai, 4 aturan tersedia) tidak
+        menyembunyikan apa pun — kurungnya tetap berwarna, cuma berputar lebih
+        pendek. Memerah untuk sesuatu yang bukan cacat adalah cara tercepat
+        membuat pagar yang merah tidak dibaca lagi.
+        """
+        css = self._baca("webapp", "statik", "gaya.css")
+        js = self._baca("webapp", "statik", "js", "editor.js")
+
+        punya = set(re.findall(r'\.tk-operator\[data-warna="(\d+)"\]', css))
+        self.assertTrue(punya, "nol aturan kedalaman di gaya.css")
+        dipakai = {w for w in self.laporan["korpusWarna"] if w != "yatim"}
+        self.assertEqual(
+            dipakai - punya, set(),
+            "ada kedalaman yang dipakai kurikulum tapi tidak punya aturan "
+            f"warna: {sorted(dipakai - punya)} — palet JS dan CSS tidak cocok")
+
+        m = re.search(r"const WARNA_KURUNG\s*=\s*(\d+)", js)
+        self.assertIsNotNone(m, "`WARNA_KURUNG` tidak lagi dideklarasikan di "
+                                "`editor.js`; tidak ada lagi yang mengadunya "
+                                "dengan aturan warna di `gaya.css`")
+        self.assertLessEqual(
+            int(m.group(1)), len(punya),
+            f"`WARNA_KURUNG` = {m.group(1)} tapi gaya.css cuma mengenal "
+            f"{len(punya)} kedalaman — nilai di atas yang terkecil tidak "
+            "berwarna sama sekali")
+
+    def test_deret_spasi_pembuka_baris_jadi_potongan_sendiri(self):
+        """Tiap tingkat indentasi jadi SATU potongan utuh, tanpa karakter lain.
+
+        Yang diadu bukan cacahnya melainkan isinya. Pemandu digambar sebagai
+        latar BERTEGEL di atas span ini, dan tegelnya dihitung dari tepi kiri
+        span itu sendiri — jadi potongan yang kelebihan atau kekurangan satu
+        spasi tetap berjumlah satu potongan sementara setiap garis di dalamnya
+        bergeser satu kolom. Cacah saja hijau untuk pemandu yang salah tempat.
+
+        Kasus kedua tampak sepele dan justru yang paling mudah hilang: awal
+        TEKS juga awal baris. Pengurai yang cuma mencari spasi sesudah `\\n`
+        melewatkan baris pertama setiap potongan kode — dan di editor ini
+        potongan kode yang dibuka langsung di kedalaman satu memang ada, karena
+        blok materi sering memuat badan fungsi tanpa kepalanya.
+        """
+        self.assertEqual(
+            self._sifat("inden-bertingkat")["inden"],
+            [["    ", None], ["        ", None]],
+            "dua tingkat indentasi bukan dua potongan berisi 4 dan 8 spasi")
+        self.assertEqual(
+            self._sifat("inden-mendahuluan-baris-pertama")["inden"],
+            [["    ", None]],
+            "indentasi di baris PERTAMA (tanpa `\\n` di depannya) tidak "
+            "terbaca; awal teks juga awal baris")
+
+    def test_yang_bukan_indentasi_tidak_dibelah(self):
+        """Dua bentuk yang BUKAN indentasi, dan keduanya punya sebab sendiri.
+
+        Baris ber-TAB tidak dibelah karena lebar sebuah tab ditentukan
+        `tab-size`, bukan jumlah karakternya: pemandu yang digambar per
+        karakter akan mendarat di kolom yang bukan tempat tingkatnya mulai.
+        Di korpus ini ada 2.056 baris seperti itu — cukup banyak untuk membuat
+        penanda yang salah terlihat sebagai fitur yang rusak, bukan sebagai
+        kasus tepi.
+
+        Deret spasi yang MENGAKHIRI barisnya juga bukan indentasi: ia tidak
+        menandai kedalaman apa pun, cuma sisa baris kosong. Korpus kurikulum
+        tidak punya satu pun baris seperti itu (diukur: 0), jadi tanpa kasus
+        buatan ini syaratnya tidak akan pernah diuji — padahal yang digambar
+        editor ini teks PELAJAR, yang memang bisa memuatnya.
+        """
+        self.assertEqual(
+            self._sifat("inden-tab")["inden"], [],
+            "baris yang dibuka TAB ikut dibelah; pemandunya akan digambar "
+            "per karakter padahal lebar tab datang dari `tab-size`")
+        self.assertEqual(
+            self._sifat("inden-baris-kosong-berisi")["inden"], [],
+            "spasi sisa di baris kosong dihitung sebagai indentasi — pemandu "
+            "muncul di baris yang tidak punya isi sama sekali")
+
+    def test_indentasi_di_dalam_string_tetap_dibelah(self):
+        """Deret sesudah `\\n` di DALAM string tetap indentasi, dan nol byte hilang.
+
+        Dua hal sekaligus. Yang pertama putusan: di kurikulum ini ada 6 token
+        `string` yang teksnya memuat baris baru, dan indentasi di dalam string
+        multibaris tetap indentasi bagi mata — menolaknya berarti pemandu yang
+        berhenti tepat di tempat pembacanya paling mudah tersesat.
+
+        Yang kedua konsekuensinya: membelah token `string` berarti satu token
+        jadi tiga potongan, dan di situlah susun-ulang paling mudah kehilangan
+        sesuatu. Diadu byte-per-byte di sini, bukan cuma di korpus, supaya
+        kegagalannya menyebut bentuk yang menyebabkannya.
+        """
+        kode = dict((l, k) for l, _, k in self.SIFAT)["inden-dalam-string"]
+        s = self._sifat("inden-dalam-string")
+        self.assertEqual(s["inden"], [["    ", None]],
+                         "indentasi di dalam string multibaris tidak dibelah")
+        self.assertEqual(s["ulang"], kode,
+                         "susun-ulang bukan masukannya; membelah token string "
+                         "kehilangan byte")
+
+    def test_invarian_slot_tiga_atas_korpus(self):
+        """Setiap potongan tetap bertiga slot, dan indentasi selalu ber-slot `null`.
+
+        Ini pagar atas kelas kegagalan yang PALING mahal di butir ini, dan ia
+        bisu seluruhnya. `_fragmenKurung()` melewati potongan ber-slot-ketiga
+        `null` dengan `if (warna === null ...) continue;`. Potongan DUA slot
+        membuat `warna` bernilai `undefined`, dan `undefined === null` itu
+        FALSE — jadi setiap span pemandu akan membawa `data-warna="undefined"`,
+        penyeleksi yang tidak ada di gaya.css mana pun. Tidak ada error di
+        konsol, tidak ada atribut yang terlihat salah, dan tidak ada satu pun
+        tes lain di sini yang menyentuhnya.
+
+        Dua ukuran lain menopang keputusan URUTAN rangkaiannya. Nol potongan
+        berwarna yang teksnya memuat baris baru berarti pembelahan indentasi
+        mustahil mengenai potongan kurung yang sudah diwarnai — itulah yang
+        membuat `pisahInden` boleh berdiri di LUAR tanpa tahu apa pun soal
+        warna. Dan nol potongan `indentasi` yang BERSEBELAHAN berarti tidak ada
+        satu deret pun yang terbelah dua token: tegel latar CSS dihitung dari
+        tepi kiri span masing-masing, jadi deret 8 spasi yang terpecah 3+5 akan
+        menggambar garis di kolom 3 dan 8 alih-alih 4 dan 8.
+
+        Angka terakhirnya lantai anti-hampa. Seluruh asersi di atas tetap hijau
+        untuk `pisahInden` yang mengembalikan masukannya apa adanya; yang
+        menolak bentuk itu cuma tuntutan bahwa ia memang menyala atas korpus
+        sungguhan. Terukur 18.734 potongan atas 1.399 blok — lantainya dipasang
+        jauh di bawah itu karena jumlahnya memang bergerak tiap kurikulum
+        tumbuh, sementara "menyala atau tidak" tidak.
+        """
+        self.assertEqual(
+            self.laporan["korpusSlot"], [3],
+            "ada potongan yang slotnya bukan tiga — `data-warna=\"undefined\"` "
+            "akan terpasang diam-diam di setiap span pemandu")
+        self.assertEqual(
+            self.laporan["korpusIndenSlot"], ["null"],
+            "ada potongan `indentasi` yang slot ketiganya bukan `null`; ia akan "
+            "ikut diperlakukan sebagai kurung berwarna")
+        self.assertEqual(
+            self.laporan["korpusWarnaBerNewline"], 0,
+            "ada potongan BERWARNA yang teksnya memuat baris baru — maka "
+            "`pisahInden` bisa membelahnya, dan urutan rangkaiannya tidak lagi "
+            "aman")
+        self.assertEqual(
+            self.laporan["korpusIndenRengket"], 0,
+            "ada dua potongan `indentasi` bersebelahan: satu deret terbelah "
+            "dua, dan tegel latarnya mulai menghitung ulang di tengah deret")
+        self.assertGreater(
+            self.laporan["korpusInden"], 10000,
+            "pemandu indentasi hampir tidak menyala atas korpus sungguhan; "
+            "`pisahInden` yang mengembalikan masukannya apa adanya lolos "
+            "seluruh asersi lain di metode ini")
+
+    def test_langkah_indentasi_satu_angka_di_dua_berkas(self):
+        """`INDENT` di editor.js dan lebar tegel di gaya.css adalah satu angka.
+
+        Pasangan dari pagar `WARNA_KURUNG` tepat di atas, dan kegagalannya
+        sejenis: bukan salah satu berkas yang salah, melainkan hubungannya.
+        JS memutuskan spasi MANA yang indentasi; CSS memutuskan setiap berapa
+        kolom sebuah garis digambar. Kalau suatu hari `INDENT` jadi dua spasi
+        sementara tegelnya tetap `4ch`, setiap tingkat ganjil kehilangan
+        garisnya dan yang tersisa pemandu yang menghitung tingkat dengan
+        satuan yang bukan satuan editornya sendiri.
+
+        Keduanya dibaca dengan regex, bukan diketik sebagai angka 4: pagar yang
+        memuat salinan ketiga dari angka yang sedang ia jaga cuma memindahkan
+        tempat angka itu bisa meleset.
+        """
+        js = self._baca("webapp", "statik", "js", "editor.js")
+        css = self._baca("webapp", "statik", "gaya.css")
+
+        m = re.search(r'const INDENT = "( +)"', js)
+        self.assertIsNotNone(
+            m, "`INDENT` tidak lagi dideklarasikan sebagai deret spasi di "
+               "editor.js; tidak ada lagi yang bisa diadu dengan lebar tegel")
+        blok = re.search(r"\.tk-indentasi\s*\{([^}]*)\}", css)
+        self.assertIsNotNone(
+            blok, "aturan `.tk-indentasi` tidak ada di gaya.css; potongan "
+                  "pemandu terbentuk tapi tidak digambar apa pun")
+        tegel = re.search(r"background-size:\s*(\d+)ch\b", blok.group(1))
+        self.assertIsNotNone(
+            tegel, "`.tk-indentasi` tidak lagi menyetel lebar tegel dalam "
+                   "satuan `ch`; lebar sebuah tingkat jadi tidak terdefinisi")
+        self.assertEqual(
+            len(m.group(1)), int(tegel.group(1)),
+            f"`INDENT` {len(m.group(1))} spasi tapi tegel pemandu "
+            f"{tegel.group(1)}ch — garis-garisnya menghitung tingkat dengan "
+            "satuan yang bukan satuan editornya")
+
+    def test_klaim_lama_soal_urutan_tidak_bisa_lahir_lagi(self):
+        """Kedua frasa `FRASA_PALSU` nol kali di SELURUH `editor.js`.
+
+        Keterangan yang dibetulkan di sini dulu menamakan akibat yang tidak
+        pernah terjadi: membalik rangkaian `pisahInden(pisahKurung(...))`
+        katanya membuat kurung "lewat tanpa dihitung". Diukur, selisihnya nol
+        atas seluruh korpus — jadi yang salah bukan kodenya melainkan
+        kalimatnya, dan kalimat yang salah soal SEBAB adalah yang paling mahal
+        di berkas ini: pembaca berikutnya memakai sebab itu untuk memutuskan
+        apa yang boleh ia pindahkan.
+
+        Disapu atas isi LENGKAP berkasnya, bukan atas blok tempat kalimat itu
+        dulu tinggal, dan itu bedanya pagar ini dari pagar bentuk. Prosa
+        berpindah tempat; sebuah frasa yang dikunci di satu blok tinggal
+        menyeberang ke kepala `pisahKurung` untuk lolos, dan yang terbaca
+        pembaca berikutnya sama saja.
+
+        Keduanya aman disapu buta karena keduanya tidak punya pembacaan sah di
+        berkas ini sama sekali — sebabnya ditulis di komentar `FRASA_PALSU` di
+        atas. Frasa yang masih punya pemakaian jujur TIDAK boleh masuk daftar
+        itu: pagar yang memerah untuk kalimat yang benar berhenti dibaca.
+
+        `longMessage` dimatikan, dan itu bukan kerapian. Bawaan `assertNotIn`
+        mencetak REPR seluruh tumpukan jeraminya — di sini 38 KB isi
+        `editor.js` — di atas pesan yang sebenarnya menerangkan apa yang
+        salah. Pagar yang menguburkan kalimatnya sendiri di bawah sumber yang
+        baru saja disunting orangnya adalah pagar yang berhenti dibaca, persis
+        kegagalan yang dilarang di seluruh berkas ini.
+        """
+        js = self._baca("webapp", "statik", "js", "editor.js")
+        self.longMessage = False
+        self.assertTrue(self.FRASA_PALSU,
+                        "`FRASA_PALSU` kosong; pagar ini tidak menyapu apa pun")
+        for frasa in self.FRASA_PALSU:
+            self.assertNotIn(
+                frasa, js,
+                f"frasa klaim lama {frasa!r} lahir lagi di editor.js. Ia "
+                "menamakan akibat yang diukur TIDAK terjadi "
+                f"(`korpusBedaUrutan` = {self.laporan['korpusBedaUrutan']}); "
+                "yang harus ditulis ulang kalimatnya, bukan pagar ini")
+
+    def test_keterangan_urutan_menyebut_invarian_yang_diukur(self):
+        """T1 dan T2 menyebut `INVARIAN_URUTAN` DI DALAM bloknya sendiri.
+
+        Dua blok prosa menerangkan kenapa `pisahInden` boleh berdiri di LUAR
+        `pisahKurung`: docstring `pisahInden` (T1) dan komentar-doc
+        `_fragmenKurung` (T2). Penggantinya kalimat lama yang berbohong, dan
+        pengganti itu cuma lebih baik kalau sebabnya bisa dilacak ke sesuatu
+        yang DIUKUR — karena itu yang dituntut di sini nama kunci laporannya,
+        bukan sekadar kalimat yang terdengar meyakinkan.
+
+        Diadu dua arah, dan arah kedua yang sebenarnya menjaga: namanya wajib
+        ada di dalam bloknya, DAN wajib jadi kunci yang sungguh dikirim driver
+        Node-nya. Tanpa arah kedua, "menyebut nama invarian" turun jadi
+        mencocokkan sebuah string — dan prosa boleh menamai pagar yang sudah
+        lama dihapus tanpa satu tes pun memerah.
+
+        Blok diambil MUNDUR dari deklarasinya (`_blok_doc_sebelum`), bukan maju
+        dari awal berkas: yang ditanya pagar ini "apa yang dibaca orang tepat
+        sebelum fungsi ini", dan itu cuma berarti blok terakhir yang ditutup
+        sebelum deklarasinya. Satu komentar tersisip di antaranya dan
+        pencarian maju memungut tetangganya — bentuk yang justru dilarang
+        aturan "komentar-doc menempel pada fungsinya" di AGENTS.md.
+        """
+        js = self._baca("webapp", "statik", "js", "editor.js")
+        self.assertIn(
+            self.INVARIAN_URUTAN, self.laporan,
+            f"`{self.INVARIAN_URUTAN}` bukan lagi kunci yang dikirim driver "
+            "Node-nya; prosa di editor.js akan menamai sebuah invarian yang "
+            "tidak diukur di mana pun")
+
+        for tanda, nama in (
+            ("export function pisahInden(daftar) {", "docstring `pisahInden`"),
+            ("_fragmenKurung(daftar) {", "komentar-doc `_fragmenKurung`"),
+        ):
+            blok = self._blok_doc_sebelum(js, tanda)
+            self.assertIn(
+                self.INVARIAN_URUTAN, blok,
+                f"{nama} tidak lagi menyebut `{self.INVARIAN_URUTAN}` di "
+                "dalam bloknya sendiri. Keterangan urutan tanpa nama "
+                "invariannya adalah klaim tanpa alamat — pembaca berikutnya "
+                "tidak punya cara memeriksa apakah ia masih benar")
+
+    def test_urutan_rangkaian_nol_beda_dan_itu_hasil_ukur(self):
+        """Membalik rangkaiannya memberi keluaran IDENTIK — diukur, bukan diduga.
+
+        Ini angka yang jadi sebab seluruh keterangan urutan di `editor.js`,
+        jadi ia diadu di sini supaya kalimatnya tidak pernah berjalan sendiri.
+        Dua sisi, karena dua tempat yang menghitungnya: selisih atas seluruh
+        blok kurikulum (`korpusBedaUrutan`, dihitung di loop korpus) dan
+        per-kasus `samaUrutan` atas keempat belas kasus `SIFAT`. Korpus
+        menangkap bentuk yang memang ada di pohon ini; `SIFAT` menangkap bentuk
+        yang SENGAJA dibuat dan tidak kebetulan muncul di kurikulum — tab,
+        baris kosong berisi spasi, indentasi di dalam string.
+
+        Yang diadu SELISIHnya, bukan cacah korpusnya. Angka 1.399 blok dan
+        18.734 potongan bergerak tiap kurikulum tumbuh; "nol beda" tidak.
+        Lantai anti-hampanya dihitung dari `SIFAT` di berkas ini sendiri, bukan
+        dari korpus — supaya laporan yang kehilangan kasusnya memerah di sini
+        alih-alih lolos dengan nol kasus yang semuanya sama.
+
+        Kalau metode ini merah, yang ditulis ulang KALIMAT di `editor.js` soal
+        urutan — bukan asersi di bawah. Rangkaiannya boleh dibalik; yang tidak
+        boleh adalah prosa yang mengaku sudah mengukur sesuatu yang berubah.
+        """
+        self.assertEqual(
+            self.laporan["korpusBedaUrutan"], 0,
+            "membalik rangkaian `pisahInden(pisahKurung(...))` TIDAK lagi "
+            "memberi keluaran identik atas korpus kurikulum. Yang harus "
+            "ditulis ulang kalimat urutan di docstring `pisahInden` dan "
+            "komentar-doc `_fragmenKurung` di editor.js — keduanya mengaku "
+            "selisihnya nol, dan pengakuan itu sekarang salah")
+
+        kasus = self.laporan["sifat"]
+        self.assertEqual(
+            len(kasus), len(self.SIFAT),
+            "driver Node tidak melaporkan seluruh kasus `SIFAT`; nol beda atas "
+            "laporan yang tidak lengkap bukan nol beda")
+        beda = sorted(l for l, c in kasus.items() if not c["samaUrutan"])
+        self.assertEqual(
+            beda, [],
+            "kasus yang keluarannya BERUBAH kalau rangkaiannya dibalik: "
+            f"{beda}. Sama seperti di atas, yang berbohong sekarang kalimat "
+            "urutan di editor.js, bukan asersi ini")
+
+
+class TestGayaPemanduIndentasi(unittest.TestCase):
+    """Bentuk sumber pemandu indentasi: aturan CSS-nya, dan tempat ia LAHIR.
+
+    Keduanya pagar STRUKTUR, dan batasnya perlu ditulis supaya tidak dibaca
+    lebih jauh dari yang benar: yang dijaga di sini adalah properti apa yang
+    ada dan di berkas mana kelasnya disebut. Geometri yang terbentuk dengan
+    benar tapi terlihat salah — garis 1 px yang mendarat di separuh piksel,
+    atau pemandu yang tingginya cuma em-box span inline sehingga putus di
+    antara baris — TIDAK terlihat oleh satu pun asersi di bawah. Itu
+    pemeriksaan di peramban, dan pagar yang mengaku menjaganya akan membuat
+    orang berhenti memeriksanya sendiri.
+    """
+
+    # Properti yang mengubah lebar RANJANG tempat caret mendarat, atau aliran
+    # barisnya. Pemandu ini satu span di dalam `.editor-lapis > pre`, yang
+    # parity-nya dikunci karakter demi karakter dengan textarea transparan di
+    # atasnya; satu di antara properti ini cukup untuk membuat kursor mendarat
+    # di huruf yang salah pada baris panjang, tanpa satu pun error di mana pun.
+    DILARANG = ("display", "width", "height", "padding", "margin", "border",
+                "text-indent", "letter-spacing", "line-height", "tab-size",
+                "white-space", "transform")
+
+    @staticmethod
+    def _baca(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    def test_aturan_pemandu_hanya_menyetel_latar(self):
+        """Nol properti yang menyentuh lebar ranjang atau aliran baris.
+
+        Dua arah, dan keduanya perlu. Daftar `DILARANG` menyebut yang sudah
+        diketahui merusak; tuntutan "semuanya `background-*`" menutup yang
+        belum terpikirkan. Yang pertama sendiri tidak cukup — properti yang
+        tidak ada di daftar mana pun hari ini tetap bisa menggeser ranjangnya
+        besok, dan daftar larangan yang harus ditebak lengkap bukan pagar.
+        """
+        css = self._baca("webapp", "statik", "gaya.css")
+        blok = re.search(r"\.tk-indentasi\s*\{([^}]*)\}", css)
+        self.assertIsNotNone(blok, "aturan `.tk-indentasi` tidak ada di gaya.css")
+        nama = set(re.findall(r"([a-z-]+)\s*:", blok.group(1)))
+        self.assertTrue(nama, "blok `.tk-indentasi` kosong")
+
+        terlarang = nama & set(self.DILARANG)
+        self.assertEqual(
+            terlarang, set(),
+            f"`.tk-indentasi` menyetel {sorted(terlarang)} — properti itu "
+            "mengubah lebar ranjang tempat caret textarea di atasnya mendarat")
+        bukan_latar = {n for n in nama if not n.startswith("background")}
+        self.assertEqual(
+            bukan_latar, set(),
+            f"`.tk-indentasi` menyetel {sorted(bukan_latar)}, yang bukan "
+            "properti latar; pemandu ini menggambar DI ATAS ranjang yang sudah "
+            "ada, ia tidak boleh ikut menentukan ukurannya")
+
+    def test_kelas_token_baru_tidak_lahir_di_pemindai(self):
+        """Jenis `indentasi` disebut di editor.js dan gaya.css, bukan di pemindai.
+
+        Ada DUA implementasi pemindai — `webapp/statik/js/sorot.js` dan
+        `inti/sorot.py` — dan `TestPenyorotJavaScript` mengadu keluaran
+        keduanya byte-per-byte atas seluruh kurikulum. Jenis token yang
+        ditambahkan di salah satunya memerahkan pagar itu, dan jenis yang
+        ditambahkan di KEDUANYA mengubah apa yang dikirim server ke blok kode
+        materi — permukaan yang sama sekali tidak meminta pemandu ini.
+
+        Sisi Python dituntut lebih sempit daripada sisi JS, dan itu terukur,
+        bukan selera: `inti/sorot.py:841` memakai kata `indentasi` sebagai
+        PROSA di docstring `sorot_baris()` ("indentasi tampilan tanpa mengubah
+        indentasi kode aslinya"), soal argumen `awalan` dan sama sekali bukan
+        soal jenis token. Menuntut kata itu absen di sana berarti pagar yang
+        merah sejak lahir untuk sebuah kalimat yang benar. Yang dijaga karena
+        itu bentuk yang memang mengikat: di Python setiap jenis token adalah
+        STRING LITERAL, jadi kelas ini lahir di sana hanya kalau namanya
+        pernah dikutip.
+        """
+        js_pemindai = self._baca("webapp", "statik", "js", "sorot.js")
+        self.assertNotIn(
+            "indentasi", js_pemindai,
+            "`indentasi` muncul di sorot.js — kelas token ini lahir di "
+            "editor.js justru supaya port pemindai tidak perlu disentuh")
+
+        py_pemindai = self._baca("inti", "sorot.py")
+        for kutip in ('"indentasi"', "'indentasi'"):
+            self.assertNotIn(
+                kutip, py_pemindai,
+                f"{kutip} muncul sebagai string literal di inti/sorot.py — "
+                "jenis token baru di pemindai Python memerahkan "
+                "`TestPenyorotJavaScript` dan mengubah blok kode materi")
+
+        # Arah sebaliknya: kelasnya memang HARUS disebut di dua berkas yang
+        # mengerjakannya. Tanpa ini, memindahkannya ke pemindai lolos asalkan
+        # jejaknya di sini ikut dibersihkan.
+        self.assertIn("indentasi",
+                      self._baca("webapp", "statik", "js", "editor.js"),
+                      "`indentasi` tidak lagi disebut di editor.js")
+        self.assertIn(".tk-indentasi", self._baca("webapp", "statik", "gaya.css"),
+                      "`.tk-indentasi` tidak lagi ada di gaya.css")
+
+
+class TestGayaKurungBerpasangan(unittest.TestCase):
+    """Bentuk sumber aturan kurung di gaya.css.
+
+    Satu hal yang DIUKUR dan belum diputuskan, dicatat di sini karena ia tidak
+    bisa dibaca dari kodenya: `--k-fungsi` dan `--k-tipe` bernilai IDENTIK di
+    keempat tema (`#93b4ff` gelap & kontras, `#98aac9` malam, `#1d4ed8`
+    terang). Akibatnya kedalaman 0 dan 1 — dua kedalaman yang paling sering
+    muncul — tampil dengan warna yang sama, dan yang bergilir sebenarnya cuma
+    tiga warna dengan pola A-A-B-C. Palet itu putusan reviewer, jadi tes ini
+    TIDAK menuntut keempatnya berbeda NILAI: menuntutnya berarti memerah hari
+    ini untuk sesuatu yang bukan cacat kode. Yang dijaga di bawah cuma aturan
+    yang memang mengikat.
+    """
+
+    @staticmethod
+    def _css():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            return f.read()
+
+    def test_empat_kedalaman_memakai_token_yang_sudah_ada(self):
+        """Nol token warna baru; keempatnya `--k-*` yang sudah dideklarasikan.
+
+        Alasannya bukan kehematan. `--k-*` sudah didefinisikan ulang di
+        keempat blok tema, jadi palet kurung otomatis benar di gelap, malam,
+        terang, dan kontras. Empat token baru berarti enam belas angka yang
+        harus ikut disetel setiap kali sebuah tema disentuh — dan yang lupa
+        disetel tidak menimbulkan error apa pun, cuma kurung yang hilang di
+        satu tema saja.
+        """
+        css = self._css()
+        warna = []
+        for n in range(4):
+            m = re.search(r'\.tk-operator\[data-warna="%d"\][^}]*}' % n, css)
+            self.assertIsNotNone(m, f"nol aturan untuk kedalaman {n}")
+            tok = re.findall(r"var\((--[\w-]+)\)", m.group(0))
+            self.assertEqual(len(tok), 1,
+                             f"kedalaman {n} bukan satu token warna: {tok}")
+            warna.append(tok[0])
+        self.assertEqual(len(set(warna)), 4,
+                         f"empat kedalaman memakai token berulang: {warna}")
+        for t in warna:
+            self.assertRegex(css, r"(?m)^\s*%s\s*:" % re.escape(t),
+                             f"token {t} dipakai tapi tidak dideklarasikan")
+        self.assertNotRegex(css, r"--kurung[\w-]*\s*:",
+                            "ada token `--kurung*` baru di gaya.css; keempat "
+                            "warna kurung wajib datang dari `--k-*` yang "
+                            "sudah ikut bergeser di tiap tema")
+
+    def test_penanda_yatim_bentuk_bukan_warna_saja_dan_tidak_bergerak(self):
+        """Kurung yatim ditandai BENTUK, dan bentuknya tidak pernah bergerak.
+
+        Dua aturan yang keduanya pernah dilanggar di repo ini dalam bentuk
+        lain. Yang pertama WCAG 1.4.1: pembedaan yang cuma warna tidak sampai
+        ke sebagian pembaca, dan dari seluruh penanda di blok kurung justru
+        yang inilah yang paling perlu sampai. Yang kedua doktrin "animasi
+        tidak boleh jadi satu-satunya cara sebuah elemen terlihat": penanda
+        yang muncul lewat gerak hilang sama sekali di `data-gerak="mati"` —
+        setelan yang dipilih justru oleh orang yang ingin layarnya lebih
+        tenang, bukan yang ingin informasinya lebih sedikit.
+        """
+        css = self._css()
+        m = re.search(r"\.tk-operator\[data-yatim\]\s*{[^}]*}", css)
+        self.assertIsNotNone(m, "nol aturan untuk kurung yatim")
+        blok = m.group(0)
+        self.assertIn("text-decoration", blok,
+                      "kurung yatim dibedakan hanya lewat warna")
+        self.assertNotIn("!important", blok)
+        for p in ("transition", "animation"):
+            self.assertNotIn(p, blok,
+                             f"`{p}` di penanda yatim; ia elemen DIAM dan "
+                             f'wajib tetap tampil di data-gerak="mati"')
+
+
+# ------------------------------------------------- pisahRekor() layar-kerja.js
+
+_SKRIP_REKOR = r"""
+// DRIVER, BUKAN CERMIN. Ia tidak menghitung satu pun rautan sendiri: yang
+// dikerjakannya cuma memanggil `pisahRekor()` yang SUNGGUHAN lalu melaporkan
+// potongannya apa adanya. Seluruh harapan -- ambang, arah rautan, sufiks,
+// monotonisitas -- tinggal di Python, di kelas yang memuat skrip ini. Satu
+// syarat yang dihitung di dua tempat adalah satu syarat yang tidak dijaga
+// oleh salah satu pun.
+//
+// Stub DOM-nya ada karena layar-kerja.js mengimpor inti.js, gerak.js,
+// editor.js, layar-belajar.js, dan pratinjau.js -- bukan karena `pisahRekor`
+// memerlukannya. Fungsi itu sendiri tidak menyentuh DOM sama sekali, dan
+// itulah satu-satunya alasan ia bisa diadu dari sini.
+globalThis.window = {
+  TOKEN_BELAJAR: "x", innerWidth: 1200, innerHeight: 900,
+  addEventListener() {}, removeEventListener() {},
+  matchMedia: () => ({ matches: false, addEventListener() {} }),
+};
+globalThis.document = {
+  documentElement: { dataset: {}, style: {},
+                     classList: { add() {}, remove() {}, contains: () => false } },
+  createElement: () => ({ style: {}, dataset: {},
+                          classList: { add() {}, remove() {} },
+                          appendChild() {}, setAttribute() {},
+                          addEventListener() {} }),
+  createTextNode: () => ({}),
+  createDocumentFragment: () => ({ appendChild() {} }),
+  querySelector: () => null, querySelectorAll: () => [], addEventListener() {},
+};
+const fs = await import("node:fs");
+const mod = await import(process.argv[2]);
+const muat = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
+
+const kasus = {};
+for (const k of muat.kasus) kasus[k.label] = mod.pisahRekor(k.baris);
+
+// Satu kasus memakai argumen kedua, supaya atapnya benar-benar sebuah ATAP
+// dan bukan parameter yang tidak pernah dibaca siapa pun.
+const beratap = mod.pisahRekor(muat.beratap.baris, muat.beratap.maks);
+
+console.log(JSON.stringify({
+  ekspor: Object.keys(mod).sort(), kasus, beratap,
+}));
+"""
+
+
+@unittest.skipUnless(shutil.which("node"),
+                     "butuh node untuk menguji pisahRekor()")
+class TestRekorSolusi(unittest.TestCase):
+    """`pisahRekor()` di layar-kerja.js, dijalankan di Node atas kasus nyata.
+
+    "Lihat contoh solusi" adalah satu-satunya permukaan di aplikasi ini yang
+    hanya dibuka orang yang sudah buntu, dan dulu ia satu pintu tanpa tangga:
+    yang keluar seluruh program sekaligus. Sesudah itu tidak ada lagi yang
+    bisa dikerjakan pelajar selain membacanya -- latihan itu habis, dan yang
+    habis bukan soalnya melainkan kesempatannya.
+
+    Tangganya meraut DARI EKOR, dan arah itu bukan selera: baris terakhir
+    sebuah solusi adalah tempat hasilnya DICETAK, dan bentuk cetakan itulah
+    yang paling sering tidak ketemu. Membuka dari kepala menyajikan import dan
+    deklarasi -- bagian yang sudah ada di editornya sendiri.
+
+    Empat kelas kegagalan yang tidak menimbulkan error di mana pun, dan
+    keempatnya diadu di bawah:
+
+    1. **Arah rautan terbalik.** `slice(0, n)` dan `slice(baris.length - n)`
+       sama-sama mengembalikan daftar seukuran `n`; yang membedakannya cuma
+       ISInya. Langkah pertama yang memuat kepala tetap "berfungsi", cuma
+       berhenti menolong.
+    2. **Potongan yang bukan sufiks kontinu.** Rautan yang melompat
+       menyajikan kode yang tidak pernah ada sebagai program, dan pelajar
+       tidak punya cara tahu bagian mana yang disembunyikan.
+    3. **Langkah terakhir yang kurang satu baris.** Dihitung dengan
+       pembulatan alih-alih dipatok ke panjang aslinya, dan yang hilang
+       justru baris pertama programnya -- di tempat yang bernama
+       "seluruhnya".
+    4. **Langkah yang tidak menambah apa pun.** Solusi satu baris yang
+       dipecah dua menghasilkan tombol "Lihat lebih banyak" yang tidak
+       mengubah satu piksel. Itu tombol yang berujung penolakan.
+
+    Ambang 12 barisnya diukur, bukan dipilih: dari 303 latihan, 76 solusinya
+    berpanjang <= 12 baris, dan tiga langkah untuk solusi delapan baris
+    berarti tiga klik untuk empat baris.
+    """
+
+    # (label, jumlah baris sintetis). Isinya dibuat bernomor supaya setiap
+    # baris UNIK -- dengan baris yang berulang, sebuah potongan yang melompat
+    # bisa kebetulan terbaca sebagai sufiks yang benar.
+    PANJANG = [
+        ("kosong", 0),
+        ("satu", 1),
+        ("dua", 2),
+        ("ambang-12", 12),
+        ("ambang-13", 13),
+        ("terpanjang-167", 167),
+    ]
+
+    laporan = None
+    nyata = None
+
+    @classmethod
+    def setUpClass(cls):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        kasus = [{"label": l, "baris": [f"baris {i}" for i in range(n)]}
+                 for l, n in cls.PANJANG]
+
+        # Kasus NYATA dari kurikulum: solusi Python terpanjang yang ada,
+        # "Proyek Akhir: Koperasi Sekolah". Diambil dari registry, tidak
+        # ditempel -- solusi yang disunting harus ikut menggeser tesnya.
+        nyata = None
+        for lang in api.LANGUAGES:
+            if lang["key"] != "python":
+                continue
+            for e in lang["exercises"]:
+                baris = e["solution"].split("\n")
+                if nyata is None or len(baris) > len(nyata[1]):
+                    nyata = (e["title"], baris)
+        assert nyata is not None, "nol latihan Python di registry"
+        cls.nyata = nyata
+        kasus.append({"label": "nyata-python", "baris": nyata[1]})
+
+        muat = {"kasus": kasus,
+                "beratap": {"baris": [f"baris {i}" for i in range(99)],
+                            "maks": 2}}
+
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "rekor.mjs")
+            data = os.path.join(d, "muat.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_REKOR)
+            with open(data, "w", encoding="utf-8") as f:
+                json.dump(muat, f)
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "layar-kerja.js"),
+                 data],
+                capture_output=True, text=True, timeout=180)
+        if hasil.returncode != 0:
+            raise AssertionError("driver Node gagal:\n" + hasil.stderr[-2000:])
+        cls.laporan = json.loads(hasil.stdout)
+        cls._muat = muat
+
+    @classmethod
+    def _baris(cls, label):
+        for k in cls._muat["kasus"]:
+            if k["label"] == label:
+                return k["baris"]
+        raise KeyError(label)
+
+    def _potongan(self, label):
+        return self.laporan["kasus"][label]
+
+    @staticmethod
+    def _sumber():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-kerja.js"), encoding="utf-8") as f:
+            return f.read()
+
+    def test_pisahRekor_diekspor_dari_layar_kerja(self):
+        """Fungsinya murni dan diekspor; tanpa itu tidak ada yang bisa diadu.
+
+        Sekaligus pagar untuk impor layar-kerja.js di Node: kalau berkas ini
+        suatu hari menyentuh DOM di tingkat modul, `setUpClass` yang gagal
+        akan menyebut stderr Node-nya apa adanya alih-alih diam.
+        """
+        self.assertIn("pisahRekor", self.laporan["ekspor"])
+        # Layar-layarnya tetap ikut terekspor -- kalau salah satu hilang,
+        # yang hilang adalah sebuah rute, bukan sebuah tes.
+        for nama in ("layarKuis", "layarLatihan", "layarCoba"):
+            self.assertIn(nama, self.laporan["ekspor"])
+
+    def test_langkah_pertama_memuat_baris_terakhir(self):
+        """Ekor dulu: langkah 1 selalu berakhir di baris terakhir solusi.
+
+        Dan baris PERTAMA baru muncul di langkah terakhir -- itu separuh
+        pernyataan yang sama, dan separuh yang justru patah kalau arah
+        rautannya dibalik. Membandingkan panjang saja tidak cukup: kepala dan
+        ekor seukuran sama-sama lolos uji panjang.
+        """
+        for label, _ in self.PANJANG[1:]:
+            baris = self._baris(label)
+            potongan = self._potongan(label)
+            with self.subTest(label):
+                self.assertEqual(potongan[0][-1], baris[-1],
+                                 "langkah pertama tidak berakhir di ekor")
+                if len(potongan) > 1:
+                    self.assertNotEqual(
+                        potongan[0][0], baris[0],
+                        "baris pertama solusi sudah terbuka di langkah 1")
+                    self.assertEqual(potongan[-1][0], baris[0])
+
+    def test_tiap_potongan_sufiks_kontinu_dan_tumbuh_monoton(self):
+        """Tiap potongan = `baris[n-k:]`, dan `k` bertambah tiap langkah.
+
+        Diadu per elemen, bukan per panjang. Potongan yang melompati sebuah
+        baris di tengah tetap berpanjang benar, dan yang terlihat pelajar
+        adalah program yang tidak pernah bisa jalan -- tanpa satu pun tanda
+        bahwa ada yang dibuang.
+        """
+        for label in [l for l, _ in self.PANJANG] + ["nyata-python"]:
+            baris = self._baris(label)
+            potongan = self._potongan(label)
+            with self.subTest(label):
+                panjang_lalu = 0
+                for p in potongan:
+                    self.assertGreater(len(p), panjang_lalu,
+                                       "langkah yang tidak menambah apa pun")
+                    self.assertEqual(p, baris[len(baris) - len(p):],
+                                     "potongan bukan sufiks kontinu")
+                    panjang_lalu = len(p)
+
+    def test_langkah_terakhir_seluruhnya_byte_per_byte(self):
+        """`join("\\n")` langkah terakhir == masukannya, persis.
+
+        Dipatok byte-per-byte karena di situlah pembulatan sembunyi: langkah
+        terakhir yang dihitung `ceil(n * i / langkah)` alih-alih dipatok ke
+        `n` bisa kurang satu baris, dan yang kurang adalah baris pertama.
+        """
+        for label in [l for l, _ in self.PANJANG[1:]] + ["nyata-python"]:
+            baris = self._baris(label)
+            potongan = self._potongan(label)
+            with self.subTest(label):
+                self.assertEqual("\n".join(potongan[-1]), "\n".join(baris))
+
+    def test_ambang_dua_belas_baris_menentukan_jumlah_langkah(self):
+        """12 baris -> 2 langkah, 13 -> 3, dan 3 adalah atapnya.
+
+        Angka 12 datang dari kurikulum, bukan dari selera: 76 dari 303 solusi
+        berpanjang <= 12 baris. Atapnya ikut dipagari dari kasus terpanjang --
+        tangga yang anak-anaknya tumbuh bersama panjang solusi akan memberi
+        solusi 167 baris sebelas klik.
+        """
+        self.assertEqual(len(self._potongan("ambang-12")), 2)
+        self.assertEqual(len(self._potongan("ambang-13")), 3)
+        self.assertEqual(len(self._potongan("terpanjang-167")), 3)
+        self.assertEqual(len(self._potongan("nyata-python")), 3,
+                         f"{self.nyata[0]} ({len(self.nyata[1])} baris)")
+        # Atapnya sebuah ATAP, bukan parameter yang tidak pernah dibaca.
+        self.assertEqual(len(self.laporan["beratap"]), 2)
+
+    def test_kosong_dan_satu_baris_tidak_melahirkan_langkah_hampa(self):
+        """Nol baris -> `[]`; satu baris -> SATU langkah, bukan dua identik.
+
+        `[]` dan bukan `[[]]`: pemanggilnya memakai `rekor.length` sebagai
+        syarat membuka dialognya sama sekali, dan `[[]]` berarti sebuah
+        jendela berisi blok kode kosong. Juga bukan sesuatu yang melempar --
+        solusi kosong memang mustahil lolos `test_solutions`, tapi gerbang
+        yang bergantung pada tes bahasa lain bukan gerbang.
+        """
+        self.assertEqual(self._potongan("kosong"), [])
+        satu = self._potongan("satu")
+        self.assertEqual(len(satu), 1,
+                         "solusi satu baris dipecah jadi dua langkah identik")
+        self.assertEqual(satu[0], self._baris("satu"))
+
+    def test_kalimat_menghakimi_sudah_tidak_ada(self):
+        """Gerbangnya menyatakan KEADAAN, tidak meramal isi kepala pelajar.
+
+        Kalimat lamanya berbunyi "biasanya membuat latihan ini terasa mudah
+        padahal belum kamu kuasai" -- sebuah tuduhan, pada satu-satunya
+        permukaan yang hanya dibuka orang yang sudah buntu. Yang menggantinya
+        wajib menyebut angkanya, karena angka itulah keadaan yang sebenarnya
+        relevan; kalimatnya sendiri tidak boleh menuduh.
+        """
+        src = self._sumber()
+        for frasa in ("terasa mudah padahal belum", "Tetap lihat"):
+            self.assertNotIn(frasa, src,
+                             f"kalimat menghakimi masih ada: {frasa}")
+        self.assertIn("dari ${x.hint.length} petunjuk", src,
+                      "jumlah petunjuk yang dibuka tidak ditampilkan")
+
+    def test_salin_cuma_ada_saat_seluruhnya_terbuka(self):
+        """`Salin` dijaga `penuh ?`; `Lihat lebih banyak` dijaga `penuh ? null :`.
+
+        Menyalin separuh solusi adalah cara tercepat membuat jawaban yang
+        salah terlihat sah: yang tertempel jalan, outputnya cuma sebagian,
+        dan yang disalahkan pelajar adalah pemahamannya sendiri.
+
+        Dipagari di tingkat SUMBER, dan itu batas yang disadari: membalik
+        kedua penjaganya adalah satu suntingan yang tidak menimbulkan error
+        di mana pun, dan sumber adalah satu-satunya tempat ia terlihat tanpa
+        peramban. Mengadu dialog yang benar-benar tergambar butuh peramban --
+        itu pekerjaan reviewer, bukan tes ini.
+        """
+        src = self._sumber()
+        m = re.search(r"    function gambarRekor\(\) \{.*?\n    \}\n", src, re.S)
+        self.assertIsNotNone(m, "nol blok gambarRekor yang bisa dibaca")
+        blok = m.group(0)
+        self.assertRegex(blok, r"penuh \? h\(\"button(?:.|\n)*?\"Salin",
+                         "Salin tidak dijaga `penuh ?`")
+        self.assertRegex(blok, r"penuh \? null : h\(\"button",
+                         "`Lihat lebih banyak` tidak dijaga `penuh ? null :`")
+        self.assertIn('"Lihat lebih banyak"', blok)
+        # Keadaan akhir = keadaan alami DOM. Blok yang sudah terbuka wajib
+        # tetap terbuka pada gerak "mati", jadi nol animasi di jalur ini.
+        for larangan in ("forwards", "animasi(", "masuk(", "getAnimations",
+                         "scrollIntoView", "replaceChildren"):
+            self.assertNotIn(larangan, blok,
+                             f"`{larangan}` di jalur reveal solusi")
+
+    # ------------------------------------------------------ gerbang konfirmasi
+
+    # Indentasi DUA spasi, bukan empat: `lihatJawaban` adalah fungsi langsung
+    # di dalam `layarLatihan`, sedangkan `gambarRekor` bersarang satu tingkat
+    # lebih dalam. Pola yang salah indentasinya tidak memerah -- ia cuma
+    # mengembalikan None, dan assertIsNotNone-lah yang menyebutkannya.
+    _POLA_LIHAT = r"  async function lihatJawaban\(\) \{.*?\n  \}\n"
+
+    def _blok_gerbang(self):
+        """`(seluruh sumber, badan lihatJawaban)`; dipakai seluruh pagar
+        gerbang di bawah.
+
+        Tanpa angka dengan sengaja: menuliskan cacahnya berarti kalimat ini
+        berbohong pada pagar gerbang berikutnya yang ditambahkan, dan
+        memperbaikinya dengan menaikkan angkanya hanya menunda kebohongan yang
+        sama satu ronde.
+        """
+        src = self._sumber()
+        m = re.search(self._POLA_LIHAT, src, re.S)
+        self.assertIsNotNone(m, "nol blok lihatJawaban yang bisa dibaca")
+        return src, m.group(0)
+
+    def test_gerbang_dilesapkan_saat_semua_petunjuk_terbuka(self):
+        """Gerbangnya dilewati pada semua-petunjuk-terbuka, dan itu TERTULIS.
+
+        Syaratnya `hintTerbuka < x.hint.length`, jadi orang yang sudah membaca
+        petunjuk terakhir tidak ditanya apa-apa: solusinya langsung terbuka.
+        Itu keputusan, bukan kelalaian -- sesudah petunjuk habis tidak ada
+        lagi "coba sendiri dulu" yang tersisa untuk dijaga, dan menagih
+        konfirmasi kedua dari orang yang paling gigih justru menghukum yang
+        benar.
+
+        Yang cacat sebelum pagar ini bukan perilakunya melainkan ketidak-
+        tulisannya: klausa itu bisa dihapus siapa pun tanpa satu tes pun
+        gagal, dan tidak ada satu baris pun yang berkata "ini disengaja".
+        Maka dua hal diadu sekaligus, dan keduanya wajib hidup bersama --
+        klausanya DAN kalimat yang menamainya.
+
+        Batas yang disadari: predikat komentarnya kata-kata kunci, jadi yang
+        dijamin adalah KEBERADAAN keputusan itu, bukan susunan kalimatnya.
+        Parafrase yang masih menyebut keadaannya tetap hijau; penghapusan
+        seluruh paragrafnya tidak.
+        """
+        src, blok = self._blok_gerbang()
+        # Satu regex, bukan dua asersi lepas: `konfirmasi(` yang ADA dan
+        # klausa yang ADA bisa hijau bersamaan pada bentuk TERBALIK (gerbang
+        # yang bertanya justru saat semua petunjuk sudah terbuka). Yang
+        # dipagari urutannya.
+        self.assertRegex(
+            blok, r"hintTerbuka < x\.hint\.length\s*&&\s*!await konfirmasi\(",
+            "short-circuit gerbang hilang, atau `konfirmasi(` tidak lagi "
+            "berada di sebelah kanan klausa yang melesapkannya")
+
+        kepala = src[:src.index(blok)]
+        self.assertIn("/*", kepala, "nol blok komentar sebelum lihatJawaban")
+        komentar = kepala[kepala.rindex("/*"):].lower()
+        self.assertIn("semua petunjuk terbuka", komentar,
+                      "keputusan melesapkan gerbang tidak dinamai di komentar")
+        self.assertTrue(
+            any(k in komentar for k in
+                ("dilewati", "tidak dikonfirmasi", "tanpa konfirmasi")),
+            "komentar menyebut keadaannya tapi tidak menyebut bahwa "
+            "gerbangnya dilewati di situ")
+
+    def test_kalimat_gerbang_bercabang_pada_nol_petunjuk(self):
+        """Satu kalimat untuk dua keadaan selalu salah di salah satunya.
+
+        Kalimat lamanya memuji `hintTerbuka` petunjuk yang dibuka sebagai
+        "cara yang benar" untuk keadaan buntu -- dan pada NOL petunjuk itu
+        memuji keadaan yang sedang tidak terjadi. Yang belum membuka satu pun
+        petunjuk tidak sedang buntu; ia sedang mencoba, dan yang sebenarnya
+        berguna baginya adalah tahu bahwa ada jalan yang lebih pendek
+        daripada membuka solusi.
+
+        Menetralkannya untuk kedua keadaan bukan perbaikan: pada nol petunjuk
+        "cara yang benar untuk buntu" dan "tidak apa-apa" sama salahnya --
+        yang pertama menuduh, yang kedua tidak menyebut apa pun. Maka yang
+        dipagari adalah PERCABANGANNYA, dengan angkanya tetap disebut di
+        kedua sisi.
+
+        Preseden bentuknya sudah ada di berkas yang sama, di kalimat panel
+        petunjuk saat `hintTerbuka === 0`; yang ini mengikutinya.
+        """
+        src, blok = self._blok_gerbang()
+        m = re.search(r"hintTerbuka === 0\n(?P<nol>.*?)\n\s*: (?P<ada>.*?);\n",
+                      blok, re.S)
+        self.assertIsNotNone(
+            m, "kalimat gerbang tidak bercabang pada `hintTerbuka === 0` -- "
+               "satu kalimat untuk nol petunjuk dan untuk tiga petunjuk")
+        nol, ada = m.group("nol"), m.group("ada")
+
+        self.assertNotIn(
+            "cara yang benar untuk buntu", nol,
+            "cabang nol-petunjuk memuji keadaan yang sedang tidak terjadi")
+        self.assertEqual(
+            src.count("cara yang benar untuk buntu"), 1,
+            "frasa itu bocor ke luar cabang `> 0` (cabang lain, komentar, "
+            "atau docstring) -- pagarnya menyapu seluruh berkas")
+
+        for cabang, nama in ((nol, "nol"), (ada, "ada")):
+            for angka in ("${hintTerbuka}", "${x.hint.length}"):
+                self.assertIn(angka, cabang,
+                              f"cabang {nama} berhenti menyebut {angka}")
+
+        # Daftar, bukan satu frasa: yang dijaga adalah "cabang nol MENYEBUT
+        # keadaannya", dan sinonim yang masih menyebutkannya tidak boleh
+        # memerah. Yang memerah adalah keadaan yang hilang sama sekali.
+        self.assertTrue(
+            any(k in nol.lower() for k in
+                ("belum", "nol petunjuk", "satu pun", "masih utuh")),
+            "cabang nol tidak menyebut keadaannya sendiri -- angka saja "
+            "tidak memberi tahu pelajar bahwa ada jalan yang lebih pendek")
+
+        # Asersi warisan dari `test_kalimat_menghakimi_sudah_tidak_ada`,
+        # ditegakkan ulang DI DALAM cabang: di sana ia cuma menuntut frasanya
+        # ada di suatu tempat di berkas.
+        self.assertIn("dari ${x.hint.length} petunjuk", src)
+
+    def test_gerbang_dan_tombol_petunjuk_memakai_angka_yang_sama(self):
+        """Satu angka, dua tempat: `tbl.disabled` dan syarat gerbang.
+
+        Melesapkan gerbang hanya sah selama kedua tempat itu berpendapat sama
+        tentang "tidak ada lagi petunjuk": tombolnya mati karena
+        `hintTerbuka >= x.hint.length`, dan gerbangnya diam karena syarat yang
+        sama berhenti terpenuhi. Begitu salah satunya dibandingkan dengan
+        konstanta tangan -- `< 8`, atau sebuah AMBANG -- ada pita keadaan
+        tempat tombolnya sudah mati tapi gerbangnya masih bertanya, atau
+        sebaliknya; dan yang terlihat pelajar bukan error melainkan dialog
+        yang munculnya terasa acak.
+
+        Yang dipagari KETIDAKSERASIANNYA, bukan angkanya: `x.hint.length`
+        boleh berubah nilainya per latihan, yang tidak boleh adalah ada dua
+        sumber kebenaran.
+        """
+        src, blok = self._blok_gerbang()
+        self.assertIn("tbl.disabled = hintTerbuka >= x.hint.length;", src,
+                      "tombol petunjuk berhenti memakai `x.hint.length` "
+                      "sebagai atapnya")
+        self.assertNotRegex(
+            blok, r"hintTerbuka\s*[<>]=?\s*\d",
+            "`hintTerbuka` dibandingkan dengan konstanta angka di jalur "
+            "gerbang, bukan dengan `x.hint.length`")
+        self.assertNotRegex(
+            blok, r"hintTerbuka\s*[<>]=?\s*[A-Z_]{3,}",
+            "`hintTerbuka` dibandingkan dengan konstanta bernama di jalur "
+            "gerbang, bukan dengan `x.hint.length`")
+
+    def test_kalimat_gerbang_benar_benar_diucapkan_di_dialog(self):
+        """Yang MEMBANGUN kalimat dan yang MENGUCAPKANNYA wajib tetap tersambung.
+
+        Pagar di atas sudah memutuskan CABANG-nya: kalimat gerbang bercabang
+        pada `hintTerbuka === 0`, dan kedua sisinya menyebut angkanya. Yang
+        tidak dipagari satu pun tes adalah KABELNYA -- cabang itu membangun
+        sebuah variabel, dan tidak ada yang menuntut variabel itu dipakai.
+        Buang interpolasinya, tulis ulang teks dialognya dengan tangan, dan
+        seluruh pagar cabang tetap hijau sambil kalimatnya tidak pernah sampai
+        ke pelajar.
+
+        Tempat mengucapkannya ARGUMEN PERTAMA `konfirmasi(`, bukan `judul:`
+        maupun `labelYa:`. Di argumen pertama itulah orang membaca
+        konsekuensinya sebelum menekan tombol; label tombol dibayar untuk muat
+        dalam dua puluh piksel, dan memindahkan angkanya ke sana berarti
+        menaruh kalimat yang baru saja dirancang di tempat paling sempit di
+        dialog.
+
+        BATASNYA, dan menuliskannya bukan hiasan: rename yang KONSISTEN di
+        kedua tempat LOLOS, dan memang tidak ada yang salah dengan rename.
+        Nama variabelnya DIREBUT dari definisinya, tidak diketik di sini. Yang
+        dijaga adalah KETERPISAHAN antara yang membangun kalimat dan yang
+        mengucapkannya -- bukan namanya. Tanpa kalimat ini, orang berikutnya
+        akan "memperbaiki" pagar ini menjadi pengunci nama, dan pagarnya lalu
+        memerah untuk refactor yang benar; pagar yang memerah untuk perubahan
+        yang benar adalah pagar yang dibuang orang sesudahnya.
+
+        Tiga hal yang BUKAN urusan pagar ini karena masing-masing sudah punya
+        pemiliknya: bentuk cabangnya dipagari
+        `test_kalimat_gerbang_bercabang_pada_nol_petunjuk`, angka atapnya oleh
+        `test_gerbang_dan_tombol_petunjuk_memakai_angka_yang_sama`, dan klausa
+        pelesapannya oleh
+        `test_gerbang_dilesapkan_saat_semua_petunjuk_terbuka`. Menagihnya
+        ulang di sini tidak menambah perlindungan apa pun dan menyalakan satu
+        aturan dengan dua definisi.
+        """
+        src, blok = self._blok_gerbang()
+
+        # Nama DIREBUT, tidak diketik -- dan direbut dari SELURUH sumber, bukan
+        # dari blok: kalau definisinya terangkat keluar `lihatJawaban()`, yang
+        # harus memerah adalah asersi POSISI di bawah beserta pesannya sendiri,
+        # bukan asersi ini dengan pesan "cabangnya hilang" yang menuduh hal
+        # yang salah.
+        m = re.search(r"const (?P<nama>\w+) = hintTerbuka === 0", src)
+        self.assertIsNotNone(
+            m, "cabangnya sendiri yang hilang; itu diputuskan "
+               "`test_kalimat_gerbang_bercabang_pada_nol_petunjuk`, bukan di "
+               "sini")
+        nama = m.group("nama")
+
+        # `hintTerbuka` dimutasi di penangan tombol petunjuk, jadi cabang yang
+        # dihitung sekali di tingkat layar membeku pada keadaan saat layar
+        # DIBANGUN -- dan berkata "belum ada yang kamu buka" kepada orang yang
+        # sudah membuka tiga petunjuk.
+        self.assertIn(
+            f"const {nama} = hintTerbuka === 0", blok,
+            f"`{nama}` dibangun di luar `lihatJawaban()`; cabangnya lalu "
+            "membeku pada keadaan saat layar dibangun, bukan keadaan saat "
+            "dialognya dibuka, sementara `hintTerbuka` masih berubah di "
+            "penangan tombol petunjuk")
+
+        # Argumen PERTAMA, dipotong di koma yang mendahului objek opsi. Batas
+        # yang disadari: bentuk tanpa objek opsi tidak terbaca pola ini, dan
+        # assertIsNotNone-lah yang menyebutkannya -- bukan asersi berikutnya
+        # yang akan menuduh dialognya ditulis ulang.
+        d = re.search(r"await konfirmasi\(\s*(?P<arg>.*?),\s*\{", blok, re.S)
+        self.assertIsNotNone(
+            d, "argumen pertama `konfirmasi(` tidak bisa dibaca di blok ini")
+        self.assertIn(
+            "${" + nama + "}", d.group("arg"),
+            "dialog ditulis ulang dengan tangan; cabang di atasnya sekarang "
+            "membangun kalimat yang tidak pernah sampai ke pelajar. "
+            f"`{nama}` wajib diucapkan di ARGUMEN PERTAMA `konfirmasi(` -- "
+            "bukan di `judul:`, bukan di `labelYa:`, bukan di tempat lain di "
+            "berkas")
+
+        # Yang dihitung INTERPOLASInya, bukan penanda katanya: sebuah komentar
+        # yang menjelaskan variabel ini dengan namanya adalah dokumentasi yang
+        # jujur dan tidak boleh memerahkan apa pun.
+        self.assertEqual(
+            src.count("${" + nama + "}"), 1,
+            "pembacaan kedua muncul; putuskan secara sadar: salin kalimatnya "
+            "untuk permukaan kedua (lalu pagar ini ikut menyesuaikan), atau "
+            "pindahkan permukaan kedua ke dialog ini. Menambah angka ke "
+            "tempat baru tanpa menyebutnya di pagar ini artinya kalimat "
+            "bercabang itu sekarang hidup di permukaan yang belum diaudit "
+            "keadaan nol-petunjuknya (lihat "
+            "`test_kalimat_gerbang_bercabang_pada_nol_petunjuk`)")
+
+
+# ------------------------------------------------------------ pita baris aktif
+
+_SKRIP_PITA = r"""
+// DRIVER, BUKAN CERMIN. Ia tidak menghitung satu pun koordinat sendiri; yang
+// dikerjakannya cuma memanggil `posisiPita()` yang SUNGGUHAN lalu melaporkan
+// `{atas, tinggi}` mentah. Seluruh harapan tinggal di Python, di kelas yang
+// memuat skrip ini. Driver yang menyalin rumusnya -- `paddingAtas +
+// (baris - 1) * tinggiBaris - scrollTop` -- akan tetap hijau sesudah rumus
+// aslinya salah, dan pagar yang tidak bisa memerah bukan pagar.
+//
+// Stub DOM-nya ada karena editor.js mengimpor inti.js, gerak.js, dan sorot.js,
+// bukan karena `posisiPita` memerlukannya: fungsi itu tidak menyentuh DOM sama
+// sekali, dan justru itu yang membuat letak pita bisa diadu tanpa peramban.
+globalThis.window = {
+  TOKEN_BELAJAR: "x", innerWidth: 1200, innerHeight: 900,
+  addEventListener() {}, removeEventListener() {},
+  matchMedia: () => ({ matches: false, addEventListener() {} }),
+};
+globalThis.document = {
+  documentElement: { dataset: {}, style: {},
+                     classList: { add() {}, remove() {}, contains: () => false } },
+  createElement: () => ({ style: {}, dataset: {},
+                          classList: { add() {}, remove() {} },
+                          appendChild() {}, setAttribute() {},
+                          addEventListener() {} }),
+  createTextNode: () => ({}),
+  createDocumentFragment: () => ({ appendChild() {} }),
+  querySelector: () => null, querySelectorAll: () => [], addEventListener() {},
+};
+const fs = await import("node:fs");
+const { posisiPita } = await import(process.argv[2]);
+const muat = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
+
+const hasil = {};
+for (const k of muat.kasus) hasil[k.label] = posisiPita(k.arg);
+console.log(JSON.stringify({ hasil }));
+"""
+
+
+class TestPitaBarisAktif(unittest.TestCase):
+    """Pita baris aktif: `posisiPita()` di editor.js + bloknya di gaya.css.
+
+    Penanda baris tempat caret berdiri adalah INFORMASI, bukan hiasan — dan
+    seluruh kelas kegagalannya tidak menimbulkan satu pun error di mana pun:
+    pita yang mendarat sebaris di bawah kursornya, pita yang macet di tepi
+    atas, pita yang menutupi huruf, pita yang hilang begitu gerak dimatikan.
+    Semuanya tampil sebagai "ada yang terasa aneh", dan tidak satu pun sampai
+    ke konsol.
+
+    Empat sumber kegagalan itu, dan keempatnya diadu di bawah:
+
+    1. **Rumus letak yang meleset satu baris.** `(baris - 1) * tinggiBaris`
+       dan `baris * tinggiBaris` sama-sama "berfungsi"; yang kedua menandai
+       baris di bawah kursornya, seterusnya, di seluruh editor.
+    2. **`atas` yang DIJEPIT ke nol.** Godaan terbesar di bentuk ini, karena
+       koordinat negatif terlihat seperti bug. Ia bukan: `overflow: hidden`
+       pada `.editor-lapis` memang memotongnya, dan yang tidak terlihat
+       memang tidak boleh ditandai. Yang dihasilkan `Math.max(0, ...)` adalah
+       garis macet di tepi atas yang mengaku "baris aktifmu di sini" padahal
+       kursornya sudah jauh tergulir ke atas — penanda yang menunjuk tempat
+       salah lebih buruk daripada tidak ada penanda.
+    3. **Nama properti yang hidup di dua berkas.** `--pita-atas` ditulis JS
+       dan dibaca CSS; satu huruf berbeda dan pita diam di `0px` tanpa satu
+       pun pesan. Bentuknya sama dengan `AMBANG_RUANG`↔`1100px` dan
+       `WARNA_KURUNG`↔`.tk-operator[data-warna]`: gagal diam-diam.
+    4. **Gerak yang dimatikan menghapus pitanya.** Kalau pita bersandar pada
+       `animation`/`transition`/`opacity`, dua aturan besar di kaki gaya.css
+       memadamkannya — dan yang hilang justru pada setelan yang dipilih orang
+       supaya layarnya lebih tenang. Pita adalah keadaan, dan keadaan tidak
+       boleh punya tingkat gerak.
+
+    Angka masukannya BUKAN karangan: `tinggiBaris` 22,55 adalah
+    `--t-kode: .87rem` (13,92 px) dikali `line-height: 1.62`, dan
+    `paddingAtas` 12 adalah `--s3`. Keduanya bilangan yang benar-benar keluar
+    dari `getComputedStyle`, pecahan dan semuanya — rumus yang cuma pernah
+    diuji dengan bilangan bulat adalah rumus yang belum diuji, karena
+    `6 * 22.55` berakhir `135.29999999999998`.
+
+    Yang TIDAK diadu di sini, dan itu disadari: di piksel mana pita mendarat
+    di layar, apakah ia menutupi huruf, dan apakah ia ikut terpotong saat
+    digulir. Ketiganya butuh peramban — pekerjaan reviewer, bukan tes ini.
+    """
+
+    # (label, baris, scrollTop). Argumen lainnya sama untuk semua kasus.
+    KASUS = [
+        ("baris-1", 1, 0),
+        ("baris-7", 7, 0),
+        ("baris-8", 8, 0),
+        ("baris-0", 0, 0),
+        ("gulir-sedang", 7, 90),
+        ("gulir-keluar-pandangan", 1, 900),
+    ]
+    TINGGI_BARIS = 22.55
+    PADDING_ATAS = 12
+
+    laporan = None
+
+    @classmethod
+    def setUpClass(cls):
+        if not shutil.which("node"):
+            return
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        muat = {"kasus": [
+            {"label": l,
+             "arg": {"baris": b, "tinggiBaris": cls.TINGGI_BARIS,
+                     "paddingAtas": cls.PADDING_ATAS, "scrollTop": s}}
+            for l, b, s in cls.KASUS]}
+
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "pita.mjs")
+            data = os.path.join(d, "muat.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PITA)
+            with open(data, "w", encoding="utf-8") as f:
+                json.dump(muat, f)
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "editor.js"),
+                 data],
+                capture_output=True, text=True, timeout=180)
+        if hasil.returncode != 0:
+            raise AssertionError("driver Node gagal:\n" + hasil.stderr[-1500:])
+        cls.laporan = json.loads(hasil.stdout)
+
+    def _letak(self, label):
+        """Satu kasus dari driver Node, atau SKIP kalau Node tidak terpasang.
+
+        Skip, bukan lulus diam-diam. Dan skipnya per METODE, bukan per kelas:
+        empat pagar terakhir di bawah cuma membaca berkas sumber, jadi
+        mematikannya bersama Node berarti pasangan dua-berkas `--pita-*`
+        berhenti dijaga justru di mesin yang paling mungkin memerahkannya.
+        """
+        if self.laporan is None:
+            self.skipTest("butuh node untuk menguji posisiPita()")
+        return self.laporan["hasil"][label]
+
+    @staticmethod
+    def _baca(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    BLOK = re.compile(r"\.editor-lapis::before\s*\{(.*?)\}", re.S)
+
+    def _blok_css(self):
+        blok = self.BLOK.findall(self._baca("webapp", "statik", "gaya.css"))
+        self.assertEqual(len(blok), 1,
+                         "blok `.editor-lapis::before` wajib tepat satu: dua "
+                         "blok untuk satu pseudo berarti yang kedua menimpa "
+                         "yang pertama tanpa satu pun tanda")
+        return blok[0]
+
+    def _blok_gambar_pita(self):
+        src = self._baca("webapp", "statik", "js", "editor.js")
+        m = re.search(r"\n  _gambarPita\(\) \{.*?\n  \}\n", src, re.S)
+        self.assertIsNotNone(m, "nol blok `_gambarPita()` yang bisa dibaca")
+        return src, m.group(0)
+
+    def test_tinggi_selalu_sama_dengan_tinggi_baris(self):
+        """`tinggi` = `tinggiBaris` apa adanya, pada SETIAP kasus.
+
+        Termasuk pada baris 0 dan pada baris yang sudah tergulir keluar
+        pandangan: tinggi pita tidak punya satu pun alasan bergantung pada
+        baris mana yang aktif. Pita setinggi dua baris berbohong soal di mana
+        kursornya; pita setinggi nol tidak menandai apa pun.
+        """
+        for label, _baris, _gulir in self.KASUS:
+            self.assertAlmostEqual(
+                self._letak(label)["tinggi"], self.TINGGI_BARIS, places=9,
+                msg=f"tinggi pita bukan satu tinggi baris pada `{label}`")
+
+    def test_baris_pertama_mendarat_tepat_di_padding_atas(self):
+        """Baris 1 tanpa gulir = `paddingAtas`, bukan 0 dan bukan satu baris.
+
+        Padding atas editor adalah ruang SEBELUM baris pertama; pita yang
+        mengabaikannya mendarat di atas huruf pertama, dan selisihnya tetap
+        sebesar `--s3` di seluruh berkas.
+        """
+        self.assertAlmostEqual(self._letak("baris-1")["atas"],
+                               self.PADDING_ATAS, places=9)
+
+    def test_tiap_baris_menambah_tepat_satu_tinggi_baris(self):
+        """`atas(n)` = `paddingAtas + (n-1) * tinggiBaris`, dan beda 1 baris = 1.
+
+        Dua asersi yang sengaja tidak dilipat jadi satu: yang pertama memagari
+        OFFSET-nya (`n` vs `n-1`, kesalahan yang menggeser seluruh pita satu
+        baris), yang kedua memagari SKALANya (tinggi baris yang dikali atau
+        dibagi, kesalahan yang melencengkannya makin jauh makin ke bawah).
+        """
+        a7 = self._letak("baris-7")["atas"]
+        a8 = self._letak("baris-8")["atas"]
+        self.assertAlmostEqual(a7, self.PADDING_ATAS + 6 * self.TINGGI_BARIS,
+                               places=9)
+        self.assertAlmostEqual(a8 - a7, self.TINGGI_BARIS, places=9)
+
+    def test_gulir_mengurangi_dan_atas_tidak_dijepit_ke_nol(self):
+        """`scrollTop` dikurangi penuh, dan `atas` BOLEH negatif.
+
+        Inilah asersi yang membunuh `Math.max(0, ...)`. Letak pita diukur di
+        dalam `.editor-lapis`, yang ber-`overflow: hidden`: baris aktif yang
+        sudah tergulir ke atas layar memang menghasilkan koordinat negatif,
+        dan pemotongannya dikerjakan CSS. Menjepitnya di JS mengubah pita jadi
+        garis macet di tepi atas — penanda yang tetap kelihatan sesudah yang
+        ditandainya tidak kelihatan lagi.
+        """
+        self.assertAlmostEqual(
+            self._letak("gulir-sedang")["atas"],
+            self.PADDING_ATAS + 6 * self.TINGGI_BARIS - 90, places=9)
+        jauh = self._letak("gulir-keluar-pandangan")["atas"]
+        self.assertAlmostEqual(jauh, self.PADDING_ATAS - 900, places=9)
+        self.assertLess(jauh, 0,
+                        "`atas` dijepit ke nol: pita akan menempel di tepi "
+                        "atas sebagai garis macet, dan mengaku baris aktifnya "
+                        "ada di sana padahal kursornya jauh di atas")
+
+    def test_baris_nol_dinormalkan_ke_baris_satu(self):
+        """`baris < 1` dinormalkan, bukan dibiarkan jadi koordinat negatif.
+
+        Nol bukan masukan yang mustahil: `_barisKursor()` menghitung dari
+        `selectionStart`, dan tiap keadaan yang membuatnya nol akan menaruh
+        pita satu baris DI ATAS padding, di luar lapisnya.
+        """
+        self.assertEqual(self._letak("baris-0"), self._letak("baris-1"))
+
+    def test_dua_var_pita_ditulis_hanya_di_gambar_pita(self):
+        """`--pita-atas`/`--pita-tinggi`: satu penulis di JS, satu pembaca CSS.
+
+        Dua angka di dua berkas yang gagal TANPA error, persis seperti
+        `AMBANG_RUANG`↔`1100px`. Yang dipagari di sini dua hal sekaligus:
+        penulisnya tidak boleh berbiak ke tempat lain di editor.js, dan nama
+        yang dibaca gaya.css wajib sama persis sampai hurufnya.
+        """
+        src, blok = self._blok_gambar_pita()
+        self.assertEqual(
+            src.count('setProperty("--pita'), 2,
+            "jumlah penulis `--pita-*` di editor.js bukan dua: penulis kedua "
+            "di tempat lain berarti dua pendapat soal di mana barisnya")
+        self.assertEqual(blok.count('setProperty("--pita'), 2,
+                         "ada penulis `--pita-*` di luar `_gambarPita()`")
+        css = self._blok_css()
+        for nama in ("--pita-atas", "--pita-tinggi"):
+            self.assertIn(f'setProperty("{nama}"', blok,
+                          f"`{nama}` tidak ditulis `_gambarPita()`")
+            self.assertIn(f"var({nama},", css,
+                          f"`{nama}` tidak dibaca blok pita di gaya.css")
+
+    def test_pita_ditulis_di_lapis_bukan_di_sorotan(self):
+        """Sasaran penulisnya `this.lapis`, dan `this.sorotan` tidak disentuh.
+
+        `set nilai()` menganimasikan `opacity` `this.sorotan` lewat WAAPI
+        setiap isi editor diganti. Menumpangkan keadaan pita pada elemen yang
+        sedang dianimasikan berarti dua mesin atas satu elemen — dan `pre`
+        sorotan juga yang digulir `_selaraskan()`, jadi pita di sana akan ikut
+        bergeser dua kali.
+        """
+        _src, blok = self._blok_gambar_pita()
+        for nama in ("--pita-atas", "--pita-tinggi"):
+            self.assertIn(f'this.lapis.style.setProperty("{nama}"', blok,
+                          f"`{nama}` tidak ditulis ke `this.lapis`")
+        self.assertNotIn("this.sorotan", blok,
+                         "`_gambarPita()` menyentuh `this.sorotan`")
+
+    def test_blok_css_pita_tanpa_zindex_transisi_atau_jarak_piksel(self):
+        """Empat larangan dan dua kewajiban, semuanya di dalam blok itu sendiri.
+
+        `z-index`: tanpanya pita sudah pasti di BAWAH huruf, karena `::before`
+        datang lebih awal di urutan pohon daripada `> pre` dan `> textarea`
+        yang sama-sama ber-`z-index: auto`. Menuliskannya menukar urutan itu
+        dan menutupi teks yang sedang dibaca.
+
+        `transition`/`animation`/`forwards`: letak pita adalah keadaan
+        pengguna, dan menggerakkannya berarti dua mesin atas satu properti —
+        pita yang MENGEJAR kursor alih-alih menandainya.
+
+        Jarak piksel: satu-satunya `px` yang boleh ada di blok ini adalah
+        bawaan NOL di dalam `var()`. Jarak sungguhan datang dari tangga
+        `--s1`..`--s8` atau dari JS; nol tidak punya skala, jadi ia bukan
+        jarak.
+
+        Yang diperiksa hanya DEKLARASInya, bukan komentar di atasnya —
+        komentar itu memang menyebut keempat kata terlarang, dan di situlah
+        alasannya dicatat.
+        """
+        css = self._blok_css()
+        for larangan in ("z-index", "transition", "animation", "forwards"):
+            self.assertNotIn(larangan, css,
+                             f"`{larangan}` di dalam blok pita")
+        self.assertIn('content: ""', css,
+                      "`::before` tanpa `content` tidak pernah dirender")
+        self.assertIn("pointer-events: none", css,
+                      "pita menadah klik yang seharusnya sampai ke textarea")
+        self.assertEqual(
+            re.findall(r"[\d.]+px", css), ["0px", "0px"],
+            "ada piksel literal di blok pita selain dua bawaan nol")
+
+    def test_pita_tidak_bersandar_pada_gerak_sama_sekali(self):
+        """Di tingkat gerak `mati`, pita tetap ada — karena ia keadaan.
+
+        Dua aturan besar di kaki gaya.css memadamkan `animation` dan
+        `transition` pada SEMUA `*::before`. Pita yang muncul lewat salah
+        satunya karena itu hilang total di setelan yang dipilih orang supaya
+        layarnya lebih tenang, dan yang ikut hilang adalah nomor baris tempat
+        kursornya berdiri.
+
+        Keadaan bawaannya pun wajib benar sebelum JS menulis apa pun: KEDUA
+        `var()` membawa bawaan, dan bawaannya NOL. Tanpa bawaan, `top`
+        menjadi tidak sah pada waktu nilai-terhitung lalu jatuh ke `auto` —
+        untuk elemen absolut itu bukan "belum ada pita" melainkan pita yang
+        melar.
+        """
+        self.assertEqual(
+            self._baca("webapp", "statik", "gaya.css")
+            .count(".editor-lapis::before"), 1,
+            "`.editor-lapis::before` disebut lebih dari sekali di gaya.css: "
+            "aturan kedua bisa memberinya gerak tanpa terlihat di blok "
+            "aslinya")
+        css = self._blok_css()
+        for larangan in ("opacity", "visibility"):
+            self.assertNotIn(larangan, css,
+                             f"pita bersandar pada `{larangan}`; keadaan "
+                             "akhirnya wajib keadaan alami elemennya")
+        self.assertIn("top: var(--pita-atas, 0px)", css)
+        self.assertIn("height: var(--pita-tinggi, 0px)", css)
+
+
+class TestSatuAngkaSatuPermukaan(unittest.TestCase):
+    """Layar statistik: satu angka satu permukaan, dan tiap angka besar punya
+    pembanding.
+
+    Dua cacat berdiri bersebelahan di `layarStatistik()` sebelum ronde ini,
+    dan tidak satu pun pernah memberi galat. Kalimat sambutan di
+    `header.kepala-besar` menggambar level, gelar, dan XP; petak kartu
+    delapan baris di bawahnya menggambar ketiganya LAGI. Dan dua kartu
+    berdiri dengan `ket: null` sementara kartu keempat tidak punya argumen
+    ketiga sama sekali -- "1.204 XP" tidak menjawab apa-apa, "38 hari ini,
+    12 kemarin" menjawab.
+
+    Yang dijaga di sini RELASI antar permukaan, bukan prosanya: kata-kata di
+    dalam kalimat, urutan kartu, jumlah kartu, dan apakah pembandingnya
+    berupa persen atau selisih XP semuanya bebas berubah. Pagar yang
+    mengunci kalimat akan dibuang orang berikutnya, dan ia benar
+    membuangnya.
+    """
+
+    BIDANG = re.compile(r"\bs\.(\w+)")
+
+    @staticmethod
+    def _blok_statistik():
+        """(sumber `layar-lain.js`, badan `layarStatistik`), keduanya telanjang.
+
+        Dipakai seluruh pagar layar statistik di bawah. Badannya diiris lewat
+        `TestHamparanBara._fungsi` -- bukan disapu dari seluruh berkas --
+        karena `header.kepala-besar` yang KEDUA tinggal di `layarPengaturan()`
+        di berkas yang sama, dan sapuan berkas penuh akan mengadu kalimat
+        sambutan layar yang salah.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-lain.js"), encoding="utf-8") as f:
+            src = TestHamparanBara._telanjang(f.read())
+        return src, TestHamparanBara._fungsi(src, "layarStatistik")
+
+    @staticmethod
+    def _lewati_literal(teks, i):
+        """Indeks sesudah literal string yang dibuka di `i`."""
+        kutip = teks[i]
+        j = i + 1
+        while j < len(teks):
+            if teks[j] == "\\":
+                j += 2
+                continue
+            if teks[j] == kutip:
+                return j + 1
+            j += 1
+        raise AssertionError(f"literal {kutip} tidak tertutup: {teks[i:i + 40]!r}")
+
+    @classmethod
+    def _tutup_kurung(cls, teks, buka):
+        """Indeks `)` yang menutup `(` di `buka`; literal string dilewati."""
+        dalam, i = 0, buka
+        while i < len(teks):
+            c = teks[i]
+            if c in "\"'`":
+                i = cls._lewati_literal(teks, i)
+                continue
+            if c == "(":
+                dalam += 1
+            elif c == ")":
+                dalam -= 1
+                if dalam == 0:
+                    return i
+            i += 1
+        raise AssertionError("kurung tidak tertutup di potongan yang diperiksa")
+
+    @classmethod
+    def _pisah_argumen(cls, teks):
+        """Argumen satu daftar panggilan, dipecah pada koma kedalaman NOL.
+
+        `split(",")` tidak cukup, dan bukan cuma karena kurung bersarang:
+        pembanding di layar ini berbunyi "`${angka(s.xp_hari_ini)} hari ini, `"
+        -- komanya ada DI DALAM template literal, dan pemisah yang tidak
+        melewati literal string akan memecah satu argumen jadi dua lalu
+        mengadu separuh kalimat.
+        """
+        bagian, dalam, mulai, i = [], 0, 0, 0
+        while i < len(teks):
+            c = teks[i]
+            if c in "\"'`":
+                i = cls._lewati_literal(teks, i)
+                continue
+            if c in "([{":
+                dalam += 1
+            elif c in ")]}":
+                dalam -= 1
+            elif c == "," and dalam == 0:
+                bagian.append(teks[mulai:i])
+                mulai = i + 1
+            i += 1
+        bagian.append(teks[mulai:])
+        return [b.strip() for b in bagian]
+
+    @classmethod
+    def _panggilan(cls, badan, nama):
+        """Daftar argumen tiap panggilan `nama(...)` di `badan`."""
+        hasil = []
+        for m in re.finditer(rf"\b{re.escape(nama)}\s*\(", badan):
+            buka = badan.index("(", m.end() - 1)
+            tutup = cls._tutup_kurung(badan, buka)
+            hasil.append(cls._pisah_argumen(badan[buka + 1:tutup]))
+        return hasil
+
+    @classmethod
+    def _blok_h(cls, badan, pemilih):
+        """Teks satu panggilan `h("<pemilih>", ...)` beserta seluruh anaknya."""
+        tanda = f'h("{pemilih}"'
+        if tanda not in badan:
+            raise AssertionError(f"`{tanda}` tidak ada lagi di layar ini")
+        awal = badan.index(tanda)
+        buka = badan.index("(", awal)
+        return badan[awal:cls._tutup_kurung(badan, buka) + 1]
+
+    @classmethod
+    def _lokal_dari_muatan(cls, badan):
+        """Nama `const` di blok ini yang nilainya diturunkan dari muatan.
+
+        Diturunkan dari sumber, tidak diketik: `punya`/`belum` di kepala
+        `layarStatistik` lahir dari `s.semua_badge`, dan sebuah pembanding
+        yang memakai salah satunya memang terhitung "dari muatan". Mengetik
+        daftar namanya di sini akan jadi daftar yang berbohong pada kartu
+        berikutnya yang memakai nama lain.
+        """
+        return {m.group(1) for m in re.finditer(r"\bconst\s+(\w+)\s*=([^;]*);",
+                                                badan)
+                if cls.BIDANG.search(m.group(2))}
+
+    @classmethod
+    def _bidang_kartu(cls, badan, sampai):
+        """Himpunan `s.<bidang>` di argumen `[0:sampai)` seluruh kartu angka."""
+        kena = set()
+        for arg in cls._panggilan(badan, "angkaBesar"):
+            for a in arg[:sampai]:
+                kena |= set(cls.BIDANG.findall(a))
+        return kena
+
+    def test_angka_kartu_tidak_digambar_ulang_di_kalimat_sambutan(self):
+        """Field yang digambar sebuah kartu tidak boleh diucapkan header lagi.
+
+        BATASNYA: ini pagar STRUKTUR SUMBER. Ia tidak membuktikan angka itu
+        terbaca di layar, tidak membuktikan pembandingnya masuk akal, dan
+        tidak menjalankan satu pun baris JavaScript -- yang diadu cuma dua
+        himpunan nama field yang dipungut dari teks. Komentar sengaja tidak
+        ikut dihitung: `_telanjang` membuangnya lebih dulu, jadi sebuah
+        penjelasan yang menyebut `s.xp` tidak memerahkan apa pun.
+        """
+        _, badan = self._blok_statistik()
+        header = self._blok_h(badan, "header.kepala-besar")
+        f_header = set(self.BIDANG.findall(header))
+        f_kartu = self._bidang_kartu(badan, 2)
+        self.assertEqual(
+            f_header & f_kartu, set(),
+            f"satu angka dua permukaan: header menyebut {sorted(f_header)}, "
+            f"nilai/label kartu menyebut {sorted(f_kartu)}. Hapus yang di "
+            "header ATAU ganti kartunya, jangan keduanya-diam")
+
+    def test_setiap_angka_besar_punya_pembanding_dari_muatan(self):
+        """Tiap kartu wajib punya `ket` yang dihitung dari field LAIN.
+
+        Tiga kegagalan yang dijaga sekaligus: pembandingnya HILANG (`null`,
+        `undefined`, atau argumen ketiga yang memang tidak ada), DIKARANG
+        (teks jadi tanpa satu pun rujukan ke muatan -- "+38 XP sejak
+        kemarin" yang tidak pernah berubah), atau DIBANDINGKAN DENGAN DIRINYA
+        SENDIRI (kartu XP yang `ket`-nya menyebut `s.xp` lagi).
+
+        BATASNYA: pagar struktur sumber. Bahwa 38 memang XP hari ini, bahwa
+        angkanya terbaca, dan bahwa perbandingannya berarti bagi pelajar --
+        tidak satu pun dibuktikan di sini, dan tidak ada JavaScript yang
+        dijalankan. Argumen keempat (`angkaMentah`, yang cuma memberi
+        count-up) sengaja TIDAK dihitung sebagai permukaan.
+        """
+        _, badan = self._blok_statistik()
+        kartu = self._panggilan(badan, "angkaBesar")
+        self.assertTrue(kartu, "tidak ada satu pun kartu angka di layar ini")
+        lokal = self._lokal_dari_muatan(badan)
+
+        for arg in kartu:
+            siapa = arg[1] if len(arg) > 1 else arg[0]
+            self.assertGreaterEqual(
+                len(arg), 3,
+                f"kartu {siapa}: pembandingnya hilang -- argumen ketiga "
+                "(`ket`) tidak ada sama sekali")
+            ket = arg[2]
+            self.assertNotIn(
+                ket, ("null", "undefined"),
+                f"kartu {siapa}: pembandingnya hilang -- `ket` masih {ket}")
+
+            f_ket = set(self.BIDANG.findall(ket))
+            pinjam = {n for n in lokal if re.search(rf"\b{re.escape(n)}\b", ket)}
+            self.assertTrue(
+                f_ket or pinjam,
+                f"kartu {siapa}: pembandingnya dikarang -- {ket} tidak "
+                "menyebut satu pun field muatan atau nilai yang diturunkan "
+                "darinya")
+
+            f_diri = set(self.BIDANG.findall(arg[0]))
+            f_diri |= set(self.BIDANG.findall(arg[1])) if len(arg) > 1 else set()
+            self.assertEqual(
+                f_ket & f_diri, set(),
+                f"kartu {siapa}: pembandingnya dibandingkan dengan dirinya "
+                f"sendiri -- {sorted(f_ket & f_diri)} sudah jadi nilai/label "
+                "kartu ini")
+
+    def test_kalimat_sambutan_masih_mengatakan_hal_yang_kartu_tidak_bilang(self):
+        """Lolos dengan MENGHAPUS kalimat sambutan bukan memperbaiki layar.
+
+        Pagar di atas bisa dibuat hijau dengan satu cara yang salah: buang
+        `p.kepala-sub` dan tidak ada lagi yang bertabrakan. Karena itu di
+        sini kalimatnya dituntut tetap ada DAN tetap membawa sesuatu yang
+        tidak satu pun permukaan kartu bawa: nilai, label, maupun
+        keterangannya. Argumen keempat tetap tidak ikut -- `angkaMentah`
+        cuma memberi count-up, dan count-up bukan permukaan kedua.
+
+        BATASNYA: pagar struktur sumber. Bahwa kalimatnya terbaca, enak
+        dibaca, atau berguna sama sekali tidak diukur di sini; yang diukur
+        cuma bahwa himpunan fieldnya tidak habis dimakan kartu. Tidak ada
+        JavaScript yang dijalankan.
+        """
+        _, badan = self._blok_statistik()
+        header = self._blok_h(badan, "header.kepala-besar")
+        sub = self._blok_h(header, "p.kepala-sub")
+
+        f_sub = set(self.BIDANG.findall(sub))
+        f_kartu = self._bidang_kartu(badan, 3)
+        self.assertTrue(
+            f_sub - f_kartu,
+            f"kalimat sambutan tidak lagi mengatakan apa pun yang kartu tidak "
+            f"bilang: ia menyebut {sorted(f_sub)}, kartu menyebut "
+            f"{sorted(f_kartu)}")
+
+
+class TestKomposisiPerBahasa(unittest.TestCase):
+    """Satu batang per bahasa, tiga komposisi di dalamnya, satu sumber panjang.
+
+    Baris rincian di layar statistik dulu mengetik ulang tiga rasio sebagai
+    teks (`3/44 materi · 1/6 kuis · 2/19 latihan`) di samping satu batang
+    rata. Angkanya benar, tapi bentuknya tidak membawa satu pun di antaranya:
+    dua bahasa dengan persen yang sama terlihat identik walaupun yang satu
+    cuma membaca dan yang lain cuma mengerjakan latihan.
+
+    Yang dijaga di sini BUKAN tampilan barunya melainkan dua hal yang mudah
+    dilanggar sambil membangunnya: (1) panjang batangnya tetap datang dari
+    `persen` milik server — `pelajar/progress.py` satu-satunya yang berhak
+    menghitungnya, dan `min(selesai, target)` di sana membuat pembilang dan
+    persen berpisah diam-diam, jadi pembagian kedua di sisi web tidak akan
+    pernah ketahuan salah; dan (2) ruas di dalamnya digerakkan satu mesin
+    saja.
+
+    Nama fungsi, nama kelas CSS, urutan ruas, warna, dan ada-tidaknya teks
+    rasio di sampingnya sengaja TIDAK dikunci.
+    """
+
+    # Pembagi terlarang: `b.total_materi`, dan juga bentuk terbungkus seperti
+    # `Math.max(1, b.total_materi)`. Yang dilarang pembagiannya, bukan
+    # penyebutan fieldnya -- `.rinci-angka` memang berhak menyebut totalnya.
+    PEMBAGI_TOTAL = (
+        r"/\s*[A-Za-z_$][\w.$]*\.total_(?:materi|kuis|latihan)\b",
+        r"/\s*[A-Za-z_$][\w.$]*\s*\([^)]*\.total_(?:materi|kuis|latihan)\b",
+    )
+    # Penulisan lebar akhir di gaya inline, dalam dua bentuk yang dipakai di
+    # pohon ini: `el.style.width = ...` dan `h("i", { gaya: { width: ... } })`.
+    # Sengaja TIDAK cocok dengan `animasi(el, { width: [...] })`, yang memang
+    # bukan keadaan diam.
+    POLA_DIAM = r"\.style\.width\s*=|gaya:\s*\{[^{}]*\bwidth\b"
+    # Dua pemindai ikatan fungsi tingkat-modul. Keduanya berjangkar AWAL
+    # BARIS, dan itu satu-satunya alasannya: `blokRingkasan()` sendiri
+    # mengikat pembantunya sebagai `const jml = (f) => ...` DI DALAM badannya,
+    # dan badan itu sudah jadi anggota `wilayah` sejak baris pertama -- ikatan
+    # berindentasi yang ikut terbaca cuma menghitungnya dua kali.
+    #
+    # Prelude `export`/`async` ikut diterima, dan komposisinya DIUKUR, bukan
+    # dikira. Angkanya ada di baris berpenanda di bawah ini, dan
+    # `test_angka_komposisi_di_komentar_dihitung_ulang` menghitung SELURUHNYA
+    # dari `layar-lain.js` lalu mengadunya dengan yang tertulis di sini --
+    # jadi tidak ada di antaranya yang bisa basi tanpa pagar itu memerah.
+    # Pagar yang sama menolak digit di luar baris berpenanda dan menolak
+    # hitungan yang ditulis sebagai kata, sebab persis di situ versi
+    # sebelumnya berbohong: ia menyebut jumlahnya sebagai kata, kata itu
+    # salah, dan tidak ada yang menghitungnya ulang.
+    #   [komposisi-layar-lain] polos=16 export=4 async=4 export_async=2
+    #   [komposisi-layar-lain] indentasi=4 total=30 ditangkap=26
+    #   [komposisi-layar-lain] konstanta=4 konstanta_fungsi=0
+    # `polos` berarti kolom nol tanpa prelude, `total` seluruh deklarasi
+    # `function` BERNAMA pada indentasi apa pun, dan `ditangkap` yang dilihat
+    # `POLA_FUNGSI`. Yang TIDAK dijaga, dan memang tidak boleh ikut: bentuk
+    # `indentasi`, yang hidup di dalam badan fungsi lain dan karenanya bukan
+    # ikatan tingkat-modul -- jangkar awal-baris itulah yang membuangnya, dan
+    # itu gunanya. `konstanta` adalah ikatan `const` tingkat-modul yang
+    # dilihat `POLA_IKATAN`, dan `konstanta_fungsi` berapa di antaranya yang
+    # mengikat sebuah fungsi: bentuk arrow dan `= function` DITERIMA pola itu,
+    # tapi tidak satu pun ada di sumbernya hari ini.
+    POLA_FUNGSI = r"(?m)^(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\("
+    POLA_IKATAN = r"(?m)^(?:export\s+)?const\s+(\w+)\s*="
+
+    # Satu-satunya hal yang mengikat komentar komposisi di atas ke pagarnya.
+    # Sengaja bukan nomor baris: nomor bergeser tiap kali ada yang menyisipkan
+    # metode di atasnya, dan jangkar yang bergeser diam-diam adalah jangkar
+    # yang suatu hari mengukur paragraf tetangganya.
+    PENANDA_KOMPOSISI = "[komposisi-layar-lain]"
+
+    # Nama bilangan yang bisa menyamarkan sebuah hitungan jadi prosa, dan
+    # dengan itu lolos dari penyapu digit. `satu` dan `nol` sengaja TIDAK di
+    # sini: keduanya dipakai sebagai kata biasa di paragraf itu (`tidak satu
+    # pun`, `kolom nol`), jadi melarangnya berarti melarang bahasa yang wajar
+    # alih-alih melarang angka yang menyelundup.
+    NAMA_BILANGAN = ("dua", "tiga", "empat", "lima", "enam", "tujuh",
+                     "delapan", "sembilan", "sepuluh", "sebelas", "selusin",
+                     "seratus", "seribu")
+
+    @staticmethod
+    def _tanpa_literal(teks):
+        """`teks` dengan tiap literal string diganti spasi sepanjang aslinya.
+
+        Meminjam `TestSatuAngkaSatuPermukaan._lewati_literal`, dan itu bukan
+        kerapian: baris rasio di layar ini berbunyi
+        "`${b.materi}/${b.total_materi} materi · `" -- ada GARIS MIRING di
+        dalam template literal, tepat sebelum sebuah `total_*`. Penyapu yang
+        tidak melewati literal akan membaca teks itu sebagai pembagian dan
+        memerahkan baris yang justru sah. Panjangnya dipertahankan supaya
+        indeks di dalamnya tetap sebanding dengan sumber aslinya.
+        """
+        keluar, i = [], 0
+        while i < len(teks):
+            if teks[i] in "\"'`":
+                j = TestSatuAngkaSatuPermukaan._lewati_literal(teks, i)
+                keluar.append(" " * (j - i))
+                i = j
+                continue
+            keluar.append(teks[i])
+            i += 1
+        return "".join(keluar)
+
+    @staticmethod
+    def _lewati_pasangan(src, i):
+        """Indeks tepat SESUDAH pasangan kurung yang dibuka di `src[i]`.
+
+        Literal string dilewati utuh, jadi sebuah kurung yang kebetulan ada di
+        dalam teks tidak menggeser hitungannya. `None` kalau pasangannya tidak
+        pernah tertutup -- pemanggilnya memperlakukan itu sebagai "bukan
+        ikatan fungsi", bukan sebagai kegagalan tes.
+        """
+        tutup = {"(": ")", "[": "]", "{": "}"}[src[i]]
+        buka, dalam, j = src[i], 0, i
+        while j < len(src):
+            c = src[j]
+            if c in "\"'`":
+                j = TestSatuAngkaSatuPermukaan._lewati_literal(src, j)
+                continue
+            if c == buka:
+                dalam += 1
+            elif c == tutup:
+                dalam -= 1
+                if dalam == 0:
+                    return j + 1
+            j += 1
+        return None
+
+    @staticmethod
+    def _akhir_ekspresi(src, i):
+        """Indeks akhir badan EKSPRESI yang dimulai di `src[i]`.
+
+        Berhenti pada `;` atau akhir baris yang ditemui di kedalaman kurung
+        NOL -- mana yang lebih dulu. Keduanya dibutuhkan: tanpa `;` sebuah
+        badan satu baris akan menelan seluruh sisa berkas, dan tanpa akhir
+        baris sebuah berkas tanpa titik koma akan melakukan hal yang sama.
+        """
+        dalam, j = 0, i
+        while j < len(src):
+            c = src[j]
+            if c in "\"'`":
+                j = TestSatuAngkaSatuPermukaan._lewati_literal(src, j)
+                continue
+            if c in "([{":
+                dalam += 1
+            elif c in ")]}":
+                dalam -= 1
+            elif dalam == 0 and c == ";":
+                return j + 1
+            elif dalam == 0 and c == "\n":
+                return j
+            j += 1
+        return len(src)
+
+    @classmethod
+    def _badan_ikatan(cls, src, mulai):
+        """Potongan sumber ikatan `const` di `mulai`, atau `None`.
+
+        `TestHamparanBara._fungsi()` sengaja TIDAK dipakai di sini, dan
+        docstring-nya sendiri sudah menamai sebabnya: ia mencari `{` sesudah
+        daftar parameter. Badan EKSPRESI sebuah arrow tidak punya `{` sama
+        sekali (`const p = (b) => b.a / b.b;`), jadi `{` berikutnya di berkas
+        adalah badan fungsi TETANGGANYA -- kelas kesalahan yang sama dengan
+        `function layarBahasa({ key }` dulu, cuma bergeser satu bentuk.
+
+        Yang dikenali: `= function (...) {...}`, `= (...) => {...}`,
+        `= (...) => <ekspresi>`, dan bentuk satu parameter tanpa kurung
+        (`= p => ...`). Yang lain -- `const UKURAN = [...]` dan kawannya --
+        mengembalikan `None`, dan itu bukan kegagalan: sebuah `const` di awal
+        baris tidak harus mengikat sebuah fungsi.
+
+        BATASNYA: badan ekspresi dipotong di `;` atau akhir baris pada
+        kedalaman kurung nol, jadi ekspresi yang dipatah di TENGAH baris
+        terpotong lebih awal, dan sebuah `;` di dalam literal REGEX (`/;/`)
+        terbaca sebagai akhir statemen -- literal string dilewati, literal
+        regex tidak. `= async (...) => ...` juga tidak dikenali. Tidak satu
+        pun dari ketiganya ada di pohon ini; yang salah di situ akan tampak
+        sebagai potongan yang terlalu pendek, bukan sebagai pagar yang diam.
+        """
+        kosong = re.compile(r"\s*")
+        i = kosong.match(src, src.index("=", mulai) + 1).end()
+        if src.startswith("function", i):
+            i = kosong.match(src, i + len("function")).end()
+            if i < len(src) and src[i] == "(":
+                lanjut = cls._lewati_pasangan(src, i)
+                if lanjut is None:
+                    return None
+                i = kosong.match(src, lanjut).end()
+            if i >= len(src) or src[i] != "{":
+                return None
+            akhir = cls._lewati_pasangan(src, i)
+            return None if akhir is None else src[mulai:akhir]
+        if i < len(src) and src[i] == "(":
+            lanjut = cls._lewati_pasangan(src, i)
+            if lanjut is None:
+                return None
+            i = lanjut
+        else:
+            j = i
+            if j < len(src) and (src[j].isalpha() or src[j] in "_$"):
+                while j < len(src) and (src[j].isalnum() or src[j] in "_$"):
+                    j += 1
+            if j == i:
+                return None
+            i = j
+        i = kosong.match(src, i).end()
+        if not src.startswith("=>", i):
+            return None
+        i = kosong.match(src, i + 2).end()
+        if i < len(src) and src[i] == "{":
+            akhir = cls._lewati_pasangan(src, i)
+            return None if akhir is None else src[mulai:akhir]
+        return src[mulai:cls._akhir_ekspresi(src, i)]
+
+    @classmethod
+    def _ikatan_modul(cls, src):
+        """Pasangan `(nama, potongan sumber)` tiap ikatan fungsi tingkat-modul.
+
+        Dua pemotong, bukan satu: bentuk `function` tetap dipotong
+        `TestHamparanBara._fungsi()` -- kontrak yang dipakai selusin tes lain
+        di kelas itu dan sengaja tidak disentuh dari sini -- sedangkan bentuk
+        `const` dipotong `_badan_ikatan()`, yang tahu badan ekspresi arrow
+        tidak punya kurung kurawal untuk dihitung.
+        """
+        for m in re.finditer(cls.POLA_FUNGSI, src):
+            yield m.group(1), TestHamparanBara._fungsi(src, m.group(1))
+        for m in re.finditer(cls.POLA_IKATAN, src):
+            mentah = cls._badan_ikatan(src, m.start())
+            if mentah is not None:
+                yield m.group(1), mentah
+
+    @classmethod
+    def _potong(cls):
+        """(badan `blokRingkasan`, wilayah komposisi, pembangun ruas).
+
+        `wilayah` = badan `blokRingkasan` ditambah badan tiap fungsi
+        tingkat-modul yang dipanggil dari dalamnya, TERGANTUNG apakah fungsi
+        itu menyentuh `width` atau tidak; `pembangun` = daftar
+        `(nama, mentah, telanjang)` untuk potongan yang memasang lebar saja.
+        Bentuknya sengaja dicari begini alih-alih dengan menyebut sebuah nama
+        fungsi: ruasnya boleh dibangun di fungsi terpisah atau langsung di
+        tempat, dan pagar ini tidak berhak memilihkan salah satunya.
+
+        Kedua himpunan dipisah karena yang diadu di atasnya berbeda. Fungsi
+        yang MENGHITUNG panjang batang tidak pernah menulis `width` -- ia cuma
+        mengembalikan angka, dan `width`-nya ditulis tetangganya. Jadi
+        `wilayah` yang hanya memuat penulis lebar membiarkan definisi kedua
+        "berapa yang selesai" pindah satu fungsi ke samping tanpa satu pun tes
+        gagal. `pembangun` sebaliknya memang HARUS tetap sempit: keadaan diam
+        sebelum animasi dan kelas ruas di CSS cuma berlaku bagi potongan yang
+        benar-benar memasang lebar.
+
+        "Fungsi tingkat-modul" di sini bukan cuma bentuk `function NAMA(...)`:
+        `const NAMA = (...) => ...` (badan blok maupun badan ekspresi) dan
+        `const NAMA = function (...) {...}` ikut terbaca, termasuk bentuk satu
+        parameter tanpa kurung. Alasannya satu: `blokRingkasan()` sendiri sudah
+        mengikat pembantunya sebagai `const jml = (f) => ...`, jadi pemindai
+        yang cuma mengenal `function` membiarkan panjang batang pindah ke
+        bentuk ikatan tetangga -- satu refactor yang idiomatic di berkas itu --
+        dan keluar dari satu-satunya pagar yang menjaganya.
+
+        Yang DITERIMA tidak sama dengan yang ADA. Di `layar-lain.js` hari ini
+        `POLA_IKATAN` menjumpai sejumlah `const` tingkat-modul dan tidak satu
+        pun di antaranya mengikat sebuah fungsi -- semuanya literal senarai.
+        Jadi cabang arrow dan `= function` adalah pertahanan terhadap refactor
+        yang BELUM terjadi, dan itu sah; yang tidak sah adalah membaca kalimat
+        ini sebagai bukti bentuk itu ada di sumber yang dijaga. Hitungannya
+        tinggal di komentar `POLA_IKATAN` di kepala kelas, bukan di sini, dan
+        dijaga `test_angka_komposisi_di_komentar_dihitung_ulang` -- satu
+        tempat, supaya tidak ada rumusan kedua yang bisa melenceng sendiri.
+
+        BATASNYA: "terjangkau" di sini berarti dipanggil LANGSUNG dari badan
+        `blokRingkasan` -- bukan seluruh berkas, dan bukan pula tertutup
+        transitif. Dan yang dijaga tetap TEKS sumbernya, bukan aritmetikanya.
+        Jangkar awal-baris di `POLA_FUNGSI`/`POLA_IKATAN` sendiri TIDAK punya
+        mutan yang bisa memerahkannya selama predikat terjangkau bertahan:
+        sebuah ikatan berindentasi di dalam fungsi yang tak terjangkau tidak
+        akan pernah terpilih, karena namanya tidak dicari di `blokRingkasan`.
+        Itu sudah diukur -- dan bukan alasan memperluas aturannya, karena
+        pagar yang tidak bisa merah cuma hiasan.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-lain.js"), encoding="utf-8") as f:
+            src = TestHamparanBara._telanjang(f.read())
+
+        ringkas_mentah = TestHamparanBara._fungsi(src, "blokRingkasan")
+        ringkas = cls._tanpa_literal(ringkas_mentah)
+        wilayah, pembangun = [ringkas], []
+        if re.search(cls.POLA_DIAM, ringkas):
+            pembangun.append(("blokRingkasan", ringkas_mentah, ringkas))
+        for nama, mentah in cls._ikatan_modul(src):
+            if nama == "blokRingkasan":
+                continue
+            if not re.search(rf"\b{re.escape(nama)}\s*\(", ringkas):
+                continue
+            telanjang = cls._tanpa_literal(mentah)
+            wilayah.append(telanjang)
+            if "width" in telanjang:
+                pembangun.append((nama, mentah, telanjang))
+        return ringkas, "\n".join(wilayah), pembangun
+
+    def test_panjang_batang_tidak_didefinisikan_ulang(self):
+        """Treknya tetap `bilah(<sesuatu dari persen>)`, dan tak ada pembagian
+        dengan `total_*` di seluruh wilayah komposisi.
+
+        BATASNYA: ini mengadu EKSPRESI di sumber, bukan piksel. Ia tidak
+        membuktikan bahwa lebar yang terlihat di peramban sama dengan
+        `persen`, tidak membuktikan `persen` itu sendiri benar, dan tidak
+        menangkap definisi kedua yang ditulis di berkas LAIN lalu diimpor
+        ke sini dengan nama yang tidak menyebut `total_` sama sekali.
+        """
+        ringkas, wilayah, _ = self._potong()
+
+        panggil = TestSatuAngkaSatuPermukaan._panggilan(ringkas, "bilah")
+        self.assertEqual(
+            len(panggil), 1,
+            f"baris rincian per bahasa harus punya tepat satu bilah; "
+            f"ditemukan {len(panggil)}")
+        self.assertIn(
+            "persen", panggil[0][0],
+            f"panjang bilah wajib bersumber dari `persen` milik server, "
+            f"bukan dihitung ulang di sini; argumennya: {panggil[0][0]!r}")
+
+        for pola in self.PEMBAGI_TOTAL:
+            m = re.search(pola, wilayah)
+            # Pesannya dirakit TERPISAH: f-string dievaluasi sebelum assert,
+            # jadi menyebut `m.group(0)` di dalamnya meledakkan justru jalur
+            # yang lulus.
+            self.assertIsNone(
+                m,
+                "ada pembagian dengan total_* di komposisi per bahasa "
+                + (repr(m.group(0)) if m else "")
+                + " -- itu definisi kedua dari 'berapa yang selesai', dan "
+                  "pemiliknya pelajar/progress.py")
+
+    def test_tiga_pembilang_satu_penyebut(self):
+        """Ketiga pembilang masuk ke penyusunan ruas, dengan satu penyebut.
+
+        BATASNYA: yang diadu kehadiran nama field dan keseragaman pembaginya,
+        bukan ARITMETIKANYA. Ruas yang nilainya dihitung benar tapi dipasang
+        pada elemen yang salah tetap lolos di sini, begitu pula ruas yang
+        lebarnya benar tapi ditimpa aturan CSS lain.
+        """
+        _, wilayah, pembangun = self._potong()
+        self.assertTrue(
+            pembangun,
+            "tidak ada satu pun potongan yang menyusun lebar ruas: batang "
+            "per bahasa kembali rata, dan komposisinya hilang")
+
+        for field in (r"\.materi\b", r"\.kuis\b",
+                      r"\.latihan_lulus\b", r"\.latihan_manual\b"):
+            self.assertRegex(
+                wilayah, field,
+                f"pembilang {field} tidak ikut menyusun komposisi batang")
+
+        pembagi = {m.group(1) for m in
+                   re.finditer(r"/\s*([A-Za-z_$][\w.$]*)", wilayah)}
+        self.assertEqual(
+            len(pembagi), 1,
+            f"ruas-ruasnya harus dihitung terhadap SATU penyebut bersama "
+            f"(jumlah pembilangnya); yang dipakai sekarang: {sorted(pembagi)}")
+
+    def test_keadaan_diam_ditulis_sebelum_animasi(self):
+        """Lebar akhir tiap ruas ada di gaya inline SEBELUM `animasi(`.
+
+        Pola yang sama dituntut untuk cincin level di
+        `tests/test_web.py:2320`-`:2336`, dan alasannya sama: animasi di sini
+        cuma berangkat dari tempat lain. Kalau keadaan akhirnya yang
+        dipasrahkan kepada animasi, gerak yang dimatikan -- atau animasi yang
+        dibatalkan saat layarnya berganti -- membuat ruasnya hilang, bukan
+        diam.
+
+        BATASNYA: ini membaca URUTAN TEKS di dalam satu potongan sumber, bukan
+        urutan eksekusi. Penulisan lebar yang disembunyikan di dalam callback
+        yang jalan belakangan tetap terbaca "lebih dulu" di sini.
+        """
+        _, _, pembangun = self._potong()
+        self.assertTrue(pembangun, "tidak ada potongan penyusun ruas")
+
+        for nama, mentah, telanjang in pembangun:
+            diam = re.search(self.POLA_DIAM, telanjang)
+            self.assertIsNotNone(
+                diam,
+                f"{nama}: lebar akhir ruas tidak pernah ditulis ke gaya "
+                f"inline; yang tersisa cuma animasinya")
+            gerak = re.search(r"\banimasi\s*\(", telanjang)
+            if gerak:
+                self.assertLess(
+                    diam.start(), gerak.start(),
+                    f"{nama}: `animasi(` dipanggil sebelum lebar akhirnya "
+                    f"ditulis -- keadaan diamnya jadi milik animasi")
+            self.assertNotIn(
+                "forwards", mentah,
+                f"{nama}: `fill: \"forwards\"` tidak perlu di sini (keadaan "
+                f"akhir ruas sudah keadaan alaminya), dan yang memasangnya "
+                f"bertanggung jawab membatalkannya")
+
+    def test_satu_properti_satu_mesin_di_css(self):
+        """Kelas ruas tidak memegang `transition` atas properti yang sudah
+        dianimasikan WAAPI.
+
+        Presedennya `.bilah > i` di `gaya.css`, yang justru sengaja kehilangan
+        `transition: width`-nya: dua mesin pada satu properti saling mengejar,
+        dan gejalanya bukan error melainkan gerakan tersendat.
+
+        BATASNYA: yang diperiksa cuma `width`/`all` pada kelas yang NAMANYA
+        muncul di potongan penyusun ruas. Aturan yang mengenai ruas lewat
+        selektor turunan tanpa menyebut kelasnya, atau `transition` yang
+        ditulis di gaya inline dari JS, lolos dari sapuan ini.
+        """
+        _, _, pembangun = self._potong()
+        kelas = set()
+        for _nama, mentah, _telanjang in pembangun:
+            for m in re.finditer(r"""h\(\s*["']([A-Za-z][\w-]*(?:\.[\w-]+)+)""",
+                                 mentah):
+                kelas.update(m.group(1).split(".")[1:])
+        self.assertTrue(kelas, "tidak satu pun kelas ruas bisa dibaca dari JS")
+
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = re.sub(r"/\*.*?\*/", " ", f.read(), flags=re.S)
+
+        ketemu = 0
+        for nama in sorted(kelas):
+            for m in re.finditer(
+                    r"(?m)^([^{}\n]*\.%s\b[^{}]*)\{([^{}]*)\}"
+                    % re.escape(nama), css):
+                ketemu += 1
+                self.assertNotRegex(
+                    m.group(2), r"\btransition[^;]*\b(?:width|all)\b",
+                    f"{m.group(1).strip()}: lebarnya sudah digerakkan WAAPI, "
+                    f"jadi `transition` atasnya adalah mesin kedua")
+        self.assertTrue(
+            ketemu,
+            f"tidak ada aturan gaya.css untuk satu pun kelas ruas "
+            f"{sorted(kelas)} -- pagar ini jadi hampa")
+
+    # Sumber SINTETIS untuk dua tes bukti-nyala di bawah. Ia ada karena aturan
+    # cakupan `wilayah` di `_potong()` tidak punya bahan untuk menyala di pohon
+    # bersih: di sana `blokRingkasan()` memanggil tepat satu fungsi
+    # tingkat-modul (`tumpukSegmen`) dan fungsi itu menyebut `width`, jadi
+    # saringan lama dan aturan sekarang menghasilkan himpunan yang IDENTIK.
+    # Tanpa kedua tes ini, mengebiri aturannya kembali ke saringan `width`
+    # adalah no-op yang tidak satu pun pagar memprotesnya.
+    #
+    # Tiga bentuk ikatan tingkat-modul hadir sekaligus, karena yang dijaga
+    # justru bentuknya. Enam perannya:
+    #   `function` terjangkau DAN memasang `width` (penghuni lama);
+    #   `function` terjangkau tanpa `width`, membagi dengan `total_materi`;
+    #   `function` tak terjangkau, pembawa `PENANDA_LUAR`;
+    #   `const ... = (p) => <ekspresi>` terjangkau, membagi `total_latihan`;
+    #   `const ... = function (p) { ... }` terjangkau, membagi `total_kuis`;
+    #   `const ... = (p) => { ... }` tak terjangkau, pembawa
+    #     `PENANDA_IKATAN_LUAR`.
+    # Dua bentuk `const` terjangkau dan bukan satu gabungan: dengan satu
+    # pembantu saja, pemindai yang cuma mendukung salah satu bentuk tetap
+    # hijau, dan bentuk yang lain berhenti dijaga tanpa satu pun tanda. Tiap
+    # bentuk karena itu membawa RUAS PEMBAGI sendiri, jadi tiap bentuk punya
+    # mutannya sendiri.
+    #
+    # `PENANDA_IKATAN_DALAM` dipakai sebagai nama parameter kedua pembantu
+    # terjangkau: ia masuk `wilayah` HANYA kalau badannya benar-benar
+    # terekstraksi, jadi ia sekalian jadi cek bahwa suntikannya sudah
+    # tercabut. Penanda tidak boleh ditaruh di dalam badan `blokRingkasan`
+    # sintetis -- badan itu sudah anggota `wilayah` sejak baris pertama, jadi
+    # apa pun di dalamnya tidak membuktikan apa-apa.
+    #
+    # Nama pembantunya sengaja tidak pernah diadukan di asersi mana pun: yang
+    # dijaga jangkauan dan bentuknya, bukan nama yang kebetulan diketik di
+    # sini.
+    PENANDA_LUAR = "tandaDiLuarJangkauan"
+    PENANDA_IKATAN_LUAR = "tandaIkatanDiLuarJangkauan"
+    PENANDA_IKATAN_DALAM = "ruasUjiTerjangkau"
+    SUMBER_JANGKAUAN = """
+function tumpukSegmen(trek, ruas) {
+  const jumlah = ruas.reduce((a, r) => a + r.nilai, 0);
+  trek.style.width = (ruas[0].nilai / jumlah) * 100 + "%";
+  return trek;
+}
+
+function porsiRuas(b) {
+  return (b.materi / b.total_materi) * 100;
+}
+
+function tidakTerkait(b) {
+  const tandaDiLuarJangkauan = b.materi;
+  return tandaDiLuarJangkauan;
+}
+
+const porsiArrow = (ruasUjiTerjangkau) =>
+  (ruasUjiTerjangkau.nilai / ruasUjiTerjangkau.total_latihan) * 100;
+
+const porsiFungsiEkspresi = function (ruasUjiTerjangkau) {
+  return (ruasUjiTerjangkau.nilai / ruasUjiTerjangkau.total_kuis) * 100;
+};
+
+const ikatanTidakTerkait = (b) => {
+  const tandaIkatanDiLuarJangkauan = b.nilai;
+  return tandaIkatanDiLuarJangkauan;
+};
+
+function blokRingkasan(s) {
+  return s.bahasa.map((b) => tumpukSegmen(bilah(b.persen), [
+    { kelas: "ruas-materi", nilai: porsiRuas(b) },
+    { kelas: "ruas-latihan", nilai: porsiArrow(b) },
+    { kelas: "ruas-kuis", nilai: porsiFungsiEkspresi(b) },
+  ]));
+}
+"""
+
+    @staticmethod
+    def _suntik_sumber(teks):
+        """Tukar pembaca sumber `_potong()` dengan `teks`; kembalikan aslinya.
+
+        `_potong()` membaca `layar-lain.js` lalu menyerahkan isinya ke
+        `TestHamparanBara._telanjang`. Menukar pembuang-komentar itu dengan
+        pengembali-konstanta memberi pagar ini sumber yang dikarang TANPA
+        menyentuh satu byte pun berkas produk -- yang penting di sini, karena
+        bahan buktinya justru bentuk yang memang tidak ada di pohon bersih.
+
+        Yang dikembalikan objek `staticmethod` aslinya, bukan fungsi di
+        dalamnya: memasang kembali fungsi telanjangnya menjadikannya metode
+        biasa, dan `_telanjang(src)` berhenti berarti hal yang sama bagi
+        selusin tes lain di `TestHamparanBara`. Pemanggilnya WAJIB
+        mengembalikannya di `finally`.
+        """
+        asli = TestHamparanBara.__dict__["_telanjang"]
+        TestHamparanBara._telanjang = staticmethod(lambda _src: teks)
+        return asli
+
+    def test_fungsi_terjangkau_tanpa_width_ikut_jadi_wilayah(self):
+        """Fungsi yang dipanggil `blokRingkasan()` ikut `wilayah` meski tidak
+        menyebut `width`, sehingga pembagian `total_*` di dalamnya DITEMUKAN.
+
+        Yang ditagih penemuannya, bukan kemerahan sebuah tes lain: aturan
+        cakupan itu sendiri yang diukur di sini. Kalau `wilayah` cuma memuat
+        potongan yang memasang lebar, maka mengekstrak panjang batang ke
+        sebuah fungsi tetangga -- satu berkas, satu panggilan ke samping --
+        memindahkan definisi kedua "berapa yang selesai" ke tempat yang tidak
+        satu pun dari keempat pagar di atas membacanya.
+
+        BATASNYA: sumbernya KARANGAN, jadi yang dibuktikan cuma perilaku
+        `_potong()` atas bentuk itu; ia tidak mengatakan apa-apa tentang
+        layar-lain.js hari ini, yang memang tidak punya bentuk ini.
+        """
+        self.assertIn(
+            self.PENANDA_LUAR, self.SUMBER_JANGKAUAN,
+            "PENANDA_LUAR dan sumber sintetisnya sudah berpisah -- kedua tes "
+            "bukti-nyala di kelas ini berhenti mengukur apa pun")
+
+        asli = self._suntik_sumber(self.SUMBER_JANGKAUAN)
+        try:
+            _, wilayah, _ = self._potong()
+        finally:
+            TestHamparanBara._telanjang = asli
+
+        self.assertIs(
+            TestHamparanBara.__dict__["_telanjang"], asli,
+            "suntikan sumber sintetis tidak tercabut: tes sesudah ini akan "
+            "membaca karangan, bukan layar-lain.js")
+
+        ketemu = [p for p in self.PEMBAGI_TOTAL if re.search(p, wilayah)]
+        self.assertTrue(
+            ketemu,
+            "fungsi yang dipanggil blokRingkasan() tapi tidak memasang "
+            "`width` tidak ikut wilayah, jadi pembagian dengan total_* di "
+            "dalamnya tak pernah disapu -- panjang batang boleh didefinisikan "
+            "ulang di fungsi tetangga dan keempat pagar di atas tetap hijau")
+
+        _, nyata, _ = self._potong()
+        self.assertNotIn(
+            self.PENANDA_LUAR, nyata,
+            "`_potong()` masih mengembalikan sumber karangan sesudah "
+            "suntikannya dicabut")
+
+    def test_fungsi_tak_terjangkau_tetap_di_luar_wilayah(self):
+        """Fungsi yang TIDAK dipanggil `blokRingkasan()` tetap di luar wilayah.
+
+        Tanpa tuntutan ini "masukkan seluruh berkas" lolos sebagai
+        implementasi: di pohon bersih ia tetap hijau, tapi mulai memerahkan
+        pembagian yang hidup di `blokXp()` atau `blokData()` -- bising di
+        tempat yang bukan bagian komposisi batang, dan yang membaca
+        kegagalannya akan mencari bugnya di layar yang salah.
+
+        BATASNYA: yang diadu KEHADIRAN TEKS penandanya di wilayah, bukan
+        jangkauan sungguhan. Fungsi tak terjangkau yang kebetulan menyalin
+        sebaris dari potongan terjangkau tidak bisa dibedakan di sini.
+        """
+        asli = self._suntik_sumber(self.SUMBER_JANGKAUAN)
+        try:
+            _, wilayah, _ = self._potong()
+        finally:
+            TestHamparanBara._telanjang = asli
+
+        self.assertNotIn(
+            self.PENANDA_LUAR, wilayah,
+            "fungsi yang tidak dipanggil blokRingkasan() ikut terseret ke "
+            "wilayah komposisi -- pagarnya berhenti menempel pada jangkauan "
+            "dan mulai menyapu berkasnya")
+
+    def test_ikatan_const_terjangkau_ikut_jadi_wilayah(self):
+        """Dua bentuk ikatan `const` yang terjangkau ikut `wilayah` -- dan
+        masing-masing ditagih SENDIRI.
+
+        Pemindai yang cuma mengenal `function` menyebut dirinya pemilih
+        "fungsi tingkat-modul" padahal ia memilih satu bentuk GRAMATIKA saja.
+        `blokRingkasan()` sendiri sudah mengikat pembantunya sebagai
+        `const jml = (f) => ...`, jadi memindahkan perhitungan panjang batang
+        ke `const persenBahasa = (b) => ...` adalah refactor yang idiomatic di
+        berkas itu -- dan ia memindahkannya keluar dari satu-satunya pagar
+        yang menjaganya, persis kelas kegagalan yang baru ditutup di atas.
+
+        Dua asersi dan bukan satu atas himpunan gabungan: satu `assertTrue`
+        atas gabungan lolos dengan SATU bentuk saja, dan bentuk yang lain
+        berhenti dijaga tanpa satu pun tes berubah warna.
+
+        BATASNYA: sumbernya KARANGAN, jadi yang dibuktikan cuma perilaku
+        `_potong()` atas bentuk itu. `layar-lain.js` hari ini tidak punya satu
+        pun ikatan `const` fungsi di tingkat modul, jadi aturannya memang
+        no-op di pohon bersih -- dan itulah sebabnya bahan sintetis ini ada,
+        bukan tanda bahwa pagarnya hampa.
+        """
+        for ruas in ("latihan", "kuis"):
+            self.assertIn(
+                "total_%s" % ruas, self.SUMBER_JANGKAUAN,
+                "pembagi uji total_%s sudah hilang dari sumber sintetis -- "
+                "asersi di bawah berhenti mengukur apa pun" % ruas)
+
+        asli = self._suntik_sumber(self.SUMBER_JANGKAUAN)
+        try:
+            _, wilayah, _ = self._potong()
+        finally:
+            TestHamparanBara._telanjang = asli
+
+        self.assertIs(
+            TestHamparanBara.__dict__["_telanjang"], asli,
+            "suntikan sumber sintetis tidak tercabut: tes sesudah ini akan "
+            "membaca karangan, bukan layar-lain.js")
+
+        # `PEMBAGI_TOTAL` disempitkan ke SATU ruas, sekali per bentuk ikatan.
+        pembagi = r"/\s*[A-Za-z_$][\w.$]*\.total_%s\b"
+        self.assertRegex(
+            wilayah, pembagi % "latihan",
+            "ikatan `const NAMA = (p) => <ekspresi>` yang dipanggil "
+            "blokRingkasan() tidak ikut wilayah -- pemindainya cuma membaca "
+            "deklarasi `function`, jadi definisi kedua panjang batang boleh "
+            "pindah ke bentuk ikatan itu dan seluruh pagar di atas diam")
+        self.assertRegex(
+            wilayah, pembagi % "kuis",
+            "ikatan `const NAMA = function (p) { ... }` yang dipanggil "
+            "blokRingkasan() tidak ikut wilayah -- lubang yang sama dengan "
+            "bentuk arrow di atas, dan tiap bentuk butuh buktinya sendiri")
+
+        _, nyata, _ = self._potong()
+        self.assertNotIn(
+            self.PENANDA_IKATAN_DALAM, nyata,
+            "`_potong()` masih mengembalikan sumber karangan sesudah "
+            "suntikannya dicabut")
+
+    def test_ikatan_const_tak_terjangkau_tetap_di_luar_wilayah(self):
+        """Ikatan `const` yang TIDAK dipanggil `blokRingkasan()` tetap di luar.
+
+        Kembaran dari tuntutan tak-terjangkau di atas, dan dibutuhkan
+        tersendiri: memperluas pemindaian ke bentuk ikatan baru membuat
+        "masukkan semua yang ada di tingkat modul" terasa makin masuk akal,
+        padahal akibatnya sama -- pembagian yang hidup di `blokXp()` atau
+        `blokData()` mulai diperahkan di layar yang bukan bagian komposisi
+        batang, dan yang membaca kegagalannya mencari bugnya di tempat salah.
+
+        BATASNYA: yang diadu KEHADIRAN TEKS penandanya di wilayah, bukan
+        jangkauan sungguhan -- sama seperti kembarannya.
+        """
+        self.assertIn(
+            self.PENANDA_IKATAN_LUAR, self.SUMBER_JANGKAUAN,
+            "PENANDA_IKATAN_LUAR dan sumber sintetisnya sudah berpisah -- "
+            "tes ini berhenti mengukur apa pun")
+
+        asli = self._suntik_sumber(self.SUMBER_JANGKAUAN)
+        try:
+            _, wilayah, _ = self._potong()
+        finally:
+            TestHamparanBara._telanjang = asli
+
+        self.assertIs(
+            TestHamparanBara.__dict__["_telanjang"], asli,
+            "suntikan sumber sintetis tidak tercabut: tes sesudah ini akan "
+            "membaca karangan, bukan layar-lain.js")
+
+        self.assertNotIn(
+            self.PENANDA_IKATAN_LUAR, wilayah,
+            "ikatan const yang tidak dipanggil blokRingkasan() ikut terseret "
+            "ke wilayah komposisi -- predikat terjangkaunya tidak berlaku "
+            "bagi bentuk ikatan yang baru dibaca")
+
+        _, nyata, _ = self._potong()
+        self.assertNotIn(
+            self.PENANDA_IKATAN_DALAM, nyata,
+            "`_potong()` masih mengembalikan sumber karangan sesudah "
+            "suntikannya dicabut")
+
+    def test_angka_komposisi_di_komentar_dihitung_ulang(self):
+        """Tiap angka di komentar `POLA_FUNGSI` dihitung ulang dari sumbernya.
+
+        Komentar itu dulu memikul aritmetika yang tidak dipikul siapa pun:
+        ia menyebut hitungan deklarasi `function` di `layar-lain.js`, dua di
+        antaranya salah, dan yang menahannya cuma pembaca. Menggantinya dengan
+        angka yang benar saja tidak menyelesaikan apa pun -- angka yang benar
+        hari ini adalah angka yang basi besok, dan kalimat yang basi persis
+        sesulit dikenali seperti yang sebelumnya.
+
+        Karena itu yang diadu di sini BUKAN hitungan dengan sebuah angka yang
+        diketik di tes ini, melainkan hitungan dengan angka yang TERTULIS DI
+        KOMENTAR: metode ini membaca berkasnya sendiri, menemukan paragraf
+        berpenanda tepat di atas `POLA_FUNGSI`, dan mengurai `kunci=nilai` di
+        dalamnya. Dua arah jadi merah, dan keduanya yang dituntut: komentarnya
+        disunting salah, ATAU `layar-lain.js` bertambah sementara komentarnya
+        dibiarkan. Salinan angka di dalam tes hanya akan menjaga salinannya.
+
+        BATASNYA ada tiga, dan semuanya sengaja. Pertama, yang dihitung TEKS
+        sumber, bukan hasil parsing JavaScript -- deklarasi di dalam literal
+        template tidak dibedakan dari deklarasi sungguhan. Kedua, `total`
+        cuma mencakup deklarasi BERNAMA; ekspresi fungsi anonim seperti
+        `arr.map(function (x) {...})` tidak dihitung di mana pun, dan itu
+        dipilih supaya sebuah callback idiomatic tidak memerahkan pagar yang
+        tidak berbicara tentangnya. Ketiga, ia tidak menyentuh pertanyaan
+        apakah `POLA_FUNGSI` SEHARUSNYA menerima prelude -- cuma apakah
+        kalimat yang mengklaim angkanya masih jujur.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-lain.js"), encoding="utf-8") as f:
+            src = TestHamparanBara._telanjang(f.read())
+
+        bentuk = (
+            ("polos", r"(?m)^function\s+\w+\s*\("),
+            ("export", r"(?m)^export\s+function\s+\w+\s*\("),
+            ("async", r"(?m)^async\s+function\s+\w+\s*\("),
+            ("export_async", r"(?m)^export\s+async\s+function\s+\w+\s*\("),
+            ("indentasi",
+             r"(?m)^[ \t]+(?:export\s+)?(?:async\s+)?function\s+\w+\s*\("),
+            ("total",
+             r"(?m)^[ \t]*(?:export\s+)?(?:async\s+)?function\s+\w+\s*\("),
+        )
+        hitung = {nama: len(re.findall(pola, src)) for nama, pola in bentuk}
+        hitung["ditangkap"] = len(re.findall(self.POLA_FUNGSI, src))
+        ikatan = list(re.finditer(self.POLA_IKATAN, src))
+        hitung["konstanta"] = len(ikatan)
+        hitung["konstanta_fungsi"] = sum(
+            1 for m in ikatan
+            if re.match(r"\s*(?:async\s+)?(?:function\b|(?:\([^)]*\)|\w+)"
+                        r"\s*=>)", src[m.end():]))
+
+        # Kewarasan daftar bentuk di atas, dan pesannya sengaja menyalahkan
+        # TES-nya: kalau salah satu dari dua kesamaan ini pecah, yang usang
+        # bukan komentarnya melainkan daftar ini -- ada prelude baru di
+        # `layar-lain.js` yang belum punya namanya di sini, dan menyuruh orang
+        # menyunting komentar yang masih benar cuma membuang waktunya.
+        self.assertEqual(
+            hitung["polos"] + hitung["export"] + hitung["async"]
+            + hitung["export_async"], hitung["ditangkap"],
+            "keempat bentuk kolom nol tidak menjumlah ke yang ditangkap "
+            "`POLA_FUNGSI`: " + repr(sorted(hitung.items())) + ". Ada bentuk "
+            "prelude di `layar-lain.js` yang daftar `bentuk` di TES ini belum "
+            "kenal; komentarnya belum tentu salah")
+        self.assertEqual(
+            hitung["ditangkap"] + hitung["indentasi"], hitung["total"],
+            "yang ditangkap plus yang berindentasi tidak menjumlah ke total "
+            "deklarasi bernama: " + repr(sorted(hitung.items())) + ". Daftar "
+            "`bentuk` di TES ini yang usang, bukan komentarnya")
+
+        with open(os.path.abspath(__file__), encoding="utf-8") as f:
+            baris = f.read().splitlines()
+
+        def berisi(i):
+            """Baris `i` ada, berupa komentar `#`, dan bukan pemisah kosong."""
+            return 0 <= i < len(baris) and re.match(r"\s*#\s*\S", baris[i])
+
+        tandai = [i for i, b in enumerate(baris)
+                  if re.match(r"\s*#", b) and self.PENANDA_KOMPOSISI in b]
+        self.assertTrue(
+            tandai,
+            "tidak ada satu pun baris komentar berpenanda "
+            + self.PENANDA_KOMPOSISI + " di berkas ini. Pagar ini jadi tidak "
+            "mengukur apa pun -- kalau penandanya memang mau dibuang, "
+            "angkanya harus pindah ke tempat yang bisa dihitung ulang, bukan "
+            "kembali jadi prosa")
+
+        atas, bawah = tandai[0], tandai[-1]
+        while berisi(atas - 1):
+            atas -= 1
+        while berisi(bawah + 1):
+            bawah += 1
+
+        self.assertRegex(
+            baris[bawah + 1] if bawah + 1 < len(baris) else "",
+            r"\s*POLA_FUNGSI\s*=",
+            "paragraf berpenanda tidak lagi duduk tepat di atas "
+            "`POLA_FUNGSI`; yang menyusulnya sekarang "
+            + repr(baris[bawah + 1] if bawah + 1 < len(baris) else None)
+            + ". Komentar yang berpisah dari apa yang dijelaskannya berhenti "
+            "menjelaskan dan mulai menjelaskan tetangganya")
+
+        tertulis = {}
+        for i in range(atas, bawah + 1):
+            if self.PENANDA_KOMPOSISI in baris[i]:
+                for kunci, nilai in re.findall(r"(\w+)=(\d+)", baris[i]):
+                    self.assertNotIn(
+                        kunci, tertulis,
+                        "kunci `" + kunci + "` ditulis lebih dari sekali di "
+                        "baris berpenanda; dua angka untuk satu bentuk berarti "
+                        "salah satunya tidak pernah dibaca")
+                    tertulis[kunci] = int(nilai)
+                sisa = re.sub(r"\w+=\d+", "",
+                              baris[i].replace(self.PENANDA_KOMPOSISI, ""))
+                self.assertNotRegex(
+                    sisa, r"\d",
+                    "ada digit di baris berpenanda yang tidak berbentuk "
+                    "`kunci=nilai`: " + repr(baris[i]) + ". Angka yang tidak "
+                    "berlabel tidak bisa diadu dengan apa pun")
+                continue
+            self.assertNotRegex(
+                baris[i], r"\d",
+                "ada digit di prosa paragraf komposisi: " + repr(baris[i])
+                + ". Seluruh angka di paragraf ini wajib hidup di baris "
+                "berpenanda, karena cuma di situ ia dihitung ulang")
+            for kata in self.NAMA_BILANGAN:
+                self.assertNotRegex(
+                    baris[i], r"(?i)\b" + kata + r"\b",
+                    "nama bilangan `" + kata + "` di prosa paragraf "
+                    "komposisi: " + repr(baris[i]) + ". Hitungan yang ditulis "
+                    "sebagai kata lolos dari penyapu digit -- itu persis "
+                    "bentuk kebohongan yang pagar ini dipasang untuk "
+                    "menghentikan")
+
+        self.assertEqual(
+            tertulis, hitung,
+            "angka di komentar `POLA_FUNGSI` berbeda dari komposisi "
+            "`layar-lain.js` yang sungguhan.\n  tertulis: "
+            + repr(sorted(tertulis.items())) + "\n  dihitung: "
+            + repr(sorted(hitung.items())) + "\nYang benar hampir selalu sisi "
+            "`dihitung`: kalau berkasnya bertambah atau berkurang, "
+            "komentarnya yang ikut, bukan sebaliknya")
+
+
+class TestPartisiKunciSetelan(unittest.TestCase):
+    """Satu kunci setelan, tepat satu pemilik -- dan daftarnya DIHASILKAN.
+
+    Ada empat tempat sebuah kunci setelan bisa hidup, dan sebelum kelas ini
+    tidak ada satu pun tes yang mengadu keempatnya:
+
+    1. `konfigurasi.SKEMA` -- deklarasi tunggal tiap opsi;
+    2. `api._KONFIG_TERMINAL` -- pengecualian "penyimpanannya milik terminal",
+       sekarang beralasan per anggota;
+    3. baris `simpanKonfig("<kunci>", ...)` di `layarAtur()` -- satu-satunya
+       cara layar web MENULIS ke SKEMA;
+    4. kunci localStorage yang dibaca `bacaTampilan()` dan ditulis
+       `terapkanTampilan()` -- preferensi TAMPILAN, yang memang sengaja tidak
+       menumpang di berkas konfigurasi.
+
+    Yang pernah patah justru yang paling sunyi: `tema` dan `sorot_sintaks` ada
+    di (1), tidak ada di (2), dan tidak punya baris di (3). Jadi
+    `POST /api/konfigurasi {"tema": "terang"}` diterima, ditulis ke berkas, dan
+    tidak mengubah apa pun yang bisa dilihat pengirimnya.
+
+    Tidak ada satu pun daftar kunci yang diketik tangan di kelas ini: sisi
+    Python datang dari modulnya sendiri, tiga sisi lainnya dari SUMBER
+    berkasnya. Karena itu kegagalan parse adalah MERAH, bukan skip -- gerbang
+    yang diam begitu bentuk sumbernya berubah adalah gerbang yang menipu
+    pembacanya yang berikutnya.
+
+    CATATAN soal kolom (4): ia ruang nama tersendiri, dan `tema` kebetulan
+    tinggal di DUA ruang sekaligus (SKEMA dan localStorage). Itu bukan
+    kebetulan yang aman, dan sekarang yang menjaganya sebuah butir, bukan
+    harapan: butir [7] menuntut tiap kunci dua-ruang jadi anggota beralasan
+    di (2). Butir [1] tidak bisa menangkap kelas cacat itu -- bagi [1], kolom
+    localStorage sudah cukup untuk menyebut sebuah kunci "punya rumah", jadi
+    mencabut `tema` dari (2) membuat [1] TETAP KOSONG sementara
+    `konfigurasi_tulis({"tema": ...})` diterima lagi. Akibatnya diuji dari
+    sisi PERILAKU di `TestKunciDuaRuangDitolak`, yang sengaja tidak pernah
+    membaca (2).
+    """
+
+    # Predikat butir [8], ditulis sebagai konstanta supaya yang dituntut bisa
+    # DIBACA alih-alih ditebak dari sebuah regex. Sebuah alasan dianggap
+    # mengaku rumah WEB kalau ia menyebut salah satu frasa kelompok pertama,
+    # dan mengaku rumah TERMINAL kalau ia menyebut salah satu kelompok kedua.
+    _FRASA_RUMAH_WEB = ("localStorage", "bacaTampilan")
+    _FRASA_RUMAH_TERMINAL = ("berkas konfigurasi", "terminal", "SKEMA")
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @staticmethod
+    def _tanpa_komentar_js(src):
+        """Buang komentar JS. Tanpa ini tes menghukum penjelasannya sendiri."""
+        src = re.sub(r"/\*.*?\*/", " ", src, flags=re.S)
+        return re.sub(r"//[^\n]*", " ", src)
+
+    @staticmethod
+    def _blok_kurawal(src, jangkar):
+        """Isi kurawal pertama sesudah `jangkar`, dicocokkan berpasangan.
+
+        Dipakai untuk dua bentuk sekaligus -- sebuah dict Python dan sebuah
+        objek JavaScript -- karena yang dibutuhkan keduanya sama: batas yang
+        tidak putus di koma pertama yang kebetulan ada di dalam nilainya.
+        """
+        i = src.index(jangkar)
+        i = src.index("{", i)
+        dalam = 0
+        for j in range(i, len(src)):
+            if src[j] == "{":
+                dalam += 1
+            elif src[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return src[i + 1:j]
+        raise ValueError(f"kurawal sesudah {jangkar!r} tidak pernah ditutup")
+
+    @staticmethod
+    def _badan_fungsi(js, nama):
+        """Badan satu fungsi JS, kurung dan kurawal dicocokkan berpasangan.
+
+        Daftar parameternya dilewati lebih dulu: kurawal PERTAMA sesudah nama
+        bisa saja milik parameter yang didekonstruksi, bukan milik badannya.
+        """
+        jangkar = f"function {nama}("
+        n = js.count(jangkar)
+        if n != 1:
+            raise AssertionError(
+                f"parse tidak menemukan apa pun: `{jangkar}` muncul {n} kali "
+                f"di `layar-lain.js`, bukan satu, jadi jangkar tes ini tidak "
+                f"bisa memilih situs yang dimaksud")
+        buka = js.index("(", js.index(jangkar))
+        dalam = 0
+        tutup = None
+        for j in range(buka, len(js)):
+            if js[j] == "(":
+                dalam += 1
+            elif js[j] == ")":
+                dalam -= 1
+                if dalam == 0:
+                    tutup = j
+                    break
+        if tutup is None:
+            raise AssertionError(f"daftar parameter {nama} tidak tertutup")
+        return TestPartisiKunciSetelan._blok_kurawal(js[tutup:], "")
+
+    @classmethod
+    def _sumber_js(cls):
+        with open(os.path.join(cls._akar(), "webapp", "statik", "js",
+                               "layar-lain.js"), encoding="utf-8") as f:
+            return cls._tanpa_komentar_js(f.read())
+
+    @classmethod
+    def _terminal_saja(cls):
+        """{kunci: alasan} dibaca dari SUMBER api.py, bukan dari modulnya.
+
+        Sengaja dari sumber: yang dijaga di sini BENTUKNYA -- bahwa tiap
+        pengecualian menuliskan alasannya -- dan nilai yang sudah diimpor tidak
+        bisa lagi membedakan alasan yang dikosongkan dari alasan yang memang
+        pernah ditulis panjang.
+        """
+        with open(os.path.join(cls._akar(), "webapp", "api.py"),
+                  encoding="utf-8") as f:
+            src = f.read()
+        try:
+            blok = cls._blok_kurawal(src, "_KONFIG_TERMINAL =")
+        except ValueError as e:
+            raise AssertionError(
+                f"parse tidak menemukan apa pun di `webapp/api.py`: {e}. "
+                "Bentuk `_KONFIG_TERMINAL` berubah, dan gerbang ini memilih "
+                "MERAH daripada diam") from e
+        blok = re.sub(r"(?m)#[^\n]*", "", blok)
+        cocok = list(re.finditer(r'"(\w+)"\s*:', blok))
+        if not cocok:
+            raise AssertionError(
+                "parse tidak menemukan apa pun: `_KONFIG_TERMINAL` tidak "
+                "memuat satu pun pasangan `\"kunci\": \"alasan\"`. Kalau ia "
+                "dikembalikan jadi set tanpa alasan, itu persis bentuk yang "
+                "pernah menyembunyikan `tema` dan `sorot_sintaks`")
+        keluar = {}
+        for n, m in enumerate(cocok):
+            habis = cocok[n + 1].start() if n + 1 < len(cocok) else len(blok)
+            potong = blok[m.end():habis]
+            keluar[m.group(1)] = " ".join(
+                re.findall(r'"([^"]*)"', potong)).strip()
+        return keluar
+
+    @classmethod
+    def _baris_web(cls):
+        """Kunci yang BENAR-BENAR ditulis layar Pengaturan web."""
+        badan = cls._badan_fungsi(cls._sumber_js(), "layarAtur")
+        kunci = set(re.findall(r'simpanKonfig\(\s*"([^"]+)"', badan))
+        if not kunci:
+            raise AssertionError(
+                "parse tidak menemukan apa pun: tidak ada satu pun "
+                "`simpanKonfig(\"<kunci>\"` di dalam `layarAtur()`. Entah "
+                "layar Pengaturan berhenti menyimpan apa pun, entah cara "
+                "menyimpannya berganti bentuk -- keduanya wajib dilihat orang")
+        return kunci
+
+    @classmethod
+    def _kunci_lokal(cls):
+        """Kunci localStorage yang DIBACA `bacaTampilan()`."""
+        badan = cls._badan_fungsi(cls._sumber_js(), "bacaTampilan")
+        try:
+            obj = cls._blok_kurawal(badan, "return")
+        except ValueError as e:
+            raise AssertionError(
+                "parse tidak menemukan apa pun di `bacaTampilan()`: "
+                f"{e}") from e
+        kunci = set(re.findall(r"(?m)^\s*(\w+)\s*:", obj))
+        if not kunci:
+            raise AssertionError(
+                "parse tidak menemukan apa pun: objek yang dikembalikan "
+                "`bacaTampilan()` tidak punya satu pun kunci")
+        return kunci
+
+    @classmethod
+    def _prop_terapkan(cls):
+        """Properti tampilan yang DIPAKAI `terapkanTampilan()`."""
+        badan = cls._badan_fungsi(cls._sumber_js(), "terapkanTampilan")
+        prop = set(re.findall(r"(?<![\w$.])t\.(\w+)", badan))
+        if not prop:
+            raise AssertionError(
+                "parse tidak menemukan apa pun: `terapkanTampilan()` tidak "
+                "membaca satu pun properti dari nilai gabungannya")
+        return prop
+
+    @classmethod
+    def _cacat(cls):
+        """Daftar keluhan partisi; kosong berarti keempat kolom sepakat.
+
+        Dipisah dari tesnya supaya `test_gerbang_menyala_...` bisa menjalankan
+        PERHITUNGAN YANG SAMA atas SKEMA yang sudah disabotase. Dua tes yang
+        masing-masing menghitung sendiri akan berbohong berdua.
+
+        BATAS butir [8], ditulis apa adanya supaya tidak dibaca lebih jauh
+        daripada yang ia sanggup: yang dijaga [8] adalah TEKS, bukan perilaku.
+        Sebuah alasan yang menyebut `localStorage` sambil menjelaskan rencana
+        yang tidak jadi akan melewatinya, dan [8] tidak punya cara tahu.
+        Pagarnya berhenti di situ. Itu tetap lebih baik daripada tidak ada
+        apa-apa -- yang ia cegah adalah alasan yang menunjuk rumah yang SUDAH
+        DITINGGALKAN, satu-satunya tempat yang mendeskripsikan kunci itu --
+        tapi jangan dibaca sebagai "isi alasannya sudah pasti benar".
+        """
+        skema = {o.kunci for o in konfigurasi.daftar_opsi()}
+        terminal = cls._terminal_saja()
+        web = cls._baris_web()
+        lokal = cls._kunci_lokal()
+        dipakai = cls._prop_terapkan()
+        cacat = []
+
+        yatim = sorted(skema - set(terminal) - web - lokal)
+        if yatim:
+            cacat.append(
+                f"[1] kunci SKEMA tanpa pemilik: {yatim}. Tiap opsi wajib "
+                "punya salah satu dari tiga rumah -- sebuah baris "
+                "`simpanKonfig(\"<kunci>\", ...)` di `layarAtur()`, satu "
+                "anggota beralasan di `api._KONFIG_TERMINAL`, atau "
+                "localStorage lewat `bacaTampilan()`. Yang tidak punya rumah "
+                "tetap DITULIS oleh POST /api/konfigurasi dan tidak dibaca "
+                "siapa pun di web")
+
+        rebutan = sorted(set(terminal) & web)
+        if rebutan:
+            cacat.append(
+                f"[2] satu kunci diklaim dua pemilik: {rebutan}. Masuk "
+                "`_KONFIG_TERMINAL` berarti `konfigurasi_tulis` MENOLAKNYA, "
+                "jadi barisnya di layar web adalah tombol yang berujung "
+                "penolakan -- setelan yang tampak ada tapi selalu gagal")
+
+        basi = sorted(set(terminal) - skema)
+        if basi:
+            cacat.append(
+                f"[3] pengecualian basi di `_KONFIG_TERMINAL`: {basi}. Kunci "
+                "itu tidak ada di SKEMA, jadi yang dikecualikan tidak ada -- "
+                "dan daftar yang menyebut nama mati berhenti bisa dibaca "
+                "sebagai daftar")
+
+        bisu = sorted(k for k, alasan in terminal.items() if not alasan)
+        if bisu:
+            cacat.append(
+                f"[4] pengecualian tanpa alasan: {bisu}. Daftar tanpa alasan "
+                "per anggota adalah bentuk yang sudah pernah menyembunyikan "
+                "dua kunci di tempat ini; alasannya ditulis supaya yang "
+                "menambah anggota berikutnya harus membelanya lebih dulu")
+
+        hantu = sorted(web - skema)
+        if hantu:
+            cacat.append(
+                f"[5] baris web menulis kunci yang tidak ada di SKEMA: "
+                f"{hantu}. `konfigurasi_tulis` membuang kunci asing tanpa "
+                "sepatah kata, jadi barisnya diam-diam tidak pernah menyimpan "
+                "apa pun -- dan sorak \"Tersimpan.\" tetap muncul")
+
+        lupa = sorted(dipakai - lokal)
+        if lupa:
+            cacat.append(
+                f"[6] `terapkanTampilan()` memakai {lupa}, yang tidak dibaca "
+                "`bacaTampilan()`. Yang ditulis tanpa pernah dibaca kembali "
+                "hilang pada muat ulang berikutnya, dan yang terlihat bukan "
+                "galat melainkan setelan yang 'tidak nyangkut'")
+
+        terlarang = sorted((skema & lokal) - set(terminal))
+        if terlarang:
+            cacat.append(
+                f"[7] kunci yang hidup di DUA penyimpan tanpa dikecualikan: "
+                f"{terlarang}. Nama itu ada di `konfigurasi.SKEMA` -- yaitu di "
+                "berkas konfigurasi -- DAN di localStorage lewat "
+                "`bacaTampilan()`. Jadi `konfigurasi_tulis` MENERIMANYA dan "
+                "menulisnya ke berkas yang bukan tempat sisi penampilnya "
+                "membaca: web membaca localStorage. Butir [1] tidak bisa "
+                "menangkap ini, karena bagi [1] kolom localStorage sudah "
+                "menghitungnya 'punya rumah' -- dan itulah yang membuat irisan "
+                "ini istimewa, bukan sekadar kasus lain dari [1]. Yang berbeda "
+                "pun bukan cuma penyimpannya melainkan RUANG NILAINYA: pada "
+                "`tema`, `malam` cuma ada di web dan `mono` cuma ada di "
+                "terminal, jadi kedua sisi tidak akan pernah bisa saling "
+                "membaca nilai yang satunya tulis. Kunci seperti ini wajib "
+                "jadi anggota beralasan `api._KONFIG_TERMINAL` supaya "
+                "`konfigurasi_tulis` menolaknya")
+
+        # Butir [8] memakai IRISAN di tempat [7] memakai selisih, dan di situ
+        # seluruh bedanya: yang dicari justru anggota `_KONFIG_TERMINAL` yang
+        # ikut mendapat rumah web -- orang yang sama yang [7] buang lebih dulu.
+        for kunci in sorted(set(terminal) & skema & lokal):
+            alasan = terminal[kunci]
+            mengaku_web = any(f in alasan for f in cls._FRASA_RUMAH_WEB)
+            mengaku_terminal = any(f in alasan
+                                   for f in cls._FRASA_RUMAH_TERMINAL)
+            if mengaku_web and mengaku_terminal:
+                continue
+            kurang = []
+            if not mengaku_web:
+                kurang.append("sisi WEB (salah satu dari "
+                              f"{list(cls._FRASA_RUMAH_WEB)})")
+            if not mengaku_terminal:
+                kurang.append("sisi TERMINAL (salah satu dari "
+                              f"{list(cls._FRASA_RUMAH_TERMINAL)})")
+            cacat.append(
+                f"[8] alasan `{kunci}` tidak mengaku kedua rumahnya; yang "
+                f"tidak disebutnya: {' dan '.join(kurang)}. Nama itu "
+                f"berpotongan di keempat kolom sekaligus -- ia ada di "
+                f"`konfigurasi.SKEMA` (yaitu di berkas konfigurasi), ada "
+                f"sebagai pengecualian di `api._KONFIG_TERMINAL`, DAN dibaca "
+                f"dari localStorage oleh `bacaTampilan()` yang hasilnya "
+                f"dipakai `terapkanTampilan()`. Jadi satu setelan punya dua "
+                f"penyimpan, dan satu-satunya tempat yang menjelaskan itu ke "
+                f"pembaca berikutnya adalah teks ini. Yang sekarang tertulis: "
+                f"{alasan!r}. Butir [7] TIDAK bisa menangkapnya, dan bukan "
+                f"karena kelalaian: [7] MENGURANGI `terminal` dari irisannya "
+                f"supaya `tema` boleh hidup di dua penyimpan, jadi justru "
+                f"anggota `_KONFIG_TERMINAL` -- yaitu kunci ini -- yang lolos. "
+                f"Butir [2] juga tidak: [2] mengadukan `terminal` terhadap "
+                f"baris `simpanKonfig(\"<kunci>\")` di `layarAtur()`, bukan "
+                f"terhadap localStorage, jadi kunci yang tidak punya baris "
+                f"Pengaturan web sama sekali tetap lewat. Akibat praktisnya: "
+                f"`konfigurasi_tulis` MENOLAK `{kunci}` karena ia anggota di "
+                f"sini, jadi setelan itu cuma bisa berubah dari localStorage, "
+                f"sementara alasan di atas masih menunjuk rumah yang sudah "
+                f"ditinggalkan. Tidak ada galat di mana pun. Dua jalan "
+                f"keluarnya: perbaiki alasannya di `api._KONFIG_TERMINAL` "
+                f"supaya ia MENGAKU dua rumah -- sebutkan penyimpan webnya DAN "
+                f"penyimpan terminalnya, seperti yang dilakukan alasan `tema` "
+                f"-- ATAU cabut baris localStorage-nya dari `bacaTampilan()` "
+                f"kalau rumah kedua itu memang tidak pernah dimaksudkan")
+
+        return cacat
+
+    def test_gerbang_menyala_untuk_kunci_terminal_yang_dapat_rumah_web(self):
+        """Bukti bahwa butir [8] bukan butir [7] yang diberi nomor baru.
+
+        Di pohon hari ini `terminal & SKEMA & localStorage` cuma berisi `tema`,
+        dan alasannya sudah mengaku dua rumah -- jadi [8] TIDAK punya bahan
+        untuk menyala sama sekali, dan sebuah butir yang cuma pernah dilihat
+        hijau tidak terbukti bisa menyala. Di sini kolom localStorage
+        DIDISTORSI di dalam proses supaya memuat satu anggota
+        `_KONFIG_TERMINAL` yang alasannya tidak menyebut rumah web.
+
+        Yang didistorsi KOLOMNYA, lewat subkelas lokal -- bukan
+        `layar-lain.js`. Jadi tidak ada berkas yang harus dipulihkan dan tidak
+        ada `finally` yang bisa terlupa. Subkelas yang dibuat di dalam sebuah
+        metode tidak ikut dikoleksi penemuan tes.
+
+        Kuncinya dihitung, tidak dipilih tangan: anggota `_KONFIG_TERMINAL`
+        yang ada di SKEMA tapi BELUM punya kunci localStorage. Yang ditagih
+        bukan cuma [8] menyala -- [7] juga wajib TETAP DIAM, dan di situlah
+        seluruh alasan [8] ada: [7] mengurangi `terminal` dari irisannya, jadi
+        kalau [7] yang menangkapnya maka salah satu dari keduanya salah bentuk.
+        """
+        terminal = self._terminal_saja()
+        skema = {o.kunci for o in konfigurasi.daftar_opsi()}
+        lokal = self._kunci_lokal()
+        calon = sorted((set(terminal) & skema) - lokal)
+        self.assertTrue(
+            calon,
+            "tidak ada satu pun anggota `api._KONFIG_TERMINAL` di SKEMA yang "
+            "belum punya kunci localStorage, jadi litmus ini tidak punya nama "
+            "untuk didistorsi. Itu bukan lulus: butir [8] jadi gerbang yang "
+            "tidak pernah terbukti bisa menyala")
+        kunci = calon[0]
+        ditambal = set(lokal) | {kunci}
+        probe = type("Probe", (TestPartisiKunciSetelan,), {
+            "_kunci_lokal": classmethod(lambda cls: set(ditambal))})
+        cacat = probe._cacat()
+        self.assertTrue(
+            [c for c in cacat if c.startswith("[8]") and kunci in c],
+            f"butir [8] TIDAK melaporkan `{kunci}`, padahal ia anggota "
+            f"`api._KONFIG_TERMINAL` yang alasannya ({terminal[kunci]!r}) "
+            f"tidak menyebut satu pun dari {list(self._FRASA_RUMAH_WEB)} "
+            f"sementara kolom localStorage yang didistorsi memuatnya. Keluhan "
+            f"yang keluar: {cacat or '(tidak ada)'}")
+        self.assertEqual(
+            [], [c for c in cacat if c.startswith("[7]")],
+            f"butir [7] ikut menyala, padahal `{kunci}` anggota "
+            f"`api._KONFIG_TERMINAL` dan [7] MENGURANGI kolom itu dari "
+            f"irisannya. Kalau [7] yang menangkap kelas cacat ini, [8] cuma "
+            f"penomoran ulang dan salah satu dari keduanya salah bentuk. "
+            f"Keluhan yang keluar: {cacat}")
+
+    def test_gerbang_menyala_untuk_alasan_yang_cuma_mengaku_satu_rumah(self):
+        """Bukti bahwa butir [8] membaca ISI alasannya, bukan keanggotaannya.
+
+        Kalau predikatnya dilonggarkan jadi "ada alasannya atau tidak", [8]
+        berhenti bisa dibedakan dari butir [4], dan kunci dua-ruang yang
+        alasannya menunjuk rumah yang sudah ditinggalkan lolos lagi. Di sini
+        alasan kunci dua-ruang DIDISTORSI jadi teks non-kosong yang cuma
+        menyebut sisi terminal; kutipannya diambil dari alasan `lebar` di
+        `api.py` sendiri, supaya yang diuji benar-benar kalimat yang sudah
+        pernah ditulis orang, bukan teks karangan tes.
+
+        Yang ditagih dua hal sekaligus: [8] menyala, DAN [4] tetap diam.
+        Alasan non-kosong bukan alasan kosong; kalau [4] ikut menyala,
+        predikatnya salah bentuk dan dua butir memperebutkan satu pekerjaan.
+        """
+        terminal = self._terminal_saja()
+        skema = {o.kunci for o in konfigurasi.daftar_opsi()}
+        irisan = sorted(set(terminal) & skema & self._kunci_lokal())
+        self.assertTrue(
+            irisan,
+            "tidak ada satu pun kunci yang hidup di `api._KONFIG_TERMINAL`, "
+            "SKEMA, dan localStorage sekaligus, jadi litmus ini tidak punya "
+            "alasan untuk didistorsi. Itu bukan lulus: butir [8] jadi gerbang "
+            "tanpa satu pun anggota di domainnya")
+        kunci = irisan[0]
+        tanpa_web = ("lebar kolom terminal; jendela browser mengurus lebarnya "
+                     "sendiri")
+        ditambal = dict(terminal)
+        ditambal[kunci] = tanpa_web
+        probe = type("Probe", (TestPartisiKunciSetelan,), {
+            "_terminal_saja": classmethod(lambda cls: dict(ditambal))})
+        cacat = probe._cacat()
+        self.assertTrue(
+            [c for c in cacat if c.startswith("[8]") and kunci in c],
+            f"butir [8] TIDAK melaporkan `{kunci}`, padahal alasannya diganti "
+            f"{tanpa_web!r} -- teks yang tidak menyebut satu pun dari "
+            f"{list(self._FRASA_RUMAH_WEB)}, sehingga satu-satunya tempat yang "
+            f"mendeskripsikan kunci itu berhenti menyebut rumah tempat web "
+            f"benar-benar membacanya. Keluhan yang keluar: "
+            f"{cacat or '(tidak ada)'}")
+        self.assertEqual(
+            [], [c for c in cacat if c.startswith("[4]")],
+            f"butir [4] ikut menyala atas alasan yang NON-KOSONG "
+            f"({tanpa_web!r}). [4] menjaga 'ada alasannya atau tidak', [8] "
+            f"menjaga 'alasannya mengaku rumah yang mana' -- keduanya tidak "
+            f"boleh bertukar pekerjaan. Keluhan yang keluar: {cacat}")
+
+    def test_setiap_kunci_setelan_punya_tepat_satu_pemilik(self):
+        """Empat kolom partisi diadu sekaligus; pesannya menamai kuncinya."""
+        cacat = self._cacat()
+        self.assertEqual(
+            [], cacat,
+            "partisi kunci setelan pecah:\n\n" + "\n\n".join(cacat))
+
+    def test_gerbang_menyala_untuk_opsi_yang_tidak_punya_rumah(self):
+        """Bukti bahwa butir [1] MEMBACA SKEMA, bukan daftar ketikan.
+
+        Gerbang yang cuma pernah dilihat hijau tidak terbukti bisa menyala. Di
+        sini satu `Opsi` sungguhan disuntikkan ke `SKEMA` di proses ini --
+        namanya tidak ada di `api.py`, tidak ada di `layar-lain.js`, tidak ada
+        di localStorage -- lalu fungsi partisi YANG SAMA dijalankan. Kalau ia
+        tetap hijau, butir [1] sedang membaca sesuatu yang bukan SKEMA, dan
+        seluruh kelas ini cuma hiasan.
+        """
+        kunci = "opsi_sisipan_uji"
+        konfigurasi.SKEMA.append(konfigurasi.Opsi(
+            kunci, "Opsi sisipan untuk menguji gerbang", "sakelar", False,
+            keterangan="Disuntik di dalam tes, dicabut di `finally`."))
+        try:
+            cacat = self._cacat()
+        finally:
+            konfigurasi.SKEMA[:] = [o for o in konfigurasi.SKEMA
+                                    if o.kunci != kunci]
+            konfigurasi.lupakan_cache()
+        self.assertTrue(
+            [c for c in cacat if c.startswith("[1]") and kunci in c],
+            f"gerbang partisi TIDAK melaporkan `{kunci}` sebagai kunci tanpa "
+            f"pemilik. Keluhan yang keluar: {cacat or '(tidak ada)'}")
+        self.assertEqual(
+            [], [o for o in konfigurasi.daftar_opsi() if o.kunci == kunci],
+            "opsi sisipan tidak tercabut dari SKEMA; tes sesudah ini akan "
+            "gagal karena sampah yang ditinggalkan tes ini")
+
+    def test_gerbang_menyala_untuk_kunci_yang_hidup_di_dua_penyimpan(self):
+        """Bukti bahwa butir [7] MENGHITUNG irisannya, bukan memprosakannya.
+
+        Butir [7] kosong di pohon hari ini: `tema` satu-satunya kunci dua
+        ruang, dan ia sudah punya alasan tertulis di `_KONFIG_TERMINAL`.
+        Gerbang yang cuma pernah dilihat hijau belum terbukti bisa menyala --
+        dan sebuah butir yang tidak bisa menyala tidak membedakan dirinya dari
+        sebaris komentar. Jadi di sini sebuah `Opsi` sungguhan disuntikkan ke
+        `SKEMA` memakai nama kunci localStorage yang BELUM ada di SKEMA, lalu
+        fungsi partisi YANG SAMA dijalankan.
+
+        Namanya diambil dari `_kunci_lokal()`, tidak diketik: kalau suatu hari
+        `bacaTampilan()` berhenti membaca kunci itu, tes ini ikut berganti
+        sasaran alih-alih menjaga sebuah nama mati. Yang disuntik SKEMA sisi
+        Python, bukan berkas JS -- sumber kolom localStorage tetap satu.
+        """
+        calon = sorted(self._kunci_lokal()
+                       - {o.kunci for o in konfigurasi.daftar_opsi()})
+        self.assertTrue(
+            calon,
+            "tidak ada satu pun kunci localStorage yang belum ada di SKEMA, "
+            "jadi tes ini tidak punya nama untuk disuntikkan. Itu bukan lulus: "
+            "butir [7] jadi gerbang yang tidak pernah terbukti bisa menyala")
+        kunci = calon[0]
+        konfigurasi.SKEMA.append(konfigurasi.Opsi(
+            kunci, "Opsi sisipan untuk menguji butir [7]", "sakelar", False,
+            keterangan="Disuntik di dalam tes, dicabut di `finally`."))
+        try:
+            cacat = self._cacat()
+        finally:
+            konfigurasi.SKEMA[:] = [o for o in konfigurasi.SKEMA
+                                    if o.kunci != kunci]
+            konfigurasi.lupakan_cache()
+        self.assertTrue(
+            [c for c in cacat if c.startswith("[7]") and kunci in c],
+            f"butir [7] TIDAK melaporkan `{kunci}`, padahal namanya ada di "
+            f"SKEMA dan di localStorage sekaligus tanpa satu pun alasan di "
+            f"`api._KONFIG_TERMINAL`. Keluhan yang keluar: "
+            f"{cacat or '(tidak ada)'}")
+        self.assertEqual(
+            [], [o for o in konfigurasi.daftar_opsi() if o.kunci == kunci],
+            "opsi sisipan tidak tercabut dari SKEMA; tes sesudah ini akan "
+            "gagal karena sampah yang ditinggalkan tes ini")
+
+
+class TestKunciDuaRuangDitolak(BasisWeb):
+    """PERILAKU, bukan bentuk: kunci dua-ruang ditolak `konfigurasi_tulis`.
+
+    Butir [7] di `TestPartisiKunciSetelan` menjaga BENTUKNYA -- bahwa tiap
+    kunci yang hidup di berkas konfigurasi DAN di localStorage punya alasan
+    tertulis di `api._KONFIG_TERMINAL`. Kelas ini menjaga AKIBATNYA: bahwa
+    `POST /api/konfigurasi` untuk kunci seperti itu benar-benar berbalik jadi
+    `Galat`, bukan diterima lalu ditulis ke berkas yang tidak dibaca siapa pun
+    di sisi web.
+
+    Harapan di sini TIDAK PERNAH membaca `_KONFIG_TERMINAL`, dan itu bukan
+    kerapian melainkan seluruh alasan kelas ini ada. Dua pagar yang sama-sama
+    menurunkan harapannya dari daftar pengecualian akan berbohong berdua:
+    menghapus sebuah kunci dari daftar itu menghapus juga TUNTUTANNYA, keduanya
+    tetap hijau, dan bocornya terbuka lagi tanpa satu pun tes merah -- persis
+    lubang yang hop ini menutup. Sumber harapannya cuma dua: `konfigurasi.SKEMA`
+    dari modulnya, dan kolom localStorage dari SUMBER `layar-lain.js` lewat
+    `TestPartisiKunciSetelan._kunci_lokal()`.
+
+    Diwarisi dari `BasisWeb` karena kelas ini MENULIS: kalau sebuah tuntutan di
+    sini patah, yang terjadi adalah tulisan sungguhan ke `konfigurasi.BERKAS`,
+    dan tanpa pengalihan itu berkas yang tertimpa milik orang yang menjalankan
+    tes.
+    """
+
+    @staticmethod
+    def _kunci_dua_ruang():
+        """Kunci yang hidup di SKEMA dan di localStorage sekaligus.
+
+        SKEMA dari modulnya, localStorage dari sumber `layar-lain.js`. Tidak
+        ada kolom ketiga di sini -- khususnya BUKAN `api._KONFIG_TERMINAL`,
+        yang justru hal yang sedang diuji.
+        """
+        skema = {o.kunci for o in konfigurasi.daftar_opsi()}
+        return sorted(skema & TestPartisiKunciSetelan._kunci_lokal())
+
+    @staticmethod
+    def _nilai_bukan_bawaan(opsi):
+        """Satu nilai SAH yang `bersihkan()` tidak memulangkan ke bawaan.
+
+        Kirim nilai ngawur dan `Opsi.bersihkan` mengembalikannya jadi bawaan
+        ("Nilai ngawur diganti bawaan"), lalu tuntutan "wajib ditolak" berhenti
+        bisa dibedakan dari pengiriman yang memang tidak mengubah apa pun --
+        koersi menyamarkan hasilnya. Karena itu kandidatnya diturunkan dari
+        `opsi` per jenis, lalu diadu BALIK ke `bersihkan()`: yang dipakai hanya
+        nilai yang sungguh bertahan DAN berbeda dari bawaan. `None` berarti
+        kunci itu tidak punya nilai seperti itu, dan pemanggilnya wajib
+        memerahkan tesnya, bukan melewatinya.
+        """
+        if opsi.jenis == "sakelar":
+            kandidat = [not bool(opsi.bawaan)]
+        elif opsi.jenis == "pilihan":
+            kandidat = [n for n, _ in opsi.pilihan]
+        elif opsi.jenis == "angka":
+            dasar = opsi.bawaan or 0
+            kandidat = [opsi.minimum, opsi.maksimum, dasar + 1, dasar - 1]
+        else:
+            kandidat = ["nilai-uji-dua-ruang", "x"]
+        for nilai in kandidat:
+            if nilai is not None and opsi.bersihkan(nilai) != opsi.bawaan:
+                return nilai
+        return None
+
+    def test_irisan_dua_ruang_tidak_kosong(self):
+        """Tanpa pagar ini, tes di bawah bisa jadi nol iterasi dan tetap hijau.
+
+        Sebuah `for` atas himpunan kosong lulus tanpa menuntut apa pun. Kalau
+        irisan `SKEMA ∩ localStorage` suatu hari jadi kosong -- entah karena
+        sebuah opsi dibuang dari SKEMA, entah karena perhitungan irisannya
+        sendiri disunting supaya lebih sempit -- yang benar bukan hijau
+        diam-diam melainkan MERAH dengan sebabnya tertulis.
+        """
+        lokal = sorted(TestPartisiKunciSetelan._kunci_lokal())
+        self.assertTrue(
+            self._kunci_dua_ruang(),
+            f"irisan `konfigurasi.SKEMA` dengan kunci localStorage {lokal} "
+            "KOSONG, jadi `test_konfigurasi_tulis_menolak_kunci_dua_ruang` "
+            "tidak menguji satu pun kunci dan lulus tanpa menuntut apa pun")
+
+    def test_harapan_dua_ruang_diturunkan_dari_kolom_bukan_diketik(self):
+        """`_kunci_dua_ruang()` wajib BERTUMBUH ketika kolomnya bertumbuh.
+
+        Lubang yang ditutup di sini ditemukan dengan mutasi yang tidak
+        memerahkan satu tes pun: `_kunci_dua_ruang()` diganti jadi literal
+        `return ["tema"]`. `test_irisan_dua_ruang_tidak_kosong` tetap hijau dan
+        `test_konfigurasi_tulis_menolak_kunci_dua_ruang` tetap hijau -- keduanya
+        kebetulan benar untuk `tema` -- dan sesudah itu tidak ada lagi yang
+        membedakan "harapan DIHITUNG dari dua kolom" dari "harapan DIKETIK".
+        Akibatnya datang belakangan, bukan saat mutasinya: begitu irisan itu
+        bertambah anggota, kedua tes di atas tetap hijau sambil tidak menguji
+        anggota baru itu sama sekali.
+
+        Jadi di sini salah satu kolomnya DITUMBUHKAN -- satu `Opsi` sungguhan
+        disuntikkan ke `konfigurasi.SKEMA` memakai nama kunci localStorage yang
+        belum ada di SKEMA -- dan hasilnya wajib ikut bertumbuh tepat satu
+        anggota. Sebuah literal ketikan tidak bisa melakukan itu. Namanya
+        diambil dari kolomnya, tidak diketik, supaya tes ini berganti sasaran
+        alih-alih menjaga sebuah nama mati. Pencabutannya di `finally`, dan
+        tuntutan terakhir MEMBUKTIKAN pencabutan itu: tes sesudah ini tidak
+        boleh mewarisi sampah.
+        """
+        sebelum = self._kunci_dua_ruang()
+        calon = sorted(TestPartisiKunciSetelan._kunci_lokal()
+                       - {o.kunci for o in konfigurasi.daftar_opsi()})
+        self.assertTrue(
+            calon,
+            "tidak ada satu pun kunci localStorage yang belum ada di SKEMA, "
+            "jadi kolomnya tidak bisa ditumbuhkan dan tes ini tidak menuntut "
+            "apa pun. Itu bukan lulus")
+        kunci = calon[0]
+        konfigurasi.SKEMA.append(konfigurasi.Opsi(
+            kunci, "Opsi sisipan untuk menguji sumber harapan", "sakelar",
+            False, keterangan="Disuntik di dalam tes, dicabut di `finally`."))
+        try:
+            sesudah = self._kunci_dua_ruang()
+        finally:
+            konfigurasi.SKEMA[:] = [o for o in konfigurasi.SKEMA
+                                    if o.kunci != kunci]
+            konfigurasi.lupakan_cache()
+        self.assertIn(
+            kunci, sesudah,
+            f"harapan diturunkan dari kolom, bukan diketik: `{kunci}` baru saja "
+            f"ditambahkan ke `konfigurasi.SKEMA` dan sudah lama dibaca "
+            f"`bacaTampilan()` dari localStorage, tapi `_kunci_dua_ruang()` "
+            f"tidak memuatnya. Itu bentuk sebuah literal, bukan sebuah irisan. "
+            f"Yang dikembalikan: {sesudah}")
+        self.assertEqual(
+            len(sebelum) + 1, len(sesudah),
+            f"harapan diturunkan dari kolom, bukan diketik: menumbuhkan satu "
+            f"kolom wajib menumbuhkan hasilnya TEPAT satu anggota. Sebelum "
+            f"{sebelum}, sesudah {sesudah}")
+        self.assertEqual(
+            sebelum, self._kunci_dua_ruang(),
+            "opsi sisipan tidak tercabut dari SKEMA; tes sesudah ini akan "
+            "gagal karena sampah yang ditinggalkan tes ini")
+
+    def test_konfigurasi_tulis_menolak_kunci_dua_ruang(self):
+        """Tiap kunci dua-ruang diadu satu per satu, dengan nilai yang nyata."""
+        for kunci in self._kunci_dua_ruang():
+            with self.subTest(kunci=kunci):
+                opsi = next(o for o in konfigurasi.daftar_opsi()
+                            if o.kunci == kunci)
+                nilai = self._nilai_bukan_bawaan(opsi)
+                self.assertIsNotNone(
+                    nilai,
+                    f"tidak ada satu pun nilai sah untuk `{kunci}` yang "
+                    f"berbeda dari bawaan {opsi.bawaan!r}, jadi tuntutan di "
+                    f"bawah tidak bisa membedakan penolakan dari koersi "
+                    f"`Opsi.bersihkan`")
+                with self.assertRaises(api.Galat, msg=(
+                        f"`konfigurasi_tulis({{{kunci!r}: {nilai!r}}})` TIDAK "
+                        f"melempar `Galat`. Yang sebenarnya terjadi: nilainya "
+                        f"ditulis ke berkas konfigurasi yang satu-satunya "
+                        f"pembacanya TERMINAL, sementara sisi web membaca "
+                        f"`{kunci}` dari localStorage dan tidak akan berubah "
+                        f"sedikit pun. Pengirimnya menerima 200 dan sorak "
+                        f"\"Tersimpan.\", lalu tidak punya cara tahu bahwa "
+                        f"browsernya mengabaikannya. `{kunci}` wajib jadi "
+                        f"anggota beralasan `api._KONFIG_TERMINAL`")):
+                    api.konfigurasi_tulis({kunci: nilai})
+
+
+# ===================================================== saluran non-visual ===
+
+_SKRIP_SUARA = r"""
+// Driver Node untuk statik/js/suara.js.
+//
+// Pola berkas ini sama dengan `_SKRIP_GERAK`/`_SKRIP_TANPA_DOM`: tulis .mjs ke
+// direktori sementara, impor modul sungguhan dari jalurnya, cetak satu objek
+// JSON ke stdout. Harness keduanya satu -- harness kedua berarti dua tempat
+// yang bisa berbeda pendapat soal cara memanggil Node.
+//
+// Yang distub di sini BUKAN perilaku modulnya, melainkan peramban: tiap stub
+// MENCATAT dipanggil berapa kali, karena yang ditagih §3.3 adalah ANGKA
+// ("nol konstruksi AudioContext sebelum satu gestur pun"), bukan "tidak
+// melempar". Stub yang cuma diam akan membuat pagar (c) hijau di atas modul
+// yang membangun konteksnya lewat jalan lain.
+const cacah = {
+  konteks: 0, osilator: 0, gain: 0, vibrate: 0, resume: 0, suspend: 0,
+  close: 0,
+};
+
+// Nama metode konteks DALAM URUTANNYA, bukan cuma cacahnya. §2.6 menuntut
+// `suspend()` saat idle dan BUKAN `close()`, dan dua penghitung terpisah bisa
+// hijau bersamaan untuk sebuah modul yang memanggil keduanya; satu daftar
+// berurut tidak bisa.
+const metodeKonteks = [];
+
+// Osilator yang pernah dibuat, supaya skrip ini bisa memanggil `onended`-nya
+// SENDIRI. `hidup` di suara.js hanya turun lewat callback itu, dan stub tidak
+// boleh memanggilnya di `stop()`: kalau tiap nada "selesai" seketika,
+// penghitung MAKS_BARENG tidak pernah naik ke dua dan pagar §2.7 di bawah
+// mengukur modul yang tidak pernah punya dua isyarat bersamaan.
+const osilatorDibuat = [];
+
+// Satu rekaman per osilator. `lama` TIDAK dibaca dari tabel yang diketik ulang
+// di sini -- ia dihitung dari dua titik jadwal yang `nada()` pasang pada
+// amplopnya sendiri (`setValueAtTime(…, mulai)` dan
+// `exponentialRampToValueAtTime(…, mulai + lama)`), jadi angkanya datang dari
+// modulnya. `ISYARAT` sendiri tidak diekspor suara.js, dan menambah ekspor
+// bukan hak hop ini.
+const nadaDirekam = [];
+let rekamKini = null;
+
+// Jam idle di suara.js memasang `setTimeout` 20 detik, dan Node menahan
+// prosesnya sampai setiap timer matang -- jadi tanpa `unref()` tes ini makan
+// dua puluh detik untuk pekerjaan yang selesai dalam setengah detik. Yang
+// distub cuma PENAHANANNYA; fungsinya tetap berjalan, dan jadwalnya tetap
+// milik modulnya.
+// Jam idle juga DITANGKAP di sini, dan tanpa menyebut 20000: satu-satunya
+// pemakai `setTimeout` di suara.js adalah `tundaIdle()`, jadi menyaring
+// berdasarkan `ms` berarti mengetik ulang `IDLE_MS` -- sebuah konstanta produk
+// yang nilainya bukan kontrak apa pun. Yang dipegang callback TERAKHIR, karena
+// `tundaIdle()` memang membatalkan jadwal sebelumnya tiap kali.
+let jamIdleFn = null;
+const timerAsli = globalThis.setTimeout;
+globalThis.setTimeout = (fn, ms) => {
+  jamIdleFn = fn;
+  const t = timerAsli(fn, ms);
+  if (t && typeof t.unref === "function") t.unref();
+  return t;
+};
+
+let simpanan = new Map();
+globalThis.localStorage = {
+  getItem: (k) => (simpanan.has(k) ? simpanan.get(k) : null),
+  setItem: (k, v) => { simpanan.set(k, String(v)); },
+  removeItem: (k) => { simpanan.delete(k); },
+  clear: () => { simpanan = new Map(); },
+};
+
+// `catat` opsional, dan `Param()` tanpa argumen tetap bersikap seperti
+// sebelumnya: yang ditambahkan cuma kemampuan merekam WAKTU yang dijadwalkan,
+// dipakai untuk mengukur `lama` tiap nada dari modulnya sendiri.
+function Param(catat) {
+  return {
+    value: 0,
+    setValueAtTime(v, t) { if (catat) catat("set", t); return this; },
+    linearRampToValueAtTime(v, t) { if (catat) catat("linear", t); return this; },
+    exponentialRampToValueAtTime(v, t) { if (catat) catat("exp", t); return this; },
+  };
+}
+
+class AudioContextPalsu {
+  constructor() {
+    cacah.konteks += 1;
+    this.state = "running";
+    this.currentTime = 0;
+    this.destination = { nama: "tujuan" };
+  }
+  createOscillator() {
+    cacah.osilator += 1;
+    const rekam = { set: null, exp: null };
+    nadaDirekam.push(rekam);
+    // Amplop nada ini adalah GainNode berikutnya yang dibuat: `nada()` selalu
+    // memanggil `createOscillator()` lalu `createGain()` berpasangan. Plafon
+    // master lahir sebelum osilator pertama, jadi ia tidak punya rekam -- dan
+    // itu yang benar: plafon memang tidak punya `lama`.
+    rekamKini = rekam;
+    const osc = {
+      type: "", frequency: Param(), connect() {}, start() {}, stop() {},
+      onended: null,
+    };
+    osilatorDibuat.push(osc);
+    return osc;
+  }
+  createGain() {
+    cacah.gain += 1;
+    const r = rekamKini;
+    rekamKini = null;
+    return { gain: Param((jenis, t) => { if (r) r[jenis] = t; }), connect() {} };
+  }
+  resume() { cacah.resume += 1; metodeKonteks.push("resume"); this.state = "running"; }
+  suspend() { cacah.suspend += 1; metodeKonteks.push("suspend"); this.state = "suspended"; }
+  close() { cacah.close += 1; metodeKonteks.push("close"); this.state = "closed"; }
+}
+
+// `matchMedia` ikut distub supaya pagar (d) bisa menyetel
+// prefers-reduced-motion ke `true` dan menuntut `bacaSuara()` TIDAK bergerak.
+// Kalau suatu hari suara.js mulai menanyakannya, di sinilah ia akan terlihat.
+let kurangiGerak = false;
+cacah.matchMedia = 0;
+globalThis.matchMedia = (q) => {
+  cacah.matchMedia += 1;
+  return {
+    matches: /prefers-reduced-motion/.test(q) ? kurangiGerak : false,
+    media: q, addEventListener() {}, removeEventListener() {},
+  };
+};
+
+globalThis.window = {
+  AudioContext: AudioContextPalsu,
+  matchMedia: globalThis.matchMedia,
+};
+globalThis.document = { documentElement: { dataset: {} } };
+// `globalThis.navigator` di Node 24 punya GETTER saja, jadi menugaskannya
+// lewat `=` melempar "which has only a getter" -- dan yang terlihat adalah
+// tes merah yang pesannya tidak menyebut suara.js sama sekali.
+const navigatorPalsu = {
+  vibrate: (ms) => { cacah.vibrate += 1; cacah.vibrateMs = ms; return true; },
+  // Tidak ada `userActivation`: platform yang tidak punya properti itu adalah
+  // mayoritas hari ini, dan di situ kebijakan autoplay peramban sendiri yang
+  // jadi pagarnya. Jalur "ada tapi belum aktif" diuji terpisah di bawah.
+};
+Object.defineProperty(globalThis, "navigator",
+                      { value: navigatorPalsu, writable: true, configurable: true });
+
+const jalur = process.argv[2];
+const s = await import(jalur);
+
+const hasil = { cacah, langkah: {} };
+
+// (a) IMPOR SAJA tidak boleh membangun apa pun. Dipotret DI SINI, sebelum satu
+//     fungsi pun dipanggil.
+hasil.langkah.konteksSaatImpor = cacah.konteks;
+hasil.langkah.keadaanSaatImpor = s.keadaanSuara();
+
+// (b) localStorage kosong -> "mati". Bawaannya mati, dan itu bukan kebetulan
+//     dari nilai yang belum ditulis: `bacaSuara()` memang mengembalikannya.
+hasil.langkah.bawaanKosong = s.bacaSuara();
+hasil.langkah.bawaanGetarKosong = s.bacaGetar();
+
+// (c) Pada tingkat "mati", yang dimatikan adalah JALUR PANGGILNYA. Nol
+//     konstruksi konteks, nol osilator -- bukan "konteks menyala dengan gain
+//     nol".
+const matiBerbunyi = s.isyarat("acara");
+hasil.langkah.isyaratSaatMati = matiBerbunyi;
+hasil.langkah.konteksSesudahMati = cacah.konteks;
+hasil.langkah.osilatorSesudahMati = cacah.osilator;
+
+// (d) prefers-reduced-motion TIDAK ikut memutuskan suara. Dua saklar, dua
+//     pertanyaan; mengopelnya membuat salah satu tidak bisa dimatikan sendiri.
+s.setelSuara({ suara: "penuh" });
+const sebelumKurangi = s.bacaSuara();
+kurangiGerak = true;
+const sesudahKurangi = s.bacaSuara();
+kurangiGerak = false;
+hasil.langkah.suaraSebelumKurangiGerak = sebelumKurangi;
+hasil.langkah.suaraSesudahKurangiGerak = sesudahKurangi;
+
+// Kontrol positif: tanpa ini, (c) bisa hijau hanya karena stub-nya mati.
+// Tingkat "penuh" HARUS benar-benar sampai ke mesin audio.
+const penuhBerbunyi = s.isyarat("capai");
+hasil.langkah.isyaratSaatPenuh = penuhBerbunyi;
+hasil.langkah.konteksSesudahPenuh = cacah.konteks;
+hasil.langkah.osilatorSesudahPenuh = cacah.osilator;
+
+// Tingkat "halus": hanya `acara`. `capai` diam -- dan "diam" di sini berarti
+// nol osilator baru, bukan osilator yang kebetulan tidak terdengar.
+s.setelSuara({ suara: "halus" });
+const oscSebelumHalus = cacah.osilator;
+const halusCapai = s.isyarat("capai");
+const oscTengahHalus = cacah.osilator;
+const halusAcara = s.isyarat("acara");
+hasil.langkah.halusCapai = halusCapai;
+hasil.langkah.halusCapaiOsilatorBaru = oscTengahHalus - oscSebelumHalus;
+hasil.langkah.halusAcara = halusAcara;
+hasil.langkah.halusAcaraOsilatorBaru = cacah.osilator - oscTengahHalus;
+
+// Nilai sampah di localStorage jatuh ke "mati", bukan ke "penuh". Sisi
+// salahnya dipilih: setelan rusak yang membuat aplikasi berbunyi di ruang
+// rapat tidak bisa dibatalkan sesudah terjadi.
+globalThis.localStorage.setItem("belajar.suara", '"gaduh"');
+hasil.langkah.suaraSampah = s.bacaSuara();
+
+// HAPTIK berdiri sendiri: ia tidak menumpang tingkat `suara`. Dibuktikan dua
+// arah -- suara penuh + getar mati harus NOL vibrate, dan suara mati + getar
+// nyala harus TETAP menyentak.
+s.setelSuara({ suara: "penuh", getarPerangkat: false });
+const vibSebelum = cacah.vibrate;
+s.sentuhPerangkat();
+hasil.langkah.vibrateSaatSaklarMati = cacah.vibrate - vibSebelum;
+
+s.setelSuara({ suara: "mati", getarPerangkat: true });
+const vibSebelum2 = cacah.vibrate;
+const sentakSaatSuaraMati = s.sentuhPerangkat();
+hasil.langkah.sentakSaatSuaraMati = sentakSaatSuaraMati;
+hasil.langkah.vibrateSaatSuaraMati = cacah.vibrate - vibSebelum2;
+hasil.langkah.vibrateMs = cacah.vibrateMs;
+
+// Durasi dijepit ke atap 30 ms. Satu sentakan, dan tidak pernah ritme: sebuah
+// argumen yang kelewat besar tidak boleh bisa mengubahnya jadi alarm.
+s.sentuhPerangkat(5000);
+hasil.langkah.vibrateMsDijepit = cacah.vibrateMs;
+
+// `userActivation` yang ADA tapi belum aktif harus memblokir bunyi. Ini jalur
+// autoplay yang sebenarnya di peramban modern.
+s.setelSuara({ suara: "penuh" });
+navigatorPalsu.userActivation = { hasBeenActive: false };
+/* Penghitung `hidup` WAJIB dilepas lebih dulu, dan ini bukan kerapian.
+   `isyarat()` memeriksa atap MAKS_BARENG satu baris SEBELUM gerbang gestur,
+   dan dua isyarat di langkah-langkah di atas sudah membuat penghitungnya
+   mentok. Tanpa baris ini yang menolak bunyinya adalah penghitung, gerbang
+   gesturnya tidak pernah dievaluasi, dan pagar di bawah hijau untuk sebuah
+   modul yang tidak punya gerbang gestur sama sekali. Terukur, bukan diduga:
+   menghapus `if (!adaGestur()) return false;` dari suara.js memberi SELURUH
+   suite hijau selama baris ini belum ada. */
+lepaskanSemua();
+const oscSebelumGestur = cacah.osilator;
+const tanpaGestur = s.isyarat("capai");
+hasil.langkah.isyaratTanpaGestur = tanpaGestur;
+hasil.langkah.osilatorTanpaGestur = cacah.osilator - oscSebelumGestur;
+
+/* Kontrol arah sebaliknya, dan tanpa ini pagar di atas masih belum menagih
+   klausulnya. "Tanpa gestur tidak berbunyi" dipuaskan SEPENUHNYA oleh
+   `adaGestur()` yang di-hardcode `false` -- dan modul seperti itu tidak
+   membayar kebijakan autoplay, ia membalik arahnya: tidak pernah berbunyi,
+   bahkan sesudah diklik. Yang ditagih SATU osilator baru dan bukan nilai
+   baliknya saja, karena sebuah modul yang melaporkan `true` sambil tidak
+   menjadwalkan nada apa pun sudah berhenti membunyikan apa pun. */
+navigatorPalsu.userActivation = { hasBeenActive: true };
+lepaskanSemua();
+const oscSebelumAdaGestur = cacah.osilator;
+hasil.langkah.isyaratDenganGestur = s.isyarat("capai");
+hasil.langkah.osilatorDenganGestur = cacah.osilator - oscSebelumAdaGestur;
+
+// `tandaiPreferensi()` cuma menulis atribut. Inilah SATU-SATUNYA yang boleh
+// berjalan saat halaman dimuat, dan ia tidak boleh membangun konteks baru.
+const konteksSebelumTandai = cacah.konteks;
+s.tandaiPreferensi(globalThis.document.documentElement);
+hasil.langkah.datasetSesudahTandai = {
+  ...globalThis.document.documentElement.dataset,
+};
+hasil.langkah.konteksBaruSaatTandai = cacah.konteks - konteksSebelumTandai;
+
+// "Muat ulang": modul diimpor LAGI lewat query unik supaya cache ESM tidak
+// mengembalikan instance yang sama. localStorage dibersihkan lebih dulu --
+// yang ditagih adalah "bawaan mati bertahan sesudah muat ulang", bukan
+// "variabel modulnya masih mati".
+globalThis.localStorage.clear();
+const s2 = await import(jalur + "?muat=2");
+hasil.langkah.bawaanSesudahMuatUlang = s2.bacaSuara();
+hasil.langkah.getarSesudahMuatUlang = s2.bacaGetar();
+hasil.langkah.konteksBaruSaatMuatUlang = s2.keadaanSuara().konteksAda;
+
+/* ---- klausul §2.5/§2.6/§2.7 yang sebelumnya cuma kalimat di komentar ----
+ *
+ * Seluruh blok di bawah duduk di AKHIR skrip dengan sengaja: tiap potret di
+ * atas adalah angka MUTLAK (`konteksSesudahPenuh === 1`,
+ * `osilatorSesudahPenuh === 1`), jadi isyarat tambahan yang disisipkan di
+ * tengah akan memerahkan pagar lama untuk alasan yang tidak ada hubungannya
+ * dengan isinya. Yang di bawah mengukur DELTA, jadi ia tidak peduli berapa
+ * yang sudah terjadi sebelumnya. */
+
+/* `hidup` di suara.js hanya turun lewat `onended` osilator terakhir, dan stub
+   tidak pernah memanggilnya sendiri. Tanpa pelepasan eksplisit di sini,
+   penghitung sudah mentok di MAKS_BARENG sejak langkah "halus" di atas dan
+   setiap isyarat berikutnya ditolak karena penghitungnya -- bukan karena
+   hal yang sedang diukur. */
+function lepaskanSemua() {
+  for (const o of osilatorDibuat.splice(0)) {
+    if (typeof o.onended === "function") o.onended();
+  }
+}
+
+/* C1 (§2.5) -- haptik berdiri sendiri, dan ini kembar persis langkah (d) di
+   atas untuk `bacaSuara()`. Dua saklar, dua pertanyaan: orang yang meminta
+   gerak dikurangi tidak dengan itu meminta teleponnya berhenti menyentak. */
+s.setelSuara({ getarPerangkat: true });
+const getarSebelumKurangi = s.bacaGetar();
+kurangiGerak = true;
+const getarSesudahKurangi = s.bacaGetar();
+kurangiGerak = false;
+hasil.langkah.getarSebelumKurangiGerak = getarSebelumKurangi;
+hasil.langkah.getarSesudahKurangiGerak = getarSesudahKurangi;
+
+/* C3 (§2.7) -- maksimum DUA isyarat bersamaan, dan yang ketiga DIBUANG bukan
+   diantre. Tiga permintaan berturut-turut tanpa satu pun `onended` di
+   antaranya; yang ditagih cacah osilator BARU, bukan nilai balik saja, karena
+   sebuah modul yang melaporkan `false` sambil tetap menjadwalkan nadanya
+   sudah membunyikan akor itu. */
+s.setelSuara({ suara: "penuh" });
+lepaskanSemua();
+const oscSebelumBareng = cacah.osilator;
+hasil.langkah.barengVonis = [
+  s.isyarat("capai"), s.isyarat("capai"), s.isyarat("capai"),
+];
+hasil.langkah.barengOsilator = cacah.osilator - oscSebelumBareng;
+hasil.langkah.barengHidup = s.keadaanSuara().hidup;
+
+/* Kontrol dua arah. Sebuah pagar "tepat dua" yang juga memerah untuk SATU
+   isyarat tidak sedang menagih atapnya, ia sedang menagih kebetulan. */
+lepaskanSemua();
+const oscSebelumSatu = cacah.osilator;
+s.isyarat("capai");
+hasil.langkah.satuOsilator = cacah.osilator - oscSebelumSatu;
+
+lepaskanSemua();
+const oscSebelumDua = cacah.osilator;
+s.isyarat("capai");
+s.isyarat("capai");
+hasil.langkah.duaOsilator = cacah.osilator - oscSebelumDua;
+
+/* C2 (§2.6) -- saat idle konteksnya di-`suspend()`, TIDAK di-`close()`.
+   `close()` tidak bisa dibatalkan: isyarat berikutnya menuntut konteks BARU,
+   dan konteks baru di luar gestur pengguna adalah konteks yang ditolak
+   peramban selamanya. Jamnya dijalankan di sini alih-alih ditunggu dua puluh
+   detik; yang dijalankan tetap callback milik modulnya. */
+lepaskanSemua();
+metodeKonteks.length = 0;
+if (jamIdleFn) jamIdleFn();
+hasil.langkah.metodeSaatIdle = [...metodeKonteks];
+hasil.langkah.konteksAdaSesudahIdle = s.keadaanSuara().konteksAda;
+
+/* C4 (§2.7) -- tiap isyarat ≤ 120 md, dan jumlah isyaratnya tidak menyusut.
+   Daftar jenisnya datang dari Python yang MEMBACA `const ISYARAT` di sumber;
+   mengetiknya di sini akan membuat pagarnya hijau sesudah sebuah isyarat
+   dihapus. `lama` dihitung dari jadwal amplop yang dipasang `nada()` sendiri. */
+const jenisDiminta = process.argv[3] ? JSON.parse(process.argv[3]) : [];
+const nadaPerJenis = {};
+for (const jenis of jenisDiminta) {
+  lepaskanSemua();
+  s.setelSuara({ suara: "penuh" });
+  const batas = nadaDirekam.length;
+  const berbunyi = s.isyarat(jenis);
+  nadaPerJenis[jenis] = {
+    berbunyi,
+    nada: nadaDirekam.slice(batas).map((r) => ({
+      set: r.set, exp: r.exp,
+      lama: (r.set === null || r.exp === null) ? null : r.exp - r.set,
+    })),
+  };
+}
+hasil.langkah.nadaPerJenis = nadaPerJenis;
+
+hasil.langkah.ekspor = ["bacaSuara", "bacaGetar", "setelSuara", "isyarat",
+                        "sentuhPerangkat", "adaHaptik", "tandaiPreferensi",
+                        "keadaanSuara", "SUARA"].filter((n) => s[n] === undefined);
+
+console.log(JSON.stringify(hasil));
+"""
+
+
+class TestSaluranNonVisual(unittest.TestCase):
+    """Pagar BENTUK untuk saluran audio & haptik: siapa boleh memuat apa.
+
+    Tiga klaim yang dijaga di sini, dan ketiganya soal STRUKTUR -- bukan soal
+    apa yang terdengar, yang memang tidak bisa diukur dari Python:
+
+      1. Saluran audio dan haptik tinggal di SATU berkas. Kelas bug yang
+         dicegah bukan hipotetis: aplikasi ini sudah punya satu `getar()` di
+         gerak.js yang merupakan GOYANG VISUAL, dan sebuah `navigator.vibrate`
+         yang lahir di sebuah layar akan jadi saluran kedua dengan nama yang
+         nyaris sama, syarat sendiri, dan saklar yang tidak mengenainya.
+
+      2. Pintunya satu: HANYA inti.js yang memuat suara.js, persis seperti
+         bahasa gerak. Layar yang bisa memanggil mesin bunyinya langsung
+         adalah layar yang bisa mengarang bunyi barunya sendiri, dan pada saat
+         itu "tiga tingkat" berhenti menggambarkan apa pun yang terdengar.
+
+      3. Pembacanya satu: `bacaSuara()`. Layar yang membaca kuncinya sendiri
+         dari localStorage punya pendapatnya sendiri soal nilai rusak -- dan
+         dua bawaan untuk satu setelan berarti setelan itu tergantung siapa
+         yang membacanya lebih dulu.
+
+    Sapuannya membuang KOMENTAR lebih dulu, dan itu disengaja. Komentar yang
+    menjelaskan mengapa `navigator.vibrate` TIDAK boleh dipanggil dari sebuah
+    layar adalah dokumentasi paling berharga yang bisa ada di layar itu;
+    pagar yang memerah untuk kalimat semacam itu akan dilonggarkan orang
+    berikutnya, bukan dibaca. Yang ditagih kemunculan di KODE.
+    """
+
+    AKAR_JS = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "webapp", "statik", "js")
+
+    PEMILIK = "suara.js"
+
+    # Satu-satunya berkas yang boleh memuat `suara.js`. Bukan daftar yang
+    # tumbuh: begitu ada anggota kedua, klaim "pintunya satu" sudah palsu.
+    PINTU = "inti.js"
+
+    # Yang ditagih: setiap bentuk yang MENYEBUT NAMA KEMAMPUANNYA SENDIRI di
+    # kode. Itu batasnya, dan ia lebih sempit daripada "kemampuan, bukan
+    # ejaan" -- rumusan yang pernah ditulis di sini dan yang terukur lebih
+    # tinggi daripada apa yang tabel ini sanggup.
+    #
+    # Yang TIDAK dijaga, dan masing-masing sudah diadu satu per satu: enam
+    # bentuk PENGALIHAN NAMA semuanya lolos, karena di keenamnya nama
+    # kemampuannya tidak pernah berdiri di sebelah pemanggilnya --
+    # `document["createElement"]("audio")` (kurung siku di pemanggil),
+    # `const {vibrate: getar} = navigator; getar(10)` (destructuring),
+    # `const n = window.navigator; n.vibrate(10)` (alias),
+    # `Reflect.construct(Audio, [])` (konstruksi tak langsung),
+    # `new window.Audio("gema").play()`, dan `import("./suara.js?v=1")`
+    # (kueri pada specifier). Sebaliknya yang TERTANGKAP justru bentuk yang
+    # masih menulis nama kemampuannya: `window["AudioContext"]`, `navigator`
+    # yang terpecah baris, dan `document.createElement(` yang terpecah baris.
+    #
+    # Keenam bentuk itu sengaja TIDAK diberi polanya sendiri. Nomornya baru
+    # diketahui sesudah satu langkah pelacakan nama, nol di antaranya ada di
+    # pohon ini, dan satu pelacak nama di dalam sebuah tabel regex adalah
+    # mesin kedua yang suatu hari berbeda pendapat dengan JS soal nama mana
+    # yang menunjuk apa. Yang menjaga kelas itu `TestPengaitNonVisualTerikat`
+    # di kaki berkas ini -- ia menagih IKATAN, bukan ejaan, dan sebuah alias
+    # yang tidak punya tempat asal tertangkap di situ.
+    #
+    # Daftar ini tetap satu tabel dan bukan sepuluh regex yang tumbuh terpisah,
+    # karena justru bentuk terpisah itulah yang membuat pelonggaran berikutnya
+    # tidak kelihatan oleh siapa pun. Setiap anggota dinamai dengan label yang
+    # sama yang nanti muncul di pesan galatnya.
+    #
+    # Terukur, bukan dikhawatirkan: versi yang mengeja SATU bentuk per saluran
+    # meloloskan empat varian sekaligus di seluruh suite -- `navigator?.vibrate`,
+    # `document.createElement("audio")`, `import("./suara.js")` dan
+    # `new OfflineAudioContext(...)` semuanya hijau, sementara
+    # `window.navigator.vibrate` merah. Yang membedakan keempat yang lolos dari
+    # satu yang tertangkap bukan niat penulisnya melainkan panjang ejaannya.
+    SALURAN = (
+        # Tanpa batas kata di DEPAN, dan itu disengaja: `webkitAudioContext`
+        # dan `OfflineAudioContext` adalah konstruktor yang sama dengan nama
+        # yang lebih panjang, dan sebuah konteks offline yang mengantre buffer
+        # tetap saluran audio kedua di luar pemiliknya.
+        ("AudioContext", r"AudioContext\b"),
+        # `navigator.vibrate`, `navigator?.vibrate`, `navigator["vibrate"]`,
+        # dan dua nama berprefiks yang tidak menyebut `navigator` sama sekali.
+        # `window.navigator.vibrate` ikut tertangkap klausa pertama -- ia lebih
+        # panjang, bukan lebih tersembunyi.
+        ("navigator.vibrate",
+         r"""navigator\s*(?:\?\.|\.)\s*vibrate\b"""
+         r"""|navigator\s*(?:\?\.)?\s*\[\s*["']vibrate["']"""
+         r"""|\b(?:moz|webkit|ms)Vibrate\b"""),
+        ("new Audio(", r"\bnew\s+Audio\s*\("),
+        # Elemen `<audio>` yang DIBANGUN dari kode tidak pernah muncul sebagai
+        # `<audio` di sumbernya. Kutipnya tiga bentuk karena ketiganya sah di
+        # JS, dan `createElementNS` lewat argumen namespace lebih dulu.
+        ("createElement audio",
+         r"""createElement(?:NS)?\s*\([^)]*["'`](?i:audio)["'`]"""),
+        ("<audio", r"<\s*(?i:audio)\b"),
+        (".mp3", r"\.(?i:mp3)\b"),
+        (".wav", r"\.(?i:wav)\b"),
+    )
+
+    # Pasangan pintu dari tabel di atas: rujukan modul APA PUN, bukan cuma
+    # klausa `from` statis. `import("./suara.js")` memuat mesin bunyi yang sama
+    # dan melakukannya tanpa satu baris `import` di kepala berkas -- bentuk
+    # yang paling mungkin dipilih orang yang merasa sedang berhati-hati.
+    RUJUKAN_SUARA = (
+        ("import statis", r"""from\s+["']\./suara\.js["']"""),
+        ("import() dinamis", r"""import\s*\(\s*["']\./suara\.js["']"""),
+        ("import efek-samping", r"""import\s+["']\./suara\.js["']"""),
+    )
+
+    KOMENTAR = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+    def _berkas_js(self):
+        for nama in sorted(os.listdir(self.AKAR_JS)):
+            if nama.endswith(".js"):
+                yield nama, os.path.join(self.AKAR_JS, nama)
+
+    def _kode(self, jalur):
+        """Isi berkas dengan komentar diganti spasi.
+
+        Diganti spasi, bukan dibuang: nomor baris harus tetap benar supaya
+        pesan kegagalannya bisa dibuka langsung.
+        """
+        with open(jalur, encoding="utf-8") as f:
+            isi = f.read()
+        return self.KOMENTAR.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), isi)
+
+    def _temuan(self, nama, kode, tabel):
+        """Pelanggaran `tabel` di sebuah isi berkas, atau `[]` kalau pemiliknya.
+
+        Satu predikat yang dipakai BERSAMA oleh tes atas berkas sungguhan dan
+        tes atas tabel sampel. Dua jalan menuju vonis yang sama adalah cara
+        tercepat membuat tabel sampel setuju dengan dirinya sendiri sambil
+        berhenti menggambarkan apa yang berlaku di pohon.
+
+        Pengecualian pemiliknya duduk di sini dan bukan di pemanggilnya karena
+        ia bagian dari predikatnya: `suara.js:155` berisi
+        `window.webkitAudioContext` yang BENAR, dan pola yang memerahkannya
+        akan dilonggarkan orang berikutnya, bukan dibaca.
+        """
+        if nama == self.PEMILIK:
+            return []
+        temuan = []
+        for label, pola in tabel:
+            for m in re.finditer(pola, kode):
+                nomor = kode.count("\n", 0, m.start()) + 1
+                temuan.append(f"{nama}:{nomor} {label}")
+        return temuan
+
+    def test_saluran_non_visual_hanya_ada_di_suara_js(self):
+        """§3.1 -- nol AudioContext/vibrate/aset audio di berkas lain."""
+        pelanggar = []
+        for nama, jalur in self._berkas_js():
+            pelanggar.extend(
+                self._temuan(nama, self._kode(jalur), self.SALURAN))
+        self.assertEqual(
+            pelanggar, [],
+            "saluran audio/haptik lahir di luar suara.js: "
+            + repr(pelanggar)
+            + ". Keduanya tinggal di SATU berkas karena keduanya tunduk pada "
+            "satu kebijakan ('bawaan mati, tidak pernah satu-satunya cara "
+            "mengetahui apa pun'), dan dua tempat yang memegang kebijakan itu "
+            "suatu hari berbeda pendapat. Butuh bunyi baru? Tambah tingkatnya "
+            "di suara.js dan panggil lewat inti.js")
+
+    def test_tabel_saluran_menangkap_keluarga_ejaannya(self):
+        """Pagar yang mengadu pagarnya sendiri, dan dua arah.
+
+        Satu-satunya tes di kelas ini yang tidak melihat berkas sungguhan, dan
+        justru karena itu ia yang paling perlu ada: tabel di atas melebar dari
+        "ejaan persis" ke "keluarga ejaan", dan sebuah pelonggaran berikutnya
+        -- seseorang menyempitkan `AudioContext\\b` jadi `\\bAudioContext\\b`
+        lagi, atau membuang klausa `?.` -- terukur memerahkan tepat satu tes,
+        dan tes itu adalah `test_tabel_saluran_menangkap_keluarga_ejaannya`
+        sendiri, baik dijalankan sekelas maupun bersama seluruh suite.
+        Sebabnya: satu-satunya saksi untuk kedua pelonggaran itu tinggal di
+        dalam `sampel` di bawah -- tes atas berkas sungguhan sudah hijau
+        dengan pola yang LEBIH lebar, dan tetap hijau sesudah disempitkan.
+
+        Dua arah, dan sisi "TIDAK tertangkap" sama kuatnya: sebuah pagar yang
+        memerah untuk komentar yang MENJELASKAN larangannya akan dilucuti orang
+        berikutnya, bukan dibaca, dan `suara.js:155` adalah contoh nyata bahwa
+        pola yang terlalu agresif membunuh kode yang benar.
+
+        Lewat `_temuan()` dan `_kode()` yang SAMA dengan berkas sungguhan --
+        termasuk penulisan ke berkas, supaya pembuang komentarnya benar-benar
+        yang itu dan bukan sepupunya.
+        """
+        sampel = (
+            ("layar-contoh.js", "navigator?.vibrate(10);",
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", "window.navigator.vibrate(9);",
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'const v = navigator["vibrate"];',
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", "if (navigator.webkitVibrate) return;",
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'document.createElement("audio");',
+             self.SALURAN, ["createElement audio"]),
+            ("layar-contoh.js", "new OfflineAudioContext(1, 8, 8000);",
+             self.SALURAN, ["AudioContext"]),
+            ("layar-contoh.js", 'import("./suara.js");',
+             self.RUJUKAN_SUARA, ["import() dinamis"]),
+            ("layar-contoh.js", "// navigator.vibrate tidak boleh di sini",
+             self.SALURAN, []),
+            ("layar-contoh.js",
+             "/* Memanggil navigator.vibrate dari sebuah layar berarti\n"
+             "   saluran haptik kedua dengan syaratnya sendiri. */",
+             self.SALURAN, []),
+            (self.PEMILIK, "return window.AudioContext"
+                           " || window.webkitAudioContext || null;",
+             self.SALURAN, []),
+            # Lima entri berikut saksi tunggal bagi lima label yang tanpanya
+            # bisa dibungkam seluruhnya: pagar atas berkas sungguhan menuntut
+            # himpunan KOSONG, jadi di sana tidak ada apa pun yang hilang
+            # kalau pola mereka berhenti mencocokkan.
+            ("layar-contoh.js", "const g = new Audio();",
+             self.SALURAN, ["new Audio("]),
+            ("layar-contoh.js", 'el.innerHTML = "<audio controls></audio>";',
+             self.SALURAN, ["<audio"]),
+            ("layar-contoh.js", 'const kunci = "gema.mp3";',
+             self.SALURAN, [".mp3"]),
+            ("layar-contoh.js", 'fetch("bara.wav");',
+             self.SALURAN, [".wav"]),
+            ("layar-contoh.js", 'import "./suara.js";',
+             self.RUJUKAN_SUARA, ["import efek-samping"]),
+            # Dua belas entri berikut menagih KNOB whitespace tabel di atas,
+            # bukan lagi kehadiran labelnya: tiap `\s+` boleh disempitkan jadi
+            # `\s` atau satu spasi, dan tiap `\s*` boleh dihapus, tanpa satu
+            # pun tes memerah -- karena tidak ada saksi yang berbentuk PUTUS
+            # BARIS. Satu entri per knob per posisi, dua arah.
+            ("layar-contoh.js", 'navigator\n  .vibrate(9);',
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'navigator?.\n  vibrate(9);',
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'navigator\n  ?.["vibrate"];',
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'navigator?.\n  ["vibrate"];',
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'navigator[\n  "vibrate"];',
+             self.SALURAN, ["navigator.vibrate"]),
+            ("layar-contoh.js", 'const g = new\n  Audio();',
+             self.SALURAN, ["new Audio("]),
+            ("layar-contoh.js", 'new Audio\n  ();',
+             self.SALURAN, ["new Audio("]),
+            ("layar-contoh.js", 'document.createElement\n  ("audio");',
+             self.SALURAN, ["createElement audio"]),
+            ("layar-contoh.js", 'import\n  ("./suara.js");',
+             self.RUJUKAN_SUARA, ["import() dinamis"]),
+            ("layar-contoh.js", 'import(\n  "./suara.js");',
+             self.RUJUKAN_SUARA, ["import() dinamis"]),
+            ("layar-contoh.js", 'import {\n  suara\n} from\n  "./suara.js";',
+             self.RUJUKAN_SUARA, ["import statis"]),
+            ("layar-contoh.js", 'import\n  "./suara.js";',
+             self.RUJUKAN_SUARA, ["import efek-samping"]),
+            # Lima entri berikut menagih KASUS-HURUF di dua posisi yang memang
+            # tidak peka-kapital: nama tag HTML (`<AUDIO controls>` sungguh
+            # elemen audio) dan nama berkas aset (`GEMA.MP3`). Identitas JS
+            # SENGAJA dikecualikan -- `audiocontext` sebagai nama variabel
+            # bukan kanal bunyi -- dan entri terakhir saksi NEGATIF yang
+            # memerah kalau pelebarannya merembet ke sana.
+            ("layar-contoh.js", 'el.innerHTML = "<AUDIO controls></AUDIO>";',
+             self.SALURAN, ["<audio"]),
+            ("layar-contoh.js", 'const kunci = "GEMA.MP3";',
+             self.SALURAN, [".mp3"]),
+            ("layar-contoh.js", 'fetch("BARA.WAV");',
+             self.SALURAN, [".wav"]),
+            ("layar-contoh.js", 'document.createElement("AUDIO");',
+             self.SALURAN, ["createElement audio"]),
+            ("layar-contoh.js", "const audiocontext = new Map();",
+             self.SALURAN, []),
+        )
+        with tempfile.TemporaryDirectory() as d:
+            for nomor, (nama, kode, tabel, harap) in enumerate(sampel):
+                jalur = os.path.join(d, f"sampel{nomor}.js")
+                with open(jalur, "w", encoding="utf-8") as f:
+                    f.write(kode + "\n")
+                temuan = self._temuan(nama, self._kode(jalur), tabel)
+                label = [t.split(" ", 1)[1] for t in temuan]
+                self.assertEqual(
+                    label, harap,
+                    f"sampel {nomor} ({nama}, {kode!r}) memberi label "
+                    f"{label!r}, diharapkan {harap!r}. Sampel yang berubah "
+                    "vonisnya berarti tabel SALURAN/RUJUKAN_SUARA baru saja "
+                    "berhenti menagih kemampuan dan kembali menagih ejaan -- "
+                    "dan empat varian yang sudah pernah lolos seluruh suite "
+                    "akan lolos lagi tanpa satu pun tanda")
+
+    def test_hanya_inti_js_yang_memuat_suara_js(self):
+        """§3.2 -- pintunya satu, dan daftarnya bukan daftar yang tumbuh."""
+        pemuat = []
+        rincian = []
+        for nama, jalur in self._berkas_js():
+            kena = self._temuan(nama, self._kode(jalur), self.RUJUKAN_SUARA)
+            if kena:
+                pemuat.append(nama)
+                rincian.extend(kena)
+        # Yang diadu daftar NAMA BERKAS, bukan `rincian`: nomor baris klausa
+        # impor di inti.js bergerak setiap kali ada yang menyisipkan sesuatu di
+        # atasnya, dan sebuah pagar yang memerah karena berkas lain tumbuh
+        # adalah pagar yang dilucuti orang berikutnya. Labelnya tetap ikut ke
+        # pesan galat, karena yang perlu diketahui pembacanya bukan "ada
+        # pelanggaran" melainkan BENTUK apa yang dipakainya.
+        self.assertEqual(
+            pemuat, [self.PINTU],
+            f"yang boleh memuat suara.js cuma {self.PINTU}, terukur: "
+            + repr(rincian)
+            + ". Layar yang memanggil mesin bunyinya langsung bisa mengarang "
+            "bunyinya sendiri, dan pada saat itu 'tiga tingkat' berhenti "
+            "menggambarkan apa pun yang sebenarnya terdengar")
+
+    def test_inti_js_benar_benar_memuatnya(self):
+        """Pasangan tes di atas: `[]` dan `["inti.js"]` harus bisa dibedakan.
+
+        Tanpa ini, menghapus klausa impornya di inti.js membuat tes di atas
+        MERAH untuk alasan yang benar tapi pesannya terbaca seperti "ada layar
+        yang nakal" -- dan yang sebenarnya terjadi adalah fiturnya hilang.
+        """
+        kode = self._kode(os.path.join(self.AKAR_JS, self.PINTU))
+        self.assertRegex(kode, r"""from\s+["']\./suara\.js["']""")
+
+    def test_kunci_suara_hanya_dibaca_pemiliknya(self):
+        """§3.2 -- satu pembaca, supaya nilai rusak punya satu bawaan."""
+        pelanggar = []
+        pola = re.compile(
+            r"""(?:localStorage\s*\.\s*(?:get|set|remove)Item|"""
+            r"""ambilLokal|simpanLokal)\s*\(\s*["'](?:belajar\.)?"""
+            r"""(suara|getarPerangkat)["']""")
+        for nama, jalur in self._berkas_js():
+            if nama == self.PEMILIK:
+                continue
+            kode = self._kode(jalur)
+            for m in pola.finditer(kode):
+                nomor = kode.count("\n", 0, m.start()) + 1
+                pelanggar.append(f"{nama}:{nomor} {m.group(1)}")
+        self.assertEqual(
+            pelanggar, [],
+            "ada yang membaca/menulis kunci saluran non-visual sendiri: "
+            + repr(pelanggar)
+            + ". Lewat `bacaSuara()`/`bacaGetar()`/`setelSuara()` dari "
+            "inti.js. Dua pembaca berarti dua bawaan untuk satu setelan, dan "
+            "yang berlaku jadi tergantung siapa yang membacanya lebih dulu")
+
+    def test_rayakan_memasang_pengait_non_visual(self):
+        """Pengait itu MILIK `rayakan()`, bukan milik layar-layar.
+
+        Dipagari terpisah dari §3.1/§3.2 dengan sengaja: ketiganya menagih hal
+        yang berbeda, dan sebuah pohon yang memuat modulnya dengan rapi tapi
+        tidak pernah memanggilnya adalah pohon yang lolos dua pagar pertama
+        sambil tidak punya fiturnya sama sekali. Pengait tinggal di sini dan
+        bukan di layar karena `tingkatRayakan()` sudah memutuskan tingkatnya;
+        pengait di layar berarti tiap layar menyimpulkan ulang "ini peristiwa
+        sebesar apa", dan suatu hari dua di antaranya menyimpulkan beda.
+        """
+        kode = self._kode(os.path.join(self.AKAR_JS, self.PINTU))
+        awal = kode.index("export function rayakan(")
+        # Batasnya ekspor BERIKUTNYA, bukan sebuah hitungan kurung: badan
+        # `rayakan()` memuat objek literal dan arrow function, jadi mencocokkan
+        # `}` pertama di kolom nol akan berhenti di tempat yang salah.
+        akhir = kode.index("\nexport ", awal + 1)
+        badan = kode[awal:akhir]
+        for panggil in ('isyarat("acara")', 'isyarat("capai")',
+                        "sentuhPerangkat()"):
+            self.assertIn(
+                panggil, badan,
+                f"`{panggil}` hilang dari badan `rayakan()`. Saluran "
+                "non-visual menempel pada tingkat yang SUDAH diputuskan "
+                "`tingkatRayakan()`; memindahkannya ke layar berarti tiap "
+                "layar menyimpulkan ulang besarnya peristiwa")
+
+    def test_tidak_ada_isyarat_per_jawaban_kuis_atau_latihan(self):
+        """Yang boleh berbunyi cuma hasil akhir, lewat `rayakan()`, sekali.
+
+        Termasuk tidak ada bunyi untuk jawaban yang SALAH. "Pilihanmu salah"
+        sudah punya salurannya sendiri -- goyang visual lewat `getar()` di
+        gerak.js -- dan menggandakannya jadi bunyi mengubah kuis latihan jadi
+        deretan teguran. Haptik untuk jawaban yang gagal pernah ada di layar
+        kerja dan dibuang lagi dengan alasan yang tertulis di sana.
+        """
+        pelanggar = []
+        pola = re.compile(r"\b(?:isyarat|sentuhPerangkat)\s*\(")
+        for nama, jalur in self._berkas_js():
+            if not nama.startswith("layar-"):
+                continue
+            kode = self._kode(jalur)
+            for m in pola.finditer(kode):
+                nomor = kode.count("\n", 0, m.start()) + 1
+                pelanggar.append(f"{nama}:{nomor}")
+        self.assertEqual(
+            pelanggar, [],
+            "ada layar yang membunyikan isyarat sendiri: " + repr(pelanggar)
+            + ". Layar boleh memanggil `mainkanContoh()` untuk MEMPERAGAKAN "
+            "setelan di Pengaturan, tidak untuk menanggapi jawaban. Satu "
+            "peristiwa, satu perayaan, dan tempatnya `rayakan()`")
+
+    def test_tidak_ada_aset_bunyi_di_pohon_statik(self):
+        """Nol aset berarti nol: sebuah .wav adalah dependensi tanpa manifes.
+
+        Dicek atas DIREKTORI, bukan atas isi berkas, karena ini satu-satunya
+        bentuk pelanggaran yang tidak meninggalkan jejak di kode mana pun --
+        sebuah berkas bunyi yang di-`fetch()` dari string yang dibangun saat
+        jalan tidak akan terlihat oleh sapuan teks apa pun.
+        """
+        statik = os.path.dirname(self.AKAR_JS)
+        ditemukan = []
+        for akar, _, berkas in os.walk(statik):
+            for nm in berkas:
+                if os.path.splitext(nm)[1].lower() in (
+                        ".mp3", ".wav", ".ogg", ".m4a", ".aac", ".flac", ".opus"):
+                    ditemukan.append(os.path.relpath(os.path.join(akar, nm),
+                                                     statik))
+        self.assertEqual(
+            sorted(ditemukan), [],
+            "ada aset bunyi di webapp/statik: " + repr(sorted(ditemukan))
+            + ". Seluruh aplikasi ini berdiri tanpa satu dependensi pun dan "
+            "tanpa langkah build; isyaratnya dibangkitkan osilator dan "
+            "totalnya nol byte di disk")
+
+    def test_pengaturan_web_punya_barisnya(self):
+        """Setelan yang ada di modul tapi tidak ada di layar = setelan hantu.
+
+        Antarmuka web menyusun barisnya satu per satu di `layar-lain.js` -- ia
+        TIDAK membangun dirinya dari sebuah skema seperti menu terminal. Jadi
+        menambah tingkat suara tanpa menambah barisnya di sana menghasilkan
+        preferensi yang bisa dibaca, bisa disimpan, dan tidak pernah bisa
+        diubah siapa pun. Jebakan yang sama sudah pernah terjadi untuk
+        `buka_semua_bab`.
+        """
+        kode = self._kode(os.path.join(self.AKAR_JS, "layar-lain.js"))
+        for potongan, kenapa in (
+                ("SUARA.map", "tiga kartu tingkat suara"),
+                ("mainkanContoh", "peragaan: bunyi tidak bisa digambarkan"),
+                ("terapkanTampilan({ suara:", "kartunya benar-benar menyimpan"),
+                ("terapkanTampilan({ getarPerangkat:",
+                 "saklar haptik benar-benar menyimpan"),
+                ("adaHaptik()", "saklar ditandai SEBELUM ditekan")):
+            self.assertIn(
+                potongan, kode,
+                f"`{potongan}` hilang dari layar-lain.js ({kenapa}). Setelan "
+                "yang ada di API tapi tidak ada di layar adalah setelan yang "
+                "tidak bisa diubah siapa pun")
+
+    def test_bacaTampilan_membawa_kedua_medan(self):
+        """Hilang dari `bacaTampilan()` = setelan yang lupa saat muat ulang.
+
+        `terapkanTampilan()` menyusun nilainya dari `{...bacaTampilan(),
+        ...ubah}`. Sebuah medan yang tidak ada di `bacaTampilan()` karena itu
+        hilang dari objek itu setiap kali setelan LAIN diubah -- dan yang
+        terlihat orangnya adalah suara yang mati sendiri begitu ia menyentuh
+        tema.
+        """
+        kode = self._kode(os.path.join(self.AKAR_JS, "layar-lain.js"))
+        awal = kode.index("export function bacaTampilan()")
+        akhir = kode.index("export function terapkanTampilan(")
+        badan = kode[awal:akhir]
+        self.assertIn("suara: bacaSuara()", badan)
+        self.assertIn("getarPerangkat: bacaGetar()", badan)
+
+    def test_terapkan_tampilan_hanya_mencatat_preferensi(self):
+        """§2.6 -- yang jalan tanpa gestur cuma boleh menulis atribut.
+
+        `terapkanTampilan()` berjalan saat halaman dimuat. AudioContext yang
+        dibangun di luar gestur masuk ke keadaan ditolak dan tidak pernah
+        pulih, jadi membunyikan apa pun dari sana bukan cuma tidak sopan -- ia
+        menukar satu-satunya konteks yang akan pernah ada dengan konteks mati.
+        """
+        kode = self._kode(os.path.join(self.AKAR_JS, "layar-lain.js"))
+        awal = kode.index("export function terapkanTampilan(")
+        akhir = kode.index("export function temaBerikutnya(")
+        badan = kode[awal:akhir]
+        self.assertIn("tandaiPreferensi(akar)", badan)
+        for terlarang in ("mainkanContoh", "isyarat(", "sentuhPerangkat("):
+            self.assertNotIn(
+                terlarang, badan,
+                f"`{terlarang}` dipanggil dari `terapkanTampilan()`, yang "
+                "jalan saat halaman dimuat -- sebelum ada gestur apa pun")
+
+
+class TestMesinSuara(unittest.TestCase):
+    """Jalankan suara.js di Node dan tagih angkanya, bukan niatnya.
+
+    Empat klaim yang tidak bisa dibuktikan dengan membaca sumber, karena
+    masing-masing soal apa yang TERJADI saat dipanggil:
+
+      (a) impor saja tidak membangun AudioContext -- nol, bukan "sedikit";
+      (b) localStorage kosong berarti "mati", dan tetap mati sesudah muat
+          ulang;
+      (c) pada tingkat "mati" yang dimatikan JALUR PANGGILNYA, jadi nol
+          osilator dan nol konteks -- bukan konteks menyala dengan gain nol;
+      (d) `prefers-reduced-motion` TIDAK mengubah jawaban `bacaSuara()`.
+
+    Butir (d) adalah penerjemahan tes dari sebuah keputusan desain: gerak dan
+    suara adalah dua pertanyaan, dan mengopelnya membuat salah satu tidak bisa
+    dimatikan sendiri. Tanpa tes ini keputusan itu cuma kalimat di komentar.
+
+    Kalau Node tidak terpasang, tesnya SKIP -- bukan lulus diam-diam.
+    """
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji suara.js")
+    def test_mesin_suara_di_node(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "js", "suara.js")
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-suara.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_SUARA)
+            hasil = subprocess.run(["node", js, jalur],
+                                   capture_output=True, text=True, timeout=60)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-1500:])
+        lap = json.loads(hasil.stdout)
+        L = lap["langkah"]
+
+        self.assertEqual(L["ekspor"], [], "ekspor suara.js yang hilang")
+
+        # (a) autoplay: nol konstruksi sebelum satu gestur pun.
+        self.assertEqual(
+            L["konteksSaatImpor"], 0,
+            "`new AudioContext` terjadi SAAT IMPOR. Konteks yang dibangun "
+            "sebelum gestur asli masuk ke keadaan ditolak dan tidak pernah "
+            "pulih -- jadi ini bukan pemborosan, ini menukar satu-satunya "
+            "konteks yang akan pernah ada dengan konteks mati")
+        self.assertFalse(L["keadaanSaatImpor"]["konteksAda"])
+        self.assertEqual(L["keadaanSaatImpor"]["hidup"], 0)
+
+        # (b) bawaan mati, dan ia tetap mati sesudah "muat ulang".
+        self.assertEqual(
+            L["bawaanKosong"], "mati",
+            "bawaan suara BUKAN 'mati'. Fitur yang menyala sendiri di "
+            "peramban orang yang tidak pernah memintanya adalah fitur yang "
+            "dimatikan sekali lalu tidak pernah dicoba lagi")
+        self.assertFalse(L["bawaanGetarKosong"])
+        self.assertEqual(L["bawaanSesudahMuatUlang"], "mati")
+        self.assertFalse(L["getarSesudahMuatUlang"])
+        self.assertFalse(L["konteksBaruSaatMuatUlang"])
+
+        # (c) tingkat "mati" mematikan JALUR PANGGILNYA.
+        self.assertFalse(L["isyaratSaatMati"])
+        self.assertEqual(
+            L["konteksSesudahMati"], 0,
+            "tingkat 'mati' masih membangun AudioContext. Yang dimatikan "
+            "harus jalur panggilnya, bukan volumenya: mesin audio yang "
+            "menyala adalah daya yang terpakai untuk menghasilkan keheningan")
+        self.assertEqual(L["osilatorSesudahMati"], 0)
+
+        # Kontrol positif. Tanpa ini, (c) bisa hijau karena stub-nya mati.
+        self.assertTrue(
+            L["isyaratSaatPenuh"],
+            "tingkat 'penuh' TIDAK sampai ke mesin audio -- dan kalau ia "
+            "tidak pernah sampai, pagar (c) di atas hijau tanpa membuktikan "
+            "apa pun")
+        self.assertEqual(L["konteksSesudahPenuh"], 1)
+        self.assertEqual(L["osilatorSesudahPenuh"], 1)
+
+        # (d) dua saklar, dua pertanyaan.
+        self.assertEqual(L["suaraSebelumKurangiGerak"], "penuh")
+        self.assertEqual(
+            L["suaraSesudahKurangiGerak"], "penuh",
+            "`prefers-reduced-motion` mengubah jawaban `bacaSuara()`. "
+            "Mengopel keduanya membuat salah satu tidak bisa dimatikan "
+            "sendiri -- dan orang yang meminta gerak dikurangi sambil tetap "
+            "mau mendengar konfirmasi kehilangan pilihannya")
+
+        # Tingkat tengah benar-benar di tengah.
+        self.assertFalse(L["halusCapai"])
+        self.assertEqual(L["halusCapaiOsilatorBaru"], 0)
+        self.assertTrue(L["halusAcara"])
+        self.assertGreater(L["halusAcaraOsilatorBaru"], 0)
+
+        # Nilai rusak jatuh ke sisi yang bisa dibatalkan.
+        self.assertEqual(L["suaraSampah"], "mati")
+
+        # Haptik berdiri sendiri, dibuktikan DUA arah.
+        self.assertEqual(
+            L["vibrateSaatSaklarMati"], 0,
+            "saklar getar mati tapi `navigator.vibrate` tetap dipanggil")
+        self.assertTrue(
+            L["sentakSaatSuaraMati"],
+            "getar ikut mati saat SUARA dimatikan. Keduanya saklar yang "
+            "berdiri sendiri: telepon di saku di kereta adalah tempat getar "
+            "berguna dan bunyi tidak sopan, dan laptop di meja kebalikannya")
+        self.assertEqual(L["vibrateSaatSuaraMati"], 1)
+        self.assertLessEqual(L["vibrateMs"], 30)
+        self.assertLessEqual(
+            L["vibrateMsDijepit"], 30,
+            "durasi getar tidak dijepit: satu sentakan ≤30 ms adalah tanda "
+            "baca, dan apa pun di atasnya adalah alarm")
+
+        # Autoplay, jalur yang sebenarnya dipakai peramban modern.
+        self.assertFalse(L["isyaratTanpaGestur"])
+        self.assertEqual(
+            L["osilatorTanpaGestur"], 0,
+            "bunyi dijadwalkan padahal `userActivation.hasBeenActive` false")
+
+        # Kontrol dua arah, dan ini yang membuat pagar di atas tidak bisa
+        # ditipu. Sebuah `adaGestur()` yang di-hardcode `false` memuaskan
+        # kedua assert di atas tanpa cela -- sambil memadamkan seluruh saluran
+        # suara. Klausulnya bukan "jangan berbunyi", melainkan "jangan
+        # berbunyi SEBELUM gestur"; separuh kedua kalimat itu harus ikut
+        # ditagih atau yang dijaga cuma separuh pertamanya.
+        self.assertTrue(
+            L["isyaratDenganGestur"],
+            "`userActivation.hasBeenActive` true tapi isyaratnya TETAP "
+            "ditolak. Gerbang gestur yang tidak pernah membuka bukan "
+            "kepatuhan autoplay -- ia saluran suara yang mati, dan ia lolos "
+            "pagar 'tanpa gestur tidak berbunyi' dengan nilai sempurna")
+        self.assertEqual(
+            L["osilatorDenganGestur"], 1,
+            "dengan gestur yang sah, tepat satu osilator harus lahir: nol "
+            "berarti gerbangnya tidak pernah membuka, lebih dari satu "
+            "berarti sebuah isyarat menjadwalkan nada di luar amplopnya")
+
+        # Mencatat preferensi tidak membangunkan mesin apa pun.
+        self.assertEqual(L["konteksBaruSaatTandai"], 0)
+        # Nilai yang diharapkan di sini adalah setelan yang BERLAKU di titik
+        # itu -- "penuh"/"ya", bukan bawaan "mati"/"tidak". Mengharapkan
+        # bawaannya akan hijau juga untuk sebuah `tandaiPreferensi()` yang
+        # menulis dua konstanta dan tidak pernah membaca preferensi apa pun,
+        # dan itu persis bug yang atribut ini ada untuk mencegah.
+        self.assertEqual(L["datasetSesudahTandai"],
+                         {"suara": "penuh", "getar": "ya"})
+
+    # Atap durasi satu isyarat, dalam detik. Ini KONTRAK dan bukan nilai yang
+    # kebetulan: di atas ~120 md sebuah nada berhenti terbaca sebagai tanda
+    # baca dan mulai terbaca sebagai musik -- sesuatu yang punya awal, tengah,
+    # dan akhir, dan karena itu menuntut didengarkan sampai habis.
+    ATAP_ISYARAT_S = 0.120
+
+    # Jadwal audio dibangun dari penjumlahan float (`mulai + lama`), jadi
+    # mengurangkannya kembali memberi 0.12000000000000002 untuk sebuah isyarat
+    # yang nilainya TEPAT di atap. Dibulatkan ke mikrodetik: enam desimal jauh
+    # lebih halus daripada apa pun yang bisa didengar, dan tanpa pembulatan ini
+    # sebuah isyarat yang sah persis 120 md akan ditolak pagarnya sendiri.
+    DESIMAL_JADWAL = 6
+
+    def _jenis_isyarat_di_sumber(self, jalur):
+        """Nama jenis di `const ISYARAT` milik suara.js, dibaca dari sumbernya.
+
+        Tabelnya TIDAK diekspor, dan menambah ekspor bukan hak hop ini -- jadi
+        daftar jenisnya dibaca di sini lalu dioper ke Node. Yang penting bukan
+        caranya melainkan bahwa daftarnya datang dari SATU tempat: sebuah tes
+        yang mengetik `["acara", "capai", "contoh"]` sendiri akan tetap hijau
+        sesudah salah satunya dihapus dari modulnya.
+        """
+        with open(jalur, encoding="utf-8") as f:
+            isi = f.read()
+        # Komentar dibuang lebih dulu: blok ISYARAT memuat tiga paragraf
+        # penjelasan, dan sebuah kalimat yang kebetulan berisi "kata:" akan
+        # terbaca sebagai jenis keempat.
+        tanpa = re.sub(r"/\*.*?\*/|//[^\n]*", "", isi, flags=re.S)
+        m = re.search(r"const ISYARAT = \{(.*?)\n\};", tanpa, re.S)
+        self.assertIsNotNone(
+            m, "blok `const ISYARAT = {` tidak ditemukan di suara.js. Pagar "
+               "durasi isyarat membaca daftar jenisnya dari sumber justru "
+               "supaya ia tidak bisa hijau sesudah sebuah isyarat dihapus")
+        return re.findall(r"^\s{2}(\w+):", m.group(1), re.M)
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk menguji suara.js")
+    def test_klausul_nilai_dan_arah_di_node(self):
+        """Empat klausul §2 yang selama ini cuma kalimat di komentar produk.
+
+        Dipisah dari `test_mesin_suara_di_node` bukan karena harness-nya
+        berbeda -- harnessnya SAMA, dan itu disengaja: dua cara memanggil Node
+        berarti dua tempat yang suatu hari berbeda pendapat soal stub mana yang
+        berlaku. Yang berbeda cuma apa yang ditagih, dan keempatnya punya satu
+        sifat bersama: nilainya NILAI, bukan kehadiran. Sebuah pagar yang cuma
+        menagih "ada `suspend` di berkasnya" hijau untuk modul yang memanggil
+        `close()` tepat di sebelahnya.
+
+          C1 (§2.5) `prefers-reduced-motion` TIDAK mengubah `bacaGetar()`;
+          C2 (§2.6) saat idle konteksnya di-`suspend()`, bukan di-`close()`;
+          C3 (§2.7) maksimum dua isyarat bersamaan, yang ketiga dibuang;
+          C4 (§2.7) tiap isyarat ≤ 120 md, dan jumlah jenisnya tidak menyusut.
+        """
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "js", "suara.js")
+        jenis = self._jenis_isyarat_di_sumber(jalur)
+        self.assertGreaterEqual(
+            len(jenis), 3,
+            f"cuma {len(jenis)} jenis isyarat terbaca di suara.js: {jenis!r}. "
+            "Tiganya punya pekerjaan masing-masing -- `acara` untuk yang "
+            "jarang, `capai` untuk XP, `contoh` untuk peragaan di Pengaturan -- "
+            "dan sebuah pagar durasi yang hijau atas dua isyarat adalah pagar "
+            "yang bisa dipuaskan dengan MENGHAPUS yang ketiga")
+
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-suara.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_SUARA)
+            hasil = subprocess.run(["node", js, jalur, json.dumps(jenis)],
+                                   capture_output=True, text=True, timeout=60)
+
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-1500:])
+        L = json.loads(hasil.stdout)["langkah"]
+
+        # C1 -- §2.5. Kembar langkah (d) milik `bacaSuara()`, dan arahnya dua:
+        # nilai sebelum HARUS benar (kalau tidak, "tidak berubah" bisa hijau
+        # karena keduanya kebetulan `false`), dan nilai sesudah HARUS sama.
+        self.assertTrue(
+            L["getarSebelumKurangiGerak"],
+            "`bacaGetar()` tidak mengembalikan true padahal saklarnya baru "
+            "dinyalakan. Tanpa nilai awal yang benar, pagar 'tidak berubah' di "
+            "bawah hijau untuk sebuah `bacaGetar()` yang selalu false")
+        self.assertEqual(
+            L["getarSesudahKurangiGerak"], L["getarSebelumKurangiGerak"],
+            "§2.5 -- `prefers-reduced-motion` mengubah jawaban `bacaGetar()`. "
+            "Haptik BERDIRI SENDIRI: ia bukan tingkat keempat dari `suara` dan "
+            "bukan turunan dari preferensi gerak. Orang yang memakai pembaca "
+            "layar sering justru MEMINTA gerak dikurangi sambil tetap mau "
+            "merasakan konfirmasi di telapaknya, dan mengopel keduanya "
+            "menghapus pilihan itu tanpa pernah menampilkan saklarnya")
+
+        # C2 -- §2.6. Daftar berurut, bukan dua penghitung: yang dilarang bukan
+        # "jumlah close > 0" melainkan close MUNCUL di jalur idle sama sekali.
+        self.assertIn(
+            "suspend", L["metodeSaatIdle"],
+            "§2.6 -- jalur idle tidak memanggil `suspend()`. Konteks yang "
+            "dibiarkan `running` selamanya adalah mesin audio yang menyala "
+            "untuk menghasilkan keheningan, terukur: "
+            + repr(L["metodeSaatIdle"]))
+        self.assertNotIn(
+            "close", L["metodeSaatIdle"],
+            "§2.6 -- jalur idle memanggil `close()`, terukur: "
+            + repr(L["metodeSaatIdle"])
+            + ". `close()` TIDAK BISA DIBATALKAN. Isyarat berikutnya karena itu "
+            "menuntut konteks BARU, dan konteks baru lahir di luar gestur "
+            "pengguna -- yaitu persis konteks yang peramban tolak dan yang "
+            "§2.6 ada untuk mencegah. Yang benar `suspend()`: ia bisa "
+            "di-`resume()` di dalam gestur berikutnya")
+        self.assertTrue(
+            L["konteksAdaSesudahIdle"],
+            "konteksnya hilang sesudah jalur idle. `suspend()` menidurkan, ia "
+            "tidak membuang -- dan modul yang membuangnya sudah membayar harga "
+            "`close()` dengan nama yang lain")
+
+        # C3 -- §2.7, dan kontrol dua arahnya ikut di sini.
+        self.assertEqual(
+            L["barengVonis"], [True, True, False],
+            "§2.7 -- tiga permintaan berturut-turut memberi vonis "
+            + repr(L["barengVonis"]) + ", bukan [True, True, False]. Dua "
+            "isyarat bersamaan masih terbaca sebagai dua kejadian; tiga "
+            "terbaca sebagai satu AKOR, dan akor yang tidak diminta siapa pun "
+            "adalah bunyi yang salah")
+        self.assertEqual(
+            L["barengOsilator"], 2,
+            f"§2.7 -- tiga permintaan menjadwalkan {L['barengOsilator']} "
+            "osilator, bukan 2. Yang ditagih nadanya, bukan nilai baliknya: "
+            "sebuah modul yang melaporkan `false` sambil tetap memanggil "
+            "`createOscillator()` sudah membunyikan akornya")
+        self.assertEqual(L["barengHidup"], 2)
+        self.assertEqual(
+            L["satuOsilator"], 1,
+            "satu permintaan tidak memberi tepat satu osilator. Kalau pagar "
+            "'tepat dua' di atas merah untuk SATU isyarat, yang salah "
+            "pagarnya -- ia sedang menagih kebetulan, bukan atapnya")
+        self.assertEqual(
+            L["duaOsilator"], 2,
+            "dua permintaan tidak memberi tepat dua osilator. Atapnya DUA, "
+            "jadi dua harus lewat utuh; pagar yang memerah di sini melarang "
+            "hal yang §2.7 justru izinkan")
+
+        # C4 -- §2.7. Dua tagihan, dan yang kedua wajib: tanpa "jumlah jenis
+        # tidak menyusut", pagar durasi di bawah bisa dipuaskan dengan
+        # MENGHAPUS isyarat yang kepanjangan.
+        self.assertEqual(
+            sorted(L["nadaPerJenis"]), sorted(jenis),
+            "jenis yang terukur di Node tidak sama dengan yang terbaca di "
+            f"sumber: {sorted(L['nadaPerJenis'])!r} vs {sorted(jenis)!r}")
+        panjang = {}
+        for nama in jenis:
+            lapor = L["nadaPerJenis"][nama]
+            self.assertTrue(
+                lapor["berbunyi"],
+                f"isyarat `{nama}` ada di tabel `ISYARAT` tapi tidak berbunyi "
+                "di tingkat 'penuh'. Jenis yang tidak pernah bisa terdengar "
+                "adalah jenis yang lupa didaftarkan di `IZIN` -- dan yang "
+                "terlihat pelajarnya bukan error melainkan keheningan di "
+                "tempat yang seharusnya menandai sesuatu")
+            self.assertGreaterEqual(
+                len(lapor["nada"]), 1,
+                f"isyarat `{nama}` menjadwalkan nol nada")
+            for ke, n in enumerate(lapor["nada"]):
+                self.assertIsNotNone(
+                    n["lama"],
+                    f"nada {ke} dari `{nama}` tidak punya amplop berjadwal "
+                    "(`setValueAtTime` + `exponentialRampToValueAtTime`). "
+                    "Durasinya karena itu tidak bisa diukur dari modulnya, dan "
+                    "pagar 120 md berhenti menagih apa pun")
+                panjang[f"{nama}[{ke}]"] = round(n["lama"], self.DESIMAL_JADWAL)
+        kepanjangan = {k: v for k, v in panjang.items()
+                       if v > self.ATAP_ISYARAT_S}
+        self.assertEqual(
+            kepanjangan, {},
+            f"§2.7 -- ada isyarat di atas {self.ATAP_ISYARAT_S * 1000:.0f} md: "
+            + repr(kepanjangan) + f" (seluruhnya: {panjang!r}). Angkanya bukan "
+            "selera: lebih panjang dari itu dan bunyinya mulai terdengar "
+            "sebagai MUSIK -- sesuatu yang punya awal, tengah, dan akhir, yang "
+            "karena itu menuntut didengarkan sampai habis. Yang dibutuhkan di "
+            "sini cuma tanda baca")
+
+
+class TestPengaitNonVisualTerikat(unittest.TestCase):
+    """Yang MEMANGGIL sebuah nama ikut terikat padanya.
+
+    Tiga klausul §3 yang semuanya punya bentuk kegagalan yang sama, dan bentuk
+    itulah alasan kelas ini ada: sebuah rujukan yang tidak menunjuk apa pun
+    TIDAK memerahkan satu pun pagar yang menagih kehadiran. `inti.js` pernah
+    diukur kehilangan `isyarat` dari klausa impornya sementara `rayakan()`
+    tetap memanggilnya, dan seluruh suite tetap hijau -- karena tiap pagar yang
+    ada menanyakan "apakah `isyarat` disebut di suatu tempat?", dan jawabannya
+    memang ya: di baris yang akan melempar `ReferenceError` pada perayaan
+    pertama yang pernah dialami pelajar.
+
+    Yang dijaga di sini karena itu bukan EJAAN melainkan IKATAN: tiap nama yang
+    dipanggil di sebuah badan harus punya tempat asal di berkas yang sama --
+    klausa impornya, deklarasinya, atau daftar parameternya.
+
+    Ketiga sasarannya sengaja SEMPIT, masing-masing satu fungsi:
+
+      C5  badan `rayakan()` di inti.js, satu-satunya tempat pengait non-visual
+          dipasang;
+      C7  badan `layarAtur()` di layar-lain.js, satu-satunya tempat setelannya
+          bisa diubah;
+      C6  kelas grid `petak-<n>` yang dibangkitkan baris pengaturan suara.
+
+    Sapuan yang lebih lebar sudah diukur dan ditolak: ia menghasilkan
+    positif-palsu, dan pagar yang memerah untuk kode yang sah akan dilucuti
+    orang berikutnya, bukan dibaca.
+    """
+
+    AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    AKAR_JS = os.path.join(AKAR, "webapp", "statik", "js")
+
+    # Kata kunci JS yang diikuti `(`. Dibuang sebagai KATA KUNCI dan bukan
+    # ditambahkan ke ikatan, karena `if` bukan sesuatu yang bisa hilang dari
+    # sebuah klausa impor.
+    KATA_KUNCI = frozenset((
+        "if", "for", "while", "switch", "catch", "return", "typeof", "function",
+        "new", "var", "do", "else", "await", "delete", "void", "in", "of",
+        "instanceof", "throw", "yield", "import", "super", "this",
+    ))
+
+    # Global peramban & bawaan bahasa. Daftar KECIL dan sengaja ditulis tangan:
+    # sebuah daftar yang digenerasi dari `globalThis` milik Node akan memuat
+    # nama-nama yang TIDAK ada di peramban, dan dengan itu pagar ini berhenti
+    # bisa membedakan `structuredClone` dari sebuah fungsi yang lupa diimpor.
+    GLOBAL_SAH = frozenset((
+        "Number", "String", "Boolean", "Array", "Object", "Math", "JSON",
+        "Promise", "Date", "Set", "Map", "RegExp", "Error", "CustomEvent",
+        "setTimeout", "clearTimeout", "setInterval", "clearInterval",
+        "requestAnimationFrame", "cancelAnimationFrame", "fetch", "parseInt",
+        "parseFloat", "isNaN", "alert", "confirm", "encodeURIComponent",
+        "decodeURIComponent", "queueMicrotask", "structuredClone",
+    ))
+
+    # Nama yang dipanggil di sebuah badan. `(?<![.\w$])` membuang pemanggilan
+    # METODE (`document.dispatchEvent(`): metode milik objeknya dan tidak bisa
+    # hilang dari sebuah klausa impor, jadi menagihnya di sini cuma menambah
+    # tiga puluh nama yang semuanya harus dikecualikan satu per satu.
+    PANGGILAN = re.compile(r"(?<![.\w$])([A-Za-z_$][\w$]*)\s*\(")
+
+    KOMENTAR = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+    def _kode(self, nama):
+        """Isi berkas js dengan komentar diganti spasi, nomor baris utuh."""
+        with open(os.path.join(self.AKAR_JS, nama), encoding="utf-8") as f:
+            isi = f.read()
+        return self.KOMENTAR.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)),
+                                 isi)
+
+    def _badan(self, kode, tanda):
+        """Badan fungsi `tanda`, dibatasi KURUNG KURAWAL SEIMBANG.
+
+        Daftar parameternya dilewati lebih dulu dengan menyeimbangkan `(`.
+        Tanpa langkah itu, sebuah tanda tangan seper
+        `rayakan(hadiah, { diam = false } = {})` membuat `{` pertama jatuh di
+        objek destructuring-nya dan badannya terbaca satu baris -- bentuk
+        kegagalan yang paling berbahaya di kelas ini, karena ia HIJAU: nol nama
+        dipanggil berarti nol nama di luar ikatan.
+        """
+        awal = kode.index(tanda)
+        buka = kode.index("(", awal)
+        dalam = 0
+        for n in range(buka, len(kode)):
+            if kode[n] == "(":
+                dalam += 1
+            elif kode[n] == ")":
+                dalam -= 1
+                if dalam == 0:
+                    buka = n
+                    break
+        kurawal = kode.index("{", buka)
+        dalam = 0
+        for n in range(kurawal, len(kode)):
+            if kode[n] == "{":
+                dalam += 1
+            elif kode[n] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return kode[awal:n + 1]
+        raise AssertionError(f"kurung badan `{tanda}` tidak pernah tertutup")
+
+    def _ikatan(self, kode):
+        """Nama yang punya tempat asal di berkas ini.
+
+        Tiga sumber, dan ketiganya hanya MEMPERBESAR himpunannya -- arah yang
+        dipilih dengan sengaja. Sebuah ikatan yang terlewat membuat pagar ini
+        memerah untuk kode yang sah, dan itu kegagalan yang jauh lebih mahal
+        daripada sebuah nama asing yang lolos: yang pertama membuat pagarnya
+        dilucuti, yang kedua cuma membuatnya tidak menangkap satu kasus.
+        """
+        nama = set()
+        for m in re.finditer(r"import\s*\{([^}]*)\}\s*from", kode):
+            for bagian in m.group(1).split(","):
+                bersih = bagian.strip().split(" as ")[-1].strip()
+                if bersih:
+                    nama.add(bersih)
+        nama |= set(re.findall(r"(?:function|class)\s+([A-Za-z_$][\w$]*)",
+                               kode))
+        nama |= set(re.findall(
+            r"(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=", kode))
+        # Parameter: `function f(a, b)`, `(a, b) => …`, dan `a => …`.
+        for m in re.finditer(
+                r"function\s*[A-Za-z_$\w]*\s*\(([^)]*)\)|\(([^)]*)\)\s*=>",
+                kode):
+            daftar = m.group(1) if m.group(1) is not None else m.group(2)
+            nama |= set(re.findall(r"[A-Za-z_$][\w$]*", daftar or ""))
+        nama |= set(re.findall(r"([A-Za-z_$][\w$]*)\s*=>", kode))
+        return nama
+
+    def _tak_terikat(self, berkas, tanda):
+        """Nama yang dipanggil di sebuah badan tanpa tempat asal di berkasnya.
+
+        Satu predikat, dipakai BERSAMA oleh C5, C7, dan tes sampel di bawah.
+        Dua jalan menuju vonis yang sama adalah cara tercepat membuat sampelnya
+        setuju dengan dirinya sendiri sambil berhenti menggambarkan pohonnya.
+        """
+        kode = self._kode(berkas)
+        badan = self._badan(kode, tanda)
+        terikat = self._ikatan(kode)
+        dipanggil = set(self.PANGGILAN.findall(badan))
+        return sorted(dipanggil - terikat - self.KATA_KUNCI - self.GLOBAL_SAH)
+
+    def _baris_impor(self, berkas, modul):
+        """Nomor baris klausa impor `modul` di `berkas`, untuk pesan galatnya."""
+        kode = self._kode(berkas)
+        m = re.search(r"import\s*\{[^}]*\}\s*from\s*[\"']" + re.escape(modul)
+                      + r"[\"']", kode)
+        return kode.count("\n", 0, m.start()) + 1 if m else 0
+
+    def test_rayakan_memanggil_nama_yang_terikat(self):
+        """§3 doktrin 104+120 -- `rayakan()` tidak boleh menyebut nama hantu.
+
+        Ini pagar yang lahir dari sebuah mutan yang BERTAHAN: `isyarat` dibuang
+        dari klausa impor inti.js sementara `rayakan()` tetap memanggilnya, dan
+        `Ran 965 / rc=0`. Pagar lama `test_rayakan_memasang_pengait_non_visual`
+        menagih KEHADIRAN `isyarat("acara")` di badannya -- dan kehadirannya
+        memang tidak berubah. Yang berubah cuma apakah nama itu menunjuk
+        sesuatu.
+
+        TIDAK dengan menjalankan inti.js di Node: itu menuntut stub DOM selebar
+        berkasnya sendiri, dan sebuah harness yang lebih besar daripada yang
+        diuji adalah harness yang suatu hari punya bug-nya sendiri.
+        """
+        hantu = self._tak_terikat("inti.js", "export function rayakan(")
+        self.assertEqual(
+            hantu, [],
+            "`rayakan()` memanggil nama yang tidak punya tempat asal di "
+            "inti.js: " + repr(hantu) + f". Klausa impor ./suara.js ada di "
+            f"inti.js:{self._baris_impor('inti.js', './suara.js')}, "
+            f"./gerak.js di "
+            f"inti.js:{self._baris_impor('inti.js', './gerak.js')}. Yang "
+            "terjadi kalau ini dibiarkan bukan pagar yang merah melainkan "
+            "`ReferenceError` pada perayaan PERTAMA yang pernah dialami "
+            "pelajar -- dan ia dilempar sesudah XP-nya tercatat, jadi yang "
+            "terlihat orangnya adalah hadiah yang setengah sampai")
+
+    def test_pengaturan_memanggil_nama_yang_terikat(self):
+        """§3.2 -- baris kontrol di Pengaturan memanggil yang ADA.
+
+        `layarAtur()` adalah satu-satunya permukaan tempat setelan suara dan
+        haptik bisa diubah. Sebuah peragaan yang memanggil nama yang salah
+        tidak memerahkan apa pun dan tidak menulis apa pun ke konsol sampai
+        seseorang benar-benar mengeklik kartunya -- dan yang terlihat orangnya
+        adalah kartu tingkat suara yang tersimpan tapi tidak pernah
+        memperagakan bunyinya, yaitu persis informasi yang kartu itu ada untuk
+        memberikan.
+        """
+        hantu = self._tak_terikat("layar-lain.js",
+                                  "export async function layarAtur(")
+        self.assertEqual(
+            hantu, [],
+            "`layarAtur()` memanggil nama yang tidak punya tempat asal di "
+            "layar-lain.js: " + repr(hantu) + ". Klausa impor ./inti.js ada di "
+            f"layar-lain.js:"
+            f"{self._baris_impor('layar-lain.js', './inti.js')}. Layar ini "
+            "tidak memuat suara.js sendiri dan tidak boleh -- seluruh "
+            "kosakata bunyinya dipinjam lewat inti.js, jadi nama yang tidak "
+            "ada di klausa itu adalah nama yang tidak pernah ada")
+
+    def test_predikat_ikatan_diadu_dua_arah(self):
+        """Pagar yang mengadu pagarnya sendiri, dan sisi HIJAU-nya sama penting.
+
+        Satu-satunya tes di kelas ini yang tidak membaca berkas sungguhan,
+        dan justru karena itu ia perlu ada -- tapi bukan karena sebuah
+        pelonggaran `_ikatan()` lolos tanpa saksi. Membuang klausa
+        parameternya memerahkan sebuah tes berkas-sungguhan,
+        `test_pengaturan_memanggil_nama_yang_terikat`; menambah nama
+        yang dipanggil ke `GLOBAL_SAH` memerahkan metode ini, dan cuma ini.
+        Yang tidak punya saksi adalah penangkap arrow berparameter
+        tunggal tanpa kurung: bentuk itu tidak pernah ditulis di
+        `webapp/statik/js/`, jadi lubangnya jujur -- ia menunggu berkas
+        pertama yang memakainya, bukan menambal cakupan yang sudah ada.
+
+        Lewat `_tak_terikat()` dan `_kode()` yang SAMA dengan berkas sungguhan,
+        termasuk penulisan ke berkas: sebuah predikat yang diuji lewat jalan
+        kedua adalah predikat yang suatu hari berbeda dari yang berlaku.
+        """
+        sampel = (
+            # Nama yang diimpor: terikat.
+            ("import { isyarat } from './suara.js';\n"
+             "export function rayakan(h, { diam = false } = {}) {\n"
+             "  isyarat('acara');\n}\n", []),
+            # Nama yang dipanggil tapi TIDAK diimpor: inilah mutan U5.
+            ("import { sentuhPerangkat } from './suara.js';\n"
+             "export function rayakan(h, { diam = false } = {}) {\n"
+             "  isyarat('acara');\n  sentuhPerangkat();\n}\n", ["isyarat"]),
+            # Didefinisikan di berkas yang sama: terikat. Ini kontrol dua arah
+            # untuk C7 -- `mainkanContoh` nyatanya DIIMPOR dari inti.js, bukan
+            # didefinisikan di layar-lain.js, jadi sisi "lokal" harus punya
+            # sampelnya sendiri atau ia tidak pernah teruji.
+            ("function mainkanContoh() {}\n"
+             "export function rayakan(h, { diam = false } = {}) {\n"
+             "  mainkanContoh();\n}\n", []),
+            # Parameter fungsi dalam: terikat. `kartuPilihan(..., saatPilih)`
+            # di layar-lain.js:414 adalah bentuk yang ditangguhkan klausa
+            # parameter di `_ikatan()`, dan yang membayar klausa itu cuma
+            # `test_pengaturan_memanggil_nama_yang_terikat`: melumpuhkan
+            # penangkap parameter bentuk `function` memerahkannya, sedangkan
+            # `test_rayakan_memanggil_nama_yang_terikat` tetap hijau -- daftar
+            # gugur mutan itu tidak memuat nama lain, baik di kelas ini maupun
+            # di seluruh suite.
+            ("export function rayakan(h, { diam = false } = {}) {\n"
+             "  const kartu = (nilai, saatPilih) => saatPilih(nilai);\n"
+             "  return kartu(1, (x) => x);\n}\n", []),
+            # Pemanggilan METODE: bukan ikatan modul, jadi tidak ditagih.
+            ("export function rayakan(h, { diam = false } = {}) {\n"
+             "  document.dispatchEvent(new CustomEvent('x'));\n}\n", []),
+            # Komentar yang MENYEBUT nama hantu tidak memerahkan apa pun. Pagar
+            # yang memerah untuk kalimat yang menjelaskan larangannya akan
+            # dilonggarkan orang berikutnya, bukan dibaca.
+            ("export function rayakan(h, { diam = false } = {}) {\n"
+             "  // dulu di sini ada contohSuara(); dibuang karena tidak ada\n"
+             "  return null;\n}\n", []),
+            # Daftar parameter yang memuat `{`: badannya harus tetap terbaca
+            # UTUH. Kalau pengambil badannya tersandung di situ, sampel ini
+            # hijau untuk alasan yang salah -- nol nama dipanggil.
+            ("export function rayakan(hadiah, { diam = false, dari = null } "
+             "= {}) {\n  hantuSekali();\n}\n", ["hantuSekali"]),
+            # K1 PANGGILAN `\s*\(`: panggilan dengan spasi ekstra di depan
+            # kurung tetap harus terbaca sebagai panggilan.
+            ("export function rayakan(h) {\n"
+             "  hantuPanggilan  ('acara');\n}\n", ["hantuPanggilan"]),
+            # K2 `import\s*\{`: klausa impor yang berpindah baris tetap terikat.
+            ("import\n  { isyarat } from './suara.js';\n"
+             "export function rayakan(h) {\n  isyarat('acara');\n}\n", []),
+            # K3 `\}\s*from`: `from` yang menyusul di baris berikutnya.
+            ("import { isyarat }\n  from './suara.js';\n"
+             "export function rayakan(h) {\n  isyarat('acara');\n}\n", []),
+            # K4 `(?:function|class)\s+`: deklarasi lokal yang berpindah baris.
+            ("function\n  bantu() {\n  return 1;\n}\n"
+             "export function rayakan(h) {\n  bantu();\n}\n", []),
+            # K5 `(?:const|let|var)\s+`: nama yang diikat di baris berikutnya.
+            ("const\n  penutup = () => 1;\n"
+             "export function rayakan(h) {\n  penutup();\n}\n", []),
+            # K6 `\s*=`: tanda sama dengan yang turun baris.
+            ("const penggaya\n  = () => 1;\n"
+             "export function rayakan(h) {\n  penggaya();\n}\n", []),
+            # K7 `function\s*[`: parameter fungsi DALAM badan rayakan, deklarasinya
+            # berpindah baris; kalau penangkapnya berhenti bekerja, nama itu jadi
+            # hantu sementara panggilannya tetap ada di rentang yang diperiksa.
+            ("export function rayakan(h) {\n  function\n    tulis(sandi) {\n"
+             "    return sandi();\n  }\n  tulis(h);\n}\n", []),
+            # K8 `]*\s*\(`: kurung parameter yang didahului spasi ekstra, bentuk
+            # yang sama sekali sah di JS dan tidak ditagih apa pun hari ini.
+            ("export function rayakan(h) {\n  function tulis  (sandi) {\n"
+             "    return sandi();\n  }\n  tulis(h);\n}\n", []),
+            # K9 `\)\s*=>`: panah kurung yang `=>` -nya turun baris.
+            ("export function rayakan(h) {\n  const kartu = (nilai)\n"
+             "    => nilai();\n  kartu(1);\n}\n", []),
+            # K10 `([A-Za-z_$][\w$]*)\s*=>`: panah berparameter tunggal tanpa
+            # kurung, dan `=>` -nya turun baris.
+            ("export function rayakan(h) {\n  const satu = angka\n"
+             "    => angka();\n  satu(1);\n}\n", []),
+        )
+        with tempfile.TemporaryDirectory() as d:
+            asli = self.AKAR_JS
+            try:
+                self.AKAR_JS = d
+                for nomor, (isi, harap) in enumerate(sampel):
+                    nama = f"sampel{nomor}.js"
+                    with open(os.path.join(d, nama), "w",
+                              encoding="utf-8") as f:
+                        f.write(isi)
+                    temuan = self._tak_terikat(
+                        nama, "export function rayakan(")
+                    self.assertEqual(
+                        temuan, harap,
+                        f"sampel {nomor} memberi {temuan!r}, diharapkan "
+                        f"{harap!r}. Sumber:\n{isi}"
+                        "Sampel yang berubah vonisnya berarti predikat ikatan "
+                        "baru saja berhenti membedakan nama yang menunjuk "
+                        "sesuatu dari nama yang tidak -- dan mutan yang sudah "
+                        "pernah bertahan di seluruh suite akan bertahan lagi")
+            finally:
+                self.AKAR_JS = asli
+
+    def test_kelas_petak_pengaturan_suara_punya_selektornya(self):
+        """§3.4 -- kelas di markup harus punya selektornya di gaya.css.
+
+        SEMPIT dengan sengaja, dan batasnya ditulis di sini supaya yang
+        berikutnya tidak memperlebarnya tanpa mengukur: yang ditagih HANYA
+        keluarga `petak-<n>` yang dibangkitkan baris pengaturan suara. Sapuan
+        atas semua kelas di semua layar sudah ditolak sebagai tagihan --
+        `h("div.deret.deret-rapat")` dan belasan kelas keadaan lain lahir dari
+        penggabungan string, dan sebuah pagar yang memerah untuk kelas yang sah
+        akan dilucuti orang berikutnya, bukan dibaca.
+
+        Dua hal ditagih sekaligus, dan yang kedua bukan hiasan: jumlah kolomnya
+        harus SAMA dengan jumlah tingkat di `SUARA`. Sebuah tingkat keempat yang
+        ditambahkan tanpa menaikkan kelasnya menghasilkan tiga kartu di satu
+        baris dan satu kartu menggantung sendirian di baris kedua -- bentuk
+        yang terbaca sebagai "yang keempat ini lain", padahal ia sederajat.
+        """
+        js = self._kode("layar-lain.js")
+        m = re.search(
+            r"""const petakSuara = h\(\s*["']div\.petak\.petak-(\d+)["']""",
+            js)
+        self.assertIsNotNone(
+            m, "baris `const petakSuara = h(\"div.petak.petak-<n>\", …)` tidak "
+               "ditemukan di layar-lain.js. Tiga kartu tingkat suara adalah "
+               "satu-satunya cara setelan itu bisa diubah di web")
+        kolom = int(m.group(1))
+
+        # Jumlah tingkat dibaca dari `export const SUARA` di suara.js, bukan
+        # diketik: sebuah angka yang diketik di sini adalah angka yang suatu
+        # hari berbohong tanpa satu pun tes gagal.
+        with open(os.path.join(self.AKAR_JS, "suara.js"),
+                  encoding="utf-8") as f:
+            sumber = f.read()
+        tanpa = self.KOMENTAR.sub("", sumber)
+        blok = re.search(r"export const SUARA = \[(.*?)\n\];", tanpa, re.S)
+        self.assertIsNotNone(blok, "`export const SUARA = [` hilang suara.js")
+        tingkat = re.findall(r"^\s{2}\[\"(\w+)\"", blok.group(1), re.M)
+        self.assertEqual(
+            kolom, len(tingkat),
+            f"kisi kartu suara `petak-{kolom}` tapi `SUARA` punya "
+            f"{len(tingkat)} tingkat ({tingkat!r}). Ruang lebar dipakai dengan "
+            "MENAMBAH KOLOM, dan jumlah kolomnya karena itu ikut jumlah "
+            "pilihannya -- satu kartu yang menggantung sendirian di baris "
+            "kedua terbaca sebagai 'yang ini lain', padahal ia sederajat")
+
+        with open(os.path.join(os.path.dirname(self.AKAR_JS), "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+        self.assertRegex(
+            css, r"\.petak-" + str(kolom) + r"\b",
+            f"kelas `petak-{kolom}` dipakai di layar-lain.js tapi tidak punya "
+            "satu pun selektor di gaya.css. Yang terjadi bukan error melainkan "
+            "`display: grid` tanpa `grid-template-columns`: tiga kartu "
+            "bertumpuk satu kolom, pada layar selebar apa pun, dan tidak ada "
+            "yang menuliskan keluhannya di mana pun")
+
+    def test_pesan_galat_ikut_menunjuk_baris_impor(self):
+        """Pesan galat wajib menunjuk baris yang ADA, bukan baris 0.
+
+        `test_rayakan_memanggil_nama_yang_terikat` dan
+        `test_pengaturan_memanggil_nama_yang_terikat` menulis klausa impor ke
+        dalam pesan `assertEqual` mereka ("ada di inti.js:26"), dan angka itu
+        datang dari `_baris_impor()` - regex KETIGA atas bentuk klausa impor, di
+        luar `_ikatan()` yang memutuskan dan `sampel` yang bersaksi. Karena
+        keluarannya hanya lewat di PESAN, menyempitkan sebuah knob whitespace di
+        dalamnya tidak memerahkan apa pun: `import` yang tidak lagi memaafkan
+        spasi membuat klausa multi-baris tidak terbaca, cabang `if m else 0`
+        mengambil jalan 0, dan yang dibaca orangnya adalah baris 0 milik
+        `inti.js` - sebuah baris yang tidak ada. Pagar yang mengirim orang ke
+        baris nol adalah pagar yang akan disunting tanpa dibaca.
+
+        Ditagih dengan IMPLEMENTASI KEDUA, bukan dengan angka 26 yang diketik:
+        barisnya dicari dengan menyapu `splitlines()` lalu mundur dari baris
+        `from` ke baris `import` terdekat di atasnya. Dua mesin yang boleh
+        berbeda pendapat itulah tesnya; sebuah `26` yang diketik di sini adalah
+        angka yang suatu hari berbohong tanpa satu pun tes gagal.
+
+        `> 0` ditagih lebih dulu dan itu bukan hiasan: tanpa itu dua implementasi
+        yang sama-sama batal justru SETUJU di angka 0 - klausa yang dihapus dari
+        berkas membuat pesan berhenti menunjuk apa pun sambil kelas ini tetap
+        hijau.
+        """
+        tiga = (("inti.js", "./suara.js"), ("inti.js", "./gerak.js"),
+                ("layar-lain.js", "./inti.js"))
+        for berkas, modul in tiga:
+            dilaporkan = self._baris_impor(berkas, modul)
+            baris2 = self._kode(berkas).splitlines()
+            mandiri = 0
+            for i, teks in enumerate(baris2):
+                if ('from "' + modul + '"') in teks or \
+                        ("from '" + modul + "'") in teks:
+                    for j in range(i, -1, -1):
+                        if baris2[j].lstrip().startswith("import"):
+                            mandiri = j + 1
+                            break
+                    break
+            self.assertGreater(
+                dilaporkan, 0,
+                f"`_baris_impor('{berkas}', '{modul}')` mengembalikan "
+                f"{dilaporkan}. Klausa itu ada di berkasnya, dan pesan galat "
+                "yang menunjuk baris nol mengirim orang menyunting berkas yang "
+                "salah persis pada saat pagar ini memerah")
+            self.assertEqual(
+                dilaporkan, mandiri,
+                f"dua mesin berbeda pendapat soal baris klausa '{modul}' di "
+                f"{berkas}: `_baris_impor()` bilang {dilaporkan}, sapuan baris "
+                f"bilang {mandiri}. Yang bedanya cuma satu angka itu tidak "
+                "membuat tes mana pun merah selain yang ini - dan itulah "
+                "satu-satunya cara angka di pesan galat bisa dipercaya")
+
+
+class TestSaksiSumberSimbol(unittest.TestCase):
+    """Bahan yang runtuh wajib memerahkan DIRINYA, bukan pagar yang memakainya.
+
+    `TestNamaSimbolDiKomentar` menjawab satu pertanyaan — "simbol yang disebut
+    komentar itu benar-benar ada" — dan jawabannya cuma sebaik BAHAN yang
+    disapunya, yaitu `_sumber_repo()`. Begitu bahan itu kehilangan sebagian
+    pohonnya, pagar nama-simbol tetap memerah; yang salah bukan warnanya
+    melainkan KALIMATNYA. Yang terbaca pembaca berikutnya adalah daftar
+    puluhan simbol SAH yang disebut hantu, beserta saran "perbaiki NAMANYA" —
+    saran yang mengirim orang menyunting komentar yang sejak awal benar,
+    sementara yang rusak pengukurnya.
+
+    Ini bukan kekhawatiran teoretis. Penyaring bytecode `_sumber_repo()` dulu
+    memeriksa `__pycache__` sebagai SUBSTRING seluruh jalur absolut, bukan
+    sebagai satu KOMPONEN jalur. Di akar repo keduanya memberi jawaban
+    identik — nol berkas sumber tinggal di bawah direktori bytecode — jadi
+    tidak ada satu pun tes yang bisa membedakannya. Yang membongkarnya bukan
+    perubahan kode melainkan perubahan LOKASI: satu salinan pohon yang
+    jalurnya memuat komponen `__pycache__` membuat predikat itu benar untuk
+    SETIAP jalur, `sumber` menyusut jadi `main.py` seorang diri, dan baterai
+    mutasi di atas salinan itu memerah SELURUH selnya sekaligus termasuk sel
+    kontrolnya. Dibaca dari bawah, pola itu terlihat seperti "mutannya
+    terbukti" — padahal nol mutan yang terukur.
+
+    SAKSI, bukan CACAH. Pagar berbasis "paling sedikit N berkas" sudah dicoba
+    dan dijatuhkan: angkanya menyandera siapa pun yang nanti menambah atau
+    menggabung berkas sumber, dan lebih buruk, ia gampang menagih kuantitas
+    yang bukan kuantitas yang dihitungnya (himpunan NAMA berkas vs cacah
+    ENTRI — lima `__init__.py` membuat keduanya berbeda empat). Yang
+    sebenarnya ingin diketahui cuma "tiap subtree masih ikut terbaca", dan
+    satu berkas per subtree menjawabnya tanpa memasang lantai pada apa pun.
+
+    Kelas ini DIPERLUKAN di samping predikat yang sudah diperbaiki, bukan
+    menggantikannya: perbaikan menutup satu cara bahan itu runtuh, kelas ini
+    membuat cara BERIKUTNYA terdengar benar. Buktinya subtree `layar` —
+    membuangnya dari jalur walk `_sumber_repo()` tidak memerahkan satu pun tes
+    di seluruh suite sebelum kelas ini ada, karena tidak ada komentar di
+    `webapp/statik/js/` yang kebetulan menamai simbol yang hanya `layar/`
+    deklarasikan.
+    """
+
+    # Satu berkas per subtree yang disapu `_sumber_repo()`, dipilih karena
+    # nama dasarnya cuma ada di subtree itu. Yang TIDAK boleh diduplikasi di
+    # sini adalah jalur walk-nya -- bahannya diambil dengan MEMANGGIL
+    # `_sumber_repo()`, supaya pagar ini mengadu apa yang benar-benar dipakai
+    # sapuan nama-simbol, bukan tiruannya yang suatu hari melenceng.
+    SAKSI = (
+        ("webapp", "suara.js"),
+        ("pelajar", "progress.py"),
+        ("inti", "runner.py"),
+        ("layar", "exercises.py"),
+        ("tests", "test_web.py"),
+        ("akar", "main.py"),
+    )
+
+    def test_sumber_simbol_memuat_saksi_tiap_subtree(self):
+        sumber = TestNamaSimbolDiKomentar()._sumber_repo()
+        self.assertTrue(
+            sumber, "`_sumber_repo()` mengembalikan daftar kosong; sapuan "
+                    "nama-simbol di atas bahan kosong melaporkan SETIAP nama "
+                    "sebagai hantu")
+
+        terbaca = {}
+        for nama, teks in sumber:
+            terbaca.setdefault(nama, teks)
+        hilang = [d + "/" + n for d, n in self.SAKSI
+                  if not terbaca.get(n, "").strip()]
+        self.assertEqual(
+            hilang, [],
+            "`_sumber_repo()` tidak membaca saksi dari " + str(hilang)
+            + ". Itu BAHAN yang disapu TestNamaSimbolDiKomentar: bahan yang "
+            "separuh membuatnya melaporkan simbol sah sebagai hantu, dan "
+            "pesannya menyuruh pembacanya memperbaiki komentar yang justru "
+            "benar. Perbaiki jalur walk `_sumber_repo()` — jangan melonggarkan "
+            "pagar nama-simbolnya, dan jangan menambah simbol supaya ia hijau")
+
+
+# ---------------------------------------- palet perintah sebagai combobox APG
+
+_SKRIP_PALET = r"""
+// DRIVER, BUKAN CERMIN. Ia tidak memutuskan satu pun atribut sendiri: yang
+// dikerjakannya memanggil `bukaPalet()` yang SUNGGUHAN -- dipotong dari sumber
+// `aplikasi.js` dan dijalankan dengan `h()`/`isikan()` yang asli dari inti.js
+// -- lalu melaporkan keadaan DOM apa adanya. Seluruh harapan tinggal di Python,
+// di kelas yang memuat skrip ini. Satu atribut yang diputuskan di dua tempat
+// adalah satu atribut yang tidak dijaga oleh salah satu pun.
+//
+// DOM-nya jebak, bukan jsdom: yang dibutuhkan kontrak APG cuma peta atribut
+// yang bisa dibaca kembali, classList yang sungguhan mengubah className, dan
+// `getBoundingClientRect` yang nilainya bisa disetel tes. Nol dependensi
+// berlaku di tes juga.
+
+class Simpul {}
+class Teks extends Simpul {
+  constructor(t) { super(); this.data = String(t); }
+}
+
+class Elemen extends Simpul {
+  constructor(tag) {
+    super();
+    this.tagName = String(tag).toUpperCase();
+    this.className = "";
+    this.id = "";
+    this.value = "";
+    this.style = {};
+    this.dataset = {};
+    this.anak = [];
+    this.sifat = new Map();
+    this.pendengar = new Map();
+    this.fokusKe = 0;
+    // Posisi gulir tinggal di field INTERNAL, dan itu bukan gaya penulisan:
+    // `scrollTop`/`scrollLeft` punya accessor pencatat di bawah, jadi sebuah
+    // constructor yang menulis lewat accessor-nya sendiri akan menamai SETIAP
+    // elemen yang pernah lahir -- termasuk <html> dan <body> milik `document`
+    // -- sebagai penggulir. Petanya penuh sejak sebelum tes apa pun berjalan,
+    // dan pagar yang selalu merah tidak memberi tahu apa pun.
+    this._gulirAtas = 0;
+    this._gulirKiri = 0;
+    this.kotak = { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 };
+    const kelas = () => this.className.split(/\s+/).filter(Boolean);
+    const tulis = (d) => { this.className = d.join(" "); };
+    this.classList = {
+      add: (k) => { const d = kelas(); if (!d.includes(k)) d.push(k); tulis(d); },
+      remove: (k) => tulis(kelas().filter((x) => x !== k)),
+      contains: (k) => kelas().includes(k),
+      toggle: (k, on) => {
+        const mau = on === undefined ? !kelas().includes(k) : !!on;
+        if (mau) this.classList.add(k); else this.classList.remove(k);
+        return mau;
+      },
+    };
+  }
+  get children() { return this.anak.filter((n) => n instanceof Elemen); }
+  get firstChild() { return this.anak[0] || null; }
+  get textContent() {
+    return this.anak
+      .map((n) => (n instanceof Teks ? n.data : n.textContent)).join("");
+  }
+  setAttribute(k, v) { this.sifat.set(k, String(v)); }
+  getAttribute(k) { return this.sifat.has(k) ? this.sifat.get(k) : null; }
+  removeAttribute(k) { this.sifat.delete(k); }
+  hasAttribute(k) { return this.sifat.has(k); }
+  appendChild(n) { this.anak.push(n); return n; }
+  removeChild(n) { this.anak = this.anak.filter((x) => x !== n); return n; }
+  addEventListener(nama, fn) {
+    if (!this.pendengar.has(nama)) this.pendengar.set(nama, []);
+    this.pendengar.get(nama).push(fn);
+  }
+  removeEventListener() {}
+  focus() { this.fokusKe++; globalThis.__fokus = this; }
+  blur() {}
+  /** Nama elemen ini di mata pencatat gulir: kelasnya kalau ada, nama tagnya
+   *  kalau tidak, plus `#id` kalau idnya terisi. Dengan itu `.palet-hasil`
+   *  dan `<html>` jadi dua kunci yang jelas berbeda tanpa sisi Python perlu
+   *  tahu apa pun tentang bentuk pohonnya. */
+  get _namaGulir() {
+    return (this.className || this.tagName.toLowerCase())
+      + (this.id ? "#" + this.id : "");
+  }
+  /** Pencatat, bukan penyimpan: nilainya tetap bisa DIBACA kembali seperti
+   *  field biasa, tapi setiap PENULISAN meninggalkan nama elemennya di
+   *  `__tulisGulir`. Itulah satu-satunya cara Python bisa menuntut "yang
+   *  digulir cuma wadah hasil" -- pagar teks tidak bisa, karena nama
+   *  cara-salahnya tak terbatas (`documentElement`, `body`, elemen apa pun
+   *  yang kebetulan tergapai) sedangkan akibatnya cuma satu. */
+  _catatGulir() {
+    const peta = globalThis.__tulisGulir;
+    peta.set(this._namaGulir, (peta.get(this._namaGulir) || 0) + 1);
+  }
+  get scrollTop() { return this._gulirAtas; }
+  set scrollTop(v) { this._gulirAtas = v; this._catatGulir(); }
+  get scrollLeft() { return this._gulirKiri; }
+  set scrollLeft(v) { this._gulirKiri = v; this._catatGulir(); }
+  // Jebakan, bukan fasilitas: §2D melarang `scrollIntoView` di dalam palet,
+  // jadi setiap pemanggilan dicatat supaya Python bisa menuntut angka NOL.
+  // Yang dijaga di sini bukan teksnya melainkan akibatnya.
+  scrollIntoView() { globalThis.__gulirLeluhur++; }
+  getBoundingClientRect() { return this.kotak; }
+  querySelectorAll() { return []; }
+  querySelector() { return null; }
+  picu(nama, ev) { for (const fn of this.pendengar.get(nama) || []) fn(ev); }
+}
+
+globalThis.__gulirLeluhur = 0;
+// Dua pencatat gulir yang BERBEDA mekanismenya, karena kelas akibatnya satu
+// tapi jalannya dua: menggulir sebuah ELEMEN menyentuh `scrollTop`-nya dan
+// tertangkap accessor di atas, sedangkan menggulir JENDELA tidak menyentuh
+// `scrollTop` elemen mana pun sama sekali. Pencatat per-elemen buta total
+// terhadap `window.scrollTo`, padahal yang dialami pembaca identik: halaman
+// di belakang tirai berpindah.
+globalThis.__tulisGulir = new Map();
+globalThis.__tulisWindow = 0;
+globalThis.__fokus = null;
+globalThis.Node = Simpul;
+globalThis.document = {
+  documentElement: new Elemen("html"),
+  body: new Elemen("body"),
+  createElement: (t) => new Elemen(t),
+  createTextNode: (t) => new Teks(t),
+  createDocumentFragment: () => new Elemen("#fragment"),
+  querySelector: () => null,
+  querySelectorAll: () => [],
+  addEventListener() {},
+  removeEventListener() {},
+};
+globalThis.window = {
+  TOKEN_BELAJAR: "x", innerWidth: 1200, innerHeight: 900,
+  addEventListener() {}, removeEventListener() {},
+  matchMedia: () => ({ matches: false, addEventListener() {} }),
+  getComputedStyle: () => ({ getPropertyValue: () => "" }),
+  scrollTo() { globalThis.__tulisWindow++; },
+  scroll() { globalThis.__tulisWindow++; },
+};
+globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
+globalThis.requestAnimationFrame = (fn) => { fn(0); return 1; };
+globalThis.cancelAnimationFrame = () => {};
+
+const fs = await import("node:fs");
+const { h, isikan } = await import(process.argv[2]);
+const blok = fs.readFileSync(process.argv[3], "utf8");
+
+let tutupDipanggil = 0;
+let isiJendela = null, judulJendela = null, kotakJendela = null;
+const lokasi = { hash: "" };
+
+// `ctx.ingat` yang SUNGGUHAN tidak ikut dipotong ke sini -- ia tinggal di
+// `const ctx` di kepala aplikasi.js, di luar wilayah palet. Jadi yang dipasang
+// di bawah penggantinya, dan ia MEREKAM alih-alih mengembalikan `undefined`:
+// `bukaPalet()` membaca "palet-riwayat" saat lahir dan `buka()` menulisnya
+// sesudah bernavigasi, jadi pengganti yang tidak punya `ingat` membuat palet
+// melempar sebelum satu atribut pun terpasang. Dibuat merekam, bukan no-op,
+// supaya AKIBAT pencatatannya bisa diadu tanpa menyentuh driver ini lagi.
+//
+// Kuncinya apa adanya ("palet-riwayat"), tanpa awalan `belajar.ingat.`:
+// awalan itu dipasang DI DALAM `ctx.ingat` yang sungguhan, dan yang diuji di
+// sini bukan penamaan kuncinya melainkan bahwa palet cuma lewat satu pintu.
+const ingatan = {};
+// Cacah panggilan BERNILAI per kunci, dan ia memang berdiri di samping
+// `ingatan`, bukan di dalamnya: keadaan akhir ingatan tidak bisa membedakan
+// "ditulis sekali" dari "ditulis dua kali dengan nilai yang sama".
+// `riwayatNaikkan` murni dan idempoten terhadap alamat yang sama, jadi
+// `buka()` yang mencatat dua kali dari `riwayat` yang sama menyimpan daftar
+// yang persis identik -- dan setiap pagar yang membaca HASILNYA tetap hijau.
+const cacahTulis = {};
+const ingatPalsu = (kunci, nilai) => {
+  if (nilai === undefined) return kunci in ingatan ? ingatan[kunci] : null;
+  cacahTulis[kunci] = (cacahTulis[kunci] || 0) + 1;
+  ingatan[kunci] = nilai;
+  return nilai;
+};
+
+const buat = new Function(
+  "h", "isikan", "jendela", "tutupJendelaKini", "masukBerurut", "tunda",
+  "api", "ctx", "location",
+  '"use strict";\n' + blok + "\nreturn { bukaPalet, daftarPerintah };");
+
+const { bukaPalet, daftarPerintah } = buat(
+  h, isikan,
+  // `jendela()` sungguhan memasang tirai, jerat fokus, dan pendengar Escape --
+  // tidak satu pun diuji di sini. Yang dipinjam: `isi` (pohon yang DIPASANG,
+  // bukan variabel internal `bukaPalet`), bentuk `.jendela > .jendela-badan >
+  // isi` yang dibangun inti.js:418, dan kontrak `saatBuka(kotak, tutup)` dari
+  // inti.js:449 -- di situlah fokus awal mendarat di medan, dan di situ pula
+  // satu-satunya pintu `bukaPalet` ke `kotak`. Kepala dan `.jendela-kaki`
+  // sengaja tidak ikut: tidak ada yang membacanya di sini.
+  (opsi) => {
+    isiJendela = opsi.isi; judulJendela = opsi.judul;
+    kotakJendela = h("div.jendela", {}, h("div.jendela-badan", {}, opsi.isi));
+    if (opsi.saatBuka) opsi.saatBuka(kotakJendela, () => {});
+    return () => {};
+  },
+  () => { tutupDipanggil++; },
+  () => {},                       // masukBerurut: animasi bukan urusan tes ini
+  () => () => {},                 // tunda: `cariIsi` sengaja tidak pernah nyala
+  { ambil: async () => ({ hasil: [] }) },
+  { ingat: ingatPalsu,
+    awal: { bahasa: [
+      { key: "html", label: "HTML", materi: 44, kuis: 6, latihan: 19 },
+      { key: "css", label: "CSS", materi: 40, kuis: 6, latihan: 18 },
+      { key: "python", label: "Python", materi: 48, kuis: 7, latihan: 19 },
+  ] } },
+  lokasi);
+
+bukaPalet();
+
+const turun = (el, sel) => {
+  const keluar = [];
+  (function telusur(n) {
+    if (!(n instanceof Elemen)) return;
+    if (sel(n)) keluar.push(n);
+    for (const a of n.anak) telusur(a);
+  })(el);
+  return keluar;
+};
+const kelasnya = (k) => (n) => n.className.split(/\s+/).includes(k);
+
+const medan = turun(isiJendela, kelasnya("palet-cari"))[0];
+const hasil = turun(isiJendela, kelasnya("palet-hasil"))[0];
+const butirKini = () => turun(hasil, kelasnya("palet-item"));
+
+const sifatnya = (el) => Object.fromEntries([...el.sifat.entries()].sort());
+const ketuk = () => ({ judul: judulJendela, hasilSifat: sifatnya(hasil),
+  fokus: globalThis.__fokus === medan ? "medan"
+    : globalThis.__fokus === null ? "tidakAda" : "lain",
+  medanSifat: sifatnya(medan),
+  aktif: medan.getAttribute("aria-activedescendant"),
+  adaAktif: medan.hasAttribute("aria-activedescendant"),
+  butir: butirKini().map((el) => ({
+    tag: el.tagName, id: el.id, kelas: el.className,
+    sifat: sifatnya(el), fokusKe: el.fokusKe,
+  })),
+});
+
+const tekan = (kunci, tambahan = {}) => {
+  let dicegah = 0;
+  medan.picu("keydown", {
+    key: kunci, ctrlKey: false,
+    preventDefault: () => { dicegah++; }, ...tambahan,
+  });
+  return dicegah;
+};
+
+const laporan = { langkah: {} };
+const catat = (nama, tambah = {}) => {
+  laporan.langkah[nama] = { ...ketuk(), ...tambah };
+};
+
+catat("awal", { tagHasil: hasil.tagName, idHasil: hasil.id,
+                kelasHasil: hasil.className, sifatHasil: sifatnya(hasil) });
+catat("turun1", { dicegah: tekan("ArrowDown") });
+catat("turun2", { dicegah: tekan("ArrowDown") });
+
+// Enter pada butir indeks 2: hash-nya HARUS jadi href butir itu, dan hrefnya
+// dibaca dari `daftarPerintah()` yang sama -- bukan diketik di sini.
+laporan.hrefKe2 = daftarPerintah()[2].href;
+tekan("Enter");
+laporan.hashSesudahEnter = lokasi.hash;
+laporan.tutupDipanggil = tutupDipanggil;
+
+catat("home", { dicegah: tekan("Home") });
+catat("end", { dicegah: tekan("End") });
+catat("ctrlN", { dicegah: tekan("n", { ctrlKey: true }) });
+catat("ctrlP", { dicegah: tekan("p", { ctrlKey: true }) });
+
+// Daftar KOSONG: tidak ada satu pun perintah yang memuat deretan huruf ini.
+medan.value = "zzzzqqqqxxxx";
+medan.picu("input", {});
+catat("kosong", { tagAnak0: (hasil.children[0] || {}).tagName || null,
+                  kelasAnak0: (hasil.children[0] || {}).className || null });
+catat("kosongTurun", { dicegah: tekan("ArrowDown") });
+catat("kosongEnd", { dicegah: tekan("End") });
+const hashSebelum = lokasi.hash;
+tekan("Enter");
+laporan.enterSaatKosongMengubahHash = lokasi.hash !== hashSebelum;
+
+// Kembali berisi: id butir harus lahir lagi dari nol.
+medan.value = "";
+medan.picu("input", {});
+catat("pulih");
+
+// Gulir. Kotak dipalsukan supaya butir TERAKHIR berada di bawah tepi wadah,
+// lalu satu `End` harus memindahkan `scrollTop` wadah -- dan HANYA itu.
+const bar = butirKini();
+hasil.kotak = { top: 100, bottom: 300, left: 0,
+                right: 500, width: 500, height: 200 };
+bar.forEach((el, i) => {
+  el.kotak = { top: 100 + i * 40, bottom: 140 + i * 40,
+               left: 0, right: 500, width: 500, height: 40 };
+});
+hasil.scrollTop = 0;
+// Kedua pencatat dinolkan TEPAT di sini, bukan di kelahiran medan tiruan:
+// baris di atas adalah PENATAAN tes, dan peta yang masih memuat jejaknya
+// membuat pagar "siapa yang digulir" mengadu akibat satu keystroke dengan
+// sesuatu yang bukan perbuatan palet sama sekali.
+globalThis.__tulisGulir.clear();
+globalThis.__tulisWindow = 0;
+tekan("End");
+laporan.gulirWadah = hasil.scrollTop;
+laporan.gulirHarusnya = (100 + (bar.length - 1) * 40 + 40) - 300;
+laporan.gulirLeluhur = globalThis.__gulirLeluhur;
+laporan.tulisGulir = [...globalThis.__tulisGulir.keys()].sort();
+laporan.tulisWindow = globalThis.__tulisWindow;
+laporan.fokusButirTotal = bar.reduce((a, el) => a + el.fokusKe, 0);
+laporan.fokusMedanTotal = medan.fokusKe;
+laporan.cacahPerintah = bar.length;
+
+// AKIBAT pencatatan riwayat, dipanen PALING AKHIR -- dan urutannya mengikat,
+// bukan kerapian. `Enter` memanggil `buka()` yang SUNGGUHAN, dan `buka()`
+// menutup jendela lalu menulis ingatan. Menaruhnya di tengah berarti setiap
+// field di atas ikut mengukur sebuah navigasi yang bukan bagian dari
+// pertanyaannya -- `tutupDipanggil` yang paling jelas.
+laporan.riwayatSebelum = ingatan["palet-riwayat"] || null;
+laporan.tulisSebelum = cacahTulis["palet-riwayat"] || 0;
+tekan("Enter");
+laporan.riwayatSesudah = ingatan["palet-riwayat"] || null;
+laporan.tulisSesudah = cacahTulis["palet-riwayat"] || 0;
+laporan.kunciIngatan = Object.keys(ingatan).sort();
+
+// Kaki pintasan, dipanen PALING AKHIR -- sesudah blok riwayat di atas, dan
+// urutannya mengikat sama seperti blok itu. Sebabnya di sini malah lebih
+// keras: ketiga fikstur di bawah MEMUTASI pohon dengan sengaja, jadi setiap
+// medan yang dipanen sesudahnya akan mengukur pohon yang sudah dirusak dan
+// melaporkannya seolah itu keadaan palet yang sungguhan.
+//
+// SATU pengukur, dipanggil empat kali. Empat ekspresi yang masing-masing
+// menuliskan telusurnya sendiri adalah empat ekspresi yang suatu hari
+// melenceng -- dan yang melenceng duluan biasanya fiksturnya, sehingga
+// pagarnya tetap hijau sambil berhenti mengadu hal yang sama.
+//
+// Pasangannya (di_badan, anak_kotak). `di_badan` mencacah kaki di SELURUH
+// subpohon `.jendela-badan` -- `.palet-hasil` ada di dalamnya, jadi kaki di
+// wadah gulir pertama ikut terhitung di sini bersama kaki di wadah gulir
+// kedua. `anak_kotak` cuma mencacah anak LANGSUNG `.jendela`.
+const badanJendela = turun(kotakJendela, kelasnya("jendela-badan"))[0];
+const cacahKaki = () => [
+  turun(badanJendela, kelasnya("palet-kaki")).length,
+  kotakJendela.children.filter(kelasnya("palet-kaki")).length,
+];
+laporan.kakiApaAdanya = cacahKaki();
+
+// `Elemen` tiruan sengaja nol `parentNode`, jadi induk kaki DICARI lewat
+// telusur yang sama alih-alih diketik sebagai `kotakJendela`: kaki yang suatu
+// hari dibungkus satu lapis lagi tetap harus bisa dipindahkan fikstur ini.
+const kaki = turun(kotakJendela, kelasnya("palet-kaki"))[0];
+const indukKaki = turun(kotakJendela, (n) => n.anak.includes(kaki))[0];
+
+// Apakah keduanya KETEMU, dipanen sebelum fikstur mana pun menyentuh pohon.
+// Ia memisahkan dua keadaan yang sama-sama ditolak `_vonis_kaki`: kaki yang
+// SALAH TEMPAT tetap ketemu dan terbaca (1, 0), sedangkan kaki yang LENYAP
+// tidak ketemu sama sekali dan terbaca (0, 0). Keduanya butuh
+// perbaikan yang berbeda -- yang satu memindahkan node, yang satu
+// melahirkannya -- jadi pagar di Python perlu tahu yang mana.
+laporan.kakiAda = [kaki !== undefined, indukKaki !== undefined];
+
+// Tiga fikstur, BERURUTAN, masing-masing bekerja di atas pohon yang
+// ditinggalkan pendahulunya.
+//
+// Fikstur D membiarkan kaki asli di tempatnya lalu menempel SATU kaki kedua
+// ke `hasil` -- terbaca (1, 1). Ia satu-satunya keadaan yang memerahkan suku
+// `di_badan` SENDIRIAN: kaki di tempat yang benar DAN salinannya di wadah
+// gulir. Tanpa D, menghapus suku itu dari `_vonis_kaki` tetap hijau atas A
+// dan B, sebab keduanya juga ditolak suku `anak_kotak`. Kaki keduanya dicabut
+// lagi sebelum A, jadi A berangkat dari pohon apa adanya.
+//
+// Fikstur A memindahkan kaki asli KE DALAM wadah yang digulir, pada pohon
+// yang sudah selesai digambar dan tanpa `gambar()` sesudahnya -- terbaca
+// (1, 0). Yang diwakilinya KEADAAN itu, bukan salah satu cara
+// melahirkannya: kaki di `isi` jendela, atau di dalam `hasil`, sama-sama
+// berdiri di dalam `.jendela-badan`.
+//
+// Fikstur B lanjut dari A dengan satu langkah, tanpa memulihkan dulu: kaki
+// dibuang sama sekali -- terbaca (0, 0). B ada karena predikat satu sisi
+// ("tidak ada di wadah gulir") juga benar untuk kaki yang lenyap, dan pagar
+// yang hijau atas kaki yang lenyap tidak menjaga apa pun.
+//
+// Ketiganya BERPAGAR, dan pagarnya yang membuat seluruh laporan ini sampai.
+// Tanpa ia, kaki yang lenyap membuat `kaki` dan `indukKaki` sama-sama
+// `undefined` -- nol simpul yang `anak`-nya memuat `undefined` -- dan
+// `indukKaki.removeChild` di bawah mati di tempat. Drivernya berhenti sebelum
+// `console.log` di kaki berkas ini, jadi NOL medan sampai ke Python,
+// termasuk `kakiAda` yang baru saja dipanen dengan benar. Yang dibaca orang
+// jadi tumpukan Node yang menuduh driver tesnya, padahal yang rusak
+// produknya. Fikstur yang tidak bisa dijalankan dilaporkan `null`; yang
+// memvonisnya pagar `kakiAda` di Python, satu kali, sebelum `_vonis_kaki`
+// pernah dipanggil atas `null` itu.
+if (kaki !== undefined && indukKaki !== undefined) {
+  const kakiKedua = h("div.palet-kaki", {});
+  hasil.appendChild(kakiKedua);
+  laporan.kakiFiksturD = cacahKaki();
+  hasil.removeChild(kakiKedua);
+  indukKaki.removeChild(kaki);
+  hasil.appendChild(kaki);
+  laporan.kakiFiksturA = cacahKaki();
+  hasil.removeChild(kaki);
+  laporan.kakiFiksturB = cacahKaki();
+} else {
+  laporan.kakiFiksturD = null;
+  laporan.kakiFiksturA = null;
+  laporan.kakiFiksturB = null;
+}
+
+// --- Rombongan berpenanda. Yang dipanen BUKAN daftar `butir` melainkan urutan
+// ANAK wadah hasil apa adanya: pertanyaannya "apa yang terbaca dari atas ke
+// bawah", dan penanda yang BENAR justru tidak ada di `butir` sama sekali.
+// Karena itu `id` dan `peran` ikut dibawa per baris -- penanda yang telanjur
+// masuk `butir` membawa `palet-opt-<i>` dan `role=option`, dan itulah
+// satu-satunya jejak yang membedakannya dari penanda yang benar.
+//
+// Pil jenis tiap butir dipanen dari POHONNYA, bukan disimpulkan di sini: ia
+// sudah ada sejak sebelum rombongan ada (`span.pil` berisi `d.tipe || "buka"`),
+// dan itulah satu-satunya jalan bagi Python menghitung berapa rombongan yang
+// SEHARUSNYA bertanda tanpa menyalin tabel grup milik produknya.
+const petaBaris = () => hasil.children.map((el) => ({
+  kelas: el.className, peran: el.getAttribute("role"), id: el.id,
+  pil: (turun(el, kelasnya("pil"))[0] || { textContent: "" }).textContent,
+  teks: el.textContent,
+}));
+
+// Pohonnya DIBANGUN ULANG lebih dulu, dan itu bukan kerapian: blok kaki di
+// atas memutasi pohon dengan sengaja, dan `gambar()` tidak terjangkau dari
+// luar `bukaPalet()`. Jadi yang dipakai pintu yang sama dengan pemakainya --
+// satu `input` dengan medan kosong, yaitu keadaan yang paling sering terlihat.
+medan.value = "";
+medan.picu("input", {});
+laporan.barisApaAdanya = petaBaris();
+
+// Fikstur C -- SELURUH penanda dibuang. Bentuk cacat yang paling mungkin
+// terjadi, yaitu `isikan(hasil, ...butir)` yang kembali melewati rombongannya.
+for (const g of turun(hasil, kelasnya("palet-grup"))) hasil.removeChild(g);
+laporan.barisFiksturC = petaBaris();
+
+// Fikstur D -- satu penanda TANPA anggota, ditempel di ekor. D ada karena
+// predikat satu sisi ("tiap butir didahului penanda") juga benar untuk penanda
+// yang tidak memimpin apa pun, dan label di atas nol butir menjanjikan sesuatu
+// yang tidak ada di bawahnya.
+medan.picu("input", {});
+hasil.appendChild(h("li.palet-grup", { role: "presentation" }, "Hampa"));
+laporan.barisFiksturD = petaBaris();
+
+// Fikstur E -- penanda yang IKUT jadi opsi: pelanggaran "penanda bukan opsi"
+// apa adanya, yaitu satu indeks `aria-activedescendant` yang disita untuk baris
+// yang tidak bisa dibuka. `grupAda` dilaporkan sebagai MEDAN, bukan dibiarkan
+// meledak: kalau produk berhenti menggambar penanda sama sekali, yang harus
+// terbaca di diagnosis adalah sebabnya -- bukan `TypeError` dari driver ini.
+medan.picu("input", {});
+const grup0 = turun(hasil, kelasnya("palet-grup"))[0];
+laporan.grupAda = !!grup0;
+if (grup0) {
+  grup0.setAttribute("role", "option");
+  grup0.id = "palet-opt-99";
+}
+laporan.barisFiksturE = petaBaris();
+
+// Fikstur F -- `.palet-kosong` berdiri di SAMPING butir: dua jawaban
+// sekaligus, "Tidak ada yang cocok" di bawah daftar yang justru cocok. Produk
+// hari ini memilih salah satunya (ternary di `isikan`), jadi F mewakili
+// regresi, bukan cacat yang sudah ada. Pohonnya dibangun ulang lebih dulu
+// karena E memutasinya.
+medan.picu("input", {});
+hasil.appendChild(h("li.palet-kosong", { role: "presentation" }, "Tidak ada yang cocok."));
+laporan.barisFiksturF = petaBaris();
+
+// Fikstur G -- penanda kosong di TENGAH, bukan di ekor: penanda kedua
+// dipindah ke tepat sesudah penanda pertama, jadi yang pertama tidak memimpin
+// apa pun. Cacah penandanya SENGAJA tetap sama dengan cacah rombongan: penanda
+// yang DISISIP di antara dua rombongan menambah satu penanda, sisi cacah ikut
+// menolaknya, dan cek tengah tidak lagi diuji sendirian. Pohonnya dibangun
+// ulang lebih dulu karena F memutasinya.
+medan.picu("input", {});
+const grupKedua = turun(hasil, kelasnya("palet-grup"))[1];
+const anakG = hasil.children;
+for (const el of anakG.slice(1)) hasil.removeChild(el);
+for (const el of [grupKedua, ...anakG.slice(1).filter((el) => el !== grupKedua)]) {
+  hasil.appendChild(el);
+}
+laporan.barisFiksturG = petaBaris();
+
+console.log(JSON.stringify(laporan));
+"""
+
+
+class TestPaletCombobox(unittest.TestCase):
+    """Palet perintah (`Ctrl+K`) sebagai combobox APG, dijaga dari dua sisi.
+
+    Palet ini satu-satunya jalan ke sembilan belas tujuan tanpa menyentuh
+    tetikus, dan sebelum hop ini ia tidak punya SATU PUN peran ARIA: sebuah
+    `<input>` polos di atas `<div>` berisi `<button>`. Yang dilihat pemakai
+    tetikus benar; yang didengar pemakai pembaca layar adalah "edit teks,
+    kosong" dan sesudahnya tidak ada apa-apa lagi -- panah bawah memindahkan
+    sorotan yang tidak pernah diumumkan, lalu Enter membuka halaman yang tidak
+    pernah disebutkan namanya.
+
+    Pola yang dipasang: fokus TIDAK pernah meninggalkan medan, dan sorotan
+    dikirim lewat `aria-activedescendant`. Pola sebaliknya -- memindahkan fokus
+    ke butirnya -- mencabut papan ketik dari medan pada ArrowDown pertama.
+
+    Tiap metode menjaga kelas kegagalan yang BERBEDA -- dan daftarnya sengaja
+    TIDAK dibuka dengan cacahnya. Kalimat pembukanya dulu berbunyi "Tiga
+    metode", dan ia sudah berbohong sejak metode keempat lahir: waktu itu
+    tidak ada satu pun tes di repo ini yang menagih isi daftar ini, jadi angka
+    di prosa adalah angka yang melenceng tanpa satu pun kerutan di layar.
+    Obatnya cuma membuang angka dari kalimat pembuka, dan daftar di bawahnya
+    -- yang dulu bernomor satu sampai lima -- basi lagi dengan cara yang sama:
+    empat metode lahir sesudahnya tanpa butir, dan tidak satu tes pun merah.
+
+    Sekarang yang menagihnya `test_docstring_kelas_menamai_tiap_metode_tesnya`,
+    dan yang ia tagih NAMA, bukan cacah: tiap metode yang dijalankan unittest
+    wajib punya butir yang dibuka namanya, dan tiap nama di butir wajib
+    menunjuk metode yang masih ada. Cacah yang cocok tetap lolos untuk butir
+    yang menceritakan metode yang salah atau metode yang sudah berganti nama;
+    nama menangkap keduanya. Butirnya juga sengaja tidak bernomor: nomor
+    mengklaim URUTAN, padahal unittest menjalankan metode kelas ini menurut
+    abjad, bukan menurut urutan sumber yang diikuti daftar ini.
+
+      * `test_peran_dan_atribut_palet_ada_di_sumber` -- teks sumber: atribut
+        yang tidak pernah ditulis tidak akan pernah terpasang, dan ini
+        satu-satunya sisi yang bisa menjawabnya murah;
+      * `test_activedescendant_ikut_sorotan_di_node` -- perilaku di Node:
+        atribut yang ditulis tapi menunjuk id yang sudah lenyap, atau
+        dikosongkan alih-alih dilepas, LOLOS dari sisi teks;
+      * `test_palet_tidak_menggulir_leluhur` -- cacah pemanggil
+        `scrollIntoView` di seluruh berkas, karena yang rusak bukan palet
+        melainkan HALAMAN DI BELAKANGNYA, dan tidak ada error di mana pun
+        yang menyebutkannya;
+      * `test_gulir_palet_hanya_menyentuh_wadah_hasilnya` -- SIAPA yang
+        posisi gulirnya berpindah: akibat, bukan nama, karena nama
+        cara-salahnya tak terbatas sedangkan akibatnya satu;
+      * `test_kaki_palet_berdiri_di_luar_wadah_yang_digulir` -- DI MANA kaki
+        pintasan berdiri di pohonnya: tidak ada nilai yang salah dan tidak
+        ada error di mana pun, cuma empat ruas yang ikut tergulir keluar
+        layar pada satu-satunya saat ia berguna;
+      * `test_dialog_punya_dua_wadah_gulir` -- FAKTA bahwa dialog ini punya
+        wadah gulir kedua yang atapnya warisan induknya: bacaan "cuma satu
+        wadah gulir" membuat `.jendela-badan` luput dari catatan dua hop,
+        dan di jendela pendek kaki palet ikut terpotong tanpa satu pun error;
+      * `test_rombongan_palet_bertanda_dan_penandanya_bukan_opsi` -- hasil
+        terbagi rombongan bertanda, dan penandanya di LUAR `butir`: satu
+        penanda yang ikut terhitung opsi menggeser indeks, dan yang terlihat
+        bukan error melainkan sorotan yang hilang satu ketukan lalu `Enter`
+        yang diam;
+      * `test_penanda_rombongan_terbaca_di_semua_tema` -- kontras penanda
+        rombongan di SETIAP tema, dari sisi token teks dan dari rasio WCAG:
+        warna yang tenggelam di atas latar dialog tidak melempar apa pun, ia
+        cuma tidak terbaca;
+      * `test_butir_isi_bertipe_baru_tidak_hilang_dari_palet` -- hasil
+        `/api/cari` bertipe yang belum dikenal palet tetap tampil: lemparan
+        di tengah partisi ditelan `catch` kosong di `cariIsi`, jadi SELURUH
+        hasil isi lenyap tanpa error di konsol maupun tanda di layar;
+      * `test_docstring_kelas_menamai_tiap_metode_tesnya` -- daftar ini
+        sendiri: metode tanpa butir, butir yang menunjuk metode yang sudah
+        tidak ada, dan nomor yang mengklaim urutan. Prosa yang basi tidak
+        pernah membuat apa pun gagal dijalankan, jadi tanpa pagar ia cuma
+        ketahuan oleh orang yang kebetulan membacanya.
+    """
+
+    @staticmethod
+    def _akar():
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @classmethod
+    def _sumber(cls):
+        with open(os.path.join(cls._akar(), "webapp", "statik", "js",
+                               "aplikasi.js"), encoding="utf-8") as f:
+            return f.read()
+
+    @staticmethod
+    def _potong(src, jangkar):
+        """Teks dari `jangkar` sampai kurawal pembukanya tertutup berpasangan.
+
+        Pola yang sama dipakai `TestPartisiKunciSetelan._blok_kurawal` dan
+        `TestKomposisiPerBahasa`; ia ditulis ulang di sini alih-alih dipinjam
+        karena yang dibutuhkan beda satu hal -- jangkarnya ikut terbawa di
+        keluaran, supaya potongannya bisa ditempel kembali jadi JS yang bisa
+        dijalankan.
+        """
+        if jangkar not in src:
+            raise AssertionError(
+                "jangkar %r tidak ada di `aplikasi.js`; tes ini tidak bisa "
+                "memilih situs yang dimaksud" % jangkar)
+        i = src.index(jangkar)
+        buka = src.index("{", i)
+        dalam = 0
+        for j in range(buka, len(src)):
+            if src[j] == "{":
+                dalam += 1
+            elif src[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return src[i:j + 1]
+        raise AssertionError("kurawal sesudah %r tidak pernah ditutup"
+                             % jangkar)
+
+    @classmethod
+    def _badan(cls, src=None):
+        """Badan `bukaPalet()`, komentar DIBUANG.
+
+        Pembuangan komentarnya bukan kerapian melainkan syarat: blok penjelas
+        di atas `sorotPilihan()` menyebut `aria-activedescendant` dan
+        `setAttribute(..., "")` apa adanya, jadi pagar teks yang membaca
+        komentar akan menyatakan atributnya terpasang justru ketika yang ada
+        cuma kalimat yang menjelaskan kenapa ia harus terpasang.
+        """
+        return TestHamparanBara._telanjang(
+            cls._potong(src if src is not None else cls._sumber(),
+                        "function bukaPalet()"))
+
+    @classmethod
+    def _wilayah(cls):
+        """Seluruh wilayah palet sebagai satu blok JS yang berdiri sendiri.
+
+        `daftarPerintah` + `saringPerintah` + apa pun yang tinggal di antara
+        keduanya dan `bukaPalet` (hari ini: dua konstanta id) + `bukaPalet`.
+        Celah tengah diambil dengan MENGUKUR, bukan dengan menyebut nama
+        konstantanya: yang diuji bukan bahwa idnya bernama begitu, melainkan
+        bahwa ia cuma punya satu definisi.
+        """
+        src = cls._sumber()
+        daftar = cls._potong(src, "function daftarPerintah()")
+        saring = cls._potong(src, "function saringPerintah(")
+        mulai = src.index(saring) + len(saring)
+        antara = src[mulai:src.index("function bukaPalet()")]
+        return (daftar + "\n\n" + saring + "\n" + antara
+                + cls._potong(src, "function bukaPalet()") + "\n")
+
+    # ------------------------------------------------------------- metode 1
+
+    def test_peran_dan_atribut_palet_ada_di_sumber(self):
+        """Tiap baris tabel §2A ADA DITULIS di sumber wilayah palet.
+
+        APA YANG TIDAK DIJAMIN METODE INI, dan ini bukan kebocoran melainkan
+        batas jenisnya: ia tidak tahu apa pun soal PERILAKU. Ia hijau untuk
+        `aria-activedescendant` yang menunjuk id yang tidak ada di DOM, untuk
+        `aria-expanded` yang disetel sekali lalu tidak pernah diperbarui, untuk
+        `removeAttribute` yang ditulis di cabang yang tidak pernah dijalankan,
+        dan untuk `role="option"` yang dipasang pada elemen yang tidak pernah
+        ditempelkan ke listbox-nya. Semua itu urusan
+        `test_activedescendant_ikut_sorotan_di_node`. Yang DIJAMIN di sini cuma
+        satu hal, dan hanya satu sisi dari hal itu: atribut yang tidak pernah
+        ditulis tidak akan pernah terpasang.
+
+        Dua permukaan dipakai, dan keduanya disebut supaya pembaca berikutnya
+        tidak mengira yang satu bukti bagi yang lain. Atribut `medan` dan peran
+        butir diadu di BADAN `bukaPalet()`; awalan id butir diadu di WILAYAH,
+        karena ia memang sengaja hidup sebagai konstanta tingkat modul -- satu
+        definisi, dirujuk doc-komentar di atasnya.
+        """
+        badan = self._badan()
+        wilayah = TestHamparanBara._telanjang(self._wilayah())
+
+        for petikan, kenapa in [
+            ('role: "combobox"',
+             "medan tidak lagi mengaku combobox, jadi pembaca layar "
+             "mengumumkannya sebagai kotak teks biasa dan tidak pernah "
+             "menyebut ada daftar di bawahnya"),
+            ('"aria-expanded"',
+             "tidak ada yang memberi tahu listbox-nya sedang menampilkan "
+             "sesuatu atau tidak"),
+            ('"aria-controls"',
+             "medan tidak menunjuk listbox mana yang dikendalikannya"),
+            ('"aria-autocomplete"',
+             "mengetik di medan tidak diumumkan sebagai yang menyaring daftar"),
+            ('role: "listbox"',
+             "wadah hasil cuma sebuah daftar biasa; butir ber-`role=option` "
+             "di dalam wadah tanpa `role=listbox` bukan opsi apa pun"),
+            ('role: "option"',
+             "butirnya bukan opsi, jadi 'satu dari sembilan' tidak pernah "
+             "dibacakan"),
+            ('"aria-selected"',
+             "tidak ada butir yang mengaku terpilih"),
+            ('"aria-activedescendant"',
+             "sorotan berpindah tanpa satu pun jalan untuk diumumkan -- ini "
+             "seluruh alasan pola combobox dipakai di sini"),
+            ('removeAttribute',
+             "tidak ada yang MELEPAS rujukan sorotan. `h()` melewati nilai "
+             "`null` (inti.js:118), jadi melepas atribut mustahil lewat `h()` "
+             "dan `setAttribute(..., \"\")` cuma meninggalkan rujukan yatim"),
+        ]:
+            with self.subTest(petikan=petikan):
+                self.assertIn(
+                    petikan, badan,
+                    "`%s` tidak ada di badan `bukaPalet()`: %s"
+                    % (petikan, kenapa))
+
+        self.assertIn(
+            "palet-opt-", wilayah,
+            "awalan id butir `palet-opt-` tidak ada di wilayah palet. "
+            "`aria-activedescendant` adalah RUJUKAN id; tanpa id yang "
+            "dibentuk dari awalan yang sama di satu tempat, rujukan dan "
+            "sasaran lahir dari dua rumusan yang bisa melenceng sendiri")
+        self.assertEqual(
+            wilayah.count("palet-opt-"), 1,
+            "awalan id butir ditulis %d kali, bukan sekali. Dua tempat yang "
+            "mengarang id butir adalah dua tempat yang suatu hari mengarang "
+            "id yang berbeda, dan yang terjadi bukan error melainkan sorotan "
+            "yang tidak pernah terbaca" % wilayah.count("palet-opt-"))
+
+        # Bentuk DOM-nya (§2B): `<ul>` berisi `<li>`, bukan `<div>`/`<button>`.
+        # Nama KELASnya wajib tetap -- `gerak.js` menyebut `.palet-item` di
+        # daftar penyeleksi umpan balik tekan, dan seluruh blok `.palet-*` di
+        # `gaya.css` mengenai lewat kelas, bukan lewat tag.
+        self.assertIn('h("ul.palet-hasil', badan,
+                      "wadah hasil bukan `<ul>`; `role=listbox` pada `<div>` "
+                      "sah bagi ARIA tapi `<li role=option>` di dalamnya tidak")
+        self.assertIn('h("li.palet-item', badan,
+                      "butirnya bukan `<li>`. Kalau ia kembali jadi "
+                      "`<button>`, ia ikut jadi sasaran Tab -- dan fokus yang "
+                      "bisa pindah ke butir membatalkan seluruh gunanya "
+                      "`aria-activedescendant`")
+        self.assertNotIn('h("button.palet-item', badan,
+                         "butir palet kembali jadi `<button>`")
+        for kunci in ("Home", "End"):
+            self.assertIn(
+                'e.key === "%s"' % kunci, badan,
+                "`%s` tidak lagi ditangani. Daftar palet bisa memuat 49 baris "
+                "(9 perintah + 40 hasil cari), dan menuntut orang menekan "
+                "panah empat puluh kali adalah pintasan yang berhenti jadi "
+                "pintasan" % kunci)
+
+    # ------------------------------------------------------------- metode 2
+
+    @unittest.skipUnless(
+        shutil.which("node"),
+        "butuh node untuk menjalankan bukaPalet() di DOM jebak")
+    def test_activedescendant_ikut_sorotan_di_node(self):
+        """PERILAKU, bukan teks: sorotan berpindah dan fokus tidak.
+
+        Lima hal yang hanya bisa dijawab dengan MENJALANKANNYA, dan kelimanya
+        lolos dari pagar teks:
+
+          · fokus tetap di medan sesudah dua ArrowDown (sebuah `.focus()` yang
+            diselipkan di `sorotPilihan()` tidak mengubah satu pun kata di
+            tabel §2A);
+          · `aria-activedescendant` menunjuk id butir yang BENAR, bukan sekadar
+            ada;
+          · `aria-expanded` ikut berubah, bukan disetel sekali di kelahiran;
+          · daftar kosong membuat atributnya TIDAK ADA -- `setAttribute(.., "")`
+            menyisakan rujukan yatim yang dibacakan sebagai sorotan yang hilang
+            entah ke mana, dan string kosong itu tidak terlihat dari sumber;
+          · `Enter` benar-benar mendarat di href butir yang sedang disorot.
+        """
+        akar = self._akar()
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PALET)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._wilayah())
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+        L = lap["langkah"]
+
+        # --- bentuk DOM yang benar-benar terpasang
+        awal = L["awal"]
+        self.assertEqual(awal["tagHasil"], "UL",
+                         "wadah hasil yang terpasang bukan <ul>")
+        self.assertEqual(awal["sifatHasil"].get("role"), "listbox",
+                         "wadah hasil tidak ber-`role=listbox`")
+        self.assertIn("palet-hasil", awal["kelasHasil"],
+                      "kelas `.palet-hasil` hilang; seluruh blok `.palet-*` "
+                      "di gaya.css dan daftar penyeleksi tekan di gerak.js "
+                      "mengenai lewat kelas itu")
+        self.assertEqual(
+            awal["medanSifat"].get("aria-controls"), awal["idHasil"],
+            "`aria-controls` di medan tidak menunjuk id listbox yang "
+            "terpasang: %r vs %r. Rujukan id yang nyasar tidak pernah datang "
+            "sebagai error -- ia cuma tidak dibacakan"
+            % (awal["medanSifat"].get("aria-controls"), awal["idHasil"]))
+        self.assertEqual(awal["medanSifat"].get("role"), "combobox")
+        self.assertEqual(awal["medanSifat"].get("aria-autocomplete"), "list")
+        self.assertTrue(awal["butir"], "palet tidak menggambar butir")
+        for b in awal["butir"]:
+            self.assertEqual(b["tag"], "LI")
+            self.assertEqual(b["sifat"].get("role"), "option")
+        self.assertEqual(
+            [b["id"] for b in awal["butir"]],
+            ["palet-opt-%d" % i for i in range(len(awal["butir"]))],
+            "id butir bukan deret `palet-opt-<indeks>` yang utuh")
+
+        # --- dua ArrowDown: sorotan maju, fokus TIDAK
+        for nama, mau in [("awal", 0), ("turun1", 1), ("turun2", 2)]:
+            langkah = L[nama]
+            self.assertEqual(
+                langkah["fokus"], "medan",
+                "fokus meninggalkan medan pada langkah %r. Sorotan combobox "
+                "berpindah lewat `aria-activedescendant`, bukan lewat fokus; "
+                "begitu fokus pindah ke butirnya, huruf berikutnya yang "
+                "diketik tidak lagi mendarat di kotak pencarian" % nama)
+            self.assertEqual(
+                langkah["aktif"], "palet-opt-%d" % mau,
+                "sesudah %r, `aria-activedescendant` = %r, bukan "
+                "`palet-opt-%d`" % (nama, langkah["aktif"], mau))
+            self.assertEqual(
+                langkah["medanSifat"].get("aria-expanded"), "true",
+                "`aria-expanded` bukan \"true\" pada %r padahal listbox "
+                "sedang menampilkan %d opsi" % (nama, len(langkah["butir"])))
+            terpilih = [b["id"] for b in langkah["butir"]
+                        if b["sifat"].get("aria-selected") == "true"]
+            self.assertEqual(
+                terpilih, ["palet-opt-%d" % mau],
+                "butir ber-`aria-selected=true` pada %r: %r. Tepat satu butir "
+                "boleh mengaku terpilih; nol berarti tidak ada yang disorot, "
+                "dua berarti pembaca layar menyebut dua" % (nama, terpilih))
+            self.assertIn(
+                "pilih", langkah["butir"][mau]["kelas"].split(),
+                "kelas `.pilih` tidak ikut berpindah pada %r -- yang terlihat "
+                "mata dan yang dibacakan pembaca layar jadi dua butir "
+                "berbeda" % nama)
+        for nama in ("turun1", "turun2"):
+            self.assertEqual(L[nama]["dicegah"], 1,
+                             "%s tidak memanggil preventDefault; kursor teks "
+                             "di medan ikut melompat" % nama)
+
+        # --- Enter mendarat di href butir yang disorot
+        self.assertEqual(
+            lap["hashSesudahEnter"], lap["hrefKe2"],
+            "Enter pada butir indeks 2 mengarahkan hash ke %r, sedangkan "
+            "href butir itu %r" % (lap["hashSesudahEnter"], lap["hrefKe2"]))
+        self.assertTrue(lap["hashSesudahEnter"].startswith("#/"),
+                        "hash yang didaratkan Enter bukan rute aplikasi: %r"
+                        % lap["hashSesudahEnter"])
+        self.assertEqual(lap["tutupDipanggil"], 1,
+                         "palet tidak menutup dirinya sesudah Enter")
+
+        # --- Home/End dan Ctrl+n/Ctrl+p, batasnya tetap [0, len-1]
+        n = len(L["awal"]["butir"])
+        self.assertEqual(L["home"]["aktif"], "palet-opt-0")
+        self.assertEqual(L["end"]["aktif"], "palet-opt-%d" % (n - 1))
+        self.assertEqual(L["ctrlN"]["aktif"], "palet-opt-%d" % (n - 1),
+                         "Ctrl+n melewati butir terakhir")
+        self.assertEqual(L["ctrlP"]["aktif"], "palet-opt-%d" % (n - 2),
+                         "Ctrl+p tidak lagi memundurkan sorotan")
+
+        # --- daftar kosong: atributnya DILEPAS, bukan dikosongkan
+        for nama in ("kosong", "kosongTurun", "kosongEnd"):
+            langkah = L[nama]
+            self.assertEqual(langkah["butir"], [],
+                             "penyaring %r masih menyisakan butir" % nama)
+            self.assertFalse(
+                langkah["adaAktif"],
+                "pada %r atribut `aria-activedescendant` MASIH ADA, bernilai "
+                "%r. Yang benar melepasnya: atribut yang ada tapi tidak "
+                "menunjuk butir mana pun dibacakan sebagai sorotan yang "
+                "hilang entah ke mana, bukan sebagai daftar yang memang kosong"
+                % (nama, langkah["aktif"]))
+            self.assertEqual(
+                langkah["medanSifat"].get("aria-expanded"), "false",
+                "`aria-expanded` bukan \"false\" pada %r. Baris \"Tidak ada "
+                "yang cocok\" bukan opsi yang bisa dibuka" % nama)
+        self.assertEqual(L["kosong"]["tagAnak0"], "LI",
+                         "baris kosong di dalam <ul> bukan <li>: %r"
+                         % L["kosong"]["tagAnak0"])
+        self.assertFalse(
+            lap["enterSaatKosongMengubahHash"],
+            "Enter pada daftar kosong tetap menavigasi ke suatu tempat")
+
+        # --- kembali berisi: id lahir ulang dan rujukannya ikut
+        self.assertEqual(L["pulih"]["aktif"], "palet-opt-0",
+                         "sesudah penyaring dikosongkan, sorotan tidak "
+                         "kembali ke butir pertama")
+        self.assertEqual(len(L["pulih"]["butir"]), n,
+                         "daftar tidak pulih ke jumlah semula")
+
+        # --- fokus: NOL kali pada butir, tepat sekali pada medan
+        self.assertEqual(
+            lap["fokusButirTotal"], 0,
+            "ada %d pemanggilan `.focus()` pada butir palet. Satu saja "
+            "membatalkan seluruh pola: fokus yang pindah ke `<li>` mencabut "
+            "papan ketik dari medan, dan `aria-activedescendant` jadi atribut "
+            "yang tidak menjelaskan apa pun" % lap["fokusButirTotal"])
+        self.assertEqual(
+            lap["fokusMedanTotal"], 1,
+            "medan difokuskan %d kali, bukan sekali (`saatBuka`)"
+            % lap["fokusMedanTotal"])
+
+        # --- gulir: `scrollTop` wadah bergerak, leluhur TIDAK tersentuh
+        self.assertEqual(
+            lap["gulirWadah"], lap["gulirHarusnya"],
+            "`scrollTop` wadah hasil = %r, sedangkan yang dibutuhkan supaya "
+            "butir terakhir terlihat = %r"
+            % (lap["gulirWadah"], lap["gulirHarusnya"]))
+        self.assertEqual(
+            lap["gulirLeluhur"], 0,
+            "`scrollIntoView` dipanggil %d kali di dalam palet. Ia menggulir "
+            "SEMUA leluhur yang bisa digulir, termasuk dokumen di belakang "
+            "tirai -- jadi menahan panah bawah memindahkan halaman yang "
+            "sedang dibaca, dan palet yang ditutup meninggalkan pembacanya di "
+            "tempat yang bukan tempat ia berhenti" % lap["gulirLeluhur"])
+
+    # ------------------------------------------------------------- metode 3
+
+    def test_palet_tidak_menggulir_leluhur(self):
+        """`scrollIntoView` keluar dari palet, dan cacah seluruh berkas = 1.
+
+        Dua asersi untuk satu aturan, karena yang pertama saja tidak cukup:
+        memindahkan pemanggilannya satu fungsi ke samping -- ke sebuah
+        pembantu tingkat modul di luar badan `bukaPalet` -- membuat
+        `assertNotIn` hijau sementara akibatnya persis sama.
+        """
+        badan = self._badan()
+        self.assertNotIn(
+            "scrollIntoView", badan,
+            "`bukaPalet()` memakai `scrollIntoView`. Ia menggulir SEMUA "
+            "leluhur yang bisa digulir -- kelas bug yang sama yang membuat "
+            "`bawaKeTengah()` di layar-belajar.js ada. Yang benar menghitung "
+            "`scrollTop` pada `.palet-hasil` saja")
+        self.assertRegex(
+            badan, r"hasil\.scrollTop\s*[-+]?=",
+            "palet tidak lagi menggulir wadah hasilnya sendiri lewat "
+            "`scrollTop`; sorotan yang keluar dari 58vh jadi sorotan yang "
+            "tidak terlihat")
+
+        telanjang = TestHamparanBara._telanjang(self._sumber())
+        panggil = [telanjang[:m.start()].count("\n") + 1
+                   for m in re.finditer(r"\.scrollIntoView\s*\(", telanjang)]
+        self.assertEqual(
+            len(panggil), 1,
+            "jumlah pemanggil `scrollIntoView` di aplikasi.js bukan satu, "
+            "melainkan %d di baris %s. SATU yang sah adalah penangan "
+            "`#lompat-isi` -- tautan lewati-navigasi memang HARUS menggulir "
+            "dokumen, karena itu seluruh gunanya. Yang kedua tidak punya izin "
+            "lahir, dan angka ini dipatok supaya ia tidak berkembang biak "
+            "diam-diam. Alamatnya memang bergerak setiap kali berkas ini "
+            "tumbuh; yang mengikat `#lompat-isi`, bukan nomornya"
+            % (len(panggil), panggil))
+        # Lingkungannya dibaca dari teks TELANJANG yang sama, bukan dari sumber
+        # mentah: `_telanjang` meruntuhkan komentar blok jadi satu spasi, jadi
+        # nomor baris di kedua teks itu berbeda. Mengadu nomor dari yang satu
+        # dengan baris dari yang lain memberi kegagalan yang menunjuk potongan
+        # kode yang tidak ada hubungannya -- dan pembacanya mencari bug di
+        # tempat yang salah.
+        baris = telanjang.splitlines()
+        sekitar = "\n".join(baris[max(0, panggil[0] - 6):panggil[0]])
+        self.assertIn(
+            "#lompat-isi", sekitar,
+            "satu-satunya `scrollIntoView` yang tersisa di aplikasi.js bukan "
+            "milik `#lompat-isi` (baris %d dari sumber telanjang-komentar). "
+            "Pengecualiannya diberikan kepada tautan lewati-navigasi, bukan "
+            "kepada angka satu" % panggil[0])
+
+    # ------------------------------------------------------------- metode 4
+
+    @unittest.skipUnless(
+        shutil.which("node"),
+        "butuh node untuk menjalankan bukaPalet() di DOM jebak")
+    def test_gulir_palet_hanya_menyentuh_wadah_hasilnya(self):
+        """AKIBAT, bukan nama: SIAPA yang posisi gulirnya berpindah.
+
+        `metode 3` menjaga satu NAMA (`scrollIntoView`) dan satu BENTUK
+        (`hasil.scrollTop ±=`). Keduanya tetap hijau untuk sebaris
+        `document.documentElement.scrollTop += 1` yang diselipkan di
+        `bawaKeDalam()` -- itu diadu, bukan dikira: baris itu pernah berdiri di
+        salinan kerja dan seluruh suite melaporkan OK tanpa satu pun kerutan.
+        Sebabnya bisa diperkirakan: nama cara-salahnya tak terbatas
+        (`documentElement`, `body`, `window.scrollTo`, elemen apa pun yang
+        kebetulan tergapai), sedangkan yang jumlahnya satu adalah akibatnya --
+        "ada posisi gulir di luar wadah hasil yang berpindah".
+
+        Karena itu yang diadu di sini bukan teks sumber melainkan pencatat per
+        elemen di medan tiruan: satu `End`, lalu daftar siapa yang ditulisi.
+        Kunci wadahnya pun DIHITUNG dari laporan driver, tidak diketik -- kelas
+        dan id `.palet-hasil` adalah hal yang boleh berubah, dan tes yang
+        mengetiknya akan memerahkan perubahan yang sah sambil mengaku menjaga
+        gulir.
+        """
+        akar = self._akar()
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PALET)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._wilayah())
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+
+        for kunci in ("tulisGulir", "tulisWindow"):
+            self.assertIn(
+                kunci, lap,
+                "driver Node berhenti melaporkan `%s`. Tanpa pencatatnya tes "
+                "ini tidak mengukur apa pun dan akan hijau untuk setiap "
+                "penulisan gulir yang seharusnya dimerahkannya -- pagar yang "
+                "kehilangan alat ukurnya lebih buruk daripada pagar yang tidak "
+                "pernah ada, karena yang pertama masih terlihat seperti "
+                "menjaga sesuatu" % kunci)
+
+        awal = lap["langkah"]["awal"]
+        wadah = ((awal["kelasHasil"] or awal["tagHasil"].lower())
+                 + ("#" + awal["idHasil"] if awal["idHasil"] else ""))
+        akibat = ("Menahan panah bawah di palet memindahkan halaman yang "
+                  "sedang dibaca di belakang tirai, dan palet yang ditutup "
+                  "meninggalkan pembacanya di tempat yang bukan tempat ia "
+                  "berhenti. Yang benar menghitung `scrollTop` wadah hasil "
+                  "saja -- lihat `bawaKeDalam()` di aplikasi.js")
+
+        luar = [k for k in lap["tulisGulir"] if k != wadah]
+        self.assertEqual(
+            luar, [],
+            "satu `End` di palet menulis posisi gulir pada %r, padahal "
+            "satu-satunya yang boleh digulir adalah wadah hasilnya (%r). %s"
+            % (luar, wadah, akibat))
+        for leluhur in ("html", "body"):
+            self.assertNotIn(
+                leluhur, lap["tulisGulir"],
+                "palet menggulir `<%s>` -- dokumen di belakang tirai, bukan "
+                "daftarnya sendiri. %s" % (leluhur, akibat))
+        self.assertEqual(
+            lap["tulisGulir"], [wadah],
+            "yang ditulisi satu `End`: %r, sedangkan yang benar tepat satu "
+            "nama, yaitu wadah hasil (%r). Daftar KOSONG berarti sebaliknya: "
+            "palet berhenti menggulir daftarnya sendiri, dan sorotan yang "
+            "lewat dari 58vh jadi sorotan yang tidak terlihat"
+            % (lap["tulisGulir"], wadah))
+        self.assertEqual(
+            lap["tulisWindow"], 0,
+            "`window.scrollTo`/`window.scroll` dipanggil %d kali di dalam "
+            "palet. Ia tidak menyentuh `scrollTop` elemen mana pun -- jadi ia "
+            "lolos dari pagar di atas -- tapi yang dialami pembaca persis "
+            "sama. %s" % (lap["tulisWindow"], akibat))
+
+    # ------------------------------------------------------------- metode 5
+
+    @staticmethod
+    def _vonis_kaki(pasangan):
+        """LULUS hanya kalau nol kaki di `.jendela-badan` DAN tepat satu kaki
+        anak langsung `.jendela`.
+
+        Dua suku, dan masing-masing punya fikstur yang HANYA ia yang
+        menolaknya. `di_badan == 0` menolak fikstur D -- kaki di tempat yang
+        benar plus salinannya di wadah gulir, yang lolos suku kedua karena
+        anak langsungnya tetap satu. `anak_kotak == 1` menolak fikstur B --
+        kaki yang dibuang sama sekali, yang lolos suku pertama karena "tidak
+        ada di wadah gulir" juga benar untuk kaki yang lenyap. Fikstur A
+        ditolak keduanya, jadi ia sendirian tidak membuktikan suku mana pun.
+
+        Keputusannya tinggal di sini saja, dan keempat keadaan -- pohon apa
+        adanya plus tiga fikstur yang sengaja merusaknya -- masuk lewat fungsi
+        yang SAMA. Fikstur yang menyalin ulang predikat ke dalam dirinya
+        sendiri menguji salinannya, bukan pagarnya.
+        """
+        di_badan, anak_kotak = pasangan
+        return di_badan == 0 and anak_kotak == 1
+
+    @unittest.skipUnless(
+        shutil.which("node"),
+        "butuh node untuk menjalankan bukaPalet() di DOM jebak")
+    def test_kaki_palet_berdiri_di_luar_wadah_yang_digulir(self):
+        """POSISI di pohon: `.palet-kaki` anak langsung `.jendela`, saudara
+        `.jendela-badan` -- bukan di dalam `isi` jendela.
+
+        Kelas kegagalannya yang paling pelan di seluruh kelas ini: tidak ada
+        error di konsol, tidak ada atribut yang salah, tidak ada nilai yang
+        bisa dibantah -- cuma sebuah node yang berdiri satu tingkat terlalu
+        dalam. Wadah gulir di dialog ini ADA DUA, dan kaki harus di luar
+        keduanya. `.palet-hasil` punya `overflow-y` beserta atapnya sendiri
+        (`max-height: 58vh`), jadi kaki di dalamnya ikut tergulir keluar layar
+        TEPAT saat empat ruas itu berguna -- saat orang menyusuri daftar
+        panjang dan belum tahu bahwa Home dan End ada. `.jendela-badan` juga
+        `overflow-y: auto`, dengan atap yang diwarisi dari `.jendela`
+        (`max-height: 82vh`, kolom flex): kaki di dalamnya terpotong 18 px di
+        1280×700, 42 px di 1280×600, 54 px di 360×700, dan 0 di semua ukuran
+        terukur sesudah ia jadi anak langsung `.jendela` (artefak
+        /home/vi/.hop9d13/ukur-9d13.json).
+
+        Yang dipakai driver `_SKRIP_PALET` yang sudah ada, bukan harness
+        kedua, dan angkanya datang dari `cacahKaki()` di situ: satu pengukur
+        untuk pohon apa adanya DAN untuk ketiga fikstur. Fiksturnya ada supaya
+        tiap suku predikat terbukti bisa menjawab TIDAK -- D menambah salinan
+        kaki di wadah gulir, A memindahkan kaki ke dalam wadah gulir, B
+        membuangnya sama sekali.
+        """
+        akar = self._akar()
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PALET)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._wilayah())
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+
+        for kunci in ("kakiAda", "kakiApaAdanya", "kakiFiksturD",
+                      "kakiFiksturA", "kakiFiksturB"):
+            self.assertIn(
+                kunci, lap,
+                "driver Node berhenti melaporkan `%s`. Tanpa alat ukurnya tes "
+                "ini tidak mengadu apa pun dan akan hijau untuk kaki yang "
+                "sudah pindah ke dalam wadah gulir -- pagar yang kehilangan "
+                "alat ukurnya lebih buruk daripada pagar yang tidak pernah "
+                "ada, karena yang pertama masih terlihat seperti menjaga "
+                "sesuatu" % kunci)
+
+        akibat = ("`.palet-hasil` punya `overflow-y` beserta atapnya sendiri "
+                  "(`max-height: 58vh`), jadi kaki yang berdiri DI DALAMNYA "
+                  "ikut tergulir keluar layar justru saat daftarnya panjang -- "
+                  "satu-satunya saat empat ruas pintasan itu berguna. Wadah "
+                  "gulir di dialog ini ADA DUA, dan yang kedua tidak "
+                  "menyelamatkan kakinya: `.jendela-badan` atapnya diwarisi "
+                  "dari `.jendela` ber-`max-height: 82vh` + `flex-direction: "
+                  "column`, jadi kaki di dalamnya terpotong di jendela pendek. "
+                  "Yang benar: kaki dibangun sekali di `bukaPalet`, TIDAK ikut "
+                  "`isi`, lalu ditempel ke `kotak` di `saatBuka` -- anak "
+                  "langsung `.jendela`, saudara `.jendela-badan`, seperti "
+                  "`.jendela-kaki` dialog lain")
+
+        # PENEBUS PERTAMA, dan urutannya mengikat alih-alih rapi. Kaki yang
+        # LENYAP membuat `kakiApaAdanya` jadi (0, 0), jadi `assertTrue` di
+        # bawah IKUT memerah untuk keadaan ini -- dengan kalimat "salah
+        # tempat", yang menyuruh pembaca mencari node yang sudah tidak ada
+        # sama sekali. Yang menentukan pesan mana yang dibaca orang cuma
+        # urutannya. Ia juga yang menghentikan tes sebelum `_vonis_kaki`
+        # pernah menerima fikstur ber-`null`: pembongkaran `di_badan,
+        # anak_kotak = pasangan` atas `None` berujung ERROR alih-alih FAIL,
+        # yaitu diagnosis yang lebih buruk lagi daripada yang digantikan di
+        # sini. Jangan dipindahkan ke bawah keempat `_vonis_kaki`.
+        self.assertEqual(
+            lap["kakiAda"], [True, True],
+            "`.palet-kaki` tidak ada lagi di pohon palet: (kaki ketemu, "
+            "induknya ketemu) = %r. Ini BUKAN kaki yang salah tempat -- yang "
+            "salah tempat tetap KETEMU dan terbaca (1, 0) di "
+            "`kakiApaAdanya`, sedangkan yang ini tidak dilahirkan sama "
+            "sekali, tidak pernah ditempel ke `kotak`, atau dilahirkan di "
+            "dalam `hasil` lalu ikut terhapus `isikan()` pada penggambaran "
+            "berikutnya. Ketiga fikstur karena itu dilaporkan apa adanya "
+            "sebagai %r, %r, dan %r alih-alih dijalankan di atas pohon tanpa "
+            "kaki. %s"
+            % (lap["kakiAda"], lap["kakiFiksturD"], lap["kakiFiksturA"],
+               lap["kakiFiksturB"], akibat))
+
+        self.assertTrue(
+            self._vonis_kaki(lap["kakiApaAdanya"]),
+            "kaki pintasan palet salah tempat: (di dalam `.jendela-badan`, "
+            "anak langsung `.jendela`) = %r, sedangkan yang benar (0, 1). %s"
+            % (tuple(lap["kakiApaAdanya"]), akibat))
+
+        # PRASYARAT FIKSTUR, satu per fikstur dan masing-masing tepat sebelum
+        # penebusnya. Pesan `assertFalse` hanya benar selama fiksturnya sungguh
+        # berdiri di keadaan cacat yang ia wakili; fikstur yang membusuk
+        # ditagih di prasyaratnya, dengan pesan yang menunjuk fikstur. Harus
+        # tetap SESUDAH kedua penebus di atas: kaki yang lenyap dan kaki
+        # produk yang salah tempat sudah punya kalimatnya sendiri. Urutannya
+        # D, A, B karena begitulah driver menjalankannya -- tiap fikstur
+        # bekerja di atas pohon yang ditinggalkan pendahulunya, jadi yang
+        # rusak duluan harus terbaca duluan.
+        self.assertEqual(
+            lap["kakiFiksturD"], [1, 1],
+            "fikstur D tidak lagi menghasilkan keadaan kaki-ganda yang ia "
+            "wakili: ia melaporkan %r, sedangkan yang diharapkan (1, 1). Yang "
+            "rusak FIKSTURNYA, yaitu blok fikstur D di `_SKRIP_PALET`, bukan "
+            "`_vonis_kaki`, sebab predikat yang benar memang meluluskan "
+            "(0, 1). Tanpa prasyarat ini, fikstur yang melaporkan (0, 1) "
+            "membuat pesan di bawahnya menuduh predikat yang utuh, dan suku "
+            "`di_badan` kehilangan satu-satunya keadaan yang hanya ia tolak"
+            % (tuple(lap["kakiFiksturD"]),))
+
+        self.assertFalse(
+            self._vonis_kaki(lap["kakiFiksturD"]),
+            "fikstur D menempel salinan `.palet-kaki` ke dalam `.palet-hasil` "
+            "sambil membiarkan kaki asli di tempatnya, dan melaporkan %r, tapi "
+            "`_vonis_kaki` masih meluluskannya. Yang seharusnya menolaknya "
+            "suku `di_badan == 0` -- satu-satunya suku yang bisa, sebab anak "
+            "langsung `.jendela` tetap tepat satu. %s"
+            % (tuple(lap["kakiFiksturD"]), akibat))
+
+        self.assertEqual(
+            lap["kakiFiksturA"], [1, 0],
+            "fikstur A tidak lagi menghasilkan keadaan cacat yang ia wakili: "
+            "ia melaporkan %r, sedangkan yang diharapkan (1, 0). Yang rusak "
+            "FIKSTURNYA, yaitu blok fikstur A di `_SKRIP_PALET`, bukan "
+            "`_vonis_kaki`, sebab predikat yang benar memang meluluskan "
+            "(0, 1). Tanpa prasyarat ini, fikstur yang melaporkan (0, 1) "
+            "membuat pesan di bawahnya menuduh predikat yang utuh, dan "
+            "fikstur yang melaporkan (0, 0) lolos diam-diam di wilayah "
+            "fikstur B" % (tuple(lap["kakiFiksturA"]),))
+
+        self.assertFalse(
+            self._vonis_kaki(lap["kakiFiksturA"]),
+            "fikstur A memindahkan `.palet-kaki` ke dalam `.palet-hasil` dan "
+            "melaporkan %r, tapi `_vonis_kaki` masih meluluskannya. Yang "
+            "seharusnya menolaknya kedua suku sekaligus: `di_badan == 0` "
+            "(kakinya di wadah gulir) DAN `anak_kotak == 1` (`.jendela` tidak "
+            "lagi punya kaki). Predikat yang tidak bisa menjawab TIDAK untuk "
+            "cacat yang persis ia jaga bukan pagar; ia hijau selamanya. %s"
+            % (tuple(lap["kakiFiksturA"]), akibat))
+
+        self.assertEqual(
+            lap["kakiFiksturB"], [0, 0],
+            "fikstur B tidak lagi menghasilkan keadaan kaki-lenyap yang ia "
+            "wakili: ia melaporkan %r, sedangkan yang diharapkan (0, 0). Yang "
+            "rusak FIKSTURNYA, yaitu blok fikstur B di `_SKRIP_PALET`, bukan "
+            "`_vonis_kaki`, sebab predikat yang benar memang meluluskan "
+            "(0, 1). Tanpa prasyarat ini, fikstur yang melaporkan (0, 1) "
+            "membuat pesan di bawahnya menuduh predikat yang utuh, dan "
+            "fikstur yang berhenti membuang kakinya (melaporkan (1, 0)) lolos "
+            "diam-diam, dan bersamanya predikat yang meluluskan kaki yang "
+            "lenyap" % (tuple(lap["kakiFiksturB"]),))
+
+        self.assertFalse(
+            self._vonis_kaki(lap["kakiFiksturB"]),
+            "fikstur B membuang `.palet-kaki` sama sekali dan melaporkan %r, "
+            "tapi `_vonis_kaki` masih meluluskannya. Yang seharusnya "
+            "menolaknya suku `anak_kotak == 1` -- satu-satunya suku yang "
+            "bisa, sebab kaki yang lenyap juga memenuhi 'nol di wadah gulir', "
+            "dan pagar yang hijau atas kaki yang lenyap menjaga nol"
+            % (tuple(lap["kakiFiksturB"]),))
+
+    # --------------------------------- fakta yang dipegang premis metode 5
+
+    @staticmethod
+    def _dua_wadah_gulir(css):
+        """YA kalau dialog ini masih punya DUA wadah gulir, bukan satu.
+
+        Yang kedua `.jendela-badan`, dan ia tidak terlihat seperti wadah gulir
+        kalau yang dibaca cuma deklarasinya sendiri: atapnya datang dari
+        INDUKNYA -- `.jendela` ber-`max-height` bersatuan `vh` +
+        `flex-direction: column` -- sementara `.jendela-badan` nol `flex` apa
+        pun sehingga `flex-shrink` bawaannya 1 dan ia yang dipangkas lebih
+        dulu.
+
+        Keputusannya tinggal di sini saja, dan ketiga keadaan -- pohon apa
+        adanya plus dua fikstur yang sengaja merusaknya -- masuk lewat fungsi
+        yang SAMA. Fikstur yang menyalin ulang predikat ke dalam dirinya
+        sendiri menguji salinannya, bukan pagarnya.
+        """
+        def blok(sel):
+            m = re.search(r"(?ms)^[ \t]*\.%s[ \t]*\{(.*?)\}" % sel, css)
+            return m.group(1) if m else ""
+
+        badan, jendela = blok("jendela-badan"), blok("jendela")
+        return bool(re.search(r"overflow-y\s*:\s*(auto|scroll)", badan)
+                    and re.search(r"max-height\s*:\s*[0-9.]+vh", jendela)
+                    and re.search(r"flex-direction\s*:\s*column", jendela))
+
+    def test_dialog_punya_dua_wadah_gulir(self):
+        """Wadah gulir di dialog ini ADA DUA, dan yang kedua atapnya warisan.
+
+        Premis metode 5 dulu menyebut `.palet-hasil` satu-satunya pemilik
+        `overflow-y` berikut atap tinggi. Itu benar hanya dalam bacaan
+        tersempitnya -- satu-satunya pemilik DEKLARASI `max-height` sendiri
+        sekaligus `overflow-y` -- dan bacaan itulah yang membuat wadah gulir
+        KEDUA tidak pernah masuk catatan selama dua hop. `.jendela-badan`
+        (gaya.css:4077) juga `overflow-y: auto`; atapnya datang dari induknya,
+        `.jendela` ber-`max-height: 82vh` (:4054) + `flex-direction: column`
+        (:4055) + `overflow: hidden` (:4060).
+
+        Akibatnya diukur di layout sungguhan, bukan ditaksir dari token
+        (Chrome headless, CDP, profil terpisah, palet dibuka lewat Ctrl+K yang
+        asli; artefak `/home/vi/.s9d5/ukur-9d5.json`). Komponen yang TETAP,
+        tidak ikut tinggi viewport: `.jendela-kepala` 71px, padding
+        `.jendela-badan` 26+26, `.palet-cari` 44px, `.palet-kaki` 43px satu
+        baris / 79px dua baris di lebar 360px (`flex-wrap: wrap`,
+        gaya.css:4122). Dari situ:
+
+            sisa_gulir(.jendela-badan) = 210 - 0,24*H
+            `.jendela-badan` MELUBER  <=> sisa > 0   <=> H < 875 px
+            kaki IKUT TERPOTONG       <=> sisa > 26  <=> H < 767 px
+            kaki dua baris di 360px   : 246 - 0,24*H <=> H < 917 px
+
+        26 itu padding bawah `--s5`. Chrome dijalankan dengan
+        `--hide-scrollbars`, jadi bilah gulir nol piksel di pengukuran itu
+        sementara di mesin pelajar ia memakan lebar: angka-angka itu BATAS
+        BAWAH keluberan, bukan batas atas.
+
+        Yang dijaga di sini FAKTANYA, bukan cacatnya, dan itu bukan kehati-
+        hatian: pagar yang menuntut kaki palet selalu terlihat MERAH sejak
+        lahir di pohon hari ini, sedangkan pagar yang memihak ambang 767px
+        akan memerah justru saat seseorang memperbaikinya. Fakta "ada wadah
+        gulir kedua yang atapnya datang dari induknya" selamat dari kedua
+        bentuk perbaikan yang mungkin -- memindahkan kaki keluar
+        `.jendela-badan`, maupun menukar atap `58vh` `.palet-hasil` dengan
+        `flex: 1; min-height: 0`.
+
+        Yang kedua diadu sebagai fikstur F3 di bawah, dan ia WAJIB tetap YA:
+        klaim "pagar ini tidak menghalangi perbaikan" yang cuma ditulis di
+        prosa adalah klaim yang bisa melenceng tanpa satu pun tes gagal. F3
+        ditulis UTUH sebagai CSS sintetis, tidak diturunkan dari `gaya.css`.
+        Ia mewakili keadaan MASA DEPAN, yaitu sesudah perbaikan, dan fikstur
+        masa depan yang dibentuk dengan menukar teks keadaan sekarang patah
+        tepat saat masa depan itu tiba. Begitu perbaikannya dipasang, tidak
+        ada lagi atap `.palet-hasil` untuk ditukar. Fiksturnya berhenti
+        mendarat, lalu tes memerah dengan pesan yang menuduh harness, dan
+        yang membacanya justru orang yang baru saja memperbaiki CSS-nya.
+        F1, F2, F4, dan F5 TETAP diturunkan dari berkas hidup karena
+        keempatnya MERUSAK sesuatu yang ada sekarang. Kalau jangkar mereka
+        hilang, pohonnya memang sudah berubah, jadi pesan "tidak pernah
+        mendarat" di sana jujur. Jalur merah yang dibayar F3 adalah predikat
+        yang diperketat sampai ikut menuntut `.palet-hasil` ber-`max-height`
+        bersatuan `vh`. `assertTrue(css)` pertama buta terhadap pengetatan
+        itu, karena pohon hari ini memang masih beratap, sehingga F3
+        satu-satunya penagihnya.
+
+        Suku KETIGA predikat -- satuan `vh` pada atap `.jendela` -- dibayar F4,
+        dan bentuknya MENUKAR satuan, bukan membuang deklarasinya. Keduanya
+        diadu: fikstur yang MEMBUANG `max-height` memang memerah kalau suku itu
+        dihapus, tapi tetap HIJAU atas dua pelemahan yang justru paling mungkin
+        terjadi -- predikat yang menerima satuan apa pun (`[0-9.]+\\w+`) dan
+        predikat yang menerima `max-height` apa pun. Sebabnya struktural: blok
+        tanpa `max-height` menjawab TIDAK lewat jalur APA PUN, jadi
+        `assertFalse` tetap lulus atas predikat yang sudah lumpuh, dan yang
+        sebenarnya diuji cuma "ada atapnya". Menyisakan deklarasinya sambil
+        menukar SATUANNYA yang membuat suku itu penentu tunggal: tukar memerah
+        di ketiga pelemahan, buang cuma di satu.
+        """
+        jalur = os.path.join(self._akar(), "webapp", "statik", "gaya.css")
+        with open(jalur, encoding="utf-8") as f:
+            css = f.read()
+
+        pelajar = ("Begitu fakta ini dilanggar, premis metode 5 di atas "
+                   "berhenti benar tanpa satu pun tes gagal -- dan yang "
+                   "dibayar pelajar adalah kaki pintasan atau isi dialog yang "
+                   "tergulir keluar layar tanpa satu pun error di mana pun")
+
+        self.assertTrue(
+            self._dua_wadah_gulir(css),
+            "`gaya.css` tidak lagi memuat dua wadah gulir di dialog: yang "
+            "dituntut `.jendela-badan` ber-`overflow-y` DAN `.jendela` "
+            "ber-`max-height` bersatuan `vh` + `flex-direction: column`. %s"
+            % pelajar)
+
+        f1, n1 = re.subn(
+            r"(?ms)(^[ \t]*\.jendela-badan[ \t]*\{[^}]*?)"
+            r"overflow-y\s*:\s*[^;}]+;[ \t]*", r"\1", css, count=1)
+        self.assertEqual(
+            n1, 1,
+            "fikstur F1 tidak pernah mendarat: nol deklarasi `overflow-y` "
+            "untuk dibuang dari blok `.jendela-badan`. Fikstur yang tidak "
+            "mengubah apa pun membuat assertion di bawahnya hijau tanpa "
+            "menguji apa pun -- dan itu bentuk kegagalan yang tidak terlihat "
+            "seperti kegagalan")
+        # PRASYARAT PASCA-KONDISI FIKSTUR. `n1 == 1` membuktikan F1 MENDARAT,
+        # bukan bahwa sisi itu kosong: blok yang ber-`overflow-y` dua kali
+        # masih menyisakan satu sesudah `count=1`. Nilainya sengaja tidak
+        # dibaca -- ini pasca-kondisi fikstur, bukan salinan predikat.
+        b1 = re.search(r"(?ms)^[ \t]*\.jendela-badan[ \t]*\{(.*?)\}", f1)
+        # Cabang ini cuma terjangkau fikstur yang busuk: dari 8.132 blok
+        # `.jendela-badan` acak yang lolos `assertTrue(css)` dan `n1 == 1`,
+        # sensus pengendali menemukan 0 rute produk ke sini.
+        self.assertIsNotNone(
+            b1,
+            "fikstur F1 tidak meninggalkan blok `.jendela-badan` sama sekali: "
+            "F1 merusak LEBIH dari yang ia klaim -- ia mengaku membuang satu "
+            "deklarasi, bukan bloknya. `assertTrue(css)` dan `n1 == 1` di "
+            "atas sudah membuktikan blok itu ADA di `gaya.css` dan F1 "
+            "mendarat di sana, jadi yang rusak fiksturnya, BUKAN `gaya.css` "
+            "dan BUKAN `_dua_wadah_gulir`. Tanpa prasyarat ini, blok yang "
+            "lenyap menjawab TIDAK lewat jalur apa pun, dan `assertFalse` di "
+            "bawahnya lulus diam-diam atas fikstur yang tidak menguji sisi "
+            "yang ia klaim")
+        self.assertNotIn(
+            "overflow-y", b1.group(1),
+            "fikstur F1 meninggalkan `overflow-y` di blok `.jendela-badan`: "
+            "F1 cuma membuang SATU deklarasi, dan blok itu masih memuat yang "
+            "lain, jadi sisi yang F1 klaim patahkan masih berdiri. Yang "
+            "tidak lengkap fiksturnya -- atau `gaya.css` yang mendeklarasikan "
+            "`overflow-y` lebih dari sekali -- BUKAN `_dua_wadah_gulir`; "
+            "predikat yang utuh memang wajib menjawab YA atas blok yang masih "
+            "ber-`overflow-y`. Tanpa prasyarat ini, pesan di bawahnya menuduh "
+            "predikat yang utuh")
+        self.assertFalse(
+            self._dua_wadah_gulir(f1),
+            "F1 membuang `overflow-y` dari `.jendela-badan` dan "
+            "`_dua_wadah_gulir` masih menjawab YA. Predikat yang tidak bisa "
+            "menjawab TIDAK untuk fakta yang persis ia jaga bukan pagar; ia "
+            "hijau selamanya. %s" % pelajar)
+
+        # F5 menukar NILAI `overflow-y` jadi `hidden` dan membiarkan
+        # deklarasinya berdiri. Bentuk BUANG sudah diadu dan tidak membayar
+        # sisi ini: atas predikat yang dilemahkan jadi `[^;}]+` maupun daftar
+        # yang dilebarkan ke `hidden|visible|clip`, BUANG tetap HIJAU (0 dari
+        # 2 pelemahan tertagih) sedangkan TUKAR memerah di keduanya (2 dari
+        # 2). `visible` dan `clip` terukur identik dengan `hidden`, jadi satu
+        # nilai mewakili kelasnya. Prasyaratnya memanen NILAI, bukan "masih
+        # menggulir?" -- yang kedua itu salinan suku predikat.
+        f5, n5 = re.subn(
+            r"(?ms)(^[ \t]*\.jendela-badan[ \t]*\{[^}]*?overflow-y\s*:\s*)"
+            r"(?:auto|scroll)", r"\g<1>hidden", css, count=1)
+        self.assertEqual(
+            n5, 1,
+            "fikstur F5 tidak pernah mendarat: nol `overflow-y` bernilai "
+            "`auto`/`scroll` untuk ditukar di blok `.jendela-badan`, jadi "
+            "assertion di bawahnya menguji teks yang sama dengan pohon apa "
+            "adanya")
+        b5 = re.search(r"(?ms)^[ \t]*\.jendela-badan[ \t]*\{(.*?)\}", f5)
+        nilai5 = (sorted(set(re.findall(r"overflow-y\s*:\s*([\w-]+)",
+                                        b5.group(1))))
+                  if b5 is not None else [])
+        self.assertEqual(
+            nilai5, ["hidden"],
+            "fikstur F5 tidak meninggalkan TEPAT `overflow-y: hidden` di blok "
+            "`.jendela-badan`: `count=1` cuma menukar SATU deklarasi, jadi "
+            "blok yang ber-`overflow-y` dua kali masih menyisakan nilai yang "
+            "menggulir; daftar kosong berarti bloknya hilang atau "
+            "deklarasinya ikut lenyap, dan F5 sudah berubah jadi F1. Yang "
+            "tidak lengkap fiksturnya -- atau `gaya.css` -- BUKAN "
+            "`_dua_wadah_gulir`; tanpa prasyarat ini pesan di bawahnya "
+            "menuduh predikat yang utuh")
+        self.assertFalse(
+            self._dua_wadah_gulir(f5),
+            "F5 menukar `overflow-y` `.jendela-badan` jadi `hidden` -- "
+            "deklarasinya MASIH ADA, cuma nilainya yang berhenti menggulir -- "
+            "dan `_dua_wadah_gulir` masih menjawab YA. Artinya predikatnya "
+            "tinggal bertanya ADA-TIDAKNYA deklarasi, bukan apakah blok itu "
+            "menggulir. F1 tidak bisa menangkap ini: blok yang deklarasinya "
+            "dibuang menjawab TIDAK lewat jalur apa pun, jadi `assertFalse` "
+            "F1 tetap lulus bahkan atas predikat yang sudah lumpuh. `hidden` "
+            "memangkas isi tanpa bilah gulir sama sekali. %s" % pelajar)
+
+        f2, n2 = re.subn(
+            r"(?ms)(^[ \t]*\.jendela[ \t]*\{[^}]*?)"
+            r"flex-direction\s*:\s*column\s*;[ \t]*", r"\1", css, count=1)
+        self.assertEqual(
+            n2, 1,
+            "fikstur F2 tidak pernah mendarat: nol `flex-direction: column` "
+            "untuk dibuang dari blok `.jendela`, jadi assertion di bawahnya "
+            "menguji teks yang sama dengan pohon apa adanya")
+        # PRASYARAT PASCA-KONDISI FIKSTUR. Yang dibuktikan `n2 == 1` cuma
+        # bahwa F2 MENDARAT, bukan bahwa sisi itu sudah kosong: `count=1`
+        # menyisakan satu kalau bloknya ber-`flex-direction` dua kali. Nilai
+        # ini sengaja BUKAN salinan predikat -- ia pasca-kondisi fikstur.
+        b2 = re.search(r"(?ms)^[ \t]*\.jendela[ \t]*\{(.*?)\}", f2)
+        self.assertTrue(
+            b2 is not None and "flex-direction" not in b2.group(1),
+            "fikstur F2 meninggalkan `flex-direction` di blok `.jendela`: F2 "
+            "cuma membuang SATU deklarasi, jadi sisi yang ia klaim patahkan "
+            "masih berdiri. Kalau bloknya malah HILANG, F2 merusak lebih dari "
+            "yang ia klaim. Yang tidak lengkap fiksturnya -- atau `gaya.css` "
+            "yang mendeklarasikan `flex-direction` lebih dari sekali -- BUKAN "
+            "`_dua_wadah_gulir`: predikat yang utuh memang wajib menjawab YA "
+            "atas blok yang masih ber-`flex-direction: column`, jadi tanpa "
+            "prasyarat ini pesan di bawahnya menuduh predikat yang utuh")
+        self.assertFalse(
+            self._dua_wadah_gulir(f2),
+            "F2 membuang `flex-direction: column` dari `.jendela` dan "
+            "`_dua_wadah_gulir` masih menjawab YA. Tanpa kolom itu "
+            "`.jendela-badan` bukan lagi item flex yang menyusut di bawah "
+            "atap induknya -- seluruh alasan ia wadah gulir kedua lenyap, dan "
+            "premis metode 5 jadi benar karena alasan yang berbeda. %s"
+            % pelajar)
+
+        f4, n4 = re.subn(
+            r"(?ms)(^[ \t]*\.jendela[ \t]*\{[^}]*?max-height\s*:\s*[0-9.]+)"
+            r"vh", r"\1px", css, count=1)
+        self.assertEqual(
+            n4, 1,
+            "fikstur F4 tidak pernah mendarat: nol `max-height` bersatuan `vh` "
+            "untuk ditukar di blok `.jendela`, jadi assertion di bawahnya "
+            "menguji teks yang sama dengan pohon apa adanya -- dan satuan `vh` "
+            "kembali jadi suku predikat yang nol fikstur")
+        # PRASYARAT PASCA-KONDISI FIKSTUR. Sama seperti b1/b2, `n4 == 1` cuma
+        # membuktikan F4 MENDARAT: `count=1` menyisakan satu kalau bloknya
+        # ber-`max-height` dua kali. Yang BEDA di sini, dan karena itu disebut:
+        # F4 tidak MEMBUANG apa pun, jadi yang dituntut bentuk HASIL TUKARNYA
+        # -- satuan yang tersisa di blok itu HANYA `px` -- bukan ketidakhadiran
+        # sebuah deklarasi. Fikstur yang membuang atapnya terukur HIJAU atas
+        # predikat yang dilemahkan jadi "satuan apa pun", karena blok tanpa
+        # atap menjawab TIDAK lewat jalur apa pun.
+        #
+        # Yang dipanen SATUANNYA, bukan jawaban "masih ada `vh`?". Menuliskan
+        # pertanyaan itu berarti menyalin suku predikat kata demi kata ke dalam
+        # prasyaratnya -- hal yang dilarang docstring `_dua_wadah_gulir`, dan
+        # yang terukur melumpuhkan alat ukurnya juga: pola sasaran mutasi
+        # berhenti tunggal, jadi sel yang melemahkan predikat tidak punya
+        # situs yang pasti. `assertEqual` atas himpunan dipilih karena ia
+        # bergigi pada himpunan KOSONG (blok hilang / nol atap), sementara
+        # `all(...)` meluluskannya.
+        b4 = re.search(r"(?ms)^[ \t]*\.jendela[ \t]*\{(.*?)\}", f4)
+        satuan4 = (sorted(set(re.findall(r"max-height\s*:\s*[0-9.]+(\w+)",
+                                         b4.group(1))))
+                   if b4 is not None else [])
+        self.assertEqual(
+            satuan4, ["px"],
+            "fikstur F4 tidak meninggalkan blok `.jendela` dengan satuan atap "
+            "`px` sebagai satu-satunya: yang terbaca %r. F4 cuma menukar SATU "
+            "deklarasi, jadi blok yang ber-`max-height` lebih dari sekali "
+            "masih menyisakan atap bersatuan `vh` dan sisi yang F4 klaim "
+            "patahkan masih berdiri. Daftar KOSONG berarti bloknya hilang atau "
+            "nol atap sama sekali -- F4 merusak lebih dari yang ia klaim. Yang "
+            "tidak lengkap fiksturnya -- atau `gaya.css` yang mendeklarasikan "
+            "`max-height` lebih dari sekali di `.jendela` -- BUKAN "
+            "`_dua_wadah_gulir`: predikat yang utuh memang wajib menjawab YA "
+            "atas blok yang masih ber-`max-height` bersatuan `vh`, jadi tanpa "
+            "prasyarat ini pesan di bawahnya menuduh predikat yang utuh"
+            % (satuan4,))
+        self.assertFalse(
+            self._dua_wadah_gulir(f4),
+            "F4 menukar satuan atap `.jendela` dari `vh` jadi `px` dan "
+            "`_dua_wadah_gulir` masih menjawab YA. Satuan `vh` adalah "
+            "satu-satunya alasan atap dialog ini ikut tinggi viewport: dengan "
+            "`px` atapnya TETAP, jadi `.jendela-badan` berhenti jadi wadah "
+            "gulir yang atapnya warisan -- ia tidak lagi dipangkas oleh ruang "
+            "yang menyusut bersama jendela browser, dan seluruh hitungan "
+            "`sisa_gulir = 210 - 0,24*H` di atas kehilangan sukunya yang "
+            "bergantung H. Predikat yang menerima satuan apa pun menjaga "
+            "'ada atapnya', bukan 'atapnya ikut viewport'. %s" % pelajar)
+
+        # F3 mewakili keadaan SESUDAH perbaikan, jadi ia ditulis utuh di sini
+        # dan tidak dibaca dari `css`. Nilainya disalin dari `gaya.css` hari
+        # ini supaya pembaca langsung mengenalinya, tapi nilai itu DIKETIK.
+        # Satu-satunya yang berbeda dari pohon hari ini adalah atap
+        # `.palet-hasil`, yang ditukar dengan `flex: 1; min-height: 0`.
+        f3 = (".jendela {\n"
+              "  max-height: 82vh;\n"
+              "  display: flex; flex-direction: column;\n"
+              "  overflow: hidden;\n"
+              "}\n"
+              ".jendela-badan { padding: var(--s5); overflow-y: auto; }\n"
+              ".palet-hasil { flex: 1; min-height: 0; overflow-y: auto; "
+              "padding: 7px;\n"
+              "               list-style: none; margin: 0; }\n")
+        # PRASYARAT PASCA-KONDISI FIKSTUR A: ketiga bloknya ada. Yang dipanen
+        # nama penyeleksi, bukan suku predikat.
+        nama3 = sorted(re.findall(r"(?m)^[ \t]*\.([\w-]+)[ \t]*\{", f3))
+        self.assertEqual(
+            nama3, ["jendela", "jendela-badan", "palet-hasil"],
+            "fikstur F3 tidak memuat tepat tiga blok `.jendela`, "
+            "`.jendela-badan`, dan `.palet-hasil`: yang terbaca %r. Yang rusak "
+            "FIKSTURNYA, BUKAN `_dua_wadah_gulir`. Blok yang hilang membuat "
+            "predikat menjawab TIDAK lewat jalur yang tidak ada hubungannya "
+            "dengan perbaikan, jadi tanpa prasyarat ini pesan di bawahnya "
+            "menuduh predikat yang utuh" % (nama3,))
+        # PRASYARAT PASCA-KONDISI FIKSTUR B: `.palet-hasil` sungguh berbentuk
+        # SESUDAH perbaikan. Blok `.jendela` dan `.jendela-badan` sengaja
+        # tidak dipanen di sini. Keduanya suku predikat, dan menuntutnya di
+        # prasyarat berarti menguji salinannya.
+        b3 = re.search(r"(?ms)^[ \t]*\.palet-hasil[ \t]*\{(.*?)\}", f3)
+        prop3 = (sorted({"flex", "max-height", "min-height"}
+                        & set(re.findall(r"(?:^|[;{\s])([\w-]+)\s*:",
+                                         b3.group(1))))
+                 if b3 is not None else [])
+        self.assertEqual(
+            prop3, ["flex", "min-height"],
+            "fikstur F3 berhenti mewakili keadaan sesudah perbaikan: dari "
+            "`flex`, `max-height`, dan `min-height`, blok `.palet-hasil`-nya "
+            "mendeklarasikan %r, padahal yang dituntut tepat `flex` dan "
+            "`min-height`. Atapnya kembali, atau `flex`/`min-height`-nya "
+            "hilang. Tanpa prasyarat ini `assertTrue` di bawahnya tidak lagi "
+            "mengukur apa pun yang ia klaim" % (prop3,))
+        self.assertTrue(
+            self._dua_wadah_gulir(f3),
+            "F3 menukar atap `58vh` `.palet-hasil` dengan `flex: 1; "
+            "min-height: 0` -- salah satu dari dua bentuk perbaikan yang "
+            "mungkin bagi kaki palet -- dan `_dua_wadah_gulir` berhenti "
+            "menjawab YA. Pagar yang memerah justru saat seseorang "
+            "memperbaiki cacatnya lebih buruk daripada tidak ada pagar: ia "
+            "berhenti menjaga sebuah fakta dan mulai menghalangi perbaikan "
+            "yang sedang ditunggu izinnya. F3 sintetis dan tidak membaca "
+            "`gaya.css`, jadi merah di sini berarti PREDIKAT-nya yang "
+            "berubah, BUKAN `gaya.css`")
+
+    # ------------------------------------------------------------- metode 6
+
+    GRUP_DARI_PIL = {"buka": "Perintah", "bahasa": "Bahasa"}
+
+    @classmethod
+    def _mau_penanda(cls, baris_dom):
+        """Berapa rombongan yang SEHARUSNYA bertanda, dihitung dari pohonnya.
+
+        Angkanya tidak diketik, dan itulah yang menahan pagar di bawah supaya
+        tidak mengeras jadi "dua": pil jenis tiap butir sudah ada di DOM sejak
+        sebelum rombongan ada, jadi jumlah rombongan terisi bisa dihitung dari
+        apa yang benar-benar terpasang -- termasuk pada kelima fikstur, yang
+        butirnya memang tidak disentuh. Yang tinggal di sini cuma TABELnya
+        (pil mana milik rombongan mana); KEPUTUSANNYA tinggal di `_vonis_grup`
+        dan dibagi lewat parameter, karena fikstur yang menyalin ulang
+        predikatnya menguji salinannya sendiri.
+
+        `"Isi"` jadi BAWAAN dan bukan cabang ketiga yang disebut namanya: pil
+        isi ada tiga hari ini (`materi`, `kuis`, `latihan`), dan daftar yang
+        menyebut ketiganya akan berhenti mengenali yang keempat tanpa satu pun
+        tanda -- persis kelas bug yang `punya: () => true` di `GRUP_PALET`
+        dipasang untuk mencegah.
+        """
+        return len({cls.GRUP_DARI_PIL.get(b["pil"], "Isi") for b in baris_dom
+                    if "palet-item" in b["kelas"].split()})
+
+    @staticmethod
+    def _vonis_grup(baris_dom, mau):
+        """LULUS hanya kalau tiap penanda memimpin rombongan yang tidak kosong.
+
+        Empat sisi, dan tidak satu pun bisa dibuang tanpa membuat predikat ini
+        hijau untuk cacat yang ia justru jaga:
+
+        * jumlah penanda tepat `mau` -- NOL penanda juga memenuhi "tidak ada
+          penanda kosong", dan daftar datar tanpa satu pun tanda adalah
+          keadaan sebelum hop ini;
+        * nol penanda ber-`role=option` maupun ber-id -- penanda yang ikut
+          masuk `butir` menyita satu indeks `aria-activedescendant` untuk
+          baris yang tidak bisa dibuka;
+        * tiap butir didahului sebuah penanda, DAN tiap penanda diikuti
+          minimal satu butir -- dua arah, karena satu arah saja meluluskan
+          label yang tidak memimpin apa pun;
+        * nol baris yang bukan penanda maupun butir -- `.palet-kosong` yang
+          berdiri di samping butir berarti dua jawaban sekaligus.
+
+        Keputusannya tinggal di sini saja, dan keenam keadaan -- pohon apa
+        adanya plus lima fikstur yang sengaja merusaknya -- masuk lewat fungsi
+        yang SAMA.
+        """
+        if not baris_dom:
+            return False
+        penanda, anggota, pernah = 0, 0, False
+        for b in baris_dom:
+            kelas = b["kelas"].split()
+            if "palet-grup" in kelas:
+                if pernah and anggota == 0:
+                    return False
+                if b["peran"] == "option" or b["id"]:
+                    return False
+                penanda, pernah, anggota = penanda + 1, True, 0
+            elif "palet-item" in kelas:
+                if not pernah:
+                    return False
+                anggota += 1
+            else:
+                return False
+        return penanda == mau and anggota > 0
+
+    @unittest.skipUnless(
+        shutil.which("node"),
+        "butuh node untuk menjalankan bukaPalet() di DOM jebak")
+    def test_rombongan_palet_bertanda_dan_penandanya_bukan_opsi(self):
+        """Daftar hasil terbagi rombongan BERTANDA, dan tandanya bukan opsi.
+
+        Sebelum hop ini daftarnya satu runtun datar: `daftarPerintah()`
+        menaruh enam tujuan aplikasi tanpa `tipe` bersama sembilan belas
+        bahasa ber-`tipe: "bahasa"`, lalu `cariIsi` menyambung sampai empat
+        puluh butir isi di belakangnya -- dan `saringPerintah()` mengurutkan
+        seluruhnya menurut skor. Yang terbaca pemakai mencampur tiga jenis
+        benda tanpa satu pun tanda jenisnya.
+
+        KENAPA TANDANYA SATU BUTIR DENGAN PENGELOMPOKANNYA, dan bukan hop
+        sendiri: memaksa rombongan TANPA tanda berarti mendorong hasil bahasa
+        berskor tinggi ke bawah enam perintah berskor rendah. Tanpa tanda di
+        layar itu bukan struktur melainkan peringkat yang rusak tanpa
+        penjelasan, dan pemakainya tidak punya cara tahu mana dari keduanya
+        yang sedang ia lihat.
+
+        DUA PERTANYAAN, dan pagar ini menjawab keduanya dengan satu predikat:
+        apakah penandanya ADA dan memimpin rombongan yang tidak kosong, dan
+        apakah ia BERADA DI LUAR `butir`. Yang kedua bukan kerewelan: tiga
+        mesin membaca `butir`/`baris` dan ketiganya menghitung OPSI, bukan
+        baris di layar -- `aria-activedescendant` lewat `butir[pilihan].id`,
+        ArrowDown/Home/End lewat `baris.length`, dan urutan masuk lewat
+        `butir.slice(0, 10)`. Satu penanda yang ikut masuk berarti satu indeks
+        yang menunjuk baris yang tidak bisa dibuka, dan yang terlihat bukan
+        error melainkan sorotan yang hilang satu ketukan lalu `Enter` yang
+        diam.
+
+        Yang dipakai driver `_SKRIP_PALET` yang sudah ada, bukan harness
+        kedua, dan kelima fiksturnya ada supaya predikat ini terbukti bisa
+        menjawab TIDAK: C membuang seluruh penanda, D menempelkan penanda
+        tanpa anggota, E menjadikan penanda pertama sebuah opsi ber-id,
+        F menempelkan `.palet-kosong` di samping butir, dan G memindah
+        penanda kedua ke tepat sesudah yang pertama -- penanda kosong di
+        tengah, bukan di ekor.
+
+        YANG TIDAK DIJAMIN DI SINI, disebut supaya tidak dikira lebih: ia
+        tidak menyentuh gaya penandanya, urutan rombongan satu terhadap yang
+        lain, maupun peringkat butir DI DALAM sebuah rombongan. Urutan skor
+        itu urusan `TestPaletCocokFuzzy`.
+        """
+        akar = self._akar()
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PALET)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._wilayah())
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+
+        # Alat ukurnya ditagih ADA sebelum nilainya ditagih. Kunci yang lenyap
+        # membuat setiap asersi di bawah melempar `KeyError` alih-alih
+        # mengadu -- dan yang hilang bukan cuma vonisnya melainkan seluruh
+        # diagnosis yang sudah ditulis untuknya.
+        for kunci in ("barisApaAdanya", "barisFiksturC", "barisFiksturD",
+                      "barisFiksturE", "barisFiksturF", "barisFiksturG",
+                      "grupAda"):
+            self.assertIn(
+                kunci, lap,
+                "driver Node berhenti melaporkan `%s`. Pagar yang kehilangan "
+                "alat ukurnya lebih buruk daripada pagar yang tidak pernah "
+                "ada, karena yang pertama masih terlihat seperti menjaga "
+                "sesuatu" % kunci)
+
+        self.assertTrue(
+            lap["grupAda"],
+            "nol `.palet-grup` di wadah hasil: daftar palet kembali jadi satu "
+            "runtun datar yang mencampur enam tujuan aplikasi, sembilan belas "
+            "bahasa, dan hasil isi tanpa satu pun tanda jenisnya. Medan ini "
+            "ada supaya fikstur E melaporkan `false` alih-alih membuat driver "
+            "mati `TypeError` -- diagnosis yang tidak pernah terbaca adalah "
+            "diagnosis yang tidak pernah ditulis")
+
+        apa_adanya = lap["barisApaAdanya"]
+        mau = self._mau_penanda(apa_adanya)
+        self.assertGreaterEqual(
+            mau, 2,
+            "pohon palet yang dipanen cuma memuat %d jenis rombongan, jadi "
+            "pagar di bawah tidak pernah mengadu PEMISAHAN apa pun -- satu "
+            "penanda di atas satu runtun tidak memisahkan apa-apa. Pada medan "
+            "kosong daftarnya wajib memuat perintah DAN bahasa (pil `buka` "
+            "dan pil `bahasa`); kalau salah satu hilang, yang rusak "
+            "`daftarPerintah()` atau fikstur bahasa di driver, bukan "
+            "rombongannya" % mau)
+
+        akibat = ("runtun datar mencampur tiga jenis benda tanpa tanda "
+                  "jenisnya, dan harga mengelompokkan TANPA tanda lebih mahal "
+                  "lagi: hasil bahasa berskor tinggi berdiri di bawah "
+                  "perintah berskor rendah, yang terbaca bukan sebagai "
+                  "struktur melainkan sebagai peringkat yang rusak")
+
+        self.assertTrue(
+            self._vonis_grup(apa_adanya, mau),
+            "daftar hasil palet tidak terbagi rombongan bertanda. Yang "
+            "terpasang dari atas ke bawah: %r. Yang benar: %d penanda "
+            "`.palet-grup`, masing-masing memimpin minimal satu "
+            "`.palet-item`, dan tidak satu pun ber-`role=option` maupun "
+            "ber-id. %s"
+            % ([(b["kelas"], b["teks"][:22]) for b in apa_adanya], mau,
+               akibat))
+
+        # Penanda tidak menyita satu pun indeks opsi: deret id butir tetap
+        # utuh dari nol. Ini sisi yang paling murah diukur dan paling mahal
+        # kalau dilanggar, dan ia TIDAK tertutup predikat di atas -- sebuah
+        # penanda yang disisipkan ke `butir` tanpa membawa id sendiri tetap
+        # menggeser id butir sesudahnya.
+        ids = [b["id"] for b in apa_adanya
+               if "palet-item" in b["kelas"].split()]
+        self.assertEqual(
+            ids, ["palet-opt-%d" % i for i in range(len(ids))],
+            "deret id butir bukan `palet-opt-<indeks>` yang utuh: %r. Satu "
+            "penanda yang ikut masuk `butir` menggeser seluruh indeks "
+            "sesudahnya, dan `aria-activedescendant` mulai menunjuk baris "
+            "yang bukan sorotannya" % ids[:14])
+
+        for nama, kenapa, bentuk, cocok in [
+            ("barisFiksturC",
+             "fikstur C membuang SELURUH penanda -- bentuk cacat yang paling "
+             "mungkin terjadi, yaitu `isikan(hasil, ...butir)` yang kembali "
+             "melewati rombongannya",
+             "persis baris pohon apa adanya yang bukan penanda `.palet-grup`, "
+             "urutannya tetap: cacatnya cuma penanda yang hilang, selebihnya "
+             "identik dengan pohon apa adanya di kelima medan yang dipanen",
+             lambda r: r == [b for b in apa_adanya
+                             if "palet-grup" not in b["kelas"].split()]),
+            ("barisFiksturD",
+             "fikstur D menempelkan satu penanda TANPA anggota -- sebuah "
+             "label di atas nol butir, yang predikat satu sisi ('tiap butir "
+             "didahului penanda') justru meluluskan",
+             "pohon apa adanya ditambah satu baris di ekor, yaitu penanda "
+             "`.palet-grup` ber-peran `presentation` tanpa id; selebihnya "
+             "identik dengan pohon apa adanya di kelima medan yang dipanen",
+             lambda r: (r[:-1] == apa_adanya
+                        and "palet-grup" in r[-1]["kelas"].split()
+                        and r[-1]["peran"] == "presentation"
+                        and not r[-1]["id"])),
+            ("barisFiksturE",
+             "fikstur E menjadikan penanda pertama sebuah `role=option` "
+             "ber-id, yaitu pelanggaran 'penanda bukan opsi' apa adanya",
+             "baris pertama pohon apa adanya yang cuma diganti peran dan "
+             "id-nya, jadi ber-peran `option` DAN ber-id tidak kosong; medan "
+             "lain baris itu dan seluruh baris sesudahnya identik dengan "
+             "pohon apa adanya di kelima medan yang dipanen",
+             lambda r: (r[1:] == apa_adanya[1:]
+                        and dict(r[0], peran=None, id=None)
+                        == dict(apa_adanya[0], peran=None, id=None)
+                        and r[0]["peran"] == "option" and bool(r[0]["id"]))),
+            ("barisFiksturF",
+             "fikstur F menempelkan `.palet-kosong` di samping butir -- "
+             "baris yang bukan penanda maupun butir, alias dua jawaban "
+             "sekaligus: 'Tidak ada yang cocok' di bawah daftar yang "
+             "justru cocok",
+             "pohon apa adanya ditambah tepat satu baris `.palet-kosong` "
+             "yang kelasnya cuma itu, di posisi mana pun; selebihnya "
+             "identik dengan pohon apa adanya di kelima medan yang dipanen",
+             lambda r: ([b for b in r
+                         if "palet-kosong" not in b["kelas"].split()]
+                        == apa_adanya
+                        and [b["kelas"].split() for b in r
+                             if "palet-kosong" in b["kelas"].split()]
+                        == [["palet-kosong"]])),
+            ("barisFiksturG",
+             "fikstur G memindah penanda kedua ke tepat sesudah penanda "
+             "pertama -- penanda kosong di TENGAH: label yang tidak memimpin "
+             "apa pun tapi tidak berdiri di ekor, jadi yang menolaknya bukan "
+             "`anggota > 0` di ekor, dan cacah penandanya tetap sama dengan "
+             "cacah rombongan",
+             "minimal tiga baris, dua baris pertama penanda, baris terakhir "
+             "butir, tiap baris penanda atau butir, dan penanda sebanyak "
+             "rombongan, semuanya ber-peran `presentation` tanpa id",
+             lambda r: (len(r) >= 3
+                        and all("palet-grup" in b["kelas"].split()
+                                for b in r[:2])
+                        and "palet-item" in r[-1]["kelas"].split()
+                        and all({"palet-grup", "palet-item"}
+                                & set(b["kelas"].split()) for b in r)
+                        and [(b["peran"], bool(b["id"])) for b in r
+                             if "palet-grup" in b["kelas"].split()]
+                        == [("presentation", False)]
+                        * self._mau_penanda(r))),
+        ]:
+            rusak = lap[nama]
+            # PRASYARAT BENTUK FIKSTUR. Kalimat di bawah menceritakan satu
+            # cacat tertentu, dan ia cuma jujur kalau baris yang dipanen
+            # sungguh berbentuk cacat itu. Pagar `!=` yang dulu di sini boleh
+            # pergi karena tak satu pun bentuk ini dipenuhi pohon apa adanya,
+            # dan penjaminnya: pohon itu sudah LULUS `_vonis_grup` di atas.
+            # D dan F menuntut tepat satu baris lebih banyak daripadanya;
+            # C nol penanda, padahal pohon itu memuat penanda; E baris 0
+            # ber-peran opsi DAN ber-id, padahal baris 0 pohon itu adalah
+            # penanda yang bukan opsi dan tanpa id; G baris kedua penanda,
+            # padahal pohon itu tidak memuat penanda kosong di tengah, jadi
+            # baris keduanya butir.
+            # Bentuknya juga wajib TUNGGAL. `_vonis_grup` berhenti di penolakan
+            # pertama, jadi fikstur yang membawa cacat KEDUA ditolak sisi lain
+            # lebih dulu dan sisi yang ia wakili tidak diuji siapa pun --
+            # hijau diam-diam. Maka sisanya diadu dengan pohon apa adanya atas
+            # SELURUH medan yang dipanen, `pil` dan `teks` juga, bukan cuma
+            # yang ditampilkan pesan. E boleh menunjuk baris 0 karena pagar
+            # `_vonis_grup(apa_adanya)` menjamin baris itu penanda pertamanya.
+            self.assertTrue(
+                cocok(rusak),
+                "fikstur %s tidak lagi berbentuk cacat yang ia wakili. Bentuk "
+                "yang diwajibkan: %s. Yang dipanen: %r. Yang rusak bloknya di "
+                "`_SKRIP_PALET`, bukan `_vonis_grup`. Fikstur yang busuk ke "
+                "ejaan lain membuat sisi predikat yang ia wakili tidak diuji "
+                "siapa pun -- hijau diam-diam -- atau membuat pesan di bawah "
+                "ini menceritakan cacat yang barisnya tidak bawa. Fikstur "
+                "yang membawa cacat KEDUA di luar yang ia klaim juga jatuh di "
+                "sini, dan beda di `pil`/`teks` tidak terlihat di daftar yang "
+                "dipanen di atas"
+                % (nama[-1], bentuk,
+                   [(b["kelas"], b["peran"], b["id"]) for b in rusak]))
+            self.assertFalse(
+                self._vonis_grup(rusak, self._mau_penanda(rusak)),
+                "%s, dan `_vonis_grup` masih meluluskannya: %r. Predikat yang "
+                "tidak bisa menjawab TIDAK untuk cacat yang persis ia jaga "
+                "bukan pagar; ia hijau selamanya"
+                % (kenapa,
+                   [(b["kelas"], b["peran"], b["id"]) for b in rusak]))
+
+    @staticmethod
+    def _kontras_penanda_palet(akar):
+        """Bahan `test_penanda_rombongan_terbaca_di_semua_tema`, dipisah dari
+        assertion-nya supaya angkanya bisa dipanggil sendiri.
+
+        Mengembalikan `(aturan, latar, tema, rasio)`: `aturan` daftar
+        `(selektor, nilai color)` tiap aturan tingkat-atas yang selektornya
+        menyebut `.palet-grup`; `latar` nilai background `.jendela` (None
+        kalau tidak ada); `tema` id dari `TEMA` di layar-lain.js; `rasio` dict
+        `(tema, token) -> float`, atau kalimat kenapa pasangan itu tidak bisa
+        dihitung.
+        """
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            # Komentar dibuang LEBIH DULU: gaya.css menulis contoh blok tema
+            # dan deklarasi token di dalam komentar, dan keduanya bukan CSS.
+            css = re.sub(r"/\*.*?\*/", " ", f.read(), flags=re.S)
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-lain.js"), encoding="utf-8") as f:
+            js = f.read()
+        m = re.search(r"export const TEMA = \[(.*?)\n\];", js, re.S)
+        tema = re.findall(r'^\s*\[\s*"([^"]+)"', m.group(1), re.M) if m else []
+
+        def aturan_atas(teks):
+            # Cuma aturan TINGKAT-ATAS: isi @media/@container/@keyframes
+            # dilewati utuh, dan kurung kurawal di dalam string tidak dihitung.
+            hasil, dalam, awal, buka, i = [], 0, 0, 0, 0
+            while i < len(teks):
+                c = teks[i]
+                if c in "\"'":
+                    j = i + 1
+                    while j < len(teks) and teks[j] != c:
+                        j += 2 if teks[j] == "\\" else 1
+                    i = j + 1
+                    continue
+                if c == "{":
+                    if dalam == 0:
+                        buka = i
+                    dalam += 1
+                elif c == "}":
+                    dalam -= 1
+                    if dalam == 0:
+                        kepala = re.sub(r"\s+", " ", teks[awal:buka]).strip()
+                        if not kepala.startswith("@"):
+                            hasil.append((kepala, teks[buka + 1:i]))
+                        awal = i + 1
+                elif c == ";" and dalam == 0:
+                    awal = i + 1
+                i += 1
+            return hasil
+
+        def deklarasi(badan):
+            # `;` di dalam kurung (url(data:...;base64,...)) bukan pemisah.
+            for potong in re.split(r";(?![^(]*\))", badan):
+                nama, _, isi = potong.partition(":")
+                isi = re.sub(r"\s*!important\s*$", "", isi.strip())
+                if nama.strip() and isi:
+                    yield nama.strip(), isi
+
+        semua = aturan_atas(css)
+
+        def token_tema(t):
+            # Cascade seperti peramban: `:root` dan `[data-tema="t"]` sama-sama
+            # 0,1,0 pada <html>, jadi yang menentukan URUTAN SUMBER -- blok
+            # yang ditulis belakangan menang, termasuk `:root` sesudah blok
+            # tema dan blok tema yang sama yang muncul dua kali.
+            pola = r'\[data-tema=(["\']?)%s\1\]' % re.escape(t)
+            nilai = {}
+            for kepala, badan in semua:
+                pilih = [s.strip() for s in kepala.split(",")]
+                if any(s == ":root" or re.fullmatch(pola, s) for s in pilih):
+                    for nama, isi in deklarasi(badan):
+                        if nama.startswith("--"):
+                            nilai[nama] = isi
+            return nilai
+
+        def selesaikan(isi, nilai, jejak=()):
+            m = re.fullmatch(r"var\(\s*(--[\w-]+)\s*(?:,.*)?\)", isi, re.S)
+            if m:
+                nama = m.group(1)
+                if nama in jejak:
+                    return None, "%s melingkar" % nama
+                if nama not in nilai:
+                    return None, "%s tidak dideklarasikan" % nama
+                return selesaikan(nilai[nama].strip(), nilai, jejak + (nama,))
+            m = re.fullmatch(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})", isi)
+            if not m:
+                return None, "%r bukan hex 3/6 digit" % isi
+            h = m.group(1)
+            if len(h) == 3:
+                h = "".join(c * 2 for c in h)
+            return tuple(int(h[k:k + 2], 16) / 255 for k in (0, 2, 4)), None
+
+        def luminansi(rgb):
+            lin = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+                   for c in rgb]
+            return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+
+        aturan, latar = [], None
+        for kepala, badan in semua:
+            if re.search(r"\.palet-grup(?![\w-])", kepala):
+                aturan += [(kepala, isi) for nama, isi in deklarasi(badan)
+                           if nama == "color"]
+            if ".jendela" in [s.strip() for s in kepala.split(",")]:
+                for nama, isi in deklarasi(badan):
+                    if nama in ("background", "background-color"):
+                        latar = isi
+
+        rasio = {}
+        for t in tema:
+            nilai = token_tema(t)
+            if latar is None:
+                bg, alasan_bg = None, "`.jendela` tanpa background"
+            else:
+                bg, alasan_bg = selesaikan(latar, nilai)
+            for _, isi in aturan:
+                m = re.match(r"var\(\s*(--[\w-]+)", isi)
+                token = m.group(1) if m else isi
+                fg, alasan = selesaikan(isi, nilai)
+                if bg is None:
+                    rasio[(t, token)] = "latar tak terselesaikan: " + alasan_bg
+                elif fg is None:
+                    rasio[(t, token)] = "tak terselesaikan: " + alasan
+                else:
+                    terang, gelap = sorted((luminansi(fg), luminansi(bg)),
+                                           reverse=True)
+                    rasio[(t, token)] = (terang + 0.05) / (gelap + 0.05)
+        return aturan, latar, tema, rasio
+
+    def test_penanda_rombongan_terbaca_di_semua_tema(self):
+        """Penanda rombongan palet ("PERINTAH", "BAHASA") terbaca di SETIAP
+        tema, dijaga dari dua sisi yang gagal dengan cara berbeda.
+
+        Sisi token: warna penanda wajib diambil dari token TEKS. Aturan itu
+        lahir dari `.bab-nomor`, yang pernah memakai token garis dan nyaris
+        tak terbaca di tema gelap -- dan sampai metode ini ada, ia cuma dijaga
+        paragrafnya di AGENTS.md. Sisi angka: token teks yang benar pun bisa
+        digeser sampai tenggelam di atas latar `.jendela`, jadi rasionya
+        dihitung dengan rumus WCAG 2.x dan ditagih minimal AA.
+
+        Cascade-nya dimodelkan, bukan dibaca dari satu blok per tema, karena
+        `:root` dan `[data-tema="..."]` berspesifisitas sama pada <html> dan
+        yang menentukan pemenangnya urutan sumber: `:root` yang ditulis
+        sesudah blok tema mengubah semua tema, dan blok tema kedua di ekor
+        berkas menimpa yang pertama. Pembaca yang mengambil "blok tema
+        pertama" akan menagih nilai yang tidak pernah sampai ke layar.
+        Daftar tema dibaca dari `TEMA` di layar-lain.js, jadi tema baru ikut
+        tertagih tanpa menyunting tes ini.
+
+        Hitungan statis ini diadu dengan warna TERHITUNG Chrome di hop 9d18
+        (artefak `/home/vi/.hop9d18/ukur-9d18-pra2.json`) dan hasilnya
+        identik di keempat tema yang ada saat itu.
+
+        Batasnya, sengaja konservatif: aturan yang dicakup tema tertentu
+        (`[data-tema="X"] .palet-grup`) dihitung di SEMUA tema, bukan hanya
+        di tema X.
+        """
+        aturan, latar, tema, rasio = self._kontras_penanda_palet(self._akar())
+        self.assertTrue(
+            tema,
+            "`export const TEMA = [` di layar-lain.js tidak terbaca, jadi tidak "
+            "ada satu tema pun yang ditagih -- tes ini akan hijau tanpa "
+            "memeriksa apa pun")
+
+        sah = {"var(--teks)", "var(--teks-2)", "var(--redup)"}
+        salah = [(sel, isi) for sel, isi in aturan
+                 if re.sub(r"\s+", "", isi) not in sah]
+        self.assertTrue(
+            aturan and not salah,
+            "Warna penanda rombongan palet wajib diambil dari token TEKS, bukan "
+            "dari token garis atau aksen (AGENTS.md: \"Warna teks diambil dari "
+            "token TEKS\"; yang paling tenang yang boleh dipakai `--redup`). "
+            "Yang sah: %s. Aturan .palet-grup ber-color yang ditemukan: %r; "
+            "yang melanggar: %r. Nol aturan juga salah -- penanda yang "
+            "mewarisi warnanya tidak dijaga apa pun"
+            % (sorted(sah), aturan, salah))
+
+        pelanggaran = [(t, token, round(r, 2) if isinstance(r, float) else r)
+                       for (t, token), r in rasio.items()
+                       if not isinstance(r, float) or r < 4.5]
+        self.assertEqual(
+            pelanggaran, [],
+            "Penanda rombongan palet di atas latar `.jendela` (%s) wajib "
+            "mencapai kontras minimal 4,5:1 (WCAG AA teks biasa) di SETIAP "
+            "tema. Pelanggaran (tema, token, rasio): %r"
+            % (latar, pelanggaran))
+
+    def test_butir_isi_bertipe_baru_tidak_hilang_dari_palet(self):
+        """Hasil `/api/cari` bertipe yang BELUM dikenal palet tetap tampil,
+        utuh, di rombongan yang sama dengan hasil isi lainnya.
+
+        `GRUP_PALET` memasukkan tiap butir ke rombongan PERTAMA yang
+        mengakuinya, dan ekornya mengakui apa pun. Itu perlindungan oleh
+        konstruksi, bukan oleh pagar: siapa pun yang menulis ekor itu jadi
+        daftar tipe satu per satu membuat `findIndex` memberi -1 untuk tipe
+        yang tidak disebut, dan `push` pada rombongan yang tidak ada melempar.
+
+        KENAPA KEGAGALANNYA SENYAP, dan kenapa yang hilang SELURUH hasil isi,
+        bukan satu butir: `gambar()` untuk hasil isi dipanggil di dalam
+        `cariIsi`, yang membungkusnya dengan `catch` kosong ("biarkan hasil
+        perintah yang sudah tampil"). Lemparan di tengah partisi membatalkan
+        seluruh gambar ulang, jadi yang tetap terpasang adalah gambar dari
+        penangan `input` -- kalau kata yang diketik tidak cocok dengan satu
+        perintah pun, itu baris "Tidak ada yang cocok.", tepat sesudah server
+        mengirim empat hasil. Tidak ada error di konsol, tidak ada tanda di
+        layar.
+
+        KENAPA DRIVERNYA DIPINJAM, bukan disalin: `_SKRIP_PALET` sengaja
+        mematikan `cariIsi` (`tunda` yang tidak pernah memanggil) dan menjawab
+        `/api/cari` dengan daftar kosong, sehingga sebelum metode ini nol butir
+        isi pernah melewati partisi itu di seluruh suite. Yang diubah di sini
+        tepat dua baris (`tunda` yang langsung memanggil dan menyimpan janjinya,
+        `ambil` yang mencacah dan menjawab fikstur) ditambah satu potongan di
+        `bukaPalet();` -- masing-masing ditagih ditemukan TEPAT SEKALI. Harness
+        kedua adalah DOM jebakan kedua yang suatu hari berbeda dari yang
+        pertama tanpa ada yang menyadarinya.
+
+        Tipe barunya sengaja di posisi KEDUA fikstur, bukan di ekor: rombongan
+        terpisah yang ditaruh di belakang cuma ketahuan kalau URUTANNYA diadu.
+        Karena itu ada dua assertion. A (himpunan-ganda judul, buta urutan)
+        menangkap butir yang lenyap; B (satu runtun bersambung dalam urutan
+        server) menangkap butir yang dipindah ke rombongan lain.
+
+        YANG TIDAK DIJAMIN DI SINI: label dan gaya penanda rombongan, peringkat
+        yang dikirim server, rombongan Perintah/Bahasa (itu urusan metode
+        `test_rombongan_...`), dan butir bertipe string kosong -- `!d.tipe`
+        mengakuinya sebagai Perintah, dan itu di luar pertanyaan metode ini.
+        """
+        akar = self._akar()
+        wilayah = self._wilayah()
+        self.assertNotIn(
+            '"proyek"', wilayah,
+            "Wilayah palet di aplikasi.js sekarang MENYEBUT tipe \"proyek\", "
+            "jadi fikstur metode ini berhenti menguji tipe yang belum dikenal. "
+            "Ganti nama tipe itu di fikstur dengan nama yang belum pernah "
+            "disebut wilayah palet -- jangan melemahkan assertion ini")
+
+        fikstur = [
+            {"label_bahasa": "Python", "judul": "Sungai Pertama",
+             "cuplikan": "cuplikan materi", "tipe": "materi",
+             "bahasa": "python", "indeks": 3},
+            {"label_bahasa": "Go", "judul": "Gunung Kedua",
+             "cuplikan": "cuplikan proyek", "tipe": "proyek",
+             "bahasa": "go", "indeks": 0},
+            {"label_bahasa": "Java", "judul": "Lembah Ketiga",
+             "cuplikan": "cuplikan kuis", "tipe": "kuis",
+             "bahasa": "java", "indeks": 1},
+            {"label_bahasa": "HTML", "judul": "Pantai Keempat",
+             "cuplikan": "cuplikan latihan", "tipe": "latihan",
+             "bahasa": "html", "indeks": 2},
+        ]
+        judul_fikstur = [x["judul"] for x in fikstur]
+
+        driver = _SKRIP_PALET
+        driver, cacah = re.subn(
+            r"\(\) => \(\) => \{\},\s+// tunda: `cariIsi` sengaja tidak "
+            r"pernah nyala",
+            lambda m: "(fn) => (...a) => { globalThis.__janji = fn(...a); },",
+            driver)
+        self.assertEqual(
+            cacah, 1,
+            "baris `tunda` yang mematikan `cariIsi` ditemukan %d kali di "
+            "_SKRIP_PALET, bukan sekali. Yang berubah DRIVER-nya, bukan "
+            "produk: metode ini akan diam-diam menguji driver lama" % cacah)
+
+        api_lama = "{ ambil: async () => ({ hasil: [] }) },"
+        cacah = driver.count(api_lama)
+        self.assertEqual(
+            cacah, 1,
+            "baris `api` yang menjawab daftar kosong ditemukan %d kali di "
+            "_SKRIP_PALET, bukan sekali. Yang berubah DRIVER-nya, bukan "
+            "produk: metode ini akan diam-diam menguji driver lama" % cacah)
+        driver = driver.replace(
+            api_lama,
+            "{ ambil: async () => { globalThis.__ambil = "
+            "(globalThis.__ambil || 0) + 1; return { hasil: %s }; } },"
+            % json.dumps(fikstur, ensure_ascii=False))
+
+        potong = "\nbukaPalet();\n"
+        cacah = driver.count(potong)
+        self.assertEqual(
+            cacah, 1,
+            "titik potong `bukaPalet();` ditemukan %d kali di _SKRIP_PALET, "
+            "bukan sekali. Yang berubah DRIVER-nya, bukan produk: metode ini "
+            "akan diam-diam menguji driver lama" % cacah)
+
+        # Ekornya cuma MELAPORKAN: urutan baris di wadah hasil apa adanya,
+        # kelasnya, dan teks `.judul`-nya. Seluruh harapan ada di Python.
+        ekor = r"""
+bukaPalet();
+
+const semua = [];
+(function telusur(n) {
+  if (!n || !n.anak) return;
+  semua.push(n);
+  n.anak.forEach(telusur);
+})(isiJendela);
+const berkelas = (k) =>
+  semua.find((n) => n.className.split(/\s+/).includes(k));
+const judulDi = (akar) => {
+  let teks = "";
+  (function telusur(n) {
+    if (teks || !n || !n.anak) return;
+    if (n.className.split(/\s+/).includes("judul")) { teks = n.textContent; return; }
+    n.anak.forEach(telusur);
+  })(akar);
+  return teks;
+};
+const medan = berkelas("palet-cari");
+const wadah = berkelas("palet-hasil");
+medan.value = "zq";
+medan.picu("input", {});
+await globalThis.__janji;
+console.log(JSON.stringify({
+  ambil: globalThis.__ambil || 0,
+  baris: wadah.children.map((n) => ({ kelas: n.className, judul: judulDi(n) })),
+}));
+"""
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(driver[:driver.index(potong)] + ekor)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(wilayah)
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(akar, "webapp", "statik", "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+        self.assertEqual(
+            lap["ambil"], 1,
+            "`api.ambil` dipanggil %r kali, bukan sekali: `cariIsi` tidak "
+            "pernah menyala, jadi tidak satu pun butir isi melewati partisi "
+            "`GRUP_PALET` dan setiap assertion di bawah hijau tanpa menguji "
+            "apa pun" % lap["ambil"])
+
+        def asal(teks):
+            cocok = [j for j in judul_fikstur if j in teks]
+            return cocok[0] if len(cocok) == 1 else None
+
+        baris = lap["baris"]
+        milik = [(i, asal(b["judul"])) for i, b in enumerate(baris)
+                 if "palet-item" in b["kelas"].split() and asal(b["judul"])]
+
+        self.assertEqual(
+            sorted(j for _, j in milik), sorted(judul_fikstur),
+            "Butir isi dari `/api/cari` wajib tampil SEMUA, masing-masing "
+            "sekali, termasuk yang bertipe \"proyek\" yang belum dikenal "
+            "palet. Ekor `GRUP_PALET` wajib mengakui tipe APA PUN. Dua bentuk "
+            "kegagalannya: (i) cacah NOL -- partisi melempar untuk tipe yang "
+            "tidak diakui, dan `catch` kosong di `cariIsi` menelannya, jadi "
+            "SELURUH hasil isi lenyap tanpa error; (ii) kurang satu -- "
+            "penjaga `findIndex >= 0` yang membuang butir tanpa jejak. "
+            "Baris di wadah hasil: %r" % baris)
+
+        pertama, terakhir = milik[0][0], milik[-1][0]
+        sela = [b for b in baris[pertama:terakhir + 1]
+                if asal(b["judul"]) is None
+                or "palet-item" not in b["kelas"].split()]
+        self.assertEqual(
+            ([j for _, j in milik], sela), (judul_fikstur, []),
+            "Butir isi wajib membentuk SATU runtun bersambung dalam urutan "
+            "server, tanpa satu pun `palet-grup` (atau baris lain) di "
+            "antaranya. Server mengurutkan hasilnya menurut relevansi "
+            "(komentar di atas `GRUP_PALET`), jadi memecah tipe isi ke "
+            "rombongan lain mendorong butir berperingkat rendah di atas yang "
+            "berperingkat tinggi. Baris di wadah hasil: %r" % baris)
+
+    def test_docstring_kelas_menamai_tiap_metode_tesnya(self):
+        """Daftar di docstring kelas ini menamai SETIAP metode tesnya.
+
+        Yang ditagih NAMA, bukan cacah. Pagar "cacah butir = cacah metode"
+        tetap hijau untuk butir yang menceritakan metode yang salah, atau
+        metode yang sudah berganti nama, asal jumlahnya kebetulan sama. Nama
+        menangkap semuanya: metode tanpa butir, butir yang menunjuk metode
+        yang sudah tidak ada, dan penggantian nama -- yang tidak lain adalah
+        keduanya sekaligus. Himpunan metodenya diambil dari apa yang SUNGGUH
+        dijalankan unittest, bukan dari daftar yang diketik, supaya metode
+        yang lahir besok ikut tertagih tanpa menyunting tes ini.
+        """
+        doc = TestPaletCombobox.__doc__ or ""
+        dijalankan = set(
+            unittest.TestLoader().getTestCaseNames(TestPaletCombobox))
+        disebut = set(re.findall(r"`(test_\w+)`", doc))
+        self.assertEqual(
+            sorted(dijalankan - disebut), [],
+            "Metode berikut tidak punya butir di daftar docstring kelas "
+            "`TestPaletCombobox`. Tambahkan satu butir yang DIBUKA nama "
+            "metodenya dalam backtick, lalu satu-dua kalimat tentang kelas "
+            "kegagalan yang ia jaga. Daftar lama yang bernomor 1-5 pernah "
+            "tertinggal empat metode tanpa satu pun tes merah -- itulah "
+            "sebabnya pagar ini ada.")
+        self.assertEqual(
+            sorted(disebut - dijalankan), [],
+            "Butir di docstring kelas `TestPaletCombobox` menunjuk metode "
+            "yang tidak dijalankan unittest -- salah ketik, atau metodenya "
+            "sudah berganti nama atau dihapus. Pointer menggantung: butirnya "
+            "menceritakan pagar yang tidak ada lagi.")
+        self.assertEqual(
+            re.findall(r"(?m)^[ \t]*\d+[.)][ \t]", doc), [],
+            "Daftar di docstring kelas `TestPaletCombobox` memuat butir "
+            "BERNOMOR. Nomor mengklaim URUTAN, padahal unittest menjalankan "
+            "metode kelas ini menurut abjad, bukan menurut urutan sumber. "
+            "Buka tiap butir dengan `*` dan nama metodenya.")
+
+
+# --------------------------- pencocok berurutan-berskor di palet perintah
+
+_SKRIP_SARING = r"""
+// DRIVER, BUKAN CERMIN -- sama seperti `_SKRIP_PALET` di atas, dikerutkan ke
+// satu pertanyaan: apa URUTAN yang keluar dari `saringPerintah()` yang
+// SUNGGUHAN. Tidak ada DOM di sini dan `bukaPalet()` tidak pernah dipanggil;
+// yang dipotong dari sumber tetap SELURUH wilayah palet, karena hanya dengan
+// begitu helper baru apa pun ikut terbawa tanpa sisi Python perlu tahu namanya.
+//
+// Korpusnya turun sebagai JSON dari Python, bukan dibangun di sini dan bukan
+// diambil dari `daftarPerintah()`: daftar sungguhan bergantung pada isi
+// kurikulum, jadi pagar yang mengurutkannya akan berubah sendiri setiap ada
+// bahasa atau materi baru -- dan pagar yang ikut berubah berhenti menjaga apa
+// pun. Seluruh harapan tinggal di Python.
+
+import fs from "node:fs";
+
+const blok = fs.readFileSync(process.argv[2], "utf8");
+const kasus = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
+
+const buat = new Function(
+  "ctx",
+  '"use strict";\n' + blok + "\nreturn { saringPerintah, daftarPerintah };");
+
+// Sembilan baris: enam perintah tetap + tiga bahasa. Dipakai SATU sel saja,
+// yang mengadu kueri kosong -- di situlah isinya memang tidak berpengaruh.
+const { saringPerintah, daftarPerintah } = buat({ awal: { bahasa: [
+  { key: "html", label: "HTML", materi: 44, kuis: 6, latihan: 19 },
+  { key: "css", label: "CSS", materi: 40, kuis: 6, latihan: 18 },
+  { key: "python", label: "Python", materi: 48, kuis: 7, latihan: 19 },
+] } });
+
+const keluar = kasus.map((k) => {
+  const daftar = k.bawaan ? daftarPerintah() : k.daftar;
+  // DUA jalur, dan pemisahnya "kunci `riwayat` dikirim atau tidak" -- bukan
+  // "nilainya kosong atau tidak". JSON tidak punya `undefined`, jadi sel yang
+  // tidak menyebut `riwayat` sama sekali memanggil bentuk DUA argumen, persis
+  // seperti sebelum riwayat ada; sel yang mengirim `[]` memanggil bentuk TIGA
+  // argumen dengan daftar kosong. Tanpa pemisahan itu sel R3 tidak bisa
+  // ditulis sama sekali: yang perlu dibuktikan di situ justru bahwa kedua
+  // bentuk memberi urutan yang sama, dan `k.riwayat || []` menghapus salah
+  // satu dari dua bentuk yang sedang diadu.
+  const hasil = k.riwayat === undefined
+    ? saringPerintah(daftar, k.kata)
+    : saringPerintah(daftar, k.kata, k.riwayat);
+  return {
+    // Label apa adanya, dalam URUTAN keluarannya. Keanggotaan saja tidak cukup:
+    // implementasi yang mengembalikan semua baris lolos dari pagar yang cuma
+    // bertanya "ada di dalam hasil?".
+    label: hasil.map((d) => d.label),
+    // Objek yang sama, bukan salinan. Pencocok yang menyalin barisnya untuk
+    // menempelkan skor di situ membocorkan medan internal ke pemanggilnya.
+    identik: hasil.every((d) => daftar.indexOf(d) >= 0),
+    utuh: hasil.length === daftar.length
+      && hasil.every((d, i) => d === daftar[i]),
+  };
+});
+
+console.log(JSON.stringify(keluar));
+"""
+
+
+@unittest.skipUnless(shutil.which("node"),
+                     "butuh node untuk menjalankan pencocok palet")
+class TestPaletCocokFuzzy(unittest.TestCase):
+    """`saringPerintah()` sebagai pencocok BERURUTAN berskor, diadu per urutan.
+
+    Sebelum hop ini ia `includes()`: cuma potongan yang BERDEKATAN. Dua kueri
+    paling alami untuk sebuah palet tidak pernah menemukan apa pun -- singkatan
+    ("stk" untuk "Statistik") dan huruf awal kata ("bh" untuk "Bahasa") -- dan
+    yang dialami pemakainya bukan "kueriku kurang tepat" melainkan "barangnya
+    tidak ada di sini". Palet yang gagal menemukan barang yang ADA adalah palet
+    yang berhenti dipakai, dan sesudahnya sembilan belas tujuan di aplikasi ini
+    cuma bisa dicapai lewat tetikus.
+
+    Yang diadu di sini URUTAN keluaran, bukan keanggotaan, dan itu bukan
+    kerewelan: sebuah pencocok yang mengembalikan SEMUA baris tanpa menyaring
+    apa pun memuaskan setiap asersi berbentuk "x ada di dalam hasil". Urutan
+    satu-satunya sisi yang tidak bisa dipalsukan begitu.
+
+    Korpusnya SINTETIK dan ditulis di dalam tes, tiga-empat baris per sel,
+    disusun supaya kandidat yang SEHARUSNYA kalah berdiri di DEPAN di masukan.
+    Dengan begitu sebuah bonus yang dibuang tidak cuma menurunkan angka -- ia
+    memulihkan urutan masukan yang salah, dan selnya merah.
+    """
+
+    @classmethod
+    def _blok_saring(cls):
+        """Teks `saringPerintah()` + seluruh helper barunya, TANPA `bukaPalet()`.
+
+        Batasnya `const ID_LISTBOX`, dan itu bukan selera. `bukaPalet()`
+        memegang `cariIsi` yang memang `async` dan memakai `await` -- rentang
+        yang lebih lebar membuat pagar kata-terlarang di bawah merah pada kode
+        yang sudah diterima, dan yang dilarang di situ cuma PENCOCOKNYA, bukan
+        paletnya.
+        """
+        src = TestPaletCombobox._sumber()
+        saring = TestPaletCombobox._potong(src, "function saringPerintah(")
+        mulai = src.index(saring) + len(saring)
+        antara = src[mulai:src.index("const ID_LISTBOX")]
+        return TestHamparanBara._telanjang(saring + antara)
+
+    def _urut(self, kasus):
+        """Jalankan driver Node sekali untuk seluruh `kasus`, kembalikan laporan.
+
+        Satu `kasus` = `{"daftar": [...], "kata": "..."}` atau
+        `{"bawaan": True, "kata": "..."}` untuk `daftarPerintah()` sungguhan.
+        """
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "saring.mjs")
+            blok = os.path.join(d, "blok.js")
+            kas = os.path.join(d, "kasus.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_SARING)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(TestPaletCombobox._wilayah())
+            with open(kas, "w", encoding="utf-8") as f:
+                json.dump(kasus, f)
+            hasil = subprocess.run(["node", js, blok, kas],
+                                   capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        return json.loads(hasil.stdout)
+
+    @staticmethod
+    def _label(daftar):
+        return [{"label": x} for x in daftar]
+
+    # ----------------------------------------------------------------- P1
+
+    def test_p1_huruf_berurutan_boleh_berjarak_tapi_tidak_boleh_terbalik(self):
+        """Huruf kueri muncul dalam URUT yang sama, boleh berjarak.
+
+        Ini seluruh fitur hop ini dalam satu baris: "stk" menemukan
+        "Statistik" dan "bh" menemukan "Bahasa", sementara "kts" TIDAK --
+        sesudah "t" di "Statistik" tidak ada lagi "s". Urutan yang tidak
+        ditegakkan membuat pencocoknya mengembalikan nyaris segalanya untuk
+        kueri tiga huruf, dan daftar yang tidak menyaring sama tak bergunanya
+        dengan daftar yang tidak menemukan.
+        """
+        korpus = self._label(["Statistik", "Bahasa", "Pengaturan"])
+        lap = self._urut([{"daftar": korpus, "kata": k}
+                          for k in ("stk", "bh", "kts")])
+        self.assertEqual(
+            lap[0]["label"], ["Statistik"],
+            "kueri \"stk\" tidak menemukan \"Statistik\": pencocoknya masih "
+            "menuntut potongan yang berdekatan, jadi singkatan -- cara orang "
+            "mengetik di palet -- tidak pernah menemukan apa pun")
+        self.assertEqual(
+            lap[1]["label"], ["Bahasa"],
+            "kueri \"bh\" tidak menemukan \"Bahasa\"; huruf awal kata adalah "
+            "kueri kedua yang paling sering diketik di sebuah palet")
+        self.assertEqual(
+            lap[2]["label"], [],
+            "kueri \"kts\" menemukan sesuatu, padahal hurufnya TERBALIK "
+            "terhadap \"Statistik\". Pencocok yang mengabaikan urutan "
+            "mengembalikan nyaris seluruh daftar untuk tiap kueri pendek")
+
+    # ----------------------------------------------------------------- P2
+
+    def test_p2_label_dan_ket_dinilai_terpisah_bukan_satu_string(self):
+        """Dua medan, dua pencocokan, skor TERBAIK yang dipakai.
+
+        Versi lama menggabungnya (`label + " " + ket`), dan gabungan itu
+        menciptakan batas kata yang tidak ada di data: huruf yang MELOMPAT dari
+        judul ke keterangan jadi kecocokan. Tidak ada seorang pun mengetik "ab"
+        untuk mencari "Alpha" yang keterangannya "Beta".
+        """
+        lap = self._urut([
+            {"kata": "ab", "daftar": [
+                {"label": "Alpha", "ket": "Beta"},
+                {"label": "Gamma", "ket": "Alpha Beta"}]},
+            {"kata": "ab", "daftar": [
+                {"label": "Abu"},
+                {"label": "Zab", "ket": "Ada Bagus"}]},
+        ])
+        self.assertEqual(
+            lap[0]["label"], ["Gamma"],
+            "kecocokan yang hurufnya melompati batas label->ket diterima. "
+            "\"Alpha\"/\"Beta\" cocok HANYA kalau kedua medannya disambung "
+            "jadi satu string -- dan baris kedua membuktikan `ket` tetap "
+            "dinilai sendiri, karena di situ \"ab\" memang ada di dalamnya")
+        self.assertEqual(
+            lap[1]["label"], ["Zab", "Abu"],
+            "skor yang dipakai bukan yang TERBAIK dari kedua medan. \"Zab\" "
+            "menang lewat ket-nya (\"Ada Bagus\", dua batas kata) sedangkan "
+            "label-nya sendiri payah; mengurutkan atas label saja menukar "
+            "keduanya dan menyembunyikan baris yang paling cocok")
+
+    # ----------------------------------------------------------------- P3
+
+    def test_p3_huruf_di_awal_kata_mengalahkan_huruf_di_tengah_kata(self):
+        """Bonus batas kata: `_`, `-`, `/`, spasi, dan transisi kecil->besar.
+
+        Untuk kueri "kk", `"kata kunci"` (dua batas) wajib mengalahkan
+        `"kertakuk"` (satu batas -- huruf keduanya di tengah kata). Korpusnya
+        menaruh `"kertakuk"` DI DEPAN, jadi bonus yang dibuang tidak cuma
+        menurunkan angka: ia memulihkan urutan masukan yang salah.
+        """
+        lap = self._urut([{"kata": "kk", "daftar": self._label(
+            ["kertakuk", "kata kunci"])}])
+        self.assertEqual(
+            lap[0]["label"], ["kata kunci", "kertakuk"],
+            "huruf yang mendarat di AWAL kata tidak dihitung lebih tinggi "
+            "daripada huruf di tengah kata. Tanpa bonus itu \"kk\" "
+            "memperlakukan \"kata kunci\" dan \"kertakuk\" sebagai sama "
+            "baiknya, dan yang muncul di atas jadi soal kebetulan urutan data")
+
+    # ----------------------------------------------------------------- P4
+
+    def test_p4_kecocokan_yang_mulai_di_huruf_pertama_menang(self):
+        """Bonus posisi awal, diukur pada dua kandidat yang sisa skornya SAMA.
+
+        "jal" di `"Jalan Pintas"` dan di `"Ulangi Jalan"` sama-sama kena TEPAT
+        satu batas kata, jadi satu-satunya yang membedakan keduanya posisi
+        mulainya. Dengan begitu selnya mengukur bonus awal dan bukan bonus
+        batas kata yang sudah dijaga sel di atas.
+        """
+        lap = self._urut([{"kata": "jal", "daftar": self._label(
+            ["Ulangi Jalan", "Jalan Pintas"])}])
+        self.assertEqual(
+            lap[0]["label"], ["Jalan Pintas", "Ulangi Jalan"],
+            "kecocokan yang dimulai di huruf pertama tidak mengalahkan yang "
+            "mulai di tengah teks pada skor-sisa yang sama. Yang dicari orang "
+            "yang mengetik \"jal\" hampir pasti yang namanya MULAI begitu")
+
+    # ----------------------------------------------------------------- P5
+
+    def test_p5_skor_seri_tidak_pernah_menukar_urutan_daftar_asal(self):
+        """Seri berarti urutan daftar asal, tanpa pemecah-seri buatan.
+
+        `Array.prototype.sort` dijamin stabil sejak ES2019; yang diuji di sini
+        bukan jaminan itu melainkan bahwa pencocoknya TIDAK merusaknya dengan
+        tie-break tambahan. Urutan asal palet bukan kebetulan -- enam perintah
+        lebih dulu, lalu bahasa -- dan menukarnya pada setiap seri membuat
+        baris di bawah kursor berpindah tempat antar pengetikan.
+        """
+        lap = self._urut([{"kata": "a", "daftar": self._label(
+            ["Alfa", "Arus"])}])
+        self.assertEqual(
+            lap[0]["label"], ["Alfa", "Arus"],
+            "dua baris berskor SAMA bertukar tempat. Entah ada tie-break "
+            "buatan di pembandingnya, entah urutannya dibangun ulang dari "
+            "sesuatu selain daftar asal -- dua-duanya membuat palet berpindah "
+            "isi di bawah kursor orang yang sedang memilih")
+
+    # ----------------------------------------------------------------- P6
+
+    def test_p6_kueri_kosong_mengembalikan_daftar_apa_adanya(self):
+        """Kueri kosong = tidak ada yang berubah, objeknya pun objek yang sama.
+
+        Ini keadaan yang paling sering terlihat: palet lahir dengan medan
+        kosong. Menyaring atau mengurutkan di situ berarti setiap orang yang
+        membuka palet melihat daftar yang bukan daftar aplikasinya.
+        """
+        korpus = self._label(["Zulu", "Alfa", "Mike"])
+        lap = self._urut([{"kata": "", "daftar": korpus}])
+        self.assertEqual(
+            lap[0]["label"], ["Zulu", "Alfa", "Mike"],
+            "kueri kosong mengubah isi atau urutan daftar. Seluruh tes palet "
+            "yang sudah ada bertumpu pada perilaku ini, dan yang dilihat "
+            "pemakai adalah daftar tujuan yang tersusun bukan seperti "
+            "aplikasinya")
+        self.assertTrue(
+            lap[0]["utuh"],
+            "kueri kosong tidak mengembalikan daftar yang IDENTIK: panjangnya "
+            "atau objek per posisinya berbeda. `if (!kata) return daftar` "
+            "adalah satu-satunya bentuk yang tidak bisa meleset di sini")
+
+    def test_p6_kueri_kosong_pada_daftar_perintah_sungguhan(self):
+        """Sel yang sama, tapi atas `daftarPerintah()` yang SUNGGUHAN.
+
+        Satu-satunya sel yang memakainya, dan ia menguji P6 saja -- justru
+        karena isi daftar itu bergantung pada kurikulum. Sel yang mengurutkan
+        daftar sungguhan akan berubah sendiri setiap ada bahasa baru; sel yang
+        menuntut "tidak ada yang berubah" tetap benar selamanya.
+        """
+        lap = self._urut([{"kata": "", "bawaan": True}])
+        self.assertEqual(
+            lap[0]["label"][:6],
+            ["Dasbor", "Ruang Coba", "Catatanku", "Bookmark", "Statistik",
+             "Pengaturan"],
+            "enam perintah tetap tidak lagi berdiri paling depan pada kueri "
+            "kosong. Urutan itu yang dipegang `TestPaletCombobox` lewat "
+            "`daftarPerintah()[2].href`, dan ia bagian dari kontrak palet")
+        self.assertTrue(
+            lap[0]["utuh"],
+            "`saringPerintah(daftarPerintah(), \"\")` bukan daftar yang sama. "
+            "Palet menggambar hasil fungsi ini saat lahir, jadi yang pertama "
+            "dilihat setiap orang yang menekan Ctrl+K datang dari sini")
+
+    # ----------------------------------------------------------------- P7
+
+    def test_p7_pencocok_tidak_memuat_kata_yang_membuatnya_tidak_setara(self):
+        """Pagar TEKS, dan batasnya diakui: ia tidak membuktikan PERILAKU.
+
+        Yang membuktikan perilaku sel P1-P6 dan P8 di atas. Yang dikerjakan
+        metode ini cuma menolak kata yang tidak boleh muncul di dalam
+        pencocoknya, karena masing-masing membuat hasilnya berhenti setara
+        antar mesin atau antar pemanggilan:
+
+          * `toLocaleLowerCase` / `localeCompare` ikut locale pengguna, jadi
+            satu kueri bisa berurut BEDA di dua mesin -- dan `test_solutions`
+            tidak bisa menangkapnya karena ini berkas JS, bukan latihan;
+          * pembangkit acak dan jam membuat urutan berubah antar pemanggilan;
+          * penyimpanan dan jaringan memberinya keadaan atau kelambatan,
+            padahal ia dipanggil pada SETIAP ketukan papan ketik.
+
+        Yang dibatasi hanya PENCOCOKNYA, bukan paletnya: `bukaPalet()` memang
+        memegang `cariIsi` yang menunggu jawaban server, dan rentang
+        `_blok_saring()` berhenti sebelum sampai ke situ.
+
+        Riwayat perintah SUDAH mendarat, dan yang direvisi untuk menampungnya
+        adalah KALIMAT ini -- bukan satu huruf pun dari alternationnya. Caranya
+        bukan melonggarkan pagar melainkan membagi fiturnya pada batas yang
+        pagar ini sudah punya: `riwayatPotong()` dan `riwayatNaikkan()` tinggal
+        DI DALAM rentang yang dipindai, jadi keduanya tetap murni -- jam masuk
+        lewat argumen `sekarang`, bukan dibaca di dalam, dan tidak satu pun
+        dari keduanya menyentuh penyimpanan. Yang MENGAMBIL jam dan yang
+        membaca-menulis ingatan tinggal sesudah `const ID_LISTBOX`, di dalam
+        `bukaPalet()` -- di luar jangkauan metode ini, dan dijaga
+        `test_r6_satu_definisi_ingat_dan_jam_hanya_sesudah_listbox` di bawah:
+        `localStorage.` tepat dua kali di seluruh `aplikasi.js` dan keduanya di
+        badan `ctx.ingat`, `Date.now(` hanya sesudah batas itu.
+
+        Pembagian itulah yang membuat kedua pagar bisa menggigit sekaligus
+        tanpa salah satu dilemahkan: kalau helper riwayat suatu hari digeser ke
+        SESUDAH `bukaPalet()`, `assertIn` di bawah dan pagar R6 menjerit lebih
+        dulu -- dan tanpa keduanya, metode ini akan hijau untuk kode yang
+        sudah tidak pernah dibacanya.
+        """
+        blok = self._blok_saring()
+        self.assertIn(
+            "function skorBerurutan(", blok,
+            "`_blok_saring()` tidak lagi memuat pencocoknya. Rentangnya "
+            "berhenti di `const ID_LISTBOX`, jadi helper yang dipindahkan ke "
+            "SESUDAH `bukaPalet()` lolos tanpa diperiksa -- dan pagar di bawah "
+            "jadi hijau untuk kode yang tidak pernah dibacanya")
+        self.assertNotRegex(
+            blok,
+            r"toLocaleLowerCase|localeCompare|Math\.random|Date\.|"
+            r"localStorage|fetch|async|await",
+            "pencocok palet memuat salah satu kata yang membuat urutannya "
+            "berhenti setara antar mesin atau antar pemanggilan. Perbandingan "
+            "kasus memakai `toLowerCase()`, dan skornya dihitung dari kedua "
+            "argumennya saja")
+
+    # ----------------------------------------------------------------- P8
+
+    def test_p8_kasus_diabaikan_saat_mencocokkan_tapi_label_tampil_asli(self):
+        """Dibandingkan bentuk kecilnya; yang dibaca pengguna label apa adanya.
+
+        Dua sisi satu aturan. Kalau pencocokannya peka kasus, "STK" dan "stk"
+        memberi hasil berbeda untuk maksud yang sama. Kalau yang DIKEMBALIKAN
+        sudah dikecilkan, judul di palet berhenti sama dengan judul di
+        kurikulum -- dan judul itu bagian dari kunci progres.
+        """
+        kueri = ("STK", "sTk", "STATISTIK")
+        korpus = self._label(["Statistik", "Bahasa"])
+        lap = self._urut([{"daftar": korpus, "kata": k} for k in kueri])
+        for i, k in enumerate(kueri):
+            self.assertEqual(
+                lap[i]["label"], ["Statistik"],
+                "kueri %r tidak menemukan \"Statistik\" dengan label aslinya. "
+                "Kalau yang gagal pencocokannya, huruf besar jadi kueri yang "
+                "berbeda artinya; kalau yang berubah labelnya, judul di palet "
+                "berhenti sama dengan judul di kurikulum" % k)
+            self.assertTrue(
+                lap[i]["identik"],
+                "hasil untuk %r bukan objek yang sama dengan masukannya. "
+                "Pencocok yang menyalin barisnya untuk menempelkan skor di "
+                "situ membocorkan medan internal ke pemanggilnya, dan `href` "
+                "yang ikut tersalin suatu hari tidak ikut" % k)
+
+    # ------------------------------------- dua kata warisan verdik 9a/9a2
+
+    def test_dialog_palet_dan_wadah_hasilnya_punya_nama(self):
+        """Dialog palet dan listbox-nya bisa DISEBUT, bukan cuma dilihat.
+
+        Dua kata yang diwariskan hop 9a dan 9a2 kepada hop palet berikutnya.
+        Keduanya diadu sebagai PERILAKU -- apa yang benar-benar sampai ke
+        `jendela()` dan ke atribut elemennya -- bukan sebagai teks di sumber,
+        karena nama yang ditulis di tempat yang salah tetap terbaca "Dialog".
+
+          1. `bukaPalet()` dulu memanggil `jendela()` tanpa `judul`, dan
+             `inti.js` jatuh ke `aria-label: judul || "Dialog"`. Palet ini
+             dibuka dengan Ctrl+K justru oleh orang yang tidak sedang melihat
+             layarnya: "Dialog" memberi tahu bahwa sesuatu terbuka tanpa
+             memberi tahu APA.
+          2. `#palet-list` beraNama kosong. APG tidak menuntutnya, tapi susur
+             daftar tanpa nama berbunyi "daftar, satu dari dua puluh lima" dan
+             tidak bisa dirujuk lagi sesudah fokus berpindah.
+
+        Namanya dituntut bertahan di langkah `kosong` juga, dan itu bukan
+        kelebihan: `gambar()` menukar SELURUH isi listbox lewat `isikan()` pada
+        tiap ketukan. Nama yang dipasang di tempat yang ikut ditukar hilang
+        pada kueri pertama yang tidak menemukan apa pun -- persis keadaan
+        ketika orang paling perlu diberi tahu daftar apa yang sedang kosong.
+        """
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PALET)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(TestPaletCombobox._wilayah())
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(TestPaletCombobox._akar(), "webapp", "statik",
+                              "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+
+        judul = lap["langkah"]["awal"]["judul"]
+        self.assertTrue(
+            judul and str(judul).strip(),
+            "`bukaPalet()` memanggil `jendela()` tanpa `judul` (terbaca %r), "
+            "jadi dialognya bernama \"Dialog\" di pohon aksesibilitas -- "
+            "`inti.js` memakai `aria-label: judul || \"Dialog\"`, dan "
+            "`inti.js` BEKU. Yang perlu dikirim judulnya, dari sini" % (judul,))
+
+        for langkah in ("awal", "kosong"):
+            nama = lap["langkah"][langkah]["hasilSifat"].get("aria-label")
+            self.assertTrue(
+                nama and nama.strip(),
+                "wadah hasil palet tidak punya `aria-label` pada langkah %r "
+                "(terbaca %r). Sebuah listbox tanpa nama bisa disusuri tapi "
+                "tidak bisa disebut, dan pada langkah `kosong` itu berarti "
+                "orang diberi tahu ada daftar kosong tanpa diberi tahu daftar "
+                "APA yang kosong" % (langkah, nama))
+
+    # ------------------------------------------------- R1-R6: riwayat perintah
+
+    _MJS_MURNI = r"""
+// Driver kedua, untuk DUA HELPER MURNI, dan ia sengaja tidak lewat jalur yang
+// sama dengan `_SKRIP_SARING`: yang diadu di sini bukan urutan keluaran
+// `saringPerintah` melainkan BENTUK daftar yang dikembalikan `riwayatPotong`
+// dan `riwayatNaikkan` -- panjangnya, isinya, dan apakah daftar yang MASUK
+// ikut berubah. Bloknya tetap potongan `_blok_saring()` yang sama, jadi helper
+// yang suatu hari digeser ke luar celah membuat driver ini gagal memuatnya
+// alih-alih diam-diam menguji sesuatu yang lain.
+//
+// Tidak ada `ctx` di sini dan tidak perlu: rentang `_blok_saring()` berhenti
+// sebelum `bukaPalet()`, satu-satunya yang menyentuhnya.
+
+import fs from "node:fs";
+
+const blok = fs.readFileSync(process.argv[2], "utf8");
+const kode = fs.readFileSync(process.argv[3], "utf8");
+
+const api = new Function(
+  '"use strict";\n' + blok
+  + "\nreturn { riwayatPotong, riwayatNaikkan };")();
+
+console.log(JSON.stringify(
+  new Function("riwayatPotong", "riwayatNaikkan", '"use strict";\n' + kode)(
+    api.riwayatPotong, api.riwayatNaikkan)));
+"""
+
+    def _murni(self, kode):
+        """Jalankan `kode` dengan kedua helper riwayat SUNGGUHAN di lingkupnya.
+
+        `kode` badan sebuah fungsi yang `return` satu objek; objek itulah yang
+        sampai ke Python sebagai JSON. Harapannya tinggal di Python, sama
+        seperti `_urut()`: yang di sisi JS cuma pengukuran.
+
+        Bloknya `_blok_saring()` -- rentang yang SAMA dengan yang dipindai P7.
+        Satu jalur masuk, jadi helper yang digeser ke luar celah memerahkan
+        kedua pagar sekaligus alih-alih membuat yang satu menguji yang lain.
+        """
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "murni.mjs")
+            blok = os.path.join(d, "blok.js")
+            isi = os.path.join(d, "kode.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(self._MJS_MURNI)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(self._blok_saring())
+            with open(isi, "w", encoding="utf-8") as f:
+                f.write(kode)
+            hasil = subprocess.run(["node", js, blok, isi],
+                                   capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        return json.loads(hasil.stdout)
+
+    # ----------------------------------------------------------------- R1
+
+    def test_r1_butir_yang_pernah_dipakai_naik_di_atas_yang_skornya_sama(self):
+        """Riwayat MENGUBAH urutan, bukan cuma ikut hadir di dalam hasil.
+
+        Korpusnya disusun supaya butir yang pernah dipakai berdiri di BELAKANG
+        di masukan, dan skor dasar keduanya PERSIS sama: untuk kueri "st" baik
+        "Statistik" maupun "Statis" mendapat hurufnya di indeks 0 dan 1 yang
+        sama, jadi tanpa riwayat keduanya seri -- dan `sort` yang stabil
+        mengembalikan urutan masukan. Satu-satunya hal yang bisa membalikkan
+        urutan itu bonus riwayat, dan itulah yang membuat sel ini tidak bisa
+        hijau karena kebetulan.
+
+        Keanggotaan saja TIDAK ditagih di sini, dan itu disengaja: sebuah
+        implementasi yang cuma menandai baris riwayat tanpa menaikkannya
+        memuaskan setiap asersi berbentuk "ada di dalam hasil", sementara yang
+        dialami orangnya tidak berubah satu piksel pun.
+        """
+        korpus = [{"label": "Statistik", "href": "#/a"},
+                  {"label": "Statis", "href": "#/b"}]
+        lap = self._urut([
+            {"daftar": korpus, "kata": "st"},
+            {"daftar": korpus, "kata": "st",
+             "riwayat": [{"k": "#/b", "u": 1}]},
+        ])
+        self.assertEqual(
+            lap[0]["label"], ["Statistik", "Statis"],
+            "tanpa riwayat kedua baris seri, jadi urutan masukan harus "
+            "selamat. Kalau INI sudah merah, yang rusak bukan riwayatnya "
+            "melainkan kestabilan urutannya -- dan sel di bawah mengukur "
+            "selisih terhadap garis dasar yang sudah bergeser")
+        self.assertEqual(
+            lap[1]["label"], ["Statis", "Statistik"],
+            "`#/b` pernah dibuka dari palet tapi tetap berdiri di belakang. "
+            "Palet yang mengingat tanpa mengubah urutan tidak mengingat apa "
+            "pun yang bisa dilihat orangnya")
+
+    # ----------------------------------------------------------------- R2
+
+    def test_r2_bonus_riwayat_kalah_dari_huruf_di_awal_teks(self):
+        """`BONUS_RIWAYAT < BONUS_AWAL`, diadu sebagai selisih SATU bonus.
+
+        Kasus pertama dua baris yang skor dasarnya identik -- kueri "s"
+        mendarat di batas kata pada keduanya -- dan yang membedakannya cuma
+        ini: yang satu memulai teksnya ("Statistik", dapat `BONUS_AWAL`), yang
+        lain tidak ("Buka Statistik", tapi pernah dibuka, dapat
+        `BONUS_RIWAYAT`). Begitu `BONUS_RIWAYAT` dinaikkan sampai MENYAMAI
+        `BONUS_AWAL`, keduanya seri, `sort` yang stabil memulihkan urutan
+        masukan, dan baris riwayat yang berdiri di depan di masukan menang --
+        selnya merah tepat pada mutasi yang perlu ditangkap.
+
+        Kasus kedua bentuk yang lebih longgar tapi lebih sering terjadi:
+        kecocokan di TENGAH kata yang pernah dibuka melawan kecocokan di awal
+        kata yang belum pernah. Yang hilang kalau pagar ini dilepas bukan
+        sebuah angka -- huruf yang SUNGGUH diketik berhenti mengalahkan satu
+        kunjungan minggu lalu, dan riwayat berhenti jadi pemecah seri lalu
+        mulai jadi hak veto atas kuerinya.
+        """
+        pasangan = [{"label": "Buka Statistik", "href": "#/b"},
+                    {"label": "Statistik", "href": "#/s"}]
+        tengah = [{"label": "Bahasa", "href": "#/t"},
+                  {"label": "Statistik", "href": "#/s"}]
+        lap = self._urut([
+            {"daftar": pasangan, "kata": "s",
+             "riwayat": [{"k": "#/b", "u": 1}]},
+            {"daftar": tengah, "kata": "s",
+             "riwayat": [{"k": "#/t", "u": 1}]},
+        ])
+        self.assertEqual(
+            lap[0]["label"], ["Statistik", "Buka Statistik"],
+            "`BONUS_RIWAYAT` sudah menyamai atau melewati `BONUS_AWAL`. Kedua "
+            "baris di sini berskor dasar SAMA, dan satu-satunya pembedanya "
+            "huruf di awal teks melawan satu kunjungan lama. Yang keluar: %r"
+            % (lap[0]["label"],))
+        self.assertEqual(
+            lap[1]["label"], ["Statistik", "Bahasa"],
+            "kecocokan di tengah kata yang pernah dibuka mengalahkan "
+            "kecocokan di AWAL kata yang belum pernah. Yang keluar: %r"
+            % (lap[1]["label"],))
+
+    # ----------------------------------------------------------------- R3
+
+    def test_r3_tanpa_argumen_ketiga_sama_dengan_riwayat_kosong(self):
+        """Bawaan `[]` bukan hiasan: bentuk DUA argumen tidak berubah artinya.
+
+        Dua bentuk pemanggilan, satu korpus, satu kueri -- dan urutan yang
+        sama, baris per baris. Inilah yang membuat p1-p8 di atas tetap
+        mengukur apa yang dulu mereka ukur tanpa satu pun dari mereka
+        disentuh: semuanya memanggil bentuk dua argumen, dan sel ini yang
+        menjamin bentuk itu masih ada dan masih berarti sama.
+
+        Yang dicegah kalau pagar ini lepas: nilai bawaan yang suatu hari
+        diubah jadi sesuatu yang TIDAK kosong -- daftar contoh, atau hasil
+        terakhir yang disimpan -- dan setiap pemanggilan dua argumen di
+        aplikasi ini mulai diurut oleh keadaan yang tidak pernah diminta
+        pemanggilnya.
+        """
+        korpus = [{"label": "Statistik", "href": "#/a"},
+                  {"label": "Statis", "href": "#/b"},
+                  {"label": "Bahasa", "href": "#/c"}]
+        lap = self._urut([
+            {"daftar": korpus, "kata": "st"},
+            {"daftar": korpus, "kata": "st", "riwayat": []},
+        ])
+        self.assertEqual(
+            lap[0]["label"], lap[1]["label"],
+            "`saringPerintah(daftar, kata)` dan "
+            "`saringPerintah(daftar, kata, [])` memberi urutan BERBEDA "
+            "(%r vs %r). Nilai bawaan argumen ketiga bukan daftar kosong, dan "
+            "dengan itu setiap pemanggilan dua argumen di aplikasi ini sudah "
+            "berubah arti tanpa satu pun situsnya disentuh"
+            % (lap[0]["label"], lap[1]["label"]))
+        self.assertEqual(
+            lap[0]["label"], ["Statistik", "Statis"],
+            "korpus ini seharusnya menyaring `Bahasa` keluar -- sesudah "
+            "\"s\" di \"Bahasa\" tidak ada lagi \"t\" -- lalu mempertahankan "
+            "urutan masukan untuk dua sisanya. Kalau yang keluar bukan itu, "
+            "yang dibandingkan di atas dua hasil yang sama-sama salah. "
+            "Yang keluar: %r" % (lap[0]["label"],))
+
+    # ----------------------------------------------------------------- R4
+
+    def test_r4_riwayatpotong_membuang_lewat_batas_menahan_tepat_batasnya(self):
+        """Batasnya DIUJI, bukan dikira-kira, dan jamnya sintetis.
+
+        Empat butir yang berbeda, bukan satu: (i) 15 hari dibuang dan TEPAT
+        14 hari dipertahankan -- `>` di tempat `>=` membuat ingatan hidup
+        sehari lebih pendek daripada yang dijanjikan, dan tidak ada satu pun
+        gejala di layar yang menunjukkannya; (ii) urutan keluar sama dengan
+        urutan masuk, karena pemotongan bukan tempat mengurutkan apa pun;
+        (iii) daftar yang MASUK tidak berubah, karena `bukaPalet()` memakai
+        lagi daftar yang sama di `buka()` untuk mencatat butir berikutnya --
+        pemotongan yang menyunting di tempat membuat apa yang dicatat
+        bergantung pada apakah pemotongan sudah jalan; (iv) `batasHari`
+        benar-benar dipakai, bukan parameter hiasan di atas angka yang
+        tertanam di badan fungsinya.
+
+        `sekarang` sebuah angka yang ditulis di sini, bukan jam mesin
+        penjalannya. Itu seluruh alasan `riwayatPotong` menerimanya sebagai
+        argumen: sel ini memberi jawaban yang sama hari ini dan tahun depan.
+        """
+        lap = self._murni(r"""
+const HARI = 86400000;
+const kini = 1000 * HARI;
+const masuk = [
+  { k: "#/baru", u: kini },
+  { k: "#/limabelas", u: kini - 15 * HARI },
+  { k: "#/empatbelas", u: kini - 14 * HARI },
+  { k: "#/seminggu", u: kini - 7 * HARI },
+];
+const cap = JSON.stringify(masuk);
+const keluar = riwayatPotong(masuk, kini);
+return {
+  keluar: keluar.map((r) => r.k),
+  masukUtuh: JSON.stringify(masuk) === cap,
+  daftarBaru: keluar !== masuk,
+  limaBelas: riwayatPotong([{ k: "#/x", u: kini - 15 * HARI }], kini).length,
+  empatBelas: riwayatPotong([{ k: "#/x", u: kini - 14 * HARI }], kini).length,
+  batasLain: riwayatPotong(masuk, kini, 7).map((r) => r.k),
+};
+""")
+        self.assertEqual(
+            lap["keluar"], ["#/baru", "#/empatbelas", "#/seminggu"],
+            "`riwayatPotong` tidak membuang tepat yang lewat 14 hari sambil "
+            "menahan yang TEPAT 14 hari, dalam urutan masuk. Yang keluar: %r"
+            % (lap["keluar"],))
+        self.assertEqual(
+            lap["limaBelas"], 0,
+            "butir berumur 15 hari lolos; batas umurnya lebih panjang "
+            "daripada 14 hari yang dijanjikan")
+        self.assertEqual(
+            lap["empatBelas"], 1,
+            "butir berumur TEPAT 14 hari dibuang. Pembandingnya `>` dan "
+            "bukan `>=`, dan ingatan ini hidup sehari lebih pendek daripada "
+            "yang dijanjikan -- tanpa satu pun gejala di layar")
+        self.assertTrue(
+            lap["masukUtuh"],
+            "daftar yang MASUK ikut berubah. `bukaPalet()` memakai lagi "
+            "daftar itu di `buka()` untuk mencatat butir berikutnya, jadi "
+            "pemotongan yang menyunting di tempat membuat yang dicatat "
+            "bergantung pada apakah pemotongan sudah jalan")
+        self.assertTrue(
+            lap["daftarBaru"],
+            "yang dikembalikan objek daftar yang SAMA, bukan daftar baru")
+        self.assertEqual(
+            lap["batasLain"], ["#/baru", "#/seminggu"],
+            "`batasHari` tidak dipakai: memanggilnya dengan 7 memberi hasil "
+            "yang sama dengan bawaan 14, jadi angka 14 tertanam di badan "
+            "fungsinya dan parameternya cuma hiasan. Yang keluar: %r"
+            % (lap["batasLain"],))
+
+    # ----------------------------------------------------------------- R5
+
+    def test_r5_riwayatnaikkan_memindahkan_butir_lama_bukan_menduplikatnya(self):
+        """Satu alamat satu butir, `k` di depan, dan yang masuk tidak disentuh.
+
+        Sel ini mengadu bentuk yang paling mudah ditulis salah: menyisipkan di
+        depan TANPA membuang yang lama. Gejalanya tidak pernah berupa error --
+        tujuan yang sering dibuka cuma menumpuk jadi belasan butir yang isinya
+        sama, pemotongan umur membacanya sebagai belasan kunjungan berbeda,
+        dan ingatan yang paling sering dipakai justru yang paling cepat
+        memenuhi dirinya sendiri.
+
+        `u` butir terdepan juga ditagih, dan itu bukan kelebihan: kalau waktu
+        kunjungan TERAKHIR tidak ditulis ulang, tujuan yang dipakai setiap
+        hari tetap kedaluwarsa empat belas hari sesudah pertama kali dibuka.
+        """
+        lap = self._murni(r"""
+const masuk = [
+  { k: "#/x", u: 100 },
+  { k: "#/y", u: 200 },
+  { k: "#/z", u: 300 },
+];
+const cap = JSON.stringify(masuk);
+const lama = riwayatNaikkan(masuk, "#/y", 999);
+const baru = riwayatNaikkan(masuk, "#/w", 999);
+return {
+  lama: lama.map((r) => r.k),
+  lamaWaktu: lama[0].u,
+  baru: baru.map((r) => r.k),
+  masukUtuh: JSON.stringify(masuk) === cap,
+  daftarBaru: lama !== masuk,
+};
+""")
+        self.assertEqual(
+            lap["lama"], ["#/y", "#/x", "#/z"],
+            "`#/y` sudah ada di dalam riwayat, jadi yang benar: ia PINDAH ke "
+            "depan dan tidak tinggal di posisi lamanya. Yang keluar: %r"
+            % (lap["lama"],))
+        self.assertEqual(
+            lap["lamaWaktu"], 999,
+            "butir terdepan tidak membawa `sekarang` sebagai `u`. Umurnya "
+            "dihitung dari kunjungan PERTAMA, dan tujuan yang dibuka tiap "
+            "hari tetap kedaluwarsa 14 hari sesudah pertama kali dipakai")
+        self.assertEqual(
+            lap["baru"], ["#/w", "#/x", "#/y", "#/z"],
+            "alamat yang belum pernah ada seharusnya cuma ditambahkan di "
+            "depan tanpa membuang apa pun. Yang keluar: %r" % (lap["baru"],))
+        self.assertTrue(
+            lap["masukUtuh"],
+            "daftar yang MASUK ikut berubah; riwayat yang dipegang "
+            "`bukaPalet()` tidak boleh disunting di tempat")
+        self.assertTrue(
+            lap["daftarBaru"],
+            "yang dikembalikan objek daftar yang SAMA, bukan daftar baru")
+
+    # ----------------------------------------------------------------- R6
+
+    def test_r6_satu_definisi_ingat_dan_jam_hanya_sesudah_listbox(self):
+        """Satu definisi "ingat", dan jam yang tidak pernah masuk pencocok.
+
+        Pagar TEKS atas POTONGAN sumber, seperti metode tetangganya, dan
+        pembagian yang dijaganya persis pembagian yang membuat P7 di atas
+        masih bisa menggigit dengan alternation yang tidak disentuh:
+
+          * `localStorage.` muncul TEPAT DUA kali di seluruh `aplikasi.js`,
+            dan keduanya di badan `ctx.ingat`. Satu tambahan di tempat lain
+            adalah definisi "ingatan" yang KEDUA -- dan `ctx.ingat` sudah
+            menelan kegagalan kuota, jadi tempat kedua berarti sebuah tulisan
+            yang gagal tanpa ada seorang pun yang tahu.
+          * `Date.now(` hanya muncul SESUDAH `const ID_LISTBOX`. Di sebelah
+            sananya tinggal pencocoknya, dan pencocok yang membaca jam memberi
+            urutan berbeda untuk masukan yang sama.
+          * kunci `"palet-riwayat"` cuma pernah disebut sebagai argumen
+            pertama `ctx.ingat(`; jalan masuk kedua ke kunci yang sama berarti
+            dua pihak menulis bentuk yang tidak dijamin sama.
+          * kedua helper riwayat, `BONUS_RIWAYAT`, dan `HARI_MS` memang
+            TERMUAT oleh `_blok_saring()`. Kalau suatu hari semuanya digeser
+            ke sesudah `bukaPalet()`, P7 berhenti membacanya TANPA berubah
+            warna, dan pagar inilah yang menjerit lebih dulu.
+        """
+        src = TestPaletCombobox._sumber()
+        self.assertEqual(
+            src.count("localStorage."), 2,
+            "`localStorage.` muncul %d kali di `aplikasi.js`, bukan 2. "
+            "Satu-satunya tempat yang boleh menyentuhnya badan `ctx.ingat`"
+            % src.count("localStorage."))
+        ingat = TestPaletCombobox._potong(src, "ingat(kunci, nilai)")
+        self.assertEqual(
+            ingat.count("localStorage."), 2,
+            "cacah totalnya benar tapi cuma %d yang ada di badan "
+            "`ctx.ingat` -- satu di antaranya sudah pindah ke tempat lain, "
+            "dan ingatan punya definisi kedua" % ingat.count("localStorage."))
+
+        batas = src.index("const ID_LISTBOX")
+        self.assertNotIn(
+            "Date.now(", src[:batas],
+            "`Date.now(` muncul SEBELUM `const ID_LISTBOX`, yaitu di dalam "
+            "wilayah yang dipotong `_blok_saring()` dan dipindai P7. Jam "
+            "masuk ke helper riwayat lewat argumen `sekarang`; yang "
+            "mengambilnya `bukaPalet()`, sekali per palet yang dibuka")
+        self.assertIn(
+            "Date.now(", src[batas:],
+            "tidak ada satu pun `Date.now(` sesudah `const ID_LISTBOX`: "
+            "riwayat tidak pernah diberi waktu, jadi pemotongan 14 hari "
+            "tidak punya bahan untuk memutuskan apa pun")
+
+        situs = list(re.finditer(r'"palet-riwayat"', src))
+        self.assertTrue(
+            situs, "kunci \"palet-riwayat\" tidak ada di `aplikasi.js`; "
+                   "riwayat palet tidak disimpan di mana pun")
+        for m in situs:
+            awal = src.rfind("ctx.ingat(", 0, m.start())
+            self.assertNotEqual(
+                awal, -1,
+                "kunci \"palet-riwayat\" dipakai tanpa `ctx.ingat(` di "
+                "depannya; penyimpanannya punya jalan masuk kedua")
+            self.assertEqual(
+                src[awal + len("ctx.ingat("):m.start()].strip(), "",
+                "kunci \"palet-riwayat\" bukan argumen PERTAMA pemanggilan "
+                "`ctx.ingat(` yang terdekat sebelumnya")
+
+        blok = self._blok_saring()
+        for nama in ("function riwayatPotong(", "function riwayatNaikkan("):
+            self.assertIn(
+                nama, blok,
+                "`%s` tidak termuat `_blok_saring()`. Helper riwayat wajib "
+                "tinggal di celah antara penutup `saringPerintah` dan "
+                "`const ID_LISTBOX`: hanya di situ P7 ikut membacanya, dan "
+                "hanya di situ driver Node ikut menjalankannya" % nama)
+        for nama in ("BONUS_RIWAYAT", "HARI_MS"):
+            self.assertIn(
+                nama, blok,
+                "`%s` tinggal di luar rentang `_blok_saring()`. Konstanta "
+                "yang dipakai pencocok tapi berdiri di luar rentangnya "
+                "membuat blok yang katanya berdiri sendiri gagal dimuat "
+                "driver -- dan pesannya `ReferenceError`, bukan nama ini"
+                % nama)
+
+    # ----------------------------------------------------------------- R7
+
+    @unittest.skipUnless(
+        shutil.which("node"),
+        "butuh node untuk menjalankan bukaPalet() di DOM jebak")
+    def test_r7_membuka_butir_mencatatnya_lewat_satu_pintu(self):
+        """AKIBAT, bukan teks: satu `Enter`, tepat satu tulisan bernilai.
+
+        R1-R5 mengadu helper yang MURNI dan R6 mengadu tempat tinggalnya.
+        Tidak satu pun dari keenamnya menjalankan glue-nya, dan di situlah
+        kelas bug yang paling mungkin bersembunyi: dua helper yang benar,
+        dipanggil dengan argumen yang tertukar, atau tidak dipanggil sama
+        sekali -- `ctx.ingat` yang cuma dibaca dan tidak pernah ditulis
+        memuaskan setiap pagar teks di atas sambil membuat palet tetap lupa.
+
+        Yang dipakai driver `_SKRIP_PALET` yang sudah ada: `bukaPalet()` yang
+        sungguhan, di DOM jebak, dengan `ctx.ingat` pengganti yang MEREKAM.
+        Satu `Enter` di butir terakhir -- bahasa yang berdiri paling belakang
+        di `daftarPerintah()` -- lalu ingatannya dibaca apa adanya.
+
+        `kunciIngatan` ditagih juga, dan itu bukan kelebihan: kunci kedua
+        berarti riwayat punya dua bentuk tersimpan, dan yang dibaca saat palet
+        lahir berikutnya cuma salah satunya.
+        """
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "palet.mjs")
+            blok = os.path.join(d, "blok.js")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_PALET)
+            with open(blok, "w", encoding="utf-8") as f:
+                f.write(TestPaletCombobox._wilayah())
+            hasil = subprocess.run(
+                ["node", js,
+                 os.path.join(TestPaletCombobox._akar(), "webapp", "statik",
+                              "js", "inti.js"), blok],
+                capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        lap = json.loads(hasil.stdout)
+
+        # Driver ini sudah membuka SATU butir lebih awal, di langkah yang
+        # mengadu `tutupJendelaKini()`. Itu dipakai, bukan dihindari: ia
+        # memberi sel ini garis dasar yang TIDAK kosong, dan dengan itu
+        # "dicatat sekarang" bisa dibedakan dari "sudah tercatat tadi".
+        sebelum = lap["riwayatSebelum"]
+        self.assertIsInstance(
+            sebelum, list,
+            "satu butir sudah dibuka lebih awal di driver ini, jadi ingatan "
+            "seharusnya sudah berisi daftar. Terbaca %r -- `buka()` tidak "
+            "pernah memanggil `ctx.ingat(...)` dengan nilai sama sekali, dan "
+            "palet tetap lupa walau kedua helper di atas benar" % (sebelum,))
+        self.assertTrue(
+            sebelum and sebelum[0].get("k") != "#/bahasa/python",
+            "butir yang dibuka lebih awal oleh driver sudah beralamat sama "
+            "dengan tujuan `Enter` di bawah (terbaca %r), jadi sel ini tidak "
+            "bisa lagi membedakan \"baru dicatat\" dari \"sudah tercatat\""
+            % (sebelum,))
+        sesudah = lap["riwayatSesudah"]
+        self.assertIsInstance(
+            sesudah, list,
+            "sesudah `Enter` tidak ada satu pun butir riwayat yang tersimpan "
+            "(terbaca %r). `buka()` tidak memanggil `ctx.ingat(...)` dengan "
+            "nilai, atau memanggilnya dengan sesuatu yang bukan daftar"
+            % (sesudah,))
+        self.assertEqual(
+            [r.get("k") for r in sesudah].count("#/bahasa/python"), 1,
+            "satu alamat satu butir, dan lewat glue pun: `#/bahasa/python` "
+            "muncul %d kali di %r"
+            % ([r.get("k") for r in sesudah].count("#/bahasa/python"),
+               sesudah))
+        # Asersi di atas menagih KEADAAN AKHIR ingatan, dan keadaan akhir tidak
+        # pernah bisa menjawab "cuma sekali": `riwayatNaikkan` idempoten
+        # terhadap alamat yang sama, jadi `buka()` yang mencatat dua kali dari
+        # `riwayat` yang sama menyimpan daftar yang identik. Terukur: glue
+        # `aplikasi.js` digandakan pada barisnya sendiri, dan seluruh kelas ini
+        # tetap hijau. Yang membedakannya cuma cacah panggilan bernilai.
+        self.assertEqual(
+            lap["tulisSesudah"] - lap["tulisSebelum"], 1,
+            "satu `Enter` seharusnya tepat satu tulisan bernilai ke "
+            "\"palet-riwayat\": tercatat %d sebelum dan %d sesudah, selisih "
+            "%d. Lebih dari satu berarti `buka()` mencatat lewat dua pintu, "
+            "dan yang kedua menimpa yang pertama tanpa meninggalkan satu pun "
+            "bekas di hasil yang dibaca pagar-pagar di atas"
+            % (lap["tulisSebelum"], lap["tulisSesudah"],
+               lap["tulisSesudah"] - lap["tulisSebelum"]))
+        self.assertEqual(
+            sesudah[0]["k"], "#/bahasa/python",
+            "yang dicatat bukan `href` butir yang dibuka. Butir terakhir "
+            "`daftarPerintah()` bahasa yang berdiri paling belakang, dan "
+            "`End` lalu `Enter` mendarat di situ. Yang tercatat: %r"
+            % (sesudah[0],))
+        self.assertIsInstance(
+            sesudah[0].get("u"), (int, float),
+            "butir riwayat tidak membawa `u` berupa angka (terbaca %r). "
+            "Tanpa waktu, `riwayatPotong` tidak punya bahan dan ingatan ini "
+            "tidak pernah kedaluwarsa" % (sesudah[0].get("u"),))
+        self.assertGreater(
+            sesudah[0]["u"], 0,
+            "`u` nol atau negatif; yang diteruskan ke `riwayatNaikkan` bukan "
+            "jam melainkan sesuatu yang lain")
+        self.assertEqual(
+            lap["kunciIngatan"], ["palet-riwayat"],
+            "palet menyentuh kunci ingatan selain \"palet-riwayat\": %r. "
+            "Kunci kedua berarti riwayat punya dua bentuk tersimpan, dan "
+            "yang dibaca saat palet lahir berikutnya cuma salah satunya"
+            % (lap["kunciIngatan"],))
+
+
+_SKRIP_JANGKAR = r"""
+// DRIVER, BUKAN CERMIN -- sama seperti `_SKRIP_PALET` dan `_SKRIP_SARING` di
+// atas. Yang dijalankan di sini WILAYAH NAV yang dipotong dari `aplikasi.js`
+// apa adanya; stub di bawah cuma menyediakan papan secukupnya supaya kode itu
+// bisa berjalan, dan MENCATAT apa yang dilakukannya terhadap papan itu.
+//
+// Catatannya berupa satu `jejak` BERURUTAN untuk seluruh jalannya, bukan
+// potret per langkah saja: pertanyaan N2 ("penanda dipasang SEBELUM panel
+// dibuka") tidak bisa dijawab oleh potret, karena potret yang diambil sesudah
+// satu ketukan terlihat sama untuk kedua urutan.
+//
+// Papan diturunkan sebagai JSON dari Python -- termasuk AMBANG_PANEL, yang
+// DIBACA dari sumbernya dan bukan ditulis ulang di sini: angka 860 yang
+// diketik di tes adalah angka ketiga di rantai `aplikasi.js:82` <-> `@media
+// (max-width: 860px)`, dan rantai bertiga adalah rantai yang suatu hari
+// pecah di tempat yang tidak ada yang memeriksanya.
+
+import fs from "node:fs";
+
+const blok = fs.readFileSync(process.argv[2], "utf8");
+const blokResize = fs.readFileSync(process.argv[3], "utf8");
+const papan = JSON.parse(fs.readFileSync(process.argv[4], "utf8"));
+
+const jejak = [];
+
+function buatKelas(id) {
+  const isi = new Set();
+  const catat = (apa, kelas) => jejak.push({ apa, el: id, kelas });
+  return {
+    add(k) { isi.add(k); catat("kelas+", k); },
+    remove(k) { isi.delete(k); catat("kelas-", k); },
+    contains(k) { return isi.has(k); },
+    toggle(k, nilai) {
+      // DOM sungguhan menerima `toggle(k)` tanpa nilai dan membalik keadaan.
+      // Stub ini menolaknya dengan sengaja: di wilayah nav satu-satunya
+      // pemakaian yang benar adalah bentuk dua-argumen, dan stub yang ramah
+      // terhadap bentuk sebaliknya menyembunyikan justru kelas bug itu.
+      if (nilai === undefined) {
+        throw new Error("classList.toggle(" + k + ") tanpa nilai kedua");
+      }
+      if (nilai) isi.add(k); else isi.delete(k);
+      catat(nilai ? "kelas+" : "kelas-", k);
+      return isi.has(k);
+    },
+    _isi() { return [...isi].sort(); },
+  };
+}
+
+function buatEl(id, bisaPopover) {
+  const sifat = new Map();
+  const pendengar = {};
+  let terbuka = false;
+  const el = {
+    id,
+    classList: buatKelas(id),
+    _sifat: sifat,
+    _pendengar: pendengar,
+    _terbuka: () => terbuka,
+    setAttribute(k, v) {
+      sifat.set(k, String(v));
+      jejak.push({ apa: "sifat+", el: id, k, v: String(v) });
+    },
+    removeAttribute(k) {
+      sifat.delete(k);
+      jejak.push({ apa: "sifat-", el: id, k });
+    },
+    hasAttribute(k) { return sifat.has(k); },
+    getAttribute(k) { return sifat.has(k) ? sifat.get(k) : null; },
+    addEventListener(jenis, fn) {
+      pendengar[jenis] = pendengar[jenis] || [];
+      pendengar[jenis].push(fn);
+    },
+    contains(lain) {
+      return lain === el || (el._anak || []).indexOf(lain) >= 0;
+    },
+    togglePopover(nilai) {
+      // Argumennya dicatat SEBELUM pemeriksaan apa pun, dan bentuk tanpa
+      // argumen dicatat sebagai nilai tersendiri alih-alih `null`: yang diadu
+      // N3 bukan "pernah dipanggil" melainkan "dipanggil dengan apa".
+      jejak.push({
+        apa: "togglePopover", el: id,
+        arg: nilai === undefined ? "TANPA-ARGUMEN" : nilai,
+      });
+      if (!bisaPopover) {
+        throw new Error("togglePopover dipanggil pada " + id
+          + ", yang bukan panel");
+      }
+      if (!sifat.has("popover")) {
+        throw new Error("togglePopover pada " + id + " yang belum punya "
+          + "atribut popover -- UA sungguhan melempar InvalidStateError di "
+          + "sini, jadi stub yang membiarkannya lewat memalsukan jalur yang "
+          + "di browser justru mematikan panelnya");
+      }
+      terbuka = nilai === undefined ? !terbuka : Boolean(nilai);
+      return terbuka;
+    },
+  };
+  return el;
+}
+
+const KUNCI = ["bahasa", "lain"];
+const dom = {};
+const tabelAkar = {};
+for (const kunci of KUNCI) {
+  const turun = buatEl("rel-turun-" + kunci, false);
+  const pemicu = buatEl("rel-pemicu-" + kunci, false);
+  const panel = buatEl("rel-panel-" + kunci, true);
+  turun._anak = [pemicu, panel];
+  turun._cari = { ".rel-pemicu": pemicu, ".rel-panel": panel };
+  dom[kunci] = { turun, pemicu, panel };
+  tabelAkar["#rel-turun-" + kunci] = turun;
+}
+
+// Selektor yang tidak dikenal MELEMPAR, tidak mengembalikan undefined. Stub
+// yang ramah di sini membuat seluruh kelas ini hijau di atas kode yang tidak
+// pernah tersentuh: `$(".rel-panel-x", turun)` yang mengembalikan undefined
+// bikin `panel.setAttribute` melempar belakangan, dan yang dibaca orang di
+// laporan bukan "selektornya salah" melainkan "stub-nya kurang".
+function $(sel, induk) {
+  const tabel = induk ? induk._cari : tabelAkar;
+  if (!tabel || !(sel in tabel)) {
+    throw new Error("selektor tak dikenal di stub: " + sel
+      + (induk ? " (di dalam " + induk.id + ")" : ""));
+  }
+  return tabel[sel];
+}
+
+const pendengarDok = {};
+const document = {
+  addEventListener(jenis, fn) {
+    pendengarDok[jenis] = pendengarDok[jenis] || [];
+    pendengarDok[jenis].push(fn);
+  },
+};
+
+const pendengarJendela = {};
+const window = {
+  innerWidth: papan.lebar,
+  addEventListener(jenis, fn) {
+    pendengarJendela[jenis] = pendengarJendela[jenis] || [];
+    pendengarJendela[jenis].push(fn);
+  },
+};
+
+const CSS = {
+  supports(prop) {
+    if (!Array.isArray(papan.dukung)) {
+      throw new Error("papan tanpa daftar dukungan");
+    }
+    return papan.dukung.indexOf(prop) >= 0;
+  },
+};
+const HTMLElement = {
+  prototype: papan.togglePopover ? { togglePopover() {} } : {},
+};
+
+const api = new Function(
+  "$", "document", "window", "CSS", "HTMLElement", "AMBANG_PANEL",
+  '"use strict";\n' + blok
+  + "\nreturn { pasangTurun, jangkarAktif, segarkanJangkar };")(
+    $, document, window, CSS, HTMLElement, papan.ambang);
+
+api.pasangTurun("rel-turun-bahasa");
+api.pasangTurun("rel-turun-lain");
+
+// Pendengar `resize` SUNGGUHAN, dipotong dari `mulai()` dan dijalankan di sini
+// dengan `tunda` yang mengembalikan fungsinya apa adanya. Ini yang membuat N6
+// pagar AKIBAT: kalau badan pendengarnya berhenti melepas penanda, yang merah
+// bukan sebuah nama yang hilang melainkan atribut yang masih menempel.
+new Function("window", "tunda", "uraikanRute", "tandaiRel", "segarkanJangkar",
+             '"use strict";\n' + blokResize)(
+  window, (fn) => fn, () => ({ nama: "dasbor", params: {} }), () => {},
+  api.segarkanJangkar);
+
+function potret() {
+  const hasil = {};
+  for (const kunci of KUNCI) {
+    const { turun, pemicu, panel } = dom[kunci];
+    hasil[kunci] = {
+      kelasTurun: turun.classList._isi(),
+      sifatPanel: Object.fromEntries(panel._sifat),
+      sifatPemicu: Object.fromEntries(pemicu._sifat),
+      popoverTerbuka: panel._terbuka(),
+    };
+  }
+  return hasil;
+}
+
+const potretLangkah = {};
+for (const langkah of papan.langkah) {
+  if (langkah.apa === "klik") {
+    const pemicu = dom[langkah.panel].pemicu;
+    const fns = pemicu._pendengar.click || [];
+    if (!fns.length) {
+      throw new Error("pemicu " + langkah.panel + " tidak punya pendengar "
+        + "click; `pasangTurun()` tidak pernah sampai ke situ");
+    }
+    for (const fn of fns) fn({ stopPropagation() {}, target: pemicu });
+  } else if (langkah.apa === "lebar") {
+    window.innerWidth = langkah.nilai;
+  } else if (langkah.apa === "resize") {
+    const fns = pendengarJendela.resize || [];
+    if (!fns.length) {
+      throw new Error("tidak ada pendengar resize yang terdaftar");
+    }
+    for (const fn of fns) fn({});
+  } else if (langkah.apa === "rekam") {
+    potretLangkah[langkah.nama] = potret();
+  } else {
+    throw new Error("langkah tak dikenal: " + langkah.apa);
+  }
+}
+
+console.log(JSON.stringify({ jejak, potret: potretLangkah }));
+"""
+
+
+class TestPanelJangkar(unittest.TestCase):
+    """`.rel-panel` dinaikkan ke popover + anchor positioning, diadu per AKIBAT.
+
+    Blok `@supports (anchor-name: --a) and (position-area: bottom)` di gaya.css
+    sudah ada sejak lama dan TIDAK PERNAH berlaku di browser mana pun: selektornya
+    menuntut `.pakai-jangkar` dan `[popover]`, dan nol baris JS memproduksi
+    keduanya. CSS yang benar atas penanda yang tidak pernah terbit terlihat
+    persis sama dengan CSS yang browsernya belum mendukung -- tidak ada error di
+    mana pun, dan tidak ada yang punya cara tahu separuhnya hilang.
+
+    DUA KORPUS, dan keduanya wajib ada:
+
+    * **peramban tanpa dukungan** -- tiga bentuk kemampuan separuh
+      (`anchor-name` saja, `position-area` saja, keduanya tanpa
+      `togglePopover`) plus tanpa keduanya. Di situ `setel()` harus tetap
+      PERSIS seperti sebelum hop ini: kelas `buka` + `aria-expanded`, nol
+      atribut `popover`, nol kelas penanda. Ini jalur Firefox lama dan Safari
+      lama, dan ia jalur yang paling banyak dipakai hari ini (N1, N5).
+    * **peramban dengan dukungan** -- penanda terbit, urutannya benar,
+      argumennya tertulis, dan pelepasannya terjadi (N2, N3, N4, N6).
+
+    Pagar yang cuma bisa memalsukan korpus kedua tidak menjaga apa pun: fitur
+    ini dinilai justru dari apakah ia TIDAK menyentuh jalur lama.
+
+    BATAS PAGAR INI, dinamai supaya tidak dibaca lebih luas daripada isinya.
+    Driver Node membuktikan tiga hal dan hanya tiga: atribut dan kelas APA yang
+    terpasang, dalam URUTAN apa, dan KEADAAN apa yang tertinggal sesudah
+    serangkaian ketukan. Ia tidak membuktikan GEOMETRI. Apakah
+    `position-area: bottom span-right` benar-benar menaruh panelnya di bawah
+    pemicunya, apakah *top layer* tidak menutupi navbar, dan apakah keempat
+    lebar (360/860/1100/1440) masih benar bersamaan -- semuanya tugas pengukur
+    peramban, bukan tugas berkas ini, dan tidak ada satu pun asersi di sini yang
+    boleh dibaca sebagai klaim tentang tampilan.
+
+    Yang juga BUKAN urusan kelas ini: `:916`, `:897`, dan blok `@media` laci
+    lipat. N7 MEMBACA ketiganya untuk menurunkan apa yang harus dinetralkan,
+    tapi tidak satu pun barisnya disunting -- 40 rujukan alamat menunggu di
+    sekitar `:916`.
+    """
+
+    DUKUNG_PENUH = ("anchor-name", "position-area")
+
+    # Lebar "jendela lebar" sebagai FIXTURE, bukan ambang: ia cuma perlu lebih
+    # besar daripada `AMBANG_PANEL`, dan ambangnya sendiri selalu dibaca dari
+    # sumbernya lewat `_ambang()`. Lebar sempit diturunkan dari ambang itu, jadi
+    # tidak ada satu pun angka ambang yang diketik ulang di berkas ini.
+    LEBAR_LEBAR = 1400
+    LEBAR_PONSEL = 360
+
+    # Properti yang, kalau sebuah aturan `.rel-panel` di LUAR blok `@supports`
+    # memasangnya, wajib dinetralkan DI DALAM blok itu. Dua kelompok karena
+    # alasannya dua: tepi yang dipatok tidak menyisakan ruang bagi
+    # `position-area`, dan `animation` yang masih jalan berarti dua mesin atas
+    # satu properti.
+    PATOK = ("inset", "top", "right", "bottom", "left")
+    GERAK = ("animation", "animation-name")
+
+    # ------------------------------------------------------- pengukur sumber
+
+    @staticmethod
+    def _teks(*jalur):
+        with open(os.path.join(TestPaletCombobox._akar(), *jalur),
+                  encoding="utf-8") as f:
+            return f.read()
+
+    @classmethod
+    def _wilayah_nav(cls):
+        """Wilayah nav sebagai satu blok JS yang berdiri sendiri.
+
+        Dari `const penutupPanel` sampai kurawal `pasangTurun()` tertutup, jadi
+        helper BARU apa pun yang tinggal di antara keduanya ikut terbawa tanpa
+        sisi Python perlu tahu namanya. Batas akhirnya diambil dengan MENGUKUR
+        `pasangTurun` sendiri, bukan dengan `_potong` dari jangkar pertama:
+        kurawal pertama sesudah `const penutupPanel` sekarang milik helper, jadi
+        potongan naif akan berhenti sebelum `pasangTurun` -- dan sel yang
+        memuatnya tetap hijau sambil tidak pernah menjalankan `setel()`.
+        """
+        src = TestPaletCombobox._sumber()
+        awal = src.index("const penutupPanel")
+        blok = TestPaletCombobox._potong(src, "function pasangTurun(")
+        return TestHamparanBara._telanjang(
+            src[awal:src.index(blok) + len(blok)])
+
+    @classmethod
+    def _blok_resize(cls):
+        """Pendengar `resize` yang SUDAH ADA di `mulai()`, apa adanya.
+
+        Dipotong supaya N6 bisa menjalankannya alih-alih memeriksa bahwa sebuah
+        nama tertulis di dalamnya. Batasnya `}, 160));` -- penundaan 160 md itu
+        bagian dari kontraknya, bukan detail: pengukur tata letak kedua tanpa
+        penundaan membatalkan gunanya.
+        """
+        src = TestPaletCombobox._sumber()
+        awal = src.index('window.addEventListener("resize"')
+        tutup = "}, 160));"
+        if tutup not in src[awal:]:
+            raise AssertionError(
+                "pendengar resize di `aplikasi.js` tidak lagi ditutup %r; "
+                "batas potongannya harus diukur ulang" % tutup)
+        akhir = src.index(tutup, awal) + len(tutup)
+        return TestHamparanBara._telanjang(src[awal:akhir])
+
+    @classmethod
+    def _ambang(cls):
+        cocok = re.search(r"const AMBANG_PANEL = (\d+);",
+                          TestPaletCombobox._sumber())
+        if not cocok:
+            raise AssertionError(
+                "`const AMBANG_PANEL = N;` tidak ada lagi di `aplikasi.js`; "
+                "kelas ini membaca ambangnya dari situ supaya angka 860 tidak "
+                "punya salinan ketiga")
+        return int(cocok.group(1))
+
+    @classmethod
+    def _nilai_konstanta(cls, nama):
+        """Nilai sebuah konstanta string di wilayah nav, DIBACA bukan diketik.
+
+        Dipakai supaya mengganti nama penanda di JS memerahkan N7 -- yang
+        memang menjaga kecocokan CSS<->JS -- dan BUKAN memerahkan N2/N3, yang
+        menjaga urutan dan argumen. Pagar yang semuanya ikut merah untuk satu
+        mutasi berhenti memberi tahu mana yang rusak.
+        """
+        cocok = re.search(r"const %s = \"([^\"]+)\";" % nama,
+                          cls._wilayah_nav())
+        if not cocok:
+            raise AssertionError(
+                "`const %s = \"...\";` tidak ada di wilayah nav `aplikasi.js`"
+                % nama)
+        return cocok.group(1)
+
+    @classmethod
+    def _blok_supports(cls):
+        """Blok `@supports (anchor-name…)` di gaya.css, komentar DIBUANG.
+
+        Pembuangan komentarnya syarat, bukan kerapian: komentar di dalam blok
+        itu menyebut `.rel-turun.buka`, `:916`, dan `aplikasi.js` apa adanya,
+        dan `aplikasi.js` saja sudah membuat pemungut kelas di N7 memanen `js`
+        sebagai nama kelas yang harus diproduksi JS.
+        """
+        css = cls._teks("webapp", "statik", "gaya.css")
+        jangkar = "@supports (anchor-name: --a) and (position-area: bottom)"
+        if jangkar not in css:
+            raise AssertionError(
+                "blok %r tidak ada lagi di gaya.css; seluruh fitur hop ini "
+                "bergantung padanya" % jangkar)
+        i = css.index(jangkar)
+        dalam = 0
+        for j in range(css.index("{", i), len(css)):
+            if css[j] == "{":
+                dalam += 1
+            elif css[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return re.sub(r"/\*.*?\*/", "", css[i:j + 1], flags=re.S)
+        raise AssertionError("blok @supports jangkar tidak pernah ditutup")
+
+    # ------------------------------------------------------------ driver Node
+
+    def _jalankan(self, *, dukung, toggle_popover, lebar, langkah):
+        """Jalankan wilayah nav + pendengar resize sungguhan di atas papan stub.
+
+        Asersi PERTAMA-nya bukan tentang hasil melainkan tentang POTONGANNYA:
+        potongan yang salah bisa tetap hijau sepanjang hari sambil tidak pernah
+        memuat kode yang dimaksud, dan itu pernah hampir terjadi satu hop lalu.
+        """
+        if not shutil.which("node"):
+            self.skipTest("butuh node untuk menjalankan papan panel nav")
+        blok = self._wilayah_nav()
+        for nama in ("function pasangTurun(", "function jangkarAktif(",
+                     "function segarkanJangkar("):
+            self.assertIn(
+                nama, blok,
+                "potongan wilayah nav tidak memuat %r, jadi sel ini akan "
+                "menguji papan stub-nya sendiri alih-alih `aplikasi.js`. "
+                "`_wilayah_nav()` yang harus diukur ulang, bukan asersinya"
+                % nama)
+        resize = self._blok_resize()
+        self.assertTrue(
+            resize.startswith('window.addEventListener("resize"'),
+            "potongan pendengar resize tidak berawal di pendengarnya "
+            "(terbaca %r)" % resize[:60])
+        papan = {"dukung": list(dukung), "togglePopover": bool(toggle_popover),
+                 "lebar": lebar, "ambang": self._ambang(), "langkah": langkah}
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "jangkar.mjs")
+            f_blok = os.path.join(d, "blok.js")
+            f_resize = os.path.join(d, "resize.js")
+            f_papan = os.path.join(d, "papan.json")
+            for jalur, isi in ((js, _SKRIP_JANGKAR), (f_blok, blok),
+                               (f_resize, resize)):
+                with open(jalur, "w", encoding="utf-8") as f:
+                    f.write(isi)
+            with open(f_papan, "w", encoding="utf-8") as f:
+                json.dump(papan, f)
+            hasil = subprocess.run(["node", js, f_blok, f_resize, f_papan],
+                                   capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        return json.loads(hasil.stdout)
+
+    @staticmethod
+    def _arg_popover(lap, el):
+        """Argumen setiap `togglePopover` pada `el`, DALAM URUTANNYA.
+
+        Daftar, bukan cacah: "dipanggil tepat sekali per `setel()`" dan
+        "dipanggil dengan nilai yang benar" adalah dua pertanyaan, dan cacah
+        menjawab satu sambil terlihat menjawab keduanya.
+        """
+        return [r["arg"] for r in lap["jejak"]
+                if r["apa"] == "togglePopover" and r["el"] == el]
+
+    @staticmethod
+    def _indeks(lap, cocok):
+        for i, rekor in enumerate(lap["jejak"]):
+            if cocok(rekor):
+                return i
+        return None
+
+    # ----------------------------------------------------------------- N1
+
+    def test_n1_tanpa_dukungan_penuh_nol_penanda(self):
+        """Kemampuan separuh = jalur lama, UTUH, tanpa satu pun penanda.
+
+        Empat papan, dan tiga di antaranya kemampuan SEPARUH. Itu yang penting:
+        gerbang yang cuma menanyakan `anchor-name` memberi popover di *top
+        layer* kepada browser yang tidak punya `position-area` untuk
+        menempatkannya, dan yang terlihat bukan panel yang salah posisi
+        melainkan panel yang menempel di sudut layar.
+        """
+        kelas = self._nilai_konstanta("KELAS_JANGKAR")
+        sifat = self._nilai_konstanta("SIFAT_POPOVER")
+        papan = (("anchor-name saja", ["anchor-name"], True),
+                 ("position-area saja", ["position-area"], True),
+                 ("tanpa keduanya", [], True),
+                 ("keduanya, tanpa togglePopover",
+                  list(self.DUKUNG_PENUH), False))
+        for nama, dukung, toggle in papan:
+            with self.subTest(papan=nama):
+                lap = self._jalankan(
+                    dukung=dukung, toggle_popover=toggle,
+                    lebar=self.LEBAR_LEBAR,
+                    langkah=[{"apa": "klik", "panel": "bahasa"},
+                             {"apa": "rekam", "nama": "sesudah"}])
+                p = lap["potret"]["sesudah"]["bahasa"]
+                self.assertNotIn(
+                    sifat, p["sifatPanel"],
+                    "papan %r tidak mendukung penempatan jangkar, tapi "
+                    "panelnya tetap diberi atribut %r. Popover di browser itu "
+                    "berarti elemen di top layer yang tidak ada yang "
+                    "menempatkan" % (nama, sifat))
+                self.assertNotIn(
+                    kelas, p["kelasTurun"],
+                    "kelas %r terpasang di papan %r" % (kelas, nama))
+                self.assertIn(
+                    "buka", p["kelasTurun"],
+                    "jalur lama kehilangan kelas `buka` di papan %r; gaya.css "
+                    "memakainya untuk latar pemicu dan panah terbalik, jadi "
+                    "yang hilang bukan panelnya saja" % nama)
+                self.assertEqual(
+                    p["sifatPemicu"].get("aria-expanded"), "true",
+                    "`aria-expanded` tidak ikut jalur lama di papan %r" % nama)
+                self.assertEqual(
+                    self._arg_popover(lap, "rel-panel-bahasa"), [],
+                    "`togglePopover` dipanggil di papan %r yang tidak "
+                    "mendukungnya" % nama)
+
+    # ----------------------------------------------------------------- N2
+
+    def test_n2_penanda_terpasang_sebelum_popover_dibuka(self):
+        """Penanda mendahului `togglePopover` pada giliran `setel(true)` sama.
+
+        Urutan, bukan keberadaan: potret yang diambil sesudah satu ketukan
+        terlihat identik untuk kedua urutan, sementara yang dialami pelajar
+        tidak -- panel yang jadi popover SESUDAH ia terlihat melompat dari
+        tempat aliran normalnya ke tempat jangkarnya dalam satu frame.
+        """
+        kelas = self._nilai_konstanta("KELAS_JANGKAR")
+        sifat = self._nilai_konstanta("SIFAT_POPOVER")
+        lap = self._jalankan(
+            dukung=self.DUKUNG_PENUH, toggle_popover=True,
+            lebar=self.LEBAR_LEBAR,
+            langkah=[{"apa": "klik", "panel": "bahasa"},
+                     {"apa": "rekam", "nama": "buka"}])
+        i_toggle = self._indeks(lap, lambda r: r["apa"] == "togglePopover")
+        self.assertIsNotNone(
+            i_toggle,
+            "panel tidak pernah dibuka lewat `togglePopover` padahal papannya "
+            "mendukung penuh; penanda CSS tanpa pembukaan popover berarti "
+            "blok `@supports` tetap tidak pernah berlaku")
+        i_sifat = self._indeks(lap, lambda r: (r["apa"] == "sifat+"
+                                              and r["k"] == sifat))
+        self.assertIsNotNone(i_sifat, "atribut %r tidak pernah dipasang" % sifat)
+        i_kelas = self._indeks(lap, lambda r: (r["apa"] == "kelas+"
+                                              and r["kelas"] == kelas))
+        self.assertIsNotNone(i_kelas, "kelas %r tidak pernah dipasang" % kelas)
+        self.assertLess(
+            i_sifat, i_toggle,
+            "atribut %r dipasang SESUDAH `togglePopover` (indeks jejak %s "
+            "lawan %s). UA sungguhan melempar InvalidStateError di urutan itu, "
+            "jadi panelnya tidak terbuka sama sekali"
+            % (sifat, i_sifat, i_toggle))
+        self.assertLess(
+            i_kelas, i_toggle,
+            "kelas %r dipasang SESUDAH panel terlihat (indeks jejak %s lawan "
+            "%s), jadi frame pertamanya digambar tanpa penempatan jangkar"
+            % (kelas, i_kelas, i_toggle))
+        self.assertEqual(
+            lap["jejak"][i_sifat]["v"], "manual",
+            "atribut popover bernilai %r, bukan \"manual\". Dengan `auto` UA "
+            "melakukan light dismiss, dan pemicu panel ini ADA di luar "
+            "popovernya -- satu ketukan untuk menutup akan ditutup UA lalu "
+            "dibuka kembali `setel()`, jadi panelnya tidak pernah bisa ditutup "
+            "dari tombolnya sendiri" % (lap["jejak"][i_sifat]["v"],))
+        p = lap["potret"]["buka"]["bahasa"]
+        self.assertTrue(p["popoverTerbuka"], "panel tidak berakhir terbuka")
+        self.assertIn("buka", p["kelasTurun"],
+                      "kelas `buka` hilang di jalur jangkar; yang berpindah "
+                      "tangan cuma SIAPA yang menampilkan panelnya")
+
+    # ----------------------------------------------------------------- N3
+
+    def test_n3_dua_ketukan_berakhir_tutup_dengan_argumen_tertulis(self):
+        """Satu `togglePopover` beragumen per `setel()`, dan dua ketukan TUTUP.
+
+        Rekaman yang dituntut `[True, False, False]`, dan panggilan KETIGA itu
+        bukan cacat yang ditoleransi -- ia perilaku yang sudah ada sejak sebelum
+        hop ini dan justru alasan terkuat kenapa argumennya wajib ditulis.
+        Penangan klik mengerjakan `for (const tutup of penutupPanel)
+        tutup(false)` lebih dulu, dan loop itu menutup SEMUA panel termasuk yang
+        sedang diketuk; sesudahnya `setel(buka)` dipanggil dengan `buka ===
+        false`. Jadi ketukan penutup memanggil `setel(false)` dua kali, dan
+        masing-masing memanggil `togglePopover` tepat sekali -- itulah bentuk
+        "tepat sekali per panggilan" yang sebenarnya.
+
+        Dengan argumen tertulis, panggilan ketiga tidak berakibat apa-apa.
+        Dengan `togglePopover()` tanpa argumen ia MEMBUKA KEMBALI panelnya,
+        karena bentuk itu membalik keadaan yang sedang ada -- dan yang dialami
+        pemakainya bukan "panelnya berkedip" melainkan tombol tutup yang
+        berhenti menutup. Itu sebabnya sel ini mengadu DUA hal sekaligus:
+        urutan argumennya dan keadaan akhirnya.
+
+        Angka 3 di sini DITURUNKAN dari penangan kliknya, bukan dipilih: kalau
+        suatu hari loop itu berhenti menyentuh panel yang sedang diketuk,
+        angkanya berubah jadi 2 dan sel ini merah -- dan itu yang benar, karena
+        jumlah kali `setel()` dipanggil per ketukan memang bagian kontraknya.
+        """
+        lap = self._jalankan(
+            dukung=self.DUKUNG_PENUH, toggle_popover=True,
+            lebar=self.LEBAR_LEBAR,
+            langkah=[{"apa": "klik", "panel": "bahasa"},
+                     {"apa": "rekam", "nama": "buka"},
+                     {"apa": "klik", "panel": "bahasa"},
+                     {"apa": "rekam", "nama": "tutup"}])
+        arg = self._arg_popover(lap, "rel-panel-bahasa")
+        self.assertEqual(
+            arg, [True, False, False],
+            "dua ketukan menghasilkan urutan argumen %r, bukan "
+            "[True, False, False]. \"TANPA-ARGUMEN\" berarti `togglePopover()` "
+            "dipanggil tanpa nilai, dan pada panggilan ketiga bentuk itu "
+            "MEMBUKA KEMBALI panel yang baru ditutup. Panjang yang berbeda "
+            "berarti jumlah panggilan `setel()` per ketukan berubah -- lihat "
+            "loop `penutupPanel` di penangan kliknya" % (arg,))
+        self.assertTrue(
+            all(isinstance(a, bool) for a in arg),
+            "ada panggilan `togglePopover` tanpa argumen (rekaman %r). Bentuk "
+            "itu membalik keadaan yang sedang ada alih-alih menyetelnya" % (arg,))
+        buka = lap["potret"]["buka"]["bahasa"]
+        tutup = lap["potret"]["tutup"]["bahasa"]
+        self.assertEqual(buka["sifatPemicu"].get("aria-expanded"), "true",
+                         "`aria-expanded` tidak ikut jalur buka")
+        self.assertEqual(tutup["sifatPemicu"].get("aria-expanded"), "false",
+                         "`aria-expanded` tidak ikut jalur tutup")
+        self.assertFalse(
+            tutup["popoverTerbuka"],
+            "dua ketukan pada pemicu yang sama berakhir TERBUKA")
+        self.assertNotIn("buka", tutup["kelasTurun"],
+                         "kelas `buka` tertinggal sesudah panel ditutup")
+
+    # ----------------------------------------------------------------- N4
+
+    def test_n4_membuka_satu_menutup_popover_yang_lain(self):
+        """`penutupPanel` tetap menutup panel lain, termasuk di *top layer*.
+
+        Dua daftar yang menggantung bersamaan dari satu baris adalah dua daftar
+        yang saling menutupi, dan di jalur jangkar keduanya mengambang -- jadi
+        yang kedua tidak sekadar tertindih, ia berdiri di atas yang pertama.
+        """
+        lap = self._jalankan(
+            dukung=self.DUKUNG_PENUH, toggle_popover=True,
+            lebar=self.LEBAR_LEBAR,
+            langkah=[{"apa": "klik", "panel": "lain"},
+                     {"apa": "rekam", "nama": "lainDulu"},
+                     {"apa": "klik", "panel": "bahasa"},
+                     {"apa": "rekam", "nama": "bahasaKemudian"}])
+        self.assertTrue(
+            lap["potret"]["lainDulu"]["lain"]["popoverTerbuka"],
+            "panel \"lain\" tidak pernah terbuka, jadi sel ini tidak pernah "
+            "sampai pada hal yang diujinya")
+        akhir = lap["potret"]["bahasaKemudian"]
+        self.assertTrue(akhir["bahasa"]["popoverTerbuka"],
+                        "panel \"bahasa\" tidak terbuka sesudah diketuk")
+        self.assertFalse(
+            akhir["lain"]["popoverTerbuka"],
+            "panel \"lain\" masih mengambang di top layer sesudah \"bahasa\" "
+            "dibuka; `penutupPanel` berhenti menutup jalur jangkar")
+        self.assertNotIn("buka", akhir["lain"]["kelasTurun"],
+                         "kelas `buka` tertinggal di panel yang ditutup")
+        self.assertEqual(
+            self._arg_popover(lap, "rel-panel-lain"), [True, False],
+            "urutan argumen pada panel \"lain\" %r, bukan [True, False]"
+            % (self._arg_popover(lap, "rel-panel-lain"),))
+
+    # ----------------------------------------------------------------- N5
+
+    def test_n5_layar_sempit_tidak_pernah_opted_in(self):
+        """Di `<= AMBANG_PANEL` jawabannya selalu tidak, termasuk TEPAT di ambang.
+
+        `@media (max-width: 860px)` di gaya.css memaksa `.rel-panel` jadi
+        `position: static` karena di dalam laci lipat panel bukan mengambang
+        melainkan BAGIAN dari daftarnya. Aturan di dalam blok `@supports`
+        menang atas aturan laci itu lewat spesifisitas (0,3,0 lawan 0,2,0),
+        jadi opt-in di layar sempit bukan "penempatan yang berbeda" -- ia laci
+        yang isinya hilang ke lapisan atas.
+
+        Ambangnya DIBACA dari `aplikasi.js`, dan `<=` diuji di titik ambang itu
+        sendiri: batas yang salah satu piksel adalah batas yang tidak pernah
+        kelihatan salah sampai seseorang memakai jendela selebar itu.
+        """
+        kelas = self._nilai_konstanta("KELAS_JANGKAR")
+        sifat = self._nilai_konstanta("SIFAT_POPOVER")
+        for lebar in (self.LEBAR_PONSEL, self._ambang()):
+            with self.subTest(lebar=lebar):
+                lap = self._jalankan(
+                    dukung=self.DUKUNG_PENUH, toggle_popover=True, lebar=lebar,
+                    langkah=[{"apa": "klik", "panel": "bahasa"},
+                             {"apa": "rekam", "nama": "sesudah"}])
+                p = lap["potret"]["sesudah"]["bahasa"]
+                self.assertNotIn(
+                    sifat, p["sifatPanel"],
+                    "atribut %r terpasang di lebar %s px, yang <= ambang %s. "
+                    "Isi laci lipat berpindah ke top layer alih-alih berdiri "
+                    "di dalam lacinya" % (sifat, lebar, self._ambang()))
+                self.assertNotIn(
+                    kelas, p["kelasTurun"],
+                    "kelas %r terpasang di lebar %s px" % (kelas, lebar))
+                self.assertIn("buka", p["kelasTurun"],
+                              "jalur lama di lebar %s px kehilangan kelas "
+                              "`buka`" % lebar)
+                self.assertEqual(
+                    self._arg_popover(lap, "rel-panel-bahasa"), [],
+                    "`togglePopover` dipanggil di lebar %s px" % lebar)
+
+    # ----------------------------------------------------------------- N6
+
+    def test_n6_resize_menyempit_menutup_dan_melepas_penanda(self):
+        """Menyempit melewati ambang MELEPAS penanda; melebar memasangnya lagi.
+
+        Yang dijalankan di sini pendengar `resize` SUNGGUHAN yang dipotong dari
+        `mulai()`, bukan helper-nya langsung: kalau badan pendengar itu
+        berhenti melepas, yang merah harus berupa atribut yang masih menempel
+        -- bukan sebuah nama yang hilang dari teks.
+
+        Langkah terakhir (melebar lagi lalu mengetuk) ada karena melepas tanpa
+        bisa memasang kembali bukan perbaikan: orang yang memperlebar
+        jendelanya akan memakai panel yang penempatannya mendadak jadi versi
+        cadangan sampai ia memuat ulang halaman.
+        """
+        kelas = self._nilai_konstanta("KELAS_JANGKAR")
+        sifat = self._nilai_konstanta("SIFAT_POPOVER")
+        ambang = self._ambang()
+        lap = self._jalankan(
+            dukung=self.DUKUNG_PENUH, toggle_popover=True,
+            lebar=self.LEBAR_LEBAR,
+            langkah=[{"apa": "klik", "panel": "bahasa"},
+                     {"apa": "rekam", "nama": "lebar"},
+                     {"apa": "lebar", "nilai": ambang - 160},
+                     {"apa": "resize"},
+                     {"apa": "rekam", "nama": "sempit"},
+                     {"apa": "lebar", "nilai": self.LEBAR_LEBAR},
+                     {"apa": "klik", "panel": "bahasa"},
+                     {"apa": "rekam", "nama": "lebarLagi"}])
+        awal = lap["potret"]["lebar"]["bahasa"]
+        self.assertIn(sifat, awal["sifatPanel"],
+                      "panel tidak pernah dinaikkan ke popover di %s px, jadi "
+                      "sel ini tidak pernah sampai pada pelepasannya"
+                      % self.LEBAR_LEBAR)
+        self.assertIn(kelas, awal["kelasTurun"], "kelas %r tidak pernah "
+                      "terpasang" % kelas)
+        self.assertTrue(awal["popoverTerbuka"], "panel tidak terbuka di awal")
+
+        sempit = lap["potret"]["sempit"]["bahasa"]
+        self.assertNotIn(
+            sifat, sempit["sifatPanel"],
+            "atribut %r masih menempel sesudah jendela menyempit ke %s px. "
+            "Laci lipat sekarang punya isi yang berdiri di top layer, dan "
+            "yang terlihat pemakainya bukan panel yang salah tempat melainkan "
+            "laci yang kosong" % (sifat, ambang - 160))
+        self.assertNotIn(
+            kelas, sempit["kelasTurun"],
+            "kelas %r masih menempel sesudah jendela menyempit" % kelas)
+        self.assertFalse(sempit["popoverTerbuka"],
+                         "panel masih terbuka sesudah jendela menyempit")
+        self.assertNotIn("buka", sempit["kelasTurun"],
+                         "kelas `buka` tertinggal sesudah jendela menyempit")
+
+        lagi = lap["potret"]["lebarLagi"]["bahasa"]
+        self.assertIn(
+            sifat, lagi["sifatPanel"],
+            "jendela melebar lagi tapi pembukaan berikutnya tidak opted-in; "
+            "penempatan jangkar hilang sampai halaman dimuat ulang")
+        self.assertIn(kelas, lagi["kelasTurun"],
+                      "kelas %r tidak dipasang lagi sesudah melebar" % kelas)
+        self.assertTrue(lagi["popoverTerbuka"],
+                        "panel tidak terbuka lagi sesudah jendela melebar")
+
+    # ----------------------------------------------------------------- N7
+
+    def test_n7_css_dan_js_menyebut_hal_yang_sama(self):
+        """Penanda yang DIBACA gaya.css == penanda yang DITULIS aplikasi.js.
+
+        Tidak diadu dengan satu string yang diketik dua kali. Daftar penandanya
+        DITURUNKAN dari selektor di dalam blok `@supports`, lalu disaring
+        terhadap `index.html`: kelas yang sudah ada di markup datang dari
+        markup, dan kelas yang TIDAK ada di situ cuma punya satu sumber yang
+        mungkin, yaitu JS. Menamai ulang di satu sisi saja karena itu merah di
+        sini, dari sisi mana pun penggantiannya dilakukan.
+
+        Separuh kedua sel ini soal PENIMPAAN, dan daftarnya juga diturunkan,
+        bukan diketik: setiap properti `PATOK`/`GERAK` yang dipasang aturan
+        `.rel-panel` di LUAR blok wajib dinetralkan DI DALAM blok. `:897`
+        memasang `top`/`left` dan `:916` memasang `animation`, jadi elemen di
+        top layer tetap mewarisi tepi yang dipatok (dan `position-area` tidak
+        punya kesempatan) serta tetap menjalankan `animation: masuk` bersamaan
+        dengan `transition` di dalam blok -- dua mesin atas satu properti.
+        """
+        blok = self._blok_supports()
+        wilayah = self._wilayah_nav()
+        html = self._teks("webapp", "statik", "index.html")
+
+        kelas_markup = set()
+        for cocok in re.finditer(r'class="([^"]*)"', html):
+            kelas_markup.update(cocok.group(1).split())
+        kelas_blok = set(re.findall(r"\.([a-z][a-z0-9-]*)", blok))
+        dari_js = sorted(kelas_blok - kelas_markup)
+        self.assertTrue(
+            dari_js,
+            "setiap kelas yang dipilih blok `@supports` sudah ada di "
+            "index.html, jadi sel ini tidak menjaga apa pun. Penanda yang "
+            "dipasang JS-lah yang membuat blok itu berlaku; kalau tidak ada "
+            "lagi, fiturnya sudah berpindah bentuk dan pagar ini harus "
+            "diukur ulang")
+        for kelas in dari_js:
+            self.assertIn(
+                '"%s"' % kelas, wilayah,
+                "gaya.css memilih `.%s` tapi wilayah nav `aplikasi.js` tidak "
+                "pernah menulis string itu. Penanda yang tidak diproduksi "
+                "siapa pun membuat SELURUH blok `@supports` jadi kode mati, "
+                "dan tidak ada error di mana pun yang mengatakannya" % kelas)
+
+        sifat_blok = set(re.findall(r"\[([a-z-]+)[\]=]", blok))
+        self.assertTrue(sifat_blok,
+                        "blok `@supports` tidak lagi memilih atribut apa pun")
+        for sifat in sorted(sifat_blok):
+            self.assertIn(
+                '"%s"' % sifat, wilayah,
+                "gaya.css memilih `[%s]` tapi wilayah nav tidak pernah "
+                "menulis nama atribut itu" % sifat)
+
+        css = self._teks("webapp", "statik", "gaya.css")
+        patok_luar, gerak_luar = set(), set()
+        for cocok in re.finditer(r"([^{}]+)\{([^{}]*)\}", css):
+            if ".rel-panel" not in cocok.group(1):
+                continue
+            for dekl in cocok.group(2).split(";"):
+                prop = dekl.split(":")[0].strip().lower()
+                if prop in self.PATOK:
+                    patok_luar.add(prop)
+                if prop in self.GERAK:
+                    gerak_luar.add(prop)
+        self.assertTrue(
+            patok_luar,
+            "tidak ada aturan `.rel-panel` di gaya.css yang memasang tepi "
+            "(%s), jadi tuntutan penimpaan di bawah tidak menjaga apa pun"
+            % ", ".join(self.PATOK))
+        self.assertTrue(
+            gerak_luar,
+            "tidak ada aturan `.rel-panel` di gaya.css yang memasang "
+            "`animation`, jadi tuntutan penimpaan di bawah tidak menjaga "
+            "apa pun")
+
+        prop_blok = set()
+        for cocok in re.finditer(r"([^{}]*)\{([^{}]*)\}", blok):
+            if ".rel-panel[popover]" not in cocok.group(1):
+                continue
+            for dekl in cocok.group(2).split(";"):
+                prop_blok.add(dekl.split(":")[0].strip().lower())
+        self.assertTrue(
+            "inset" in prop_blok or patok_luar <= prop_blok,
+            "aturan `.rel-panel` di luar blok memasang %s, dan blok "
+            "`@supports` tidak melepaskannya (yang dipasangnya: %s). Elemen "
+            "di top layer tetap mewarisi tepi itu, jadi `position-area` tidak "
+            "punya kesempatan dan blok itu bukan mengambil alih penempatan -- "
+            "ia menabraknya"
+            % (sorted(patok_luar), sorted(p for p in prop_blok if p)))
+        self.assertTrue(
+            prop_blok & set(self.GERAK),
+            "aturan `.rel-panel` di luar blok memasang %s sementara blok "
+            "`@supports` menganimasikan opacity/transform lewat `transition`. "
+            "Dua mesin atas properti yang sama pada satu elemen menghasilkan "
+            "gerakan tersendat yang sangat sulit didiagnosis; satu baris "
+            "`animation: none` di dalam blok cukup, karena spesifisitasnya "
+            "(0,3,0) sudah menang" % sorted(gerak_luar))
+
+
+class TestKontrakKelasHidup(unittest.TestCase):
+    """Setiap nama kelas yang ditulis `gaya.css` wajib punya produser.
+
+    `gaya.css` ditulis tangan, dan sampai pagar ini ada tidak satu pun tes
+    menanyakan apakah sebuah kelas benar-benar DIPRODUKSI. Kontrak yang tidak
+    pernah ditagih itulah yang membuat aturan mati menumpuk tanpa satu pun
+    tanda: ia tidak merusak apa pun hari ini, ia cuma membuat berkas yang
+    harus dibaca manusia bertambah panjang tiap tahun, dan membuat setiap
+    pembaca berikutnya menebak mana yang masih dipakai. Di sini kontraknya
+    ditagih DUA ARAH -- kelas yatim baru ditolak, DAN daftar kecualiannya
+    ikut ditagih supaya ia tidak mengeras jadi fosil.
+
+    RUANG CSS adalah KEPALA SELEKTOR, bukan berkas mentah. Komentarnya dibuang
+    lebih dulu dengan `_telanjang` milik `TestHamparanBara`; tanpa itu, prosa
+    di dalam komentar -- yang di berkas ini memang menyebut nama kelas untuk
+    MENJELASKANNYA -- dipanen sebagai kontrak yang "harus diproduksi JS".
+    Kepalanya diambil dengan pola satu-grup yang sudah didokumentasikan di
+    berkas ini (cari `SATU-GRUP`): `(?m)^([^{}/@][^{}]*?)\\{`.
+
+    RUANG PRODUSER adalah kode yang bisa MENGHASILKAN markup:
+    `webapp/statik/js/*.js`, `webapp/statik/index.html`, `webapp/*.py`,
+    `inti/*.py`, `pelajar/*.py`, `layar/*.py`, `main.py`, `belajar-web.py`.
+    `tests/` dan `data/` sengaja TIDAK ikut, dan alasannya beda untuk
+    masing-masing: nama yang cuma disebut sebuah TES bukan produser -- ia
+    justru membuat pagar ini membenarkan dirinya sendiri; sedangkan `data/`
+    adalah badan materi, yaitu PROSA kurikulum yang boleh menyebut kata apa
+    pun, dan materi CSS di sana memang mengajarkan nama kelas dan `gaya.css`.
+
+    "Hidup" punya DUA bentuk, dan bentuk kedua bukan kemewahan:
+
+    * literal -- namanya muncul sebagai token utuh di korpus;
+    * komposisi -- korpus merangkai namanya dari sebuah awalan. Bentuknya
+      selalu fragmen selektor parsial yang disambung: `".keadaan-" + jenis`
+      dan `".sorak-" + jenis` di `inti.js`, `"span.tk-" + jenis` di
+      `sorot.js`, `"span.pil.t-" + e.tingkat` dan `".peran.peran-" +
+      blk.peran` dan `".bara-" + tingkat` di `layar-belajar.js` (nilai peran
+      datang dari `isi.py`). Tanpa bentuk kedua, `.keadaan-salah`,
+      `.sorak-nyala`, `.t-Sulit`, dan `.peran-jebakan` semuanya terbaca
+      yatim padahal dipakai -- tidak satu pun punya literal lengkap di mana
+      pun. Bentuk templat ikut dibaca untuk menjaga bentuk yang sah, dan ia
+      menyumbang NOL awalan di korpus hari ini.
+
+    DIZINKAN berisi PERSIS dua nama, dan alasannya angka. Empat kelas yatim
+    terukur saat pagar ini ditulis: `gulir-ungkap`, `memuat-garis`,
+    `petak-4`, `ubin-siap`. Dua yang pertama DIBUANG dari `gaya.css` karena
+    pajak alamatnya nol -- tidak ada satu pun rujukan bergaya `gaya.css:NNNN`
+    di repo ini yang menunjuk di atas :4900. Dua yang terakhir tidak bisa
+    dibuang sekarang: `.petak-4` di `gaya.css:1255` menggeser 37 alamat dan
+    `.ubin-siap` di `:2746` menggeser 30, dan keduanya menuntut penulisan ke
+    tiga berkas yang dua di antaranya beku. Membayar itu demi dua aturan satu
+    baris adalah harga yang salah; mencatat utangnya di sini harga yang benar.
+
+    BATAS PAGAR INI, disebut dengan nama supaya tidak dikira lebih: ia
+    membuktikan "tidak ada kontrak kelas yang tidak diproduksi", BUKAN
+    "setiap kelas terpakai dan terpakai dengan benar". Ia sengaja memilih
+    merah-palsu lebih jarang daripada hijau-palsu: komentar di korpus IKUT
+    dihitung sebagai produser, jadi nama yang "dihidupkan" cuma oleh sebuah
+    komentar tetap hijau di sini -- satu dari sembilan awalan yang terdeteksi
+    (`benar-`) memang lahir dari komentar di `isi.py`, bukan dari kode. Yang
+    TIDAK ia sentuh sama sekali: geometri, nilai deklarasi, urutan cascade,
+    dan perilaku peramban mana pun.
+    """
+
+    DIZINKAN = ("petak-4", "ubin-siap")
+
+    KEPALA = r"(?m)^([^{}/@][^{}]*?)\{"
+    NAMA = r"\.(-?[A-Za-z_][\w-]*)"
+    SAMBUNG = r"[\"'`][^\"'`]*?([A-Za-z][\w-]*-)[\"'`]\s*\+"
+    TEMPLAT = r"([A-Za-z][\w-]*-)\$\{"
+
+    DIR_KORPUS = (("webapp/statik/js", ".js"), ("webapp", ".py"),
+                  ("inti", ".py"), ("pelajar", ".py"), ("layar", ".py"))
+    BERKAS_KORPUS = ("webapp/statik/index.html", "main.py", "belajar-web.py")
+    LUAR_KORPUS = ("tests", "data")
+
+    # Ruang PAJAK bukan ruang KORPUS, dan bedanya bukan kebetulan: yang di atas
+    # mencari siapa yang MEMPRODUKSI sebuah kelas, yang ini mencari siapa yang
+    # MERUJUK sebuah alamat. Karena itu `tests/` justru ikut -- ia penulis
+    # alamat `gaya.css:NNNN` terbanyak di repo ini -- dan sapuannya rekursif.
+    AMBANG = 5
+    RUJUK = r"gaya\.css:(\d+)"
+    DIR_PAJAK = ("webapp", "tests", "inti", "pelajar", "layar")
+    BERKAS_PAJAK = ("main.py", "belajar-web.py")
+    LUAR_PAJAK = ("__pycache__", ".git", ".remember", "data")
+
+    # Dan karena `tests/` ikut, pajaknya bisa dibayar oleh berkas yang MENULIS
+    # daftar ampunannya sendiri -- di situ ia berhenti jadi harga. `AMBANG_LUAR`
+    # menagih IRISAN ruang pajak: rujukan yang datang dari luar `tests/`.
+    # Angkanya 2 karena terukur, bukan diwarisi dari `AMBANG`: kedua ampunan
+    # yang hidup hari ini masing-masing dibayar 5 rujukan di 2 berkas, jadi 2
+    # meninggalkan kelonggaran tiga rujukan untuk churning komentar yang sah.
+    # Ambang yang sama dengan jumlah BERKAS-nya (2 == 2) akan menahan keduanya
+    # persis di tepi jurang, dan 1 terlalu murah -- satu komentar di satu
+    # berkas produk membeli ampunan apa pun.
+    AMBANG_LUAR = 2
+
+    _telanjang = staticmethod(TestHamparanBara._telanjang)
+
+    @classmethod
+    def _akar(cls):
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @classmethod
+    def _css(cls):
+        """Isi gaya.css tanpa komentar."""
+        jalur = os.path.join(cls._akar(), "webapp", "statik", "gaya.css")
+        with open(jalur, encoding="utf-8") as f:
+            return cls._telanjang(f.read())
+
+    @classmethod
+    def _kepala_selektor(cls):
+        """Himpunan nama kelas yang ditulis di kepala selektor gaya.css."""
+        kelas = set()
+        for prelude in re.findall(cls.KEPALA, cls._css()):
+            kelas.update(re.findall(cls.NAMA, prelude))
+        return kelas
+
+    @classmethod
+    def _berkas_korpus(cls):
+        """Jalur berkas yang bisa MENGHASILKAN markup."""
+        akar = cls._akar()
+        jalur = []
+        for rel, akhiran in cls.DIR_KORPUS:
+            ruang = os.path.join(akar, *rel.split("/"))
+            jalur.extend(os.path.join(ruang, n)
+                         for n in sorted(os.listdir(ruang))
+                         if n.endswith(akhiran))
+        jalur.extend(os.path.join(akar, *rel.split("/"))
+                     for rel in cls.BERKAS_KORPUS)
+        return jalur
+
+    @classmethod
+    def _korpus(cls):
+        """Seluruh berkas produser disambung jadi satu teks."""
+        isi = []
+        for jalur in cls._berkas_korpus():
+            with open(jalur, encoding="utf-8") as f:
+                isi.append(f.read())
+        return "\n".join(isi)
+
+    @classmethod
+    def _awalan(cls, korpus):
+        """Awalan kelas yang dirangkai korpus (`".keadaan-" + jenis`)."""
+        return (set(re.findall(cls.SAMBUNG, korpus))
+                | set(re.findall(cls.TEMPLAT, korpus)))
+
+    @classmethod
+    def _produser(cls, nama, korpus, awalan):
+        """Sebab sebuah nama hidup, atau None kalau tidak ada produsernya."""
+        if re.search(r"(?<![\w-])" + re.escape(nama) + r"(?![\w-])", korpus):
+            return "literal"
+        for depan in sorted(awalan, key=len, reverse=True):
+            if nama.startswith(depan) and len(nama) > len(depan):
+                return "komposisi:" + depan
+        return None
+
+    def test_pembaca_tidak_punya_lubang(self):
+        """Pembacanya sendiri ditagih: ruang CSS dan ruang produsernya.
+
+        Dua asersi yang TIDAK bisa dibeli dua sel di bawah, karena keduanya
+        bergerak ke arah yang sama dengan hijau. Pembaca yang melewatkan
+        sebagian kepala selektor menghasilkan LEBIH SEDIKIT yatim, dan korpus
+        yang kebablasan memuat `tests/` menghasilkan LEBIH BANYAK produser --
+        keduanya membuat ratchet hijau justru ketika ia berhenti menjaga.
+        """
+        css = self._css()
+        kelas = self._kepala_selektor()
+        self.assertGreater(
+            len(kelas), 300,
+            "cuma %d kelas terpanen dari kepala selektor gaya.css. Pembacanya "
+            "rusak, dan dua sel di bawah akan hijau karena tidak membaca "
+            "apa-apa" % len(kelas))
+
+        sisa = re.sub(self.KEPALA, " ", css)
+        for nama in sorted(set(re.findall(self.NAMA, sisa))):
+            self.assertRegex(
+                css, r"url\([^)]*\." + re.escape(nama),
+                "token bertitik `.%s` ada di LUAR kepala selektor dan bukan "
+                "di dalam url(). Kalau itu sebuah kelas, pembaca satu-grup di "
+                "kelas ini melewatkannya -- dan kontrak yang tidak terbaca "
+                "tidak pernah ditagih" % nama)
+
+        akar = self._akar()
+        for jalur in self._berkas_korpus():
+            bagian = os.path.relpath(jalur, akar).split(os.sep)
+            for larangan in self.LUAR_KORPUS:
+                self.assertNotIn(
+                    larangan, bagian,
+                    "%s ikut jadi korpus produser. `tests/` membuat pagar ini "
+                    "membenarkan dirinya sendiri, dan `data/` adalah prosa "
+                    "kurikulum yang boleh menyebut kata apa pun" % jalur)
+
+    def test_kelas_yatim_hanya_yang_dizinkan(self):
+        """Ratchet: satu kelas yatim baru di gaya.css berarti merah."""
+        korpus = self._korpus()
+        awalan = self._awalan(korpus)
+        yatim = sorted(n for n in self._kepala_selektor()
+                       if n not in self.DIZINKAN
+                       and self._produser(n, korpus, awalan) is None)
+        self.assertEqual(
+            yatim, [],
+            "kelas ini ditulis gaya.css tapi tidak satu pun berkas produser "
+            "menghasilkannya: %s. Kalau memang mati, buang aturannya; kalau "
+            "pajak alamatnya terlalu mahal untuk dibayar sekarang, tambahkan "
+            "ke DIZINKAN BERSAMA angka pajaknya -- whitelist yang tumbuh "
+            "karena nyaman adalah cara tercepat membuat pagar ini jadi "
+            "hiasan" % ", ".join(yatim))
+
+    def test_daftar_dizinkan_masih_yatim(self):
+        """Anti-fosil: tiap nama DIZINKAN wajib masih ADA dan masih YATIM."""
+        kelas = self._kepala_selektor()
+        korpus = self._korpus()
+        awalan = self._awalan(korpus)
+
+        hilang = [n for n in self.DIZINKAN if n not in kelas]
+        self.assertEqual(
+            hilang, [],
+            "DIZINKAN masih menyebut %s, padahal nama itu sudah tidak ada di "
+            "kepala selektor gaya.css. Kecualian untuk aturan yang sudah "
+            "dibuang tidak menjaga apa pun -- ia cuma menyembunyikan kelas "
+            "yatim berikutnya yang kebetulan bernama sama"
+            % ", ".join(hilang))
+
+        hidup = [(n, self._produser(n, korpus, awalan))
+                 for n in self.DIZINKAN]
+        hidup = [pasang for pasang in hidup if pasang[1] is not None]
+        self.assertEqual(
+            hidup, [],
+            "DIZINKAN mengecualikan nama yang SEKARANG punya produser: %s. "
+            "Begitu sebuah kelas dipakai, kecualiannya wajib dicabut, bukan "
+            "dibiarkan -- kalau tidak, kelas itu kehilangan pagarnya tanpa "
+            "satu pun tanda"
+            % ", ".join("%s (%s)" % pasang for pasang in hidup))
+
+    @classmethod
+    def _alamat_aturan(cls, nama):
+        """Nomor baris pertama di gaya.css yang MEMBUKA dengan `.nama`.
+
+        Dibaca dari berkas MENTAH, bukan lewat `_css()`: `_telanjang`
+        meruntuhkan tiap komentar multi-baris jadi satu spasi, jadi nomor baris
+        di teks tanpa-komentar bukan alamat yang dipakai orang saat menulis
+        `gaya.css:NNNN`. Komentarnya tetap dibuang di sini, hanya saja dengan
+        newline-nya dipertahankan -- sebuah komentar yang menyebut `.nama` di
+        awal baris memberi alamat yang LEBIH KECIL, dan alamat yang lebih kecil
+        berarti pajak yang lebih besar, alias ampunan yang lolos lebih mudah.
+        """
+        jalur = os.path.join(cls._akar(), "webapp", "statik", "gaya.css")
+        with open(jalur, encoding="utf-8") as f:
+            mentah = f.read()
+        tanpa = re.sub(r"/\*.*?\*/",
+                       lambda m: "\n" * m.group(0).count("\n"),
+                       mentah, flags=re.S)
+        pola = re.compile(r"^\." + re.escape(nama) + r"(?![\w-])")
+        for n, baris in enumerate(tanpa.splitlines(), 1):
+            if pola.match(baris.lstrip()):
+                return n
+        return None
+
+    @classmethod
+    def _jalur_pajak(cls):
+        """Berkas yang ikut dihitung saat sebuah alamat gaya.css bergeser.
+
+        Berdiri sendiri karena DUA predikat memakainya, dan keduanya hanya
+        berarti kalau ruang sapuannya sama persis: `_pajak_luar` di bawah
+        adalah IRISAN dari `_pajak_alamat`, jadi selisih keduanya dibaca orang
+        sebagai "yang bukan `tests/`". Dua penyapu yang ditulis terpisah akan
+        melenceng satu per satu, dan yang terlihat bukan error melainkan dua
+        angka yang berhenti boleh dikurangkan. `gaya.css` sendiri dilewati di
+        sini, karena rujukan ke dirinya bukan pajak penyuntingan.
+        """
+        akar = cls._akar()
+        css = os.path.join(akar, "webapp", "statik", "gaya.css")
+        jalur = []
+        for rel in cls.DIR_PAJAK:
+            for dasar, anak, berkas in os.walk(os.path.join(akar, rel)):
+                anak[:] = [d for d in anak if d not in cls.LUAR_PAJAK]
+                jalur.extend(os.path.join(dasar, n) for n in berkas)
+        jalur.extend(os.path.join(akar, n) for n in cls.BERKAS_PAJAK)
+        return [satu for satu in jalur if satu != css]
+
+    @classmethod
+    def _cacah_rujuk(cls, jalur, mulai):
+        """Rujukan `gaya.css:NNNN` di satu berkas yang `NNNN >= mulai`.
+
+        Dekodenya longgar karena dua `.woff2` di `webapp/statik/huruf/` ikut
+        tersapu, dan menolaknya memerahkan pagar ini karena sebuah font.
+        """
+        with open(jalur, encoding="utf-8", errors="ignore") as f:
+            return sum(1 for angka in re.findall(cls.RUJUK, f.read())
+                       if int(angka) >= mulai)
+
+    @classmethod
+    def _pajak_alamat(cls, mulai):
+        """Cacah rujukan `gaya.css:NNNN` di repo yang `NNNN >= mulai`.
+
+        Itulah ongkos menyunting gaya.css di atas baris itu: tiap alamat di
+        atas titik sisipan ikut bergeser dan harus dibetulkan.
+        """
+        return sum(cls._cacah_rujuk(satu, mulai)
+                   for satu in cls._jalur_pajak())
+
+    @classmethod
+    def _pajak_luar(cls, mulai):
+        """Pajak alamat yang dibayar dari LUAR `tests/`: `(rujukan, berkas)`.
+
+        IRISAN dari `_pajak_alamat`, dan satu-satunya bedanya berkas yang
+        jalur relatifnya mulai dengan `tests/` tidak dihitung. Kenapa `tests/`
+        dikecualikan DI SINI padahal ia justru ikut di `_pajak_alamat`: ruang
+        KORPUS (siapa MEMPRODUKSI sebuah kelas) dan ruang PAJAK (siapa MERUJUK
+        sebuah alamat) sengaja berbeda, dan komentar di atas `AMBANG` sudah
+        menuliskan alasannya -- `tests/` penulis alamat `gaya.css:NNNN`
+        terbanyak di repo ini, jadi membuangnya dari ruang pajak akan
+        memalsukan ongkos penyuntingan yang sebenarnya. Yang ditagih predikat
+        ini bukan ruang yang lain, melainkan IRISAN ruang yang sama.
+
+        LOBANGNYA NYATA, dan bentuknya persis begini -- terukur di salinan
+        rata, bukan dikira: tambal satu aturan satu baris di EKOR `gaya.css`
+        (`.petak-5`, mendarat di `gaya.css` baris 5058), namakan `petak-5` di
+        `DIZINKAN`, lalu tulis LIMA rujukan ke baris itu di dalam komentar
+        `tests/test_web.py`. Dekomposisi pajaknya: total 5, dari `tests/` 5,
+        dari LUAR 0 di 0 berkas -- dan seluruh kelas ini HIJAU, `Ran 4`, nol
+        berkas produk tersentuh. Satu koma plus dua baris komentar membeli
+        ampunan berikutnya; itu bukan harga, itu tanda tangan sendiri di cek
+        sendiri. (Alamat 5058 itu ditulis sebagai prosa, TANPA kolon, dan itu
+        bukan kerapian: `TestRujukanAntarBerkasTidakMenunjukRuangKosong`
+        menyapu berkas INI juga, dan baris 5058 cuma ada di salinan uji -- di
+        pohon ia ekor kosong sesudah baris terakhir, jadi bentuk berkolonnya
+        memerahkan pagar itu. Docstringnya sendiri menuliskan aturan ini:
+        angka historis dinarasikan, tidak dirujuk.)
+
+        YANG DIBUKTIKAN predikat ini, dengan batasnya disebut: bahwa beban
+        pajak tidak boleh seluruhnya jadi milik berkas yang menulis daftar
+        ampunannya. Ia TIDAK membuktikan satu kelas pun DIPAKAI, dan tidak
+        pula membuktikan sebuah rujukan mengutip aturan yang diampuni. Lima
+        rujukan LUAR hari ini menunjuk `gaya.css:4551` sampai `gaya.css:4808`
+        -- sama sekali bukan `gaya.css:1255` atau `gaya.css:2746` -- karena
+        yang diukur "apa yang bergeser kalau gaya.css di atas situ disunting",
+        bukan "siapa mengutip aturan ini". Kalau halaman ini terbaca seperti
+        bukti pemakaian, itu salah membacanya.
+
+        Berkas yang menyumbang dikembalikan sebagai DAFTAR, bukan cuma
+        cacahnya: tanpa namanya, pembaca pesan kegagalan tidak bisa
+        membedakan "belum dibayar" dari "dibayar di satu tempat saja".
+        """
+        akar = cls._akar()
+        kena, penyumbang = 0, []
+        for satu in cls._jalur_pajak():
+            rel = os.path.relpath(satu, akar)
+            if rel.split(os.sep)[0] == "tests":
+                continue
+            cacah = cls._cacah_rujuk(satu, mulai)
+            if cacah:
+                kena += cacah
+                penyumbang.append(rel)
+        return kena, sorted(penyumbang)
+
+    def test_ampunan_dizinkan_dibayar_pajak(self):
+        """Ampunan wajib DIBAYAR: tiap nama DIZINKAN ber-pajak alamat nyata.
+
+        Ratchet di atas sudah bergigi; daftar kecualiannya belum. Menambahkan
+        satu yatim baru di ekor gaya.css sambil menambahkan namanya ke DIZINKAN
+        membuat SELURUH suite tetap hijau, dan satu koma adalah seluruh harga
+        yang dibayar. Yang membedakan `.petak-4` dan `.ubin-siap` dari
+        `.gulir-ungkap` dan `.memuat-garis` yang DIBUANG bukan selera melainkan
+        angka -- puluhan rujukan versus nol -- dan angka itu bisa dihitung
+        ulang di sini alih-alih dipercaya dari prosa.
+
+        Alamatnya DIHITUNG, tidak diketik. 1255 dan 2746 bergeser setiap kali
+        ada yang menyunting gaya.css di atasnya, dan hop yang menulis pagar ini
+        sudah menggeser yang pertama 37 -> 38 dengan penghapusan yang ia
+        lakukan sendiri -- angka yang diketik di tes akan berbohong lebih dulu.
+
+        DUA tagihan, bukan satu, dan yang kedua menutup lobang yang dibuka
+        tagihan pertama. `_pajak_alamat` menyapu `tests/` juga -- harus, sebab
+        `tests/` penulis alamat `gaya.css:NNNN` terbanyak di repo ini -- tapi
+        berkas INILAH yang menulis `DIZINKAN`. Jadi harganya bisa dibayar
+        dengan uang sendiri: satu aturan satu baris di ekor gaya.css (`gaya.css`
+        baris 5058 di salinan uji), satu koma di `DIZINKAN`, lima rujukan ke
+        baris itu di sebuah komentar di sini -- total 5, dari `tests/` 5, dari
+        LUAR 0 -- dan `Ran 4 / OK` tanpa satu pun berkas produk tersentuh. Itu
+        terukur, bukan dikhawatirkan. `_pajak_luar` karena itu menagih dari
+        MANA uangnya datang.
+
+        Yang dibayar produk hari ini, dan ini populasi penuhnya: empat rujukan
+        di `layar-kerja.js:1248`, `layar-kerja.js:1284`, `layar-kerja.js:1286`,
+        `layar-kerja.js:1340` plus satu di `layar-belajar.js:1646` -- lima
+        rujukan di dua berkas, dan angka itu sama untuk KEDUA ampunan, karena
+        kelimanya menunjuk alamat jauh di bawah 1255 maupun 2746. Dari situ
+        `AMBANG_LUAR = 2`: kelonggaran tiga rujukan, tanpa menahan keduanya di
+        tepi. Yang TIDAK dibuktikan di sini disebut dengan nama di docstring
+        `_pajak_luar` -- bukan pemakaian, dan bukan pengutipan aturannya.
+        """
+        for nama in self.DIZINKAN:
+            mulai = self._alamat_aturan(nama)
+            self.assertIsNotNone(
+                mulai,
+                "DIZINKAN menyebut `%s`, tapi tidak satu pun baris gaya.css "
+                "MEMBUKA dengan `.%s`. Tagihan di bawah tidak bisa dihitung "
+                "tanpa alamat, dan ampunan yang tidak bisa ditagih adalah "
+                "ampunan gratis" % (nama, nama))
+            pajak = self._pajak_alamat(mulai)
+            self.assertGreaterEqual(
+                pajak, self.AMBANG,
+                "`.%s` ada di gaya.css:%d dan pajak alamatnya cuma %d rujukan "
+                "`gaya.css:NNNN` (ambang %d). Pajak sekecil itu berarti "
+                "membuang aturannya MURAH: buang aturannya, jangan beli "
+                "ampunan dengan satu koma di DIZINKAN"
+                % (nama, mulai, pajak, self.AMBANG))
+
+            luar, penyumbang = self._pajak_luar(mulai)
+            self.assertGreaterEqual(
+                luar, self.AMBANG_LUAR,
+                "`.%s` ada di gaya.css:%d dengan pajak total %d rujukan "
+                "(ambang %d), tapi %d di antaranya ditulis `tests/` sendiri "
+                "dan cuma %d datang dari luar (ambang %d), tersebar di %s. "
+                "Ampunan yang pajaknya dibayar oleh berkas yang MENULIS "
+                "daftar ampunannya bukan harga -- lima rujukan di sebuah "
+                "komentar tes membeli yatim berikutnya tanpa menyentuh satu "
+                "pun berkas produk. Kalau alamatnya memang mahal, kemahalan "
+                "itu kelihatan di berkas yang ikut bergeser; kalau tidak "
+                "kelihatan di sana, buang aturannya"
+                % (nama, mulai, pajak, self.AMBANG, pajak - luar, luar,
+                   self.AMBANG_LUAR, ", ".join(penyumbang) or "NOL berkas"))
+
+
+class TestKontrakKelasPakai(unittest.TestCase):
+    """Nama kelas yang sisi web PASANG ke elemen wajib ada aturannya.
+
+    Ini arah BALIK dari `TestKontrakKelasHidup` di atas, dan dua arah itu
+    menangkap dua kelas bug yang tidak saling menutup. Yang di atas bertanya
+    "kelas yang ditulis `gaya.css` diproduksi siapa?" -- ia menangkap aturan
+    MATI. Yang di sini bertanya "nama yang dipasang ke sebuah elemen, ada
+    aturan `gaya.css`-nya?" -- ia menangkap kelas YATIM, dan biayanya bukan
+    tampilan yang rusak hari ini melainkan tebakan yang salah besok: sebuah
+    nama kelas terbaca pembaca berikutnya sebagai janji "ini digayai di suatu
+    tempat", jadi ia memindahkan elemennya dan mengira gayanya ikut pindah --
+    padahal yang menggayainya selama ini adalah selektor struktural induk yang
+    baru saja ia tinggalkan.
+
+    DEFINISI "DIPAKAI" -- enam bentuk, dan empat terakhir bukan kemewahan:
+
+    * (a) string literal pertama `h("TAG.a.b#c", ...)`, TERMASUK tiap penggal
+      yang disambung `+` ke argumen itu. Tanpa bentuk sambungan, `.bab-kini`
+      dan `.bab-terkunci` -- dua kelas yang menentukan tampilan SELURUH daftar
+      bab -- terbaca tidak pernah dipakai: panggilan yang mulai di
+      `layar-belajar.js:1122` menempelkan keduanya sebagai fragmen terpisah,
+      dan tidak satu pun punya literal utuh di mana pun.
+    * (b) `classList.add|remove|toggle|contains("a", ...)`.
+    * (c) `className = "..."` / `className: "..."`.
+    * (d) `class="a b"` di `webapp/statik/index.html`. Korpusnya memang lebih
+      sempit daripada kelas kakaknya -- pertanyaannya berbeda, dan `.py` tidak
+      memasang kelas ke elemen -- tapi index.html WAJIB ikut: ia kerangka
+      halaman yang dipasang sebelum satu baris JS berjalan, dan `.rel-panel`
+      (panel navigasi, satu-satunya jalan ke sebelas bahasa) tidak dipasang di
+      mana pun selain `index.html:56` dan `:72`. Bentuk ini TIDAK dikenakan ke
+      `*.js`, dan alasannya terukur: `pratinjau.js:434` menyusun `class="..."`
+      untuk dokumen yang DIBUATKAN bagi pelajar di dalam iframe sandbox --
+      markup itu tidak digayai `gaya.css` sama sekali, jadi memanennya
+      menuduh `.menu` milik contoh CSS pelajar sebagai kontrak aplikasi.
+    * (e) `classList.add(IDENT)` yang nilainya datang dari `const IDENT = "x"`
+      di berkas yang sama. Satu lapis tak-langsung, dan tanpa itu
+      `.pakai-jangkar` -- kerangka panel popover-anchor -- terbaca yatim
+      padahal `aplikasi.js:1170` menamainya `KELAS_JANGKAR` persis supaya nama
+      itu cuma ditulis sekali.
+    * (f) field opsi `kelas: "literal"` di sebuah pemanggilan fungsi, yang
+      baru menempel ke elemen satu lapis kemudian -- di PEMANGGILNYA, bukan
+      di situs literalnya: `r.kelas` disambung ke argumen `h()` di
+      `layar-lain.js:210`, `a.kelas` di `inti.js:428`, dan parameter `kelas`
+      di `inti.js:638` (`bilah`), `sorot.js:302` (`praKode`), serta
+      `ikon.js:112` yang memasangnya lewat `setAttribute`. Tanpa bentuk ini
+      `.ruas-kuis` dan `.ruas-latihan` -- dua warna yang membedakan ketiga
+      ruas bilah kemajuan per bahasa -- terbaca tidak pernah dipasang, dan
+      `ruas-materi` tidak pernah tertagih sama sekali.
+
+    EKSKLUSI, dan keduanya tertulis di komentar regexnya masing-masing:
+    `querySelector(All)(".x")` adalah PEMBACA (ia menuntut elemennya ADA,
+    bukan menuntut gaya), dan token berakhiran `-` adalah komposisi
+    (`bab-`, `bara-`, `keadaan-`, `sorak-`), bukan nama kelas.
+
+    "BERSELEKTOR" diukur sebagai token kelas UTUH di kepala selektor
+    `gaya.css`, komentarnya dibuang lebih dulu dengan `_telanjang` milik
+    `TestHamparanBara`. Konsekuensi yang disengaja: `.bab-saring-deret` di
+    `gaya.css:3107` TIDAK membuat `bab-saring` berselektor. Nama yang mirip
+    bukan nama yang sama, dan di berkas ini keluarga `bab-saring*` justru
+    contohnya -- dua anggotanya punya aturan, satu tidak.
+
+    BATAS PAGAR INI: ia membuktikan "tiap kelas yang dipasang punya aturan
+    atau alasan tertulis", BUKAN "gayanya benar". Ia tidak menyentuh nilai
+    deklarasi, urutan cascade, spesifisitas, maupun perilaku peramban.
+
+    ALAMAT DI DALAM ALASAN DIBUKA, bukan cuma dicocokkan bentuknya.
+    `test_alasan_izin_menunjuk_alamat` di bawah menagih BENIH alamat -- sebuah
+    string yang terbaca `berkas:baris` -- dan benih itu tidak bisa membedakan
+    `gaya.css:2896` dari tetangganya satu baris. Terukur: menggeser alamat
+    `bara-kosong` ke `gaya.css:2897` dan alamat `tanda-angka` ke
+    `aplikasi.js:549` membuat KEDUA alasan menunjuk baris yang tidak
+    membuktikan apa pun, dan seluruh suite tetap hijau. Karena itu
+    `test_alamat_izin_terbuka_dan_berbukti` membuka berkasnya dan menuntut
+    minimal SATU alamat yang barisnya membawa bukti sesuai jenis yang alasan
+    itu klaim: `strukturnya` -> baris sasaran adalah kepala aturan di sebuah
+    berkas `.css`, atau baris `gaya.css` yang menyebut nama entrinya;
+    `inline` -> baris sasaran memuat `gaya:` atau kata inline; `penanda` ->
+    baris sasaran menyebut nama entrinya.
+
+    Tiga batas yang dipilih SADAR, dan ketiganya terukur:
+
+    * Klausul kepala-aturan hanya berlaku untuk berkas `.css`. Tanpa batasan
+      itu `layar-lain.js:210` -- `h("div.ruas." + r.kelas, { title: ... })` --
+      lolos sebagai "kepala aturan", padahal kurung kurawal di sana literal
+      objek. Diadu dua arah: dengan batasan baris itu GAGAL, tanpa batasan ia
+      LOLOS, dan `gaya.css:3954` (`.ruas {`) lolos di kedua keadaan.
+    * MINIMAL satu alamat, bukan setiap alamat. `ruas-materi` menyebut
+      `layar-lain.js:210` justru untuk menerangkan dari mana simpulnya lahir,
+      dan baris itu memang bukan kepala aturan; yang membuktikan gayanya
+      adalah dua alamat CSS di sebelahnya. Menuntut SETIAP alamat berarti
+      memerahkan sebuah alasan yang jujur.
+    * Alamat yang ditulis sebagai ringkasan `:NNN` tanpa nama berkas TIDAK
+      ditagih. `ALAMAT` butuh minimal satu karakter `[\\w./-]` sebelum titik
+      dua, jadi `tanda-angka` (`aplikasi.js:550` lalu `:564`) dan
+      `ruas-materi` (`gaya.css:3960` lalu `:3961`) masing-masing cuma
+      menyumbang alamat bernama berkasnya: 2 dari 11 alasan memakai bentuk
+      itu, dan 2 alamat ringkasnya tidak pernah dibuka oleh pagar mana pun.
+      Menagihnya berarti menyimpulkan nama berkas dari alamat sebelumnya --
+      sebuah state parser di dalam sebaris prosa, dan satu langkah dari
+      positif-palsu yang justru dihindari di bawah.
+
+    Yang TIDAK dituntut: bahwa cuplikan prosa di sekitar sebuah alamat cocok
+    dengan isi barisnya. Adu-cuplikan sudah diukur di
+    `TestRujukanAntarBerkasTidakMenunjukRuangKosong` atas 35 lokasi beridiom
+    -- 26 cocok, 9 positif-palsu -- jadi di sini ia liabilitas, bukan pagar.
+    """
+
+    DIZINKAN = {
+        "bab-judul":
+            "strukturnya -- `h3` sudah digayai sebagai ELEMEN di `gaya.css:570`"
+            " dan kotaknya oleh `.bab-teks` di `gaya.css:3214`; aturan kelas"
+            " sendiri cuma akan menyalin ukuran judul tingkat tiga",
+        "bab-saring":
+            "strukturnya -- pilnya digayai `.tbl` + `.tbl-hantu`, deretnya"
+            " `.bab-saring-deret` di `gaya.css:3107`, hitungannya"
+            " `.bab-saring-jml`; kelas ini cuma sasaran `data-tingkat`",
+        "bara-kosong":
+            "strukturnya -- `gaya.css:2896` menulis sendiri bahwa pengisi ini"
+            " SENGAJA tidak punya aturan: item kisi mengambil ukurannya dari"
+            " track, jadi menuliskan 11px lagi jadi salinan ketiga",
+        "diff-kata":
+            "inline -- `layar-kerja.js:1887` menerangkan gayanya dipasang"
+            " lewat argumen `gaya:` justru supaya coretannya tidak bisa"
+            " ditimpa; nol aturan `text-decoration` di lembar gaya"
+            " menyentuhnya",
+        "keluaran-isi":
+            "strukturnya -- pembungkus tanpa gaya sendiri; kartunya digayai"
+            " `.keluaran-kartu` di `gaya.css:2045` dan isinya"
+            " `.keluaran-kartu .terminal` di `gaya.css:2062`",
+        "mulai-pilih":
+            "strukturnya -- `gaya.css:4337` memberi `.mulai > *` pengaman"
+            " `min-width: 0` dan `gaya.css:2617` mematok lebar anak-anak"
+            " `.mulai`; keduanya mengenainya tanpa menyebut namanya",
+        "pratinjau-lebar":
+            "inline -- `layar-kerja.js:1210` menerangkan jaraknya dipasang"
+            " lewat argumen `gaya:` karena baris itu tidak membawa satu pun"
+            " aturan gaya BARU: pilnya sudah `.tbl`, labelnya sudah `.mata`",
+        "rel-kaki":
+            "penanda -- `index.html:74` memasangnya di samping `.rel-menu`"
+            " yang membawa seluruh gayanya, dan JS mengenalinya lewat ID di"
+            " `aplikasi.js:436`; kelasnya cermin id-nya, bukan kontrak gaya",
+        "ruas-materi":
+            "strukturnya -- `layar-lain.js:210` menyusun simpulnya dengan"
+            " menyambung `div.ruas.` ke `r.kelas`, jadi tiap segmen selalu"
+            " memakai DUA kelas dan gayanya datang dari `.ruas` di"
+            " `gaya.css:3954`, yang memang memuat"
+            " `background: var(--nyala-lembut)`; ruas materi inilah yang"
+            " netral -- dua adiknya menimpa warnanya sendiri di"
+            " `gaya.css:3960` dan `:3961`, dan `ruas-materi` tidak termasuk",
+        "tanda-angka":
+            "penanda -- `aplikasi.js:550` dan `:564` membacanya dengan"
+            " `querySelector` untuk menaruh angka streak dan XP; gayanya"
+            " datang dari `.tanda` induknya",
+        "tbl-pintu":
+            "penanda -- `layar-belajar.js:1760` membacanya dengan"
+            " `querySelector` sebagai penjaga 'tombolnya sudah ada belum';"
+            " gayanya seluruhnya dari `.tbl` + `.tbl-utama`",
+    }
+
+    KIND = ("strukturnya", "inline", "penanda")
+    ALAMAT = r"[\w./-]+:\d+"
+    PANJANG_ALASAN = 40
+
+    KEPALA = r"(?m)^([^{}/@][^{}]*?)\{"
+    NAMA = r"\.(-?[A-Za-z_][\w-]*)"
+
+    # (a) argumen pertama h(), plus tiap penggal yang disambung `+` padanya.
+    H_PANGGIL = re.compile(r"\bh\(\s*(\"[^\"]*\"|'[^']*')((?:\s*\+\s*"
+                           r"(?:[^,()]|\([^()]*\))*?)*?)(?=\s*[,)])")
+    PENGGAL = re.compile(r"[\"']([^\"']*)[\"']")
+    # (b) Hanya add/remove/toggle/contains. `querySelector(All)` SENGAJA tidak
+    # ada di sini: ia PEMBACA, dan yang dituntutnya adalah elemennya ada --
+    # bukan bahwa namanya memanggil sebuah aturan gaya. Memasukkannya berarti
+    # setiap penanda yang memang cuma dibaca JS jadi tertuduh yatim.
+    CLASSLIST = re.compile(
+        r"classList\.(?:add|remove|toggle|contains)\(([^)]*)\)")
+    # (c) className literal.
+    CLASSNAME = re.compile(r"className\s*[:=]\s*[\"']([^\"']*)[\"']")
+    # (d) kerangka halaman; dikenakan HANYA ke index.html (lihat docstring).
+    ATRIBUT = re.compile(r"class=\"([^\"]*)\"")
+    # (e) satu lapis tak-langsung: `const KELAS_X = "x"` lalu classList.add(X).
+    TETAP = re.compile(r"\bconst\s+([A-Z][A-Z0-9_]*)\s*=\s*[\"']([^\"']*)[\"']")
+    LEWAT_IDENT = re.compile(
+        r"classList\.(?:add|remove|toggle|contains)\(\s*([A-Z][A-Z0-9_]*)")
+    # (f) field opsi `kelas: "literal"`; yang memasangnya ke elemen adalah
+    # PEMANGGILNYA, satu lapis kemudian (lihat docstring). Nilainya selalu
+    # daftar token dipisah spasi -- nol dari 16 kecocokan hari ini memuat `.`
+    # atau `#` -- jadi `split()` pemecah yang benar, sama seperti bentuk
+    # (b)/(c)/(d), dan BUKAN `_token()` yang memecah di titik.
+    OPSI_KELAS = re.compile(r"\bkelas\s*:\s*[\"']([^\"']*)[\"']")
+    # Bukti untuk jenis `inline`: argumen `gaya:` yang memasang gayanya, atau
+    # kata `inline` di komentar yang menerangkan kenapa ia dipasang begitu.
+    # Dua-duanya hidup di korpus hari ini -- `layar-kerja.js:1887` memakai
+    # bentuk kedua, `:1210` memakai keduanya sekaligus.
+    BUKTI_INLINE = re.compile(r"gaya\s*:|inline", re.I)
+
+    DIR_KORPUS = (("webapp/statik/js", ".js"),)
+    BERKAS_KORPUS = ("webapp/statik/index.html",)
+
+    _telanjang = staticmethod(TestHamparanBara._telanjang)
+
+    @classmethod
+    def _akar(cls):
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @classmethod
+    def _berselektor(cls):
+        """Nama kelas yang disebut kepala selektor gaya.css sebagai token utuh.
+
+        `NAMA` rakus sampai batas `[\\w-]`, jadi `.bab-saring-deret` memanen
+        `bab-saring-deret` dan BUKAN `bab-saring` -- itulah yang membuat
+        keanggotaan himpunan ini berarti "token kelas utuh".
+        """
+        jalur = os.path.join(cls._akar(), "webapp", "statik", "gaya.css")
+        with open(jalur, encoding="utf-8") as f:
+            css = cls._telanjang(f.read())
+        kelas = set()
+        for prelude in re.findall(cls.KEPALA, css):
+            kelas.update(re.findall(cls.NAMA, prelude))
+        return kelas
+
+    @classmethod
+    def _berkas_korpus(cls):
+        """Berkas yang MEMASANG kelas ke elemen, beserta nama pendeknya."""
+        akar = cls._akar()
+        daftar = []
+        for rel, akhiran in cls.DIR_KORPUS:
+            ruang = os.path.join(akar, *rel.split("/"))
+            daftar.extend((n, os.path.join(ruang, n))
+                          for n in sorted(os.listdir(ruang))
+                          if n.endswith(akhiran))
+        for rel in cls.BERKAS_KORPUS:
+            jalur = os.path.join(akar, *rel.split("/"))
+            daftar.append((os.path.basename(jalur), jalur))
+        return daftar
+
+    @staticmethod
+    def _token(frag):
+        """Nama kelas di sebuah fragmen selektor: titik ke kanan, `#...` lepas.
+
+        Token berakhiran `-` dibuang di `_dipakai`, bukan di sini: `"bara-"`
+        adalah AWALAN komposisi (`".bara-" + tingkat`), dan nama yang belum
+        lengkap tidak bisa dituntut punya aturan.
+        """
+        return [t for t in frag.split("#")[0].split(".")[1:] if t]
+
+    @classmethod
+    def _dipakai(cls):
+        """{nama kelas: [alamat pemakai, ...]} menurut enam bentuk DIPAKAI."""
+        peta = {}
+        for nama_berkas, jalur in cls._berkas_korpus():
+            with open(jalur, encoding="utf-8") as f:
+                teks = f.read()
+
+            def catat(nama, pos, nb=nama_berkas, tk=teks):
+                if not nama or nama.endswith("-"):
+                    return
+                alamat = "%s:%d" % (nb, tk.count("\n", 0, pos) + 1)
+                peta.setdefault(nama, [])
+                if alamat not in peta[nama]:
+                    peta[nama].append(alamat)
+
+            for m in cls.H_PANGGIL.finditer(teks):
+                frags = [m.group(1)[1:-1]]
+                frags.extend(cls.PENGGAL.findall(m.group(2) or ""))
+                for frag in frags:
+                    for t in cls._token(frag):
+                        catat(t, m.start())
+            for m in cls.CLASSLIST.finditer(teks):
+                for s in cls.PENGGAL.findall(m.group(1)):
+                    for t in s.split():
+                        catat(t, m.start())
+            for m in cls.CLASSNAME.finditer(teks):
+                for t in m.group(1).split():
+                    catat(t, m.start())
+            if nama_berkas == "index.html":
+                for m in cls.ATRIBUT.finditer(teks):
+                    for t in m.group(1).split():
+                        catat(t, m.start())
+            tetap = dict(cls.TETAP.findall(teks))
+            for m in cls.LEWAT_IDENT.finditer(teks):
+                for t in tetap.get(m.group(1), "").split():
+                    catat(t, m.start())
+            for m in cls.OPSI_KELAS.finditer(teks):
+                for t in m.group(1).split():
+                    catat(t, m.start())
+        return peta
+
+    @classmethod
+    def _bertopeng(cls, src):
+        """`src` dengan ISI komentar `/* */` diganti spasi, nomor baris UTUH.
+
+        `_telanjang` membuang komentarnya sama sekali, jadi baris ke-N
+        sesudahnya bukan lagi baris ke-N di berkasnya -- dan seluruh gunanya
+        peta kepala aturan adalah menjawab "baris 3954 itu kepala aturan atau
+        bukan". Panjang penggantinya sengaja sama persis (`/*` jadi dua spasi)
+        supaya offset karakternya pun tidak bergeser.
+
+        Yang ditopengi bukan kosmetik: komentar `gaya.css:2896` memuat `{`
+        dan `;` di dalam prosanya, dan tanpa topeng ini sebuah baris komentar
+        bisa terbaca sebagai prelude yang menjangkau aturan berikutnya.
+        """
+        keluar = []
+        i, n, dalam = 0, len(src), False
+        while i < n:
+            if not dalam and src.startswith("/*", i):
+                dalam, i = True, i + 2
+                keluar.append("  ")
+                continue
+            if dalam and src.startswith("*/", i):
+                dalam, i = False, i + 2
+                keluar.append("  ")
+                continue
+            c = src[i]
+            keluar.append(c if (not dalam or c == "\n") else " ")
+            i += 1
+        return "".join(keluar)
+
+    @classmethod
+    def _baris_kepala(cls, jalur):
+        """{nomor baris} tempat `{` sebuah kepala aturan berdiri di `jalur`.
+
+        Yang dicatat baris `{`-nya, bukan seluruh rentang prelude-nya: yang
+        ditanya predikat `strukturnya` adalah "baris sasaran ADALAH kepala
+        aturan", dan itu harus bisa dijawab TIDAK untuk sebuah baris
+        deklarasi di dalam aturan. Prelude ber-`;` dibuang karena selektor
+        tidak pernah memuat titik koma -- tanpa saringan itu `  flex: 0 0
+        auto;` terbaca sebagai prelude yang menjangkau `{` berikutnya.
+
+        Batas yang disengaja: selektor yang preludenya menumpuk beberapa
+        baris cuma dikenali di baris `{`-nya. Nol dari 17 alamat `DIZINKAN`
+        hari ini berbentuk begitu, dan alamat yang menunjuk baris pertama
+        sebuah selektor bertumpuk memang lebih baik ditulis ke baris `{`-nya.
+        """
+        with open(jalur, encoding="utf-8") as f:
+            teks = cls._bertopeng(f.read())
+        nomor = set()
+        for m in re.finditer(cls.KEPALA, teks):
+            if ";" in m.group(1):
+                continue
+            nomor.add(teks.count("\n", 0, m.end() - 1) + 1)
+        return nomor
+
+    @classmethod
+    def _buka_alamat(cls, alamat):
+        """`berkas:baris` -> (nama berkas, nomor, jalur, isi baris).
+
+        `jalur` None berarti berkasnya tidak ketemu; `isi baris` None berarti
+        nomornya di luar rentang. Daftar pencariannya DIPINJAM dari
+        `TestRujukanAntarBerkasTidakMenunjukRuangKosong.CARI`: pertanyaan
+        "berkas bernama `aplikasi.js` itu yang mana" sudah dijawab sekali di
+        modul ini, dan jawaban kedua akan melenceng sendiri.
+        """
+        berkas, _, no = alamat.rpartition(":")
+        no = int(no)
+        for pre in TestRujukanAntarBerkasTidakMenunjukRuangKosong.CARI:
+            bagian = pre.split("/") if pre else []
+            jalur = os.path.join(cls._akar(), *(bagian + [berkas]))
+            if not os.path.isfile(jalur):
+                continue
+            with open(jalur, encoding="utf-8") as f:
+                isi = f.read().split("\n")
+            if 1 <= no <= len(isi):
+                return berkas, no, jalur, isi[no - 1]
+            return berkas, no, jalur, None
+        return berkas, no, None, None
+
+    @classmethod
+    def _bukti_alamat(cls, nama, alamat, jenis):
+        """None kalau alamat ini MEMBUKTIKAN `jenis`; kalimat sebabnya kalau tidak.
+
+        Mengembalikan KALIMAT, bukan boolean, karena pesan kegagalannya harus
+        bisa menyebut apa yang baris sasaran tidak tunjukkan -- "alamatnya
+        salah" tanpa isi barisnya menyuruh pembacanya mengulang pengukuran
+        yang sudah dilakukan di sini.
+        """
+        berkas, no, jalur, baris = cls._buka_alamat(alamat)
+        if jalur is None:
+            return "berkasnya tidak ada di jalur pencarian mana pun"
+        if baris is None:
+            return "baris %d di luar rentang berkasnya" % no
+        if not baris.strip():
+            return "barisnya kosong"
+        petik = baris.strip()[:70]
+        if jenis == "strukturnya":
+            if berkas.endswith(".css") and no in cls._baris_kepala(jalur):
+                return None
+            if berkas == "gaya.css" and nama in baris:
+                return None
+            return ("bukan kepala aturan di sebuah berkas .css, dan tidak "
+                    "menyebut `%s`: %r" % (nama, petik))
+        if jenis == "inline":
+            if cls.BUKTI_INLINE.search(baris):
+                return None
+            return "tidak memuat `gaya:` maupun kata inline: %r" % petik
+        if jenis == "penanda":
+            # `#x` dan `.x` dua-duanya memuat `x`, jadi bentuk telanjangnya
+            # yang paling luas dari tiga bentuk penanda -- dan satu-satunya
+            # yang perlu diperiksa.
+            if nama in baris:
+                return None
+            return "tidak menyebut `%s`: %r" % (nama, petik)
+        return ("jenis `%s` belum punya predikat di sini; menambah kata ke "
+                "KIND berarti menambah predikatnya juga" % jenis)
+
+    def test_pengurai_menemukan_bukti_tertentu(self):
+        """Kontrol positif: pengurai yang diam-diam kosong membuat semua hijau.
+
+        Tiga metode di bawah semuanya bergerak ke arah hijau begitu
+        `_dipakai()` berhenti mencocokkan apa pun -- himpunan kosong tidak
+        punya nama yatim, dan daftar izinnya langsung terbaca fosil. Jadi
+        bentuk-bentuk yang paling mudah hilang saat regexnya disunting
+        ditagih DI SINI dengan nama: dua lewat sambungan `+`, satu lewat
+        `index.html`, satu lewat konstanta, satu lewat field opsi `kelas:`.
+        """
+        pakai = self._dipakai()
+        self.assertGreater(
+            len(pakai), 200,
+            "cuma %d nama kelas terpanen dari korpus yang memasangnya. "
+            "Penguraiannya rusak, dan tiga metode di bawah akan hijau karena "
+            "tidak membaca apa-apa" % len(pakai))
+
+        for nama, bentuk in (("rel-panel", "class= di index.html"),
+                             ("pakai-jangkar", "const + classList.add"),
+                             ("bab-kini", "argumen h() disambung `+`"),
+                             ("bab-terkunci", "argumen h() disambung `+`"),
+                             ("ruas-kuis",
+                              "field opsi `kelas:` di sebuah pemanggilan "
+                              "fungsi -- bukan argumen h(), bukan "
+                              "classList")):
+            self.assertIn(
+                nama, pakai,
+                "`%s` tidak terbaca DIPAKAI, padahal ia memang dipasang lewat "
+                "%s. Bentuk itu barusan berhenti dibaca, dan yang hilang "
+                "bersamanya bukan satu nama melainkan seluruh kelas nama yang "
+                "cuma lahir dari bentuk tersebut" % (nama, bentuk))
+
+    def test_nama_dipakai_berselektor_atau_dizinkan(self):
+        """Ratchet: satu kelas yatim baru di sisi web berarti merah."""
+        pakai = self._dipakai()
+        selektor = self._berselektor()
+        yatim = sorted(n for n in pakai
+                       if n not in selektor and n not in self.DIZINKAN)
+        self.assertEqual(
+            yatim, [],
+            "nama kelas ini dipasang ke elemen tapi tidak satu pun kepala "
+            "selektor gaya.css menyebutnya sebagai token utuh: %s. Kalau "
+            "gayanya memang datang dari selektor struktural, dari argumen "
+            "`gaya:`, atau namanya cuma penanda yang dibaca JS, tambahkan ke "
+            "DIZINKAN BERSAMA alasan beralamatnya -- daftar izin yang diisi "
+            "tanpa alasan adalah cara tercepat membuat pagar ini jadi hiasan"
+            % ", ".join("%s (%s)" % (n, pakai[n][0]) for n in yatim))
+
+    def test_daftar_izin_masih_berlubang(self):
+        """Anti-fosil dua sisi: tiap izin wajib masih DIPAKAI dan masih yatim."""
+        pakai = self._dipakai()
+        selektor = self._berselektor()
+
+        hilang = sorted(n for n in self.DIZINKAN if n not in pakai)
+        self.assertEqual(
+            hilang, [],
+            "DIZINKAN masih menyebut %s, padahal nama itu sudah tidak dipasang "
+            "di mana pun. Kecualian untuk kelas yang sudah hilang tidak "
+            "menjaga apa pun -- ia cuma menyembunyikan kelas yatim berikutnya "
+            "yang kebetulan bernama sama" % ", ".join(hilang))
+
+        digayai = sorted(n for n in self.DIZINKAN if n in selektor)
+        self.assertEqual(
+            digayai, [],
+            "DIZINKAN mengecualikan nama yang SEKARANG punya aturannya "
+            "sendiri di gaya.css: %s. Begitu sebuah kelas dapat selektornya, "
+            "pengecualiannya wajib dicabut, bukan dibiarkan -- izin yang "
+            "menutupi nama yang tidak lagi butuh izin berhenti menjaga apa "
+            "pun, dan alasan yang tertulis di sebelahnya mulai berbohong"
+            % ", ".join(digayai))
+
+    def test_alasan_izin_menunjuk_alamat(self):
+        """Bentuk alasan: daftar izin tidak bisa dibeli dengan tiga nama.
+
+        `("a", "b", "c")` adalah daftar izin yang gratis -- ia menyebut APA
+        yang dikecualikan tanpa pernah menyebut MENGAPA, jadi pembaca
+        berikutnya tidak punya cara memeriksa apakah alasannya masih berlaku.
+        Yang dituntut di sini cuma bentuknya: satu alamat yang bisa dibuka,
+        dan satu kata yang menamai jenis jawabannya.
+        """
+        self.assertIsInstance(
+            self.DIZINKAN, dict,
+            "DIZINKAN wajib dict nama -> alasan. Tuple telanjang menyebut apa "
+            "yang dikecualikan tanpa pernah menyebut mengapa")
+        for nama in sorted(self.DIZINKAN):
+            alasan = self.DIZINKAN[nama]
+            self.assertIsInstance(
+                alasan, str, "alasan `%s` bukan string" % nama)
+            self.assertGreaterEqual(
+                len(alasan), self.PANJANG_ALASAN,
+                "alasan untuk `%s` cuma %d karakter. Alasan yang tidak sempat "
+                "menyebut dari mana gaya elemen itu datang tidak bisa "
+                "diperiksa ulang oleh siapa pun -- termasuk oleh penulisnya "
+                "sendiri enam bulan lagi" % (nama, len(alasan)))
+            self.assertRegex(
+                alasan, self.ALAMAT,
+                "alasan untuk `%s` tidak memuat satu pun alamat "
+                "`berkas:baris`. Klaim 'gayanya dari induknya' yang tidak "
+                "menunjuk selektornya adalah klaim yang tidak bisa diadu "
+                "dengan pohon" % nama)
+            self.assertTrue(
+                any(k in alasan for k in self.KIND),
+                "alasan untuk `%s` tidak menyebut satu pun dari %s. Tiga kata "
+                "itu adalah tiga jawaban yang SAH atas 'kalau tidak ada "
+                "aturannya, dari mana gayanya?'; alasan yang bukan salah satu "
+                "dari ketiganya adalah kelas yatim yang sedang dinarasikan"
+                % (nama, ", ".join(self.KIND)))
+
+    def test_alamat_izin_terbuka_dan_berbukti(self):
+        """Alamat izin wajib BISA DIBUKA dan barisnya membawa bukti jenisnya.
+
+        Metode di atas menagih BENTUK alamatnya; di sini berkasnya dibuka.
+        Keduanya perlu, dan yang kedua bukan kemewahan: regex benih tidak
+        bisa membedakan `gaya.css:2896` dari `gaya.css:2897`, jadi sebuah
+        izin bisa berhenti membuktikan apa pun -- digeser satu baris saat
+        lembar gayanya disunting -- tanpa satu pun tes berubah warna.
+
+        Yang dituntut MINIMAL satu alamat per entri, dan predikatnya berbeda
+        per jenis; alasan ketiga pilihan itu beserta angkanya ada di
+        docstring kelas, bukan di sini.
+        """
+        for nama in sorted(self.DIZINKAN):
+            alasan = self.DIZINKAN[nama]
+            diklaim = [k for k in self.KIND if k in alasan]
+            lulus, gagal = None, []
+            for a in re.findall(self.ALAMAT, alasan):
+                for k in diklaim:
+                    sebab = self._bukti_alamat(nama, a, k)
+                    if sebab is None:
+                        lulus = (a, k)
+                        break
+                    gagal.append("`%s` sebagai %s -- %s" % (a, k, sebab))
+                if lulus:
+                    break
+            self.assertIsNotNone(
+                lulus,
+                "tidak satu pun alamat di alasan `%s` membawa bukti untuk "
+                "jenis yang alasan itu klaim (%s). Yang dicoba: %s. Alamat "
+                "yang menunjuk baris tetangganya -- atau baris yang tidak "
+                "ada lagi -- terbaca persis seperti alamat yang benar, dan "
+                "pembaca berikutnya tidak punya cara tahu izin ini sudah "
+                "basi" % (nama, ", ".join(diklaim) or "NOL jenis",
+                          "; ".join(gagal) or "NOL alamat"))
+
+
+class TestTokenTemaTidakDimatikanBlokAkar(unittest.TestCase):
+    """Sebuah deklarasi tema boleh kalah, tapi tidak boleh kalah DIAM-DIAM.
+
+    `[data-tema="X"]`, `:root` dan `html[data-tema="X"]` semuanya bisa
+    menunjuk elemen yang sama (`<html>`), spesifisitasnya 0,1,0 / 0,1,0 /
+    0,1,1 -- jadi sebuah token yang ditulis di blok tema bisa diisi ulang
+    oleh blok akar yang kebetulan datang lebih belakang di berkas, dan yang
+    terjadi bukan error melainkan tema yang diam-diam kehilangan satu
+    keputusannya. Aturannya sudah dituliskan `gaya.css` sendiri di :2940-:2943
+    dan di docstring :2039-:2046 kelas ini; yang belum ada adalah yang
+    MENGHITUNG.
+
+    Premisnya satu dan penting: `<html>` memegang SATU `data-tema`, jadi dua
+    blok tema BERBEDA tidak pernah bertanding. `[data-tema="malam"]` tidak
+    "dimatikan" oleh `[data-tema="terang"]`. Melonggarkan premis itu
+    menghasilkan 67 tuduhan palsu di berkas ini -- 48 pasangan tema/token
+    unik -- dan `test_premis_dua_tema_berbeda_*` adalah yang menjaganya.
+
+    Yang diukur hari ini: SEMBILAN aturan yang menunjuk `<html>` sendiri,
+    DELAPAN PULUH SATU deklarasi token tema di dalam tiga blok tema, SATU
+    yang mati, dan SATU entri ampunan untuk kematian itu.
+    """
+
+    # Kematian yang memang disengaja, dipetakan (tema, token) -> koordinat
+    # KEDUA sisinya plus alasan yang menunjuk tempat keputusannya ditulis.
+    # Tiap entri dibayar dengan bukti terbuka: baris yang ia sebut wajib
+    # memuat nama token itu DAN nilai yang ia klaim. Sebuah ampunan yang
+    # tidak lagi cocok kenyataan harus MERAH -- itu artinya kematiannya sudah
+    # hilang, dan daftar yang masih menyimpannya sedang berbohong.
+    AMPUNAN = {
+        ("kontras", "--tebal-garis"): (
+            335, "2px", 421, "1px",
+            "disengaja dan sudah terdokumentasi di gaya.css:2941, yang "
+            "menamai kedua koordinatnya; tests/test_web.py:2042 -- baris "
+            "docstring yang menamai token itu beserta KEDUA nilainya -- "
+            "mengunci cincin bara di kedua nilai border, jadi token ini "
+            "boleh dihidupkan kapan saja tanpa menjatuhkan pagar mana pun",
+        ),
+    }
+
+    # Identitas sebuah KEMATIAN dan sebuah AMPUNAN: enam medan yang sama,
+    # dan ini satu-satunya tempat yang memetakannya. Kolom kiri indeks ke
+    # tuple `_mati` `(tema, nama, nilai, bdekl, p2, v2, bd2)`, kolom kanan
+    # indeks ke ampunan yang sudah didatarkan `(tema, nama, b1, v1, b2, v2)`.
+    # Pasangan PERTAMA (baris, nilai) deklarasi yang MATI, pasangan KEDUA
+    # aturan yang MENANG; `p2` sengaja tidak ikut -- pemilih pembunuhnya
+    # keterangan untuk pembaca, bukan koordinat.
+    #
+    # Dua sisi yang dipetakan di dua tempat akan melenceng satu per satu
+    # tanpa satu tes pun gagal, dan arah yang melenceng tidak terbaca dari
+    # mana pun. Itu sebabnya ini tabel, bukan dua ekspresi yang kebetulan
+    # sama: memangkasnya jadi dua medan pertama melonggarkan KEDUA sisi
+    # sekaligus, dan yang memerah
+    # `test_ampunan_satu_kunci_tidak_menutup_kematian_kedua`.
+    JATIDIRI = ((0, 0), (1, 1), (3, 2), (2, 3), (6, 4), (5, 5))
+
+    # Pemilih yang WAJIB terbaca sebagai penunjuk <html> hari ini, beserta
+    # spesifisitas yang dihitung sendiri. Yang TIDAK ikut dan harus tetap
+    # tidak ikut: `[data-tema="terang"] #latar` (:665, kombinator -> menunjuk
+    # keturunan) dan `html.lingkar-tema::view-transition-*(root)` (:4964,
+    # pseudo-element -> propertinya tidak mendarat di elemennya).
+    POPULASI = {
+        131: (":root", (0, 1, 0)),
+        206: ('[data-tema="malam"]', (0, 1, 0)),
+        264: ('[data-tema="terang"]', (0, 1, 0)),
+        311: ('[data-tema="kontras"]', (0, 1, 0)),
+        344: (":root", (0, 1, 0)),
+        530: ("html", (0, 0, 1)),
+        1034: ("html:has(#panggung.berkonteks)", (1, 1, 1)),
+        4259: ("html.alih-tema", (0, 1, 1)),
+        4808: ('html[data-gerak="mati"]', (0, 1, 1)),
+    }
+
+    KOMBINATOR = re.compile(r"[ \t\n>+~]")
+    AKARNYA = re.compile(r":root|(?<![-\w])html(?![-\w])|\[data-tema")
+    NAMA_TEMA = re.compile(r'\[data-tema=[\'"]?([\w-]+)')
+    DEKLARASI = re.compile(r"\s*(--[\w-]+)\s*:\s*(.*)", re.S)
+    ARGUMEN = re.compile(r"\([^()]*\)")
+    # Dua grup: JENIS berkasnya, lalu nomor barisnya. Jenis yang TIDAK dikenal
+    # ikut tertangkap dengan sengaja -- syarat `f` di `_saksi` ada untuk
+    # menolaknya, dan pola yang cuma cocok pada jenis terdaftar tidak akan
+    # pernah memberinya sesuatu untuk ditolak: alamat berjenis asing akan
+    # lolos karena tidak pernah terlihat, bukan karena sudah diperiksa.
+    SAKSI = re.compile(r"((?:[\w.-]+/)*[\w.-]+\.[a-z]{2,4}):(\d+)")
+
+    @staticmethod
+    def _berkas(*bagian):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    @staticmethod
+    def _bersihkan(teks):
+        """Komentar jadi spasi TAPI barisnya disimpan.
+
+        `" " * len(m.group(0))` juga mengganti `\\n` di dalam komentar
+        multi-baris, sehingga `count("\\n", 0, pos)` memberi nomor baris yang
+        BOHONG -- alat yang pernah melakukannya melaporkan token mati di
+        :166/:216 sementara `grep -n` berkata :335/:421. Pagarnya
+        `test_blanking_komentar_menyimpan_baris`.
+        """
+        return re.sub(r"/\*.*?\*/",
+                      lambda m: "\n".join(" " * len(b)
+                                          for b in m.group(0).split("\n")),
+                      teks, flags=re.S)
+
+    @staticmethod
+    def _blok(teks):
+        """(prelude, awal_isi, akhir_isi, deklarasi) untuk SETIAP blok.
+
+        Penutupnya dicari dengan menghitung kedalaman kurung kurawal, bukan
+        dengan `[^}]*`: `html:has(#panggung.berkonteks)` (:1034) berkurung di
+        dalam `@supports selector(:has(*))` (:1033), dan regex naive berhenti
+        di `}` dalam lalu menghasilkan pembacaan yang salah tanpa pesan apa
+        pun. `batas` yang ikut bergerak di `;` juga menugaskan tiap deklarasi
+        ke blok TERDALAM yang sedang terbuka, jadi isi blok anak tidak pernah
+        terhitung sebagai milik induknya.
+        """
+        hasil, tumpukan, batas = [], [], 0
+        for i, c in enumerate(teks):
+            if c == "{":
+                tumpukan.append([teks[batas:i], i + 1, []])
+                batas = i + 1
+            elif c == "}":
+                if tumpukan:
+                    prelude, awal, dekl = tumpukan.pop()
+                    if teks[batas:i].strip():
+                        dekl.append((batas, teks[batas:i]))
+                    hasil.append((prelude, awal, i, dekl))
+                batas = i + 1
+            elif c == ";":
+                if tumpukan and teks[batas:i].strip():
+                    tumpukan[-1][2].append((batas, teks[batas:i]))
+                batas = i + 1
+        return hasil
+
+    @staticmethod
+    def _akhir_nama(s, i):
+        while i < len(s) and (s[i].isalnum() or s[i] in "-_"):
+            i += 1
+        return i
+
+    @staticmethod
+    def _tutup(s, i):
+        dalam = 0
+        for j in range(i, len(s)):
+            if s[j] == "(":
+                dalam += 1
+            elif s[j] == ")":
+                dalam -= 1
+                if dalam == 0:
+                    return j
+        return len(s) - 1
+
+    @staticmethod
+    def _pisah(s):
+        """Pecah daftar pemilih pada koma di LUAR kurung."""
+        bagian, dalam, mulai = [], 0, 0
+        for i, c in enumerate(s):
+            if c in "([":
+                dalam += 1
+            elif c in ")]":
+                dalam -= 1
+            elif c == "," and dalam == 0:
+                bagian.append(s[mulai:i])
+                mulai = i + 1
+        bagian.append(s[mulai:])
+        return [b.strip() for b in bagian if b.strip()]
+
+    @classmethod
+    def _gundul(cls, pemilih):
+        """Buang argumen fungsional supaya kombinator di dalamnya tak terbaca."""
+        sebelum = None
+        while sebelum != pemilih:
+            sebelum = pemilih
+            pemilih = cls.ARGUMEN.sub("", pemilih)
+        return pemilih
+
+    @classmethod
+    def _spesifikasi(cls, pemilih):
+        """(id, kelas, tipe). `:is()`/`:has()`/`:not()` memakai argumennya
+        yang paling spesifik, `:where()` nol -- memperlakukan keduanya sebagai
+        pseudo-class biasa akan MEREMEHKAN `html:has(#panggung.berkonteks)`,
+        dan spesifisitas yang diremehkan membuat aturan itu tampak seri dengan
+        blok tema, alias tuduhan palsu.
+        """
+        ident, kelas, tipe = 0, 0, 0
+        i, n = 0, len(pemilih)
+        while i < n:
+            c = pemilih[i]
+            if c == "#":
+                ident += 1
+                i = cls._akhir_nama(pemilih, i + 1)
+            elif c == ".":
+                kelas += 1
+                i = cls._akhir_nama(pemilih, i + 1)
+            elif c == "[":
+                kelas += 1
+                tutup = pemilih.find("]", i)
+                i = n if tutup < 0 else tutup + 1
+            elif c == ":":
+                if pemilih.startswith("::", i):
+                    tipe += 1
+                    i = cls._akhir_nama(pemilih, i + 2)
+                    continue
+                j = cls._akhir_nama(pemilih, i + 1)
+                fungsi = pemilih[i + 1:j]
+                if j < n and pemilih[j] == "(":
+                    k = cls._tutup(pemilih, j)
+                    if fungsi in ("is", "has", "not"):
+                        terbaik = max(
+                            (cls._spesifikasi(a)
+                             for a in cls._pisah(pemilih[j + 1:k])),
+                            default=(0, 0, 0))
+                        ident += terbaik[0]
+                        kelas += terbaik[1]
+                        tipe += terbaik[2]
+                    elif fungsi != "where":
+                        kelas += 1
+                    i = k + 1
+                else:
+                    kelas += 1
+                    i = j
+            elif c.isalpha() or c == "_":
+                tipe += 1
+                i = cls._akhir_nama(pemilih, i)
+            else:
+                i += 1
+        return (ident, kelas, tipe)
+
+    @classmethod
+    def _tema(cls, pemilih):
+        """Nama tema yang pemilih ini syaratkan, atau None kalau blok akar."""
+        m = cls.NAMA_TEMA.search(pemilih)
+        return m.group(1) if m else None
+
+    @classmethod
+    def _aturan(cls, teks):
+        """Aturan yang menunjuk `<html>` SENDIRI, dari TEKS yang diberikan.
+
+        Teksnya argumen, bukan berkas yang dibaca di dalam -- tanpa itu pagar
+        ini cuma mengadili satu berkas dan tidak bisa dibuktikan menggigit
+        lewat masukan sintetis. Kombinator dan `::pseudo-element` keluar: yang
+        pertama menunjuk keturunan, yang kedua menyetel properti pada pseudo
+        dan bukan pada elemennya.
+        """
+        bersih = cls._bersihkan(teks)
+        keluar = []
+        for prelude, awal, _akhir, dekl in cls._blok(bersih):
+            for pemilih in cls._pisah(prelude):
+                gundul = cls._gundul(pemilih)
+                if pemilih.startswith("@") or "::" in pemilih:
+                    continue
+                if cls.KOMBINATOR.search(gundul):
+                    continue
+                if not cls.AKARNYA.search(pemilih):
+                    continue
+                token = []
+                for pos, potong in dekl:
+                    m = cls.DEKLARASI.match(potong)
+                    if m:
+                        mulai = pos + potong.index("--")
+                        token.append((m.group(1), m.group(2).strip(),
+                                      bersih.count("\n", 0, mulai) + 1))
+                keluar.append((pemilih, bersih.count("\n", 0, awal) + 1,
+                               cls._spesifikasi(pemilih), token))
+                break
+        keluar.sort(key=lambda e: e[1])
+        return keluar
+
+    @classmethod
+    def _mati(cls, daftar):
+        """(tema, token, nilai, baris, pemilih_pembunuh, nilai2, baris2).
+
+        Korbannya selalu deklarasi di blok BERTEMA; pembunuhnya aturan mana
+        pun yang masih menunjuk `<html>` saat tema itu aktif, yaitu blok akar
+        (tema None) atau tema yang SAMA.
+        """
+        hasil = []
+        for pemilih, baris, spes, token in daftar:
+            tema = cls._tema(pemilih)
+            if tema is None:
+                continue
+            for nama, nilai, bdekl in token:
+                for p2, b2, s2, tok2 in daftar:
+                    if b2 == baris:
+                        continue
+                    if cls._tema(p2) not in (None, tema):
+                        continue
+                    for n2, v2, bd2 in tok2:
+                        if n2 != nama:
+                            continue
+                        if s2 > spes or (s2 == spes and bd2 > bdekl):
+                            hasil.append((tema, nama, nilai, bdekl,
+                                          p2, v2, bd2))
+        return hasil
+
+    @classmethod
+    def _gaya(cls):
+        return cls._berkas("webapp", "statik", "gaya.css")
+
+    def _kematian_liar(self, kematian, ampunan_items):
+        """Kematian yang tidak tertutup satu pun catatan ampunan.
+
+        Yang diadukan identitas POSISIONAL `JATIDIRI` dan bukan kuncinya
+        karena `AMPUNAN` cuma punya satu slot per `(tema, token)` sementara
+        `_mati` mengeluarkan satu tuple per KEMATIAN, jadi keanggotaan kunci
+        menutup berapa pun kematian sekunci sekaligus -- termasuk yang belum
+        pernah dibaca siapa pun.
+
+        `ampunan_items` berbentuk `(kunci, nilai)` persis seperti
+        `AMPUNAN.items()`: kunci `(tema, nama)`, nilai empat medan
+        `(baris1, nilai1, baris2, nilai2)`. Metode ini TIDAK membaca
+        `self.AMPUNAN` -- justru itu yang membuatnya bisa dipakai fikstur
+        dengan ampunan sintetis, dan dengan itu satu keputusan melayani
+        kedua sisi alih-alih dua salinan yang bisa melenceng sendiri-sendiri.
+
+        Mengurut pada KUNCI saja, bukan pada seluruh pasangan: fikstur
+        memberi dua pasangan berkunci sama, dan mengadu nilai empat-medannya
+        demi bisa mengurut cuma mengaburkan pesannya saat ia gagal. Hasilnya
+        tetap deterministik karena `datar` berakhir di dalam sebuah himpunan.
+        """
+        datar = [(t, n) + nilai[:4]
+                 for (t, n), nilai in sorted(ampunan_items,
+                                             key=lambda p: p[0])]
+        sah = {tuple(a[j] for _i, j in self.JATIDIRI) for a in datar}
+        return [d for d in kematian
+                if tuple(d[i] for i, _j in self.JATIDIRI) not in sah], datar
+
+    @staticmethod
+    def _blok_komentar(teks):
+        """(baris_awal, baris_akhir, isi) untuk SETIAP blok `/* ... */`.
+
+        Nomor barisnya dihitung atas teks MENTAH, bukan atas hasil
+        `_bersihkan`: yang terakhir sudah menukar isi komentar dengan spasi,
+        jadi isinya tidak bisa dibaca lagi dari sana. Keduanya tetap sebaris
+        karena `_bersihkan` menyimpan setiap `\\n`-nya.
+        """
+        hasil = []
+        for m in re.finditer(r"/\*.*?\*/", teks, re.S):
+            awal = teks.count("\n", 0, m.start()) + 1
+            hasil.append((awal, awal + m.group(0).count("\n"), m.group(0)))
+        return hasil
+
+    @staticmethod
+    def _blok_docstring(teks):
+        """(baris_awal, baris_akhir, isi) untuk SETIAP blok tiga-petik-ganda.
+
+        Kembaran `_blok_komentar` untuk sisi Python, dan disiplinnya sama:
+        nomor barisnya dihitung atas teks MENTAH, dan tiap blok melaporkan
+        rentangnya lewat `count("\\n")` atas kecocokannya sendiri -- bukan
+        lewat penomoran ulang hasil olahan, yang sudah pernah melaporkan
+        token mati di :166/:216 sementara `grep -n` berkata :335/:421.
+
+        Polanya ditulis `"{3}`, BUKAN tiga petik apa adanya, dan itu bukan
+        selera. `_blok_komentar` lolos dari paradoks diri secara kebetulan:
+        regexnya memuat `/\\*` dan `\\*/` yang ter-escape, jadi teks berkasnya
+        sendiri tidak pernah memuat pembatas yang ia cari. Pembatas Python
+        tidak punya keberuntungan itu -- menuliskannya apa adanya menyisipkan
+        DUA run pembatas ke dalam berkas yang sedang dipindai, dan seluruh
+        pasangan blok sesudah baris itu bergeser. Yang terjadi bukan error
+        melainkan rentang yang salah, di berkas yang alamat ampunannya
+        menunjuk ke dalam dirinya sendiri. Fikstur sintetis di kelas ini
+        karena itu MERAKIT pembatasnya dari sebuah variabel.
+
+        Pasangannya SEKUENSIAL dari awal berkas, dan itu memang yang benar
+        untuk tujuannya: sebuah blok di sini berarti "wilayah prosa", dan
+        wilayah prosa di Python dibuka dan ditutup oleh pembatas yang sama,
+        berurutan. Yang TIDAK dijangkau dan tidak diklaim: petik tunggal-tiga,
+        dan pembatas yang hidup di dalam sebuah string. Populasinya diukur di
+        laporan ronde, tidak dipatok di sini -- angka yang ditulis di
+        docstring sebuah pembantu adalah angka yang bergeser setiap kali
+        berkasnya tumbuh satu docstring.
+        """
+        hasil = []
+        for m in re.finditer(r'"{3}[\s\S]*?"{3}', teks):
+            awal = teks.count("\n", 0, m.start()) + 1
+            hasil.append((awal, awal + m.group(0).count("\n"), m.group(0)))
+        return hasil
+
+    @classmethod
+    def _saksi(cls, berkas, nama, alasan, korban, nilai):
+        """Alamat `JENIS:N` di `alasan` yang sah sebagai saksi keputusan.
+
+        DUA jenis alamat dibaca, dan tiap jenis punya aturan BLOK-nya sendiri:
+
+            `gaya.css`           syarat a/d/b/c/e atas SATU BARIS
+            `tests/test_web.py`  syarat a/c/b/e atas BLOK docstring-nya
+            jenis lain           ditolak lewat `f`
+
+        `berkas` sebuah mapping `jenis -> teks`, bukan satu teks -- alasan
+        yang sama dengan `_aturan(teks)`: tanpa itu predikat ini cuma bisa
+        mengadili satu berkas beku dan giginya tidak bisa dibuktikan. Plus
+        satu alasan yang cuma berlaku untuk jenis kedua: alamatnya menunjuk ke
+        dalam BERKAS YANG SEDANG DISUNTING, jadi ia harus tahu kalau ia
+        bergeser.
+
+        `korban` sebuah PASANGAN `(b1, b2)` -- koordinat kedua sisi kematian
+        yang diampuni -- dan sengaja bukan himpunan: sebuah entri yang
+        `b1 == b2` akan menyusut jadi SATU elemen di dalam himpunan, dan
+        syarat `e` di bawah diam-diam berhenti menuntut dua koordinat. Itu
+        persis pelemahan yang `e` ada untuk menutupnya. Urutannya juga yang
+        membuat pesannya bisa menamai koordinat MANA yang hilang, bukan cuma
+        berkata "bloknya kurang".
+
+        `nilai` sebuah PASANGAN `(v1, v2)` dengan alasan yang sama persis --
+        nilai yang diampuni di kedua sisi kematian (`2px` dan `1px` hari ini),
+        dan sebuah entri yang `v1 == v2` tidak boleh menyusut jadi satu
+        tuntutan di dalam sebuah himpunan.
+
+        Mengembalikan `(sah, tolakan)`. `sah` berisi `(jenis, n)` -- jenisnya
+        ikut supaya pemanggil tidak perlu menebak alamat mana yang lulus.
+        `tolakan` berisi `(alamat, kode, sebab)` dengan `alamat` SUDAH
+        berbentuk `"jenis:n"`: bentuk lama mencetak `"gaya.css:%d"` untuk
+        setiap tolakan, dan begitu jenis kedua hidup pesan itu mulai menuduh
+        alamat `tests/test_web.py` sebagai alamat CSS.
+
+        Syaratnya DIPILAH per jenis, bukan disalin:
+
+        * `a` -- KEDUA jenis. Alamatnya di luar berkas, jadi tidak bisa dibaca
+          ulang.
+        * `b` -- `gaya.css`: BARISNYA tidak memuat nama token yang diampuni.
+          Jenis `.py`: BLOK docstring yang memuat baris itu tidak memuatnya.
+          Per-baris di sini akan menuntut tokennya pada sebuah baris `def`,
+          yang tidak pernah memuat nama token CSS.
+        * `c` -- `gaya.css`: barisnya bukan komentar. Yang dituntut sebuah
+          ampunan adalah tempat keputusannya DITULIS, dan baris yang cuma
+          kebetulan memakai tokennya (`border-bottom: var(--tebal-garis)` di
+          :722) bukan keputusan siapa pun. Diukur lewat selisih teks mentah vs
+          `_bersihkan` -- yang menyimpan `\\n`-nya, jadi nomor barisnya tidak
+          bergeser sedikit pun. Jenis `.py`: barisnya tidak berada di dalam
+          satu pun blok docstring. Di Python, keterangan sebuah keputusan
+          tinggal di docstring; baris `def`-nya sendiri bukan keterangan apa
+          pun.
+        * `d` -- `gaya.css` SAJA. Barisnya salah satu korban ampunan itu
+          sendiri, dan menunjuk korban hanya membuktikan korban itu ada. Jenis
+          `.py` TIDAK memakainya, dan itu bukan kelalaian: `korban` koordinat
+          `gaya.css`, sementara di `tests/test_web.py` baris 335 berbunyi
+          `api.data_reset(...)` dan baris 421 berbunyi
+          `data = progress.load_progress()` -- dua baris yang tidak punya
+          hubungan apa pun dengan kematian yang diampuni. `d` yang tidak
+          dipilah akan menuduh syarat yang salah atas baris yang kebetulan
+          bernomor sama.
+        * `e` -- BLOKNYA tidak memutuskan kasusnya. `gaya.css`: blok komentar
+          yang memuat baris itu tidak menamai kedua KOORDINAT korbannya
+          sebagai angka utuh. Jenis `.py`: blok docstring-nya tidak menamai
+          kedua NILAI yang diampuni sebagai angka utuh -- koordinat `gaya.css`
+          TIDAK dituntut di sini, dan menuntutnya berarti menyuruh sebuah
+          docstring Python menghafal nomor baris berkas lain. Terukur atas
+          blok yang jadi saksi hari ini: ia menamai kedua NILAI, dan NOL
+          menyebut koordinatnya -- populasi lengkapnya di laporan ronde.
+          Tanpa `e`, sebuah ampunan masih bisa dibeli dengan menunjuk baris
+          inventaris mana pun yang kebetulan menyebut tokennya; terukur, dua
+          dari tujuh bentuk sintetis CSS lolos begitu.
+        * `f` -- jenis alamatnya tidak punya teks di `berkas`, atau punya teks
+          tapi tidak punya aturan blok. DITOLAK, bukan dilewati, dan itu
+          seluruh gunanya: ia penjaga yatim, supaya siapa pun yang melebarkan
+          `SAKSI` tanpa mendaftarkan teksnya melihat MERAH. Bentuk yang
+          dilewati diam-diam bukan kekhawatiran teoretis -- alasan ampunan di
+          kelas ini sudah memuat alamat jenis kedua selama beberapa hun tanpa
+          satu pun predikat membacanya, sehingga baris 1, baris di luar
+          berkas, dan baris yang isinya tidak ada hubungannya dengan
+          keputusan itu semuanya sama sahnya.
+
+        Urutan pemeriksaannya BERBEDA per jenis, dan alasannya juga berbeda.
+
+        `gaya.css` -> a, d, b, c, e. `d` SEBELUM `b` dan `c` karena baris
+        korban memang memuat nama tokennya dan memang bukan komentar:
+        diperiksa sesudahnya, pesan yang keluar akan menuduh syarat yang salah
+        dan menyesatkan orang yang sedang memperbaikinya. `e` TERAKHIR dengan
+        alasan kembar: menuduh "bloknya kurang" pada baris yang bukan komentar
+        sama sekali adalah pesan yang menyuruh orang memperbaiki hal yang
+        tidak rusak.
+
+        Jenis `.py` -> a, c, b, e. Di sini `c` mendahului `b` justru karena
+        kebalikannya: `b` dan `e` menilai BLOKNYA, jadi keduanya tidak punya
+        apa pun untuk dinilai sampai `c` menemukan bloknya. Satu konsekuensi
+        yang harus dibaca apa adanya: `c` jenis `.py` karena itu TIDAK bisa
+        dilonggarkan sendirian -- melepasnya meninggalkan `b` dan `e` tanpa
+        blok, dan keduanya jatuh. Itu sifat desainnya, bukan lubang di
+        pagarnya, dan sel C5b di baterai ronde ini melonggarkan ketiganya
+        sekaligus (blok -> seluruh berkas) justru supaya yang diukur tetap
+        satu hal.
+
+        BATAS `e` yang tidak boleh diklaim lebih: ia membaca ANGKA, bukan
+        maksud prosa. Blok yang menyebut kedua koordinat -- atau kedua
+        nilai -- itu secara KEBETULAN tetap diterima, dan predikat ini sama
+        sekali tidak membuktikan bahwa bloknya memang bercerita tentang
+        kematian yang diampuni. Menulis "saksi wajib menjelaskan kematiannya"
+        akan jadi docstring yang berbohong -- dan docstring yang berbohong
+        lebih mahal daripada lubang yang ditutupnya.
+        """
+        sah, tolakan = [], []
+        for m in cls.SAKSI.finditer(alasan):
+            jenis, n = m.group(1), int(m.group(2))
+            alamat = "%s:%d" % (jenis, n)
+            teks = berkas.get(jenis)
+            if teks is None:
+                tolakan.append((alamat, "f",
+                                "jenis `%s` tidak punya teks di `berkas`"
+                                % jenis))
+                continue
+            if not jenis.endswith((".css", ".py")):
+                tolakan.append((alamat, "f",
+                                "jenis `%s` punya teks tapi tidak punya "
+                                "aturan blok" % jenis))
+                continue
+            mentah = teks.split("\n")
+            if not 1 <= n <= len(mentah):
+                tolakan.append((alamat, "a", "di luar berkas"))
+                continue
+            if jenis.endswith(".css"):
+                if n in korban:
+                    tolakan.append((alamat, "d",
+                                    "baris korban ampunan itu sendiri"))
+                    continue
+                if nama not in mentah[n - 1]:
+                    tolakan.append((alamat, "b",
+                                    "tidak memuat `%s`" % nama))
+                    continue
+                if mentah[n - 1] == cls._bersihkan(teks).split("\n")[n - 1]:
+                    tolakan.append((alamat, "c",
+                                    "deklarasi, bukan komentar"))
+                    continue
+                # Baris yang sama bisa disentuh lebih dari satu blok (dua
+                # komentar inline berjejer); yang dinilai GABUNGAN isinya,
+                # karena keduanya sama-sama berdiri di baris itu.
+                sekitar = [b for b in cls._blok_komentar(teks)
+                           if b[0] <= n <= b[1]]
+                isi = "\n".join(b[2] for b in sekitar)
+                patokan = "koordinat"
+                hilang = ["%d" % b for b in korban
+                          if not re.search(r"(?<!\d)%d(?!\d)" % b, isi)]
+            else:
+                sekitar = [b for b in cls._blok_docstring(teks)
+                           if b[0] <= n <= b[1]]
+                if not sekitar:
+                    tolakan.append((alamat, "c",
+                                    "di luar blok docstring mana pun"))
+                    continue
+                isi = "\n".join(b[2] for b in sekitar)
+                if nama not in isi:
+                    tolakan.append((
+                        alamat, "b",
+                        "blok :%d-:%d tidak memuat `%s`"
+                        % (sekitar[0][0], sekitar[-1][1], nama)))
+                    continue
+                patokan = "nilai"
+                hilang = [v for v in nilai
+                          if not re.search(r"(?<![\d.,])%s(?!\d)"
+                                           % re.escape(v), isi)]
+            if hilang:
+                tolakan.append((
+                    alamat, "e",
+                    "blok :%d-:%d tidak menamai %s %s"
+                    % (min(b[0] for b in sekitar),
+                       max(b[1] for b in sekitar),
+                       patokan, ", ".join(hilang))))
+            else:
+                sah.append((jenis, n))
+        return sah, tolakan
+
+    def test_blanking_komentar_menyimpan_baris(self):
+        """Mengosongkan komentar tidak boleh mengurangi satu `\\n` pun."""
+        css = self._gaya()
+        bersih = self._bersihkan(css)
+        self.assertEqual(
+            bersih.count("\n"), css.count("\n"),
+            "blanking komentar menelan baris, jadi setiap nomor baris yang "
+            "dilaporkan pengurai ini bergeser ke atas tanpa satu pun pesan "
+            "galat -- persis cara sebuah token mati dilaporkan di :166/:216 "
+            "padahal `grep -n` berkata :335/:421")
+        self.assertEqual(len(bersih), len(css),
+                         "blanking komentar mengubah panjang teks, jadi "
+                         "offset karakter tidak lagi bisa dipakai")
+
+    def test_populasi_aturan_akar_sembilan_dan_tidak_bergeser(self):
+        """SEMBILAN aturan menunjuk `<html>` sendiri, tak lebih tak kurang."""
+        baca = {b: (p, s) for p, b, s, _t in self._aturan(self._gaya())}
+        self.assertEqual(
+            baca, self.POPULASI,
+            "himpunan aturan yang menunjuk <html> bergeser. Yang masuk harus "
+            "pemilih tanpa kombinator dan tanpa ::pseudo-element; "
+            "`[data-tema=\"terang\"] #latar` (:665) dan "
+            "`html.lingkar-tema::view-transition-new(root)` (:4964) TIDAK "
+            "ikut. Kalau ini berubah karena gaya.css memang berubah, "
+            "perbarui POPULASI dan hitung ulang kematiannya")
+
+    def test_delapan_puluh_satu_deklarasi_token_tema(self):
+        """Yang diadu 81 deklarasi di TIGA blok tema, bukan seluruh berkas."""
+        per_tema = {}
+        for pemilih, _b, _s, token in self._aturan(self._gaya()):
+            tema = self._tema(pemilih)
+            if tema is not None:
+                per_tema[tema] = per_tema.get(tema, 0) + len(token)
+        self.assertEqual(
+            per_tema, {"malam": 28, "terang": 32, "kontras": 21},
+            "cacah deklarasi token per tema bergeser; angka di docstring "
+            "kelas ini jadi bohong")
+
+    def test_tidak_ada_token_tema_mati_tanpa_ampunan(self):
+        """Tiap KEMATIAN wajib tertutup ampunan, bukan tiap KUNCI.
+
+        `_mati` mengeluarkan satu tuple per KEMATIAN: sebuah deklarasi yang
+        kalah dari DUA aturan lahir dua kali dengan `(tema, token)` yang
+        SAMA. Keanggotaan kunci karena itu bukan coverage -- satu entri
+        menutup berapa pun kematian sekunci, termasuk yang belum pernah
+        dibaca siapa pun, dan kematian kedua tidak punya pagar mana pun.
+        Yang diadu di sini identitas POSISIONAL `JATIDIRI`, sama seperti
+        `test_ampunan_mengadu_identitas_posisional_ke_kematiannya` dari arah
+        sebaliknya: yang itu bertanya "apa yang diklaim ampunan ini masih
+        ada", yang ini bertanya "apa yang ada masih punya catatannya".
+
+        Di pohon hari ini `cacah_tuple == cacah_kunci == 1`, jadi predikat
+        kunci dan predikat posisional memberi jawaban yang sama DI SINI --
+        pagar ini tidak bisa membuktikan bedanya sendiri. Itu sebabnya
+        keputusannya tidak ditulis di sini melainkan di `_kematian_liar`, dan
+        `test_ampunan_satu_kunci_tidak_menutup_kematian_kedua` MEMANGGIL
+        metode yang sama di atas fikstur yang memang punya dua kematian
+        sekunci. Dengan begitu melonggarkan predikat ini kembali ke
+        keanggotaan kunci memerahkan fikstur itu; selama keduanya menulis
+        predikatnya sendiri-sendiri, pelonggaran yang sama lolos tanpa satu
+        pun tes memerah.
+        """
+        kematian = self._mati(self._aturan(self._gaya()))
+        tak_tertutup, datar = self._kematian_liar(kematian,
+                                                 self.AMPUNAN.items())
+        liar = []
+        for d in tak_tertutup:
+            sekunci = [a for a in datar if (a[0], a[1]) == (d[0], d[1])]
+            if not sekunci:
+                liar.append(
+                    "tema %s: `%s: %s` di gaya.css:%d diisi ulang oleh "
+                    "`%s { %s: %s }` di gaya.css:%d, dan AMPUNAN tidak "
+                    "memuat kunci itu sama sekali"
+                    % (d[0], d[1], d[2], d[3], d[4], d[1], d[5], d[6]))
+                continue
+            for a in sekunci:
+                liar.append(
+                    "tema %s token %s: ampunan kunci ini menyebut "
+                    "(%d,%r,%d,%r), kematian menuntut (%d,%r,%d,%r) -- "
+                    "pembunuhnya `%s`"
+                    % (d[0], d[1], a[2], a[3], a[4], a[5],
+                       d[3], d[2], d[6], d[5], d[4]))
+        self.assertEqual(
+            liar, [],
+            "kematian token tema yang tidak tertutup satu pun ampunan. "
+            "Spesifisitasnya seri dan yang belakangan menang, jadi tema itu "
+            "kehilangan keputusannya tanpa error di mana pun -- dan entri "
+            "yang KUNCINYA cocok tapi koordinatnya milik kematian LAIN bukan "
+            "catatan untuk kematian ini: " + "; ".join(liar))
+
+    def test_ampunan_satu_kunci_tidak_menutup_kematian_kedua(self):
+        """Dua kematian satu kunci: yang kedua wajib tetap tertuduh.
+
+        `AMPUNAN` berkunci `(tema, token)` dan sebuah dict memegang SATU
+        entri per kunci, sementara `_mati` mengeluarkan satu tuple per
+        KEMATIAN. Aritas keduanya tidak sama, dan di `gaya.css` hari ini
+        bedanya tidak terukur sama sekali: `cacah_tuple == cacah_kunci == 1`,
+        jadi predikat kunci dan predikat posisional sama-sama memberi nol
+        tuduhan. Fikstur di bawah satu-satunya tempat bedanya kelihatan --
+        dan tanpa tempat seperti itu, pelonggaran predikatnya kembali tanpa
+        satu pun tes memerah.
+
+        Tiga kakinya berdiri bersama dan ketiganya perlu: premisnya (fikstur
+        memang melahirkan DUA kematian sekunci), giginya (satu tuduhan ketika
+        cuma kematian pertama punya catatan), dan batasnya (NOL tuduhan
+        ketika keduanya punya). Yang cuma bisa menuduh bukan pagar: ia tidak
+        punya cara menunjukkan tuduhannya berhenti di tempat yang benar.
+        """
+        css = ('[data-tema="malam"] { --x: 1px; }\n'
+               ":root { --x: 2px; }\n"
+               ":root { --x: 3px; }\n")
+        kematian = self._mati(self._aturan(css))
+        self.assertEqual(
+            len(kematian), 2,
+            "fikstur ini WAJIB melahirkan dua kematian; tanpa itu kedua kaki "
+            "sesudahnya tidak membuktikan apa pun dan pagar ini hijau karena "
+            "kosong: %r" % (kematian,))
+        self.assertEqual(
+            len({(d[0], d[1]) for d in kematian}), 1,
+            "dua kematian fikstur wajib SEKUNCI -- itu seluruh premisnya, "
+            "sebab yang diadili justru ampunan yang cuma punya satu slot "
+            "untuk kunci itu: %r" % (kematian,))
+
+        # Ampunan sintetis dalam bentuk `AMPUNAN.items()`: `(kunci, nilai)`
+        # dengan kunci `(tema, token)` dan nilai empat medan. Keduanya
+        # SEKUNCI, dan karena sebuah dict tidak bisa memegang dua entri
+        # sekunci, yang lewat ke `_kematian_liar` daftar pasangan -- bukan
+        # dict. Keputusannya sendiri TIDAK ditulis ulang di sini: kalau
+        # ditulis ulang, yang teruji salinannya, bukan pagar nyatanya.
+        tutup_awal = (("malam", "--x"), (1, "1px", 2, "2px"))
+        tutup_akhir = (("malam", "--x"), (1, "1px", 3, "3px"))
+
+        tak_tertutup, _ = self._kematian_liar(kematian, [tutup_awal])
+        self.assertEqual(
+            [(d[6], d[5]) for d in tak_tertutup], [(3, "3px")],
+            "satu entri ampunan menutup kematian PERTAMA saja, jadi yang "
+            "kedua wajib tetap tertuduh. Predikat yang mengadu keanggotaan "
+            "kunci memberi NOL tuduhan di sini -- kematian kedua lenyap "
+            "tanpa catatan dan tanpa satu pun pagar memerah")
+
+        self.assertEqual(
+            self._kematian_liar(kematian, [tutup_awal, tutup_akhir])[0], [],
+            "kedua kematian punya catatan yang koordinatnya cocok, jadi "
+            "tuduhannya wajib NOL. Pagar yang menuduh juga saat semuanya "
+            "tertutup bukan ketat melainkan rusak")
+
+    def test_tiap_ampunan_masih_menamai_kematian_yang_ada(self):
+        """Ampunan yang kasusnya sudah hilang sedang berbohong -> MERAH."""
+        ada = {(e[0], e[1]) for e in self._mati(self._aturan(self._gaya()))}
+        basi = sorted(set(self.AMPUNAN) - ada)
+        self.assertEqual(
+            basi, [],
+            "entri ampunan yang tidak lagi menunjuk kematian mana pun. "
+            "Daftar ini bukan tempat menulis pengecualian yang nyaman -- "
+            "sebuah ampunan tanpa kasus membuat pembaca berikutnya percaya "
+            "ada kematian yang sudah diperiksa, padahal tidak ada: "
+            + ", ".join("%s/%s" % k for k in basi))
+
+    def test_alamat_ampunan_terbuka_dan_membawa_bukti(self):
+        """Kedua koordinat tiap ampunan wajib memuat token DAN nilainya."""
+        baris = self._bersihkan(self._gaya()).split("\n")
+        gagal = []
+        for (tema, nama), entri in sorted(self.AMPUNAN.items()):
+            b1, v1, b2, v2, _alasan = entri
+            for alamat, nilai in ((b1, v1), (b2, v2)):
+                if not 1 <= alamat <= len(baris):
+                    gagal.append("%s/%s: gaya.css:%d di luar berkas"
+                                 % (tema, nama, alamat))
+                    continue
+                isi = baris[alamat - 1]
+                if nama not in isi:
+                    gagal.append(
+                        "%s/%s: gaya.css:%d tidak memuat `%s` (isinya: %r)"
+                        % (tema, nama, alamat, nama, isi.strip()[:60]))
+                elif nilai not in isi:
+                    gagal.append(
+                        "%s/%s: gaya.css:%d memuat `%s` tapi bukan nilai `%s` "
+                        "(isinya: %r)"
+                        % (tema, nama, alamat, nama, nilai, isi.strip()[:60]))
+        self.assertEqual(
+            gagal, [],
+            "koordinat ampunan yang tidak membawa buktinya. Alamat yang "
+            "menunjuk baris tetangganya -- atau baris yang isinya sudah "
+            "pindah -- terbaca persis seperti alamat yang benar, dan pembaca "
+            "berikutnya tidak punya cara tahu catatan ini sudah basi: "
+            + "; ".join(gagal))
+
+    def test_ampunan_mengadu_identitas_posisional_ke_kematiannya(self):
+        """Kunci `(tema, token)` cuma SEPARUH identitas sebuah ampunan.
+
+        Dua pagar di atas mengadu KEANGGOTAAN kunci dan satu lagi mengadu
+        baris yang ditunjuk alamatnya; tidak satu pun menanyakan apakah
+        `(b1, v1, b2, v2)` masih menunjuk tuple kematian yang SAMA. Dua
+        bentuk ampunan palsu lolos karena itu, dan keduanya sudah terbukti
+        HIJAU sebelum pagar ini ada:
+
+          * nilai KEMBAR (`335, "2px", 335, "2px"`). Pagar alamat memeriksa
+            buktinya per-koordinat, dan :335 memang memuat
+            `--tebal-garis: 2px` -- jadi klaim kembar lulus dua kali dengan
+            jawaban yang sama. Bukti yang jujur secara LOKAL tidak pernah
+            membuktikan relasi ANTAR koordinat.
+          * pasangan TERTUKAR (`421, "1px", 335, "2px"`). Kedua alamatnya
+            jujur; yang terbalik cuma perannya. Ampunan seperti itu
+            menyesatkan pembaca berikutnya ke arah yang BERLAWANAN -- ia
+            menyebut aturan yang menang sebagai korbannya.
+
+        Karena itu urutan pasangan ADALAH bagian identitasnya: pasangan
+        pertama deklarasi yang mati, pasangan kedua aturan yang menang.
+        Membacanya sebagai himpunan membuat bentuk kedua tetap lulus.
+
+        Nol entri berarti nol tuduhan, bukan kegagalan: yang diadili di sini
+        identitas tiap entri yang ADA, dan daftar ampunan yang KOSONG sudah
+        punya penjaganya sendiri di
+        `test_tidak_ada_token_tema_mati_tanpa_ampunan`.
+        """
+        kematian = self._mati(self._aturan(self._gaya()))
+        gagal = []
+        for (tema, nama), entri in sorted(self.AMPUNAN.items()):
+            b1, v1, b2, v2, _alasan = entri
+            calon = [d for d in kematian if (d[0], d[1]) == (tema, nama)]
+            if any((d[3], d[2], d[6], d[5]) == (b1, v1, b2, v2)
+                   for d in calon):
+                continue
+            if not calon:
+                gagal.append(
+                    "%s/%s: keluaran `_mati` tidak memuat kematian "
+                    "berkunci itu sama sekali" % (tema, nama))
+                continue
+            for d in calon:
+                beda = ["%s: ampunan menyebut %r, kematian menyebut %r"
+                        % (medan, diklaim, nyata)
+                        for medan, diklaim, nyata
+                        in (("b1", b1, d[3]), ("v1", v1, d[2]),
+                            ("b2", b2, d[6]), ("v2", v2, d[5]))
+                        if diklaim != nyata]
+                gagal.append("%s/%s (lawan kematian di gaya.css:%d): %s"
+                             % (tema, nama, d[3], ", ".join(beda)))
+        self.assertEqual(
+            gagal, [],
+            "entri ampunan yang kuintetnya tidak menunjuk satu pun tuple di "
+            "KELUARAN `_mati`. Yang diadili di sini bukan keanggotaan kunci "
+            "melainkan identitas POSISIONAL (tema, token, b1, v1, b2, v2) -- "
+            "pasangan pertama deklarasi yang mati, pasangan kedua aturan "
+            "yang menang: " + "; ".join(gagal))
+
+    def test_ampunan_menyebut_tempat_keputusannya_ditulis(self):
+        """Alasan tanpa alamat adalah selera yang berpura-pura jadi catatan,
+        dan alamat yang sama untuk semua entri adalah ampunan yang bisa
+        DISALIN.
+
+        Yang dulu berdiri di sini `assertIn("gaya.css:2941", entri[4])` --
+        satu string telanjang yang sama bagi setiap entri, jadi ampunan mana
+        pun yang menyalin-tempel kalimat itu tetap hijau. Dua kematian token
+        tema yang NYATA sudah terbukti bisa dibeli dengan cara itu tanpa satu
+        pun tes memerah; yang lebih buruk, bentuk lama justru MEMERAH untuk
+        ampunan yang alasannya menunjuk tempat yang sebenarnya. Sekarang tiap
+        entri wajib punya minimal satu alamat yang lulus syarat `_saksi`, dan
+        SETIAP alamat yang ia tuliskan wajib lulus -- bukan cuma satu di
+        antaranya. Alasan entri hari ini memuat DUA jenis alamat, dan bentuk
+        "cukup satu yang sah" membuat jenis kedua bebas mengarang: selama
+        alamat `gaya.css`-nya benar, alamat `tests/test_web.py`-nya boleh
+        menunjuk baris 1, baris di luar berkas, atau baris yang isinya tidak
+        ada hubungannya dengan keputusan itu. Ketiganya satu keadaan yang sama
+        di mata pola lama, yang cuma mengenal jenis `gaya.css`.
+
+        Syaratnya dibuktikan menggigit lewat masukan sintetis di
+        `test_saksi_ampunan_menolak_empat_bentuk_palsu` untuk jenis `gaya.css`,
+        dan di `test_saksi_jenis_kedua_diadili_per_blok_docstring` untuk jenis
+        `.py` beserta jenis yatim.
+        """
+        berkas = {"gaya.css": self._gaya(),
+                  "tests/test_web.py": self._berkas("tests", "test_web.py")}
+        tanpa_alamat, cacat = [], []
+        for (tema, nama), entri in sorted(self.AMPUNAN.items()):
+            b1, v1, b2, v2, alasan = entri
+            sah, tolakan = self._saksi(
+                berkas, nama, alasan, (b1, b2), (v1, v2))
+            if tolakan:
+                cacat.append(
+                    "%s/%s: %s" % (tema, nama, "; ".join(
+                        "%s gagal (%s) %s" % t for t in tolakan)))
+            elif not sah:
+                tanpa_alamat.append("%s/%s" % (tema, nama))
+        self.assertEqual(
+            tanpa_alamat, [],
+            "(a) alasan ampunan tanpa satu pun alamat `JENIS:N`. Sebuah "
+            "ampunan dibayar dengan menunjuk tempat yang bisa dibaca ulang; "
+            "kalimat tanpa alamat tidak memberi pembaca berikutnya apa pun "
+            "untuk diperiksa: " + ", ".join(tanpa_alamat))
+        self.assertEqual(
+            cacat, [],
+            "ampunan yang membawa alamat TIDAK SAH sebagai saksi. Yang "
+            "dituntut tempat keputusannya DITULIS -- untuk `gaya.css` bukan "
+            "baris korbannya sendiri (d), bukan baris yang kebetulan memakai "
+            "tokennya (c), bukan komentar yang tidak menyebut tokennya (b), "
+            "dan bukan komentar yang bloknya tidak menamai kedua KOORDINAT "
+            "kematian itu (e); untuk jenis `.py` bukan baris di luar blok "
+            "docstring mana pun (c) dan bukan blok yang tidak menamai token "
+            "beserta kedua NILAI-nya (b/e); dan untuk jenis yang tidak "
+            "terdaftar, ditolak alih-alih dilewati diam-diam (f): "
+            + "; ".join(cacat))
+
+    def test_saksi_ampunan_menolak_empat_bentuk_palsu(self):
+        """KELIMA syarat `_saksi` dibuktikan dengan CSS SINTETIS.
+
+        Namanya masih "empat bentuk palsu" karena nama metode adalah bagian
+        dari kunci yang dipakai orang mencarinya; isinya tujuh.
+
+        Tanpa ini bentuk predikatnya cuma teradu dengan satu berkas beku, dan
+        orang berikutnya harus membangun salinan pohon lebih dulu untuk
+        memastikan masing-masing syarat benar-benar menggigit.
+
+        Dua bentuk terakhir yang ditambahkan -- baris 6 dan baris 7 -- adalah
+        yang dulu DITERIMA: keduanya komentar dan keduanya menyebut `--x`,
+        jadi (a)-(d) tidak punya alasan menolaknya. Yang membedakan keduanya
+        dari saksi sungguhan cuma satu hal, dan itu hal yang paling penting:
+        bloknya tidak memutuskan kematian yang diampuni. Baris 6 tidak
+        menyebut satu pun koordinatnya; baris 7 menyebut satu dari dua, yang
+        artinya ia bercerita tentang korbannya tanpa menyebut siapa yang
+        membunuhnya.
+
+        Alamat-alamat sintetisnya DIRAKIT (`"%s:%d"`), tidak dituliskan utuh.
+        Alasannya diukur: versi pertama menuliskan ketiganya apa adanya, dan
+        `TestRujukanAntarBerkasTidakMenunjukRuangKosong` membacanya sebagai
+        rujukan ke `gaya.css` SUNGGUHAN -- dua di antaranya mendarat di baris
+        kosong dan satu di luar berkas, karena CSS tujuh baris di bawah ini
+        tidak punya hubungan apa pun dengan berkas 5.058 baris itu. Pagar itu
+        benar; yang salah adalah menulis alamat buat berkas khayalan dalam
+        bentuk yang dibaca mesin sebagai alamat berkas nyata.
+        """
+        css = (
+            "/* baris 1: --x sengaja 1px; (:3) mati oleh akar (:4) */\n"
+            "/* baris 2: komentar yang tidak menyebut tokennya sama sekali */\n"
+            '[data-tema="malam"] { --x: 2px; }\n'
+            ":root { --x: 1px; }\n"
+            ".pakai { border-bottom: var(--x) solid; }\n"
+            "/* baris 6: --x begitulah, tanpa menyebut sisi mana pun */\n"
+            "/* baris 7: --x mati di (:3), sisi lainnya tak disebut */\n")
+        korban = (3, 4)
+        berkas = "gaya.css"
+        for alamat, kode, sebab in (
+                (None, None, "(a) tidak ada alamat"),
+                (9999, "a", "(a) alamat di luar berkas"),
+                (2, "b", "(b) komentar tanpa nama token"),
+                (5, "c", "(c) deklarasi pemakai token"),
+                (3, "d", "(d) baris korbannya sendiri"),
+                (6, "e", "(e) blok tanpa satu pun koordinat korban"),
+                (7, "e", "(e) blok yang cuma menamai satu koordinat")):
+            alasan = ("tanpa satu pun alamat" if alamat is None
+                      else "lihat %s:%d" % (berkas, alamat))
+            sah, tolakan = self._saksi(
+                {berkas: css}, "--x", alasan, korban, ("2px", "1px"))
+            self.assertEqual(
+                sah, [],
+                "alasan %r DITERIMA padahal seharusnya jatuh di %s; dengan "
+                "lubang itu sebuah ampunan tinggal menyalin kalimat yang "
+                "sudah ada" % (alasan, sebab))
+            self.assertEqual(
+                [t[1] for t in tolakan], [] if kode is None else [kode],
+                "alasan %r ditolak oleh syarat yang SALAH; yang ditagih %s, "
+                "dapat %r. Pesan yang menuduh syarat keliru menyuruh orang "
+                "memperbaiki hal yang tidak rusak" % (alasan, sebab, tolakan))
+        sah, tolakan = self._saksi(
+            {berkas: css}, "--x", "lihat %s:%d" % (berkas, 1), korban,
+            ("2px", "1px"))
+        self.assertEqual(
+            (sah, tolakan), ([(berkas, 1)], []),
+            "komentar yang MENYEBUT tokennya, bukan baris korban mana pun, "
+            "dan yang bloknya menamai KEDUA koordinat kematiannya -- ditolak. "
+            "Predikat yang menolak saksi sah menghukum kejujuran dan "
+            "mengampuni salinan -- persis kebalikan dari gunanya")
+
+    def test_saksi_membaca_angka_utuh_bukan_substring(self):
+        """`e` mencocokkan KOORDINAT, dan sebuah koordinat bukan substring.
+
+        Bentuk yang gampang ditulis -- `str(b) in isi_blok` -- hijau untuk
+        seluruh berkas beku, karena blok :2925-:2952 memang memuat `335` dan
+        `421` apa adanya. Yang ia terima diam-diam adalah blok yang cuma
+        memuat ANGKA LAIN yang kebetulan memuat digitnya: `13` mengandung
+        `3`, `42` mengandung `4`. Di berkas penuh angka seperti `gaya.css` --
+        piksel, persen, nomor baris, kode warna -- itu bukan kasus pelik
+        melainkan kasus biasa, dan akibatnya sebuah ampunan bisa dibayar
+        dengan blok yang tidak pernah menyebut koordinatnya sama sekali.
+        """
+        blok = "/* --x: lihat 13 dan 42, bukan koordinatnya */"
+        css = (blok + "\n"
+               + '[data-tema="malam"] { --x: 2px; }\n'
+               + ":root { --x: 1px; }\n")
+        self.assertTrue(
+            "3" in blok and "4" in blok,
+            "fikstur ini kehilangan maksudnya: blok harus MEMUAT digit kedua "
+            "koordinat sebagai substring, kalau tidak bentuk `str(b) in isi` "
+            "yang sedang diadili akan jatuh karena alasan yang lain")
+        sah, tolakan = self._saksi(
+            {"gaya.css": css}, "--x", "lihat %s:%d" % ("gaya.css", 1), (3, 4),
+            ("2px", "1px"))
+        self.assertEqual(
+            (sah, [t[1] for t in tolakan]), ([], ["e"]),
+            "blok yang cuma memuat `13` dan `42` DITERIMA sebagai saksi untuk "
+            "korban di :3 dan :4. Predikat yang mencocokkan substring akan "
+            "mengampuni hampir blok apa pun di berkas sepenuh angka ini")
+
+    def test_saksi_jenis_kedua_diadili_per_blok_docstring(self):
+        """Jenis `.py` punya aturan BLOK sendiri, dan jenis yatim DITOLAK.
+
+        Alasan ampunan di kelas ini sudah lama memuat DUA jenis alamat, dan
+        sampai ronde ini cuma satu yang dibaca. Konsekuensinya diukur atas
+        `_saksi` sungguhan: dengan satu alamat `gaya.css` yang sah, alasan yang
+        sama diterima apa pun yang ditulis sebagai alamat jenis kedua -- baris
+        nyata, baris 1, maupun baris di luar berkas. Ketiganya satu keadaan di
+        mata predikat lama, karena predikat lama tidak pernah melihatnya.
+
+        Empat hal yang dibuktikan di sini, semuanya atas sumber SINTETIS:
+
+        * `c` jenis `.py` adalah KEANGGOTAAN BLOK, bukan "bukan komentar".
+          Baris 1 dan 3 fikstur ini baris `def`, dan sebuah baris `def` tidak
+          pernah memuat nama token CSS -- jadi `b` per-baris akan menuduh
+          syarat yang salah di tempat yang paling sering dipakai.
+        * `d` TIDAK berlaku untuk jenis `.py`. `korban` di sini `(3, 4)`, dan
+          baris 3 fikstur tetap dituntut `c`: kalau `d` menetes ke jalur ini,
+          baris yang kebetulan bernomor sama dengan korban akan dituduh
+          "menunjuk korbannya sendiri" padahal ia tidak punya hubungan apa pun
+          dengan korban mana pun.
+        * `e` jenis `.py` menuntut kedua NILAI, bukan kedua koordinat, dan
+          menuntutnya sebagai angka UTUH. Baris 11 memuat `17px`/`19px` --
+          keduanya memuat nilai yang dicari sebagai substring, jadi bentuk
+          `v in isi` akan menerimanya.
+        * `f` menolak jenis yatim, dan DUA bentuk yatimnya dipisah: jenis yang
+          tidak punya teks di `berkas`, dan jenis yang punya teks tapi tidak
+          punya aturan blok. Keduanya harus MERAH, bukan dilewati -- tanpa itu
+          "perluasan ke dua jenis" tidak bisa dibedakan dari "masih satu
+          jenis".
+
+        Nama token dan nilai fikstur SENGAJA berbeda dari yang diampuni di
+        berkas nyata (`--x` + `7px`/`9px` vs `--tebal-garis` + `2px`/`1px`),
+        dan dua assertion di bawah menjaga perbedaan itu. Predikat yang
+        menghardik nilai nyata apa adanya -- alih-alih membaca `nilai` dari
+        entrinya -- tetap hijau di berkas beku, dan pagar yang tidak bisa
+        membedakan "membaca entri" dari "menghafal berkas" tidak membuktikan
+        apa pun.
+
+        Pembatas docstring fikstur DIRAKIT dari sebuah variabel, bukan
+        dituliskan apa adanya, dengan alasan yang sama dengan alamat sintetis
+        di tetangganya: menuliskannya menyisipkan run pembatas ke dalam berkas
+        yang `_blok_docstring` pindai, dan setiap pasangan blok sesudah baris
+        itu bergeser -- termasuk blok yang jadi saksi ampunan nyata.
+        """
+        q = '"' * 3
+        py = "\n".join((
+            "def satu(self):",
+            "    %sblok yang tidak menyebut tokennya sama sekali.%s" % (q, q),
+            "def dua(self):",
+            "    %s--x hidup di sini, dan nilainya 7px saja." % q,
+            "",
+            "    Sisi lainnya tidak disebut.",
+            "    %s" % q,
+            "def tiga(self):",
+            "    %s--x: 7px kalah oleh 9px, kedua sisinya disebut.%s" % (q, q),
+            "def empat(self):",
+            "    %s--x pernah 17px lalu 19px, bukan nilainya.%s" % (q, q),
+        )) + "\n"
+        jenis, korban, nilai = "sintetis.py", (3, 4), ("7px", "9px")
+
+        diampuni = {v for e in self.AMPUNAN.values() for v in (e[1], e[3])}
+        self.assertEqual(
+            set(nilai) & diampuni, set(),
+            "nilai fikstur bertabrakan dengan nilai yang DIAMPUNI di berkas "
+            "nyata; sel yang menghardik nilai nyata apa adanya akan lolos di "
+            "sini dan pagar ini berhenti membedakan entri dari berkas")
+        self.assertNotIn(
+            "--x", {n for _t, n in self.AMPUNAN},
+            "nama token fikstur bertabrakan dengan token yang diampuni; "
+            "alasannya sama dengan assertion di atasnya")
+        self.assertEqual(
+            [(a, z) for a, z, _isi in self._blok_docstring(py)],
+            [(2, 2), (4, 7), (9, 9), (11, 11)],
+            "rentang blok fikstur bergeser, jadi sisa sel ini mengadili baris "
+            "yang bukan yang dimaksudnya")
+        baris11 = py.split("\n")[10]
+        self.assertTrue(
+            "7px" in baris11 and "9px" in baris11,
+            "fikstur baris 11 kehilangan maksudnya: ia harus MEMUAT kedua "
+            "nilai sebagai substring, kalau tidak bentuk `v in isi` yang "
+            "sedang diadili akan jatuh karena alasan yang lain")
+
+        for alamat, kode, sebab in (
+                (9999, "a", "(a) alamat di luar berkas"),
+                (1, "c", "(c) baris `def`, di luar blok mana pun"),
+                (3, "c", "(c) baris `def` yang bernomor sama dengan korban -- "
+                         "`d` tidak boleh menetes ke jenis ini"),
+                (2, "b", "(b) blok yang tidak menyebut tokennya"),
+                (4, "e", "(e) blok yang cuma menamai satu nilai"),
+                (11, "e", "(e) blok yang nilainya cuma substring")):
+            alasan = "lihat %s:%d" % (jenis, alamat)
+            sah, tolakan = self._saksi(
+                {jenis: py}, "--x", alasan, korban, nilai)
+            self.assertEqual(
+                sah, [],
+                "alasan %r DITERIMA padahal seharusnya jatuh di %s; dengan "
+                "lubang itu alamat jenis kedua boleh menunjuk ke mana saja"
+                % (alasan, sebab))
+            self.assertEqual(
+                [t[1] for t in tolakan], [kode],
+                "alasan %r ditolak oleh syarat yang SALAH; yang ditagih %s, "
+                "dapat %r. Pesan yang menuduh syarat keliru menyuruh orang "
+                "memperbaiki hal yang tidak rusak" % (alasan, sebab, tolakan))
+
+        for daftar, sebab in (
+                ({jenis: py}, "(f) jenis tanpa teks di `berkas`"),
+                ({jenis: py, "catatan.md": py},
+                 "(f) jenis bertekst tapi tanpa aturan blok")):
+            alasan = "lihat %s:%d" % ("catatan.md", 3)
+            sah, tolakan = self._saksi(
+                daftar, "--x", alasan, korban, nilai)
+            self.assertEqual(
+                (sah, [t[1] for t in tolakan]), ([], ["f"]),
+                "alasan %r tidak ditolak di %s. Jenis yang dilewati diam-diam "
+                "adalah alamat yang tidak dibaca siapa pun -- persis lubang "
+                "yang ronde ini menutup, dipindahkan satu jenis ke samping"
+                % (alasan, sebab))
+
+        sah, tolakan = self._saksi(
+            {jenis: py}, "--x", "lihat %s:%d" % (jenis, 9), korban, nilai)
+        self.assertEqual(
+            (sah, tolakan), ([(jenis, 9)], []),
+            "blok docstring yang MENYEBUT tokennya beserta KEDUA nilainya "
+            "sebagai angka utuh -- ditolak. Predikat yang menolak saksi sah "
+            "menghukum kejujuran dan mengampuni salinan, persis kebalikan "
+            "dari gunanya")
+
+    def test_saksi_menggabungkan_dua_blok_yang_berdiri_di_satu_baris(self):
+        """Satu baris bisa disentuh DUA blok, dan yang dinilai GABUNGANNYA.
+
+        `_saksi` sudah menuliskan alasannya -- "dua komentar inline
+        berjejer" -- tapi tidak satu pun berkas yang ia adili hari ini
+        punya baris seperti itu: NOL baris, di `gaya.css` maupun di
+        berkas ini, yang disentuh lebih dari satu blok. Premis itu
+        ditagih `test_premis_nol_baris_ditutup_lebih_dari_satu_blok` dan
+        tidak lagi diketik di sini: versi pertama paragraf ini menuliskan
+        cacah blok kedua berkas sebagai angka, dan angka berkas INI sudah
+        melenceng satu di detik metode ini menambahkan docstring-nya
+        sendiri -- pengukur yang ikut terukur. Premis itu TIDAK
+        berarti cabang gabungannya tak bergigi. Di atas berkas nyata
+        `join` memang selalu mengerjakan daftar satu elemen, tapi
+        kaki A dan kaki C di metode ini mendirikan sendiri baris yang
+        disentuh dua blok -- jadi memangkas `join` di jalur `.css`
+        MAUPUN di jalur `.py` jadi blok pertama atau blok terakhir
+        memerahkan metode ini. Yang membayar untuk itu kaki B: tanpa
+        kontrolnya, gigi kaki A tidak terbedakan dari predikat
+        pelontos yang cuma menuntut satu koordinat.
+
+        Tiga kaki, dan yang kedua bukan hiasan:
+
+        * A -- jalur `.css`. Dua blok berjejer di baris 6: yang pertama
+          menamai koordinat yang mati, yang kedua koordinat pembunuhnya.
+          Hanya gabungan keduanya yang memenuhi `e`.
+        * B -- KONTROL. Fikstur yang sama dengan blok keduanya dibuang;
+          ia wajib jatuh di `e` sambil menamai koordinat yang hilang.
+          Tanpa kaki ini, kaki A tidak bisa dibedakan dari predikat yang
+          pelontos: sebuah `e` yang cuma menuntut SATU koordinat juga
+          menerima kaki A, dan gigi yang diklaim ternyata bukan gigi.
+        * C -- jalur `.py`. Dua docstring berjejer di baris 1, dengan
+          nilai yang diampuni TERBELAH di antara keduanya. Nama tokennya
+          sengaja ada di KEDUA blok: kalau cuma di salah satunya,
+          reduksi ke blok yang lain jatuh di `b`, dan yang terukur bukan
+          lagi gabungan NILAInya melainkan kebetulan hilangnya token.
+
+        Tiap kaki menegakkan premisnya sendiri lebih dulu -- cacah blok
+        yang menutupi baris saksinya, dipatok apa adanya. Kalau
+        `_blok_komentar` atau `_blok_docstring` berubah dan sebuah kaki
+        diam-diam menyusut jadi satu blok, seluruh metode ini tetap
+        hijau tanpa mengadili apa pun lagi.
+
+        Pembatas docstring fikstur DIRAKIT dari sebuah variabel, dengan
+        alasan yang sudah ditulis panjang di `_blok_docstring`:
+        menuliskannya apa adanya menyisipkan run pembatas ke dalam
+        berkas yang pembantu itu pindai, dan setiap pasangan blok
+        sesudah baris itu bergeser -- termasuk blok yang jadi saksi
+        ampunan nyata.
+        """
+        korban, nilai = (3, 4), ("7px", "9px")
+        diampuni = {v for e in self.AMPUNAN.values() for v in (e[1], e[3])}
+        self.assertEqual(
+            set(nilai) & diampuni, set(),
+            "nilai fikstur bertabrakan dengan nilai yang DIAMPUNI di berkas "
+            "nyata; predikat yang menghardik nilai nyata apa adanya akan "
+            "lolos di sini, dan pagar ini berhenti membedakan `membaca "
+            "entri` dari `menghafal berkas`")
+        self.assertNotIn(
+            "--x", {n for _t, n in self.AMPUNAN},
+            "nama token fikstur bertabrakan dengan token yang diampuni; "
+            "alasannya sama dengan assertion di atasnya")
+
+        jenis_css = "sintetis.css"
+        kepala = (
+            "/* fikstur: --x mati, dan saksinya berdiri di baris 6 */\n"
+            "\n"
+            '[data-tema="x"] { --x: 7px }\n'
+            ":root { --x: 9px }\n"
+            "\n")
+        css_dua = kepala + "/* --x di :3 kalah */ /* oleh :4 */\n"
+        css_satu = kepala + "/* --x di :3 kalah */\n"
+
+        sekitar = [(a, z) for a, z, _isi in self._blok_komentar(css_dua)
+                   if a <= 6 <= z]
+        self.assertEqual(
+            sekitar, [(6, 6), (6, 6)],
+            "premis kaki A runtuh: baris 6 tidak lagi disentuh DUA blok, "
+            "jadi gabungan yang sedang diadili tinggal satu blok dan kaki "
+            "ini berhenti mengadili apa pun")
+        sah, tolakan = self._saksi(
+            {jenis_css: css_dua}, "--x",
+            "lihat %s:%d" % (jenis_css, 6), korban, nilai)
+        self.assertEqual(
+            (sah, tolakan), ([(jenis_css, 6)], []),
+            "dua komentar berjejer yang BERSAMA-SAMA menamai kedua "
+            "koordinatnya -- ditolak. Keduanya berdiri di baris yang sama; "
+            "membaca salah satunya saja berarti menghukum penulis yang "
+            "memecah keterangannya jadi dua potong")
+
+        sekitar = [(a, z) for a, z, _isi in self._blok_komentar(css_satu)
+                   if a <= 6 <= z]
+        self.assertEqual(
+            sekitar, [(6, 6)],
+            "premis kaki B runtuh: kontrolnya harus punya TEPAT satu blok, "
+            "kalau tidak ia berhenti jadi pembeda bagi kaki A")
+        sah, tolakan = self._saksi(
+            {jenis_css: css_satu}, "--x",
+            "lihat %s:%d" % (jenis_css, 6), korban, nilai)
+        self.assertEqual(
+            (sah, [(t[1], t[2]) for t in tolakan]),
+            ([], [("e", "blok :6-:6 tidak menamai koordinat 4")]),
+            "kontrol satu blok DITERIMA, atau ditolak tanpa menamai "
+            "koordinat yang hilang. Kalau yang kurang satu koordinat pun "
+            "lolos, kaki A tidak membuktikan gabungannya dibaca -- ia cuma "
+            "membuktikan salah satu bloknya dibaca")
+
+        q = '"' * 3
+        jenis_py = "sintetis.py"
+        py = ("%s--x turun ke 7px di sini.%s %s--x naik lagi ke 9px.%s\n"
+              % (q, q, q, q))
+        sekitar = [b for b in self._blok_docstring(py) if b[0] <= 1 <= b[1]]
+        self.assertEqual(
+            [(a, z) for a, z, _isi in sekitar], [(1, 1), (1, 1)],
+            "premis kaki C runtuh: baris 1 tidak lagi disentuh DUA blok")
+        for _a, _z, isi in sekitar:
+            self.assertIn(
+                "--x", isi,
+                "kedua blok fikstur WAJIB memuat nama tokennya; begitu satu "
+                "blok kehilangannya, reduksi ke blok itu jatuh di `b` dan "
+                "yang terukur bukan lagi gabungan NILAInya")
+        sah, tolakan = self._saksi(
+            {jenis_py: py}, "--x",
+            "lihat %s:%d" % (jenis_py, 1), korban, nilai)
+        self.assertEqual(
+            (sah, tolakan), ([(jenis_py, 1)], []),
+            "dua docstring berjejer yang BERSAMA-SAMA menamai kedua "
+            "nilainya -- ditolak, dengan alasan yang sama persis dengan "
+            "kaki A, cuma di jalur yang lain")
+
+    def test_premis_nol_baris_ditutup_lebih_dari_satu_blok(self):
+        """Premis metode di atasnya DITAGIH, bukan dihitung sekali lalu diketik.
+
+        Dua fikstur sintetis di metode itu dibayar dengan satu alasan:
+        tidak ada baris di `gaya.css` maupun di berkas ini yang ditutup
+        lebih dari satu blok, jadi kedua `join` di `_saksi` selalu
+        mengerjakan daftar satu elemen dan cabang gabungannya tidak punya
+        satu pun data nyata untuk diadili. Selama alasan itu cuma berupa
+        kalimat berangka, ia bisa basi tanpa satu pun tes merah -- dan
+        sudah basi: angka yang ditulis untuk berkas ini melenceng satu
+        begitu metode yang menulisnya menambahkan docstring-nya sendiri.
+
+        Empat kaki, SATU penghitung, dan nol angka populasi yang diketik.
+        Yang dituntut cuma bentuknya -- premis `> 0`, lalu isi `== []` --
+        karena mematok cacahnya di sini melahirkan ulang cacat yang sama
+        satu tingkat lebih dalam, dan untuk `gaya.css` pajaknya jatuh ke
+        hop lain: sebuah komentar baru di sana memerahkan tes ini tanpa
+        tes ini mengadili apa pun tentang dua-blok.
+
+        Kedua kaki kontrol wajib ada karena kaki nyata tidak bisa
+        membedakan "tidak ada baris bertumpang" dari "penghitungnya tidak
+        pernah melihat satu baris pun". Barisnya sengaja baris LANJUTAN
+        blok pertama, bukan baris awalnya: penghitung yang mereduksi tiap
+        blok jadi baris AWAL-nya saja tetap memberi nol di KEDUA fikstur,
+        dan itu persis bentuk yang paling mungkin lahir dari suntingan
+        yang niatnya merapikan.
+        Titik temunya DUA karena satu tidak cukup: kalau blok keduanya
+        satu-baris, penghitung yang memakai baris AKHIR-nya saja ikut
+        lulus; kalau multibaris, penghitung yang melewati blok satu-baris
+        yang lolos. Sensus pelemahannya: sepuluh merah, dua setara hijau.
+
+        Pembatas docstring fikstur DIRAKIT dari sebuah variabel, dengan
+        alasan yang sudah ditulis panjang di `_blok_docstring`:
+        menuliskannya apa adanya menyisipkan run pembatas ke dalam berkas
+        yang kaki keduanya sedang pindai.
+        """
+        def bertumpang(blok):
+            """Baris yang ditutup >1 blok, plus cacah baris yang tertutup.
+
+            Cacahnya ikut dikembalikan supaya tiap kaki menegakkan
+            premisnya tanpa penghitung kedua. Satu mesin untuk kaki nyata
+            DAN kaki kontrol: kalau keduanya dihitung alat yang berbeda,
+            yang diklaim sebagai premis sebenarnya diadili oleh alat yang
+            tidak pernah menyentuh berkasnya.
+            """
+            hitung = {}
+            for awal, akhir, _isi in blok:
+                for n in range(awal, akhir + 1):
+                    hitung[n] = hitung.get(n, 0) + 1
+            return sorted(n for n, c in hitung.items() if c > 1), len(hitung)
+
+        blok = self._blok_komentar(self._gaya())
+        tumpang, tertutup = bertumpang(blok)
+        self.assertGreater(
+            len(blok), 0,
+            "premis kaki CSS runtuh: pemindai komentar tidak melaporkan satu "
+            "blok pun di gaya.css")
+        self.assertGreater(
+            tertutup, 0,
+            "premis kaki CSS runtuh: nol baris tertutup, jadi `nol baris "
+            "bertumpang` di bawah ini hijau karena tak melihat apa-apa")
+        self.assertEqual(
+            tumpang, [],
+            "ada baris di gaya.css yang ditutup LEBIH dari satu blok, jadi "
+            "alasan `cabang gabungan tak terjangkau dari pohon` berhenti "
+            "benar -- cabang itu punya data nyata sekarang, dan fikstur "
+            "sintetis berhenti jadi satu-satunya cara mengadilinya")
+
+        blok = self._blok_docstring(self._berkas("tests", "test_web.py"))
+        tumpang, tertutup = bertumpang(blok)
+        self.assertGreater(
+            len(blok), 0,
+            "premis kaki Python runtuh: nol blok docstring di berkas ini")
+        self.assertGreater(
+            tertutup, 0,
+            "premis kaki Python runtuh, dengan alasan yang sama persis "
+            "dengan kaki CSS di atasnya")
+        self.assertEqual(
+            tumpang, [],
+            "ada baris di berkas ini yang ditutup LEBIH dari satu blok "
+            "docstring; alasannya sama dengan kaki CSS, plus satu akibat "
+            "yang cuma ada di sisi Python: pasangan blok `_blok_docstring` "
+            "SEKUENSIAL, jadi satu run pembatas yang tertulis apa adanya "
+            "menggeser seluruh blok sesudahnya")
+
+        fiks_css = ('[data-tema="malam"] { --x: 1px; }\n'
+                    "/* buka\n"
+                    "   tutup */ /* sebaris */\n"
+                    "/* dua\n"
+                    "   baris */ /* tiga\n"
+                    "   baris */\n"
+                    ":root { --x: 2px; }\n")
+        blok = self._blok_komentar(fiks_css)
+        self.assertEqual(
+            [(a, z) for a, z, _isi in blok], [(2, 3), (3, 3), (4, 5), (5, 6)],
+            "fikstur kontrol CSS berhenti punya dua titik temu: baris 3 "
+            "(blok kedua satu-baris) dan baris 5 (blok kedua multibaris, "
+            "yang menangkap penghitung yang memakai baris AKHIR-nya saja); "
+            "tanpa keduanya ia tidak lagi memisahkan penghitung yang bekerja "
+            "dari penghitung yang buta")
+        self.assertEqual(
+            bertumpang(blok)[0], [3, 5],
+            "penghitung yang sama melewatkan baris bertumpang pada fikstur "
+            "yang jelas punya dua; kedua kaki nyata di atas karena itu "
+            "tidak membuktikan apa pun")
+
+        q = '"' * 3
+        fiks_py = (q + "satu\n" + q + " dua " + q + "tiga " + q + "\n"
+                   + q + "empat\n" + q + " lima " + q + "enam\n" + q + "\n")
+        blok = self._blok_docstring(fiks_py)
+        self.assertEqual(
+            [(a, z) for a, z, _isi in blok], [(1, 2), (2, 2), (3, 4), (4, 5)],
+            "fikstur kontrol Python berhenti punya dua titik temu (baris 2 "
+            "dengan blok satu-baris, baris 4 dengan blok multibaris); "
+            "alasannya sama dengan kontrol CSS")
+        self.assertEqual(
+            bertumpang(blok)[0], [2, 4],
+            "penghitung melewatkan baris bertumpang pada fikstur Python yang "
+            "punya dua; kaki Python di atas karena itu vacuous")
+
+    def test_premis_dua_tema_berbeda_tidak_bertanding(self):
+        """`<html>` memegang SATU `data-tema`, jadi malam vs terang tak pernah
+        bertemu. Melonggarkan ini menghasilkan 67 tuduhan palsu di gaya.css.
+        """
+        css = ('[data-tema="malam"] { --x: 1px; }\n'
+               '[data-tema="terang"] { --x: 2px; }\n')
+        daftar = self._aturan(css)
+        self.assertEqual([e[0] for e in daftar],
+                         ['[data-tema="malam"]', '[data-tema="terang"]'])
+        self.assertEqual(
+            self._mati(daftar), [],
+            "dua blok tema BERBEDA dilaporkan saling mematikan. Keduanya "
+            "tidak pernah aktif bersamaan, jadi setiap temuan dari situ "
+            "adalah tuduhan palsu")
+
+    def test_blok_akar_sesudahnya_mematikan_token_tema(self):
+        """Dan kalau pembunuhnya blok akar, pagarnya WAJIB melihatnya."""
+        css = ('[data-tema="malam"] { --x: 1px; }\n'
+               ':root { --x: 2px; }\n')
+        hasil = self._mati(self._aturan(css))
+        self.assertEqual(len(hasil), 1,
+                         "tema + `:root` sesudahnya dengan spesifisitas seri "
+                         "wajib menghasilkan TEPAT SATU kematian, dapat: %r"
+                         % (hasil,))
+        tema, nama, nilai, bdekl, p2, v2, bd2 = hasil[0]
+        self.assertEqual((tema, nama, nilai, bdekl), ("malam", "--x", "1px", 1))
+        self.assertEqual((p2, v2, bd2), (":root", "2px", 2))
+
+    def test_nomor_baris_bertahan_di_balik_komentar_multibaris(self):
+        """Komentar tiga baris di atas blok tidak boleh menggeser nomornya."""
+        css = ("/* satu\n   dua\n   tiga */\n"
+               '[data-tema="kontras"] {\n'
+               "  --y: 3px;\n"
+               "}\n")
+        harap = css.split("\n").index("  --y: 3px;") + 1
+        daftar = self._aturan(css)
+        self.assertEqual(len(daftar), 1)
+        self.assertEqual(
+            daftar[0][3][0][2], harap,
+            "nomor baris deklarasi bergeser %d baris karena komentar di "
+            "atasnya dikosongkan tanpa menyimpan `\\n`-nya; semua koordinat "
+            "yang dilaporkan pagar ini jadi bohong"
+            % (harap - daftar[0][3][0][2]))
+        self.assertEqual(daftar[0][1],
+                         css.split("\n").index('[data-tema="kontras"] {') + 1)
+
+
+@unittest.skipUnless(shutil.which("node"),
+                     "butuh node untuk menjalankan jam kuis")
+class TestJamKuisBertahanDiLatar(unittest.TestCase):
+    """LAJU jam kuis saat tabnya di latar, bukan cuma bentuk cabangnya.
+
+    `TestKuisUmpanBalik.test_timer_tidak_panik_dan_berhenti_di_latar`
+    (`tests/test_web.py:6263`) sudah menahan lima mutasi MEKANISME, dan
+    kelimanya saya adu ulang di atas salinan rata pohon: jeda dibuang dari
+    cabang `document.hidden`, `sisaDetik` di-reset saat lanjut, `jamId` tidak
+    dinihilkan, kedua cabangnya dibalik, dan pendengar `visibilitychange`
+    tidak dipasang -- kelimanya MERAH. Pagar itu juga MENGAKUI batasnya
+    sendiri di badannya: ia mengunci BENTUK cabang sembunyinya, bukan
+    perilakunya.
+
+    Yang belum dibayar siapa pun LAJUNYA. Dua mutasi lolos SELURUH 1.039 tes
+    di pohon ini: `sisaDetik -= 2` di `detak`
+    (`webapp/statik/js/layar-kerja.js:174`) dan `setInterval(detak, 2000)` di
+    `jalankanJam` (`layar-kerja.js:180`). Yang pertama menelan dua detik per
+    detik; yang kedua memberi dua kali waktu kepada siapa pun yang tahu. Dan
+    persis keduanya yang dijanjikan dua baris S07: sembunyikan tab 6 detik ->
+    jam kehilangan paling banyak 1 detik; tampilkan lagi -> meneruskan dari
+    `sisaDetik` yang sama. Dua pernyataan KUANTITATIF, dan tidak satu pun
+    angkanya pernah dihitung oleh tes mana pun.
+
+    SUMBERNYA DIEKSTRAK, BUKAN DISALIN. Enam potongan diambil LEWAT NAMA dari
+    `layar-kerja.js`: baris `let sisaDetik =` (`layar-kerja.js:161`), baris
+    `let jamId =` (`layar-kerja.js:162`), ketiga arrow `detak`, `jalankanJam`
+    (`layar-kerja.js:180`) dan `saatTampil` (`layar-kerja.js:192`), lalu blok
+    pemasangnya (`layar-kerja.js:195`). Alasannya sudah tertulis di
+    `_SKRIP_BEDA_KATA` (`tests/test_web.py:9382`): salinan akan terus lulus
+    sesudah aslinya berubah, dan pagar yang lulus untuk kode yang sudah tidak
+    ada lebih buruk daripada tidak ada pagar. Arrow dipotong dengan HITUNG
+    KURUNG lewat `_panah` (`tests/test_web.py:7903`), bukan regex sampai `}`
+    pertama -- arrow bersarang adalah bentuk normal di berkas itu. Komentar
+    dibuang lewat `_telanjang` (`tests/test_web.py:1743`), pembersih yang
+    sudah ada, bukan pembersih kedua.
+
+    DAN SETIAP ARROW TETANGGA DI RENTANG YANG SAMA IKUT DIBAWA, bukan cuma
+    ketiga yang dinamai. Itu bukan kelonggaran melainkan syarat: memindahkan
+    jeda ke sebuah helper adalah penyusunan ulang yang perilakunya identik,
+    dan pagar yang memerah pada kode yang sah adalah pagar yang suatu hari
+    dimatikan orang -- lalu yang ikut mati isinya.
+
+    JAMNYA VIRTUAL. `setInterval`/`clearInterval` palsu di atas kursor
+    `sekarang`, dan `maju(ms)` menjalankan detak yang jatuh di dalam rentang
+    itu. Nol `setTimeout` sungguhan: tes yang benar-benar menunggu enam detik
+    adalah tes yang suatu hari dimatikan orang karena lambat, dan yang ikut
+    mati pagarnya.
+
+    MELANGGAR, merah  : `sisaDetik -= 2`; `setInterval(detak, 2000)`;
+        jeda dibuang dari cabang `document.hidden`; `sisaDetik` di-reset di
+        `jalankanJam`.
+    MENYUSUN ULANG, hijau : `30 >= sisaDetik` menggantikan `sisaDetik <= 30`;
+        jeda dipindah ke helper `jedaJam()` lalu dipanggil dari cabang itu.
+    """
+
+    PANAH = ("detak", "jalankanJam", "saatTampil")
+
+    _PRELUDE = r"""// Pewaktu VIRTUAL di atas kursor `sekarang`.
+let sekarang = 0;
+let idBerikut = 1;
+const pewaktu = new Map();
+const setInterval = (fn, ms) => {
+  const id = idBerikut++;
+  pewaktu.set(id, { fn: fn, ms: ms, jatuh: sekarang + ms });
+  return id;
+};
+const clearInterval = (id) => { pewaktu.delete(id); };
+const maju = (ms) => {
+  const akhir = sekarang + ms;
+  for (;;) {
+    let pilih = null;
+    for (const t of pewaktu.values()) {
+      if (t.jatuh <= akhir && (pilih === null || t.jatuh < pilih.jatuh)) pilih = t;
+    }
+    if (pilih === null) break;
+    sekarang = pilih.jatuh;
+    pilih.jatuh += pilih.ms;
+    pilih.fn();
+  }
+  sekarang = akhir;
+};
+
+const pendengar = new Map();
+const document = {
+  hidden: false,
+  addEventListener: (nama, fn) => {
+    if (!pendengar.has(nama)) pendengar.set(nama, []);
+    pendengar.get(nama).push(fn);
+  },
+  removeEventListener: (nama, fn) => {
+    const d = pendengar.get(nama) || [];
+    const i = d.indexOf(fn);
+    if (i >= 0) d.splice(i, 1);
+  },
+};
+const picu = (nama) => {
+  for (const fn of (pendengar.get(nama) || []).slice()) fn();
+};
+
+const sesi = { durasi: 90 };
+const jamMundur = (d) => "t" + d;
+const jam = { textContent: "", classList: { toggle: () => {} } };
+let cacahSelesai = 0;
+const selesai = () => { cacahSelesai += 1; };
+
+"""
+
+    _SKENARIO = r"""
+maju(3000);
+const sesudah3dtkTampil = sisaDetik;
+const sisaSebelumSembunyi = sisaDetik;
+const selesaiSebelum = cacahSelesai;
+document.hidden = true;
+picu("visibilitychange");
+maju(6000);
+const rugiSaatSembunyi = sisaSebelumSembunyi - sisaDetik;
+const selesaiSaatSembunyi = cacahSelesai - selesaiSebelum;
+document.hidden = false;
+picu("visibilitychange");
+const sisaTepatSaatKembali = sisaDetik;
+const lanjutDariAngkaYangSama = sisaTepatSaatKembali === sisaSebelumSembunyi;
+maju(1000);
+const satuDetakSesudahKembali = sisaDetik;
+process.stdout.write(JSON.stringify({
+  sesudah3dtkTampil: sesudah3dtkTampil,
+  sisaSebelumSembunyi: sisaSebelumSembunyi,
+  rugiSaatSembunyi: rugiSaatSembunyi,
+  selesaiSaatSembunyi: selesaiSaatSembunyi,
+  sisaTepatSaatKembali: sisaTepatSaatKembali,
+  satuDetakSesudahKembali: satuDetakSesudahKembali,
+  lanjutDariAngkaYangSama: lanjutDariAngkaYangSama,
+}));
+"""
+
+    @staticmethod
+    def _kerja():
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "js",
+                               "layar-kerja.js"), encoding="utf-8") as f:
+            return f.read()
+
+    def _satu(self, src, pola, nama):
+        """Baris yang cocok TEPAT SATU kali; angkanya ikut ke pesan galat."""
+        cocok = re.findall(pola, src, flags=re.M)
+        self.assertEqual(
+            len(cocok), 1,
+            "`%s` di layar-kerja.js cocok %d kali, mau TEPAT SATU. Nol "
+            "berarti potongannya sudah tidak ada dan pagar ini menguji kode "
+            "yang tidak dijalankan siapa pun lagi; dua atau lebih berarti "
+            "vonisnya tidak bisa diatribusikan ke deklarasi yang mana."
+            % (nama, len(cocok)))
+        return cocok[0]
+
+    @staticmethod
+    def _tutup(src, i):
+        """Indeks sesudah `}` yang menutup `{` di `i`, dengan hitung kurung."""
+        dalam = 0
+        for j in range(i, len(src)):
+            if src[j] == "{":
+                dalam += 1
+            elif src[j] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return j + 1
+        raise AssertionError("kurung `{` di %d tidak pernah tertutup" % i)
+
+    def _potongan(self):
+        """Keenam potongan jam kuis, siap dirangkai jadi program Node."""
+        src = TestHamparanBara._telanjang(self._kerja())
+        b_sisa = self._satu(src, r"^[ \t]*let sisaDetik\s*=[^\n]*",
+                            "let sisaDetik =")
+        b_jam = self._satu(src, r"^[ \t]*let jamId\s*=[^\n]*", "let jamId =")
+        kepala = list(re.finditer(r"^[ \t]*if \(sesi\.durasi\)\s*\{", src,
+                                  flags=re.M))
+        self.assertEqual(
+            len(kepala), 1,
+            "blok pemasang jam cocok %d kali, mau TEPAT SATU: tanpa satu blok "
+            "yang bisa ditunjuk, harness ini merangkai jam yang tidak pernah "
+            "dinyalakan siapa pun." % (len(kepala),))
+        awal = src.index(b_sisa)
+        akhir = self._tutup(src, kepala[0].end() - 1)
+        self.assertLess(
+            awal, kepala[0].start(),
+            "`let sisaDetik` berdiri DI BAWAH blok pemasangnya; rentang "
+            "ekstraksinya jadi kosong dan yang diuji bukan apa-apa")
+        panah = TestKakiAkibatPanelHasil._panah(src[awal:akhir])
+        nama = [p[0] for p in panah]
+        for n in self.PANAH:
+            self.assertEqual(
+                nama.count(n), 1,
+                "arrow `%s` cocok %d kali di dalam rentang jam kuis, mau "
+                "TEPAT SATU. Arrow yang hilang dari rentang itu berarti "
+                "potongan yang diuji di sini bukan lagi potongan yang "
+                "dijalankan browser." % (n, nama.count(n)))
+        bagian = [b_sisa.strip(), b_jam.strip()]
+        bagian += ["const %s = (%s) => %s;" % (p[0], p[1], p[2])
+                   for p in panah]
+        bagian.append(src[kepala[0].start():akhir].strip())
+        return bagian
+
+    def _jalankan(self):
+        """Satu skenario: 3 dtk tampil, 6 dtk sembunyi, lalu 1 dtk tampil."""
+        program = (self._PRELUDE + "\n".join(self._potongan())
+                   + self._SKENARIO)
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "uji-jam-kuis.mjs")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(program)
+            hasil = subprocess.run(["node", js], capture_output=True,
+                                   text=True, timeout=60)
+        self.assertEqual(hasil.returncode, 0,
+                         "driver Node gagal:\n" + hasil.stderr[-2500:])
+        return json.loads(hasil.stdout)
+
+    def test_sembunyi_enam_detik_memakan_paling_banyak_satu_detik(self):
+        """Enam detik di latar boleh memakan paling banyak satu detik."""
+        L = self._jalankan()
+        self.assertEqual(
+            L["sesudah3dtkTampil"], 87,
+            "tiga detik dengan tab TERLIHAT menyisakan %r dari 90, mau 87. "
+            "Asersi ini berdiri SEBELUM yang di bawahnya karena tanpa ia, jam "
+            "yang tidak pernah berdetak sama sekali juga 'rugi 0' -- dan "
+            "pelajar yang jamnya diam tidak punya batas waktu, cuma angka "
+            "hiasan." % (L["sesudah3dtkTampil"],))
+        self.assertLessEqual(
+            L["rugiSaatSembunyi"], 1,
+            "enam detik dengan tab TERSEMBUNYI memakan %r detik, mau paling "
+            "banyak 1. Yang pelajar rasakan: detik yang tidak pernah bisa "
+            "dipakai menjawab, habis di halaman yang tidak ia lihat sama "
+            "sekali." % (L["rugiSaatSembunyi"],))
+        self.assertEqual(
+            L["selesaiSaatSembunyi"], 0,
+            "kuisnya diselesaikan %r kali selagi tabnya tidak terlihat, mau "
+            "NOL. Pelajar yang kembali menemukan kuisnya sudah dinilai tanpa "
+            "pernah melihat soal terakhirnya -- batas waktu yang habis di "
+            "balik punggung orangnya." % (L["selesaiSaatSembunyi"],))
+
+    def test_kembali_tampil_melanjutkan_dari_angka_yang_sama(self):
+        """Tab yang terlihat lagi meneruskan dari sisa detik yang sama."""
+        L = self._jalankan()
+        self.assertEqual(
+            L["sisaTepatSaatKembali"], L["sisaSebelumSembunyi"],
+            "kembali tampil memberi %r sisa detik, sementara saat "
+            "disembunyikan sisanya %r. Angka harapannya DITURUNKAN dari jejak "
+            "yang sama, bukan diketik, supaya ia tidak bisa basi saat durasi "
+            "harness berubah. Naik berarti waktu gratis: yang menyembunyikan "
+            "tabnya mendapat ulangan yang tidak didapat siapa pun yang jujur."
+            % (L["sisaTepatSaatKembali"], L["sisaSebelumSembunyi"]))
+        self.assertTrue(
+            L["lanjutDariAngkaYangSama"],
+            "harness melaporkan jamnya TIDAK melanjutkan dari angka yang "
+            "sama (%r vs %r). Yang dihentikan saat tab di latar seharusnya "
+            "pencacahnya, bukan angkanya."
+            % (L["sisaTepatSaatKembali"], L["sisaSebelumSembunyi"]))
+        self.assertEqual(
+            L["satuDetakSesudahKembali"], L["sisaTepatSaatKembali"] - 1,
+            "satu detik sesudah tabnya terlihat lagi sisanya %r, mau %r. "
+            "Jamnya tidak benar-benar dilanjutkan: yang pelajar lihat angka "
+            "beku, dan batas waktu yang tidak pernah berjalan sama tidak "
+            "bergunanya dengan batas waktu yang berjalan dua kali cepat."
+            % (L["satuDetakSesudahKembali"], L["sisaTepatSaatKembali"] - 1))
+
+    @staticmethod
+    def _aturan_dua_lintasan(css):
+        """Baca `css` yang sudah `_telanjang` jadi daftar `(selektor, isi)`.
+
+        SATU-SATUNYA pembaca dua lintasan di berkas ini. Pemakainya dua:
+        `TestKuisUmpanBalik.test_angka_kuis_tidak_bergeser_karena_monospace_bukan_tabular_nums`
+        (selektor TEPAT `.kuis-kemajuan`) dan
+        `test_jam_memakai_font_kode_di_seluruh_keluarga_selektornya` di kelas
+        ini (keluarga `.jam`/`.menipis`). Sebelumnya keduanya membawa salinan
+        sendiri; pemakai berikutnya cukup memanggil ini.
+
+        Rumahnya di sini, bukan di `TestKuisUmpanBalik` yang secara arsitektur
+        lebih pantas, karena kelas itu seluruhnya berada di atas
+        `class TestLompatKeBarisGalat` -- nomor barisnya dikutip komentar
+        `layar-kerja.js`, jadi pembantu yang lahir di sana menggeser nomor itu.
+
+        Yang dipulangkan: hasil KEDUA lintasan dihimpun dalam satu daftar, dan
+        aturan yang terlihat keduanya muncul dua kali. Pemakai membandingkan
+        nilainya SEKALI atas himpunan itu; kalau dibandingkan per lintasan,
+        aturan yang hanya terlihat lintasan 2 lolos karena lintasan 1 sudah
+        hijau.
+        """
+        # LINTASAN 1 -- berjangkar awal-baris, menolak prelude ber-`@`.
+        aturan = [(sel.strip(), isi) for prelude, isi
+                  in re.findall(r"(?m)^([^{}/@][^{}]*?)\{([^{}]*)\}", css)
+                  for sel in prelude.split(",")]
+        # LINTASAN 2 -- tanpa jangkar, untuk aturan yang tidak mulai di awal
+        # baris (lengan `@` satu-baris). Segmen selektor dipotong pada `{`
+        # TERAKHIR supaya awalan lengan tidak ikut dianggap selektor.
+        #
+        # Pemotongan itu DEFENSIF, bukan aktif: grup pertama `([^{}]+)`
+        # mengecualikan kurung secara konstruksi, jadi populasi ruas yang
+        # memuat `{` terukur NOL (predikat: `"{" in ruas` atas hasil
+        # `re.findall(r"([^{}]+)\{([^{}]*)\}", css)`, ruang: pohon
+        # `_telanjang`, satuan: cacah ruas). Ia tetap ditulis karena pembaca
+        # berikutnya yang mengganti polanya tidak wajib mewarisi jaminan itu.
+        for ruas, isi in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            ruas = ruas[ruas.rfind("{") + 1:]
+            for sel in ruas.split(","):
+                aturan.append((sel.strip(), isi))
+        return aturan
+
+    def test_jam_memakai_font_kode_di_seluruh_keluarga_selektornya(self):
+        """Yang menahan `0:09` -> `0:10` di tempatnya MONOSPACE-nya, satu detak.
+
+        YANG DIJAGA: setiap aturan CSS ber-selektor keluarga `.jam`/`.menipis`
+        yang menyetel `font-family` menyetelnya ke `var(--f-kode)` -- token
+        yang berakhir monospace. Jam mundur kuis berubah SETIAP DETIK, dan
+        `0:09` yang menjadi `0:10` di font proporsional menggeser apa pun yang
+        berdiri di sebelahnya pada tiap detak. Bukan satu pergeseran di satu
+        peristiwa yang jarang: enam puluh kali per menit, di satu-satunya
+        angka yang memang sedang ditunggu orang.
+
+        CELAHNYA TERUKUR, bukan dikhawatirkan. Mengganti `gaya.css:3885` dari
+        `font-family: var(--f-kode)` ke `var(--f-teks)` -- net-zero baris, jadi
+        tidak satu pun pagar ALAMAT ikut bergeser -- lolos SELURUH 1.041 tes di
+        pohon ini: nol penebus. Pagar `font-variant-numeric` yang sudah ada
+        (`TestLebarDigitDiMesin.test_satu_properti_satu_nilai_di_seluruh_claimant`,
+        `tests/test_web.py:8251`) buta terhadapnya secara konstruksi: ia
+        menuntut HIMPUNAN nilai dan CACAH 23 atas properti yang LAIN, jadi
+        pelanggaran yang tidak menyentuh cacah itu tidak pernah terlihat.
+
+        PREMIS (b) TIDAK DIULANG DI SINI. "Ekor setiap deklarasi `--f-kode`
+        adalah `monospace` atau `ui-monospace`" sudah dibayar
+        `TestKuisUmpanBalik.test_angka_kuis_tidak_bergeser_karena_monospace_bukan_tabular_nums`
+        (`tests/test_web.py:5022`, asersinya di `:5144`-`:5162`), dan populasi
+        deklarasinya terukur SATU di `gaya.css:354`. Menuliskannya ulang di
+        sini adalah definisi kedua atas satu aturan, dan dua definisi selalu
+        menyimpang -- yang satu dirapikan, yang lain tidak, dan tidak ada yang
+        tahu mana yang mengikat.
+
+        DUA LINTASAN, dan yang kedua bukan hiasan. Pembaca berjangkar
+        `(?m)^([^{}/@][^{}]*?)\\{([^{}]*)\\}` menolak prelude yang membuka
+        dengan `@` supaya lengan at-rule tidak terbaca sebagai selektor --
+        harganya ia juga buta terhadap aturan yang tidak MULAI di awal baris.
+        Pada `@media (max-width: 700px) { .jam { font-family: var(--f-teks); }
+        }` yang ditulis SATU BARIS, `.jam` tidak pernah berada di awal baris
+        dan lintasan 1 memulangkan NOL. Lubang itu sudah diukur dan ditutup
+        untuk `.kuis-kemajuan` (`tests/test_web.py:5052`-`:5061`); pagar ini
+        tidak mewarisinya.
+
+        KELUARGA, BUKAN SATU BLOK. `gaya.css:3899` adalah `.jam.menipis` --
+        selektor majemuk yang lolos pembacaan berjangkar `\\.jam` + `{`. Dan
+        `(?![\\w-])` wajib: tanpanya `.jamu-x` ikut tertuduh. Aturan keluarga
+        yang TIDAK menyetel `font-family` sama sekali bukan pelanggaran;
+        `:3899` hari ini cuma menyetel `font-weight`, dan memerahkannya berarti
+        pagar ini melarang hal yang sah.
+
+        YANG TIDAK DIJAGA -- `BELUM TERUKUR`: apakah
+        `font-variant-numeric: tabular-nums` di `.jam` (`gaya.css:3886`) itu
+        HIASAN. Tes `:5023`-`:5037` mengukur di peramban sungguhan bahwa dalam
+        konteks `--f-kode` properti itu tidak mengubah satu piksel pun untuk
+        `.kuis-kemajuan`; `.jam` memakai token font yang SAMA, jadi dugaan yang
+        sama berlaku -- tapi dugaan bukan pengukuran, dan mengukurnya butuh
+        CDP. Ia karena itu tidak disentuh di sini, ke arah mana pun.
+
+        Juga tidak dijaga: bahwa keluarga monospace di depan daftar `--f-kode`
+        benar-benar TERPASANG di mesin pembaca. Itu sebabnya yang dipagari di
+        `:5144` ekornya, bukan nama-nama di depannya.
+        """
+        css = TestHamparanBara._telanjang(
+            TestLebarDigitDiMesin._baca("webapp", "statik", "gaya.css"))
+        # Pembacanya `_aturan_dua_lintasan` di atas -- definisi SATU yang juga
+        # dipakai pagar `.kuis-kemajuan`.
+        #
+        # Lintasan 2 ikut memungut `from`/`to` di dalam `@keyframes` sebagai
+        # "selektor". Tidak berbahaya dan sengaja tidak ditambal: saringan di
+        # bawah menuntut selektor yang MENYEBUT `.jam` atau `.menipis`, dan
+        # tidak satu pun ruas keyframe menyebutnya.
+        aturan = self._aturan_dua_lintasan(css)
+        # Kedua lintasan DIHIMPUN dulu, nilainya dibandingkan sekali. Kalau
+        # dibandingkan per lintasan, aturan yang hanya terlihat lintasan 2
+        # akan lolos karena lintasan 1 sudah hijau.
+        KELUARGA_JAM = r"\.(?:jam|menipis)(?![\w-])"
+        keluarga = [(sel, isi) for sel, isi in aturan
+                    if re.search(KELUARGA_JAM, sel)]
+        self.assertTrue(
+            keluarga,
+            "tidak ada satu pun aturan ber-selektor keluarga `.jam`/"
+            "`.menipis` di `gaya.css`. Pagar yang kehilangan populasinya tidak "
+            "menjaga apa pun: ia hijau justru pada pohon tempat jamnya sudah "
+            "tidak punya gaya sama sekali")
+        nilai = {" ".join(m.split())
+                 for _, isi in keluarga
+                 for m in re.findall(r"font-family\s*:\s*([^;]+)", isi)}
+        self.assertEqual(
+            nilai, {"var(--f-kode)"},
+            "keluarga `.jam` tidak lagi memakai `var(--f-kode)` di seluruh "
+            "aturan yang menyebut `font-family` -- termasuk yang tinggal di "
+            "dalam lengan `@media`/`@container`, multibaris maupun satu baris. "
+            "Jam mundur kuis berganti angka SETIAP DETIK, jadi `0:09` yang "
+            "menjadi `0:10` di font proporsional menggeser teks di sebelahnya "
+            "enam puluh kali per menit. Yang menahannya MONOSPACE-nya token "
+            "itu, dan BUKAN `font-variant-numeric: tabular-nums` di "
+            "`gaya.css:3886`: terukur di peramban sungguhan (lihat "
+            "`tests/test_web.py:5033`-`:5037`), dalam konteks `--f-kode` "
+            "properti itu memberi `1 / 20` dan `7 / 20` lebar yang sama "
+            "46,640625 px -- yaitu selisih 0 px -- karena monospace-nya sudah "
+            f"melakukannya lebih dulu. Himpunan yang terbaca: {sorted(nilai)}")
+
+
+class TestAlamatGayaDiTesMenunjukBloknya(unittest.TestCase):
+    """Alamat `gaya.css` di `tests/*.py` wajib menunjuk BLOK yang diklaimnya.
+
+    Dua pagar alamat yang sudah ada kekuatannya berbeda, dan celahnya persis
+    di antara keduanya. `TestAlamatKomentar` (metode
+    `test_tiap_alamat_di_komentar_menunjuk_baris_yang_masih_berisi_itu`)
+    menagih ISI lewat potongan di `TABEL`, tapi ruangnya cuma komentar
+    `webapp/statik/js/*.js`. `TestRujukanAntarBerkasTidakMenunjukRuangKosong`
+    (metode `test_tiap_rujukan_berkas_nomor_menunjuk_baris_yang_berisi_sesuatu`)
+    menjangkau berkas tes, tapi cuma menagih "baris sasarannya tidak sepi".
+    Akibatnya alamat `gaya.css` di prosa tes boleh menunjuk baris MANA PUN yang
+    berisi sesuatu, termasuk blok tetangga.
+
+    Populasi terukur sebelum kelas ini ada: 65 alamat (semuanya di berkas ini),
+    28 tanpa token bercorak CSS di jendelanya (tidak dituduh), 29 lulus, dan
+    8 gagal, yaitu tujuh rujukan basi (satu di antaranya rentang). Sesudah
+    ketujuhnya dibetulkan: 64 alamat (satu narasi historis ditulis ulang ke
+    bentuk tanpa titik dua), 36 lulus, 28 tanpa token, 0 gagal.
+
+    Bentuk predikatnya diukur, bukan dipilih:
+      * backtick dipasangkan PER PARAGRAF. Pemasangan sekali-lintas atas
+        seluruh berkas meleset: satu backtick ganjil di hulu membalik semua
+        pasangan sesudahnya, dan rujukan `container-type: size` di baris 7865
+        berkas ini jadi tanpa token;
+      * deklarasi wajib `properti: nilai` dengan spasi sesudah titik dua.
+        Tanpa spasi, alamat berkas di prosa baris 19732 terbaca deklarasi;
+      * selektor ELEMEN telanjang (`h3`, `body`, ...) ikut jadi token lewat
+        `TAG`. Tanpanya rujukan ke blok `h3` di `gaya.css` baris 570 gagal palsu;
+      * komentar `/* ... */` di baris sasaran dibuang lebih dulu. Ini gratis
+        (nol dari 29 yang lulus berbalik), dan ia menutup alamat yang menunjuk
+        prosa komentar CSS yang kebetulan menyebut selektornya.
+
+    KOREKSI PREMIS. Antrean menyebut dua alamat sebagai "positif palsu karena
+    menunjuk deklarasi di dalam blok". Keduanya ternyata BASI: `gaya.css`
+    baris 3992 adalah `font-size` di blok `.rinci-total` (sedangkan
+    `@keyframes pudar` di baris 4050), dan baris 4530 adalah `padding-right`
+    di blok `.kerja-soal` (sedangkan `container-type: size` di baris 4551).
+    Satu-satunya kasus "deklarasi di dalam blok" yang benar adalah
+    `font-variant-numeric` di blok `.jam` (`gaya.css` baris 3886), dan
+    kasus itulah yang wajib tetap hijau. Fikstur metode pertama mengunci
+    bentuknya tanpa membaca berkas apa pun.
+
+    Angka historis di sini sengaja ditulis tanpa titik dua: rujukan berkolon
+    yang menarasikan nomor basi akan disapu kelas ini sendiri.
+    """
+
+    RUJUK = re.compile(r"gaya\.css:(\d+)(?:\s*-\s*:?(\d+))?")
+    TAG = frozenset({
+        "html", "body", "h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "ul",
+        "ol", "li", "pre", "code", "kbd", "button", "input", "details",
+        "summary", "table", "svg", "img", "section", "nav", "main"})
+
+    @staticmethod
+    def _konteks_blok(css):
+        """Per nomor baris (1-based): prelude blok TERDALAM yang membungkusnya,
+        komentar dibuang. Baris yang membuka blok memakai prelude-nya sendiri,
+        jadi `}` penutup masih dibaca sebagai milik bloknya."""
+        hasil = [""] * (len(css.split("\n")) + 2)
+        tumpuk = []
+        prelude = []
+        i, baris = 0, 1
+        dalam_komentar = False
+        while i < len(css):
+            c = css[i]
+            if dalam_komentar:
+                if css.startswith("*/", i):
+                    dalam_komentar = False
+                    i += 2
+                    continue
+                if c == "\n":
+                    baris += 1
+                    hasil[baris] = tumpuk[-1] if tumpuk else ""
+                i += 1
+                continue
+            if css.startswith("/*", i):
+                dalam_komentar = True
+                i += 2
+                continue
+            if c == "{":
+                p = "".join(prelude).strip()
+                tumpuk.append(p)
+                prelude = []
+                hasil[baris] = p
+            elif c == "}":
+                if tumpuk:
+                    tumpuk.pop()
+                prelude = []
+            elif c == ";":
+                prelude = []
+            elif c == "\n":
+                baris += 1
+                hasil[baris] = tumpuk[-1] if tumpuk else ""
+                prelude.append(" ")
+            else:
+                prelude.append(c)
+            i += 1
+        return hasil
+
+    @staticmethod
+    def _kode_saja(css):
+        """Baris-baris `css` dengan isi komentar diganti spasi. Jumlah barisnya
+        tetap, jadi nomor alamat tidak bergeser."""
+        return re.sub(r"/\*.*?\*/",
+                      lambda m: re.sub(r"[^\n]", " ", m.group(0)),
+                      css, flags=re.S).split("\n")
+
+    @staticmethod
+    def _token(teks_span):
+        """Isi satu span backtick -> `None` atau `(jenis, isi)`: `kf` untuk
+        `@keyframes x`, `sel` untuk selektor `.x`/`#x`/tag elemen, `dek` untuk
+        deklarasi `properti: nilai`."""
+        t = teks_span.strip()
+        kf = re.match(r"@keyframes\s+[\w-]+", t)
+        if kf:
+            return ("kf", kf.group(0))
+        if re.match(r"[.#][A-Za-z_][\w-]*", t):
+            # `.x { a }` -> `.x`; `.a .b` tetap utuh
+            return ("sel", re.split(r"\s*\{", t)[0].strip())
+        if t in TestAlamatGayaDiTesMenunjukBloknya.TAG:
+            return ("sel", t)
+        if re.match(r"-?-?[a-z][\w-]*\s*:\s+\S", t):
+            return ("dek", re.sub(r"\s+", " ", t.rstrip(";")))
+        return None
+
+    @staticmethod
+    def _lulus(token, teks_kode, prelude):
+        """Deklarasi harus ada di baris sasarannya sendiri. Selektor dan
+        keyframes boleh ada di baris itu ATAU di prelude blok terdalamnya --
+        itu yang membuat alamat ke deklarasi di dalam blok tetap sah."""
+        jenis, isi = token
+        if jenis == "dek":
+            return isi in re.sub(r"\s+", " ", teks_kode)
+        pola = re.compile(re.escape(isi) + r"(?![\w-])")
+        return bool(pola.search(teks_kode) or pola.search(prelude))
+
+    def test_predikat_blok_menerima_deklarasi_di_dalam_blok_dan_menolak_tetangga(self):
+        css = ("/* .a disebut di prosa komentar */\n"
+               ".a {\n"
+               "  color: red;\n"
+               "}\n"
+               ".b { color: blue; }")
+        kode = self._kode_saja(css)
+        prelude = self._konteks_blok(css)
+        sel = ("sel", ".a")
+        self.assertTrue(
+            self._lulus(sel, kode[1], prelude[2]),
+            "baris 2 (`.a {`) adalah prelude bloknya sendiri dan wajib LULUS")
+        self.assertTrue(
+            self._lulus(sel, kode[2], prelude[3]),
+            "baris 3 (`color: red;`) adalah deklarasi DI DALAM blok `.a` dan "
+            "wajib LULUS lewat prelude terdalamnya -- inilah bentuk alamat "
+            "`font-variant-numeric` di blok `.jam` yang sah")
+        self.assertFalse(
+            self._lulus(sel, kode[4], prelude[5]),
+            "baris 5 adalah blok TETANGGA `.b` dan wajib GAGAL untuk `.a`; "
+            "lulus di sini berarti alamat yang meleset satu blok tidak "
+            "tertangkap")
+        self.assertFalse(
+            self._lulus(sel, kode[0], prelude[1]),
+            "baris 1 adalah prosa KOMENTAR yang menyebut `.a` dan wajib GAGAL; "
+            "lulus di sini berarti komentarnya tidak dibuang sebelum dicocokkan")
+        dek = ("dek", "color: red")
+        self.assertTrue(
+            self._lulus(dek, kode[2], prelude[3]),
+            "baris 3 memuat `color: red` apa adanya dan wajib LULUS")
+        self.assertFalse(
+            self._lulus(dek, kode[4], prelude[5]),
+            "baris 5 memuat `color: blue`, bukan `color: red`, dan wajib "
+            "GAGAL: deklarasi tidak boleh menumpang prelude")
+
+    def test_tiap_alamat_gaya_css_di_tes_menunjuk_blok_yang_diklaimnya(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            css = f.read()
+        asli = css.split("\n")
+        kode = self._kode_saja(css)
+        prelude = self._konteks_blok(css)
+        total = bertoken = tanpa_token = 0
+        salah = []
+        dtes = os.path.join(akar, "tests")
+        for nama in sorted(os.listdir(dtes)):
+            if not nama.endswith(".py"):
+                continue
+            with open(os.path.join(dtes, nama), encoding="utf-8") as f:
+                isi = f.read()
+            # Backtick dipasangkan PER PARAGRAF: satu backtick ganjil di hulu
+            # tidak boleh membalik pasangan seluruh sisa berkas.
+            spans = []
+            pos = 0
+            for blok in re.split(r"(\n[ \t]*\n)", isi):
+                for s in re.finditer(r"`([^`]+)`", blok):
+                    spans.append((pos + s.start(), pos + s.end(), s.group(1)))
+                pos += len(blok)
+            awal = [0] + [m.end() for m in re.finditer(r"\n", isi)]
+            for m in self.RUJUK.finditer(isi):
+                no_sumber = isi.count("\n", 0, m.start()) + 1
+                w0 = awal[max(0, no_sumber - 2)]
+                ujung = min(len(awal) - 1, no_sumber + 1)
+                w1 = awal[ujung] - 1 if ujung < len(awal) - 1 else len(isi)
+                token = []
+                for a, b, teks in spans:
+                    if b <= w0 or a >= w1 or a <= m.start() < b:
+                        continue
+                    tk = self._token(teks)
+                    if tk:
+                        token.append(tk)
+                for g in (m.group(1), m.group(2)):
+                    if not g:
+                        continue
+                    total += 1
+                    if not token:
+                        tanpa_token += 1
+                        continue
+                    bertoken += 1
+                    no = int(g)
+                    if not 1 <= no <= len(kode):
+                        salah.append((nama, no_sumber, "gaya.css:" + g, token,
+                                      "di luar rentang 1..%d" % len(kode)))
+                    elif not any(self._lulus(tk, kode[no - 1], prelude[no])
+                                 for tk in token):
+                        salah.append((nama, no_sumber, "gaya.css:" + g, token,
+                                      asli[no - 1].strip()))
+        # Disimpan supaya cacahnya bisa dibaca tanpa mengetiknya ulang.
+        self.cacah = dict(total=total, bertoken=bertoken,
+                          tanpa_token=tanpa_token)
+        self.assertGreaterEqual(
+            total, 60,
+            "cuma %d alamat `gaya.css` terbaca di `tests/*.py`; sapuan yang "
+            "kehilangan populasinya tidak menjaga apa pun" % total)
+        self.assertGreaterEqual(
+            bertoken, 30,
+            "cuma %d alamat yang jendelanya memuat token CSS; sapuan yang "
+            "kehilangan populasinya tidak menjaga apa pun" % bertoken)
+        self.assertEqual(
+            salah, [],
+            "%d alamat `gaya.css` menunjuk baris yang bukan blok klaimnya:\n"
+            % len(salah)
+            + "\n".join("  %s baris %d -> %s  token=%s  baris sasaran=%r"
+                        % r for r in salah)
+            + "\nAlamat boleh menunjuk deklarasi DI DALAM blok selektor yang "
+            "diklaim; ia tidak boleh menunjuk blok tetangga atau prosa "
+            "komentar. Perbaiki NOMORNYA, jangan menyunting `gaya.css`.")
 
 
 if __name__ == "__main__":

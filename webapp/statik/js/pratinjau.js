@@ -119,10 +119,25 @@ const PELAPOR = `
 
 /** Bingkai pratinjau untuk sebuah dokumen HTML utuh.
  *
+ *  `opsi.lebar` menyetel lebar PERANGKAT yang disimulasikan, dalam piksel.
+ *  Nol atau tidak diisi berarti keadaan ALAMI bingkainya: `width: 100%` dari
+ *  gaya.css, nol transform, nol gaya inline pada wadahnya -- persis seperti
+ *  sebelum sakelar lebar ada. Itu kontrak, bukan kebetulan: `layar-belajar.js`
+ *  memanggil fungsi ini tanpa `opsi`, dan halaman materi tidak boleh berubah
+ *  satu simpul pun karena fitur yang hidup di layar lain.
+ *
+ *  Yang disetel adalah lebar BINGKAINYA, bukan wadahnya. Bedanya seluruh
+ *  gunanya fitur ini: halaman di dalam bingkai 360 px benar-benar MENATA ULANG
+ *  dirinya di 360 px -- media query-nya menyala, `auto-fill` jatuh ke satu
+ *  kolom, teksnya membungkus di tempat yang berbeda. Wadah yang disempitkan
+ *  cuma MEMOTONG halaman yang tetap ditata selebar aslinya, dan yang terlihat
+ *  bukan pelajaran melainkan separuh halaman yang hilang.
+ *
  *  @param {string} kode  HTML apa adanya, seperti yang ditulis pelajar.
- *  @returns {{el: HTMLElement, lepas: function}}
+ *  @param {{lebar?: number}} opsi
+ *  @returns {{el: HTMLElement, lepas: function, setLebar: function}}
  */
-export function pratinjauHtml(kode) {
+export function pratinjauHtml(kode, opsi = {}) {
   const bingkai = h("iframe.pratinjau-bingkai", {
     title: "Pratinjau halaman",
     sandbox: "allow-scripts",
@@ -138,6 +153,93 @@ export function pratinjauHtml(kode) {
     // dihemat: bingkainya baru dibuat saat tombolnya ditekan.
   });
   bingkai.style.height = TINGGI_AWAL + "px";
+  const wadah = h("div.pratinjau", {}, bingkai);
+
+  // Lebar perangkat yang SEDANG terpasang. Ini bukan otoritasnya: yang
+  // memutuskan `layar-kerja.js`, karena pilihannya harus bertahan melewati
+  // kartu hasil yang dirender ulang — dan kartu itu membuang objek ini.
+  // Yang disimpan di sini cuma nilai yang sudah dikenakan, sejajar dengan
+  // `tinggiTerpasang` di bawahnya.
+  let lebarPasang = Number(opsi.lebar) || 0;
+  let tinggiTerpasang = TINGGI_AWAL;
+
+  /* Kenakan lebar + tinggi + skala sebagai SATU keputusan.
+   *
+   * Urutannya mengikat, dan membaliknya sudah salah secara aritmetik:
+   * tinggi yang diskalakan adalah tinggi HASIL CLAMP, bukan angka mentah
+   * yang dilaporkan halaman. Yang benar `lebar -> k -> tinggi x k`;
+   * menukar dua langkah terakhir membuat wadah lebih tinggi daripada yang
+   * dibutuhkan pada `k = 1` dan memangkas isinya pada `k < 1`.
+   *
+   * Kenapa SKALA dan bukan `overflow-x: auto`: menggulir ke samping
+   * menyembunyikan separuh halaman yang justru mau dibandingkan, dan pen
+   * gulir bersarang di dalam `.kerja-hasil` berarti dua mesin pada satu
+   * sumbu — salah satunya `wheel`, yang di sana adalah isyarat putus-pin
+   * (`layar-kerja.js`, `SENTUHAN_HASIL`).
+   *
+   * Dan bingkainya TIDAK dibuat ulang. Pelapor tinggi di dalamnya sudah
+   * mendengarkan `resize`, jadi mengubah `style.width` saja cukup; menulis
+   * ulang `srcdoc` berarti memutar ulang animasi dan skrip halaman pelajar
+   * di depan matanya sendiri, setiap kali ia menekan pil lebar.
+   *
+   * Jalur `lebarPasang === 0` mengosongkan kembali SEMUA yang dipasangnya.
+   * Itu bentuk yang sama dengan aturan animasi di AGENTS.md: keadaan akhir
+   * sebuah sakelar wajib keadaan alami elemennya, supaya "lebar penuh"
+   * benar-benar mengembalikan bingkai ke rupa tanpa fitur ini — bukan ke
+   * tiruannya yang kebetulan mirip. */
+  const kenakan = () => {
+    bingkai.style.height = tinggiTerpasang + "px";
+    if (!lebarPasang) {
+      // Menghapus properti yang memang belum pernah disetel adalah no-op,
+      // jadi jalur bawaan menyisakan atribut gaya berisi `height` saja.
+      bingkai.style.width = "";
+      bingkai.style.transform = "";
+      bingkai.style.transformOrigin = "";
+      bingkai.style.marginRight = "";
+      bingkai.style.marginBottom = "";
+      wadah.style.height = "";
+      return;
+    }
+    // `clientWidth` wadah, bukan `offsetWidth`: `.pratinjau` punya border,
+    // dan lebar yang tersedia untuk bingkainya adalah lebar DALAM-nya.
+    const tersedia = wadah.clientWidth;
+    const k = tersedia > 0 ? Math.min(1, tersedia / lebarPasang) : 1;
+    bingkai.style.width = lebarPasang + "px";
+    // `top left`, bukan bawaan `center`: dengan titik tengah, halaman yang
+    // mengecil ikut bergeser ke dalam dan tepi kirinya tidak lagi sejajar
+    // dengan tepi kiri wadahnya.
+    bingkai.style.transformOrigin = "top left";
+    bingkai.style.transform = k < 1 ? `scale(${k})` : "";
+    const tinggiGambar = Math.round(tinggiTerpasang * k);
+    /* Margin negatif, dan ini bukan hiasan — ia menutup satu cacat TERUKUR.
+     *
+     * `transform` tidak mengubah satu kotak tata letak pun, jadi bingkai
+     * `width: 1280px` yang tergambar selebar 761 px TETAP menyumbang kotak
+     * 1280 px ke daerah luber wadahnya. Terukur di 1280x800: `.pratinjau`
+     * melapor `scrollWidth 1280` vs `clientWidth 761`, dan `scrollLeft`-nya
+     * benar-benar bisa digeser ke 400 — wadah itu diam-diam jadi pen gulir
+     * ber-bilah tersembunyi, yang isinya separuh halaman yang justru sedang
+     * dibandingkan. Dokumen dan `.kerja-hasil` tidak ikut kena (keduanya
+     * terukur `scrollWidth == clientWidth`), jadi gejalanya memang tidak
+     * terlihat — dan itu yang membuatnya pantas ditutup sekarang, bukan
+     * nanti.
+     *
+     * Margin negatif menyamakan kotak MARGIN bingkai dengan kotak yang
+     * TERGAMBAR, jadi tidak ada lagi yang tersisa untuk diluberi. Ia aman
+     * justru karena `transform-origin` ada di `top left`: yang digambar
+     * duduk di pojok kiri atas, dan ruang yang dicabut margin negatif
+     * adalah ruang yang memang sudah kosong.
+     *
+     * Dipasang hanya pada `k < 1`. Pada `k = 1` tidak ada yang berlebih,
+     * dan margin negatif nol piksel cuma akan menambah satu properti ke
+     * atribut gaya tanpa mengubah apa pun. */
+    bingkai.style.marginRight = k < 1
+      ? -Math.round(lebarPasang - tersedia) + "px" : "";
+    bingkai.style.marginBottom = k < 1
+      ? -(tinggiTerpasang - tinggiGambar) + "px" : "";
+    wadah.style.height = tinggiGambar + "px";
+  };
+  kenakan();
 
   function saatPesan(e) {
     if (e.source !== bingkai.contentWindow) return;
@@ -148,8 +250,8 @@ export function pratinjauHtml(kode) {
     // sedangkan KEKURANGAN satu piksel memunculkan bilah gulir sepanjang
     // bingkai — dan bilah gulir pada halaman yang sebenarnya sudah muat
     // membaca sebagai "ada yang belum kamu lihat di bawah sana".
-    const tinggi = Math.min(TINGGI_MAKS, Math.max(72, t + KELONGGARAN));
-    bingkai.style.height = tinggi + "px";
+    tinggiTerpasang = Math.min(TINGGI_MAKS, Math.max(72, t + KELONGGARAN));
+    kenakan();
     bingkai.classList.toggle("pratinjau-penuh", t + KELONGGARAN > TINGGI_MAKS);
   }
   addEventListener("message", saatPesan);
@@ -165,8 +267,22 @@ export function pratinjauHtml(kode) {
   });
 
   return {
-    el: h("div.pratinjau", {}, bingkai),
+    el: wadah,
+    // `lepas()` tetap melepas SATU pendengar dan tidak lebih. Sakelar lebar
+    // sengaja tidak menambah kanal kedua: ia tidak mengamati ukuran wadah dan
+    // tidak mendengarkan `resize` jendela, jadi tidak ada apa pun baru yang
+    // bisa tertinggal hidup di belakang layar berikutnya. Harganya diketahui
+    // dan dipilih: jendela yang diubah ukurannya SAAT sebuah lebar terpasang
+    // menyisakan `k` lama sampai halaman di dalamnya melaporkan tingginya
+    // lagi. Pengamat ukuran di atas wadah yang tingginya DISETEL fungsi ini
+    // sendiri adalah umpan balik yang memberi makan dirinya, dan menukar
+    // cacat yang kecil dan terbatas dengan cacat yang tidak berujung bukan
+    // pertukaran yang baik.
     lepas: () => removeEventListener("message", saatPesan),
+    setLebar: (w) => {
+      lebarPasang = Number(w) || 0;
+      kenakan();
+    },
   };
 }
 

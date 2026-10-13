@@ -19,6 +19,14 @@ import {
   adaGerak, PEGAS,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
+/* Saluran non-visual. Berkas ini SATU-SATUNYA yang memuatnya — sama seperti
+   bahasa gerak, pintunya cuma satu supaya tidak pernah ada layar yang
+   mengarang bunyinya sendiri. Yang diteruskan ke layar Pengaturan cuma
+   pembaca dan penulis preferensinya, lewat re-ekspor di kaki berkas ini. */
+import {
+  isyarat, sentuhPerangkat, bacaSuara, bacaGetar, setelSuara,
+  tandaiPreferensi, adaHaptik, SUARA,
+} from "./suara.js";
 
 /* -------------------------------------------------------------------- API */
 
@@ -540,11 +548,29 @@ export function rayakan(hadiah, { diam = false, dari = null } = {}) {
      Bukan `kilau()`: kilau adalah seluruh layar menguat, dan itu porsi `acara`.
      Yang di sini seukuran capaian — satu denyut pada bendanya, dan tujuh bara,
      bukan enam belas. `percikBara` memagari dirinya sendiri di `gerakPenuh`
-     (gerak.js:784) dan `denyut` ikut `skala()`, jadi tingkat gerak diputuskan
+     (gerak.js:801) dan `denyut` ikut `skala()`, jadi tingkat gerak diputuskan
      di satu tempat seperti biasanya. Keduanya berhenti sendiri. */
   if (tingkat === "capai" && dari) {
     denyut(dari);
     percikBara(dari, { jumlah: 7 });
+  }
+
+  /* Saluran NON-VISUAL, dan ia menempel DI SINI alih-alih di tiap layar
+     karena `tingkatRayakan()` di atas sudah memutuskan tingkatnya. Kalau
+     pengait ini dipasang di layar-layar, tiap layar akan menyimpulkan ulang
+     "ini peristiwa sebesar apa" dari isi hadiah — dan suatu hari dua di
+     antaranya menyimpulkan beda.
+     Haptik ikut HANYA pada `acara`. Yang dikonfirmasi getar adalah peristiwa
+     yang jarang; satu sentakan tiap kali XP bertambah berarti telepon yang
+     berdenyut dua puluh kali per sesi belajar, dan itu berhenti berarti
+     apa-apa pada denyut ketiga. Keduanya memagari dirinya sendiri lewat
+     `bacaSuara()`/`bacaGetar()` — bawaannya mati, jadi pemanggilan tanpa
+     syarat di sini tetap berujung diam sampai orangnya memilih sebaliknya. */
+  if (tingkat === "acara") {
+    isyarat("acara");
+    sentuhPerangkat();
+  } else if (tingkat === "capai") {
+    isyarat("capai");
   }
 
   for (const b of hadiah.badge || []) {
@@ -706,6 +732,40 @@ export function salin(teks, pesan = "Kode disalin.", sumber = null) {
 }
 
 export { denyut, masuk, keluar, percikBara, PEGAS };
+
+/* Satu-satunya pintu saluran non-visual yang dibuka ke layar.
+ *
+ * Yang diteruskan sengaja cuma pembaca dan penulis preferensinya plus satu
+ * peragaan — BUKAN `isyarat()` sendiri. Layar yang bisa memanggil `isyarat()`
+ * langsung adalah layar yang bisa mengarang bunyi barunya sendiri, dan pada
+ * saat itu "tiga tingkat" berhenti menggambarkan apa pun yang sebenarnya
+ * terdengar. */
+export { bacaSuara, bacaGetar, setelSuara, tandaiPreferensi, adaHaptik, SUARA };
+
+/** Peragakan satu saluran non-visual, untuk kartu pilihan di Pengaturan.
+ *
+ *  Kartunya harus BERBUNYI (atau menyentak) saat ditekan, sama seperti tiga
+ *  kartu tingkat gerak di sebelahnya memperagakan geraknya. Kalau tidak,
+ *  satu-satunya cara tahu apa arti "halus" adalah memilihnya, keluar dari
+ *  Pengaturan, belajar sampai naik level, dan mencoba mengingat rasanya — dan
+ *  tidak ada orang yang akan melakukan itu tiga kali untuk membandingkan.
+ *
+ *  SATU fungsi untuk dua saluran, dan parameternya saluran — bukan dua fungsi.
+ *  Dua pintu peragaan adalah dua tempat yang bisa berbeda pendapat tentang
+ *  syarat mana yang berlaku, dan satu-satunya hal yang membuat "bawaan mati"
+ *  bisa dipercaya adalah bahwa setiap jalur menuju bunyi melewati pemeriksaan
+ *  yang sama.
+ *
+ *  Tingkat suaranya DIBACA dari preferensi yang baru dipasang, bukan diterima
+ *  sebagai argumen: kartu yang memperagakan tingkat yang belum berlaku
+ *  memperagakan sesuatu yang bohong. "mati" karena itu memang hening — itu
+ *  jawaban yang benar, dan layar yang memanggil ini bertanggung jawab
+ *  mengatakannya dengan kata-kata. */
+export function mainkanContoh(saluran = "suara") {
+  if (saluran === "getar") return sentuhPerangkat();
+  const tingkat = bacaSuara();
+  return isyarat(tingkat === "halus" ? "acara" : "contoh");
+}
 
 function cadanganSalin(teks, selesai) {
   const ta = h("textarea", { value: teks, "aria-hidden": "true", tabIndex: -1,

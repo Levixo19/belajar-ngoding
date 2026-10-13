@@ -669,56 +669,397 @@ function daftarPerintah() {
   return daftar;
 }
 
-function saringPerintah(daftar, kata) {
+function saringPerintah(daftar, kata, riwayat = []) {
+  // Kueri kosong berarti "belum ada yang dipersempit": daftar dikembalikan apa
+  // adanya, objek yang sama dalam urutan yang sama. Palet lahir dengan medan
+  // kosong, jadi inilah keadaan yang paling sering terlihat -- dan urutan
+  // aslinya sendiri sudah berarti: perintah lebih dulu, bahasa sesudahnya.
+  // Riwayat sengaja TIDAK mengurutkan ulang keadaan ini: menatanya dari ingatan
+  // yang bisa berubah berarti daftar yang sama menyambut orangnya dengan
+  // susunan berbeda tiap kali Ctrl+K ditekan, tepat di layar yang ia pakai
+  // untuk menghafal letak sesuatu.
   if (!kata) return daftar;
+  // Bawaan `[]` membuat bentuk DUA argumen berarti persis seperti sebelum
+  // riwayat ada: himpunan kosong, `has()` selalu salah, skor utuh baris per
+  // baris. Keanggotaannya dihitung SEKALI jadi himpunan, dengan alasan yang
+  // sama dengan skor di bawah -- `riwayat.some()` di dalam perulangan mengubah
+  // ongkosnya jadi n*m pada SETIAP ketukan papan ketik.
+  const pernah = new Set(riwayat.map((r) => r.k));
+  // Skor dihitung SEKALI per baris lalu dibawa di samping barisnya. Memanggil
+  // pencocoknya dari dalam pembanding `sort` berarti ia berjalan O(n log n)
+  // kali alih-alih n, dan yang lebih mahal daripada ongkosnya: dua baris yang
+  // skornya dihitung di dua pemanggilan berbeda tidak dijamin dibandingkan
+  // atas angka yang sama.
+  const bernilai = [];
+  daftar.forEach((d) => {
+    // Dua medan, dua pencocokan, skor terbaik yang dipakai. Menggabungnya jadi
+    // satu string (`label + " " + ket`, yang dilakukan versi sebelumnya)
+    // membuat batas antar-medan jadi batas kata yang sah, sehingga huruf yang
+    // MELOMPAT dari judul ke keterangan terbaca sebagai kecocokan -- padahal
+    // tidak ada seorang pun yang mengetik "ab" untuk mencari "Alpha" yang
+    // keterangannya "Beta".
+    const skor = Math.max(skorBerurutan(d.label || "", kata),
+                          skorBerurutan(d.ket || "", kata));
+    // Riwayat MENAIKKAN kecocokan yang sudah ada, ia tidak pernah
+    // menciptakannya: baris yang hurufnya tidak muncul tetap gugur walau
+    // pernah dibuka. Kebalikannya -- membawa masuk baris yang tidak cocok
+    // karena pernah dipakai -- membuat kueri berhenti berarti apa pun.
+    if (skor > SKOR_GAGAL) {
+      bernilai.push({
+        d,
+        skor: skor + (pernah.has(d.href) ? BONUS_RIWAYAT : 0),
+      });
+    }
+  });
+  // Tanpa pemecah-seri buatan. `Array.prototype.sort` dijamin stabil sejak
+  // ES2019, jadi baris berskor sama keluar dalam urutan daftar asalnya.
+  // Menambah `|| indeks` apa pun di sini bukan "memastikan" -- ia justru
+  // satu-satunya cara urutan itu bisa rusak.
+  bernilai.sort((a, b) => b.skor - a.skor);
+  return bernilai.map((x) => x.d);
+}
+
+/* Skor yang tidak mungkin dicapai sebuah kecocokan, dipakai sebagai "tidak
+ * cocok". Ia -1 dan bukan 0 karena kueri yang seluruh hurufnya mendarat di
+ * tengah kata memang berskor rendah tapi SAH, dan menyamakan "nol" dengan
+ * "tidak ada" membuang justru kecocokan yang paling perlu bantuan. */
+const SKOR_GAGAL = -1;
+const BOBOT_HURUF = 2;
+const BONUS_BATAS = 8;
+const BONUS_AWAL = 4;
+/* Tambahan untuk baris yang pernah dibuka dari palet, dan ia WAJIB lebih kecil
+ * daripada `BONUS_AWAL` di atas -- itu sebabnya keduanya ditulis bersebelahan,
+ * supaya perbandingannya terbaca tanpa mencari. Kalau ia menang, satu
+ * kunjungan lama mengalahkan huruf yang SUNGGUH ada di awal kata, dan
+ * pencocoknya berhenti menjawab apa yang sedang diketik: ia mulai menjawab apa
+ * yang kebetulan dibuka minggu lalu. Yang dibeli riwayat cuma pemecah seri
+ * antara kandidat yang sama-sama cocok -- bukan hak veto atas kuerinya. */
+const BONUS_RIWAYAT = 3;
+
+/** Apakah `teks[i]` memulai sebuah kata?
+ *
+ *  Yang dibaca di sini teks ASLI, bukan bentuk kecilnya, dan itu bukan
+ *  kelalaian: sebagian batas kata di aplikasi ini TIDAK punya pemisah sama
+ *  sekali -- ia cuma transisi kecil->besar (`scrollTop`, `tipeData`). Mengukur
+ *  batas pada teks yang sudah dikecilkan menghapus seluruh kelas itu, dan yang
+ *  hilang justru bentuk nama yang paling sering dicari di kurikulum ini.
+ */
+function diBatasKata(teks, i) {
+  if (i === 0) return true;
+  const sblm = teks[i - 1];
+  if (sblm === "_" || sblm === "-" || sblm === "/" || sblm === " ") return true;
+  return sblm === sblm.toLowerCase() && sblm !== sblm.toUpperCase()
+    && teks[i] === teks[i].toUpperCase() && teks[i] !== teks[i].toLowerCase();
+}
+
+/** Skor kecocokan BERURUTAN `kata` di dalam `teks`, atau `SKOR_GAGAL`.
+ *
+ *  "Berurutan" berarti huruf kueri wajib muncul dalam urut yang sama tapi boleh
+ *  berjarak: "stk" menemukan "Statistik", sedangkan "kts" tidak, karena sesudah
+ *  "t" di situ tidak ada lagi "s". Pencocokan lama cuma mengenali potongan yang
+ *  BERDEKATAN, jadi dua kueri paling alami untuk sebuah palet -- singkatan
+ *  ("stk") dan huruf awal kata ("bh" untuk "Bahasa") -- tidak pernah menemukan
+ *  apa pun, dan yang dialami pemakainya bukan "kueriku kurang tepat" melainkan
+ *  "barangnya tidak ada di sini".
+ *
+ *  Pencariannya RAKUS dari kiri (`indexOf` dari kursor), dan itu dipilih bukan
+ *  karena termurah melainkan karena deterministik: satu lintasan, tanpa tabel,
+ *  tanpa cabang yang bergantung pada apa pun di luar kedua argumennya. Skor
+ *  yang lahir dari satu lintasan itulah yang membuat baris berskor sama
+ *  benar-benar sama -- dan dengan itu urutan daftar asal selamat.
+ */
+function skorBerurutan(teks, kata) {
+  const t = teks.toLowerCase();
   const k = kata.toLowerCase();
-  return daftar.filter(
-    (d) => (d.label + " " + (d.ket || "")).toLowerCase().includes(k));
+  let skor = 0;
+  let dari = 0;
+  let mulai = -1;
+  for (let n = 0; n < k.length; n++) {
+    const pos = t.indexOf(k[n], dari);
+    if (pos < 0) return SKOR_GAGAL;
+    if (mulai < 0) mulai = pos;
+    skor += BOBOT_HURUF;
+    // Huruf yang mendarat di AWAL kata jauh lebih mungkin yang dimaksud
+    // pengetiknya daripada huruf yang kebetulan ada di tengah kata.
+    if (diBatasKata(teks, pos)) skor += BONUS_BATAS;
+    dari = pos + 1;
+  }
+  // Dan kecocokan yang dimulai di huruf pertama teksnya mengalahkan yang mulai
+  // di tengah, kalau sisa skornya sama.
+  if (mulai === 0) skor += BONUS_AWAL;
+  return skor;
+}
+
+/* Umur ingatan palet diukur dalam HARI, dan panjang satu hari ditulis sekali
+ * di sini. Angka 86400000 yang ditebar di beberapa tempat adalah angka yang
+ * suatu hari ditulis salah satu digit di salah satu tempat, dan gejalanya
+ * bukan error melainkan ingatan yang dibuang pada umur yang bukan 14 hari. */
+const HARI_MS = 86400000;
+
+/** Butir riwayat yang masih cukup baru, dalam urutan yang sama.
+ *
+ *  `sekarang` masuk sebagai ARGUMEN, bukan dibaca dari jam di dalam sini, dan
+ *  itu bukan soal gaya: fungsi yang membaca jamnya sendiri memberi jawaban
+ *  berbeda untuk masukan yang sama, dan sebuah baris yang sedang berada tepat
+ *  di tepi 14 hari akan muncul-hilang di antara dua huruf yang diketik. Yang
+ *  mengambil jam tinggal di `bukaPalet()`, satu kali per palet yang dibuka --
+ *  dan dengan itu pencocok di atas tetap bisa diadu per urutan oleh tes, yang
+ *  mustahil kalau jawabannya bergantung pada kapan tes itu dijalankan.
+ *
+ *  Yang dikembalikan daftar BARU dan yang masuk tidak disentuh: pemanggilnya
+ *  memakai lagi daftar yang sama nanti untuk mencatat butir berikutnya.
+ */
+function riwayatPotong(riwayat, sekarang, batasHari = 14) {
+  const batas = sekarang - batasHari * HARI_MS;
+  return riwayat.filter((r) => r.u >= batas);
+}
+
+/** Riwayat BARU dengan `k` di depan dan waktunya disetel `sekarang`.
+ *
+ *  Satu alamat satu butir: kalau `k` sudah ada di dalam, yang lama DIBUANG --
+ *  tidak dibiarkan tinggal di posisi lamanya. Membiarkannya membuat satu tujuan
+ *  yang sering dibuka menumpuk jadi belasan butir yang isinya sama, dan
+ *  pemotongan umur kemudian membaca tumpukan itu sebagai belasan kunjungan
+ *  berbeda -- sehingga ingatan yang paling sering dipakai justru yang paling
+ *  cepat memenuhi dirinya sendiri.
+ */
+function riwayatNaikkan(riwayat, k, sekarang) {
+  return [{ k, u: sekarang }, ...riwayat.filter((r) => r.k !== k)];
+}
+
+/* Dua id yang dirujuk kontrak combobox di bawah, ditulis sekali supaya tidak
+ * ada rumusan kedua yang bisa melenceng. `ID_LISTBOX` jadi sasaran
+ * `aria-controls` di medan; tiap butir dapat `PRA_OPSI + indeks` supaya
+ * `aria-activedescendant` punya sesuatu untuk ditunjuk. Rujukan id yang tidak
+ * ada di DOM bukan error di mana pun — ia cuma dibacakan pembaca layar
+ * sebagai "tidak ada apa-apa yang terpilih", tepat ketika sesuatu terpilih. */
+const ID_LISTBOX = "palet-list";
+const PRA_OPSI = "palet-opt-";
+
+/* Rombongan daftar hasil, dan KEANGGOTAANNYA diturunkan dari `tipe` butirnya —
+ * bukan dari indeks yang diketik di tempat penggambarannya. Urutan tabel ini
+ * mengikat: sebuah butir masuk ke rombongan PERTAMA yang mengakuinya, jadi
+ * `punya: () => true` di ekor bukan kemalasan melainkan satu-satunya bentuk
+ * yang membuat butir MUSTAHIL hilang dari daftar. Predikat ketiga yang
+ * menyebut tipenya satu per satu ("materi", "kuis", "latihan") akan menelan
+ * tipe KEEMPAT yang ditambahkan `/api/cari` suatu hari — tanpa error, tanpa
+ * baris di layar, tanpa satu pun tes merah.
+ *
+ * Yang sengaja TIDAK dipecah: ketiga tipe isi tinggal dalam SATU rombongan.
+ * Server sudah mengurutkan hasilnya menurut relevansi, dan memecahnya jadi
+ * tiga berarti mendorong materi berperingkat rendah di atas kuis berperingkat
+ * tinggi — persis cacat yang penanda ini ada untuk mencegah, kali ini tanpa
+ * satu pun alasan yang terbaca di layar. */
+const GRUP_PALET = [
+  { label: "Perintah", punya: (d) => !d.tipe },
+  { label: "Bahasa", punya: (d) => d.tipe === "bahasa" },
+  { label: "Isi", punya: () => true },
+];
+
+/* Huruf pintasan `G lalu <huruf>` dan alamat yang dibukanya — SATU definisi
+ * untuk tiga pembaca: penangan papan ketik di `pasangPintasan()`, label `<kbd>`
+ * yang dititipkan `daftarPerintah()` ke tiap butir, dan lewat label itu, butir
+ * palet yang digambar. Sebelum ini hurufnya cuma ada di objek literal di dalam
+ * `pasangPintasan()`; menuliskannya lagi di palet menjadikannya rumusan
+ * KETIGA untuk keenam alamat yang sama (yang kedua tabel `PINTASAN` di
+ * `layar-lain.js`, yang menyebut tujuannya dengan prosa). Akibat rumusan yang
+ * melenceng bisa disebut: huruf yang dipindah di satu tempat membuat palet
+ * memasang label yang membuka halaman lain, dan tidak ada satu pun tes yang
+ * gagal — hari ini `pasangPintasan()` nol dijaga tes. */
+const PINTASAN_G = {
+  d: "#/dasbor",
+  c: "#/coba",
+  s: "#/statistik",
+  b: "#/bookmark",
+  n: "#/catatan",
+  p: "#/atur",
+};
+
+/** Label pintasan untuk `href`, atau `null` kalau tujuan itu tidak punya.
+ *
+ *  Pencariannya lewat ALAMAT, bukan lewat urutan daftar dan bukan lewat label.
+ *  Keduanya justru satu-satunya dua hal yang TIDAK menentukan ke mana sebuah
+ *  butir membawa orang: urutan `daftarPerintah()` boleh berubah dan labelnya
+ *  boleh ditulis ulang tanpa satu pun pintasan berpindah.
+ *
+ *  Rumusannya ("G lalu D") sengaja sama persis dengan ruas tombol di tabel
+ *  `PINTASAN` di `layar-lain.js`. Dua permukaan yang menyebut pintasan yang
+ *  sama dengan dua rumusan adalah dua permukaan yang suatu hari berbeda, dan
+ *  yang membacanya tidak punya cara tahu mana yang benar.
+ *
+ *  Yang tidak ada di peta mengembalikan `null`, dan itu keadaan WAJAR, bukan
+ *  cacat: "Catatanku" punya pintasan, sebelas bahasa tidak, dan hasil
+ *  pencarian juga tidak. Butir tanpa pintasan cuma tidak menggambar `<kbd>`.
+ */
+function labelPintasan(href) {
+  for (const huruf of Object.keys(PINTASAN_G)) {
+    if (PINTASAN_G[huruf] === href) return "G lalu " + huruf.toUpperCase();
+  }
+  return null;
 }
 
 function bukaPalet() {
   const perintah = daftarPerintah();
+  // Jam dibaca SEKALI per palet yang dibuka, dan ingatannya dipotong sekali di
+  // tempat yang sama. Dua hal yang dicegah oleh "sekali di sini" alih-alih "di
+  // dalam pencocok": batas umur yang berbeda antara dua ketukan papan ketik,
+  // dan pembacaan ingatan yang berulang pada tiap huruf. `ctx.ingat` boleh
+  // mengembalikan `null` -- profil baru, atau kuota yang penuh saat menulis --
+  // jadi `|| []` di sini, bukan di dalam `riwayatPotong`: yang murni tetap
+  // menuntut daftar, dan yang menerjemahkan ketiadaan cuma satu tempat.
+  const sekarang = Date.now();
+  const riwayat = riwayatPotong(ctx.ingat("palet-riwayat") || [], sekarang);
+  // Pola combobox APG: medan satu-satunya yang memegang FOKUS, dan sorotan
+  // dikirim ke pembaca layar lewat `aria-activedescendant`. Pola sebaliknya —
+  // memindahkan fokus ke butirnya — mencabut papan ketik dari medan pada
+  // ArrowDown pertama, dan huruf berikutnya yang diketik mendarat di tempat
+  // yang bukan kotak pencarian.
   const medan = h("input.palet-cari", {
     type: "text",
     placeholder: "Ke mana? Ketik nama bahasa, materi, atau apa pun…",
     "aria-label": "Cari perintah atau isi",
+    role: "combobox",
+    "aria-expanded": "false",
+    "aria-controls": ID_LISTBOX,
+    "aria-autocomplete": "list",
   });
-  const hasil = h("div.palet-hasil");
+  // Satu nama untuk listbox-nya. APG tidak menuntutnya, tapi tanpa itu susur
+  // daftar di pembaca layar berbunyi "daftar, satu dari dua puluh lima" tanpa
+  // sepatah pun soal daftar APA -- dan sebuah daftar yang tidak bisa disebut
+  // adalah daftar yang tidak bisa dirujuk lagi sesudah fokus berpindah.
+  const hasil = h("ul.palet-hasil#" + ID_LISTBOX,
+                  { role: "listbox", "aria-label": "Hasil palet perintah" });
   let pilihan = 0;
   let baris = [];
+  let butir = [];
 
+  /** Padanan `bawaKeTengah()` di `layar-belajar.js`, dikerutkan ke satu arah:
+   *  yang disentuh cuma `scrollTop` wadah hasil. `scrollIntoView` menggulir
+   *  SEMUA leluhur yang bisa digulir, termasuk dokumen di belakang tirai —
+   *  jadi menahan ArrowDown memindahkan halaman yang sedang dibaca, dan yang
+   *  terlihat sesudah palet ditutup bukan lagi tempat orang meninggalkannya. */
+  function bawaKeDalam(el) {
+    const kotak = el.getBoundingClientRect();
+    const wadah = hasil.getBoundingClientRect();
+    if (kotak.top < wadah.top) hasil.scrollTop -= wadah.top - kotak.top;
+    else if (kotak.bottom > wadah.bottom) {
+      hasil.scrollTop += kotak.bottom - wadah.bottom;
+    }
+  }
+
+  /** Satu sorotan, tiga pembaca: kelas `.pilih` untuk mata, `aria-selected`
+   *  untuk pembaca layar yang menyusuri daftarnya sendiri, dan
+   *  `aria-activedescendant` untuk menyebut butir mana yang aktif.
+   *
+   *  Yang terakhir DILEPAS saat tidak ada butir, bukan dikosongkan:
+   *  `setAttribute(..., "")` tetap meninggalkan atributnya di tempat, dan
+   *  atribut yang ada tapi tidak menunjuk apa pun terbaca sebagai sorotan
+   *  yang hilang entah ke mana — bukan sebagai daftar yang memang kosong. */
   function sorotPilihan() {
-    hasil.querySelectorAll(".palet-item").forEach((el, i) => {
+    butir.forEach((el, i) => {
       el.classList.toggle("pilih", i === pilihan);
-      if (i === pilihan) el.scrollIntoView({ block: "nearest" });
+      el.setAttribute("aria-selected", String(i === pilihan));
     });
+    const kini = butir[pilihan];
+    if (!kini) {
+      medan.removeAttribute("aria-activedescendant");
+      return;
+    }
+    medan.setAttribute("aria-activedescendant", kini.id);
+    bawaKeDalam(kini);
   }
 
   function buka(d) {
     tutupJendelaKini();
     location.hash = d.href;
+    // Dicatat SESUDAH bernavigasi, dan jamnya dibaca ulang -- bukan `sekarang`
+    // dari atas: palet yang dibuka lalu didiamkan sepuluh menit mencatat saat
+    // ia DIPAKAI, bukan saat ia dibuka. Yang disimpan hasil pemotongan di
+    // atas, jadi butir yang sudah kedaluwarsa tidak pernah dituliskan kembali.
+    ctx.ingat("palet-riwayat", riwayatNaikkan(riwayat, d.href, Date.now()));
   }
 
   function gambar(daftar) {
-    baris = daftar;
+    // Partisi, bukan pengurutan ulang: urutan DI DALAM tiap rombongan
+    // dipertahankan apa adanya, jadi skor `saringPerintah()` dan peringkat
+    // relevansi `/api/cari` tetap berarti. Batas antar-rombongannya sendiri
+    // sudah berlaku sebelum penanda ada — `daftarPerintah()` menaruh perintah
+    // lebih dulu, `cariIsi` menyambung isi di belakang — jadi yang ditambahkan
+    // di sini TANDANYA, bukan susunannya. Tanpa tanda itu, mengelompokkan
+    // berarti hasil bahasa berskor tinggi berdiri di bawah perintah berskor
+    // rendah tanpa satu pun penjelasan di layar: bukan struktur, cuma
+    // peringkat yang rusak.
+    const isiGrup = GRUP_PALET.map(() => []);
+    for (const d of daftar) {
+      isiGrup[GRUP_PALET.findIndex((g) => g.punya(d))].push(d);
+    }
+    // Rombongan KOSONG tidak menghasilkan penanda. Sebuah label di atas nol
+    // butir menjanjikan sesuatu yang tidak ada di bawahnya, dan satu-satunya
+    // cara pembacanya tahu janji itu bohong adalah dengan mencarinya dulu.
+    const rombongan = GRUP_PALET
+      .map((g, i) => ({ label: g.label, isi: isiGrup[i] }))
+      .filter((r) => r.isi.length);
+    // `baris` mengikuti urutan TERKELOMPOK, bukan urutan masukan. Kalau tidak,
+    // indeks papan ketik dan urutan di layar jadi dua susunan berbeda — dan
+    // yang terjadi bukan error melainkan ArrowDown yang memindahkan sorotan ke
+    // tempat yang tidak ada hubungannya dengan tempat sorotan tadi berdiri.
+    baris = rombongan.flatMap((r) => r.isi);
     pilihan = 0;
-    isikan(hasil, ...(daftar.length
-      ? daftar.map((d, i) => h("button.palet-item", {
-          onclick: () => buka(d),
-          onmousemove: () => { pilihan = i; sorotPilihan(); },
-        },
-          h("span.pil" + (d.tipe === "kuis" ? ".pil-ungu"
-            : d.tipe === "latihan" ? ".pil-nyala"
-            : d.tipe === "materi" ? ".pil-tenang" : ""), {}, d.tipe || "buka"),
-          h("div.isi", {},
-            h("div.judul", {}, d.label),
-            d.ket ? h("div.cuplik", {}, d.ket) : null)))
-      : [h("div.palet-kosong", {}, "Tidak ada yang cocok.")]));
+    butir = baris.map((d, i) => h("li.palet-item#" + PRA_OPSI + i, {
+      role: "option",
+      "aria-selected": "false",
+      onclick: () => buka(d),
+      onmousemove: () => { pilihan = i; sorotPilihan(); },
+    },
+      h("span.pil" + (d.tipe === "kuis" ? ".pil-ungu"
+        : d.tipe === "latihan" ? ".pil-nyala"
+        : d.tipe === "materi" ? ".pil-tenang" : ""), {}, d.tipe || "buka"),
+      h("div.isi", {},
+        h("div.judul", {}, d.label),
+        d.ket ? h("div.cuplik", {}, d.ket) : null)));
+    // Penanda disisipkan ke POHON, dan tidak pernah ke `butir` maupun `baris`.
+    // Tiga mesin membaca kedua array itu dan ketiganya menghitung OPSI, bukan
+    // baris di layar: `aria-activedescendant` memakai `butir[pilihan].id`,
+    // ArrowDown/Home/End memakai `baris.length`, dan urutan masuk di bawah
+    // memakai `butir`. Satu penanda yang ikut masuk berarti satu indeks yang
+    // menunjuk baris yang tidak bisa dibuka — dan yang terlihat bukan error
+    // melainkan sorotan yang menghilang satu ketukan, lalu `Enter` yang diam.
+    const simpul = [];
+    let n = 0;
+    for (const r of rombongan) {
+      simpul.push(h("li.palet-grup", { role: "presentation" }, r.label));
+      simpul.push(...butir.slice(n, n + r.isi.length));
+      n += r.isi.length;
+    }
+    // Menukar isi listbox dan menyetel atribut yang MERUJUKNYA adalah satu
+    // urutan, bukan dua: begitu baris di bawah ini berjalan, seluruh id butir
+    // yang lama lenyap. `aria-expanded` ikut di sini karena "listbox
+    // menampilkan sesuatu" dan "ada butir" adalah pertanyaan yang sama —
+    // baris "Tidak ada yang cocok" bukan pilihan yang bisa dibuka, dan begitu
+    // juga penanda rombongan: kalau nol butir lolos saringan, yang dipasang
+    // kalimatnya, bukan tiga label di atas ruang kosong.
+    isikan(hasil, ...(butir.length
+      ? simpul
+      : [h("li.palet-kosong", { role: "presentation" },
+           "Tidak ada yang cocok.")]));
+    medan.setAttribute("aria-expanded", String(butir.length > 0));
     sorotPilihan();
     // Hanya sepuluh teratas yang dianimasikan. Sisanya ada di bawah lipatan
     // layar, dan menganimasikan yang tidak terlihat cuma membuang tenaga
     // sambil memperpanjang urutannya.
-    masukBerurut([...hasil.children].slice(0, 10),
+    //
+    // Penandanya sengaja TIDAK ikut, dan yang memutuskan bukan piksel
+    // melainkan CACAHNYA: sepuluh opsi pertama menempati dua belas baris pohon
+    // (penanda Perintah, enam perintah, penanda Bahasa, empat bahasa), jadi
+    // memasukkan penanda ke urutan masuk memindahkan DUA dari sepuluh slot
+    // animasi dari baris yang bisa dibuka ke baris yang bukan tujuan siapa
+    // pun. Penanda yang muncul seketika juga yang benar urutannya — kerangka
+    // lebih dulu, isinya menyusul. Dan ia tidak kehilangan apa pun karena
+    // tidak dianimasikan: keadaan akhir animasi masuk memang keadaan alami
+    // elemennya, jadi penanda yang tak pernah dianimasikan tetap terbaca
+    // penuh — termasuk pada gerak yang dimatikan, di mana justru SELURUH
+    // butirnya juga tidak dianimasikan.
+    masukBerurut(butir.slice(0, 10),
                  { per: 22, maks: 130, geser: 6, pegas: "jawab" });
   }
 
@@ -729,7 +1070,7 @@ function bukaPalet() {
       // Perintah tetap di atas: kalau kamu mengetik "python", yang kamu maksud
       // hampir pasti bahasanya — bukan salah satu dari puluhan materi yang
       // kebetulan menyebut kata itu.
-      gambar([...saringPerintah(perintah, kata),
+      gambar([...saringPerintah(perintah, kata, riwayat),
               ...r.hasil.slice(0, 40).map((x) => ({
                 label: `${x.label_bahasa} — ${x.judul}`,
                 ket: x.cuplikan,
@@ -741,7 +1082,7 @@ function bukaPalet() {
 
   medan.addEventListener("input", () => {
     const kata = medan.value.trim();
-    gambar(saringPerintah(perintah, kata));
+    gambar(saringPerintah(perintah, kata, riwayat));
     cariIsi(kata);
   });
 
@@ -754,6 +1095,14 @@ function bukaPalet() {
       e.preventDefault();
       pilihan = Math.max(pilihan - 1, 0);
       sorotPilihan();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      pilihan = 0;
+      sorotPilihan();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      pilihan = Math.max(baris.length - 1, 0);
+      sorotPilihan();
     } else if (e.key === "Enter" && baris[pilihan]) {
       e.preventDefault();
       buka(baris[pilihan]);
@@ -762,13 +1111,30 @@ function bukaPalet() {
 
   gambar(perintah);
 
+  // Kaki pintasan berdiri sebagai SAUDARA `.jendela-badan`, anak langsung
+  // `.jendela` -- seperti `.jendela-kaki` dialog lain -- bukan di dalam `isi`.
+  // `.jendela-badan` wadah gulir KEDUA yang atapnya warisan `.jendela`
+  // (82vh, kolom flex), jadi kaki di dalamnya ikut terpotong di jendela
+  // pendek: 18 px di 1280×700, 54 px di 360×700, dan 0 di semua ukuran
+  // sesudah dipindah (artefak /home/vi/.hop9d13/ukur-9d13.json). Ia DILAHIRKAN
+  // ke `kotak`, bukan dipindahkan dari `isi`, karena `kotak` baru ada di
+  // `saatBuka`. Nol `flex: none` di CSS: item flex ber-`overflow: visible`
+  // punya `min-height: auto` sehingga tidak menyusut di bawah tinggi isinya,
+  // dan `.jendela-badan` yang berlantai 0 menyerap seluruh penyusutan.
+  const kaki = h("div.palet-kaki", {},
+    h("span", {}, h("kbd", {}, "↑↓"), " pilih"),
+    h("span", {}, h("kbd", {}, "Home/End"), " ujung"),
+    h("span", {}, h("kbd", {}, "⏎"), " buka"),
+    h("span", {}, h("kbd", {}, "Esc"), " tutup"));
+
   return jendela({
-    isi: h("div", {}, medan, hasil,
-      h("div.palet-kaki", {},
-        h("span", {}, h("kbd", {}, "↑↓"), " pilih"),
-        h("span", {}, h("kbd", {}, "⏎"), " buka"),
-        h("span", {}, h("kbd", {}, "Esc"), " tutup"))),
-    saatBuka: () => medan.focus(),
+    // Tanpa `judul`, `inti.js` jatuh ke `aria-label: "Dialog"` -- dan palet ini
+    // dibuka dengan Ctrl+K justru oleh orang yang tidak sedang melihat
+    // layarnya. "Dialog" memberi tahu bahwa sesuatu terbuka tanpa memberi tahu
+    // APA, dan satu-satunya cara keluar dari situ meraba-raba.
+    judul: "Palet perintah",
+    isi: h("div", {}, medan, hasil),
+    saatBuka: (kotak) => { kotak.appendChild(kaki); medan.focus(); },
   });
 }
 
@@ -788,28 +1154,120 @@ function alihRel() {
   $("#rel-alih").setAttribute("aria-expanded", String(buka));
 }
 
+/** Penutup setiap panel yang terpasang, dipanggil berurutan begitu salah satu
+ *  dibuka. Membuka satu panel menutup yang lain: dua daftar yang menggantung
+ *  bersamaan dari satu baris adalah dua daftar yang saling menutupi. */
+const penutupPanel = [];
+
+/** Penanda yang dibaca `gaya.css`, dan satu-satunya tempat namanya ditulis.
+ *
+ *  Blok `@supports (anchor-name: --a) and (position-area: bottom)` di gaya.css
+ *  memilih `.pakai-jangkar > .rel-panel[popover]`. Sebelum ini tidak ada satu
+ *  pun baris JS yang memproduksi kedua penanda itu, jadi blok tersebut tidak
+ *  pernah berlaku di browser mana pun — CSS-nya benar sejak awal, separuh yang
+ *  hilang ada di sini. Keduanya tinggal di konstanta supaya dua berkas tidak
+ *  diikat oleh satu nama yang ditulis ulang di masing-masing. */
+const KELAS_JANGKAR = "pakai-jangkar";
+const SIFAT_POPOVER = "popover";
+
+/** `manual`, bukan `auto`, dan itu keputusan perilaku — bukan kehati-hatian.
+ *
+ *  `auto` memberi *light dismiss*: UA menutup popovernya sendiri pada setiap
+ *  interaksi di luar isinya. Pemicu panel ini ADA di luar popovernya —
+ *  `index.html` menaruh `.rel-pemicu` dan `.rel-panel` sebagai dua anak
+ *  `.rel-turun`, bukan tombol di dalam panelnya — jadi satu ketukan untuk
+ *  menutup akan ditutup lebih dulu oleh UA lalu dibuka kembali oleh `setel()`:
+ *  panel yang tidak pernah bisa ditutup dari tombolnya sendiri. Penutupan
+ *  "klik di luar" sudah dikerjakan pendengar `document` di `pasangTurun()`,
+ *  dan `manual` berarti pekerjaan itu tetap punya satu mesin. */
+const MODE_POPOVER = "manual";
+
+/** Pelepas penanda jangkar, satu per panel yang terpasang.
+ *
+ *  Sengaja TERPISAH dari `penutupPanel` meski keduanya sederet fungsi per
+ *  panel: `penutupPanel` MENUTUP — keadaan yang dilihat pelajar, yang Esc,
+ *  klik-di-luar, dan pembukaan panel lain sama-sama memanggil — sementara yang
+ *  ini menurunkan panelnya kembali ke penempatan CSS biasa, keadaan yang cuma
+ *  bergantung pada lebar jendela. Menyatukan keduanya berarti setiap Esc ikut
+ *  melepas kemampuan yang baru akan dipasang lagi pada pembukaan berikutnya. */
+const pelepasJangkar = [];
+
+/** Bolehkah panel dinaikkan ke popover + anchor positioning SEKARANG.
+ *
+ *  KEMAMPUAN. Blok `@supports` di gaya.css menuntut `anchor-name` DAN
+ *  `position-area`; menanyakan satu saja memberi popover di *top layer* kepada
+ *  browser yang tidak punya separuh lainnya untuk menempatkannya, dan yang
+ *  terlihat bukan panel yang salah posisi melainkan panel di sudut layar.
+ *  `togglePopover` ditanyakan terpisah karena penempatannya CSS sedangkan
+ *  penampilannya API, dan kedua dukungan itu tidak selalu datang bersamaan.
+ *
+ *  LEBAR. Di `<= AMBANG_PANEL` jawabannya selalu tidak, dan alasannya terukur
+ *  di gaya.css: `@media (max-width: 860px)` memaksa `.rel-panel` jadi
+ *  `position: static` karena di dalam laci lipat panel bukan mengambang
+ *  melainkan BAGIAN dari daftarnya. Spesifikasi popover menaruh elemennya di
+ *  *top layer*, dan aturan di dalam blok `@supports` menang atas aturan laci
+ *  itu lewat spesifisitas (0,3,0 lawan 0,2,0) — jadi opt-in di layar sempit
+ *  bukan "penempatan yang berbeda", ia laci yang isinya hilang dari lacinya. */
+function jangkarAktif() {
+  return CSS.supports("anchor-name", "--a")
+    && CSS.supports("position-area", "bottom")
+    && typeof HTMLElement.prototype.togglePopover === "function"
+    && window.innerWidth > AMBANG_PANEL;
+}
+
+/** Turunkan semua panel ke penempatan CSS biasa begitu syaratnya hilang.
+ *
+ *  Dipanggil dari pendengar `resize` yang SUDAH ada, bukan dari pendengar baru:
+ *  `tunda(..., 160)` di situ ada supaya pengukuran tata letak tidak berlari,
+ *  dan pengukur kedua tanpa penundaan membatalkan gunanya. Pelepasannya wajib
+ *  mendahului laci lipat — penanda yang tertinggal di bawah ambangnya berarti
+ *  isi laci berpindah ke *top layer* alih-alih berdiri di dalam lacinya. */
+function segarkanJangkar() {
+  if (jangkarAktif()) return;
+  for (const lepas of pelepasJangkar) lepas();
+}
+
 /** Panel yang turun dari navbar: daftar bahasa dan menu "Lainnya".
  *
  *  Keduanya memakai satu fungsi, bukan dua yang mirip. Aturannya sama persis —
  *  buka lewat pemicunya, tutup lewat Esc, klik di luar, atau begitu ada tautan
  *  di dalamnya yang dipakai. Yang terakhir itu penting: aplikasi ini tidak
  *  memuat ulang halaman, jadi panel yang dibuka tidak akan tertutup sendiri
- *  oleh perpindahan layar.
- *
- *  Membuka satu panel menutup yang lain. Dua daftar yang menggantung bersamaan
- *  dari satu baris adalah dua daftar yang saling menutupi. */
-const penutupPanel = [];
-
+ *  oleh perpindahan layar. */
 function pasangTurun(id) {
   const turun = $("#" + id);
   if (!turun) return;
   const pemicu = $(".rel-pemicu", turun);
+  const panel = $(".rel-panel", turun);
 
   const setel = (buka) => {
+    // Penandanya dipasang DULU, pada giliran `setel(true)` yang sama:
+    // `togglePopover` melempar `InvalidStateError` kalau atributnya belum ada,
+    // dan CSS butuh kelasnya sudah ada supaya penempatan jangkar berlaku di
+    // frame PERTAMA panel terlihat. Panel yang baru jadi popover sesudah ia
+    // terlihat melompat dari tempat aliran normalnya ke tempat jangkarnya,
+    // tepat di bawah mata orang yang baru saja menekan tombolnya.
+    if (buka && jangkarAktif()) {
+      turun.classList.add(KELAS_JANGKAR);
+      panel.setAttribute(SIFAT_POPOVER, MODE_POPOVER);
+    }
+    // Kelas `buka` ditulis di KEDUA jalur, dan itu bukan sisa: gaya.css
+    // memakainya untuk latar pemicu dan panah yang terbalik, bukan cuma untuk
+    // menampilkan panelnya. Yang berpindah tangan di jalur jangkar cuma SIAPA
+    // yang menampilkan panel, bukan apa yang menandainya terbuka.
     turun.classList.toggle("buka", buka);
     pemicu.setAttribute("aria-expanded", String(buka));
+    // Satu perubahan keadaan per ketukan, dan argumennya DITULIS:
+    // `togglePopover()` tanpa argumen membalik keadaan yang sedang ada, jadi ia
+    // membuka kembali panel yang baru ditutup loop `penutupPanel` di atasnya.
+    if (panel.hasAttribute(SIFAT_POPOVER)) panel.togglePopover(buka);
   };
   penutupPanel.push(setel);
+  pelepasJangkar.push(() => {
+    setel(false);
+    turun.classList.remove(KELAS_JANGKAR);
+    panel.removeAttribute(SIFAT_POPOVER);
+  });
 
   pemicu.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -1005,6 +1463,10 @@ async function mulai() {
   window.addEventListener("resize", tunda(() => {
     const { nama, params } = uraikanRute();
     tandaiRel(nama, params.key);
+    // Menyempit melewati AMBANG_PANEL melepas penaikan popover panel, dan itu
+    // harus terjadi di pendengar yang SAMA: dua pengukur tata letak di satu
+    // peristiwa resize berarti satu di antaranya tidak tertunda.
+    segarkanJangkar();
   }, 160));
 
   // Setelan "kurangi gerak" di sistem bisa diubah di tengah sesi. Kalau itu
