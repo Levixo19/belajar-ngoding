@@ -5633,6 +5633,10 @@ html.lingkar-tema::view-transition-new(root) {
      ke bawah lipatan layar. */
   .kepala-materi h1 { font-size: clamp(2rem, 1.3rem + 1.4vw, 2.8rem); letter-spacing: -.028em;
                       line-height: 1.08; }
+  /* Ruang kerja latihan: judulnya cuma penanda, editornya yang utama. */
+  .kepala-latihan { margin-bottom: var(--s5); }
+  .kepala-latihan h1 { font-size: clamp(1.6rem, 1.2rem + .8vw, 2.1rem); letter-spacing: -.02em;
+                       line-height: 1.1; padding-bottom: 0; margin-bottom: var(--s2); }
 
   /* Kartu Lanjutkan di MANA PUN: tepi dan cahaya beraksen menggantikan
      cincin abu ganda. Tetap satu-satunya permukaan beraksen di layarnya. */
