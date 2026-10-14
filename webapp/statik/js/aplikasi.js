@@ -25,10 +25,15 @@ import {
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
 import { pasangAturan } from "./sorot.js";
+import { pasangSorot } from "./permukaan.js";
+import { ungkapJudul } from "./sinema.js";
+import { pasangJedaMata } from "./istirahat.js";
 import {
   layarDasbor, layarBahasa, layarMateri, layarCari, layarBookmark, layarCatatan,
 } from "./layar-belajar.js";
 import { layarKuis, layarLatihan, layarCoba } from "./layar-kerja.js";
+import { layarPustaka } from "./layar-pustaka.js";
+import { layarKarier } from "./layar-karier.js";
 import {
   layarStatistik, layarAtur, terapkanTampilan, temaBerikutnya, tampilkanBantuan,
 } from "./layar-lain.js";
@@ -45,6 +50,8 @@ const LAYAR = {
   catatan: layarCatatan,
   statistik: layarStatistik,
   atur: layarAtur,
+  pustaka: layarPustaka,
+  karier: layarKarier,
 };
 
 // Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
@@ -60,6 +67,13 @@ const LAYAR_LEBAR = new Set(["latihan", "coba", "materi"]);
 // Aturan tingginya sendiri baru menyala di container yang cukup lebar (lihat
 // gaya.css) — di ponsel, bentuk yang benar tetap satu kolom yang digulir biasa.
 const LAYAR_PENUH = new Set(["latihan", "coba"]);
+/* Layar "pintu": dibuka sesekali, jadi judulnya boleh tiba kata demi kata
+   (sinema.js). Materi, latihan, kuis, dan Ruang Coba sengaja TIDAK ada di
+   sini — dibuka ratusan kali per sesi, dan gerak yang menyenangkan di
+   kunjungan pertama jadi penghalang di kunjungan keempat puluh. */
+const LAYAR_PINTU = new Set(["dasbor", "bahasa", "statistik", "bookmark",
+                             "catatan", "atur", "pustaka",
+                             "karier"]);
 
 // Layar yang isinya pada dasarnya SATU kolom daftar, dan karena itu memakai
 // ukuran halaman yang lebih sempit (lihat `#layar.kolom` di gaya.css). Yang
@@ -72,6 +86,7 @@ const LAYAR_PENUH = new Set(["latihan", "coba"]);
 // berhenti terbaca sebagai satu baris.
 const LAYAR_KOLOM = new Set([
   "bahasa", "kuis", "bookmark", "catatan", "cari", "statistik", "atur",
+  "pustaka", "karier",
 ]);
 
 // Ambang layar sempit. ANGKA INI DIPAKAI JUGA DI gaya.css (blok @media 860px)
@@ -83,6 +98,8 @@ const AMBANG_PANEL = 860;
 
 const MENU_UTAMA = [
   ["dasbor", "dasbor", "Dasbor", "#/dasbor"],
+  ["pustaka", "pustaka", "Pustaka", "#/pustaka"],
+  ["karier", "karier", "Karier", "#/karier"],
   ["coba", "jalankan", "Ruang Coba", "#/coba"],
 ];
 const MENU_LAIN = [
@@ -286,8 +303,18 @@ async function gambarRute({ pindahFokus = true } = {}) {
     // tertinggal halaman yang berhenti entah di mana di tengah teks.
     window.scrollTo({ top: 0, behavior: "instant" });
     masukLayar(hasil.el);
+    if (LAYAR_PINTU.has(nama)) {
+      const lepasJudul = ungkapJudul(hasil.el);
+      const bersihAsli = bersihLayar;
+      bersihLayar = () => { lepasJudul(); if (bersihAsli) bersihAsli(); };
+    }
   }
   segarkanUkuran();
+  // `.tampak` bilah kemajuan baca bergantung pada PANJANG halaman, dan
+  // panjangnya baru diketahui sesudah isi rute ini terpasang. Dulu ia cuma
+  // dihitung sekali saat boot: dibuka di dasbor yang pendek berarti bilahnya
+  // tidak pernah muncul di materi yang panjang, dan sebaliknya.
+  pasangMajuBaca();
 }
 
 /** Masukkan isi layar baru.
@@ -433,6 +460,17 @@ function bangunRel() {
     daftarTematik.appendChild(butirBahasa(b));
   }
 
+  // Kedua pemicu panel mendapat ikonnya sendiri, setara butir menu lain:
+  // di rel samping semua butir berbaris menurun, dan dua yang tanpa ikon
+  // terbaca menjorok ke kiri, seperti sub-butir yang bukan.
+  for (const [id, gambar] of [["rel-turun-bahasa", "materi"], ["rel-turun-lain", "panel"]]) {
+    const pemicu = $(`#${id} .rel-pemicu`);
+    if (pemicu && !pemicu.querySelector(".ikon")) {
+      pemicu.prepend(h("span.ikon", { "aria-hidden": "true" },
+        ikon(gambar, { ukuran: 18 })));
+    }
+  }
+
   const lain = kosongkan($("#rel-kaki"));
   for (const [nama, gambar, label, href] of MENU_LAIN) {
     lain.appendChild(butirMenu(nama, gambar, label, href));
@@ -443,6 +481,12 @@ function bangunRel() {
    tiap sisi. Angkanya menyamai `left/right: 22%` pada ::before yang
    digantikannya. */
 const SISIP_TANDA = 0.22;
+
+/* Rel berdiri tegak di kiri di atas AMBANG_PANEL (gaya.css, "rel samping").
+   Ditanyakan ke matchMedia, bukan ke innerWidth: yang menentukan susunan
+   adalah media query yang sama yang dipakai CSS-nya. */
+const MEDIA_TEGAK = window.matchMedia(`(min-width: ${AMBANG_PANEL + 1}px)`);
+function relTegak() { return MEDIA_TEGAK.matches; }
 
 /** Tandai di mana pemakainya sedang berada.
  *
@@ -491,7 +535,11 @@ function tandaiRel(nama, key) {
     // yang sedang dibuka. `true` nilai yang tepat untuk hubungan itu.
     if (memuat) pemicu.setAttribute("aria-current", "true");
     else pemicu.removeAttribute("aria-current");
-    if (memuat && !aktif.offsetWidth) pengganti = pemicu;
+    // SELALU pemicunya, bukan cuma saat butir aslinya tak berlebar: kalau
+    // butir itu diklik dari panel yang masih terbuka, ia PUNYA lebar saat
+    // diukur — lalu panelnya menutup dan penandanya tertinggal melayang di
+    // tempat kosong tempat butir itu tadi berdiri.
+    if (memuat) pengganti = pemicu;
   }
 
   pindahkanTanda(pengganti || aktif);
@@ -524,11 +572,23 @@ function pindahkanTanda(aktif) {
   const pasang = () => {
     // offsetLeft dihitung terhadap induk berposisi terdekat, yang belum tentu
     // #rel. Selisih kotak batas keduanya menjawabnya tanpa perlu menebak.
-    const kiri = aktif.getBoundingClientRect().left
-      - rel.getBoundingClientRect().left;
+    const kotak = aktif.getBoundingClientRect();
+    const asal = rel.getBoundingClientRect();
+    const kiri = kotak.left - asal.left;
     const lebar = aktif.offsetWidth;
-    tanda.style.left = (kiri + lebar * SISIP_TANDA) + "px";
-    tanda.style.width = (lebar * (1 - SISIP_TANDA * 2)) + "px";
+    if (relTegak()) {
+      // Rel samping (gaya.css, "rel samping"): penandanya pil selebar dan
+      // setinggi butir aktif, bukan garis pendek di tepi bawahnya.
+      tanda.style.left = kiri + "px";
+      tanda.style.width = lebar + "px";
+      tanda.style.top = (kotak.top - asal.top) + "px";
+      tanda.style.height = aktif.offsetHeight + "px";
+    } else {
+      tanda.style.left = (kiri + lebar * SISIP_TANDA) + "px";
+      tanda.style.width = (lebar * (1 - SISIP_TANDA * 2)) + "px";
+      tanda.style.top = "";
+      tanda.style.height = "";
+    }
     tanda.style.opacity = "1";
   };
 
@@ -564,7 +624,7 @@ async function segarkanUkuran() {
     angkaKe(xp.querySelector(".tanda-angka"), d.xp);
     if (xpTerakhir !== null && d.xp > xpTerakhir) denyut(xp);
     xpTerakhir = d.xp;
-    xp.title = `Level ${d.level} — ${d.gelar} · ${d.xp_hari_ini} dari `
+    xp.title = `Level ${d.level}, ${d.gelar} · ${d.xp_hari_ini} dari `
       + `${d.target_harian} XP hari ini`;
 
     for (const b of d.bahasa) {
@@ -657,6 +717,10 @@ function daftarPerintah() {
     { label: "Bookmark", ket: "Halaman yang kamu tandai", href: "#/bookmark" },
     { label: "Statistik", ket: "XP, badge, toolchain", href: "#/statistik" },
     { label: "Pengaturan", ket: "Tema, target harian, data", href: "#/atur" },
+    // Sesudah enam perintah tetap, bukan di antaranya: urutan enam itu
+    // kontrak palet (TestPaletCombobox membaca indeksnya).
+    { label: "Pustaka", ket: "Buku, kursus, proyek, dan API gratis", href: "#/pustaka" },
+    { label: "Peta Karier", ket: "21 profesi, kesiapan, dan jalur pindah", href: "#/karier" },
   ];
   for (const b of ctx.awal.bahasa) {
     daftar.push({
@@ -1072,7 +1136,7 @@ function bukaPalet() {
       // kebetulan menyebut kata itu.
       gambar([...saringPerintah(perintah, kata, riwayat),
               ...r.hasil.slice(0, 40).map((x) => ({
-                label: `${x.label_bahasa} — ${x.judul}`,
+                label: `${x.label_bahasa} · ${x.judul}`,
                 ket: x.cuplikan,
                 tipe: x.tipe,
                 href: `#/${x.tipe}/${x.bahasa}/${x.indeks}`,
@@ -1148,7 +1212,6 @@ let tombolG = false;
  *  CSS, tapi pintasan Ctrl+B tetap sampai ke sini, dan membuat pintasan itu
  *  mengubah sesuatu yang tak terlihat lebih membingungkan daripada diam. */
 function alihRel() {
-  if (window.innerWidth > AMBANG_PANEL) return;
   const cangkang = $("#cangkang");
   const buka = cangkang.classList.toggle("rel-buka");
   $("#rel-alih").setAttribute("aria-expanded", String(buka));
@@ -1432,6 +1495,14 @@ async function mulai() {
   pasangPintasan();
 
   pasangIsyarat();
+  pasangSorot();
+  pasangJedaMata();
+  // Jendela yang diubah ukurannya melewati AMBANG_PANEL berganti susunan
+  // (bilah atas <-> rel samping); penandanya diletakkan ulang di susunan baru.
+  MEDIA_TEGAK.addEventListener("change", () => {
+    const { nama, params } = uraikanRute();
+    tandaiRel(nama, params.key);
+  });
   pasangMajuBaca();
   pasangIkonBilah();
   pasangTurun("rel-turun-bahasa");

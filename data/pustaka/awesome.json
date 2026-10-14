@@ -1,0 +1,6723 @@
+{
+"sumber":{
+"nama":"awesome",
+"pemilik":"Sindre Sorhus",
+"repo":"https://github.com/sindresorhus/awesome",
+"lisensi":"CC0 1.0",
+"atribusi":"Daftar dari awesome oleh Sindre Sorhus, CC0 1.0.",
+"kunci":"awesome",
+"commit":"bc98e51"
+},
+"entri":[
+{
+"judul":"Node.js",
+"url":"https://github.com/sindresorhus/awesome-nodejs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Async non-blocking event-driven JavaScript runtime built on Chrome's V8 JavaScript engine."
+},
+{
+"judul":"Cross-Platform",
+"url":"https://github.com/bcoe/awesome-cross-platform-nodejs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Writing cross-platform code on Node.js."
+},
+{
+"judul":"Frontend Development",
+"url":"https://github.com/dypsilon/frontend-dev-bookmarks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"iOS",
+"url":"https://github.com/vsouza/awesome-ios#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Mobile operating system for Apple phones and tablets."
+},
+{
+"judul":"Android",
+"url":"https://github.com/JStumpp/awesome-android#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Mobile operating system developed by Google."
+},
+{
+"judul":"IoT & Hybrid Apps",
+"url":"https://github.com/weblancaster/awesome-IoT-hybrid#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Electron",
+"url":"https://github.com/sindresorhus/awesome-electron#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Cross-platform native desktop apps using JavaScript/HTML/CSS."
+},
+{
+"judul":"Cordova",
+"url":"https://github.com/busterc/awesome-cordova#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"JavaScript API for hybrid apps."
+},
+{
+"judul":"React Native",
+"url":"https://github.com/jondot/awesome-react-native#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"JavaScript framework for writing natively rendering mobile apps for iOS and Android."
+},
+{
+"judul":"Containers",
+"url":"https://github.com/Friz-zy/awesome-linux-containers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"eBPF",
+"url":"https://github.com/zoidbergwill/awesome-ebpf#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Virtual machine that allows you to write more efficient and powerful tracing and monitoring for Linux systems."
+},
+{
+"judul":"Arch-based Projects",
+"url":"https://github.com/PandaFoss/Awesome-Arch#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Linux distributions and projects based on Arch Linux."
+},
+{
+"judul":"AppImage",
+"url":"https://github.com/AppImageCommunity/awesome-appimage#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Package apps in a single file that works on various mainstream Linux distributions."
+},
+{
+"judul":"Omarchy",
+"url":"https://github.com/aorumbayev/awesome-omarchy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Opinionated Arch Linux and Hyprland desktop environment from the creator of Ruby on Rails."
+},
+{
+"judul":"Screensavers",
+"url":"https://github.com/agarrharr/awesome-macos-screensavers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Apps",
+"url":"https://github.com/jaywcjlove/awesome-mac#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Open Source Apps",
+"url":"https://github.com/serhii-londar/open-source-mac-os-apps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"watchOS",
+"url":"https://github.com/yenchenlin/awesome-watchos#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Operating system for the Apple Watch."
+},
+{
+"judul":"JVM",
+"url":"https://github.com/deephacks/awesome-jvm#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Salesforce",
+"url":"https://github.com/mailtoharshit/awesome-salesforce#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Amazon Web Services",
+"url":"https://github.com/donnemartin/awesome-aws#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Windows",
+"url":"https://github.com/0pandadev/awesome-windows#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Consumer desktop operating system."
+},
+{
+"judul":"PowerToys Run Plugins",
+"url":"https://github.com/hlaueriksson/awesome-powertoys-run-plugins#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Community plugins for the Windows quick launcher."
+},
+{
+"judul":"IPFS",
+"url":"https://github.com/ipfs/awesome-ipfs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"P2P hypermedia protocol."
+},
+{
+"judul":"Fuse",
+"url":"https://github.com/fuse-compound/awesome-fuse#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Mobile development tools."
+},
+{
+"judul":"Heroku",
+"url":"https://github.com/ianstormtaylor/awesome-heroku#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Cloud platform as a service."
+},
+{
+"judul":"Raspberry Pi",
+"url":"https://github.com/thibmaek/awesome-raspberry-pi#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Credit card-sized computer aimed at teaching kids programming, but capable of a lot more."
+},
+{
+"judul":"WebExtensions",
+"url":"https://github.com/fregante/Awesome-WebExtensions#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Cross-browser extension system."
+},
+{
+"judul":"Smart TV",
+"url":"https://github.com/vitalets/awesome-smart-tv#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Create apps for different TV platforms."
+},
+{
+"judul":"GNOME",
+"url":"https://github.com/Kazhnuz/awesome-gnome#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Simple and distraction-free desktop environment for Linux."
+},
+{
+"judul":"KDE",
+"url":"https://github.com/francoism90/awesome-kde#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"A free software community dedicated to creating an open and user-friendly computing experience."
+},
+{
+"judul":".NET",
+"url":"https://github.com/quozd/awesome-dotnet#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Core",
+"url":"https://github.com/thangchung/awesome-dotnet-core#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":""
+},
+{
+"judul":"Roslyn",
+"url":"https://github.com/ironcev/awesome-roslyn#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Open-source compilers and code analysis APIs for C# and VB.NET languages."
+},
+{
+"judul":"DigitalOcean",
+"url":"https://github.com/jonleibowitz/awesome-digitalocean#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Cloud computing platform designed for developers."
+},
+{
+"judul":"Flutter",
+"url":"https://github.com/Solido/awesome-flutter#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Google's mobile SDK for building native iOS and Android apps from a single codebase written in Dart."
+},
+{
+"judul":"Home Assistant",
+"url":"https://github.com/frenck/awesome-home-assistant#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Open source home automation that puts local control and privacy first."
+},
+{
+"judul":"IBM Cloud",
+"url":"https://github.com/victorshinya/awesome-ibmcloud#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Cloud platform for developers and companies."
+},
+{
+"judul":"Firebase",
+"url":"https://github.com/jthegedus/awesome-firebase#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"App development platform built on Google Cloud."
+},
+{
+"judul":"Adafruit IO",
+"url":"https://github.com/adafruit/awesome-adafruitio#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Visualize and store data from any device."
+},
+{
+"judul":"Cloudflare",
+"url":"https://github.com/irazasyed/awesome-cloudflare#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"CDN, DNS, DDoS protection, and security for your site."
+},
+{
+"judul":"Actions on Google",
+"url":"https://github.com/ravirupareliya/awesome-actions-on-google#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Developer platform for Google Assistant."
+},
+{
+"judul":"ESP",
+"url":"https://github.com/agucova/awesome-esp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Low-cost microcontrollers with WiFi and broad IoT applications."
+},
+{
+"judul":"Deno",
+"url":"https://github.com/denolib/awesome-deno#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"A secure runtime for JavaScript and TypeScript that uses V8 and is built in Rust."
+},
+{
+"judul":"DOS",
+"url":"https://github.com/balintkissdev/awesome-dos#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Operating system for x86-based personal computers that was popular during the 1980s and early 1990s."
+},
+{
+"judul":"Nix",
+"url":"https://github.com/nix-community/awesome-nix#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Package manager for Linux and other Unix systems that makes package management reliable and reproducible."
+},
+{
+"judul":"Integration",
+"url":"https://github.com/stn1slv/awesome-integration#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Linking together different IT systems (components) to functionally cooperate as a whole."
+},
+{
+"judul":"Node-RED",
+"url":"https://github.com/naimo84/awesome-nodered#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"A programming tool for wiring together hardware devices, APIs, and online services."
+},
+{
+"judul":"Low Code",
+"url":"https://github.com/zenitysec/awesome-low-code#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Allowing business professionals to address their needs on their own with little to no coding skills."
+},
+{
+"judul":"Capacitor",
+"url":"https://github.com/riderx/awesome-capacitor#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Cross-platform open source runtime for building Web Native apps."
+},
+{
+"judul":"ArcGIS Developer",
+"url":"https://github.com/Esri/awesome-arcgis-developer#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Mapping and location analysis platform for developers."
+},
+{
+"judul":"Bluetooth Low Energy",
+"url":"https://github.com/dotintent/awesome-ble#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Low-power wireless communication protocol ideal for IoT, wearables, and other battery-powered applications."
+},
+{
+"judul":"Uno Platform",
+"url":"https://github.com/MartinZikmund/awesome-uno-platform#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Open-source .NET UI platform for building cross-platform apps."
+},
+{
+"judul":"Firebase Genkit",
+"url":"https://github.com/xavidop/awesome-firebase-genkit#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"An open-source framework for building AI-powered apps and features."
+},
+{
+"judul":"Backstage",
+"url":"https://github.com/shano/awesome-backstage#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Platforms"
+],
+"catatan":"Open-source platform for building Internal Developer Portals that unify tools and workflows."
+},
+{
+"judul":"JavaScript",
+"url":"https://github.com/sorrycc/awesome-javascript#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Promises",
+"url":"https://github.com/wbinnssmith/awesome-promises#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Standard Style",
+"url":"https://github.com/standard/awesome-standard#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Style guide and linter."
+},
+{
+"judul":"Must Watch Talks",
+"url":"https://github.com/bolshchikov/js-must-watch#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Tips",
+"url":"https://github.com/loverajoel/jstips#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Network Layer",
+"url":"https://github.com/Kikobeats/awesome-network-js#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Micro npm Packages",
+"url":"https://github.com/parro-it/awesome-micro-npm-packages#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Mad Science npm Packages",
+"url":"https://github.com/feross/awesome-mad-science#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Impossible sounding projects that exist."
+},
+{
+"judul":"Maintenance Modules",
+"url":"https://github.com/maxogden/maintenance-modules#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"For npm packages."
+},
+{
+"judul":"npm",
+"url":"https://github.com/sindresorhus/awesome-npm#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Package manager."
+},
+{
+"judul":"AVA",
+"url":"https://github.com/avajs/awesome-ava#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Test runner."
+},
+{
+"judul":"ESLint",
+"url":"https://github.com/dustinspecker/awesome-eslint#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Linter."
+},
+{
+"judul":"Functional Programming",
+"url":"https://github.com/stoeffel/awesome-fp-js#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Observables",
+"url":"https://github.com/sindresorhus/awesome-observables#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"npm scripts",
+"url":"https://github.com/RyanZim/awesome-npm-scripts#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Task runner."
+},
+{
+"judul":"30 Seconds of Code",
+"url":"https://github.com/30-seconds/30-seconds-of-code#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Code snippets you can understand in 30 seconds."
+},
+{
+"judul":"Ponyfills",
+"url":"https://github.com/Richienb/awesome-ponyfills#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Like polyfills but without overriding native APIs."
+},
+{
+"judul":"Swift",
+"url":"https://github.com/matteocrippa/awesome-swift#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Apple's compiled programming language that is secure, modern, programmer-friendly, and fast."
+},
+{
+"judul":"Education",
+"url":"https://github.com/hsavit1/Awesome-Swift-Education#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Playgrounds",
+"url":"https://github.com/uraimo/Awesome-Swift-Playgrounds#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Python",
+"url":"https://github.com/vinta/awesome-python#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"General-purpose programming language designed for readability."
+},
+{
+"judul":"Asyncio",
+"url":"https://github.com/timofurrer/awesome-asyncio#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Asynchronous I/O in Python 3."
+},
+{
+"judul":"Scientific Audio",
+"url":"https://github.com/faroit/awesome-python-scientific-audio#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Scientific research in audio/music."
+},
+{
+"judul":"CircuitPython",
+"url":"https://github.com/adafruit/awesome-circuitpython#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"A version of Python for microcontrollers."
+},
+{
+"judul":"Data Science",
+"url":"https://github.com/krzjoa/awesome-python-data-science#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Data analysis and machine learning."
+},
+{
+"judul":"Typing",
+"url":"https://github.com/typeddjango/awesome-python-typing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Optional static typing for Python."
+},
+{
+"judul":"MicroPython",
+"url":"https://github.com/mcauser/awesome-micropython#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"A lean and efficient implementation of Python 3 for microcontrollers."
+},
+{
+"judul":"Rust",
+"url":"https://github.com/rust-unofficial/awesome-rust#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Pest",
+"url":"https://github.com/pest-parser/awesome-pest#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Parser generator."
+},
+{
+"judul":"Haskell",
+"url":"https://github.com/krispo/awesome-haskell#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"PureScript",
+"url":"https://github.com/passy/awesome-purescript#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Go",
+"url":"https://github.com/avelino/awesome-go#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Scala",
+"url":"https://github.com/lauris/awesome-scala#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Scala Native",
+"url":"https://github.com/tindzk/awesome-scala-native#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Optimizing ahead-of-time compiler for Scala based on LLVM."
+},
+{
+"judul":"Ruby",
+"url":"https://github.com/markets/awesome-ruby#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Clojure",
+"url":"https://github.com/razum2um/awesome-clojure#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"ClojureScript",
+"url":"https://github.com/hantuzun/awesome-clojurescript#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Elixir",
+"url":"https://github.com/h4cc/awesome-elixir#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Elm",
+"url":"https://github.com/sporto/awesome-elm#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Erlang",
+"url":"https://github.com/drobakowski/awesome-erlang#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Julia",
+"url":"https://github.com/svaksha/Julia.jl#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"High-level dynamic programming language designed to address the needs of high-performance numerical analysis and computational science."
+},
+{
+"judul":"Lua",
+"url":"https://github.com/LewisJEllis/awesome-lua#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"C/C++",
+"url":"https://github.com/fffaraz/awesome-cpp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"General-purpose language with a bias toward system programming and embedded, resource-constrained software."
+},
+{
+"judul":"R",
+"url":"https://github.com/qinwf/awesome-R#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Functional programming language and environment for statistical computing and graphics."
+},
+{
+"judul":"Learning",
+"url":"https://github.com/iamericfletcher/awesome-r-learning-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"D",
+"url":"https://github.com/dlang-community/awesome-d#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Common Lisp",
+"url":"https://github.com/CodyReichert/awesome-cl#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Powerful dynamic multiparadigm language that facilitates iterative and interactive development."
+},
+{
+"judul":"Learning",
+"url":"https://github.com/GustavBertram/awesome-common-lisp-learning#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Perl",
+"url":"https://github.com/hachiojipm/awesome-perl#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Groovy",
+"url":"https://github.com/kdabir/awesome-groovy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Dart",
+"url":"https://github.com/yissachar/awesome-dart#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Java",
+"url":"https://github.com/akullpp/awesome-java#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Popular secure object-oriented language designed for flexibility to \"write once, run anywhere\"."
+},
+{
+"judul":"RxJava",
+"url":"https://github.com/eleventigers/awesome-rxjava#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"J2ME",
+"url":"https://github.com/hstsethi/awesome-j2me#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Java specification designed for old keypad phones and PDAs.."
+},
+{
+"judul":"Kotlin",
+"url":"https://github.com/KotlinBy/awesome-kotlin#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"OCaml",
+"url":"https://github.com/ocaml-community/awesome-ocaml#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"ColdFusion",
+"url":"https://github.com/seancoyne/awesome-coldfusion#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Fortran",
+"url":"https://github.com/rabbiabram/awesome-fortran#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"PHP",
+"url":"https://github.com/ziadoz/awesome-php#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Server-side scripting language."
+},
+{
+"judul":"Composer",
+"url":"https://github.com/jakoch/awesome-composer#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Package manager."
+},
+{
+"judul":"Pascal",
+"url":"https://github.com/Fr0sT-Brutal/awesome-pascal#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"AutoHotkey",
+"url":"https://github.com/ahkscript/awesome-AutoHotkey#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"AutoIt",
+"url":"https://github.com/J2TeaM/awesome-AutoIt#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"Crystal",
+"url":"https://github.com/veelenga/awesome-crystal#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":""
+},
+{
+"judul":"CMake",
+"url":"https://github.com/onqtam/awesome-cmake#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Build, test, and package software."
+},
+{
+"judul":"ActionScript 3",
+"url":"https://github.com/robinrodricks/awesome-actionscript3#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Object-oriented language targeting Adobe AIR."
+},
+{
+"judul":"Idris",
+"url":"https://github.com/joaomilho/awesome-idris#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"General purpose pure functional programming language with dependent types influenced by Haskell and ML."
+},
+{
+"judul":"Ada/SPARK",
+"url":"https://github.com/ohenley/awesome-ada#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Modern programming language designed for large, long-lived apps where reliability and efficiency are essential."
+},
+{
+"judul":"Q#",
+"url":"https://github.com/ebraminio/awesome-qsharp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Domain-specific programming language used for expressing quantum algorithms."
+},
+{
+"judul":"Imba",
+"url":"https://github.com/koolamusic/awesome-imba#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Programming language inspired by Ruby and Python and compiles to performant JavaScript."
+},
+{
+"judul":"Vala",
+"url":"https://github.com/desiderantes/awesome-vala#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Programming language designed to take full advantage of the GLib and GNOME ecosystems, while preserving the speed of C code."
+},
+{
+"judul":"Coq",
+"url":"https://github.com/coq-community/awesome-coq#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Formal language and environment for programming and specification which facilitates interactive development of machine-checked proofs."
+},
+{
+"judul":"V",
+"url":"https://github.com/vlang/awesome-v#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Simple, fast, safe, compiled language for developing maintainable software."
+},
+{
+"judul":"Move",
+"url":"https://github.com/MystenLabs/awesome-move#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Domain-specific programming language for writing safe smart contracts."
+},
+{
+"judul":"Esolangs",
+"url":"https://github.com/angrykoala/awesome-esolangs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"Programming languages designed for experimentation or as jokes rather than actual use."
+},
+{
+"judul":"VBA",
+"url":"https://github.com/sancarn/awesome-vba#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"An event-driven version of Visual Basic 6.0 built into most Microsoft Office apps for automation and scripting."
+},
+{
+"judul":"F#",
+"url":"https://github.com/fsprojects/awesome-fsharp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Programming Languages"
+],
+"catatan":"A .NET-based language with focus on functional programming."
+},
+{
+"judul":"ES6 Tools",
+"url":"https://github.com/addyosmani/es6-tools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Web Performance Optimization",
+"url":"https://github.com/davidsonfellipe/awesome-wpo#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Web Tools",
+"url":"https://github.com/lvwzhen/tools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"CSS",
+"url":"https://github.com/awesome-css-group/awesome-css#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Style sheet language that specifies how HTML elements are displayed on screen."
+},
+{
+"judul":"Critical-Path Tools",
+"url":"https://github.com/addyosmani/critical-path-css-tools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Scalability",
+"url":"https://github.com/davidtheclark/scalable-css-reading-list#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Must-Watch Talks",
+"url":"https://github.com/AllThingsSmitty/must-watch-css#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Protips",
+"url":"https://github.com/AllThingsSmitty/css-protips#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Frameworks",
+"url":"https://github.com/troxler/awesome-css-frameworks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"React",
+"url":"https://github.com/enaqx/awesome-react#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"JavaScript library for building user interfaces."
+},
+{
+"judul":"Relay",
+"url":"https://github.com/expede/awesome-relay#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Framework for building data-driven React apps."
+},
+{
+"judul":"React Hooks",
+"url":"https://github.com/glauberfc/awesome-react-hooks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Lets you use state and other React features without writing a class."
+},
+{
+"judul":"Web Components",
+"url":"https://github.com/web-padawan/awesome-web-components#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Polymer",
+"url":"https://github.com/Granze/awesome-polymer#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"JavaScript library to develop Web Components."
+},
+{
+"judul":"Angular",
+"url":"https://github.com/PatrickJS/awesome-angular#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Backbone",
+"url":"https://github.com/sadcitizen/awesome-backbone#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"HTML5",
+"url":"https://github.com/diegocard/awesome-html5#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Markup language used for websites & web apps."
+},
+{
+"judul":"SVG",
+"url":"https://github.com/willianjusten/awesome-svg#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"XML-based vector image format."
+},
+{
+"judul":"Canvas",
+"url":"https://github.com/raphamorim/awesome-canvas#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"KnockoutJS",
+"url":"https://github.com/dnbard/awesome-knockout#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"JavaScript library."
+},
+{
+"judul":"Dojo Toolkit",
+"url":"https://github.com/petk/awesome-dojo#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"JavaScript toolkit."
+},
+{
+"judul":"Inspiration",
+"url":"https://github.com/NoahBuscher/Inspire#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Ember",
+"url":"https://github.com/ember-community-russia/awesome-ember#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Android UI",
+"url":"https://github.com/wasabeef/awesome-android-ui#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"iOS UI",
+"url":"https://github.com/cjwirth/awesome-ios-ui#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Meteor",
+"url":"https://github.com/Urigo/awesome-meteor#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"BEM",
+"url":"https://github.com/sturobson/BEM-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Flexbox",
+"url":"https://github.com/afonsopacifer/awesome-flexbox#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Web Typography",
+"url":"https://github.com/deanhume/typography#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Web Accessibility",
+"url":"https://github.com/brunopulis/awesome-a11y#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Material Design",
+"url":"https://github.com/sachin1092/awesome-material#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"D3",
+"url":"https://github.com/wbkd/awesome-d3#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Library for producing dynamic, interactive data visualizations."
+},
+{
+"judul":"Emails",
+"url":"https://github.com/jonathandion/awesome-emails#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"jQuery",
+"url":"https://github.com/petk/awesome-jquery#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Easy to use JavaScript library for DOM manipulation."
+},
+{
+"judul":"Tips",
+"url":"https://github.com/AllThingsSmitty/jquery-tips-everyone-should-know#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Web Audio",
+"url":"https://github.com/notthetup/awesome-webaudio#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Offline-First",
+"url":"https://github.com/pazguille/offline-first#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Static Website Services",
+"url":"https://github.com/agarrharr/awesome-static-website-services#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Cycle.js",
+"url":"https://github.com/cyclejs-community/awesome-cyclejs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Functional and reactive JavaScript framework."
+},
+{
+"judul":"Text Editing",
+"url":"https://github.com/dok/awesome-text-editing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Motion UI Design",
+"url":"https://github.com/fliptheweb/motion-ui-design#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Vue.js",
+"url":"https://github.com/vuejs/awesome-vue#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Marionette.js",
+"url":"https://github.com/sadcitizen/awesome-marionette#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Aurelia",
+"url":"https://github.com/aurelia-contrib/awesome-aurelia#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Charting",
+"url":"https://github.com/zingchart/awesome-charting#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Ionic Framework",
+"url":"https://github.com/candelibas/awesome-ionic#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Chrome DevTools",
+"url":"https://github.com/ChromeDevTools/awesome-chrome-devtools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"PostCSS",
+"url":"https://github.com/jdrgomes/awesome-postcss#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"CSS tool."
+},
+{
+"judul":"Draft.js",
+"url":"https://github.com/nikgraf/awesome-draft-js#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Rich text editor framework for React."
+},
+{
+"judul":"Service Workers",
+"url":"https://github.com/TalAter/awesome-service-workers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Progressive Web Apps",
+"url":"https://github.com/TalAter/awesome-progressive-web-apps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"choo",
+"url":"https://github.com/choojs/awesome-choo#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Redux",
+"url":"https://github.com/brillout/awesome-redux#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"State container for JavaScript apps."
+},
+{
+"judul":"Browserify",
+"url":"https://github.com/browserify/awesome-browserify#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Module bundler."
+},
+{
+"judul":"Sass",
+"url":"https://github.com/Famolus/awesome-sass#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"CSS preprocessor."
+},
+{
+"judul":"Ant Design",
+"url":"https://github.com/websemantics/awesome-ant-design#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Enterprise-class UI design language."
+},
+{
+"judul":"Less",
+"url":"https://github.com/LucasBassetti/awesome-less#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"CSS preprocessor."
+},
+{
+"judul":"WebGL",
+"url":"https://github.com/sjfricke/awesome-webgl#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"JavaScript API for rendering 3D graphics."
+},
+{
+"judul":"Preact",
+"url":"https://github.com/preactjs/awesome-preact#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Progressive Enhancement",
+"url":"https://github.com/jbmoelker/progressive-enhancement-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Next.js",
+"url":"https://github.com/unicodeveloper/awesome-nextjs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Framework for server-rendered React apps."
+},
+{
+"judul":"lit",
+"url":"https://github.com/web-padawan/awesome-lit#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Library for building web components with a declarative template system."
+},
+{
+"judul":"JAMstack",
+"url":"https://github.com/automata/awesome-jamstack#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Modern web development architecture based on client-side JavaScript, reusable APIs, and prebuilt markup."
+},
+{
+"judul":"WordPress-Gatsby",
+"url":"https://github.com/henrikwirth/awesome-wordpress-gatsby#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Web development technology stack with WordPress as a back end and Gatsby as a front end."
+},
+{
+"judul":"Mobile Web Development",
+"url":"https://github.com/myshov/awesome-mobile-web-development#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Creating a great mobile web experience."
+},
+{
+"judul":"Storybook",
+"url":"https://github.com/lauthieb/awesome-storybook#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Development environment for UI components."
+},
+{
+"judul":"Blazor",
+"url":"https://github.com/AdrienTorris/awesome-blazor#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":".NET web framework using C#/Razor and HTML that runs in the browser with WebAssembly."
+},
+{
+"judul":"PageSpeed Metrics",
+"url":"https://github.com/csabapalfi/awesome-pagespeed-metrics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Metrics to help understand page speed and user experience."
+},
+{
+"judul":"Tailwind CSS",
+"url":"https://github.com/aniftyco/awesome-tailwindcss#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Utility-first CSS framework for rapid UI development."
+},
+{
+"judul":"Seed",
+"url":"https://github.com/seed-rs/awesome-seed-rs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Rust framework for creating web apps running in WebAssembly."
+},
+{
+"judul":"Web Performance Budget",
+"url":"https://github.com/pajaydev/awesome-web-performance-budget#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Techniques to ensure certain performance metrics for a website."
+},
+{
+"judul":"Web Animation",
+"url":"https://github.com/sergey-pimenov/awesome-web-animation#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Animations in the browser with JavaScript, CSS, SVG, etc."
+},
+{
+"judul":"Yew",
+"url":"https://github.com/jetli/awesome-yew#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Rust framework inspired by Elm and React for creating multi-threaded frontend web apps with WebAssembly."
+},
+{
+"judul":"Material-UI",
+"url":"https://github.com/nadunindunil/awesome-material-ui#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Material Design React components for faster and easier web development."
+},
+{
+"judul":"Building Blocks for Web Apps",
+"url":"https://github.com/componently-com/awesome-building-blocks-for-web-apps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Standalone features to be integrated into web apps."
+},
+{
+"judul":"Svelte",
+"url":"https://github.com/TheComputerM/awesome-svelte#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"App framework."
+},
+{
+"judul":"Design systems",
+"url":"https://github.com/klaufel/awesome-design-systems#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Collection of reusable components, guided by rules that ensure consistency and speed."
+},
+{
+"judul":"Inertia.js",
+"url":"https://github.com/innocenzi/awesome-inertiajs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Make single-page apps without building an API."
+},
+{
+"judul":"MDBootstrap",
+"url":"https://github.com/mdbootstrap/awesome-mdbootstrap#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Templates, layouts, components, and widgets to rapidly build websites."
+},
+{
+"judul":"Master CSS",
+"url":"https://github.com/master-co/awesome-master-css#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"A virtual CSS language with enhanced syntax."
+},
+{
+"judul":"Hydrogen",
+"url":"https://github.com/shopify/awesome-hydrogen#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Edge-first framework for building Shopify storefronts with React."
+},
+{
+"judul":"Tiny JS",
+"url":"https://github.com/thoughtspile/awesome-tiny-js#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Frontend libraries that fit into 2 kB with dependencies."
+},
+{
+"judul":"Frontend GIS",
+"url":"https://github.com/joewdavies/awesome-frontend-gis#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"Geographic Information Systems (GIS) for web browsers."
+},
+{
+"judul":"WebGPU",
+"url":"https://github.com/mikbry/awesome-webgpu#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"JavaScript API for rendering and compute on GPUs."
+},
+{
+"judul":"WebAssembly",
+"url":"https://github.com/idematos/awesome-webassembly#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Front-End Development"
+],
+"catatan":"A portable binary format for running code efficiently across platforms."
+},
+{
+"judul":"Flask",
+"url":"https://github.com/mjhea0/awesome-flask#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Python framework."
+},
+{
+"judul":"Docker",
+"url":"https://github.com/veggiemonk/awesome-docker#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Vagrant",
+"url":"https://github.com/iJackUA/awesome-vagrant#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Automation virtual machine environment."
+},
+{
+"judul":"Pyramid",
+"url":"https://github.com/uralbash/awesome-pyramid#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Python framework."
+},
+{
+"judul":"Play1 Framework",
+"url":"https://github.com/PerfectCarl/awesome-play1#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":""
+},
+{
+"judul":"CakePHP",
+"url":"https://github.com/friendsofcake/awesome-cakephp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"PHP framework."
+},
+{
+"judul":"Symfony",
+"url":"https://github.com/sitepoint-editors/awesome-symfony#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"PHP framework."
+},
+{
+"judul":"Education",
+"url":"https://github.com/pehapkari/awesome-symfony-education#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Laravel",
+"url":"https://github.com/chiraggude/awesome-laravel#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"PHP framework."
+},
+{
+"judul":"Education",
+"url":"https://github.com/fukuball/Awesome-Laravel-Education#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":""
+},
+{
+"judul":"Rails",
+"url":"https://github.com/gramantin/awesome-rails#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Web app framework for Ruby."
+},
+{
+"judul":"Gems",
+"url":"https://github.com/hothero/awesome-rails-gem#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Packages."
+},
+{
+"judul":"Phalcon",
+"url":"https://github.com/phalcon/awesome-phalcon#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"PHP framework."
+},
+{
+"judul":"Useful .htaccess Snippets",
+"url":"https://github.com/phanan/htaccess#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":""
+},
+{
+"judul":"nginx",
+"url":"https://github.com/fcambus/nginx-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Web server."
+},
+{
+"judul":"Dropwizard",
+"url":"https://github.com/stve/awesome-dropwizard#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Java framework."
+},
+{
+"judul":"Kubernetes",
+"url":"https://github.com/ramitsurana/awesome-kubernetes#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Open-source platform that automates Linux container operations."
+},
+{
+"judul":"Lumen",
+"url":"https://github.com/unicodeveloper/awesome-lumen#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"PHP micro-framework."
+},
+{
+"judul":"Serverless Framework",
+"url":"https://github.com/pmuens/awesome-serverless#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Serverless computing and serverless architectures."
+},
+{
+"judul":"Apache Wicket",
+"url":"https://github.com/PhantomYdn/awesome-wicket#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Java web app framework."
+},
+{
+"judul":"Vert.x",
+"url":"https://github.com/vert-x3/vertx-awesome#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Toolkit for building reactive apps on the JVM."
+},
+{
+"judul":"Terraform",
+"url":"https://github.com/shuaibiyy/awesome-terraform#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Tool for building, changing, and versioning infrastructure."
+},
+{
+"judul":"Vapor",
+"url":"https://github.com/vapor-community/awesome-vapor#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Server-side development in Swift."
+},
+{
+"judul":"Dash",
+"url":"https://github.com/ucg8j/awesome-dash#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Python web app framework."
+},
+{
+"judul":"FastAPI",
+"url":"https://github.com/mjhea0/awesome-fastapi#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Python web app framework."
+},
+{
+"judul":"CDK",
+"url":"https://github.com/kolomied/awesome-cdk#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Open-source software development framework for defining cloud infrastructure in code."
+},
+{
+"judul":"IAM",
+"url":"https://github.com/kdeldycke/awesome-iam#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"User accounts, authentication and authorization."
+},
+{
+"judul":"Slim",
+"url":"https://github.com/nekofar/awesome-slim#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"PHP framework."
+},
+{
+"judul":"Fiber",
+"url":"https://github.com/gofiber/awesome-fiber#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Web framework built on top of Fasthttp, the fastest HTTP engine for Go."
+},
+{
+"judul":"Kustomize",
+"url":"https://github.com/DevOpsHiveHQ/awesome-kustomize#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Kubernetes native declarative configuration management tool."
+},
+{
+"judul":"OpenTofu",
+"url":"https://github.com/virtualroot/awesome-opentofu#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Open-source infrastructure as code tool."
+},
+{
+"judul":"Reflex",
+"url":"https://github.com/reflex-dev/awesome-reflex#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Back-End Development"
+],
+"catatan":"Python web framework for building both your frontend and backend with no JavaScript."
+},
+{
+"judul":"University Courses",
+"url":"https://github.com/prakhar1989/awesome-courses#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Data Science",
+"url":"https://github.com/academic/awesome-datascience#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Tutorials",
+"url":"https://github.com/siboehm/awesome-learn-datascience#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Machine Learning",
+"url":"https://github.com/josephmisiti/awesome-machine-learning#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Tutorials",
+"url":"https://github.com/ujjwalkarn/Machine-Learning-Tutorials#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"ML with Ruby",
+"url":"https://github.com/arbox/machine-learning-with-ruby#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Learning, implementing, and applying Machine Learning using Ruby."
+},
+{
+"judul":"Core ML Models",
+"url":"https://github.com/likedan/Awesome-CoreML-Models#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Models for Apple's machine learning framework."
+},
+{
+"judul":"H2O",
+"url":"https://github.com/h2oai/awesome-h2o#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Open source distributed machine learning platform written in Java with APIs in R, Python, and Scala."
+},
+{
+"judul":"Software Engineering for Machine Learning",
+"url":"https://github.com/SE-ML/awesome-seml#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"From experiment to production-level machine learning."
+},
+{
+"judul":"AI in Finance",
+"url":"https://github.com/georgezouq/awesome-ai-in-finance#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Solving problems in finance with machine learning."
+},
+{
+"judul":"JAX",
+"url":"https://github.com/n2cholas/awesome-jax#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Automatic differentiation and XLA compilation brought together for high-performance machine learning research."
+},
+{
+"judul":"XAI",
+"url":"https://github.com/altamiracorp/awesome-xai#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Providing insight, explanations, and interpretability to machine learning methods."
+},
+{
+"judul":"Speech and Natural Language Processing",
+"url":"https://github.com/edobashira/speech-language-processing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Spanish",
+"url":"https://github.com/dav009/awesome-spanish-nlp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"NLP with Ruby",
+"url":"https://github.com/arbox/nlp-with-ruby#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Question Answering",
+"url":"https://github.com/seriousran/awesome-qa#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"The science of asking and answering in natural language with a machine."
+},
+{
+"judul":"Natural Language Generation",
+"url":"https://github.com/accelerated-text/awesome-nlg#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Generation of text used in data-to-text, conversational agents, and narrative generation applications."
+},
+{
+"judul":"Linguistics",
+"url":"https://github.com/theimpossibleastronaut/awesome-linguistics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Cryptography",
+"url":"https://github.com/sobolevn/awesome-cryptography#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Papers",
+"url":"https://github.com/pFarb/awesome-crypto-papers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Theory basics for using cryptography by non-cryptographers."
+},
+{
+"judul":"Computer Vision",
+"url":"https://github.com/jbhuang0604/awesome-computer-vision#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Deep Learning",
+"url":"https://github.com/ChristosChristofidis/awesome-deep-learning#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Neural networks."
+},
+{
+"judul":"TensorFlow",
+"url":"https://github.com/jtoy/awesome-tensorflow#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Library for machine intelligence."
+},
+{
+"judul":"TensorFlow.js",
+"url":"https://github.com/aaronhma/awesome-tensorflow-js#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"WebGL-accelerated machine learning JavaScript library for training and deploying models."
+},
+{
+"judul":"TensorFlow Lite",
+"url":"https://github.com/margaretmz/awesome-tensorflow-lite#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Framework that optimizes TensorFlow models for on-device machine learning."
+},
+{
+"judul":"Papers",
+"url":"https://github.com/terryum/awesome-deep-learning-papers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"The most cited deep learning papers."
+},
+{
+"judul":"Education",
+"url":"https://github.com/guillaume-chevalier/awesome-deep-learning-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Deep Vision",
+"url":"https://github.com/kjw0612/awesome-deep-vision#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Open Source Society University",
+"url":"https://github.com/ossu/computer-science#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Functional Programming",
+"url":"https://github.com/lucasviola/awesome-functional-programming#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Empirical Software Engineering",
+"url":"https://github.com/dspinellis/awesome-msr#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Evidence-based research on software systems."
+},
+{
+"judul":"Static Analysis & Code Quality",
+"url":"https://github.com/analysis-tools-dev/static-analysis#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":""
+},
+{
+"judul":"Information Retrieval",
+"url":"https://github.com/harpribot/awesome-information-retrieval#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Learn to develop your own search engine."
+},
+{
+"judul":"Quantum Computing",
+"url":"https://github.com/desireevl/awesome-quantum-computing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Computing that utilizes quantum mechanics and qubits on quantum computers."
+},
+{
+"judul":"Theoretical Computer Science",
+"url":"https://github.com/mostafatouny/awesome-theoretical-computer-science#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"The interplay of computer science and pure mathematics, distinguished by its emphasis on mathematical rigour and technique."
+},
+{
+"judul":"Conversational AI",
+"url":"https://github.com/jyguyomarch/awesome-conversational-ai#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Build awesome chatbots and digital assistants."
+},
+{
+"judul":"Generative AI",
+"url":"https://github.com/steven2358/awesome-generative-ai#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Automatically generates a wide range of unique content in text, image, and audio format."
+},
+{
+"judul":"Position-Based Quantum Cryptography",
+"url":"https://github.com/Renaller/awesome-position-based-quantum-cryptography#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Computer Science"
+],
+"catatan":"Theory on quantum cryptography that utilizes special relativistic constraints to achieve quantum-security under certain conditions."
+},
+{
+"judul":"Big Data",
+"url":"https://github.com/0xnr/awesome-bigdata#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":""
+},
+{
+"judul":"Public Datasets",
+"url":"https://github.com/awesomedata/awesome-public-datasets#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":""
+},
+{
+"judul":"Hadoop",
+"url":"https://github.com/youngwookim/awesome-hadoop#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":"Framework for distributed storage and processing of very large data sets."
+},
+{
+"judul":"Data Engineering",
+"url":"https://github.com/igorbarinov/awesome-data-engineering#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":""
+},
+{
+"judul":"Streaming",
+"url":"https://github.com/manuzhang/awesome-streaming#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":""
+},
+{
+"judul":"Apache Spark",
+"url":"https://github.com/awesome-spark/awesome-spark#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":"Unified engine for large-scale data processing."
+},
+{
+"judul":"Qlik",
+"url":"https://github.com/ambster-public/awesome-qlik#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":"Business intelligence platform for data visualization, analytics, and reporting apps."
+},
+{
+"judul":"Splunk",
+"url":"https://github.com/sduff/awesome-splunk#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":"Platform for searching, monitoring, and analyzing structured and unstructured machine-generated big data in real time."
+},
+{
+"judul":"Network Analysis",
+"url":"https://github.com/briatte/awesome-network-analysis#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Big Data"
+],
+"catatan":""
+},
+{
+"judul":"Papers We Love",
+"url":"https://github.com/papers-we-love/papers-we-love#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Talks",
+"url":"https://github.com/JanVanRyswyck/awesome-talks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Algorithms",
+"url":"https://github.com/tayllan/awesome-algorithms#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Education",
+"url":"https://github.com/gaerae/awesome-algorithms-education#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":"Learning and practicing."
+},
+{
+"judul":"Algorithm Visualizations",
+"url":"https://github.com/enjalot/algovis#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Artificial Intelligence",
+"url":"https://github.com/owainlewis/awesome-artificial-intelligence#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Search Engine Optimization",
+"url":"https://github.com/marcobiedermann/search-engine-optimization#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Competitive Programming",
+"url":"https://github.com/lnishan/awesome-competitive-programming#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Math",
+"url":"https://github.com/rossant/awesome-math#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":""
+},
+{
+"judul":"Recursion Schemes",
+"url":"https://github.com/passy/awesome-recursion-schemes#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":"Traversing nested data structures."
+},
+{
+"judul":"Audit Algorithms",
+"url":"https://github.com/erwanlemerrer/awesome-audit-algorithms#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":"Algorithmic audits of algorithms."
+},
+{
+"judul":"AGI & CoCoSci",
+"url":"https://github.com/YuzheSHI/awesome-agi-cocosci#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":"The reciprocation of Artificial General Intelligence (AGI) and Computational Cognitive Sciences (CoCoSci)."
+},
+{
+"judul":"Complex Systems",
+"url":"https://github.com/sellisd/awesome-complexity#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":"The scientific field studying systems with multiple interacting parts and emergent properties."
+},
+{
+"judul":"VLM Architectures",
+"url":"https://github.com/gokayfem/awesome-vlm-architectures#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Theory"
+],
+"catatan":"Vision Language Model architectures."
+},
+{
+"judul":"Free Programming Books",
+"url":"https://github.com/EbookFoundation/free-programming-books#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Books"
+],
+"catatan":""
+},
+{
+"judul":"Go Books",
+"url":"https://github.com/dariubs/GoBooks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Books"
+],
+"catatan":""
+},
+{
+"judul":"R Books",
+"url":"https://github.com/RomanTsegelskyi/rbooks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Books"
+],
+"catatan":""
+},
+{
+"judul":"Mind Expanding Books",
+"url":"https://github.com/hackerkid/Mind-Expanding-Books#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Books"
+],
+"catatan":""
+},
+{
+"judul":"Book Authoring",
+"url":"https://github.com/TalAter/awesome-book-authoring#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Books"
+],
+"catatan":""
+},
+{
+"judul":"Elixir Books",
+"url":"https://github.com/sger/ElixirBooks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Books"
+],
+"catatan":""
+},
+{
+"judul":"Sublime Text",
+"url":"https://github.com/dreikanter/sublime-bookmarks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Editors"
+],
+"catatan":""
+},
+{
+"judul":"Vim",
+"url":"https://github.com/mhinz/vim-galore#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Editors"
+],
+"catatan":""
+},
+{
+"judul":"Neovim",
+"url":"https://github.com/rockerBOO/awesome-neovim#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Editors"
+],
+"catatan":"Vim-fork focused on extensibility and usability."
+},
+{
+"judul":"Emacs",
+"url":"https://github.com/emacs-tw/awesome-emacs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Editors"
+],
+"catatan":""
+},
+{
+"judul":"Visual Studio Code",
+"url":"https://github.com/viatsko/awesome-vscode#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Editors"
+],
+"catatan":"Cross-platform open-source text editor."
+},
+{
+"judul":"Game Development",
+"url":"https://github.com/ellisonleao/magictools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":""
+},
+{
+"judul":"Game Talks",
+"url":"https://github.com/hzoo/awesome-gametalks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":""
+},
+{
+"judul":"Godot",
+"url":"https://github.com/godotengine/awesome-godot#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine."
+},
+{
+"judul":"Open Source Games",
+"url":"https://github.com/michelpereira/awesome-open-source-games#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":""
+},
+{
+"judul":"Chess",
+"url":"https://github.com/hkirat/awesome-chess#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":""
+},
+{
+"judul":"LÖVE",
+"url":"https://github.com/love2d-community/awesome-love2d#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine."
+},
+{
+"judul":"PICO-8",
+"url":"https://github.com/pico-8/awesome-PICO-8#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Fantasy console."
+},
+{
+"judul":"Game Boy Development",
+"url":"https://github.com/gbdev/awesome-gbdev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":""
+},
+{
+"judul":"Construct 2",
+"url":"https://github.com/ConstructCommunity/awesome-construct#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine."
+},
+{
+"judul":"Gideros",
+"url":"https://github.com/stetso/awesome-gideros#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine."
+},
+{
+"judul":"Minecraft",
+"url":"https://github.com/bs-community/awesome-minecraft#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Sandbox video game."
+},
+{
+"judul":"ComputerCraft",
+"url":"https://github.com/tomodachi94/awesome-computercraft#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Minecraft mod that adds programmable computers."
+},
+{
+"judul":"Game Datasets",
+"url":"https://github.com/leomaurodesenv/game-datasets#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Materials and datasets for Artificial Intelligence in games."
+},
+{
+"judul":"Haxe Game Development",
+"url":"https://github.com/Dvergar/awesome-haxe-gamedev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"A high-level strongly typed programming language used to produce cross-platform native code."
+},
+{
+"judul":"libGDX",
+"url":"https://github.com/rafaskb/awesome-libgdx#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Java game framework."
+},
+{
+"judul":"PlayCanvas",
+"url":"https://github.com/playcanvas/awesome-playcanvas#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine."
+},
+{
+"judul":"Game Remakes",
+"url":"https://github.com/radek-sprta/awesome-game-remakes#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Actively maintained open-source game remakes."
+},
+{
+"judul":"Flame",
+"url":"https://github.com/flame-engine/awesome-flame#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine for Flutter."
+},
+{
+"judul":"Discord Communities",
+"url":"https://github.com/mhxion/awesome-discord-communities#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Chat with friends and communities."
+},
+{
+"judul":"CHIP-8",
+"url":"https://github.com/tobiasvl/awesome-chip-8#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Virtual computer game machine from the 70s."
+},
+{
+"judul":"Games of Coding",
+"url":"https://github.com/michelpereira/awesome-games-of-coding#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Learn a programming language by making games."
+},
+{
+"judul":"Esports",
+"url":"https://github.com/strift/awesome-esports#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Video games played as a sport."
+},
+{
+"judul":"Learn Gamedev",
+"url":"https://github.com/notpresident35/awesome-learn-gamedev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"The craft of video game creation."
+},
+{
+"judul":"Game Engine Development",
+"url":"https://github.com/stevinz/awesome-game-engine-dev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Building software to speed up game creation."
+},
+{
+"judul":"GameMaker",
+"url":"https://github.com/bytecauldron/awesome-gamemaker#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine."
+},
+{
+"judul":"Game Production",
+"url":"https://github.com/vhladiienko/awesome-game-production#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Leading the process of designing, developing, testing and distributing a video game from concept to release."
+},
+{
+"judul":"Babylon.js",
+"url":"https://github.com/Symbitic/awesome-babylonjs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Game engine for cross-platform web and native game development."
+},
+{
+"judul":"Roblox",
+"url":"https://github.com/awesome-roblox/awesome-roblox#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Gaming"
+],
+"catatan":"Immersive platform for hosting millions of diverse experiences."
+},
+{
+"judul":"Quick Look Plugins",
+"url":"https://github.com/sindresorhus/quick-look-plugins#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"For macOS."
+},
+{
+"judul":"Dev Env",
+"url":"https://github.com/jondot/awesome-devenv#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Dotfiles",
+"url":"https://github.com/webpro/awesome-dotfiles#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Shell",
+"url":"https://github.com/alebcay/awesome-shell#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Fish",
+"url":"https://github.com/jorgebucaran/awsm.fish#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"User-friendly shell."
+},
+{
+"judul":"Command-Line Apps",
+"url":"https://github.com/agarrharr/awesome-cli-apps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"ZSH Plugins",
+"url":"https://github.com/unixorn/awesome-zsh-plugins#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"GitHub",
+"url":"https://github.com/phillipadsmith/awesome-github#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Hosting service for Git repositories."
+},
+{
+"judul":"Browser Extensions",
+"url":"https://github.com/stefanbuck/awesome-browser-extensions-for-github#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Cheat Sheet",
+"url":"https://github.com/tiimgreen/github-cheat-sheet#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Pinned Gists",
+"url":"https://github.com/matchai/awesome-pinned-gists#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Dynamic pinned gists for your GitHub profile."
+},
+{
+"judul":"Git Cheat Sheet & Git Flow",
+"url":"https://github.com/arslanbilal/git-cheat-sheet#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Git Tips",
+"url":"https://github.com/git-tips/tips#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Git Add-ons",
+"url":"https://github.com/stevemao/awesome-git-addons#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Enhance the git CLI."
+},
+{
+"judul":"Git Hooks",
+"url":"https://github.com/compscilauren/awesome-git-hooks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Scripts for automating tasks during git workflows."
+},
+{
+"judul":"SSH",
+"url":"https://github.com/moul/awesome-ssh#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"FOSS for Developers",
+"url":"https://github.com/tvvocold/FOSS-for-Dev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"Hyper",
+"url":"https://github.com/bnb/awesome-hyper#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Cross-platform terminal app built on web technologies."
+},
+{
+"judul":"Terminals Are Sexy",
+"url":"https://github.com/k4m4/terminals-are-sexy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":""
+},
+{
+"judul":"GitHub Actions",
+"url":"https://github.com/sdras/awesome-actions#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Create tasks to automate your workflow and share them with others on GitHub."
+},
+{
+"judul":"WezTerm",
+"url":"https://github.com/michaelbrusegard/awesome-wezterm#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Development Environment"
+],
+"catatan":"Powerful cross-platform terminal emulator."
+},
+{
+"judul":"Science Fiction",
+"url":"https://github.com/sindresorhus/awesome-scifi#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Entertainment"
+],
+"catatan":"Scifi."
+},
+{
+"judul":"Fantasy",
+"url":"https://github.com/RichardLitt/awesome-fantasy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Entertainment"
+],
+"catatan":""
+},
+{
+"judul":"Podcasts",
+"url":"https://github.com/ayr-ton/awesome-geek-podcasts#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Entertainment"
+],
+"catatan":""
+},
+{
+"judul":"Email Newsletters",
+"url":"https://github.com/zudochkin/awesome-newsletters#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Entertainment"
+],
+"catatan":""
+},
+{
+"judul":"IT Quotes",
+"url":"https://github.com/victorlaerte/awesome-it-quotes#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Entertainment"
+],
+"catatan":""
+},
+{
+"judul":"Database",
+"url":"https://github.com/numetriclabz/awesome-db#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":""
+},
+{
+"judul":"MySQL",
+"url":"https://github.com/shlomi-noach/awesome-mysql#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":""
+},
+{
+"judul":"SQLAlchemy",
+"url":"https://github.com/dahlia/awesome-sqlalchemy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":""
+},
+{
+"judul":"InfluxDB",
+"url":"https://github.com/mark-rushakoff/awesome-influxdb#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":""
+},
+{
+"judul":"Neo4j",
+"url":"https://github.com/neueda/awesome-neo4j#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":""
+},
+{
+"judul":"MongoDB",
+"url":"https://github.com/ramnes/awesome-mongodb#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"NoSQL database."
+},
+{
+"judul":"RethinkDB",
+"url":"https://github.com/d3viant0ne/awesome-rethinkdb#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":""
+},
+{
+"judul":"TinkerPop",
+"url":"https://github.com/mohataher/awesome-tinkerpop#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Graph computing framework."
+},
+{
+"judul":"PostgreSQL",
+"url":"https://github.com/dhamaniasad/awesome-postgres#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Object-relational database."
+},
+{
+"judul":"CouchDB",
+"url":"https://github.com/quangv/awesome-couchdb#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Document-oriented NoSQL database."
+},
+{
+"judul":"HBase",
+"url":"https://github.com/rayokota/awesome-hbase#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Distributed, scalable, big data store."
+},
+{
+"judul":"NoSQL Guides",
+"url":"https://github.com/erictleung/awesome-nosql-guides#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Help on using non-relational, distributed, open-source, and horizontally scalable databases."
+},
+{
+"judul":"Database Tools",
+"url":"https://github.com/mgramin/awesome-db-tools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Everything that makes working with databases easier."
+},
+{
+"judul":"TypeDB",
+"url":"https://github.com/vaticle/typedb-awesome#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"Logical database to organize large and complex networks of data as one body of knowledge."
+},
+{
+"judul":"Supabase",
+"url":"https://github.com/lyqht/awesome-supabase#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"An open-source alternative to Firebase."
+},
+{
+"judul":"PocketBase",
+"url":"https://github.com/benallfree/awesome-pocketbase#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"An open-source, Go-based backend in one file."
+},
+{
+"judul":"Neon",
+"url":"https://github.com/tyaga001/awesome-neon#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Databases"
+],
+"catatan":"An open-source alternative to AWS Aurora."
+},
+{
+"judul":"Fonts",
+"url":"https://github.com/brabadu/awesome-fonts#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":""
+},
+{
+"judul":"Codeface",
+"url":"https://github.com/chrissimpkins/codeface#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Text editor fonts."
+},
+{
+"judul":"Stock Resources",
+"url":"https://github.com/neutraltone/awesome-stock-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":""
+},
+{
+"judul":"GIF",
+"url":"https://github.com/davisonio/awesome-gif#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Image format known for animated images."
+},
+{
+"judul":"Music",
+"url":"https://github.com/ciconia/awesome-music#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":""
+},
+{
+"judul":"Open Source Documents",
+"url":"https://github.com/44bits/awesome-opensource-documents#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":""
+},
+{
+"judul":"Audio Visualization",
+"url":"https://github.com/willianjusten/awesome-audio-visualization#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":""
+},
+{
+"judul":"Broadcasting",
+"url":"https://github.com/ebu/awesome-broadcasting#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":""
+},
+{
+"judul":"Pixel Art",
+"url":"https://github.com/Siilwyn/awesome-pixel-art#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Pixel-level digital art."
+},
+{
+"judul":"FFmpeg",
+"url":"https://github.com/transitive-bullshit/awesome-ffmpeg#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Cross-platform solution to record, convert and stream audio and video."
+},
+{
+"judul":"Icons",
+"url":"https://github.com/notlmn/awesome-icons#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Downloadable SVG/PNG/font icon projects."
+},
+{
+"judul":"Audiovisual",
+"url":"https://github.com/stingalleman/awesome-audiovisual#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Lighting, audio and video in professional environments."
+},
+{
+"judul":"VLC",
+"url":"https://github.com/mfkl/awesome-vlc#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Cross-platform media player software and streaming server."
+},
+{
+"judul":"Audio Over IP",
+"url":"https://github.com/Mo-way/awesome-aoip#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Media"
+],
+"catatan":"Reliably transmit uncompressed, low-latency audio over an IP (layer 3) network."
+},
+{
+"judul":"CLI Workshoppers",
+"url":"https://github.com/therebelrobot/awesome-workshopper#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Interactive tutorials."
+},
+{
+"judul":"Learn to Program",
+"url":"https://github.com/karlhorky/learn-to-program#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":""
+},
+{
+"judul":"Speaking",
+"url":"https://github.com/matteofigus/awesome-speaking#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":""
+},
+{
+"judul":"Tech Videos",
+"url":"https://github.com/lucasviola/awesome-tech-videos#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":""
+},
+{
+"judul":"Computer History",
+"url":"https://github.com/watson/awesome-computer-history#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":""
+},
+{
+"judul":"Programming for Kids",
+"url":"https://github.com/HollyAdele/awesome-programming-for-kids#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":""
+},
+{
+"judul":"STEAM",
+"url":"https://github.com/RahulBirCodes/awesome-steam#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Supplements for specific science, technology, engineering, arts, and math (STEAM) courses across all grade levels."
+},
+{
+"judul":"Educational Games",
+"url":"https://github.com/yrgo/awesome-educational-games#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Learn while playing."
+},
+{
+"judul":"JavaScript Learning",
+"url":"https://github.com/micromata/awesome-javascript-learning#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":""
+},
+{
+"judul":"CSS Learning",
+"url":"https://github.com/micromata/awesome-css-learning#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Mainly about CSS – the language and the modules."
+},
+{
+"judul":"Product Management",
+"url":"https://github.com/dend/awesome-product-management#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Learn how to be a better product manager."
+},
+{
+"judul":"Roadmaps",
+"url":"https://github.com/liuchong/awesome-roadmaps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Gives you a clear route to improve your knowledge and skills."
+},
+{
+"judul":"YouTubers",
+"url":"https://github.com/JoseDeFreitas/awesome-youtubers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Watch video tutorials from YouTubers that teach you about technology."
+},
+{
+"judul":"Hackathon",
+"url":"https://github.com/dribdat/awesome-hackathon#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Running fun and productive hackathons."
+},
+{
+"judul":"Certificates",
+"url":"https://github.com/PanXProject/awesome-certificates#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Learn"
+],
+"catatan":"Free computer science certifications to showcase your knowledge."
+},
+{
+"judul":"Application Security",
+"url":"https://github.com/paragonie/awesome-appsec#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Security",
+"url":"https://github.com/sbilly/awesome-security#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"CTF",
+"url":"https://github.com/apsdehal/awesome-ctf#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Capture The Flag."
+},
+{
+"judul":"Cyber Security University",
+"url":"https://github.com/brootware/awesome-cyber-security-university#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Free educational resources that focus on learning by doing."
+},
+{
+"judul":"Malware Analysis",
+"url":"https://github.com/rshipp/awesome-malware-analysis#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Android Security",
+"url":"https://github.com/ashishb/android-security-awesome#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Hacking",
+"url":"https://github.com/carpedm20/awesome-hacking#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Hacking Spots",
+"url":"https://github.com/daviddias/awesome-hacking-locations#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Honeypots",
+"url":"https://github.com/paralax/awesome-honeypots#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Deception trap, designed to entice an attacker into attempting to compromise the information systems in an organization."
+},
+{
+"judul":"Incident Response",
+"url":"https://github.com/meirwah/awesome-incident-response#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Vehicle Security and Car Hacking",
+"url":"https://github.com/jaredthecoder/awesome-vehicle-security#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Web Security",
+"url":"https://github.com/qazbnm456/awesome-web-security#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Security of web apps & services."
+},
+{
+"judul":"Lockpicking",
+"url":"https://github.com/fabacab/awesome-lockpicking#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"The art of unlocking a lock by manipulating its components without the key."
+},
+{
+"judul":"Cybersecurity Blue Team",
+"url":"https://github.com/fabacab/awesome-cybersecurity-blueteam#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Groups of individuals who identify security flaws in information technology systems."
+},
+{
+"judul":"Fuzzing",
+"url":"https://github.com/cpuu/awesome-fuzzing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Automated software testing technique that involves feeding pseudo-randomly generated input data."
+},
+{
+"judul":"Embedded and IoT Security",
+"url":"https://github.com/fkie-cad/awesome-embedded-and-iot-security#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"GDPR",
+"url":"https://github.com/bakke92/awesome-gdpr#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Regulation on data protection and privacy for all individuals within EU."
+},
+{
+"judul":"DevSecOps",
+"url":"https://github.com/TaptuIT/awesome-devsecops#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Integration of security practices into DevOps."
+},
+{
+"judul":"Executable Packing",
+"url":"https://github.com/dhondta/awesome-executable-packing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Packing and unpacking executable formats."
+},
+{
+"judul":"Malware Persistence",
+"url":"https://github.com/Karneades/awesome-malware-persistence#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Techniques that adversaries use to keep access to systems across restarts."
+},
+{
+"judul":"EVM Security",
+"url":"https://github.com/kareniel/awesome-evm-security#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Understanding the Ethereum Virtual Machine security ecosystem."
+},
+{
+"judul":"Password Cracking",
+"url":"https://github.com/n0kovo/awesome-password-cracking#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"The process of recovering passwords from data that has been stored in or transmitted by a system in scrambled form."
+},
+{
+"judul":"Security Card Games",
+"url":"https://github.com/Karneades/awesome-security-card-games#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Train your skills and discuss various security topics."
+},
+{
+"judul":"Suricata",
+"url":"https://github.com/satta/awesome-suricata#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Intrusion detection/prevention system and network security monitoring engine."
+},
+{
+"judul":"Prompt Injection",
+"url":"https://github.com/FonduAI/awesome-prompt-injection#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"A type of vulnerability that specifically targets machine learning models."
+},
+{
+"judul":"Detection Engineering",
+"url":"https://github.com/infosecB/awesome-detection-engineering#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Design, build, and operate detective cybersecurity controls."
+},
+{
+"judul":"Annual Security Reports",
+"url":"https://github.com/jacobdjwilson/awesome-annual-security-reports#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Exploring cybersecurity trends, insights, and challenges."
+},
+{
+"judul":"CI/CD Attacks",
+"url":"https://github.com/TupleType/awesome-cicd-attacks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Offensive research of systems and processes related to developing and deploying code."
+},
+{
+"judul":"OpenID Connect",
+"url":"https://github.com/cerberauth/awesome-openid-connect#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":"Identity standard and authentication protocol built on OAuth 2.0 for user identity assertion."
+},
+{
+"judul":"Umbraco",
+"url":"https://github.com/umbraco-community/awesome-umbraco#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":""
+},
+{
+"judul":"Refinery CMS",
+"url":"https://github.com/refinerycms-contrib/awesome-refinerycms#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Ruby on Rails CMS."
+},
+{
+"judul":"Wagtail",
+"url":"https://github.com/springload/awesome-wagtail#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Django CMS focused on flexibility and user experience."
+},
+{
+"judul":"Textpattern",
+"url":"https://github.com/drmonkeyninja/awesome-textpattern#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Lightweight PHP-based CMS."
+},
+{
+"judul":"Drupal",
+"url":"https://github.com/nirgn975/awesome-drupal#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Extensible PHP-based CMS."
+},
+{
+"judul":"Craft CMS",
+"url":"https://github.com/craftcms/awesome#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Content-first CMS."
+},
+{
+"judul":"Sitecore",
+"url":"https://github.com/MartinMiles/Awesome-Sitecore#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":".NET digital marketing platform that combines CMS with tools for managing multiple websites."
+},
+{
+"judul":"Silverstripe CMS",
+"url":"https://github.com/wernerkrauss/awesome-silverstripe-cms#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"PHP MVC framework that serves as a classic or headless CMS."
+},
+{
+"judul":"Directus",
+"url":"https://github.com/directus-community/awesome-directus#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"A real-time API and app dashboard for managing SQL database content."
+},
+{
+"judul":"Plone",
+"url":"https://github.com/collective/awesome-plone#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Open source Python CMS."
+},
+{
+"judul":"Payload",
+"url":"https://github.com/DanailMinchev/awesome-payload#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Content Management Systems"
+],
+"catatan":"Next.js native and open source headless CMS."
+},
+{
+"judul":"Robotics",
+"url":"https://github.com/Kiloreux/awesome-robotics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":""
+},
+{
+"judul":"Internet of Things",
+"url":"https://github.com/HQarroum/awesome-iot#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":""
+},
+{
+"judul":"Electronics",
+"url":"https://github.com/kitspace/awesome-electronics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"For electronic engineers and hobbyists."
+},
+{
+"judul":"Bluetooth Beacons",
+"url":"https://github.com/rabschi/awesome-beacon#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":""
+},
+{
+"judul":"Electric Guitar Specifications",
+"url":"https://github.com/gitfrage/guitarspecs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Checklist for building your own electric guitar."
+},
+{
+"judul":"Plotters",
+"url":"https://github.com/beardicus/awesome-plotters#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Computer-controlled drawing machines and other visual art robots."
+},
+{
+"judul":"Robotic Tooling",
+"url":"https://github.com/protontypes/awesome-robotic-tooling#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Free and open tools for professional robotic development."
+},
+{
+"judul":"LIDAR",
+"url":"https://github.com/szenergy/awesome-lidar#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Sensor for measuring distances by illuminating the target with laser light."
+},
+{
+"judul":"Open Hardware",
+"url":"https://github.com/delftopenhardware/awesome-open-hardware#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Open-source hardware projects."
+},
+{
+"judul":"ADS-B",
+"url":"https://github.com/rickstaa/awesome-adsb#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Technology broadcasting aircraft's identity, position, and data periodically."
+},
+{
+"judul":"Flying FPV",
+"url":"https://github.com/Matthias84/awesome-flying-fpv#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Open hardware and software related to drones / UAVs."
+},
+{
+"judul":"Open Companies",
+"url":"https://github.com/opencompany/awesome-open-company#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":""
+},
+{
+"judul":"Places to Post Your Startup",
+"url":"https://github.com/mmccaff/PlacesToPostYourStartup#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":""
+},
+{
+"judul":"OKR Methodology",
+"url":"https://github.com/domenicosolazzo/awesome-okr#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Goal setting & communication best practices."
+},
+{
+"judul":"Indie",
+"url":"https://github.com/mezod/awesome-indie#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Independent developer businesses."
+},
+{
+"judul":"Tools of the Trade",
+"url":"https://github.com/cjbarber/ToolsOfTheTrade#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Tools used by companies on Hacker News."
+},
+{
+"judul":"Clean Tech",
+"url":"https://github.com/nglgzz/awesome-clean-tech#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Fighting climate change with technology."
+},
+{
+"judul":"Wardley Maps",
+"url":"https://github.com/wardley-maps-community/awesome-wardley-maps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Provides high situational awareness to help improve strategic planning and decision making."
+},
+{
+"judul":"Social Enterprise",
+"url":"https://github.com/RayBB/awesome-social-enterprise#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Building an organization primarily focused on social impact that is at least partially self-funded."
+},
+{
+"judul":"Engineering Team Management",
+"url":"https://github.com/kdeldycke/awesome-engineering-team-management#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"How to transition from software development to engineering management."
+},
+{
+"judul":"Developer-First Products",
+"url":"https://github.com/agamm/awesome-developer-first#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Products that target developers as the user."
+},
+{
+"judul":"Billing",
+"url":"https://github.com/kdeldycke/awesome-billing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"Payments, invoicing, pricing, accounting, marketplace, fraud, and business intelligence."
+},
+{
+"judul":"Engineering Strategy",
+"url":"https://github.com/aleixmorgadas/awesome-engineering-strategy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Business"
+],
+"catatan":"How to design and execute engineering strategies for tech leadership."
+},
+{
+"judul":"Slack",
+"url":"https://github.com/matiassingers/awesome-slack#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":"Team collaboration."
+},
+{
+"judul":"Communities",
+"url":"https://github.com/filipelinhares/awesome-slack#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":""
+},
+{
+"judul":"Remote Jobs",
+"url":"https://github.com/lukasz-madon/awesome-remote-job#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":""
+},
+{
+"judul":"Productivity",
+"url":"https://github.com/jyguyomarch/awesome-productivity#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":""
+},
+{
+"judul":"Niche Job Boards",
+"url":"https://github.com/tramcar/awesome-job-boards#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":""
+},
+{
+"judul":"Code Review",
+"url":"https://github.com/joho/awesome-code-review#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":"Reviewing code."
+},
+{
+"judul":"Creative Technology",
+"url":"https://github.com/j0hnm4r5/awesome-creative-technology#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Work"
+],
+"catatan":"Businesses & groups that specialize in combining computing, design, art, and user experience."
+},
+{
+"judul":"PCAPTools",
+"url":"https://github.com/caesar0301/awesome-pcaptools#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Networking"
+],
+"catatan":""
+},
+{
+"judul":"Real-Time Communications",
+"url":"https://github.com/rtckit/awesome-rtc#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Networking"
+],
+"catatan":"Network protocols for near simultaneous exchange of media and data."
+},
+{
+"judul":"SNMP",
+"url":"https://github.com/eozer/awesome-snmp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Networking"
+],
+"catatan":"A protocol for collecting, modifying, and organizing information about managed devices on IP networks."
+},
+{
+"judul":"Scapy",
+"url":"https://github.com/secdev/awesome-scapy#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Networking"
+],
+"catatan":"Python-based interactive packet manipulation."
+},
+{
+"judul":"Cilium",
+"url":"https://github.com/seifrajhi/awesome-cilium#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Networking"
+],
+"catatan":"Provides networking and security capabilities for containerized apps, microservices, and virtual machines."
+},
+{
+"judul":"Bitcoin",
+"url":"https://github.com/igorbarinov/awesome-bitcoin#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Services and tools for Bitcoin software developers."
+},
+{
+"judul":"Ripple",
+"url":"https://github.com/vhpoet/awesome-ripple#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Open source distributed settlement network."
+},
+{
+"judul":"Non-Financial Blockchain",
+"url":"https://github.com/machinomy/awesome-non-financial-blockchain#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Applications of Blockchain beyond finance."
+},
+{
+"judul":"Mastodon",
+"url":"https://github.com/hyperupcall/awesome-mastodon#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Open source decentralized microblogging network."
+},
+{
+"judul":"Ethereum",
+"url":"https://github.com/ttumiel/Awesome-Ethereum#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Distributed computing platform for smart contract development."
+},
+{
+"judul":"Blockchain AI",
+"url":"https://github.com/steven2358/awesome-blockchain-ai#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"AI and machine-learning projects built on Blockchain."
+},
+{
+"judul":"EOSIO",
+"url":"https://github.com/DanailMinchev/awesome-eosio#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"A decentralized operating system supporting industrial-scale apps."
+},
+{
+"judul":"Corda",
+"url":"https://github.com/chainstack/awesome-corda#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Open source Blockchain platform designed for business."
+},
+{
+"judul":"Waves",
+"url":"https://github.com/msmolyakov/awesome-waves#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Open source Blockchain platform and development toolset for Web 3.0 apps and decentralized solutions."
+},
+{
+"judul":"Substrate",
+"url":"https://github.com/substrate-developer-hub/awesome-substrate#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Framework for writing scalable, upgradeable blockchains in Rust."
+},
+{
+"judul":"Golem",
+"url":"https://github.com/golemfactory/awesome-golem#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Open source peer-to-peer marketplace for computing resources."
+},
+{
+"judul":"Stacks",
+"url":"https://github.com/friedger/awesome-stacks-chain#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"A smart contract platform secured by Bitcoin."
+},
+{
+"judul":"Algorand",
+"url":"https://github.com/aorumbayev/awesome-algorand#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"An open-source, proof of stake Blockchain and smart contract computing platform."
+},
+{
+"judul":"ZeroNet",
+"url":"https://github.com/zolagonano/awesome-zeronet#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"A decentralized web-like network of peer-to-peer users."
+},
+{
+"judul":"Cosmos SDK",
+"url":"https://github.com/cosmos/awesome-cosmos#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Modular framework for building app-specific blockchains in Go."
+},
+{
+"judul":"Tor",
+"url":"https://github.com/polycarbohydrate/awesome-tor#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"A free overlay network for enabling anonymous communication."
+},
+{
+"judul":"ATProto",
+"url":"https://github.com/atblueprints/awesome-atproto#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Decentralized Systems"
+],
+"catatan":"Open, decentralized network for building social apps."
+},
+{
+"judul":"Biomedical Information Extraction",
+"url":"https://github.com/caufieldjh/awesome-bioie#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"How to extract information from unstructured biomedical data and text."
+},
+{
+"judul":"Computational Neuroscience",
+"url":"https://github.com/eselkin/awesome-computational-neuroscience#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"A multidisciplinary science which uses computational approaches to study the nervous system."
+},
+{
+"judul":"Diversity",
+"url":"https://github.com/folkswhocode/awesome-diversity#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Creating a more inclusive and diverse tech community."
+},
+{
+"judul":"Digital History",
+"url":"https://github.com/maehr/awesome-digital-history#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Computer-aided scientific investigation of history."
+},
+{
+"judul":"Empathy in Engineering",
+"url":"https://github.com/KimberlyMunoz/empathy-in-engineering#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Building and promoting more compassionate engineering cultures."
+},
+{
+"judul":"Healthcare",
+"url":"https://github.com/kakoni/awesome-healthcare#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Open source healthcare software for facilities, providers, developers, policy experts, and researchers."
+},
+{
+"judul":"Mental Health",
+"url":"https://github.com/dreamingechoes/awesome-mental-health#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Awareness and self-care in the software industry."
+},
+{
+"judul":"Neuroscience",
+"url":"https://github.com/analyticalmonk/awesome-neuroscience#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Study of the nervous system and brain."
+},
+{
+"judul":"Digital Humanities",
+"url":"https://github.com/dh-tech/awesome-digital-humanities#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Software for humanities scholars using quantitative or computational methods."
+},
+{
+"judul":"Lucid Dreams",
+"url":"https://github.com/IAmCoder/awesome-lucid-dreams#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"A dream where one becomes aware they are dreaming."
+},
+{
+"judul":"Neuroimaging",
+"url":"https://github.com/NPACore/awesome-neuroimaging#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Software for analyzing brain data from living subjects."
+},
+{
+"judul":"Transgender",
+"url":"https://github.com/cvyl/awesome-transgender#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Health and Social Science"
+],
+"catatan":"Someone whose gender identity differs from their assigned birth sex."
+},
+{
+"judul":"Creative Tech Events",
+"url":"https://github.com/danvoyce/awesome-creative-tech-events#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Events"
+],
+"catatan":"Events around the globe for creative coding, tech, design, music, arts and cool stuff."
+},
+{
+"judul":"Events in Italy",
+"url":"https://github.com/ildoc/awesome-italy-events#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Events"
+],
+"catatan":"Tech-related events in Italy."
+},
+{
+"judul":"Events in the Netherlands",
+"url":"https://github.com/awkward/awesome-netherlands-events#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Events"
+],
+"catatan":"Tech-related events in the Netherlands."
+},
+{
+"judul":"Testing",
+"url":"https://github.com/TheJambo/awesome-testing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Software testing."
+},
+{
+"judul":"Visual Regression Testing",
+"url":"https://github.com/mojoaxel/awesome-regression-testing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Ensures changes did not break the functionality or style."
+},
+{
+"judul":"Selenium",
+"url":"https://github.com/christian-bromann/awesome-selenium#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Open-source browser automation framework and ecosystem."
+},
+{
+"judul":"Appium",
+"url":"https://github.com/SrinivasanTarget/awesome-appium#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Test automation tool for apps."
+},
+{
+"judul":"TAP",
+"url":"https://github.com/sindresorhus/awesome-tap#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Test Anything Protocol."
+},
+{
+"judul":"JMeter",
+"url":"https://github.com/aliesbelik/awesome-jmeter#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Load testing and performance measurement tool."
+},
+{
+"judul":"k6",
+"url":"https://github.com/grafana/awesome-k6#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Open-source, developer-centric performance monitoring and load testing solution."
+},
+{
+"judul":"Playwright",
+"url":"https://github.com/mxschmitt/awesome-playwright#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Node.js library to automate Chromium, Firefox and WebKit with a single API."
+},
+{
+"judul":"Quality Assurance Roadmap",
+"url":"https://github.com/fityanos/awesome-quality-assurance-roadmap#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"How to start & build a career in software testing."
+},
+{
+"judul":"Gatling",
+"url":"https://github.com/aliesbelik/awesome-gatling#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Open-source load and performance testing framework based on Scala, Akka, and Netty."
+},
+{
+"judul":"CodeRabbit",
+"url":"https://github.com/coderabbitai/awesome-coderabbit#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"AI-powered code review platform."
+},
+{
+"judul":"Scientific Writing",
+"url":"https://github.com/writing-resources/awesome-scientific-writing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Distraction-free scientific writing with Markdown, reStructuredText and Jupyter notebooks."
+},
+{
+"judul":"JSON",
+"url":"https://github.com/burningtree/awesome-json#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Text based data interchange format."
+},
+{
+"judul":"GeoJSON",
+"url":"https://github.com/tmcw/awesome-geojson#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"CSV",
+"url":"https://github.com/secretGeek/awesomeCSV#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A text file format that stores tabular data and uses a comma to separate values."
+},
+{
+"judul":"Discounts for Student Developers",
+"url":"https://github.com/AchoArnold/discount-for-student-dev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Radio",
+"url":"https://github.com/kyleterry/awesome-radio#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Awesome",
+"url":"https://github.com/sindresorhus/awesome#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Recursion illustrated."
+},
+{
+"judul":"Analytics",
+"url":"https://github.com/0xnr/awesome-analytics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"REST",
+"url":"https://github.com/marmelab/awesome-rest#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Continuous Integration and Continuous Delivery",
+"url":"https://github.com/cicdops/awesome-ciandcd#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Services Engineering",
+"url":"https://github.com/mmcgrana/services-engineering#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Free for Developers",
+"url":"https://github.com/ripienaar/free-for-dev#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Boilerplate Projects",
+"url":"https://github.com/melvin0008/awesome-projects-boilerplates#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Readme",
+"url":"https://github.com/matiassingers/awesome-readme#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"GitHub Wiki",
+"url":"https://github.com/MyHoneyBadger/awesome-github-wiki#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Comprehensive documentation on GitHub beyond README."
+},
+{
+"judul":"Design and Development Guides",
+"url":"https://github.com/NARKOZ/guides#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Software Engineering Blogs",
+"url":"https://github.com/kilimchoi/engineering-blogs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Self Hosted",
+"url":"https://github.com/awesome-selfhosted/awesome-selfhosted#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"FOSS Production Apps",
+"url":"https://github.com/DataDaoDe/awesome-foss-apps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Gulp",
+"url":"https://github.com/alferov/awesome-gulp#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Task runner."
+},
+{
+"judul":"AMA",
+"url":"https://github.com/sindresorhus/amas#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Ask Me Anything."
+},
+{
+"judul":"Answers",
+"url":"https://github.com/stoeffel/awesome-ama-answers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Open Source Photography",
+"url":"https://github.com/ibaaj/awesome-OpenSourcePhotography#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"OpenGL",
+"url":"https://github.com/eug/awesome-opengl#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Cross-platform API for rendering 2D and 3D graphics."
+},
+{
+"judul":"GraphQL",
+"url":"https://github.com/chentsulin/awesome-graphql#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Urban & Regional Planning",
+"url":"https://github.com/APA-Technology-Division/urban-and-regional-planning-resources#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Concerning the built environment and communities."
+},
+{
+"judul":"Transit",
+"url":"https://github.com/MobilityData/awesome-transit#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Data standards, APIs, apps, tools, datasets, and research around open source technology of public transit."
+},
+{
+"judul":"Research Tools",
+"url":"https://github.com/emptymalei/awesome-research#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Data Visualization",
+"url":"https://github.com/javierluraschi/awesome-dataviz#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Microservices",
+"url":"https://github.com/mfornos/awesome-microservices#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Unicode",
+"url":"https://github.com/jagracey/Awesome-Unicode#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Standards, quirks, packages and resources for Unicode."
+},
+{
+"judul":"Code Points",
+"url":"https://github.com/Codepoints/awesome-codepoints#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Beginner-Friendly Projects",
+"url":"https://github.com/MunGell/awesome-for-beginners#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Katas",
+"url":"https://github.com/gamontal/awesome-katas#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Tools for Activism",
+"url":"https://github.com/drewrwilson/toolsforactivism#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Citizen Science",
+"url":"https://github.com/dylanrees/citizen-science#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"For community-based and non-institutional scientists."
+},
+{
+"judul":"MQTT",
+"url":"https://github.com/hobbyquaker/awesome-mqtt#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"\"Internet of Things\" connectivity protocol."
+},
+{
+"judul":"For Girls",
+"url":"https://github.com/cristianoliveira/awesome4girls#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Vorpal",
+"url":"https://github.com/vorpaljs/awesome-vorpal#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Node.js CLI framework."
+},
+{
+"judul":"Vulkan",
+"url":"https://github.com/vinjn/awesome-vulkan#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Low-overhead, cross-platform 3D graphics and compute API."
+},
+{
+"judul":"LaTeX",
+"url":"https://github.com/egeerardyn/awesome-LaTeX#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Typesetting language."
+},
+{
+"judul":"Economics",
+"url":"https://github.com/antontarasenko/awesome-economics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"An economist's starter kit."
+},
+{
+"judul":"Funny Markov Chains",
+"url":"https://github.com/sublimino/awesome-funny-markov#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Bioinformatics",
+"url":"https://github.com/danielecook/Awesome-Bioinformatics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Cheminformatics",
+"url":"https://github.com/hsiaoyi0504/awesome-cheminformatics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Informatics techniques applied to problems in chemistry."
+},
+{
+"judul":"Colorful",
+"url":"https://github.com/Siddharth11/Colorful#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Choose your next color scheme."
+},
+{
+"judul":"Steam",
+"url":"https://github.com/scholtzm/awesome-steam#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Digital distribution platform."
+},
+{
+"judul":"Bots",
+"url":"https://github.com/hackerkid/bots#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Building bots."
+},
+{
+"judul":"Site Reliability Engineering",
+"url":"https://github.com/dastergon/awesome-sre#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"DTrace",
+"url":"https://github.com/xen0l/awesome-dtrace#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Dynamic tracing framework."
+},
+{
+"judul":"Userscripts",
+"url":"https://github.com/bvolpato/awesome-userscripts#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Enhance your browsing experience."
+},
+{
+"judul":"Pokémon",
+"url":"https://github.com/tobiasbueschel/awesome-pokemon#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Resources for Pokémon and Pokémon GO."
+},
+{
+"judul":"ChatOps",
+"url":"https://github.com/exAspArk/awesome-chatops#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Managing technical and business operations through a chat."
+},
+{
+"judul":"Falsehood",
+"url":"https://github.com/kdeldycke/awesome-falsehood#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Falsehoods programmers believe in."
+},
+{
+"judul":"Domain-Driven Design",
+"url":"https://github.com/heynickc/awesome-ddd#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Software development approach for complex needs by connecting the implementation to an evolving model."
+},
+{
+"judul":"Quantified Self",
+"url":"https://github.com/woop/awesome-quantified-self#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Self-tracking through technology."
+},
+{
+"judul":"Web Design",
+"url":"https://github.com/nicolesaidy/awesome-web-design#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"For digital designers."
+},
+{
+"judul":"Creative Coding",
+"url":"https://github.com/terkelg/awesome-creative-coding#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Programming something expressive instead of something functional."
+},
+{
+"judul":"No-Login Web Apps",
+"url":"https://github.com/aviaryan/awesome-no-login-web-apps#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Web apps that work without login."
+},
+{
+"judul":"Free Software",
+"url":"https://github.com/johnjago/awesome-free-software#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Free as in freedom."
+},
+{
+"judul":"Framer",
+"url":"https://github.com/podo/awesome-framer#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Prototyping interactive UI designs."
+},
+{
+"judul":"Markdown",
+"url":"https://github.com/BubuAnabelas/awesome-markdown#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Markup language."
+},
+{
+"judul":"Dev Fun",
+"url":"https://github.com/mislavcimpersak/awesome-dev-fun#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Funny developer projects."
+},
+{
+"judul":"Magento 2",
+"url":"https://github.com/DavidLambauer/awesome-magento2#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Open Source eCommerce built with PHP."
+},
+{
+"judul":"TikZ",
+"url":"https://github.com/xiaohanyu/awesome-tikz#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Graph drawing packages for TeX/LaTeX/ConTeXt."
+},
+{
+"judul":"Ad-Free",
+"url":"https://github.com/johnjago/awesome-ad-free#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Alternatives without ads."
+},
+{
+"judul":"Prometheus",
+"url":"https://github.com/roaldnefs/awesome-prometheus#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Open-source monitoring system."
+},
+{
+"judul":"Homematic",
+"url":"https://github.com/homematic-community/awesome-homematic#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Smart home devices."
+},
+{
+"judul":"Ledger",
+"url":"https://github.com/sfischer13/awesome-ledger#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Double-entry accounting on the command-line."
+},
+{
+"judul":"Web Monetization",
+"url":"https://github.com/thomasbnt/awesome-web-monetization#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A free open web standard service that allows you to send money directly in your browser."
+},
+{
+"judul":"Uncopyright",
+"url":"https://github.com/johnjago/awesome-uncopyright#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Public domain works."
+},
+{
+"judul":"Crypto Currency Tools & Algorithms",
+"url":"https://github.com/Zheaoli/awesome-coins#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Digital currency where encryption is used to regulate the generation of units and verify transfers."
+},
+{
+"judul":"Open Source Supporters",
+"url":"https://github.com/zachflower/awesome-open-source-supporters#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Companies that offer their tools and services for free to open source projects."
+},
+{
+"judul":"Design Principles",
+"url":"https://github.com/robinstickel/awesome-design-principles#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Create better and more consistent designs and experiences."
+},
+{
+"judul":"Theravada",
+"url":"https://github.com/johnjago/awesome-theravada#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Teachings from the Theravada Buddhist tradition."
+},
+{
+"judul":"inspectIT",
+"url":"https://github.com/inspectit-labs/awesome-inspectit#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Open source Java app performance management tool."
+},
+{
+"judul":"Open Source Maintainers",
+"url":"https://github.com/nayafia/awesome-maintainers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"The experience of being an open source maintainer."
+},
+{
+"judul":"Calculators",
+"url":"https://github.com/xxczaki/awesome-calculators#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Tools for every platform."
+},
+{
+"judul":"Captcha",
+"url":"https://github.com/ZYSzys/awesome-captcha#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A type of challenge–response test used in computing to determine whether or not the user is human."
+},
+{
+"judul":"Jupyter",
+"url":"https://github.com/markusschanta/awesome-jupyter#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Create and share documents that contain code, equations, visualizations and narrative text."
+},
+{
+"judul":"FIRST Robotics Competition",
+"url":"https://github.com/andrewda/awesome-frc#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"International high school robotics championship."
+},
+{
+"judul":"Speakers",
+"url":"https://github.com/karlhorky/awesome-speakers#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Conference and meetup speakers in the programming and design community."
+},
+{
+"judul":"Board Games",
+"url":"https://github.com/edm00se/awesome-board-games#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Table-top gaming fun for all."
+},
+{
+"judul":"Software Patreons",
+"url":"https://github.com/uraimo/awesome-software-patreons#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Fund individual programmers or the development of open source projects."
+},
+{
+"judul":"Parasite",
+"url":"https://github.com/ecohealthalliance/awesome-parasite#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Parasites and host-pathogen interactions."
+},
+{
+"judul":"Food",
+"url":"https://github.com/jzarca01/awesome-food#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Projects on GitHub related to food."
+},
+{
+"judul":"Bitcoin Payment Processors",
+"url":"https://github.com/alexk111/awesome-bitcoin-payment-processors#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Start accepting Bitcoin."
+},
+{
+"judul":"Scientific Computing",
+"url":"https://github.com/nschloe/awesome-scientific-computing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Solving complex scientific problems using computers."
+},
+{
+"judul":"Amazon Sellers",
+"url":"https://github.com/ScaleLeap/awesome-amazon-seller#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":""
+},
+{
+"judul":"Agriculture",
+"url":"https://github.com/brycejohnston/awesome-agriculture#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Open source technology for farming and gardening."
+},
+{
+"judul":"Product Design",
+"url":"https://github.com/ttt30ga/awesome-product-design#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Design a product from the initial concept to production."
+},
+{
+"judul":"Prisma",
+"url":"https://github.com/catalinmiron/awesome-prisma#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Turn your database into a GraphQL API."
+},
+{
+"judul":"Software Architecture",
+"url":"https://github.com/simskij/awesome-software-architecture#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"The discipline of designing and building software."
+},
+{
+"judul":"Connectivity Data and Reports",
+"url":"https://github.com/stevesong/awesome-connectivity-info#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Better understand who has access to telecommunication and internet infrastructure and on what terms."
+},
+{
+"judul":"Stacks",
+"url":"https://github.com/stackshareio/awesome-stacks#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Tech stacks for building different apps and features."
+},
+{
+"judul":"Cytodata",
+"url":"https://github.com/cytodata/awesome-cytodata#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Image-based profiling of biological phenotypes for computational biologists."
+},
+{
+"judul":"IRC",
+"url":"https://github.com/davisonio/awesome-irc#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Open source messaging protocol."
+},
+{
+"judul":"Advertising",
+"url":"https://github.com/cenoura/awesome-ads#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Programmatic media and ad tech for websites."
+},
+{
+"judul":"Earth",
+"url":"https://github.com/philsturgeon/awesome-earth#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Find ways to resolve the climate crisis."
+},
+{
+"judul":"Naming",
+"url":"https://github.com/gruhn/awesome-naming#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Guides for naming things in computer science."
+},
+{
+"judul":"Web Archiving",
+"url":"https://github.com/iipc/awesome-web-archiving#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"An effort to preserve the Web for future generations."
+},
+{
+"judul":"WP-CLI",
+"url":"https://github.com/schlessera/awesome-wp-cli#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Command-line interface for WordPress."
+},
+{
+"judul":"Credit Modeling",
+"url":"https://github.com/mourarthur/awesome-credit-modeling#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Methods for classifying credit applicants into risk classes."
+},
+{
+"judul":"Ansible",
+"url":"https://github.com/ansible-community/awesome-ansible#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A Python-based, open-source IT configuration management and automation platform."
+},
+{
+"judul":"Biological Visualizations",
+"url":"https://github.com/keller-mark/awesome-biological-visualizations#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Interactive visualization of biological data on the web."
+},
+{
+"judul":"QR Code",
+"url":"https://github.com/make-github-pseudonymous-again/awesome-qr-code#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A type of matrix barcode that can be used to store and share a small amount of information."
+},
+{
+"judul":"Veganism",
+"url":"https://github.com/sdassow/awesome-veganism#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Making the plant-based lifestyle easy and accessible."
+},
+{
+"judul":"Translations",
+"url":"https://github.com/mbiesiad/awesome-translations#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"The transfer of the meaning of a text from one language to another."
+},
+{
+"judul":"Scriptable",
+"url":"https://github.com/dersvenhesse/awesome-scriptable#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"An iOS app for automation in JavaScript."
+},
+{
+"judul":"WebXR",
+"url":"https://github.com/msub2/awesome-webxr#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Enables immersive virtual reality and augmented reality content on the web."
+},
+{
+"judul":"Computational Geometry",
+"url":"https://github.com/atkirtland/awesome-computational-geometry#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Computational approaches for problems in geometry."
+},
+{
+"judul":"OpenStreetMap",
+"url":"https://github.com/osmlab/awesome-openstreetmap#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"An open data mapping project utilized by many apps and devices."
+},
+{
+"judul":"Computational Biology",
+"url":"https://github.com/inoue0426/awesome-computational-biology#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Computational approaches applied to problems in biology."
+},
+{
+"judul":"Read the Docs",
+"url":"https://github.com/readthedocs-examples/awesome-read-the-docs#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Example documentation projects to inspire and help bootstrap new documentation projects."
+},
+{
+"judul":"Quarto",
+"url":"https://github.com/mcanouil/awesome-quarto#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Scientific and technical open-source publishing system built on Pandoc."
+},
+{
+"judul":"Biological Image Analysis",
+"url":"https://github.com/hallvaaw/awesome-biological-image-analysis#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Interpreting biological phenomena using images."
+},
+{
+"judul":"ChatGPT",
+"url":"https://github.com/sindresorhus/awesome-chatgpt#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Artificial intelligence chatbot developed by OpenAI."
+},
+{
+"judul":"Whisper",
+"url":"https://github.com/sindresorhus/awesome-whisper#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Open-source AI-powered speech recognition system developed by OpenAI."
+},
+{
+"judul":"Stock Trading",
+"url":"https://github.com/shi-rudo/awesome-stock-trading#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Purchase and sale of equities of publicly traded companies to generate profits."
+},
+{
+"judul":"Steam Deck",
+"url":"https://github.com/airscripts/awesome-steam-deck#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A handheld gaming computer developed by Valve."
+},
+{
+"judul":"Astrophotography",
+"url":"https://github.com/lunohodov/awesome-astrophotography#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Photography of astronomical objects, celestial events, or areas of the night sky."
+},
+{
+"judul":"HPC",
+"url":"https://github.com/dstdev/awesome-hpc#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"High Performance Computing."
+},
+{
+"judul":"Geocaching",
+"url":"https://github.com/FoxFil/awesome-geocaching#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Outdoor treasure-hunting activity that uses GPS-enabled devices."
+},
+{
+"judul":"Regex",
+"url":"https://github.com/slevithan/awesome-regex#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Specialized language for matching patterns in text."
+},
+{
+"judul":"Event-Driven Architecture",
+"url":"https://github.com/lutzh/awesome-event-driven-architecture#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A software architecture approach where services collaborate by publishing and subscribing to events."
+},
+{
+"judul":"Permacomputing",
+"url":"https://github.com/idematos/awesome-permacomputing#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Resilient and regenerative computing practices inspired by permaculture."
+},
+{
+"judul":"Standards",
+"url":"https://github.com/donBarbos/awesome-standards#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Proposals and standards that define and enhance software, languages, and related technologies."
+},
+{
+"judul":"Claude Code",
+"url":"https://github.com/hesreallyhim/awesome-claude-code#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Terminal-based AI coding assistant by Anthropic."
+},
+{
+"judul":"Gemini CLI",
+"url":"https://github.com/Piebald-AI/awesome-gemini-cli#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Terminal-based AI coding assistant by Google."
+},
+{
+"judul":"SAP Commerce",
+"url":"https://github.com/eminyagiz42/awesome-sap-commerce#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"An e-commerce platform built with Java, Spring MVC, and Angular."
+},
+{
+"judul":"Tech Ethics",
+"url":"https://github.com/sampart/awesome-tech-ethics#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"Mitigating and avoiding the potential negative effects of technology on society."
+},
+{
+"judul":"Copilot Agents",
+"url":"https://github.com/Code-and-Sorts/awesome-copilot-agents#readme",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"AI pair programming assistant by GitHub that provides code suggestions and completions."
+}
+]
+}

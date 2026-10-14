@@ -52,6 +52,7 @@ _TIPE = {
     ".json": "application/json; charset=utf-8",
     ".svg": "image/svg+xml",
     ".woff2": "font/woff2",
+    ".woff": "font/woff",
     ".png": "image/png",
     ".ico": "image/x-icon",
 }
@@ -85,6 +86,10 @@ RUTE = {
     ("POST", "/api/coba"): (api.coba, "muatan"),
 
     ("GET", "/api/cari"): (api.cari, "kueri"),
+    ("GET", "/api/pustaka"): (api.pustaka, "kueri"),
+    ("GET", "/api/karier"): (api.karier, "kueri"),
+    ("GET", "/api/karier/kuis"): (api.karier_kuis, "kueri"),
+    ("GET", "/api/karier/jalur"): (api.karier_jalur, "kueri"),
 
     ("GET", "/api/bookmark"): (api.bookmark_daftar, "kueri"),
     ("POST", "/api/bookmark"): (api.bookmark_ubah, "muatan"),

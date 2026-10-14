@@ -92,7 +92,7 @@ export async function layarKuis({ key, indeks }, ctx) {
         h("span.mata", {}, `${b.label} · kuis ${nomorKuis + 1} dari ${b.kuis.length}`),
         h("h1", {}, q.judul),
         h("p.kepala-sub", {}, `${q.soal} soal pilihan ganda. Jawaban yang `
-          + "salah bukan kegagalan — ia yang memberi tahu bagian mana yang "
+          + "salah bukan kegagalan. Ia yang memberi tahu bagian mana yang "
           + "perlu dibaca ulang."),
         h("div.kepala-aksi", {},
           h("div.deret.deret-rapat", {},
@@ -129,7 +129,7 @@ export async function layarKuis({ key, indeks }, ctx) {
         }, `Ulangi ${q.salah_tersisa} soal yang masih salah`) : null),
 
       q.salah_tersisa ? h("p.baris-sisi", { gaya: { margin: "var(--s4) 0" } },
-        "Mode ulangan tidak menyentuh skor terbaikmu — ia hanya mengurangi "
+        "Mode ulangan tidak menyentuh skor terbaikmu; ia hanya mengurangi "
         + "daftar soal yang masih salah.") : null,
 
       h("details.bantuan", { gaya: { marginTop: "var(--s5)" } },
@@ -235,7 +235,7 @@ export async function layarKuis({ key, indeks }, ctx) {
         soalEl,
         opsiEl,
         h("p.baris-sisi", { gaya: { marginTop: "var(--s4)" } },
-          `Tekan 1–${s.options.length} atau A–${HURUF[s.options.length - 1]} `
+          `Tekan 1-${s.options.length} atau A-${HURUF[s.options.length - 1]} `
           + "untuk menjawab.")));
 
       // Soal berikutnya datang DARI KANAN, bukan dari bawah seperti isi layar
@@ -256,8 +256,8 @@ export async function layarKuis({ key, indeks }, ctx) {
       // -- dan `-1`, bukan `0`, menjaganya DI LUAR urutan Tab (`inti.js:464`
       // melewati `[tabindex="-1"]` saat menghitung penghuni perangkap fokus).
       //
-      // `preventScroll: true` mengikuti konvensi rumah (`aplikasi.js:255`,
-      // `aplikasi.js:280`, `layar-belajar.js:2459`): memindahkan fokus tidak
+      // `preventScroll: true` mengikuti konvensi rumah (`aplikasi.js:272`,
+      // `aplikasi.js:297`, `layar-belajar.js:2624`): memindahkan fokus tidak
       // boleh sekaligus menggeser halaman, karena soal berikutnya sudah
       // berada di tempat yang benar dan geseran kedua terasa seperti layar
       // yang meloncat sendiri.
@@ -381,7 +381,7 @@ export async function layarKuis({ key, indeks }, ctx) {
       : persen >= 80 ? "Bagus. Tinggal sedikit yang perlu dirapikan."
       : persen >= 50 ? "Separuh jalan. Baca ulang bagian yang salah, lalu "
                        + "ulangi soal itu saja."
-      : "Ini tanda materinya belum menempel — dan itu wajar. Baca ulang "
+      : "Ini tanda materinya belum menempel, dan itu wajar. Baca ulang "
         + "materinya dulu, jangan langsung mengulang kuisnya.";
 
     // Skornya dihitung naik dari nol. Di layar hasil, angka itu satu-satunya
@@ -714,7 +714,7 @@ export async function layarLatihan({ key, indeks }) {
         // Partikelnya: `capai` satu lapis `.bara-percik` berisi 7 titik di
         // `penuh`, 0 titik di `halus` (gerbang `gerakPenuh()`), 0 benda di
         // `mati`; `acara` satu lapis 26 titik; `sentuh` nol di semua tingkat.
-        // Benda KEDUA pada `capai` bukan perayaan layar ini: `aplikasi.js:565`
+        // Benda KEDUA pada `capai` bukan perayaan layar ini: `aplikasi.js:625`
         // mendenyutkan pencacah XP navbar atas event `progres-berubah`. Itu
         // penanda angka global, bukan penanda peristiwa lokal.
         //
@@ -782,7 +782,7 @@ export async function layarLatihan({ key, indeks }) {
     isikan(kotakHint,
       hintTerbuka === 0
         ? (x.hint.length ? h("p.baris-sisi", {},
-            `Tersedia ${x.hint.length} petunjuk. Coba sendiri dulu — buntu `
+            `Tersedia ${x.hint.length} petunjuk. Coba sendiri dulu; buntu `
             + "selama beberapa menit justru bagian yang mengajari.") : null)
         : h("div", { gaya: { display: "grid", gap: "var(--s2)" } },
             x.hint.slice(0, hintTerbuka).map((t, i) =>
@@ -825,7 +825,7 @@ export async function layarLatihan({ key, indeks }) {
   async function tandaiManual() {
     const nyalakan = status !== "manual";
     if (nyalakan && !await konfirmasi(
-      "Tandai latihan ini selesai? Ini penilaian jujur dari kamu sendiri — "
+      "Tandai latihan ini selesai? Ini penilaian jujur dari kamu sendiri: "
       + "mesin tidak memeriksanya.",
       { judul: "Tandai selesai", labelYa: "Ya, sudah selesai" })) return;
     try {
@@ -869,10 +869,10 @@ export async function layarLatihan({ key, indeks }) {
     if (!rekor.length) return;
 
     const tafsir = hintTerbuka === 0
-      ? `${hintTerbuka} dari ${x.hint.length} petunjuk terbuka — belum ada `
+      ? `${hintTerbuka} dari ${x.hint.length} petunjuk terbuka, belum ada `
         + "yang kamu buka. Petunjuk pertama biasanya sudah cukup, dan yang "
         + "tersisa tetap kamu yang kerjakan."
-      : `Kamu membuka ${hintTerbuka} dari ${x.hint.length} petunjuk — itu `
+      : `Kamu membuka ${hintTerbuka} dari ${x.hint.length} petunjuk, itu `
         + "cara yang benar untuk buntu.";
 
     if (hintTerbuka < x.hint.length && !await konfirmasi(
@@ -920,12 +920,12 @@ export async function layarLatihan({ key, indeks }) {
     gambarRekor();
 
     await jendela({
-      judul: "Contoh solusi — " + x.judul,
+      judul: "Contoh solusi: " + x.judul,
       lebar: true,
       isi: h("div", {},
         h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
           "Ini cuma SATU cara. Kode yang berbeda belum tentu salah, selama "
-          + "outputnya sama. Yang terbuka lebih dulu baris-baris TERAKHIR — "
+          + "outputnya sama. Yang terbuka lebih dulu baris-baris TERAKHIR: "
           + "di situlah hasilnya dicetak, dan sering itu saja sudah cukup."),
         blok, kendali),
       aksi: [{ label: "Tutup", nilai: null, kelas: "tbl-utama" }],
@@ -942,7 +942,7 @@ export async function layarLatihan({ key, indeks }) {
         h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
           "Baris hijau dari contoh solusi, baris merah dari kodemu. Yang "
           + "dicoret hilang dari kodemu, yang bergaris bawah kamu tambahkan. "
-          + "Beda tulisan itu wajar — yang menentukan lulus cuma outputnya."),
+          + "Beda tulisan itu wajar. Yang menentukan lulus cuma outputnya."),
         h("div.diff", {}, baris.length
           ? baris.map((d) => h("div.diff-baris"
               + (d.tanda === "=" ? ".diff-sama"
@@ -996,7 +996,7 @@ export async function layarLatihan({ key, indeks }) {
             ikon("tingkat", { ukuran: 14, tebal: 1.9 }), x.tingkat),
           kotakStatus,
           x.dinilai
-            ? h("span.pil.pil-tenang", {}, "dinilai otomatis")
+            ? h("span.pil", {}, "dinilai otomatis")
             : h("span.pil.pil-kunci", {}, "tanpa nilai otomatis")),
         h("div.materi-alat", {},
           tombolBookmark(key, "latihan", indeks, x.bookmark),
@@ -1024,7 +1024,7 @@ export async function layarLatihan({ key, indeks }) {
 
         x.setup ? h("section", {},
           h("span.mata", {},
-            "Kondisi awal — sudah disiapkan, tak perlu kamu tulis"),
+            "Kondisi awal (sudah disiapkan, tak perlu kamu tulis)"),
           h("div.blok-kode", {}, praKode(x.token_setup))) : null,
 
         x.stdin_list.length > 1 ? keadaan({
@@ -1126,7 +1126,7 @@ function kartuBerkas(x) {
         "di " + x.berkas.folder),
       x.runner === "java" ? h("div.baris-sisi",
         { gaya: { marginTop: "var(--s2)" } },
-        `Nama kelasnya harus ${x.berkas.nama.replace(/\.java$/, "")} — javac `
+        `Nama kelasnya harus ${x.berkas.nama.replace(/\.java$/, "")}: javac `
         + "mewajibkannya sama dengan nama berkas.") : null,
       x.berkas.perintah.length ? h("div.berkas-jalur",
         { gaya: { marginTop: "var(--s2)" } },
@@ -1245,15 +1245,15 @@ function kartuJalan(r, x, kode, simpanLepas, tuju) {
       // cuma pengukuran di `pinKeGalat()`, bukan dugaan dari panjang keluaran.
       // Tanpa chip ini keluaran 301 baris di tata letak lebar terbaca sebagai
       // keluaran 8 baris — satu-satunya isyarat hari ini sebuah bilah gulir
-      // setipis `scrollbar-width: thin` (gaya.css:4568).
+      // setipis `scrollbar-width: thin` (gaya.css:4890).
       h("span.pil.pil-tenang", { hidden: true, data: { lebih: "bawah" } },
-        "keluaran lebih panjang dari panel — gulir ke bawah")),
+        "keluaran lebih panjang dari panel, gulir ke bawah")),
     r.stdin ? h("div", { gaya: { marginBottom: "var(--s2)" } },
       h("span.mata", {}, "Masukan yang dikirim"),
       h("div.terminal", {}, r.stdin)) : null,
     pv ? h("div", { gaya: { marginBottom: "var(--s3)" } },
       halamanDikarang(x.runner, kode) ? h("p.pratinjau-ket", {},
-        "Halaman contoh ini dibuatkan dari pemilih di CSS-mu sendiri — ",
+        "Halaman contoh ini dibuatkan dari pemilih di CSS-mu sendiri: ",
         h("b", {}, "bukan"), " berkas HTML-mu.") : null,
       barisLebarPratinjau(pv),
       pv.el) : null,
@@ -1273,7 +1273,7 @@ function kartuJalan(r, x, kode, simpanLepas, tuju) {
 const SENTUHAN_HASIL = ["wheel", "pointerdown", "keydown"];
 
 /* Batas waktu pengamat ukuran panel hasil. Angkanya kembar dengan
-   `PIN_BARA_MS` (layar-belajar.js:669) dan itu disengaja: keduanya menjawab
+   `PIN_BARA_MS` (layar-belajar.js:766) dan itu disengaja: keduanya menjawab
    satu pertanyaan — berapa lama sebuah pengamat boleh hidup di layar yang
    dibuka lalu ditinggal. */
 const PIN_HASIL_MS = 4000;
@@ -1281,9 +1281,9 @@ const PIN_HASIL_MS = 4000;
 /** Nyalakan sinyal "ada lebih di bawah", lalu antar panel ke pesan galatnya.
  *
  *  Panel hasil DIPAGARI tingginya, tapi hanya di tata letak lebar:
- *  `gaya.css:4568` memberi `.kerja-hasil { overflow-y: auto; max-height:
+ *  `gaya.css:4890` memberi `.kerja-hasil { overflow-y: auto; max-height:
  *  46cqh }` di dalam `@container panggung (min-width: 1100px)`, dengan
- *  `container-type: size` di `.kerja-kode` (`gaya.css:4551`). Akibatnya
+ *  `container-type: size` di `.kerja-kode` (`gaya.css:4873`). Akibatnya
  *  keluaran panjang + blok galat di bawahnya = blok galat SELURUHNYA di luar
  *  jendela panel sementara `scrollTop` tetap 0, dan satu-satunya isyarat
  *  bahwa jawabannya ada di bawah sebuah bilah gulir setipis `thin`.
@@ -1318,7 +1318,7 @@ const PIN_HASIL_MS = 4000;
  *  Pin-nya WAJIB lepas. Posisi gulir adalah keadaan PENGGUNA, dan merebutnya
  *  kembali sesudah dia menggeser sendiri lebih buruk daripada tidak mem-pin
  *  sama sekali. Bentuknya sengaja kembar dengan `pinKeHariIni()`
- *  (layar-belajar.js:704): putus pada sentuhan pertama, dan putus pada batas
+ *  (layar-belajar.js:801): putus pada sentuhan pertama, dan putus pada batas
  *  waktu. */
 function pinKeGalat(panel) {
   const chipBawah = panel.querySelector('[data-lebih="bawah"]');
@@ -1328,8 +1328,8 @@ function pinKeGalat(panel) {
   /* Posisi blok galat relatif jendela panel, diambil dari KOORDINAT LAYOUT.
    *
    * `getBoundingClientRect()` termasuk transform, dan kartu hasilnya
-   * `div.kartu.masuk`: `@keyframes masuk` (gaya.css:1174) berangkat dari
-   * `translateY(7px)` selama `--sedang` 220 md (gaya.css:433). Mengukur dengan
+   * `div.kartu.masuk`: `@keyframes masuk` (gaya.css:1192) berangkat dari
+   * `translateY(7px)` selama `--sedang` 220 md (gaya.css:442). Mengukur dengan
    * rect berarti menggulir ke tempat yang akan BERPINDAH tujuh piksel ke atas
    * begitu animasinya selesai — dan `ResizeObserver` tidak akan pernah
    * menangkapnya, karena transform tidak mengubah satu kotak layout pun.
@@ -1337,7 +1337,7 @@ function pinKeGalat(panel) {
    * Terukur, Chrome 152, `#/latihan/python/0`, 300 baris + ZeroDivisionError:
    * pada `penuh` residu -3 -> -6 -> -7 seiring translateY 3,39 -> 0,41 -> 0 px
    * (animasi 50 -> 133 -> 220 md) dengan `scrollTop` 532; pada `mati`, tempat
-   * `gaya.css:4802` mematikan animasinya, `transform: none` dan `scrollTop`
+   * `gaya.css:5125` mematikan animasinya, `transform: none` dan `scrollTop`
    * 525 -- tepat tujuh kurang, residu 0. Selisihnya ADALAH translateY-nya.
    *
    * Jalan keluarnya DUA, dan yang pertama saya coba lalu tolak: akumulasi
@@ -1468,7 +1468,7 @@ function pinKeGalat(panel) {
  * sudah selesai di server: `_galat_json` memanggil `rapikan()` dengan
  * `baris_setup`, jadi nomor yang sampai ke sini SUDAH menunjuk berkas milik
  * pelajar. Presedennya `sorot.js` sebagai port `inti/sorot.py`; yang membayar
- * kekembaran ini `TestLompatKeBarisGalat` (tests/test_web.py:9014), yang
+ * kekembaran ini `TestLompatKeBarisGalat` (tests/test_web.py:9021), yang
  * menjalankan `node` atas korpus `tests/test_galat.py` dan mengadu kedua pola
  * di bawah dengan padanannya di Python — jadi kekembarannya diukur, bukan
  * dipercaya.
@@ -1537,7 +1537,7 @@ function blokGalat(g, fase, tuju, denganLebih) {
       fase === "kompilasi" ? "Pesan dari compiler" : "Pesan error"),
     denganLebih
       ? h("span.pil.pil-tenang", { hidden: true, data: { lebih: "atas" } },
-          "panel digulir ke pesan ini — keluaran lengkap ada di atasnya")
+          "panel digulir ke pesan ini; keluaran lengkap ada di atasnya")
       : null,
     h("div.terminal.terminal-galat", {}, barisGalat(g.baris, tuju)),
     g.artinya.length ? h("div.arti", {},
@@ -1558,7 +1558,7 @@ function kartuPeriksa(r, x, tuju) {
       h("div.deret", {},
         h("h3", { gaya: { color: r.lulus ? "var(--tumbuh)" : "var(--salah)" } },
           r.lulus ? "Benar. Outputmu sudah sesuai."
-                  : "Belum sesuai — lihat bedanya di bawah."),
+                  : "Belum sesuai. Lihat bedanya di bawah."),
         h("span.deret-kanan"),
         h("span.pil", {}, `${lulus}/${r.uji.length} uji lulus`),
         h("span.pil", {}, r.detik + " detik")),
@@ -2063,10 +2063,10 @@ export async function layarCoba(params, ctx) {
           h("span.mata", {}, "Apa ini"),
           h("div.kartu", {},
             h("p", { gaya: { margin: "0" } }, judulContoh
-              ? `Contoh dari materi: ${judulContoh}. Ubah sesukamu — yang di `
+              ? `Contoh dari materi: ${judulContoh}. Ubah sesukamu; yang di `
                 + "materi tidak ikut berubah."
               : "Tempat mencoba apa pun. Tidak dinilai dan tidak menyentuh "
-                + "progres — justru karena itu ia berguna."))),
+                + "progres, dan justru karena itu ia berguna."))),
         h("section", {}, medan("Masukan program (stdin)", masukan))),
 
       h("div.kerja-kode", {},

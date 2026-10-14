@@ -574,7 +574,7 @@ export function rayakan(hadiah, { diam = false, dari = null } = {}) {
   }
 
   for (const b of hadiah.badge || []) {
-    sorak(`Badge baru — ${b.nama}: ${b.deskripsi}`, "nyala", 6);
+    sorak(`Badge baru, ${b.nama}: ${b.deskripsi}`, "nyala", 6);
   }
 
   document.dispatchEvent(new CustomEvent("progres-berubah",

@@ -83,6 +83,10 @@ from data.fedora_materials import FEDORA_MATERIALS
 from data.fedora_quizzes import FEDORA_QUIZZES as _FEDORA_QUIZZES
 from data.fedora_exercises import FEDORA_EXERCISES
 
+from data.git_materials import GIT_MATERIALS
+from data.git_quizzes import GIT_QUIZZES as _GIT_QUIZZES
+from data.git_exercises import GIT_EXERCISES
+
 # Posisi jawaban diratakan supaya kuis tidak bisa ditebak dari polanya.
 # Lihat data/normalisasi.py untuk alasan lengkapnya.
 APLIKASI_QUIZZES = seimbangkan_kuis(_APLIKASI_QUIZZES)
@@ -104,6 +108,7 @@ KOTLIN_QUIZZES = seimbangkan_kuis(_KOTLIN_QUIZZES)
 TYPESCRIPT_QUIZZES = seimbangkan_kuis(_TYPESCRIPT_QUIZZES)
 VB_QUIZZES = seimbangkan_kuis(_VB_QUIZZES)
 FEDORA_QUIZZES = seimbangkan_kuis(_FEDORA_QUIZZES)
+GIT_QUIZZES = seimbangkan_kuis(_GIT_QUIZZES)
 
 __all__ = [
     "APLIKASI_MATERIALS", "APLIKASI_QUIZZES", "APLIKASI_EXERCISES",
@@ -125,4 +130,5 @@ __all__ = [
     "TYPESCRIPT_MATERIALS", "TYPESCRIPT_QUIZZES", "TYPESCRIPT_EXERCISES",
     "VB_MATERIALS", "VB_QUIZZES", "VB_EXERCISES",
     "FEDORA_MATERIALS", "FEDORA_QUIZZES", "FEDORA_EXERCISES",
+    "GIT_MATERIALS", "GIT_QUIZZES", "GIT_EXERCISES",
 ]

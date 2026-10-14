@@ -147,6 +147,18 @@ def _kerangka(bahasa, ex):
     if bahasa == "fedora":
         return (f"#!/usr/bin/env bash\n#\n# {judul}\n\n"
                 f"set -euo pipefail\n\n# tulis kodemu di sini\n")
+    if bahasa == "git":
+        # Setiap latihan Git bekerja di repositori sementara miliknya
+        # sendiri. Kerangkanya sudah membuat dan membersihkan direktori itu,
+        # supaya skrip yang salah ketik tidak pernah menyentuh repositori
+        # sungguhan di komputer pelajar.
+        return (f"#!/usr/bin/env bash\n#\n# {judul}\n\n"
+                f"set -euo pipefail\n\n"
+                f"# Bekerja di direktori sementara supaya repositorimu sendiri "
+                f"tidak tersentuh.\n"
+                f"kerja=\"$(mktemp -d)\"\n"
+                f"trap 'rm -rf \"$kerja\"' EXIT\n"
+                f"cd \"$kerja\"\n\n# tulis kodemu di sini\n")
     return f"# {judul}\n# tulis kodemu di sini\n"
 
 

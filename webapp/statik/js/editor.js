@@ -55,7 +55,7 @@ const KOMENTAR = {
   php: "// ", ruby: "# ", fedora: "# ",
   // Visual Basic memakai kutip TUNGGAL untuk komentar, bukan garis miring.
   vb: "' ",
-  fedora: "# ",
+  git: "# ",
 };
 
 function escapeRegex(s) {

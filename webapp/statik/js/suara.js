@@ -59,7 +59,7 @@ export const SUARA = [
   ["mati", "Mati",
    "Tidak ada bunyi sama sekali. Ini bawaannya."],
   ["halus", "Halus",
-   "Hanya peristiwa yang jarang — naik level dan badge baru. "
+   "Hanya peristiwa yang jarang: naik level dan badge baru. "
    + "XP yang bertambah tetap diam."],
   ["penuh", "Penuh",
    "Naik level, badge baru, dan satu nada pendek tiap kali XP bertambah."],

@@ -1,0 +1,467 @@
+GIT_QUIZZES = [
+    {
+        "title": "Kuis 1: Dasar Git, Commit, dan Riwayat",
+        "questions": [
+            {
+                "q": "Apa perbedaan paling mendasar antara Git dan GitHub?",
+                "options": [
+                    "Git untuk kode, GitHub untuk dokumen",
+                    "Git adalah program lokal di komputermu; GitHub adalah layanan web untuk menyimpan dan berbagi repositori",
+                    "Git versi gratis, GitHub versi berbayar dari program yang sama",
+                    "Git hanya bekerja di Linux, GitHub bekerja di semua sistem",
+                ],
+                "answer": 1,
+                "explanation": "Git adalah program yang terpasang di komputermu dan bekerja tanpa internet maupun akun. GitHub (juga GitLab, Codeberg) adalah layanan untuk menaruh salinan repositori di internet supaya bisa dibagikan.",
+            },
+            {
+                "q": "Sebuah commit menyimpan apa?",
+                "options": [
+                    "Hanya berkas yang berubah sejak commit sebelumnya",
+                    "Potret isi seluruh proyek saat itu, beserta penulis, waktu, dan pesannya",
+                    "Daftar perintah yang dijalankan sejak commit sebelumnya",
+                    "Salinan folder proyek yang disimpan di GitHub",
+                ],
+                "answer": 1,
+                "explanation": "Commit adalah potret utuh isi proyek pada satu titik, bukan hanya selisihnya. Git menyimpannya efisien di balik layar, tapi dari sudut pandangmu tiap commit memuat semuanya, plus siapa, kapan, dan kenapa.",
+            },
+            {
+                "q": "Kenapa git commit menolak bekerja di komputer yang baru dipasang Git?",
+                "options": [
+                    "Karena belum ada koneksi ke GitHub",
+                    "Karena repositori belum punya cabang main",
+                    "Karena user.name dan user.email belum diatur, padahal tiap commit menyimpan keduanya",
+                    "Karena berkas .gitignore belum dibuat",
+                ],
+                "answer": 2,
+                "explanation": "Setiap commit mencatat nama dan email penulisnya selamanya. Sebelum keduanya diisi lewat git config --global user.name dan user.email, Git menolak membuat commit.",
+            },
+            {
+                "q": "Perintah git add memindahkan perubahan dari mana ke mana?",
+                "options": [
+                    "Dari folder kerja ke staging area",
+                    "Dari staging area ke repository",
+                    "Dari repository ke GitHub",
+                    "Dari GitHub ke folder kerja",
+                ],
+                "answer": 0,
+                "explanation": "Tiga area: folder kerja (working directory), staging area (ruang tunggu), dan repository (.git). git add memindahkan perubahan ke staging; git commit yang memindahkannya dari staging ke repository.",
+            },
+            {
+                "q": "Untuk apa staging area ada, kenapa tidak langsung commit saja?",
+                "options": [
+                    "Supaya commit lebih cepat karena berkasnya sudah disalin",
+                    "Supaya kamu bisa memilih sebagian perubahan saja untuk masuk ke commit berikutnya",
+                    "Supaya Git bisa mengirim ke GitHub secara otomatis",
+                    "Supaya berkas yang sedang disunting tidak bisa dibuka program lain",
+                ],
+                "answer": 1,
+                "explanation": "Staging memungkinkan dua perbaikan yang tercampur di satu berkas menjadi dua commit terpisah dengan pesan yang jelas. Kamu memilih apa yang masuk koper sebelum menguncinya.",
+            },
+            {
+                "q": "Apa yang ditampilkan git diff tanpa flag apa pun?",
+                "options": [
+                    "Perubahan antara dua commit terakhir",
+                    "Perubahan yang sudah di-add dan akan masuk commit berikutnya",
+                    "Perubahan di folder kerja yang BELUM di-add",
+                    "Daftar berkas yang diabaikan .gitignore",
+                ],
+                "answer": 2,
+                "explanation": "git diff membandingkan folder kerja dengan staging, jadi yang terlihat adalah perubahan yang belum di-add. Untuk melihat yang sudah di-add, pakai git diff --staged.",
+            },
+            {
+                "q": "Di keluaran git status --short, apa arti baris berikut?  MM tabel.txt",
+                "options": [
+                    "Berkas dihapus di kedua area",
+                    "Berkas baru yang belum pernah dilacak",
+                    "Berkas di-add, lalu disunting lagi sesudahnya, sehingga berubah di staging maupun di folder kerja",
+                    "Berkas berganti nama dua kali",
+                ],
+                "answer": 2,
+                "explanation": "Kolom kiri menggambarkan staging, kolom kanan folder kerja. M di keduanya berarti versi yang di-add berbeda dari HEAD, dan versi di folder kerja berbeda lagi dari yang di-add. Add sekali lagi kalau ingin versi terbaru ikut commit.",
+            },
+            {
+                "q": "HEAD~1 menunjuk ke apa?",
+                "options": [
+                    "Commit pertama di repositori",
+                    "Satu commit sebelum commit yang sedang dipijak",
+                    "Cabang pertama yang dibuat",
+                    "Commit terbaru di GitHub",
+                ],
+                "answer": 1,
+                "explanation": "HEAD adalah commit yang sedang kamu pijak; tanda ~1 berarti satu langkah ke belakang, ~2 dua langkah, dan seterusnya. git show HEAD~1 memperlihatkan commit sebelum yang terbaru.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 2: Mengendalikan Perubahan",
+        "questions": [
+            {
+                "q": "Kamu baru menambahkan node_modules/ ke .gitignore, tapi git status masih menampilkan perubahan di dalamnya. Kenapa?",
+                "options": [
+                    "Polanya harus ditulis sebagai /node_modules/**",
+                    ".gitignore hanya berlaku untuk berkas yang belum pernah dilacak; folder itu sudah telanjur di-commit sebelumnya",
+                    "Perlu menjalankan git init ulang supaya .gitignore terbaca",
+                    ".gitignore harus di-commit dulu sebelum berlaku",
+                ],
+                "answer": 1,
+                "explanation": "Berkas yang sudah dilacak tetap dilacak walau cocok dengan pola. Hentikan pelacakannya dengan git rm -r --cached node_modules, lalu commit. Flag --cached menjaga berkasnya tetap ada di disk.",
+            },
+            {
+                "q": "Kunci API pernah ter-commit, lalu dihapus di commit berikutnya. Apa yang benar?",
+                "options": [
+                    "Aman, karena commit terbaru sudah tidak memuatnya",
+                    "Aman selama repositorinya privat di GitHub",
+                    "Kunci itu masih ada di riwayat dan harus dianggap bocor; ganti kuncinya",
+                    "Git otomatis menghapus rahasia dari riwayat lama setelah 30 hari",
+                ],
+                "answer": 2,
+                "explanation": "Setiap commit lama tetap bisa dibuka (git show hash:berkas). Menghapus di commit baru tidak menyentuh commit lama. Begitu riwayat dibagikan, satu-satunya langkah aman adalah merotasi kuncinya.",
+            },
+            {
+                "q": "Apa yang dilakukan git rm --cached rahasia.env?",
+                "options": [
+                    "Menghapus berkas dari disk dan dari riwayat",
+                    "Berhenti melacak berkas itu, tapi membiarkannya tetap ada di folder kerja",
+                    "Memindahkan berkas ke cache Git untuk dipulihkan nanti",
+                    "Menambahkan berkas itu ke .gitignore",
+                ],
+                "answer": 1,
+                "explanation": "Tanpa --cached, git rm juga menghapus berkasnya dari disk. Dengan --cached, Git hanya mengeluarkannya dari staging dan commit berikutnya; berkas sungguhannya utuh.",
+            },
+            {
+                "q": "Berkas jurnal.txt yang sudah pernah di-commit terhapus tidak sengaja dengan rm. Cara mengembalikannya?",
+                "options": [
+                    "git restore jurnal.txt",
+                    "git add jurnal.txt",
+                    "git commit --amend",
+                    "Tidak bisa; Git tidak menyimpan berkas yang dihapus",
+                ],
+                "answer": 0,
+                "explanation": "git restore mengambil versi berkas dari commit terakhir (HEAD) dan menaruhnya kembali di folder kerja. Apa pun yang sudah di-commit nyaris mustahil hilang.",
+            },
+            {
+                "q": "Mana subjek pesan commit yang paling sesuai anjuran?",
+                "options": [
+                    "Menambahkan validasi email dan memperbaiki total keranjang.",
+                    "update",
+                    "Tambah validasi email di formulir pendaftaran",
+                    "Sudah saya perbaiki bugnya ya",
+                ],
+                "answer": 2,
+                "explanation": "Subjek yang baik berbentuk kalimat perintah, tanpa titik di akhir, sekitar 50 huruf, dan satu tujuan. Opsi pertama memuat dua tujuan sekaligus (ada kata 'dan') dan bentuk 'Menambahkan'; 'update' tidak mengatakan apa pun.",
+            },
+            {
+                "q": "Dalam Conventional Commits, apa arti awalan fix(runner): ?",
+                "options": [
+                    "Perbaikan bug di bagian proyek bernama runner",
+                    "Fitur baru yang menyentuh berkas runner",
+                    "Perubahan dokumentasi untuk runner",
+                    "Penanda bahwa commit ini memutus kompatibilitas",
+                ],
+                "answer": 0,
+                "explanation": "Bentuknya jenis(cakupan): ringkasan. fix berarti perbaikan bug, dan runner adalah cakupan, yaitu bagian proyek yang disentuh. Perubahan yang memutus kompatibilitas ditandai tanda seru atau baris BREAKING CHANGE.",
+            },
+            {
+                "q": "Kamu terlanjur git add . dan ikut memasukkan berkas yang belum siap. Perintah yang tepat?",
+                "options": [
+                    "git restore berkas",
+                    "git restore --staged berkas",
+                    "git rm berkas",
+                    "git revert berkas",
+                ],
+                "answer": 1,
+                "explanation": "restore --staged mengeluarkan berkas dari staging tanpa mengubah isinya di folder kerja. git restore tanpa --staged justru membuang perubahanmu, dan git rm menghapus berkasnya.",
+            },
+            {
+                "q": "Kapan git commit --amend TIDAK boleh dipakai?",
+                "options": [
+                    "Kalau commit terakhir pesannya salah ketik",
+                    "Kalau ada satu berkas yang lupa di-add",
+                    "Kalau commit terakhir sudah di-push dan orang lain sudah mengambilnya",
+                    "Kalau commit terakhir dibuat lebih dari satu jam yang lalu",
+                ],
+                "answer": 2,
+                "explanation": "amend mengganti commit terakhir dengan commit baru yang hash-nya berbeda. Kalau commit lama sudah dibagikan, riwayat kalian berbeda dan push akan ditolak. Untuk commit yang sudah dibagikan, pakai git revert.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 3: Branch, Merge, dan Konflik",
+        "questions": [
+            {
+                "q": "Secara teknis, sebuah branch di Git adalah apa?",
+                "options": [
+                    "Salinan lengkap folder proyek di lokasi lain",
+                    "Sebuah penunjuk kecil berisi hash commit yang jadi ujungnya",
+                    "Daftar berkas yang berbeda dari main",
+                    "Folder terpisah di dalam .git yang memuat commit-nya sendiri",
+                ],
+                "answer": 1,
+                "explanation": "Branch hanyalah berkas berisi satu hash. Itu sebabnya membuat dan menghapus cabang nyaris tanpa biaya, dan commit yang sama dipakai bersama oleh semua cabang yang melewatinya.",
+            },
+            {
+                "q": "Kamu sedang memijak cabang fitur dan membuat commit. Cabang mana yang bergerak?",
+                "options": [
+                    "main dan fitur bergerak bersama",
+                    "Hanya fitur, karena HEAD menunjuk ke fitur",
+                    "Hanya main, karena main adalah cabang utama",
+                    "Tidak ada; commit baru hanya ada di HEAD sampai di-merge",
+                ],
+                "answer": 1,
+                "explanation": "HEAD menunjuk ke cabang yang sedang dipijak, dan commit memajukan cabang itu saja. Cabang lain diam di tempat sampai kamu merge.",
+            },
+            {
+                "q": "Apa yang dilakukan git switch -c perbaikan/harga?",
+                "options": [
+                    "Pindah ke cabang perbaikan/harga yang sudah ada",
+                    "Membuat cabang baru bernama perbaikan/harga dari commit saat ini, lalu pindah ke sana",
+                    "Menghapus cabang perbaikan/harga",
+                    "Menyalin cabang perbaikan/harga ke remote",
+                ],
+                "answer": 1,
+                "explanation": "Flag -c berarti create. Perintah ini setara dengan git branch perbaikan/harga diikuti git switch perbaikan/harga, atau git checkout -b di tutorial lama.",
+            },
+            {
+                "q": "Kenapa git branch -d fitur bisa ditolak, padahal -D berhasil?",
+                "options": [
+                    "-d hanya bekerja di cabang main",
+                    "-d menolak menghapus cabang yang commit-nya belum di-merge ke cabang lain, supaya commit itu tidak jadi tak terjangkau",
+                    "-d memerlukan koneksi ke remote",
+                    "-d hanya untuk cabang yang dibuat kurang dari satu hari",
+                ],
+                "answer": 1,
+                "explanation": "d kecil adalah pengaman: kalau cabang itu punya commit yang belum masuk ke mana pun, menghapus penunjuknya membuat commit itu hilang dari jangkauan. D besar memaksa, dipakai hanya untuk membuang percobaan yang gagal.",
+            },
+            {
+                "q": "Untuk memasukkan cabang fitur ke main, urutan perintah yang benar adalah?",
+                "options": [
+                    "git switch fitur lalu git merge main",
+                    "git switch main lalu git merge fitur",
+                    "git merge fitur main",
+                    "git switch main lalu git merge --abort fitur",
+                ],
+                "answer": 1,
+                "explanation": "Merge selalu membawa commit dari cabang lain ke cabang yang sedang dipijak. Berdiri di tujuan (main), tarik sumbernya (fitur).",
+            },
+            {
+                "q": "Kapan sebuah merge menjadi fast-forward?",
+                "options": [
+                    "Kalau cabang fitur hanya punya satu commit",
+                    "Kalau cabang tujuan belum bergerak sejak cabang sumber dibuat, sehingga penunjuknya tinggal dimajukan",
+                    "Kalau kedua cabang mengubah berkas yang berbeda",
+                    "Kalau dijalankan dengan flag --no-ff",
+                ],
+                "answer": 1,
+                "explanation": "Fast-forward terjadi saat riwayatnya masih satu garis lurus: main tidak punya commit baru, jadi Git cukup memindahkan penunjuk main ke ujung fitur tanpa membuat commit apa pun. --no-ff justru memaksa merge commit.",
+            },
+            {
+                "q": "Sebuah merge commit berbeda dari commit biasa karena?",
+                "options": [
+                    "Ia tidak punya pesan commit",
+                    "Ia punya dua orang tua, satu dari tiap cabang yang digabung",
+                    "Ia tidak menyimpan potret berkas",
+                    "Ia hanya bisa dibuat di GitHub",
+                ],
+                "answer": 1,
+                "explanation": "Commit biasa punya satu orang tua. Merge commit menyatukan dua garis, jadi ia mencatat dua orang tua. Itu yang membuat git log --graph bisa menggambar gelembung percabangan.",
+            },
+            {
+                "q": "Di tengah konflik, apa yang terjadi kalau kamu commit tanpa menghapus baris <<<<<<<, =======, dan >>>>>>>?",
+                "options": [
+                    "Git menolak commit karena penanda masih ada",
+                    "Git otomatis memilih versi HEAD",
+                    "Penanda ikut ter-commit sebagai isi berkas dan merusak kodenya",
+                    "Git membatalkan merge-nya",
+                ],
+                "answer": 2,
+                "explanation": "Git hanya menolak commit selama berkas belum di-add (unmerged). Begitu kamu add, Git percaya konfliknya selesai, termasuk kalau penandanya masih ada. Periksa dengan grep -rn '<<<<<<<' . sebelum commit.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 4: Remote, GitHub, dan Pull Request",
+        "questions": [
+            {
+                "q": "Sesudah clone, git branch -a menampilkan main dan remotes/origin/main. Apa sebenarnya origin/main?",
+                "options": [
+                    "Cabang kedua yang bisa dipijak dan di-commit seperti main",
+                    "Catatan lokal tentang posisi ujung main di remote saat terakhir fetch, pull, atau push",
+                    "Salinan cadangan main yang diperbarui otomatis tiap commit",
+                    "Cabang yang hanya ada di server GitHub",
+                ],
+                "answer": 1,
+                "explanation": "origin/main adalah cabang pelacak jarak jauh: ia bergerak hanya saat kamu berkomunikasi dengan remote. Jarak antara main dan origin/main itulah yang dilaporkan git status sebagai ahead atau behind.",
+            },
+            {
+                "q": "Apa beda git fetch dan git pull?",
+                "options": [
+                    "fetch hanya untuk cabang fitur, pull hanya untuk main",
+                    "fetch mengambil commit baru tanpa menyentuh cabang dan folder kerjamu; pull melakukan fetch lalu merge ke cabang yang dipijak",
+                    "fetch mengirim commit ke remote, pull mengambilnya",
+                    "Keduanya sama persis; pull cuma nama lama",
+                ],
+                "answer": 1,
+                "explanation": "fetch aman dijalankan kapan pun, bahkan di tengah pekerjaan, karena ia cuma memperbarui origin/main. pull mengubah folder kerjamu, jadi lebih baik dijalankan sesudah kamu tahu apa yang datang.",
+            },
+            {
+                "q": "git push ditolak dengan pesan rejected (fetch first). Apa langkah yang benar?",
+                "options": [
+                    "git push --force supaya remote mengikuti riwayatmu",
+                    "git pull untuk menggabungkan commit yang ada di remote, lalu git push lagi",
+                    "Hapus repositori lokal dan clone ulang",
+                    "git commit --amend lalu push lagi",
+                ],
+                "answer": 1,
+                "explanation": "Penolakan itu berarti remote punya commit yang belum kamu miliki. Git menolak menimpanya; pull memasukkannya ke riwayatmu, dan sesudah itu push diterima. --force justru menghapus pekerjaan orang lain.",
+            },
+            {
+                "q": "Apa fungsi -u pada git push -u origin main?",
+                "options": [
+                    "Mengunggah berkas yang tidak dilacak juga",
+                    "Mencatat bahwa main lokal berpasangan dengan origin/main, sehingga push dan pull berikutnya tidak perlu argumen",
+                    "Memaksa push walau remote punya commit baru",
+                    "Memperbarui semua cabang sekaligus",
+                ],
+                "answer": 1,
+                "explanation": "-u adalah --set-upstream. Cukup dipakai sekali per cabang; sesudahnya git status juga bisa melaporkan ahead dan behind karena ia tahu pasangannya.",
+            },
+            {
+                "q": "Dari sepasang kunci SSH yang dibuat ssh-keygen, berkas mana yang ditempel di halaman SSH keys GitHub?",
+                "options": [
+                    "id_ed25519, kunci privatnya",
+                    "id_ed25519.pub, kunci publiknya",
+                    "Keduanya, supaya GitHub bisa memverifikasi",
+                    "known_hosts",
+                ],
+                "answer": 1,
+                "explanation": "Kunci publik boleh dibagikan ke siapa pun; ia hanya bisa memverifikasi, bukan menandatangani. Kunci privat tidak pernah meninggalkan komputermu, dan itulah yang membuktikan identitasmu saat push.",
+            },
+            {
+                "q": "Di tombol merge GitHub, apa yang dilakukan pilihan Squash and merge?",
+                "options": [
+                    "Menyalin ulang commit cabang di atas main tanpa merge commit",
+                    "Melebur seluruh commit cabang jadi satu commit baru di main",
+                    "Menggabungkan dengan merge commit dan mempertahankan semua commit cabang",
+                    "Menghapus cabang tanpa menggabungkannya",
+                ],
+                "answer": 1,
+                "explanation": "Squash membuat riwayat main tetap rapi: satu PR, satu commit. Rincian commit di cabangnya hilang dari main, tapi tetap terbaca di halaman PR. Rebase and merge yang menyalin ulang commit satu per satu.",
+            },
+            {
+                "q": "Peninjau meminta perubahan pada PR-mu. Apa yang harus kamu lakukan?",
+                "options": [
+                    "Tutup PR, buat cabang baru, dan buka PR baru",
+                    "Commit perbaikannya di cabang yang sama lalu push; PR otomatis memuat commit baru itu",
+                    "Edit berkasnya langsung di cabang main",
+                    "Kirim diff-nya lewat komentar PR",
+                ],
+                "answer": 1,
+                "explanation": "PR melekat pada cabang, bukan pada commit tertentu. Setiap push ke cabang itu memperbarui PR, menjalankan ulang CI, dan memberi tahu peninjau bahwa ada yang baru untuk dibaca.",
+            },
+            {
+                "q": "Kenapa --force-with-lease lebih aman daripada --force saat push cabang yang sudah di-rebase?",
+                "options": [
+                    "Ia hanya bekerja di cabang main",
+                    "Ia menolak push kalau remote berubah sejak terakhir kamu fetch, jadi commit orang lain tidak tertimpa diam-diam",
+                    "Ia membuat cadangan otomatis di remote",
+                    "Ia tidak pernah bisa ditolak",
+                ],
+                "answer": 1,
+                "explanation": "--force menimpa apa pun yang ada di remote. --force-with-lease membandingkan dulu: kalau ujung remote bukan yang terakhir kamu lihat, berarti ada pekerjaan orang lain, dan push dibatalkan.",
+            },
+        ],
+    },
+    {
+        "title": "Kuis 5: Menulis Ulang dan Menyelamatkan Riwayat",
+        "questions": [
+            {
+                "q": "Sesudah git reset --soft HEAD~2, di mana perubahan dari dua commit yang dilepas berada?",
+                "options": [
+                    "Hilang sama sekali",
+                    "Di staging, siap di-commit ulang sebagai satu commit",
+                    "Di folder kerja tapi tidak di staging",
+                    "Di cabang baru bernama ORIG_HEAD",
+                ],
+                "answer": 1,
+                "explanation": "--soft hanya memundurkan penunjuk cabang. Staging dan folder kerja tidak disentuh, jadi semua perubahan menunggu di staging; inilah cara melebur beberapa commit jadi satu.",
+            },
+            {
+                "q": "Apa satu-satunya hal yang benar-benar hilang tanpa bisa dikembalikan sesudah git reset --hard?",
+                "options": [
+                    "Commit yang dilepas dari cabang",
+                    "Perubahan di folder kerja yang belum pernah di-commit atau di-stash",
+                    "Tag yang menunjuk commit itu",
+                    "Riwayat reflog",
+                ],
+                "answer": 1,
+                "explanation": "Commit yang dilepas masih ada di basis data dan bisa ditemukan lewat reflog atau ORIG_HEAD. Yang tidak pernah jadi commit tidak punya tempat untuk ditemukan kembali.",
+            },
+            {
+                "q": "Apa yang terjadi pada commit cabang fitur ketika kamu menjalankan git rebase main dari cabang itu?",
+                "options": [
+                    "Commit-nya dipindahkan apa adanya dengan hash yang sama",
+                    "Commit-nya disalin ulang di atas ujung main sebagai commit baru dengan hash baru",
+                    "Commit-nya digabung jadi satu merge commit",
+                    "Commit-nya dihapus dan digantikan commit main",
+                ],
+                "answer": 1,
+                "explanation": "Rebase menulis ulang riwayat: tiap commit diterapkan ulang di atas dasar baru, dan karena orang tuanya berubah, hash-nya pun berubah. Itulah alasan aturan emasnya ada.",
+            },
+            {
+                "q": "Kapan rebase TIDAK boleh dilakukan?",
+                "options": [
+                    "Pada cabang yang punya lebih dari tiga commit",
+                    "Pada commit yang sudah di-push ke cabang yang dipakai orang lain",
+                    "Pada cabang yang pernah mengalami konflik",
+                    "Sebelum membuka pull request",
+                ],
+                "answer": 1,
+                "explanation": "Rekan yang sudah menarik commit lama akan memegang riwayat yang tidak lagi cocok dengan milikmu; pull berikutnya menghasilkan commit kembar dan merge yang membingungkan. Cabang pribadi yang belum dilihat orang aman di-rebase.",
+            },
+            {
+                "q": "Kamu membuat berkas baru, belum pernah git add, lalu git stash. Kenapa berkas itu masih ada di folder kerja?",
+                "options": [
+                    "Stash tidak pernah bekerja pada berkas baru",
+                    "Berkas yang belum dilacak tidak ikut disimpan kecuali stash diberi -u",
+                    "Stash gagal diam-diam",
+                    "Berkas itu ada di .gitignore",
+                ],
+                "answer": 1,
+                "explanation": "stash secara bawaan hanya menyimpan perubahan pada berkas yang sudah dilacak. --include-untracked (-u) memasukkan berkas baru juga. Ini sumber kebingungan stash yang paling sering.",
+            },
+            {
+                "q": "Kamu menjalankan git tag -a v1.0 -m \"Rilis\" lalu git push. Kenapa tag itu tidak muncul di GitHub?",
+                "options": [
+                    "Tag beranotasi tidak bisa di-push",
+                    "Tag tidak ikut push biasa; ia harus dikirim dengan git push origin v1.0 atau --tags",
+                    "GitHub hanya menerima tag ringan",
+                    "Tag harus dibuat lewat halaman Releases",
+                ],
+                "answer": 1,
+                "explanation": "push biasa hanya mengirim cabang yang sedang dipijak. Tag punya ruang nama sendiri dan dikirim terpisah, satu per satu atau semuanya sekaligus.",
+            },
+            {
+                "q": "Sesudah git reset --hard yang salah sasaran, bagaimana cara menemukan posisi HEAD sebelum reset?",
+                "options": [
+                    "git log, karena commit lama masih tercantum di sana",
+                    "git reflog, yang mencatat setiap posisi HEAD termasuk sebelum reset",
+                    "git status, yang menampilkan hash sebelumnya",
+                    "Tidak bisa; commit yang dilepas langsung terhapus",
+                ],
+                "answer": 1,
+                "explanation": "git log hanya membaca commit yang bisa dicapai dari cabang; commit yang dilepas tidak tampak di sana. reflog membaca riwayat HEAD, jadi baris di bawah entri reset menunjukkan tempat semula.",
+            },
+            {
+                "q": "Ada seribu commit antara versi yang bekerja dan versi yang rusak. Kira-kira berapa langkah yang dibutuhkan git bisect untuk menemukan pelakunya?",
+                "options": [
+                    "Sekitar seribu, satu per commit",
+                    "Sekitar sepuluh, karena tiap langkah membuang separuh calon",
+                    "Sekitar seratus",
+                    "Tepat satu, karena Git membaca pesan commit-nya",
+                ],
+                "answer": 1,
+                "explanation": "Bisect adalah pencarian biner: 1000 dibagi dua berulang kali habis dalam sekitar sepuluh langkah. Ia bekerja paling baik kalau tiap commit bisa dibangun, satu alasan lagi melebur commit wip.",
+            },
+        ],
+    },
+]

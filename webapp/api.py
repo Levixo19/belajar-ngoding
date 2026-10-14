@@ -37,7 +37,9 @@ from inti import beda
 from inti import berkas as modul_berkas
 from layar import exercises
 from inti import galat as modul_galat
+from inti import pustaka as modul_pustaka
 from pelajar import konfigurasi
+from pelajar import karier as modul_karier
 import main as aplikasi
 from pelajar import progress
 from inti import runner
@@ -429,7 +431,80 @@ def bahasa(params):
         # materi terkunci atau tidak tetap sepenuhnya milik bab.py -- nilai ini
         # tidak boleh dipakai untuk memutuskan apa pun di sini.
         "buka_semua_bab": bool(konfigurasi.ambil("buka_semua_bab", False)),
+        # Ringkasan bacaan dari Pustaka, dihitung inti/pustaka.py -- terminal
+        # menampilkan ringkasan yang sama di menu bahasanya.
+        "pustaka": modul_pustaka.ringkasan_kurikulum(lang["key"]),
     }
+
+
+# ------------------------------------------------------------------ pustaka
+
+def pustaka(params):
+    """Cari dan saring tautan Pustaka; satu halaman hasil plus cacah segi.
+
+    Label penyaring ikut dikirim dari sini supaya web tidak menyimpan daftar
+    jenis atau nama kurikulum sendiri: dua salinan daftar yang sama adalah dua
+    daftar yang suatu hari berbeda.
+    """
+    kurikulum = params.get("kurikulum") or None
+    if kurikulum and not any(l["key"] == kurikulum for l in LANGUAGES):
+        raise Galat("Kurikulum tidak dikenal.", 400)
+    jenis = params.get("jenis") or None
+    if jenis and jenis not in modul_pustaka.JENIS:
+        raise Galat("Jenis tidak dikenal.", 400)
+    bahasa = params.get("bahasa") or None
+    if bahasa and bahasa not in modul_pustaka.BAHASA:
+        raise Galat("Bahasa tidak dikenal.", 400)
+    try:
+        halaman = int(params.get("hal") or 1)
+    except ValueError:
+        raise Galat("Halaman harus angka.", 400)
+    hasil = modul_pustaka.cari(
+        params.get("q", ""), kurikulum=kurikulum, jenis=jenis, bahasa=bahasa,
+        sumber=params.get("sumber") or None, halaman=halaman, per_halaman=40)
+    hasil["label"] = {
+        "jenis": modul_pustaka.JENIS,
+        "bahasa": modul_pustaka.BAHASA,
+        "kurikulum": {l["key"]: l["label"] for l in LANGUAGES},
+    }
+    hasil["sumber"] = modul_pustaka.daftar_sumber()
+    hasil["semua"] = modul_pustaka.total()
+    return hasil
+
+
+# ------------------------------------------------------------------- karier
+
+def karier(_=None):
+    """Seluruh Peta Karier plus kesiapan pelajar, dari pelajar/karier.py.
+
+    Kesiapan dihitung server dari progres -- browser tidak pernah menghitung
+    ulang persen dari daftar materi yang dibaca.
+    """
+    return modul_karier.ringkasan(LANGUAGES, progress.load_progress())
+
+
+def karier_kuis(params):
+    """'?pilihan=1,3,,0' -> tiga profesi teratas. Kosong = soal dilewati."""
+    mentah = (params.get("pilihan") or "").split(",")
+    pilihan = []
+    for m in mentah[:len(modul_karier.data_karier.KUIS)]:
+        m = m.strip()
+        if not m:
+            pilihan.append(None)
+            continue
+        if not m.isdigit():
+            raise Galat("Pilihan kuis harus angka.", 400)
+        pilihan.append(int(m))
+    return {"hasil": modul_karier.skor_kuis(pilihan)}
+
+
+def karier_jalur(params):
+    dari, ke = params.get("dari"), params.get("ke")
+    if dari not in modul_karier.PER_ID or ke not in modul_karier.PER_ID:
+        raise Galat("Profesi tidak dikenal.", 400)
+    langkah = modul_karier.jalur(dari, ke)
+    return {"jalur": langkah or [],
+            "celah": modul_karier.celah_bekal(dari, ke) if langkah else []}
 
 
 # ------------------------------------------------------------------- materi

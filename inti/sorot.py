@@ -591,6 +591,8 @@ ATURAN["ts"] = ATURAN["typescript"]
 # /api/awal. Kalau ia menunjuk objek yang sama dengan bash, Fedora lenyap dari
 # daftar dan kodenya tampil polos tanpa satu pun pesan galat.
 ATURAN["fedora"] = copy.copy(ATURAN["bash"])
+# Git: alasan yang sama. Kodenya bash, tapi ia bahasa tersendiri di LANGUAGES.
+ATURAN["git"] = copy.copy(ATURAN["bash"])
 
 _POLOS = Aturan()
 

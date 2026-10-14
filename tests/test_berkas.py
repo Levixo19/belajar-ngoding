@@ -378,6 +378,27 @@ class PagarPerintahSistem(unittest.TestCase):
                 diperiksa += 1
         self.assertGreater(diperiksa, 100, "blok materi Fedora tidak terbaca")
 
+    def test_blok_perintah_git_tidak_pernah_bisa_dijalankan_aplikasi(self):
+        """Pagar yang sama untuk Git: `reset --hard` dan `push --force` di
+        materinya ditujukan ke repositori milik pelajar, bukan ke direktori
+        sementara aplikasi."""
+        lang = next((l for l in LANGUAGES if l["key"] == "git"), None)
+        if lang is None:
+            self.skipTest("kurikulum git tidak terpasang")
+        diperiksa = 0
+        for m in lang["materials"]:
+            for s in m["sections"]:
+                kode = s.get("code")
+                if not kode:
+                    continue
+                jenis = berkas.jenis_kode("git", kode)
+                with self.subTest(materi=m["title"]):
+                    self.assertFalse(
+                        berkas.boleh_dijalankan_aplikasi("git", jenis),
+                        f"blok materi Git boleh dijalankan aplikasi:\n{kode[:200]}")
+                diperiksa += 1
+        self.assertGreater(diperiksa, 40, "blok materi Git tidak terbaca")
+
     def test_sesi_sql_tetap_boleh_dijalankan(self):
         """Pagar di atas tidak boleh ikut mematikan SQL.
 
@@ -387,6 +408,7 @@ class PagarPerintahSistem(unittest.TestCase):
         """
         self.assertTrue(berkas.boleh_dijalankan_aplikasi("sql", berkas.SESI))
         self.assertFalse(berkas.boleh_dijalankan_aplikasi("fedora", berkas.SESI))
+        self.assertFalse(berkas.boleh_dijalankan_aplikasi("git", berkas.SESI))
         self.assertTrue(berkas.boleh_dijalankan_aplikasi("fedora", berkas.PROGRAM))
         self.assertFalse(berkas.boleh_dijalankan_aplikasi("python", berkas.POTONGAN))
 

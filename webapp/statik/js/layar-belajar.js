@@ -13,7 +13,7 @@
 import {
   api, h, isikan, kosongkan, bilah, bulat, angka, kosong, keadaan, sorak,
   rayakan, salin, tanggalRamah, jamRamah, selisihHari, tanggalLokal, hariIniISO,
-  jendela, jendelaTerbuka, tandai, tunda, GalatApi,
+  jendela, jendelaTerbuka, tandai, tunda, GalatApi, ambilLokal, simpanLokal,
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, saatTampak, denyut, percikBara, adaGerak, gerakPenuh,
@@ -22,19 +22,22 @@ import {
 import { ikon, ikonTipe } from "./ikon.js";
 import { praKode } from "./sorot.js";
 import { Editor } from "./editor.js";
+import { barisTautan } from "./layar-pustaka.js";
+import { kalimatGulir, akordeonBahasa, marqueeBahasa, gerakBeranda } from "./beranda.js";
 import {
   pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
 } from "./pratinjau.js";
 
-function pilTipe(t) {
-  return t === "kuis" ? ".pil-ungu" : t === "latihan" ? ".pil-nyala" : ".pil-tenang";
-}
-
 /** Pil bertanda jenis isi: ikon + kata. Ikonnya membuat jenisnya terbaca
  *  sebelum katanya sempat dibaca — dan di daftar sepanjang dua puluh baris,
- *  "sebelum dibaca" itu selisih yang besar. */
+ *  "sebelum dibaca" itu selisih yang besar.
+ *
+ *  Warnanya NETRAL untuk ketiga jenis. Dulu kuis, latihan, dan materi
+ *  masing-masing punya warna sendiri, sehingga satu daftar memuat tiga warna
+ *  untuk informasi yang sudah dibawa ikon dan katanya — dan warna aksen
+ *  (latihan) ikut tenggelam di antara dua warna lain yang sama kerasnya. */
 export function pilJenis(tipe) {
-  return h("span.pil.pil-jenis" + pilTipe(tipe), {},
+  return h("span.pil.pil-jenis", {},
     ikon(ikonTipe(tipe), { ukuran: 14, tebal: 1.9 }), tipe);
 }
 
@@ -234,7 +237,7 @@ function kartuMulaiUtama(s, bahasa) {
       h("span.mata.mata-nyala", {}, `Disarankan · ${s.label_bahasa}`),
       h("h2", {}, tanpaNomor(s.judul)),
       h("p", {}, b && !b.pasang
-        ? `${jenis}. Tidak perlu memasang apa pun — cukup aplikasi ini dan `
+        ? `${jenis}. Tidak perlu memasang apa pun: cukup aplikasi ini dan `
           + "browser yang sedang kamu buka."
         : `${jenis}. Langkah pertama di jalur ${s.label_bahasa}.`)),
     h("span.tbl.tbl-utama.tbl-besar", {},
@@ -341,25 +344,56 @@ function dasborBerjalan(d, ctx) {
   // ke bawah lipatan layar.
   const [utama, ...sisaLangkah] = d.langkah;
 
-  const el = h("div", {},
-    h("header.sambut", {},
-      h("span.mata", {}, new Date().toLocaleDateString("id-ID",
-        { weekday: "long", day: "numeric", month: "long", year: "numeric" })),
-      h("h1", {}, d.nama ? `${sapa}, ${d.nama}.` : `${sapa}.`),
-      h("p.sambut-sub", {}, kalimatPembuka(d))),
+  // BERANDA (rombak 2026-10-14). Urutannya bab demi bab, masing-masing
+  // dengan jarak lapang:
+  //   1. Hero Editorial Split: sapaan di kiri, satu-satunya tindakan utama
+  //      (kartu Lanjutkan) di kanan.
+  //   2. Bento: level, minggu ini, antrean, Peta Karier, Pustaka -- kisi
+  //      `grid-auto-flow: dense` yang tidak menyisakan sel kosong.
+  //   3. Kalimat perjalanan yang menyala kata demi kata saat digulir.
+  //   4. Akordeon bahasa yang sedang dijalani.
+  //   5. Hamparan ritme enam bulan, lalu marquee seluruh kurikulum dan ajakan
+  //      penutup.
+  // Bahasa yang sedang dijalani diurutkan dari persen server; tidak ada
+  // persen yang dihitung di sini.
+  const dijalani = d.bahasa.filter((b) => b.persen > 0)
+    .sort((a, b) => b.persen - a.persen).slice(0, 6);
+  const bento = h("div.bento", {},
+    h("div.bento-level", {}, kartuBara(d)),
+    h("div.bento-pekan", {}, pekanIni(d)),
+    sisaLangkah.length || d.tantangan
+      ? h("div.bento-antrean", {}, blokAntrean(sisaLangkah, d.tantangan, ctx)) : null,
+    h("div.bento-karier", {}, ubinKarier()),
+    h("div.bento-pustaka", {},
+      ubinPustaka(utama ? utama.bahasa : null, utama ? utama.label_bahasa : null)));
 
-    h("div.dasbor", {},
-      h("div.dasbor-utama", {},
-        utama ? kartuLanjutkan(utama) : null,
-        sisaLangkah.length || d.tantangan
-          ? blokAntrean(sisaLangkah, d.tantangan, ctx) : null,
-        blokBahasa(d.bahasa)),
-
-      h("aside.dasbor-sisi", {},
-        kartuBara(d),
-        blokBara(d))),
+  const el = h("div.beranda", {},
+    h("section.beranda-hero", {},
+      h("div.beranda-hero-teks", {},
+        h("span.mata", {}, new Date().toLocaleDateString("id-ID",
+          { weekday: "long", day: "numeric", month: "long", year: "numeric" })),
+        h("h1", {}, d.nama ? `${sapa}, ${d.nama}.` : `${sapa}.`),
+        h("p.sambut-sub", {}, kalimatPembuka(d)),
+        h("div.beranda-aksi", {},
+          utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
+            "Lanjutkan belajar", ikon("lanjut", { ukuran: 18 })) : null,
+          h("a.tbl.tbl-hantu.tbl-besar", { href: "#/karier" }, "Peta karier"))),
+      utama ? kartuLanjutkan(utama) : null),
+    bento,
+    kalimatGulir(d),
+    akordeonBahasa(dijalani),
+    h("section.meja-ritme", {}, blokBara(d)),
+    marqueeBahasa(ctx.awal.bahasa || []),
+    h("section.beranda-tutup", {},
+      h("h2", {}, "Sepuluh menit hari ini lebih baik daripada dua jam minggu depan."),
+      utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
+        "Lanjutkan: " + tanpaNomor(utama.judul), ikon("lanjut", { ukuran: 18 })) : null),
   );
-  return { el, judul: "Dasbor" };
+
+  ungkap(bento, { per: 60, maks: 360, geser: 18, pegas: "halus" });
+  let lepasGerak = () => {};
+  saatSiap(el, () => { lepasGerak = gerakBeranda(el); });
+  return { el, judul: "Dasbor", saatKeluar: () => lepasGerak() };
 }
 
 /** Kartu tindakan utama dasbor.
@@ -382,6 +416,50 @@ function kartuLanjutkan(s) {
       ikon("lanjut", { ukuran: 20 })));
 }
 
+/** Ubin Peta Karier di dasbor: profesi yang paling dekat dicapai.
+ *
+ *  Kesiapannya dibaca dari /api/karier, dihitung pelajar/karier.py -- tidak
+ *  ada persen yang dihitung ulang di sini. Ubin lahir dengan isi yang sudah
+ *  bermakna (judul dan tautan), lalu angkanya menyusul; kalau permintaannya
+ *  gagal, yang tertinggal tetap tautan yang benar. */
+function ubinKarier() {
+  const isi = h("span.meja-ubin-isi", {}, "Lihat profesi yang bisa kamu tuju.");
+  const el = h("a.meja-ubin-satu", { href: "#/karier" },
+    h("span.meja-ubin-kepala", {}, ikon("karier", { ukuran: 18 }), "Peta karier"),
+    isi);
+  api.ambil("/api/karier").then((k) => {
+    const p = [...k.profesi].sort((a, b) => b.kesiapan - a.kesiapan)[0];
+    if (!p || p.kesiapan <= 0) return;
+    el.setAttribute("href", "#/karier/" + p.id);
+    isikan(isi, h("b", {}, p.nama),
+      h("span.meja-ubin-angka", {}, `${bulat(p.kesiapan)}% siap`),
+      h("span.bilah.meja-ubin-bilah", {},
+        h("i", { gaya: { width: `${Math.min(100, p.kesiapan)}%` } })));
+  }).catch(() => { /* tautannya tetap benar tanpa angka */ });
+  return el;
+}
+
+/** Ubin Pustaka di dasbor: bacaan gratis untuk bahasa yang sedang dipelajari. */
+function ubinPustaka(kunci, label) {
+  const href = kunci ? "#/pustaka?kurikulum=" + encodeURIComponent(kunci) : "#/pustaka";
+  const isi = h("span.meja-ubin-isi", {}, "Buku, kursus, dan proyek gratis.");
+  const el = h("a.meja-ubin-satu", { href },
+    h("span.meja-ubin-kepala", {}, ikon("pustaka", { ukuran: 18 }),
+      label ? `Bacaan ${label}` : "Pustaka"),
+    isi);
+  if (kunci) {
+    api.ambil("/api/pustaka", { kurikulum: kunci, bahasa: "id" }).then((r) => {
+      const pertama = r.hasil[0];
+      const total = Object.values(r.segi.bahasa).reduce((a, b) => a + b, 0);
+      isikan(isi,
+        pertama ? h("b", {}, pertama.judul) : null,
+        h("span.meja-ubin-angka", {},
+          `${angka(total)} tautan, ${angka(r.total)} berbahasa Indonesia`));
+    }).catch(() => { /* tautannya tetap benar tanpa angka */ });
+  }
+  return el;
+}
+
 function kalimatPembuka(d) {
   if (d.xp_hari_ini >= d.target_harian) {
     return "Target hari ini sudah tercapai. Sisanya bonus.";
@@ -393,6 +471,56 @@ function kalimatPembuka(d) {
     return `Kurang ${d.target_harian - d.xp_hari_ini} XP lagi untuk menutup hari ini.`;
   }
   return "Belum ada yang dikerjakan hari ini.";
+}
+
+/** Minggu ini: tujuh hari terakhir sebagai tujuh batang, hari ini di ujung.
+ *
+ *  Hamparan enam bulan menjawab "seperti apa ritmeku"; strip ini menjawab
+ *  pertanyaan yang lebih dekat — "minggu ini aku ke mana saja" — tanpa harus
+ *  mencari tujuh sel kecil di ujung kanan sebuah kisi. Datanya tujuh entri
+ *  terakhir `heatmap` dari /api/dasbor (terlama -> hari ini, hari kosong ikut
+ *  tercatat), jadi tidak ada hitungan kedua di sini.
+ *
+ *  Tinggi batang diukur terhadap yang TERBESAR di antara target harian dan
+ *  hari terbaik minggu ini, supaya garis target selalu terlihat dan hari yang
+ *  melewatinya memang terlihat melewatinya. Tingginya ditulis langsung di
+ *  gaya inline — keadaan alaminya — tidak dianimasikan dari nol. */
+function pekanIni(d) {
+  const hari = (d.heatmap || []).slice(-7);
+  if (hari.length < 7) return null;
+  const puncak = Math.max(d.target_harian || 1, ...hari.map((x) => x.xp));
+  const nama = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+  const target = (d.target_harian || 0) / puncak * 100;
+  const total = hari.reduce((t, x) => t + x.xp, 0);
+  const aktif = hari.filter((x) => x.xp > 0).length;
+
+  return h("section.pekan", { "aria-label": "Tujuh hari terakhir" },
+    h("div.bagian-kepala", {},
+      h("span.mata", {}, "Minggu ini"),
+      h("span.baris-sisi", {},
+        `${angka(total)} XP dalam ${aktif} dari 7 hari`)),
+    petakPekan(target, hari.map((x, i) => {
+        const tgl = tanggalLokal(x.tanggal);
+        const kini = i === hari.length - 1;
+        return h("div.pekan-hari" + (kini ? ".kini" : "")
+                   + (x.xp >= (d.target_harian || 1) ? ".capai" : ""),
+          { title: `${tanggalRamah(x.tanggal)}: ${angka(x.xp)} XP` },
+          h("span.pekan-xp", {}, x.xp ? angka(x.xp) : ""),
+          h("span.pekan-batang", {},
+            h("i", { gaya: { height: (x.xp / puncak * 100) + "%" } })),
+          h("span.pekan-nama", {}, kini ? "Hari ini"
+            : tgl ? nama[tgl.getDay()] : ""));
+      })));
+}
+
+/** Kisi tujuh hari dengan garis target di ketinggian `target` (persen).
+ *  Lewat setProperty karena `h()` menyalin `gaya` dengan Object.assign, dan
+ *  Object.assign ke `style` diam-diam membuang properti kustom `--*` —
+ *  gradien yang memakainya lalu tidak sah dan seluruh latarnya hilang. */
+function petakPekan(target, isi) {
+  const petak = h("div.pekan-petak", {}, isi);
+  petak.style.setProperty("--target", target + "%");
+  return petak;
 }
 
 function cincinLevel(d) {
@@ -545,8 +673,8 @@ function blokAntrean(langkah, tantangan, ctx) {
   const baris = (s, cap) => h("a.baris", { href: tautanLangkah(s) },
     pilJenis(s.tipe),
     h("div.isi", {},
-      h("div.judul", {}, `${s.label_bahasa} — ${tanpaNomor(s.judul)}`),
-      h("div.ket", {}, s.alasan)),
+      h("div.judul", {}, tanpaNomor(s.judul)),
+      h("div.ket", {}, `${s.label_bahasa} · ${s.alasan}`)),
     cap ? h("span.pil.pil-ungu.sembunyi-hp", {}, cap) : null,
     // Ditandai SEBELUM diklik, bukan sesudah. Latihan di bahasa yang
     // toolchain-nya belum terpasang tetap bisa dikerjakan dan ditandai
@@ -568,37 +696,6 @@ function blokAntrean(langkah, tantangan, ctx) {
       h("span.mata", {}, "Antrean berikutnya"),
       h("a", { href: "#/cari" }, "Cari isi lain")),
     senarai);
-}
-
-/** Bahasa yang sedang jalan. Yang belum disentuh sama sekali TIDAK ikut di
- *  sini — sebelas kartu 0% adalah daftar yang tidak bisa dipakai untuk
- *  memutuskan apa pun, dan tempat memilih bahasa baru sudah ada di menu
- *  Bahasa maupun di palet perintah. */
-function blokBahasa(daftar) {
-  const jalan = daftar.filter((b) => b.persen > 0);
-  const tampil = jalan.length ? jalan : daftar.slice(0, 3);
-
-  const petak = h("div.petak.petak-3", {}, tampil.map((b) => h("a.kartu.kartu-rapat", {
-      href: "#/bahasa/" + b.key, gaya: { color: "inherit" },
-    },
-      h("div.rinci-atas", {},
-        h("b", {}, b.label),
-        h("span.rinci-angka", {}, bulat(b.persen) + "%")),
-      bilah(b.persen, b.persen >= 100 ? "tumbuh" : ""),
-      h("div.rinci-angka", { gaya: { marginTop: "var(--s2)" } },
-        `${b.materi}/${b.total_materi} materi · ${b.kuis}/${b.total_kuis} kuis`
-        + ` · ${b.latihan_lulus + b.latihan_manual}/${b.total_latihan} latihan`),
-      b.siap ? null
-             : h("div.pil.pil-kunci", { gaya: { marginTop: "var(--s2)" } },
-                 "toolchain belum ada"))));
-  ungkap(petak, { per: 30, maks: 240, geser: 10 });
-
-  return h("section", {},
-    h("div.bagian-kepala", {},
-      h("span.mata", {},
-        jalan.length ? "Sedang kamu jalani" : "Mulai dari salah satu"),
-      h("span.baris-sisi", {}, `${daftar.length} bahasa tersedia`)),
-    petak);
 }
 
 /* Berapa banyak bara yang boleh menyala satu per satu.
@@ -745,7 +842,7 @@ function blokBara(d) {
   // `tabindex`, Chrome dan Safari tidak memberi pengguna papan ketik satu pun
   // cara menggeser isinya, dan sesudah pin di bawah yang tidak terjangkau itu
   // justru lima bulan pertamanya. `role="group"` + nama supaya yang diumumkan
-  // bukan "grup" kosong. `:focus-visible` global (gaya.css:599) sudah memberi
+  // bukan "grup" kosong. `:focus-visible` global (gaya.css:608) sudah memberi
   // cincinnya, jadi tidak ada gaya fokus baru yang perlu ditulis di sini.
   const petak = h("div.bara-petak", {
     tabindex: "0",
@@ -772,7 +869,7 @@ function blokBara(d) {
     const tingkat = s.xp <= 0 ? 0 : s.xp < target * 0.5 ? 1 : s.xp < target ? 2 : 3;
     const sel = h("div.bara-sel" + (tingkat ? ".bara-" + tingkat : "")
       + (s.tanggal === hariIni ? ".bara-kini" : ""),
-      { title: `${tanggalRamah(s.tanggal)} — ${s.xp} XP` });
+      { title: `${tanggalRamah(s.tanggal)}: ${s.xp} XP` });
     if (tingkat) menyala.push(sel);
     petak.appendChild(sel);
   }
@@ -793,7 +890,7 @@ function blokBara(d) {
 
   const aktif = d.heatmap.filter((s) => s.xp > 0).length;
   return h("section", {},
-    h("span.mata", {}, "Bara — enam bulan terakhir"),
+    h("span.mata", {}, "Bara enam bulan terakhir"),
     h("div.kartu.kartu-rapat", {},
       petak,
       jedaBara(d.heatmap),
@@ -841,7 +938,7 @@ function jedaBara(heatmap) {
     ? "masih berlangsung"
     : `berakhir ${tanggalRamah(heatmap[akhir].tanggal)}`;
   return h("p.bara-jeda", {},
-    `Jeda terpanjang — ${angka(panjang)} hari tanpa XP, `,
+    `Jeda terpanjang ${angka(panjang)} hari tanpa XP, `,
     h("span.bara-jeda-kapan", {}, kapan));
 }
 
@@ -852,7 +949,7 @@ export async function layarBahasa({ key }, ctx) {
   const s = b.statistik;
 
   const isi = h("div");
-  const daftarTab = ["materi", "kuis", "latihan"];
+  const daftarTab = ["materi", "kuis", "latihan", "bacaan"];
   const kunciTab = "tab." + key;
 
   // Toolchain yang belum terpasang ditandai SEBELUM diklik, bukan sesudah.
@@ -871,9 +968,10 @@ export async function layarBahasa({ key }, ctx) {
     title: belumSiap && t === "latihan"
       ? "Latihan tetap bisa dibaca, tapi kodenya belum bisa dijalankan di mesin ini."
       : null,
-  }, ikon(ikonTipe(t), { ukuran: 17 }),
+  }, ikon(t === "bacaan" ? "pustaka" : ikonTipe(t), { ukuran: 17 }),
      `${t[0].toUpperCase()}${t.slice(1)}`,
-     h("span.tab-jumlah", {}, String(b[t].length)),
+     h("span.tab-jumlah", {},
+       String(t === "bacaan" ? b.pustaka.total : b[t].length)),
      belumSiap && t === "latihan" ? capBelumSiap() : null));
 
   let tabKini = null;
@@ -895,6 +993,7 @@ export async function layarBahasa({ key }, ctx) {
     }
     const baru = t === "kuis" ? daftarKuis(b, ctx)
       : t === "latihan" ? daftarLatihan(b, ctx)
+      : t === "bacaan" ? daftarBacaan(b)
       : daftarMateri(b, ctx);
 
     // Berganti tab bukan berpindah halaman: daftarnya diganti di tempat, dan
@@ -954,7 +1053,7 @@ export async function layarBahasa({ key }, ctx) {
 function kalimatBahasa(b, s) {
   const total = s.total_materi + s.total_kuis + s.total_latihan;
   if (s.persen >= 100) {
-    return `Semuanya sudah kamu selesaikan — ${total} bagian, tuntas.`;
+    return `Semuanya sudah kamu selesaikan: ${total} bagian, tuntas.`;
   }
   if (s.persen <= 0) {
     return `Belum dimulai. Jalurnya ${s.total_materi} materi, diselingi `
@@ -1010,7 +1109,7 @@ function kartuLanjutBahasa(b, key) {
     s = { tipe: "kuis", indeks: kuis.indeks, judul: kuis.judul,
           mata: "Uji pemahaman",
           ket: kuis.pernah ? "Sudah waktunya kuis ini diulang."
-                           : "Semua materi terbaca — sekarang ujinya." };
+                           : "Semua materi terbaca. Sekarang ujinya." };
   } else if (latihan) {
     s = { tipe: "latihan", indeks: latihan.indeks, judul: latihan.judul,
           mata: "Tulis kodenya",
@@ -1044,7 +1143,7 @@ function blokToolchain(b) {
     gambar: "belum",
     judul: `Kode ${b.label} belum bisa dijalankan di komputer ini`,
     ket: `Yang belum terpasang: ${b.hilang.join(", ")}. Materi dan kuis tetap `
-      + "berjalan penuh; yang mati hanya penilaian otomatis latihan — dan "
+      + "berjalan penuh; yang mati hanya penilaian otomatis latihan, dan "
       + "latihannya tetap bisa dikerjakan lalu ditandai selesai sendiri.",
     aksi: b.pasang ? [
       h("code.berkas-jalur", {}, b.pasang),
@@ -1090,7 +1189,7 @@ function daftarMateri(b, ctx) {
           // terkunci" — dan pertanyaan itu datang berbulan-bulan sesudah
           // saklarnya dipindahkan, ketika alasannya sudah lama lupa.
           b.buka_semua_bab
-            ? h("p.bab-bebas", {}, "Penguncian bab sedang dimatikan — semua "
+            ? h("p.bab-bebas", {}, "Penguncian bab sedang dimatikan: semua "
                 + "bab terbuka tanpa syarat. ",
                 h("a", { href: "#/atur" }, "Ubah di Pengaturan"), ".")
             : null)
@@ -1317,9 +1416,9 @@ function segmenBab(bab, sedang) {
       // Kalimatnya datang utuh dari `bab.py` (invarian #12); halaman ini tidak
       // merumuskan ulang aturannya, cuma meneruskannya ke tempat yang bisa
       // dibaca sebelum diklik.
-      title: `Bab ${bab.nomor} · ${bab.judul} — ${bab.selesai}/${bab.jumlah} `
+      title: `Bab ${bab.nomor} · ${bab.judul}: ${bab.selesai}/${bab.jumlah} `
         + `materi (${bab.label_tingkat.toLowerCase()})`
-        + (bab.alasan ? " — " + bab.alasan : ""),
+        + (bab.alasan ? ". " + bab.alasan : ""),
       // Tautan ini menunjuk id di halaman yang sama, bukan rute. Router
       // membaca fragmen sebagai alamat layar, jadi pemindahannya diurus di
       // sini dan hash-nya tidak pernah ikut berubah — kalau tidak, mengeklik
@@ -1510,7 +1609,7 @@ function barisMateri(b, m) {
     h("div.isi", {},
       h("div.judul", {}, tanpaNomor(m.judul)),
       m.status === "sebagian"
-        ? h("div.ket", {}, "berhenti di tengah — belum dihitung selesai") : null),
+        ? h("div.ket", {}, "berhenti di tengah, belum dihitung selesai") : null),
     m.bookmark ? h("span.pil.pil-nyala", {}, "ditandai") : null,
     h("span.baris-sisi.sembunyi-hp", {}, `${m.bagian} bagian`),
   ];
@@ -1551,6 +1650,33 @@ function ungkapSekali(el, ctx, key, opsi) {
 function ungkapSenarai(el, ctx, key) {
   return ungkapSekali(el, ctx, key,
                       { per: 24, maks: 260, geser: 8, pegas: "jawab" });
+}
+
+/** Tab Bacaan: ringkasan Pustaka untuk satu kurikulum. Pilihan tautannya
+ *  dan urutannya diputuskan inti/pustaka.py, sama dengan yang dicetak menu
+ *  bahasa di terminal; layar ini cuma menambah jalan ke Pustaka lengkap. */
+function daftarBacaan(b) {
+  const p = b.pustaka;
+  const semua = "#/pustaka?kurikulum=" + encodeURIComponent(b.key);
+  if (!p.total) {
+    return kosong("Belum ada bacaan untuk " + b.label,
+      "Pustaka tetap bisa dijelajah untuk bahasa dan topik lain.",
+      h("a.tbl.tbl-hantu", { href: "#/pustaka" }, "Buka Pustaka"));
+  }
+  const labelJenis = Object.fromEntries(p.per_jenis.map((j) => [j.jenis, j.label]));
+  return h("div", {},
+    h("p.baris-sisi", { gaya: { margin: "0 0 var(--s3)" } },
+      `${angka(p.total)} tautan gratis untuk ${b.label}: buku, kursus, `
+      + "proyek, dan lainnya. Yang berbahasa Indonesia tampil lebih dulu."),
+    h("div.deret.deret-rapat", { gaya: { marginBottom: "var(--s4)" } },
+      p.per_jenis.map((j) => h("a.tbl.tbl-kecil.tbl-hantu", {
+        href: semua + "&jenis=" + j.jenis,
+      }, j.label, h("span.tab-jumlah", {}, angka(j.jumlah))))),
+    h("div.senarai", {}, p.pembuka.map((e) => barisTautan(e, labelJenis))),
+    h("div.deret", { gaya: { marginTop: "var(--s4)" } },
+      h("a.tbl.tbl-pergi", { href: semua },
+        ikon("pustaka", { ukuran: 17 }), `Semua ${angka(p.total)} bacaan ${b.label}`,
+        ikon("lanjut", { ukuran: 15 }))));
 }
 
 function daftarKuis(b, ctx) {
@@ -1641,9 +1767,9 @@ function kunciBaca(key, indeks) {
  *
  *  `behavior: "instant"`, BUKAN `"auto"` — dan bedanya bukan gaya penulisan.
  *  CSSOM-View mendefinisikan `"auto"` sebagai "ikuti `scroll-behavior` kotak
- *  yang digulir", dan `gaya.css:532` memasang `html { scroll-behavior: smooth }`.
+ *  yang digulir", dan `gaya.css:541` memasang `html { scroll-behavior: smooth }`.
  *  Jadi `"auto"` MULUS di tingkat gerak `penuh` dan `halus`; yang instan cuma
- *  `"mati"`, karena di sana `gaya.css:4808` menimpanya jadi `auto`. Terukur
+ *  `"mati"`, karena di sana `gaya.css:5131` menimpanya jadi `auto`. Terukur
  *  sebelum diperbaiki: pemulihan ke 700 px menghasilkan sembilan cuplikan yang
  *  berubah sepanjang ~650 ms. `"instant"` mengabaikan `scroll-behavior` dan
  *  terjadi sinkron, apa pun setelannya.
@@ -1845,7 +1971,8 @@ export async function layarMateri({ key, indeks }, ctx) {
      penangannya sudah membuat penekanan sebelum terpasang jadi tidak berarti
      apa-apa. Yang tersisa cuma keuntungannya: pelepasnya sudah pasti ada
      sebelum `saatKeluar` mungkin dipanggil. */
-  const lepasTombol = pintasanPembaca(artikel, peta);
+  const fokus = pasangFokus();
+  const lepasTombol = pintasanPembaca(artikel, peta, fokus);
   // Dipegang di variabel, bukan ditulis langsung di dalam pohonnya: keduanya
   // masih berubah SESUDAH halaman jadi, saat materi ini ditandai tuntas dan
   // bab berikutnya ikut terbuka (lihat tawarkanPintuBaru()).
@@ -1879,7 +2006,8 @@ export async function layarMateri({ key, indeks }, ctx) {
     { "aria-label": "Tindakan untuk materi ini" },
     tblSelesai,
     tombolBookmark(key, "materi", indeks, m.bookmark),
-    tombolCatatan(m.kunci, m.catatan, m.judul));
+    tombolCatatan(m.kunci, m.catatan, m.judul),
+    fokus.tbl);
 
   const el = h("div.masuk.materi-tata", {},
     kolom,
@@ -2049,6 +2177,7 @@ export async function layarMateri({ key, indeks }, ctx) {
       lepasBaca();
       lepasAksi();
       lepasTombol();
+      fokus.lepas();
       pengamat.disconnect();
       peta.bersihkan();
       for (const lepas of bersihEditor) lepas();
@@ -2380,6 +2509,41 @@ function petaBagian(m, artikel) {
   return { el, bersihkan: () => { lepasGulir(); hentikan(); }, lompat, ikutiGulir };
 }
 
+/** Mode fokus pembaca: kolom daftar materi dan peta halaman disingkirkan,
+ *  kolom baca berdiri sendiri di tengah, dan navbar meredup sampai disentuh.
+ *
+ *  Untuk sesi membaca yang panjang, yang melelahkan bukan teksnya melainkan
+ *  semua yang bukan teks: dua kolom di kiri-kanan yang terus tertangkap sudut
+ *  mata, dan bilah navigasi yang tidak pernah dipakai selama membaca. Strip
+ *  konteks (kembali, posisi, maju-mundur) TIDAK ikut disembunyikan — tanpa
+ *  itu mode fokus berubah jadi jalan buntu.
+ *
+ *  Pilihannya diingat per browser (preferensi tampilan, bukan capaian
+ *  belajar), tapi kelasnya hidup HANYA selama pembaca terpasang: `lepas()`
+ *  wajib dipanggil `saatKeluar`, atau navbar dasbor ikut redup. */
+function pasangFokus() {
+  const akar = document.documentElement;
+  let nyala = ambilLokal("fokus_baca", false) === true;
+  const tbl = h("button.ikon-tombol", { type: "button", onclick: () => alih() },
+    ikon("panel", { ukuran: 19, tebal: 1.7 }));
+
+  function setel() {
+    akar.classList.toggle("fokus-baca", nyala);
+    tbl.classList.toggle("aktif", nyala);
+    tbl.setAttribute("aria-pressed", String(nyala));
+    tbl.title = nyala ? "Keluar dari mode fokus (F)" : "Mode fokus (F)";
+    tbl.setAttribute("aria-label", tbl.title);
+  }
+  function alih() {
+    nyala = !nyala;
+    simpanLokal("fokus_baca", nyala);
+    setel();
+    return true;
+  }
+  setel();
+  return { tbl, alih, lepas: () => akar.classList.remove("fokus-baca") };
+}
+
 /* Tabel pintasan pembaca materi. SATU tabel, dibaca penangan di bawah — bukan
    deretan cabang `if` yang tersebar.
    Kolom pertamanya lambang yang DITAMPILKAN, dan itu disengaja: daftar bantuan
@@ -2396,6 +2560,7 @@ const PINTASAN_PEMBACA = [
   ["k", "Blok kode sebelumnya", (a) => a.blok(-1)],
   ["]", "Bagian berikutnya", (a) => a.bagian(+1)],
   ["[", "Bagian sebelumnya", (a) => a.bagian(-1)],
+  ["f", "Mode fokus", (a) => a.fokus()],
   ["⏎", "Jalankan blok kode yang sedang difokus", (a) => a.jalankan()],
 ];
 
@@ -2422,7 +2587,7 @@ const TOMBOL_TAMPIL = { Enter: "⏎" };
  *  Mengembalikan fungsi pelepas — WAJIB dipanggil `saatKeluar` (preseden
  *  `layar-kerja.js:519`). Pendengar `keydown` di `document` yang tertinggal
  *  membuat dua layar bereaksi terhadap satu tombol. */
-function pintasanPembaca(artikel, peta) {
+function pintasanPembaca(artikel, peta, fokus) {
   // Urutan sasaran dihitung dari posisi VERTIKAL nyata, bukan dari urutan
   // dokumen. Keduanya sama hari ini; yang membuat mereka berbeda adalah
   // perubahan tata letak apa pun di kemudian hari, dan saat itu terjadi yang
@@ -2447,7 +2612,7 @@ function pintasanPembaca(artikel, peta) {
       const pertama = bawah < 0 ? daftar.length : bawah;
       tuju = arah > 0 ? pertama : pertama - 1;
     }
-    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:288).
+    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:291).
     // Melingkar berarti satu penekanan di blok terakhir memindahkan layar
     // sejauh seluruh halaman, dan tidak ada yang meminta perpindahan sebesar
     // itu dari tombol yang artinya "berikutnya".
@@ -2484,7 +2649,8 @@ function pintasanPembaca(artikel, peta) {
     return true;
   }
 
-  const aksi = { blok: keBlok, bagian: keBagian, jalankan: jalankanBlokFokus };
+  const aksi = { blok: keBlok, bagian: keBagian, jalankan: jalankanBlokFokus,
+                 fokus: () => fokus.alih() };
 
   function saatTombol(e) {
     /* Tiga penjaga, berurutan, dan urutannya bukan selera.
@@ -2617,7 +2783,7 @@ export function kartuKeluaran(r, runner, kode, saatTutup, simpanLepas) {
     // tingginya diukur ulang dari nol -- semua itu hanya karena seseorang
     // ingin mengintip pohon strukturnya sebentar lalu kembali.
     const ket = dikarang ? h("p.pratinjau-ket", {},
-      "Halaman contoh ini dibuatkan dari pemilih di CSS-mu sendiri — ",
+      "Halaman contoh ini dibuatkan dari pemilih di CSS-mu sendiri: ",
       h("b", {}, "bukan"),
       " berkas HTML-mu. Gunanya satu: melihat aturan mana mengenai apa.") : null;
     const pilih = (lihat) => {
@@ -2849,7 +3015,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
      sudah ada di urutan Tab; menambahkan pembungkusnya berarti setiap contoh
      kode menyisipkan satu perhentian kosong di antara tombol-tombol yang
      memang berguna. Cincin fokusnya dipinjam dari `:focus-visible` global
-     (`gaya.css:599`) -- tidak ada gaya fokus baru di sini. */
+     (`gaya.css:608`) -- tidak ada gaya fokus baru di sini. */
   return h("div.blok-kode", { tabindex: "-1" },
     h("div.blok-kepala", {},
       p.nama ? h("span.berkas", {}, p.nama)
@@ -2864,7 +3030,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
         // kerja yang lebih panjang (stdin, ganti bahasa, draf tersimpan) ia
         // punya yang tidak muat di sini.
         p.bisa_dijalankan ? h("a.tbl.tbl-kecil.tbl-hantu", {
-          title: "Buka di Ruang Coba — layar penuh, bisa diberi masukan (stdin)",
+          title: "Buka di Ruang Coba: layar penuh, bisa diberi masukan (stdin)",
           href: `#/coba?key=${key}&materi=${m.indeks}&bagian=${i}`,
         }, "Ruang Coba") : null)),
     sarung,
@@ -2938,7 +3104,7 @@ export async function bukaCatatan(kunci, judul, tbl) {
   });
 
   const pilih = await jendela({
-    judul: "Catatan — " + judul,
+    judul: "Catatan: " + judul,
     isi: h("div", {},
       h("p.kepala-sub", { gaya: { margin: "0 0 var(--s3)" } },
         "Menuliskan ulang dengan bahasa sendiri adalah cara paling murah "
@@ -3014,7 +3180,7 @@ export async function layarCatatan() {
         ? h("div.senarai", {}, c.daftar.map((x) => h("div.kartu", {},
             h("div.deret", { gaya: { marginBottom: "var(--s3)" } },
               x.basi ? h("span.pil.pil-salah", {}, "halaman sudah tidak ada")
-                     : h("a.pil" + pilTipe(x.tipe),
+                     : h("a.pil",
                          { href: `#/${x.tipe}/${x.bahasa}/${x.indeks}` },
                          `${x.label_bahasa} · ${x.judul}`),
               h("span.deret-kanan.baris-sisi", {}, jamRamah(x.diubah)),
@@ -3046,14 +3212,17 @@ export async function layarCatatan() {
 
 /* ================================================================== cari */
 
-export async function layarCari({ q, tipe }) {
+export async function layarCari({ q, tipe }, ctx) {
   const kata = q || "";
+  // Dihitung dari daftar bahasa, tidak diketik: kalimat ini dulu berbunyi
+  // "11 bahasa" dan tetap begitu sesudah kurikulumnya jadi dua puluh.
+  const nBahasa = ctx && ctx.awal ? ctx.awal.bahasa.length : 0;
   const saring = tipe || "semua";
   const hasil = kata.length >= 2
     ? (await api.ambil("/api/cari", { q: kata, tipe: saring })).hasil : [];
 
   const medan = h("input", {
-    type: "text", value: kata, placeholder: "Cari di 11 bahasa sekaligus…",
+    type: "text", value: kata, placeholder: nBahasa ? `Cari di ${nBahasa} bahasa sekaligus…` : "Cari di semua bahasa…",
     "aria-label": "Kata yang dicari",
     gaya: { fontSize: "var(--t-baca)" },
   });
@@ -3071,7 +3240,9 @@ export async function layarCari({ q, tipe }) {
       h("span.mata", {}, "Pencarian"),
       h("h1", {}, "Cari"),
       h("p.kepala-sub", {}, "Menjangkau judul, isi materi, soal kuis, dan "
-        + "solusi latihan di sebelas bahasa sekaligus.")),
+        + "solusi latihan di semua bahasa sekaligus. Mencari buku atau kursus? ",
+        h("a", { href: "#/pustaka" + (kata ? "?q=" + encodeURIComponent(kata) : "") },
+          "Cari di Pustaka"), ".")),
     medan,
     h("div.deret.deret-rapat", { gaya: { margin: "var(--s4) 0 var(--s5)" } },
       ["semua", "materi", "kuis", "latihan"].map((t) =>
@@ -3100,7 +3271,7 @@ export async function layarCari({ q, tipe }) {
               h("div.isi", {},
                 h("div.judul", {}, tandai(r.judul, kata)),
                 h("div.ket", {}, r.label_bahasa,
-                  r.cuplikan ? " — " : "",
+                  r.cuplikan ? ": " : "",
                   r.cuplikan ? tandai(r.cuplikan, kata) : "")),
               r.terkunci ? h("span.pil.pil-kunci", {}, "terkunci") : null)))))
         : kosong(`Tidak ada yang cocok dengan "${kata}"`,

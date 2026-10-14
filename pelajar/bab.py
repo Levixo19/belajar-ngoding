@@ -70,7 +70,7 @@ KETERANGAN_TINGKAT = {
 # sampai.
 KALIMAT_ATURAN = (
     "Sebuah bab terbuka begitu SELURUH materi bab sebelumnya dibaca sampai "
-    "habis. Kuis dan latihan tidak ikut menentukan — satu latihan sulit yang "
+    "habis. Kuis dan latihan tidak ikut menentukan: satu latihan sulit yang "
     "belum ditaklukkan tidak boleh mengunci sisa kurikulum."
 )
 

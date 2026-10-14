@@ -1168,4 +1168,54 @@ BAB = {
         "awal": 30, "akhir": 33,
         },
     ],
+    "git": [
+        {
+        "judul": "Mulai Melacak: Commit Pertama",
+        "ket":
+            "Masalah yang diselesaikan Git, memasangnya, tiga area kerja, "
+            "lalu membaca status, diff, dan riwayat tanpa takut.",
+        "tingkat": "dasar",
+        "awal": 0, "akhir": 4,
+        },
+        {
+        "judul": "Mengendalikan Apa yang Masuk Riwayat",
+        "ket":
+            ".gitignore, memindah dan menghapus berkas terlacak, pesan commit "
+            "yang terbaca setahun kemudian, dan membatalkan dengan aman.",
+        "tingkat": "dasar",
+        "awal": 4, "akhir": 8,
+        },
+        {
+        "judul": "Bercabang dan Menyatu",
+        "ket":
+            "Branch sebagai penunjuk murah, berpindah di antaranya, merge "
+            "fast-forward dan merge commit, lalu konflik sebagai hal biasa.",
+        "tingkat": "menengah",
+        "awal": 8, "akhir": 12,
+        },
+        {
+        "judul": "Jarak Jauh dan GitHub",
+        "ket":
+            "Remote, clone, fetch, pull, kunci SSH, repo pertama di GitHub, "
+            "alur push harian, dan pull request sebagai cara kerja tim.",
+        "tingkat": "menengah",
+        "awal": 12, "akhir": 16,
+        },
+        {
+        "judul": "Menulis Ulang dan Menyelamatkan Riwayat",
+        "ket":
+            "reset tiga tingkat, rebase dan rebase -i, stash, cherry-pick, "
+            "tag, lalu reflog dan bisect sebagai jaring pengaman dan detektif.",
+        "tingkat": "mahir",
+        "awal": 16, "akhir": 20,
+        },
+        {
+        "judul": "Bekerja sebagai Tim",
+        "ket":
+            "Model cabang, perlindungan main, .gitattributes, hooks, CI, dan "
+            "cara membaca repositori sungguhan sebelum berkontribusi.",
+        "tingkat": "mahir",
+        "awal": 20, "akhir": 22,
+        },
+    ],
 }

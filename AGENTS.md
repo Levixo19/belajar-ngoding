@@ -1,17 +1,29 @@
 # Catatan untuk agen
 
 Aplikasi belajar pemrograman berbahasa Indonesia dengan **dua antarmuka** —
-terminal dan web — di atas satu inti yang sama. **Tanpa dependensi eksternal**:
-Python 3.8+ dan stdlib saja, plus JavaScript vanilla tanpa langkah build.
-Jangan tambahkan paket pihak ketiga; seluruh arsitektur mengandalkan ini
-(runner, penyorot sintaks, diff, tema, server HTTP, editor kode — semuanya
-ditulis tangan).
+terminal dan web — di atas satu inti yang sama. **Tanpa dependensi yang perlu
+dipasang**: Python 3.8+ dan stdlib saja di sisi server, plus JavaScript tanpa
+langkah build. Runner, penyorot sintaks, diff, tema, server HTTP, dan editor
+kode semuanya ditulis tangan, dan tetap begitu.
+
+**Pengecualian di sisi web, atas keputusan pemilik (2026-10-13):** pustaka
+front-end BOLEH dipakai kalau ia menambah kemampuan yang belum ada — dengan
+dua syarat. Berkasnya DISIMPAN di `webapp/statik/vendor/` beserta header
+lisensinya (aplikasi ini wajib utuh tanpa internet; tidak ada CDN), dan
+aplikasinya tetap jalan kalau berkas itu gagal dimuat. Yang dipakai sekarang
+cuma GSAP 3.15.0 + SplitText + ScrollTrigger (lisensi standar tanpa biaya,
+gsap.com/standard-license), untuk judul layar "pintu" di `sinema.js` dan gerak
+gulir beranda di `beranda.js`. Jangan
+memakai pustaka untuk sesuatu yang sudah dikerjakan `gerak.js` (pegas, FLIP
+lewat `tata()`, magnet, ungkap) — dua mesin untuk satu pekerjaan saling
+mengejar.
 
 Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
-Status: 19 kurikulum, 515 materi dalam 136 bab bertingkat, 116 kuis / 928 soal,
-303 latihan (293 dinilai otomatis) termasuk 19 proyek akhir, 774 tes.
+Status: 20 kurikulum, 537 materi dalam 142 bab bertingkat, 121 kuis / 968 soal,
+319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1088 tes.
+Ditambah Pustaka (9.809 tautan belajar beratribusi) dan Peta Karier (21 profesi).
 
 144 materi ditambahkan sekaligus setelah audit cakupan tiga sudut (kode nyata,
 silabus baku, dan prasyarat yang dipakai soal tapi tidak pernah diajarkan).
@@ -100,6 +112,14 @@ belajar sendiri — semuanya dipinjam.
 | `webapp/sesi.py` | Sesi kuis di memori (pengacakan + pemetaan ulang jawaban) |
 | `webapp/catatan.py` | Catatan pribadi, berkas TERPISAH dari progres |
 | `statik/js/gerak.js` | Mesin animasi: solver pegas, urutan, pemicu, isyarat |
+| `statik/js/sinema.js` | Judul layar "pintu" yang tiba kata demi kata (GSAP SplitText, hanya tingkat gerak penuh) |
+| `statik/js/permukaan.js` | Sorot samar di bawah kursor pada baris, kartu, dan kartu Lanjutkan (mouse saja) |
+| `statik/js/istirahat.js` | Pengingat istirahat mata 20-20-20, menghitung waktu AKTIF saja |
+| `statik/js/beranda.js` | Beranda: kalimat yang menyala saat digulir, akordeon bahasa, marquee kurikulum, gerak gulir (ScrollTrigger, hanya tingkat gerak penuh) |
+| `statik/js/layar-pustaka.js` | Layar Pustaka: cari dan saring 9.809 tautan dari `/api/pustaka` |
+| `statik/js/layar-karier.js` | Layar Peta Karier: tangga karier SVG, panel rincian, kuis, perencana jalur |
+| `statik/vendor/gsap/` | GSAP 3.15.0 + SplitText + ScrollTrigger, disimpan lokal, header lisensi utuh |
+| `statik/huruf/` | Atkinson Hyperlegible Next + Mono (prosa, kode) dan Outfit (judul, antarmuka); semua OFL, lokal |
 | `statik/js/sorot.js` | Port `inti/sorot.py` ke JS untuk penyorotan langsung di editor |
 | `statik/js/editor.js` | Editor kode: textarea transparan di atas `<pre>` bertoken |
 | `statik/js/pratinjau.js` | Bingkai pratinjau halaman HTML/CSS pelajar (sandbox, tanpa allow-same-origin) |
@@ -141,6 +161,28 @@ Latihannya sendiri memang skrip sungguhan dan memang dijalankan. Itu aman
 karena semuanya bekerja di direktori `mktemp -d`, dengan hak pengguna biasa,
 dan tidak satu pun memerlukan sudo. Pertahankan sifat itu saat menambah
 latihan Fedora baru.
+
+**Kurikulum Git ikut pagar yang sama, ditambah dua hal yang tidak kelihatan.**
+Blok perintah materinya SESI (`inti/berkas.py` memperlakukan `git` persis
+seperti `fedora`): `git reset --hard` dan `git push --force` di sana ditujukan
+ke repositori MILIK PELAJAR. Latihannya skrip bershebang yang membuat
+repositori sendiri di `mktemp -d`, dan kerangka editornya (`layar/exercises.py`)
+sudah memuat baris itu supaya skrip yang salah ketik tidak pernah menyentuh
+repositori sungguhan. Dua hal yang tidak kelihatan:
+
+* Runner `git` memasang `GIT_CONFIG_NOSYSTEM`, `GIT_EDITOR=true`, dan TANGGAL
+  yang dipatok lewat `lingkungan`. Tanpa tanggal tetap, `git log` biasa pada
+  riwayat bercabang mengurutkan commit menurut DETIK ia dibuat, dan latihan
+  yang sama bisa lulus di satu mesin lalu gagal di mesin yang lebih lambat.
+  Identitas (`user.name`) sengaja TIDAK dipasang di env: `GIT_AUTHOR_NAME`
+  menimpa `git config` di repo, dan proyek akhirnya butuh dua nama penulis.
+  Tiap skrip mengatur identitasnya sendiri, persis seperti yang diajarkan
+  materi 2.
+* `git log --graph` mengurutkan dengan TUMPUKAN, bebas dari tanggal, jadi graf
+  riwayat aman dicetak apa adanya. `git log --reverse` pada riwayat ber-merge
+  tidak: beri `--first-parent`, atau cetak hitungannya saja. Keluaran latihan
+  tidak boleh memuat hash, tanggal, atau jalur absolut -- ketiganya berbeda
+  di tiap mesin, dan `test_solutions` menjalankan tiap solusi dua kali.
 
 **Solusi latihan harus deterministik.** Auto-checker menurunkan kunci jawaban
 dengan menjalankan solusi contoh. Bilangan acak, tanggal saat ini, iterasi map
@@ -289,6 +331,18 @@ di mesin siapa pun yang pernah menyalakan saklar itu. Jangan lupa
 `konfigurasi.lupakan_cache()`.
 
 ### Khusus antarmuka web
+
+**Cangkang laptop = satu pil kaca melayang (blok "pil atas" di gaya.css).**
+Aplikasi ini dipakai HANYA di laptop. Cangkang IDE (bilah aktivitas, Explorer,
+tab, bilah status) sudah DICABUT atas permintaan pemilik karena "berantakan
+dan memusingkan"; jangan dikembalikan. Yang tersisa satu pil di tengah atas
+berisi semua tujuan (Dasbor, Pustaka, Karier, Ruang Coba, Bahasa, Lainnya,
+cari, XP) dan satu kanvas lapang di bawahnya. Lapisan desain laptop hidup di
+blok `@media (min-width: 861px)` di kaki berkas ("pil atas", "bahasa visual",
+"beranda"), jadi aturan lebar sempit yang dijaga tes tidak tersentuh. Palet:
+grafit hangat + SATU aksen amber (`--nyala`); huruf judul dan antarmuka Outfit
+(`--f-judul`, `--f-ui`), prosa tetap Atkinson. `--rel-tinggi` (80 px) tetap
+arti "apa yang ada di atasku" untuk semua yang menempel.
 
 **Terminal dan web wajib menampilkan ISI yang sama.** Tata letaknya memang
 sengaja berbeda; yang tidak boleh adalah ada kalimat yang terbaca di satu
@@ -812,6 +866,28 @@ disapu ke JavaScript sama sekali — di sana tidak ada prelude, dan sapuannya
 menghasilkan dua puluh delapan kasus yang semuanya sah. Yang menjaga KELASNYA
 adalah paragraf ini, yang dibaca manusia, bukan tes itu.
 
+### Pustaka dan Peta Karier
+
+**Pustaka (`inti/pustaka.py`) membaca `data/pustaka/*.json`, dan berkas itu
+DIHASILKAN `alat/panen_pustaka.py`.** Jangan menyunting JSON-nya dengan
+tangan: `test_pustaka.TestDataHasilPemanen` memanen ulang dari
+`/home/vi/folder_materi/materi-belajar` dan menuntut hasilnya identik.
+LISENSI menentukan apa yang boleh diambil, dan tabelnya di kepala pemanen:
+repo tanpa lisensi (getting-a-gig, build-your-own-x) dan repo proprietary
+(developer-roadmap) cuma boleh DITAUTKAN, isi kurikulum freeCodeCamp berhak
+cipta walau kodenya BSD, dan daftar coding-interview-university (CC BY-SA)
+tinggal di berkasnya sendiri yang ikut berlisensi CC BY-SA. Pemetaan topik
+ke kurikulum dihitung saat dimuat (`TOPIK_KURIKULUM`), jadi kurikulum baru
+cukup menambah satu baris di sana, tanpa memanen ulang.
+
+**Peta Karier: data di `data/karier.py`, aturan di `pelajar/karier.py`.**
+Kesiapan sebuah profesi adalah rata-rata kelompok bekalnya, dan persen tiap
+kurikulum diambil dari `progress.statistik_bahasa` -- angka "x% selesai" yang
+sama dengan halaman bahasa, bukan definisi kedua. `gaji` HANYA diisi dari
+halaman publik yang memang untuk peran itu (tanggal diperiksa wajib ada);
+angka dari halaman "pendekatan" sengaja dibuang. Terminal (`layar/karier.py`,
+`layar/pustaka.py`) dan web memanggil fungsi inti yang sama.
+
 ### Proyek akhir
 
 Tiap bahasa ditutup satu latihan bertanda `proyek: True`. Ia latihan biasa di
@@ -838,6 +914,7 @@ menulis simulasi, parser, atau program berkonkurensi. Yang ada sekarang:
 | CSS | sistem tata letak (token, flex, grid, media query) |
 | Go | konkurensi (goroutine, channel, WaitGroup) |
 | Bikin Aplikasi | lapisan aplikasi (domain/repo/service/antarmuka) |
+| Git & GitHub | simulasi tim (bare remote, dua clone, PR, konflik, tag) |
 
 Semuanya dinilai otomatis dan lolos `test_solutions`. Konsekuensi yang
 mengikat: solusinya harus DETERMINISTIK, dan untuk Go itu berarti hasil dari
@@ -966,7 +1043,7 @@ berjalan dengan hak akses user yang sama.
 ## Lingkungan mesin ini
 
 Fedora 44 Workstation. Terpasang bawaan: `python3` `node` `javac/java` `gcc`
-`g++` `sqlite3` `bash` `ruby`.
+`g++` `sqlite3` `bash` `ruby` `git`.
 
 **Tujuh toolchain TIDAK ada bawaan**, dan tanpa semuanya `test_solutions`
 melewati 111 dari 303 latihan sambil tetap melaporkan OK — jadi "tesnya hijau"
@@ -1001,7 +1078,7 @@ export GOCACHE=/tmp/tc/gocache GOPATH=/tmp/tc/gopath
 ```
 
 Dengan ketujuhnya terpasang, `python3 -m unittest discover -s tests` menjalankan
-774 tes tanpa satu pun skip dan makan **sekitar 23 menit** -- hampir semuanya
+1055 tes tanpa satu pun skip dan makan **sekitar 23 menit** -- hampir semuanya
 kompilasi .NET dan Kotlin. Jalankan di latar belakang, jangan ditunggu.
 
 Catatan .NET: `DOTNET_EnableWriteXorExecute=0` sudah dipasang di

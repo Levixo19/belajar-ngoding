@@ -81,6 +81,12 @@ const BENTUK = {
            "M13 3.5V9h5.5"],
   /* Bagian / daftar. */
   bagian: ["M5 7h14", "M5 12h14", "M5 17h9"],
+  /* Rak Pustaka: tiga punggung buku, satu miring. */
+  pustaka: ["M5 4.5h3v15H5z", "M10 4.5h3v15h-3z", "M15.2 5.6l2.9-.8 2.4 14.4-2.9.8z"],
+  /* Peta Karier: dua titik dan jalan berkelok di antaranya. */
+  karier: ["M6 20.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+           "M18 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+           "M8.4 17.2c3.8-.6 2.6-6.4 7.2-7.6"],
 };
 
 /** Bangun satu ikon.

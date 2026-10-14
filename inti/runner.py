@@ -218,6 +218,28 @@ _LINGKUNGAN_DOTNET = {
 }
 
 
+# Git membaca tiga lapis konfigurasi: sistem (/etc/gitconfig), global
+# (~/.gitconfig), dan repositori. `_lingkungan()` sudah memindahkan HOME ke
+# direktori kerja, jadi lapis global milik pelajar tidak terbaca; lapis sistem
+# dimatikan di sini. Yang tersisa cuma apa yang ditulis skrip itu sendiri --
+# dan itulah yang membuat satu latihan memberi keluaran yang sama di komputer
+# mana pun, termasuk komputer yang user.name-nya belum pernah diatur.
+_LINGKUNGAN_GIT = {
+    "GIT_CONFIG_NOSYSTEM": "1",
+    # Perintah yang membuka editor (commit tanpa -m, rebase -i) akan menunggu
+    # vi yang tidak pernah ditutup siapa pun sampai batas waktu habis. Dengan
+    # editor `true`, commit tanpa pesan langsung dibatalkan Git sendiri dengan
+    # pesan yang bisa dibaca.
+    "GIT_EDITOR": "true",
+    # Jangan pernah menunggu kredensial di terminal yang tidak ada orangnya.
+    "GIT_TERMINAL_PROMPT": "0",
+    # Tanggal dipatok supaya urutan riwayat yang dicetak latihan tidak
+    # bergantung pada detik keberapa skripnya dijalankan.
+    "GIT_AUTHOR_DATE": "2026-01-01T00:00:00+0000",
+    "GIT_COMMITTER_DATE": "2026-01-01T00:00:00+0000",
+}
+
+
 TOOLCHAINS = {
     "python": Toolchain(
         key="python", label="Python", ekstensi=".py", butuh=["python3"],
@@ -339,13 +361,13 @@ TOOLCHAINS = {
         nama_file=lambda kode: "index.html",
         jalankan=lambda d, p: [sys.executable, _STRUKTUR, "html", p],
         catatan="Struktur halaman dibaca dan ditampilkan sebagai pohon "
-                "elemen — itulah yang browser lihat dari markup-mu.",
+                "elemen: itulah yang browser lihat dari markup-mu.",
     ),
     "css": Toolchain(
         key="css", label="CSS", ekstensi=".css", butuh=[],
         nama_file=lambda kode: "gaya.css",
         jalankan=lambda d, p: [sys.executable, _STRUKTUR, "css", p],
-        catatan="Aturan CSS dibaca dan ditampilkan setelah dirapikan — "
+        catatan="Aturan CSS dibaca dan ditampilkan setelah dirapikan: "
                 "pemilih, lalu properti dan nilainya.",
     ),
 
@@ -502,6 +524,27 @@ TOOLCHAINS = {
             "arch": "sudah bawaan",
             "mac": "sudah bawaan (sebagian perintah GNU berbeda; brew install coreutils)",
             "windows": "Pakai WSL dengan Fedora, atau mesin virtual",
+        },
+    ),
+    # Kurikulum Git & GitHub. Sama seperti Fedora: latihannya skrip bash yang
+    # bekerja di mktemp -d, sedangkan blok perintah di MATERINYA sesi terminal
+    # (lihat inti/berkas.py) -- `git push --force` dan `git reset --hard` di
+    # repositori milik pelajar bukan sesuatu yang boleh dijalankan aplikasi
+    # atas namanya.
+    "git": Toolchain(
+        key="git", label="Git", ekstensi=".sh", butuh=["bash", "git"],
+        jalankan=lambda d, p: ["bash", p],
+        cek_sintaks=lambda d, p: ["bash", "-n", p],
+        catatan=("Setiap latihan membuat repositorinya sendiri di direktori "
+                 "sementara (mktemp -d) dan menghapusnya saat selesai. "
+                 "Repositori milikmu tidak pernah disentuh."),
+        lingkungan=_LINGKUNGAN_GIT,
+        instalasi={
+            "fedora": "sudo dnf install git",
+            "debian": "sudo apt install git",
+            "arch": "sudo pacman -S git",
+            "mac": "xcode-select --install  (atau: brew install git)",
+            "windows": "Git for Windows dari git-scm.com (sudah termasuk Git Bash)",
         },
     ),
     "typescript": Toolchain(

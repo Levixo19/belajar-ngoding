@@ -99,27 +99,34 @@
 
 /* ----------------------------------------------------------------- huruf
 
-   Dua berkas, keduanya variabel (satu berkas memuat seluruh rentang tebal),
-   dan keduanya subset latin saja — materi di sini berbahasa Indonesia, jadi
-   Sirilik/Yunani/Vietnam cuma menambah berat tanpa pernah terpakai. Totalnya
-   70 KB. `font-display: swap` dipilih supaya teks langsung terbaca dengan
-   huruf sistem sambil berkasnya dimuat; halaman yang kosong sebentar demi
-   huruf yang "benar" adalah pertukaran yang salah di aplikasi belajar. */
-
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("/huruf/inter.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Space Grotesk";
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url("/huruf/space-grotesk.woff2") format("woff2");
-}
+   Atkinson Hyperlegible Next + Mono (Braille Institute, SIL OFL 1.1, lisensi
+   di huruf/LISENSI-atkinson.txt), variabel 200-800, subset latin. Dipilih
+   untuk dibaca BERJAM-JAM: studi Monotype & MIT AgeLab menemukan huruf
+   humanis lebih cepat dan ringan dibaca daripada grotesk (Geist, yang dulu
+   di sini, grotesk — dan terasa kaku), dan keluarga ini dirancang agar huruf
+   yang mirip tak pernah tertukar: I l 1, 0 O, rn m. Di aplikasi belajar
+   kode, pembeda itu juga ada di MONO-nya. Italic asli ikut dimuat supaya
+   penekanan di prosa tidak dimiringkan palsu oleh browser. */
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-style: normal;
+  font-weight: 200 800; font-display: swap;
+  src: url("/huruf/atkinson-next.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-style: italic;
+  font-weight: 200 800; font-display: swap;
+  src: url("/huruf/atkinson-next-italic.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal;
+  font-weight: 200 800; font-display: swap;
+  src: url("/huruf/atkinson-mono.woff2") format("woff2"); }
+/* Outfit (SIL OFL 1.1, huruf/LISENSI-outfit.txt): huruf JUDUL dan ANTARMUKA.
+   Prosa materi tetap Atkinson -- yang dibaca berjam-jam memakai huruf yang
+   dirancang untuk keterbacaan, yang dilirik sekilas memakai huruf yang
+   punya watak. WOFF (zlib), dipangkas ke Latin, 41 KB. */
+@font-face { font-family: "Outfit"; font-style: normal;
+  font-weight: 100 900; font-display: swap;
+  src: url("/huruf/outfit.woff") format("woff"); }
+/* `font-display: swap`: teks langsung terbaca dengan huruf sistem selagi
+   berkasnya dimuat — halaman kosong sebentar demi huruf yang "benar" adalah
+   pertukaran yang salah di aplikasi belajar. Total 89 KB, semuanya lokal.
+   */
 
 /* ============================================================ token warna
 
@@ -129,32 +136,32 @@
    menyentuh apa pun lagi. */
 
 :root {
-  /* GELAP — bawaan. Ungu-tinta, bukan hitam dan bukan biru-batu: latar yang
-     sedikit ungu membuat aksen ungu di atasnya terbaca sebagai CAHAYA, bukan
-     sebagai tempelan warna asing. */
-  --dasar:        #0a0711;
-  --dasar-dalam:  #070510;
-  --kartu:        #16101f;
-  --kartu-naik:   #1d1630;
-  --garis:        #2a2140;
-  --garis-kuat:   #3b2f57;
-  --teks:         #f3eef9;
-  --teks-2:       #b3a6c6;
-  /* Lebih terang daripada --text-faint milik aplikasi networking (#776a8c):
-     di sini --redup dipakai untuk KETERANGAN 12-13 px, bukan hiasan, jadi ia
-     harus tetap lolos 4,5:1 di atas --dasar maupun --kartu. */
-  --redup:        #968aab;
+  /* GELAP — bawaan. Grafit netral: bukan hitam, bukan ungu, bukan biru-batu.
+     Latar tanpa semburat warna membuat satu-satunya aksen (kobalt) terbaca
+     sebagai PENANDA, bukan sebagai suasana yang menyelimuti seluruh layar. */
+  --dasar:        #0f1012;
+  --dasar-dalam:  #0b0c0e;
+  --kartu:        #16171a;
+  --kartu-naik:   #1c1d21;
+  --garis:        #2c2e33;
+  --garis-kuat:   #3d4047;
+  --teks:         #ececee;
+  --teks-2:       #b4b6bc;
+  /* --redup dipakai untuk KETERANGAN 12-13 px, bukan hiasan, jadi ia harus
+     tetap lolos 4,5:1 di atas ketiga latar DAN di atas tint pil 11%-nya
+     sendiri. Terukur 6,05 / 5,69 / 5,35, pil 4,55. */
+  --redup:        #8f9198;
 
-  --nyala:        #b57bff;   /* ungu Aurora: aksen "yang sedang dikerjakan" */
-  --nyala-lembut: #d9c2ff;
-  --nyala-gelap:  #3b1d66;
-  --tumbuh:       #34d399;   /* hijau: benar, lulus, tumbuh                 */
-  --salah:        #fb7185;   /* mawar: salah — tegas tanpa menampar         */
-  --tenang:       #34d9f0;   /* cyan: keterangan, nilai terukur             */
-  /* Namanya tetap --ungu walau nilainya sekarang pink: ia dipakai di puluhan
-     tempat sebagai "warna kuis & pengulangan terjadwal", dan mengganti
-     namanya berarti menyunting semuanya demi nol perubahan pada hasilnya. */
-  --ungu:         #ff6ec7;
+  --nyala:        #e8b25e;   /* amber: aksen "yang sedang dikerjakan"       */
+  --nyala-lembut: #f2cd92;
+  --nyala-gelap:  #3a2c12;
+  --tumbuh:       #5cc995;   /* hijau: benar, lulus, tumbuh                 */
+  --salah:        #f27b7f;   /* merah redup: salah — tegas tanpa menampar   */
+  --tenang:       #8fb6cc;   /* biru-baja: keterangan, nilai terukur        */
+  /* Namanya tetap --ungu walau nilainya sekarang kuning-tembaga: ia dipakai
+     di puluhan tempat sebagai "warna kuis & pengulangan terjadwal", dan
+     mengganti namanya berarti menyunting semuanya demi nol perubahan hasil. */
+  --ungu:         #dcae66;
 
   /* Teks yang berdiri DI ATAS bidang beraksen penuh (tombol utama, kartu
      Lanjutkan, knop sakelar). Satu token, bukan nilai gelap yang ditulis
@@ -162,27 +169,27 @@
      yang benar di sana justru putih — dan tanpa token ini tiap komponen harus
      ingat sendiri untuk membalikkannya. Sudah pernah terlewat, dan akibatnya
      huruf gelap di atas hijau gelap: 2,5:1, praktis tak terbaca. */
-  --di-atas-aksen: #17101f;
+  --di-atas-aksen: #1b1407;
 
-  --kode-latar:   #120d20;
-  --k-komentar:   #8b7fa8;
-  --k-string:     #86e6a8;
-  --k-angka:      #ffca7a;
-  --k-kunci:      #d9a2ff;
-  --k-tipe:       #93b4ff;
-  --k-bawaan:     #ff6ec7;
-  --k-fungsi:     #93b4ff;
-  --k-operator:   #9287a8;
-  --k-khusus:     #86e6a8;
-  --k-teks:       #e6e0f0;
+  --kode-latar:   #131417;
+  --k-komentar:   #83868e;
+  --k-string:     #9fd4a9;
+  --k-angka:      #e8b97c;
+  --k-kunci:      #8eaeff;
+  --k-tipe:       #7fcad6;
+  --k-bawaan:     #dcae66;
+  --k-fungsi:     #c6cffa;
+  --k-operator:   #9a9ca3;
+  --k-khusus:     #9fd4a9;
+  --k-teks:       #e3e4e8;
 
-  --bayang: 0 1px 2px rgba(0,0,0,.26), 0 10px 30px -18px rgba(0,0,0,.62);
-  --bayang-naik: 0 2px 5px rgba(0,0,0,.3), 0 28px 60px -28px rgba(0,0,0,.8);
-  --cahaya: 0 0 0 1px rgba(181,123,255,.24), 0 0 32px -8px rgba(181,123,255,.46);
+  --bayang: 0 1px 2px rgba(0,0,0,.28), 0 12px 28px -18px rgba(0,0,0,.6);
+  --bayang-naik: 0 2px 6px rgba(0,0,0,.32), 0 24px 56px -24px rgba(0,0,0,.72);
+  --cahaya: 0 0 0 1px rgba(232,178,94,.38);
   /* Kilau tepi: satu piksel yang sedikit lebih terang di sisi ATAS permukaan
      yang terangkat. Ini sisa "bahan" yang dipakai desain ini — pengganti
      bayangan besar yang membuat kartu tampak melayang di atas halaman. */
-  --kilau-tepi: inset 0 1px 0 rgba(255,255,255,.045);
+  --kilau-tepi: inset 0 1px 0 rgba(255,255,255,.035);
 
   /* Tiga tingkat permukaan, dinamai menurut MAKSUD, bukan menurut besar
      bayangannya. Yang memilih tingkat menjawab "sejauh apa benda ini dari
@@ -196,137 +203,137 @@
      translateY + border-color. */
   --naik-datar: var(--kilau-tepi);
   --naik-sedang: var(--bayang);
-  --naik-terangkat: var(--bayang-naik);
+  --naik-terangkat: var(--bayang-naik); color-scheme: dark;
 }
 
-/* MALAM — untuk mata yang sudah lelah. Semua dihangatkan, kontras
+/* MALAM — untuk mata yang sudah lelah. Grafit yang dihangatkan, kontras
    diturunkan, putih dibuang sama sekali. Bukan sekadar "lebih gelap":
    layar lebih gelap dengan teks yang sama terangnya justru lebih
    menyilaukan, bukan lebih nyaman. */
 [data-tema="malam"] {
-  --dasar:        #141019;
-  --dasar-dalam:  #100d15;
-  --kartu:        #1c1723;
-  --kartu-naik:   #241e2d;
-  --garis:        #2f2839;
-  --garis-kuat:   #40374d;
-  --teks:         #ddd3e4;
-  --teks-2:       #a297ad;
-  /* Diangkat dari #7a6f5f. Yang lama cuma 3,76:1 di atas --dasar dan 3,52:1
-     di atas --kartu — di bawah 4,5:1, padahal --redup dipakai untuk
-     keterangan berukuran 12-13 px yang justru paling butuh kontras. Tema
-     malam memang bertugas menurunkan kontras, tapi menurunkannya sampai di
-     bawah ambang keterbacaan bukan kenyamanan, itu cuma kabur.
+  --dasar:        #141311;
+  --dasar-dalam:  #100f0d;
+  --kartu:        #1b1a17;
+  --kartu-naik:   #22211d;
+  --garis:        #2c2a26;
+  --garis-kuat:   #3b3934;
+  --teks:         #dcd7cc;
+  --teks-2:       #aaa59a;
+  /* Tema malam memang bertugas menurunkan kontras, tapi menurunkannya sampai
+     di bawah ambang keterbacaan bukan kenyamanan, itu cuma kabur. --redup
+     dipakai untuk keterangan 12-13 px yang justru paling butuh kontras.
 
-     Dinaikkan lagi dari #8d8299 setelah diukur ke KETIGA latar, bukan cuma
-     dua: di atas --kartu-naik nilainya 4,46 — meleset 0,04 dari ambang, dan
-     justru di permukaan yang dipakai pil, tombol hantu, dan baris daftar yang
-     sedang disentuh kursor. Yang sekarang 5,46 / 5,10 / 4,70. */
-  --redup:        #91869d;
-  --nyala:        #c2a0e8;
-  --nyala-lembut: #ddc8f0;
-  --nyala-gelap:  #3a2b4d;
-  --tumbuh:       #8fc9a7;
-  --salah:        #dd8b96;
-  --tenang:       #8fb8c4;
-  --ungu:         #d9a2c6;
-  --di-atas-aksen: #17121c;
-  --kode-latar:   #100d16;
-  /* Dinaikkan dari #6d6478 (3,43:1 — satu-satunya sisa di bawah 4,5:1 setelah
-     sapuan empat tema). Komentar memang warna paling redup di editor mana pun,
-     tapi di aplikasi ini komentarlah yang berbunyi "# tulis kodemu di sini":
-     ia instruksi pertama yang dibaca pemula, di layar tempat ia mulai bekerja.
-     Nilai ini 4,72:1 — lulus AA, dan MASIH yang paling redup di antara empat
-     tema (gelap 5,16 · terang 4,77 · kontras 8,36), jadi "malam" tetap tema
-     berkontras paling rendah seperti yang dijanjikan namanya. */
-  --k-komentar:   #837a90;
-  --k-string:     #a2c2a8;
-  --k-angka:      #d3b184;
-  --k-kunci:      #c2a0e8;
-  --k-tipe:       #98aac9;
-  --k-bawaan:     #d9a2c6;
-  --k-fungsi:     #98aac9;
-  --k-operator:   #857b91;
-  --k-khusus:     #8fc9a7;
-  --k-teks:       #ddd3e4;
+     Diukur ke KETIGA latar plus tint pil, bukan cuma dua: #969185 lolos di
+     ketiga latar (5,91 / 5,54 / 5,13) tapi jatuh ke 4,38 di atas tint pil
+     11%-nya sendiri — dan pil adalah tempat --redup paling sering dipakai.
+     Yang sekarang 6,38 / 5,98 / 5,53, pil 4,67.
+     */
+  --redup:        #9c978b;
+  --nyala:        #e3b36c;
+  --nyala-lembut: #f0cf9c;
+  --nyala-gelap:  #3a2d17;
+  --tumbuh:       #93c4a0;
+  --salah:        #dc8f8c;
+  --tenang:       #9fb2bd;
+  --ungu:         #cfae78;
+  --di-atas-aksen: #1b1407;
+  --kode-latar:   #12110f;
+  /* Komentar memang warna paling redup di editor mana pun, tapi di aplikasi
+     ini komentarlah yang berbunyi "# tulis kodemu di sini": ia instruksi
+     pertama yang dibaca pemula, di layar tempat ia mulai bekerja. Nilai ini
+     5,14:1 — lulus AA. Tema lain: gelap 5,06 (latar kodenya lebih gelap),
+     terang 4,96, kontras 10,34. "Malam" tetap tema berkontras rendah lewat
+     teks dan garisnya, bukan lewat komentar yang nyaris tak terbaca, karena
+     justru komentar itulah yang dibaca paling dulu oleh orang yang paling
+     baru. */
+  --k-komentar:   #8a857a;
+  --k-string:     #a8c4a4;
+  --k-angka:      #d6b386;
+  --k-kunci:      #9fb2e6;
+  --k-tipe:       #93b9bf;
+  --k-bawaan:     #cfae78;
+  --k-fungsi:     #c4c8dc;
+  --k-operator:   #8f8a80;
+  --k-khusus:     #93c4a0;
+  --k-teks:       #dcd7cc;
 }
 
-/* TERANG — kertas berkabut ungu, bukan putih dingin. Aksen ungunya
-   DIGELAPKAN, bukan dipakai apa adanya: ungu terang (#b57bff) di atas kertas
-   cuma 2,3:1, praktis tak terbaca.
+/* TERANG — kertas putih dingin, bukan krem. Aksen kobaltnya DIGELAPKAN,
+   bukan dipakai apa adanya: kobalt terang (#6b97ff) di atas kertas cuma
+   2,9:1, terlalu pucat untuk teks.
 
    Nilai --nyala di sini dipilih dengan diukur, bukan dikira-kira. Karena
    `a { color: var(--nyala) }`, angkanya berlaku untuk SETIAP tautan di
-   seluruh aplikasi pada tema ini, bukan cuma untuk satu komponen. #6d28d9
-   memberi 7,4:1 di atas --dasar dan 8,0:1 di atas --kartu — jauh di atas
-   ambang 4,5:1 WCAG AA — dan tetap lolos dari sisi sebaliknya: teks putih di
-   atasnya (tombol utama) juga 8,0:1. */
+   seluruh aplikasi pada tema ini, bukan cuma untuk satu komponen. #2852d6
+   memberi 6,2:1 di atas --dasar dan 6,4:1 di atas --kartu — di atas ambang
+   4,5:1 WCAG AA — dan tetap lolos dari sisi sebaliknya: teks putih di
+   atasnya (tombol utama) juga 6,4:1. */
 [data-tema="terang"] {
-  --dasar:        #f6f2ef;
-  --dasar-dalam:  #efe9f3;
+  --dasar:        #faf9f6;
+  --dasar-dalam:  #f2f0eb;
   --kartu:        #ffffff;
-  --kartu-naik:   #f4eff7;
-  --garis:        #e7ddec;
-  --garis-kuat:   #d6c7de;
-  --teks:         #201a2b;
-  --teks-2:       #574d66;
-  /* Lebih gelap daripada --text-faint milik networking (#9a90a6, cuma 2,6:1).
-     Lihat catatan di tema malam: --redup bukan warna hiasan, ia dipakai untuk
-     teks berukuran kecil. */
-  --redup:        #635770;
-  --nyala:        #6d28d9;
-  --nyala-lembut: #5b21b6;
-  --nyala-gelap:  #e9d8fd;
-  --tumbuh:       #047857;
-  --salah:        #be123c;
-  /* Digelapkan dari #0e7490. Pil bertanda `--tenang` memakai warnanya
-     sendiri sebagai teks DAN sebagai tint latar 11%, jadi kontrasnya diukur
-     terhadap latar yang sudah ikut bergeser ke arah warna itu — dan pada pil
-     "dinilai otomatis" di atas kartu yang naik satu tingkat, hasilnya 4,16:1:
-     satu-satunya teks di seluruh aplikasi (empat tema, sembilan layar) yang
-     masih di bawah 4,5:1. Nilai ini membawanya ke 5,9:1 tanpa mengubah
-     perannya — ia tetap cyan, tetap "keterangan & nilai terukur". */
-  --tenang:       #0b5f75;
-  --ungu:         #a21caf;
+  --kartu-naik:   #f4f4f5;
+  --garis:        #e6e6e8;
+  --garis-kuat:   #d4d4d8;
+  --teks:         #18181b;
+  --teks-2:       #4f4f57;
+  /* --redup bukan warna hiasan, ia dipakai untuk teks berukuran kecil.
+     Terukur 5,62 / 5,86 / 5,33 di ketiga latar, pil 4,62. Abunya netral
+     dingin, satu keluarga dengan --teks: dua abu dari dua suhu berbeda di
+     satu halaman terbaca sebagai noda, bukan sebagai hierarki. */
+  --redup:        #64646c;
+  --nyala:        #8a5a0e;
+  --nyala-lembut: #6d4609;
+  --nyala-gelap:  #f5e8cf;
+  --tumbuh:       #046b4d;
+  --salah:        #c0262d;
+  /* Pil bertanda `--tenang` memakai warnanya sendiri sebagai teks DAN
+     sebagai tint latar 11%, jadi kontrasnya diukur terhadap latar yang
+     sudah ikut bergeser ke arah warna itu — pada pil "dinilai otomatis" di
+     atas kartu yang naik satu tingkat. Nilai ini 5,73:1 di sana. Hal yang
+     sama berlaku untuk --tumbuh: #047857 lolos di ketiga latar tapi jatuh ke
+     4,29 di atas tint pilnya sendiri, jadi digelapkan ke #046b4d (5,07). */
+  --tenang:       #335a70;
+  --ungu:         #8a5300;
   --di-atas-aksen: #ffffff;
-  --kode-latar:   #f4eff7;
-  --k-komentar:   #6f6680;
-  --k-string:     #046c4e;
-  --k-angka:      #9a5518;
-  --k-kunci:      #6d28d9;
-  --k-tipe:       #1d4ed8;
-  --k-bawaan:     #a21caf;
-  --k-fungsi:     #1d4ed8;
-  --k-operator:   #5b5368;
-  --k-khusus:     #047857;
-  --k-teks:       #201a2b;
-  --bayang: 0 1px 2px rgba(60,20,90,.06), 0 8px 24px -16px rgba(80,30,120,.28);
-  --bayang-naik: 0 2px 6px rgba(60,20,90,.09), 0 20px 44px -22px rgba(80,30,120,.34);
-  --cahaya: 0 0 0 1px rgba(109,40,217,.28), 0 0 28px -10px rgba(109,40,217,.36);
-  --kilau-tepi: inset 0 1px 0 rgba(255,255,255,.9);
+  --kode-latar:   #f6f6f7;
+  --k-komentar:   #6a6a72;
+  --k-string:     #0f6e45;
+  --k-angka:      #9a4f0c;
+  --k-kunci:      #2852d6;
+  --k-tipe:       #0e6b78;
+  --k-bawaan:     #8a5300;
+  --k-fungsi:     #5b3fb0;
+  --k-operator:   #55555d;
+  --k-khusus:     #046b4d;
+  --k-teks:       #18181b;
+  --bayang: 0 1px 2px rgba(24,24,27,.05), 0 8px 24px -16px rgba(24,24,27,.18);
+  --bayang-naik: 0 2px 6px rgba(24,24,27,.07), 0 20px 44px -22px rgba(24,24,27,.24);
+  --cahaya: 0 0 0 1px rgba(40,82,214,.32);
+  --kilau-tepi: inset 0 1px 0 rgba(255,255,255,.9); color-scheme: light;
 }
 
 /* KONTRAS — untuk cahaya siang yang menyilaukan atau mata yang butuh
    ketegasan. Warna dikuatkan, garis dipertebal. */
 [data-tema="kontras"] {
-  --dasar:        #000308;
+  --dasar:        #050506;
   --dasar-dalam:  #000000;
-  --kartu:        #0c1018;
-  --kartu-naik:   #161c28;
-  --garis:        #544a6d;
-  --garis-kuat:   #8376a3;
+  --kartu:        #0e0f12;
+  --kartu-naik:   #181a1f;
+  --garis:        #5a5e68;
+  --garis-kuat:   #8a8f9a;
   --teks:         #ffffff;
-  --teks-2:       #e0d8ec;
-  --redup:        #b4a8c6;
-  --nyala:        #d6b4ff;
-  --nyala-lembut: #efe2ff;
+  --teks-2:       #e4e6eb;
+  --redup:        #babec8;
+  --nyala:        #ffd083;
+  --nyala-lembut: #ffe3b5;
   --tumbuh:       #86f2b8;
-  --salah:        #ffa3b0;
-  --tenang:       #8fe6f7;
-  --ungu:         #ffabdd;
-  --di-atas-aksen: #08060c;
+  --salah:        #ffa6aa;
+  --tenang:       #aed8ec;
+  --ungu:         #ffd38f;
+  --di-atas-aksen: #0a0700;
   --kode-latar:   #000000;
-  --k-komentar:   #a99fbb;
+  --k-komentar:   #b2b6bf;
   --k-teks:       #ffffff;
   --kilau-tepi: inset 0 1px 0 rgba(255,255,255,.12);
   /* Garis 1 px yang warnanya sudah dikuatkan masih hilang di layar padat
@@ -343,16 +350,17 @@
 
 :root {
   /* ---- huruf -----------------------------------------------------------
-     Inter & Space Grotesk ditaruh di dalam aplikasi ini sendiri (lihat
-     @font-face di atas), BUKAN diambil dari Google Fonts: aplikasi ini harus
-     utuh tanpa internet. Nama keluarga sistem tetap disimpan sebagai
-     cadangan kalau berkasnya gagal dimuat. */
-  --f-judul: "Space Grotesk", "URW Gothic", "Montserrat", "Cantarell",
+     Atkinson Hyperlegible ditaruh di dalam aplikasi ini sendiri (lihat
+     @font-face di atas), BUKAN diambil dari CDN: aplikasi ini harus utuh
+     tanpa internet. Cadangannya huruf humanis sistem, bukan grotesk:
+     kalau berkasnya gagal dimuat, rasanya tetap sejenis. */
+  --f-judul: "Outfit", "Atkinson Hyperlegible Next", "Noto Sans", "Cantarell",
              "Adwaita Sans", system-ui, sans-serif;
-  --f-teks:  "Inter", "Cantarell", "Adwaita Sans", "Noto Sans",
-             system-ui, sans-serif;
-  --f-kode:  "Source Code Pro", "Adwaita Mono", "DejaVu Sans Mono",
-             ui-monospace, monospace;
+  --f-ui:    var(--f-judul);
+  --f-teks:  "Atkinson Hyperlegible Next", "Noto Sans", "Cantarell",
+             "Adwaita Sans", system-ui, sans-serif;
+  --f-kode:  "Atkinson Hyperlegible Mono", "Source Code Pro", "Adwaita Mono",
+             "DejaVu Sans Mono", ui-monospace, monospace;
 
   /* ---- skala tipografi -------------------------------------------------
      Tujuh tingkat, rasio ~1,15 di bagian kecil dan melebar di bagian judul.
@@ -392,31 +400,32 @@
 
   --tinggi-rapat: 1.2;
   --tinggi-ui:    1.5;
-  --tinggi-badan: 1.62;
-  --prosa-tinggi: 1.78;
+  --tinggi-badan: 1.6;
+  --prosa-tinggi: 1.72;
 
   /* ---- tangga jarak ----------------------------------------------------
-     Kelipatan 4, delapan anak tangga, dipakai di seluruh berkas ini tanpa
-     kecuali. Menulis `padding: 22px` alih-alih `var(--s5)` bukan sekadar
-     tidak rapi: ia membuat kelapangan seluruh aplikasi berhenti bisa disetel
-     dari satu tempat, dan setelah dua puluh angka seperti itu tidak ada lagi
-     ritme yang bisa dikenali mata. */
+     Grid 4/8, delapan anak tangga, dipakai di seluruh berkas ini tanpa
+     kecuali — dan angkanya diukur, bukan dipilih: 4/8/16 adalah tiga jarak
+     terbanyak di setiap situs dokumentasi yang dirujuk (React, MDN, Vercel,
+     Stripe, Linear), disusul 12/24/32/48. Menulis `padding: 22px` alih-alih
+     `var(--s5)` membuat kelapangan berhenti bisa disetel dari satu tempat. */
   --s1: 4px;
   --s2: 8px;
   --s3: 12px;
-  --s4: 18px;
-  --s5: 26px;
-  --s6: 38px;
-  --s7: 56px;
-  --s8: 84px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
 
   /* ---- bentuk ----------------------------------------------------------
-     Sudut yang lebih bulat daripada sudut tajam. Sudut tajam terbaca sebagai
-     "alat", sudut bulat sebagai "tempat" — dan ini tempat orang duduk
-     berjam-jam, bukan alat yang dipakai sebentar lalu ditutup. */
-  --r-kecil: 10px;
-  --r: 16px;
-  --r-besar: 24px;
+     Tiga radius yang SARANG: yang di dalam rapat (tombol, medan, 6 px), yang
+     memuatnya lebih lembut (kartu, 10 px), wadah terluar paling lembut (18 px).
+     Radius seragam di semua tingkat terbaca kaku; yang bersarang terbaca
+     sebagai benda yang memang saling memuat. Pil cuma untuk chip. */
+  --r-kecil: 6px;
+  --r: 10px;
+  --r-besar: 18px;
   --r-penuh: 999px;
   --tebal-garis: 1px;
 
@@ -559,15 +568,15 @@ body {
    atau warna tambahan. Satu alat, banyak pekerjaan. */
 h1, h2, h3, h4 {
   font-family: var(--f-judul);
-  font-weight: 700;
+  font-weight: 600;
   line-height: var(--tinggi-rapat);
-  letter-spacing: -.018em;
+  letter-spacing: -.01em;
   margin: 0;
   text-wrap: balance;
 }
-h1 { font-size: var(--t-judul-1); line-height: 1.08; letter-spacing: -.032em; }
-h2 { font-size: var(--t-judul-2); letter-spacing: -.022em; }
-h3 { font-size: var(--t-judul-3); letter-spacing: -.01em; }
+h1 { font-size: var(--t-judul-1); line-height: 1.12; letter-spacing: -.018em; }
+h2 { font-size: var(--t-judul-2); letter-spacing: -.012em; }
+h3 { font-size: var(--t-judul-3); letter-spacing: 0; }
 
 p { margin: 0 0 .9em; }
 a { color: var(--nyala); text-decoration: none; }
@@ -656,16 +665,22 @@ code { font-family: var(--f-kode); font-size: .92em; }
   inset: 0;
   z-index: var(--l-latar);
   pointer-events: none;
+  /* Dua lapis, keduanya DIAM. Grain fraktal 160 px (bukan kisi titik:
+     kisi teratur terbaca sebagai pola, derau acak terbaca sebagai bahan),
+     dan satu cahaya lebar yang jatuh dari atas layar. Tidak ada yang
+     bergerak, jadi tidak ada yang perlu dimatikan di tingkat gerak mana pun. */
   background-image:
-    radial-gradient(circle at 1px 1px,
-      color-mix(in srgb, var(--teks) 3.5%, transparent) 1px, transparent 0);
-  background-size: 26px 26px;
+    radial-gradient(1100px 480px at 50% -200px,
+      color-mix(in srgb, var(--nyala) 6%, transparent), transparent 72%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.07'/%3E%3C/svg%3E");
+  background-size: auto, 160px 160px;
 }
-/* Latar putih menelan tekstur halus, jadi di tema terang kisinya dikuatkan. */
+/* Tema terang: derau GELAP di atas kertas putih (derau putih tak terlihat). */
 [data-tema="terang"] #latar {
   background-image:
-    radial-gradient(circle at 1px 1px,
-      color-mix(in srgb, var(--teks) 6%, transparent) 1px, transparent 0);
+    radial-gradient(1100px 480px at 50% -200px,
+      color-mix(in srgb, var(--nyala) 5%, transparent), transparent 72%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.06'/%3E%3C/svg%3E");
 }
 /* Tema kontras memang bertugas membuang yang halus-halus. Kisi 3% di sana
    cuma derau di bawah ambang yang bisa dilihat siapa pun yang memilihnya. */
@@ -701,10 +716,11 @@ code { font-family: var(--f-kode); font-size: .92em; }
    sering dipakai — Dasbor, Bahasa, Ruang Coba, Cari — tinggal di baris; yang
    jarang masuk ke satu menu bernama "Lainnya".
 
-   Bilah ini TIDAK buram. `backdrop-filter: blur()` di dua bilah yang menempel
-   berarti dua lapis penyaring dijalankan ulang tiap frame sepanjang gulir —
-   dan yang dibayar dengan itu cuma kesan bahan yang sudah dipakai semua orang.
-   Latarnya padat, tepinya satu garis. */
+   Bilah ini SATU-SATUNYA yang buram. `backdrop-filter` di dua bilah yang
+   menempel berarti dua lapis penyaring dihitung ulang tiap frame sepanjang
+   gulir — jadi strip konteks di bawahnya tetap padat, dan cuma bilah ini yang
+   membiarkan halaman terlihat samar lewat di baliknya. Tema kontras dan
+   `prefers-reduced-transparency` mengembalikannya padat (lihat "permukaan"). */
 
 #rel {
   position: sticky;
@@ -720,7 +736,9 @@ code { font-family: var(--f-kode); font-size: .92em; }
   align-items: center;
   gap: var(--s2);
   border-bottom: var(--tebal-garis) solid var(--garis);
-  background: var(--dasar-dalam);
+  background: color-mix(in srgb, var(--dasar-dalam) 80%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
 }
 
 /* Bagian yang melipat ke dalam panel hamburger di layar sempit. Di layar
@@ -747,32 +765,32 @@ code { font-family: var(--f-kode); font-size: .92em; }
   color: var(--teks);
 }
 .merek:hover { text-decoration: none; }
-.merek-teks { display: flex; flex-direction: column; line-height: 1.05; }
+.merek-teks { display: flex; align-items: baseline; gap: .28em; line-height: 1; }
 .merek-teks b {
   font-family: var(--f-judul);
-  font-size: 1.1rem;
-  letter-spacing: -.03em;
-  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: -.025em;
+  font-weight: 600;
 }
 .merek-teks i {
   font-style: normal;
-  font-family: var(--f-kode);
-  font-size: .62rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--nyala);
+  font-family: var(--f-judul);
+  font-size: 1.02rem;
+  letter-spacing: -.025em;
+  font-weight: 400;
+  color: var(--redup);
 }
 
 /* Bara merek: satu titik api kecil yang bernapas. Ini logo aplikasinya, dan
    satu-satunya gerak ambien yang tersisa di seluruh aplikasi — amplitudo 4%,
    periode 4,2 detik, jauh di atas lantai 3 detik. */
 .merek-bara {
-  width: 14px; height: 14px;
-  border-radius: 50%;
+  width: 10px; height: 10px;
+  border-radius: 3px;
   flex: none;
-  background: radial-gradient(circle at 38% 32%,
-    var(--nyala-lembut) 0%, var(--nyala) 44%, var(--nyala-gelap) 100%);
-  box-shadow: 0 0 14px -1px color-mix(in srgb, var(--nyala) 72%, transparent);
+  background: var(--nyala);
+  /* Tanpa pendar. Cahaya yang memancar dari logo adalah tanda zaman, bukan
+     keputusan; sebidang kecil warna aksen sudah cukup untuk menandainya. */
   animation: bernapas 4.2s ease-in-out infinite;
 }
 @keyframes bernapas {
@@ -823,7 +841,7 @@ code { font-family: var(--f-kode); font-size: .92em; }
 .rel-menu .nama { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .rel-persen {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-size: var(--t-mikro);
   color: var(--redup);
   font-variant-numeric: tabular-nums;
@@ -874,10 +892,10 @@ code { font-family: var(--f-kode); font-size: .92em; }
 .rel-tombol .ikon { display: inline-flex; align-items: center; }
 
 .rel-judul {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks); font-variant-numeric: tabular-nums;
   font-size: var(--t-mikro);
-  letter-spacing: .22em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--redup);
   padding: var(--s1) var(--s3) var(--s2);
 }
@@ -953,14 +971,14 @@ code { font-family: var(--f-kode); font-size: .92em; }
   border-radius: var(--r-penuh);
   border: var(--tebal-garis) solid var(--garis);
   background: var(--kartu);
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-size: var(--t-kecil);
   font-variant-numeric: tabular-nums;
   color: var(--teks-2);
   transition: border-color var(--cepat), color var(--cepat);
 }
 .tanda:hover { border-color: var(--garis-kuat); color: var(--teks); }
-.tanda-satuan { font-size: var(--t-mikro); color: var(--redup); letter-spacing: .08em; }
+.tanda-satuan { font-size: var(--t-mikro); color: var(--redup); }
 
 /* Bara streak. Padam kalau streaknya putus — hilangnya cahaya justru pesan
    yang paling jelas, tanpa perlu satu kata pun. */
@@ -1018,14 +1036,14 @@ code { font-family: var(--f-kode); font-size: .92em; }
 #panggung.berkonteks { --lengket-atas: calc(var(--rel-tinggi) + var(--konteks-tinggi)); }
 
 /* Dan sekali lagi di `html`, karena SATU pembaca variabel ini tidak berada di
-   dalam `#panggung`: `html { scroll-padding-top }` (:538). Sebuah variabel yang
+   dalam `#panggung`: `html { scroll-padding-top }` (:547). Sebuah variabel yang
    diisi ulang pada subtree tidak pernah terlihat oleh leluhurnya, jadi aturan di
    atas — yang benar untuk kolom yang menempel — tidak pernah sampai ke pengatur
    pendaratan gulir.
    Terukur di pembaca materi 8 bagian, tiga tautan peta berbeda: sasaran mendarat
    di top = 72 px (54 + 18) setiap kali, sementara dasar chrome yang menempel ada
    di 98 px (#rel 54 + #konteks 44). Selisih 26 px, dan yang tertutup strip justru
-   baris pertama judul bagian — persis yang komentar :534 bilang tidak boleh
+   baris pertama judul bagian — persis yang komentar :535 bilang tidak boleh
    terjadi. `#lompat-isi` kena selisih yang sama dan ikut sembuh dari sini.
    `:has()` dipagari `@supports` seperti dua pemakai lain di kaki berkas; kalau ia
    tidak didukung, yang tersisa adalah keadaan lama (72 px), bukan keadaan baru
@@ -1068,7 +1086,7 @@ code { font-family: var(--f-kode); font-size: .92em; }
   flex: none;
 }
 .konteks-angka {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-variant-numeric: tabular-nums;
   color: var(--teks-2);
   white-space: nowrap;
@@ -1206,13 +1224,13 @@ code { font-family: var(--f-kode); font-size: .92em; }
 .kartu-rapat { padding: var(--s4); }
 
 /* Label kecil di atas sebuah bagian. Ia yang menamai kelompok tanpa memakai
-   satu baris judul penuh — dan karena hurufnya monospace berjarak lebar, ia
-   tidak pernah tertukar dengan teks yang harus dibaca. */
+   satu baris judul penuh. Dulu monospace KAPITAL berjarak lebar — dan karena
+   dipasang di atas hampir setiap bagian, ia jadi irama templat, bukan nama.
+   Sekarang kalimat biasa yang redup: terbaca sebagai nama, tidak berteriak. */
 .mata {
-  font-family: var(--f-kode);
-  font-size: var(--t-mikro);
-  letter-spacing: .2em;
-  text-transform: uppercase;
+  font-family: var(--f-teks);
+  font-size: var(--t-kecil);
+  font-weight: 500;
   color: var(--redup);
   margin-bottom: var(--s2);
   display: block;
@@ -1413,18 +1431,18 @@ code { font-family: var(--f-kode); font-size: .92em; }
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: var(--s1) var(--s3);
+  padding: 2px var(--s3);
   border-radius: var(--r-penuh);
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-size: var(--t-mikro);
-  letter-spacing: .04em;
+  font-weight: 500;
   border: var(--tebal-garis) solid var(--garis);
   color: var(--teks-2);
   background: var(--kartu-naik);
   white-space: nowrap;
 }
 .pil svg { flex: none; }
-.pil-jenis { padding-left: 7px; gap: 5px; }
+.pil-jenis { padding-left: 7px; gap: 5px; min-width: 5.6rem; }
 .pil-nyala  { color: var(--nyala);  border-color: color-mix(in srgb, var(--nyala) 42%, transparent);
               background: color-mix(in srgb, var(--nyala) 11%, transparent); }
 .pil-tumbuh { color: var(--tumbuh); border-color: color-mix(in srgb, var(--tumbuh) 42%, transparent);
@@ -1509,6 +1527,31 @@ code { font-family: var(--f-kode); font-size: .92em; }
   grid-template-columns: repeat(auto-fill, minmax(min(520px, 100%), 1fr));
   gap: var(--s2);
 }
+/* GARIS RAMBUT, bukan kartu per baris. Dua puluh kotak bertepi untuk satu
+   daftar adalah dua puluh benda yang masing-masing minta diperhatikan; satu
+   wadah dengan garis 1 px di antara barisnya adalah SATU benda yang isinya
+   bisa dibaca berurutan. Garisnya bayangan kanan-bawah tiap baris, dan
+   `overflow: hidden` memotong yang jatuh di tepi luar — jadi bentuk ini
+   benar untuk satu kolom MAUPUN dua, tanpa tahu jumlah barisnya.
+   Barisnya TANPA latar: bayangannya dicat di bawah latar saudara sesudahnya.
+   Hanya untuk senarai berisi `.baris`; catatan memakai `.kartu` (dua tepi).
+   Dua hal yang dibayar `overflow: hidden` dan wajib dikembalikan: cincin
+   fokus ditarik ke DALAM baris (kalau tidak, terpotong separuh), dan geseran
+   hover dimatikan (garisnya ikut bergeser dan meninggalkan celah). */
+.senarai:has(> .baris) {
+  gap: 0;
+  border: var(--tebal-garis) solid var(--garis);
+  border-radius: var(--r);
+  background: var(--kartu);
+  overflow: hidden;
+}
+.senarai > .baris {
+  border: 0;
+  border-radius: 0; background: transparent;
+  box-shadow: var(--tebal-garis) var(--tebal-garis) 0 var(--garis);
+}
+.senarai > .baris:hover { translate: none; }
+.senarai > .baris:focus-visible { outline-offset: -3px; }
 
 .baris {
   display: flex;
@@ -1538,7 +1581,7 @@ code { font-family: var(--f-kode); font-size: .92em; }
   text-decoration: none;
 }
 .baris .nomor {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-size: var(--t-kecil);
   color: var(--redup);
   min-width: 24px;
@@ -1582,7 +1625,7 @@ code { font-family: var(--f-kode); font-size: .92em; }
 .baris-sisi {
   color: var(--redup);
   font-size: var(--t-kecil);
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-variant-numeric: tabular-nums;
   flex: none;
 }
@@ -1791,10 +1834,10 @@ input[type="range"] { min-height: var(--sentuh); }
    dijaga ketat: begitu ada dua permukaan beraksen pekat di satu layar, tidak
    ada lagi yang namanya "yang sedang kamu kerjakan".
 
-   Gradiennya sangat tipis (12% ke 4%), bukan blok penuh. Blok aksen penuh
-   seluas kartu terlalu terang untuk dipandang berjam-jam di ruangan gelap;
-   yang dicari kesan cahaya yang JATUH di atas kartu, bukan kartu yang
-   menyala sendiri. */
+   Kartunya sendiri DATAR, bertepi garis biasa. Versi sebelumnya memberinya
+   gradien aksen dan tepi beraksen, dan hasilnya dua sumber warna yang
+   bersaing di satu kartu dengan tombolnya. Aksen di sini cuma dua: nomor
+   halaman di kiri dan tombol di kanan. */
 
 .lanjutkan {
   display: flex;
@@ -1803,14 +1846,15 @@ input[type="range"] { min-height: var(--sentuh); }
   flex-wrap: wrap;
   padding: var(--s6);
   border-radius: var(--r-besar);
-  border: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 34%, transparent);
-  background:
-    linear-gradient(135deg,
-      color-mix(in srgb, var(--nyala) 12%, transparent) 0%,
-      color-mix(in srgb, var(--nyala) 4%, transparent) 58%,
-      transparent 100%),
-    var(--kartu);
-  box-shadow: var(--kilau-tepi);
+  border: var(--tebal-garis) solid var(--garis);
+  background: var(--kartu);
+  /* BINGKAI GANDA: cincin 5 px berwarna samar lalu satu garis di luarnya,
+     seperti pelat yang duduk di dalam baki. Lewat box-shadow, bukan
+     pseudo-elemen, karena keduanya tidak memakan ruang tata letak dan tidak
+     terpotong induk yang `overflow: hidden`. */
+  box-shadow: var(--kilau-tepi),
+    0 0 0 5px color-mix(in srgb, var(--teks) 2.5%, transparent),
+    0 0 0 calc(5px + var(--tebal-garis)) var(--garis);
   color: inherit;
   /* box-shadow SENGAJA tidak ada di daftar transisi: kartu ini terangkat
      dengan bergerak, bukan dengan menumbuhkan bayangan. Bentuk lamanya
@@ -1822,7 +1866,7 @@ input[type="range"] { min-height: var(--sentuh); }
 .lanjutkan:hover {
   text-decoration: none;
   transform: translateY(-2px);
-  border-color: var(--nyala);
+  border-color: var(--garis-kuat);
 }
 .lanjutkan:active { transform: translateY(0); }
 /* Nomor besar di kiri kartu — patokan tempat, bukan hiasan. Ia yang membuat
@@ -1846,7 +1890,7 @@ input[type="range"] { min-height: var(--sentuh); }
   font-size: var(--t-ui);
   max-width: 52ch;
 }
-.lanjutkan .mata { color: var(--nyala); margin: 0; }
+.lanjutkan .mata { margin: 0; }
 
 .lanjutkan-tbl {
   display: inline-flex;
@@ -1866,7 +1910,7 @@ input[type="range"] { min-height: var(--sentuh); }
 .lanjutkan:hover .lanjutkan-tbl { gap: var(--s4); }
 /* Kartu lanjutkan versi halaman bahasa: sedikit lebih rendah daripada di
    dasbor, karena di sini ia bukan satu-satunya isi layar. */
-.lanjutkan-rapat { padding: var(--s5); }
+.lanjutkan-rapat { padding: var(--s5); margin-bottom: var(--s5); }
 .lanjutkan-rapat h2 { font-size: var(--t-judul-3); }
 
 /* ================================================================= prosa
@@ -2139,7 +2183,7 @@ pre.kode {
   scrollbar-width: thin;
 }
 
-.tk-komentar { color: var(--k-komentar); font-style: italic; }
+.tk-komentar { color: var(--k-komentar); font-style: normal; }
 .tk-string   { color: var(--k-string); }
 .tk-angka    { color: var(--k-angka); }
 .tk-kunci    { color: var(--k-kunci); font-weight: 600; }
@@ -2489,8 +2533,8 @@ pre.kode {
   font-size: var(--t-ui);
 }
 .arti b {
-  color: var(--tenang); font-size: var(--t-mikro); letter-spacing: .15em;
-  text-transform: uppercase; font-family: var(--f-kode); font-weight: 600;
+  color: var(--tenang); font-size: var(--t-kecil); letter-spacing: 0;
+  text-transform: none; font-family: var(--f-teks); font-weight: 600;
 }
 
 /* ==================================================================== uji */
@@ -2548,8 +2592,6 @@ pre.kode {
   gap: var(--s6);
   align-items: start;
 }
-.dasbor-utama { display: grid; gap: var(--s6); align-content: start; min-width: 0; }
-.dasbor-sisi { display: grid; gap: var(--s4); align-content: start; min-width: 0; }
 
 .sambut { margin-bottom: var(--s2); }
 .sambut .mata { margin-bottom: var(--s3); }
@@ -2736,7 +2778,7 @@ pre.kode {
 }
 .ubin-tanda {
   margin-top: var(--s1);
-  font-family: var(--f-kode);
+  font-family: var(--f-teks); font-variant-numeric: tabular-nums;
   font-size: var(--t-mikro);
   letter-spacing: .04em;
 }
@@ -2832,7 +2874,7 @@ pre.kode {
   font-size: var(--t-kecil);
   color: var(--redup);
 }
-.target-baris b { font-family: var(--f-kode); font-weight: 600; color: var(--teks); }
+.target-baris b { font-weight: 600; color: var(--teks); }
 .target-baris b.tercapai { color: var(--tumbuh); }
 
 /* -------------------------------------------------------------- cincin bara
@@ -2859,10 +2901,10 @@ pre.kode {
   letter-spacing: -.04em;
 }
 .cincin-label {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks); font-variant-numeric: tabular-nums;
   font-size: var(--t-mikro);
-  letter-spacing: .19em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--redup);
 }
 .cincin::after {
@@ -2939,7 +2981,7 @@ pre.kode {
    ANGKA YANG DIASUMSIKAN, dan kenapa cincinnya 2px/1px dan bukan 3px/1,5px:
    inti berwarna = 11 − 2×border − 2×cincin. `--tebal-garis` hari ini 1 px di
    SEMUA tema, termasuk kontras: `[data-tema="kontras"] { --tebal-garis: 2px }`
-   (:335) dan `:root { --tebal-garis: 1px }` (:421) sama-sama berspesifisitas
+   (:342) dan `:root { --tebal-garis: 1px }` (:430) sama-sama berspesifisitas
    0,1,0 pada elemen <html> yang sama, jadi yang belakangan menang. Token itu
    bisa dihidupkan lagi kapan saja, dan itu bukan urusan blok ini.
 
@@ -3038,11 +3080,11 @@ pre.kode {
 .peta-tingkat { display: grid; gap: 5px; min-width: 0; }
 .peta-label {
   display: flex; align-items: center; gap: var(--s1);
-  font-family: var(--f-kode);
+  font-family: var(--f-teks); font-variant-numeric: tabular-nums;
   font-size: var(--t-mikro);
   color: var(--redup);
-  text-transform: uppercase;
-  letter-spacing: .08em;
+  text-transform: none;
+  letter-spacing: 0;
 }
 .peta-jml {
   font-variant-numeric: tabular-nums;
@@ -3235,7 +3277,7 @@ pre.kode {
 .bab-maju { flex: none; width: 160px; max-width: 100%; align-self: center; }
 .bab-angka {
   display: block;
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-size: var(--t-kecil);
   color: var(--redup);
   font-variant-numeric: tabular-nums;
@@ -3323,7 +3365,7 @@ pre.kode {
 
 .tab-deret { margin-bottom: var(--s5); }
 .tab-jumlah {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks); font-variant-numeric: tabular-nums;
   font-size: var(--t-mikro);
   padding: 1px 7px;
   border-radius: var(--r-penuh);
@@ -3372,7 +3414,7 @@ pre.kode {
    satu kartu yang menempel di tepi kolom. Bukan salinan: ketiganya keluar dari
    kepala dan kaki, jadi tidak ada tombol yang muncul dua kali.
 
-   `top` memakai hitungan yang SAMA dengan `scroll-padding-top` (:538), bukan
+   `top` memakai hitungan yang SAMA dengan `scroll-padding-top` (:547), bukan
    angka kedua yang mirip: apa pun yang mendarat karena gulir dan kartu ini
    berhenti di garis yang sama, dan kalau `--lengket-atas` berubah keduanya
    ikut. `--l-lengket` adalah token yang memang bernama "kolom yang menempel".
@@ -3480,7 +3522,7 @@ pre.kode {
   box-shadow: inset 2px 0 0 var(--nyala);
 }
 .materi-rel-nomor {
-  font-family: var(--f-kode);
+  font-family: var(--f-teks);
   font-size: var(--t-mikro);
   color: var(--redup);
   min-width: 1.6em;
@@ -3520,20 +3562,20 @@ pre.kode {
   min-width: 0;
   padding: var(--s2) var(--s2) var(--s1) var(--s3);
   border-left: var(--tebal-garis) solid var(--garis);
-  font-family: var(--f-kode);
-  font-size: var(--t-mikro);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--redup);
+  font-family: var(--f-teks);
+  font-size: var(--t-kecil);
+  font-weight: 600;
+  line-height: var(--tinggi-rapat);
+  color: var(--teks-2);
 }
 .materi-rel-bab-judul {
-  /* max-width, bukan cuma overflow: di susunan menurun lebar anak diambil
-     dari isinya, jadi tanpa batas ini judul panjang tidak dipotong melainkan
-     meluber ke kolom sebelahnya. */
+  /* Judul bab MEMBUNGKUS, tidak dipotong elipsis — aturan yang sama dengan
+     judul baris daftar: "Bab 3 · Menyimpan Ba…" memotong justru kata yang
+     membedakannya. max-width menjaganya tetap di kolomnya sendiri. */
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  white-space: normal;
 }
 /* Kemajuan bab mengalah di jalur sempit: "3/7" sudah terbaca di halaman
    bahasa, dan baris kedua yang dibayar untuknya di sini tidak sepadan. Yang
@@ -3983,7 +4025,7 @@ pre.kode {
 .rinci-atas a:hover { background: var(--kartu-naik); text-decoration: none; }
 .rinci-angka {
   color: var(--redup); font-size: var(--t-kecil);
-  font-family: var(--f-kode); font-variant-numeric: tabular-nums;
+  font-family: var(--f-teks); font-variant-numeric: tabular-nums;
 }
 .rinci-total {
   border-top: var(--tebal-garis) solid var(--garis);
@@ -4112,7 +4154,7 @@ pre.kode {
 .palet-item.pilih .judul { color: var(--nyala); }
 .palet-grup { padding: var(--s4) var(--s3) var(--s2);
               font-size: var(--t-mikro); color: var(--redup);
-              text-transform: uppercase; letter-spacing: .14em; }
+              font-weight: 600; letter-spacing: 0; }
 .palet-kosong { padding: var(--s5); text-align: center; color: var(--redup); }
 .palet-kaki {
   display: flex; gap: var(--s4); padding: var(--s3) var(--s5);
@@ -4272,6 +4314,293 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
 }
 .tanpa-js p { max-width: 46ch; margin: 0 auto; }
 
+/* ============================================================ peta karier
+   Layar #/karier (layar-karier.js). Konstelasi di kiri, panel rincian yang
+   menempel di kanan; di bawahnya kuis, perencana, dan indeks. Dirancang untuk
+   layar laptop: panel punya gulirnya sendiri supaya konstelasi tetap terlihat
+   selama rincian dibaca. Semua angka di sini token; garis dan warna graf
+   memakai currentColor lewat token teks, bukan heks yang ditulis ulang. */
+
+.kr-kepala h1 { text-wrap: balance; max-width: 18ch; }
+.kr-aksi { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4);
+           margin-top: var(--s5); }
+.kr-tautan {
+  background: none; border: 0; padding: 0; cursor: pointer; font: inherit;
+  color: var(--nyala-lembut); text-decoration: underline;
+  text-underline-offset: 4px; text-decoration-thickness: 1px;
+}
+.kr-tautan:hover { color: var(--teks); }
+
+.kr-saring, .kr-chip-deret, .kr-tag-deret { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.kr-saring { margin: var(--s6) 0 var(--s4); }
+.kr-chip {
+  font: inherit; font-size: var(--t-kecil); cursor: pointer;
+  padding: var(--s1) var(--s3); min-height: 32px;
+  border: var(--tebal-garis) solid var(--garis); border-radius: var(--r-penuh);
+  background: transparent; color: var(--teks-2);
+  transition: color var(--cepat), border-color var(--cepat), background-color var(--cepat);
+}
+.kr-chip:hover { color: var(--teks); border-color: var(--garis-kuat); }
+.kr-chip[aria-checked="true"] { background: var(--teks); border-color: var(--teks); color: var(--dasar); }
+
+.kr-utama {
+  display: grid; gap: var(--s5); align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 23rem);
+}
+.kr-kanvas {
+  margin: 0; min-width: 0; border-radius: var(--r-besar);
+  border: var(--tebal-garis) solid var(--garis);
+  background-color: var(--kartu);
+  background-image: radial-gradient(color-mix(in srgb, var(--garis-kuat) 55%, transparent) 1px,
+                                    transparent 1.2px);
+  background-size: 22px 22px;
+  box-shadow: var(--kilau-tepi);
+  overflow: hidden;
+}
+.kr-graf { display: block; width: 100%; height: auto; }
+
+.kr-sisi { fill: none; stroke: var(--garis-kuat); stroke-width: 1;
+           transition: opacity var(--sedang), stroke var(--sedang); }
+.kr-sisi-dekat { stroke-dasharray: .02 .016; }
+.kr-sisi.nyala { stroke: var(--nyala); stroke-width: 1.8; stroke-dasharray: none; }
+.kr-sisi.redup { opacity: .35; }
+
+.kr-rumpun { fill: var(--teks-2); font-size: 14.5px; font-weight: 600;
+             pointer-events: none; transition: opacity var(--sedang); }
+.kr-rumpun.redup { opacity: .3; }
+
+.kr-simpul { cursor: pointer; outline: none; transition: opacity var(--sedang); }
+.kr-simpul.redup { opacity: .32; }
+.kr-sasaran { fill: transparent; }
+.kr-cincin-alas { fill: none; stroke: var(--garis); stroke-width: 2.5; }
+.kr-cincin-isi { fill: none; stroke: var(--nyala); stroke-width: 2.5; stroke-linecap: round; }
+.kr-inti { fill: var(--kartu-naik); stroke: var(--redup); stroke-width: 1.2;
+           transition: fill var(--cepat), stroke var(--cepat); }
+.kr-simpul:hover .kr-inti { stroke: var(--teks); }
+.kr-simpul.dipilih .kr-inti { fill: var(--teks); stroke: var(--teks); }
+.kr-simpul:focus-visible .kr-inti { stroke: var(--nyala); stroke-width: 2.5; }
+.kr-label {
+  fill: var(--teks-2); font-size: 15.5px; font-weight: 500; pointer-events: none;
+  transition: fill var(--cepat);
+}
+.kr-simpul.tampak .kr-label { fill: var(--teks); font-weight: 650; }
+.kr-simpul:hover .kr-sasaran { fill: color-mix(in srgb, var(--teks) 6%, transparent); }
+.kr-pita { fill: transparent; transition: opacity var(--sedang); }
+.kr-pita-genap { fill: color-mix(in srgb, var(--teks) 3%, transparent); }
+.kr-pita.redup { opacity: .3; }
+.kr-kolom { fill: var(--redup); font-size: 12px; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; }
+
+.kr-legenda {
+  display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5);
+  padding: var(--s3) var(--s5); border-top: var(--tebal-garis) solid var(--garis);
+  font-size: var(--t-kecil); color: var(--redup);
+}
+.kr-legenda span { display: inline-flex; align-items: center; gap: var(--s2); }
+.kr-legenda i { display: inline-block; width: 22px; }
+.kr-leg-naik { border-top: 1.5px solid var(--garis-kuat); }
+.kr-leg-dekat { border-top: 1.5px dashed var(--garis-kuat); }
+.kr-leg-siap { width: 10px !important; height: 10px; border-radius: 50%;
+               border: 2px solid var(--nyala); }
+
+.kr-panel {
+  position: sticky; top: calc(var(--lengket-atas) + var(--s4));
+  max-height: calc(100vh - var(--lengket-atas) - var(--s7));
+  overflow-y: auto; overscroll-behavior: contain;
+  border-radius: var(--r-besar); border: var(--tebal-garis) solid var(--garis);
+  background: var(--kartu); box-shadow: var(--bayang), var(--kilau-tepi);
+  scrollbar-width: thin;
+}
+.kr-panel-isi { padding: var(--s5); }
+.kr-panel-kepala { display: flex; justify-content: space-between; gap: var(--s4);
+                   align-items: flex-start; }
+.kr-panel-kepala h2 { font-size: var(--t-judul-2); line-height: var(--tinggi-rapat);
+                      letter-spacing: -.02em; margin: var(--s1) 0 var(--s2); text-wrap: balance; }
+.kr-siap { position: relative; flex: none; display: grid; place-items: center; }
+.kr-siap .kr-cincin { grid-area: 1 / 1; }
+.kr-siap-angka { grid-area: 1 / 1; font-size: var(--t-ui); font-weight: 700;
+                 margin-top: -8px; }
+.kr-siap-ket { grid-area: 1 / 1; font-size: var(--t-mikro); color: var(--redup); margin-top: 18px; }
+.kr-ringkas { color: var(--teks-2); line-height: var(--tinggi-badan); margin: var(--s4) 0 0; }
+
+.kr-blok { margin-top: var(--s5); padding-top: var(--s4);
+           border-top: var(--tebal-garis) solid var(--garis); }
+.kr-blok h3 { font-size: var(--t-mikro); font-weight: 700; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--redup); margin: 0 0 var(--s3); }
+.kr-daftar { margin: 0; padding-left: 1.1em; display: grid; gap: var(--s2);
+             line-height: var(--tinggi-ui); color: var(--teks-2); }
+.kr-catatan { color: var(--redup); font-size: var(--t-kecil); line-height: var(--tinggi-ui); }
+.kr-tag {
+  font-size: var(--t-kecil); padding: 2px var(--s2); border-radius: var(--r-kecil);
+  background: var(--kartu-naik); color: var(--teks-2);
+  border: var(--tebal-garis) solid var(--garis);
+}
+.kr-tag-kode { font-family: var(--f-kode); font-size: var(--t-mikro); }
+.kr-gaji { font-size: var(--t-judul-3); font-weight: 700; margin: 0 0 var(--s1); }
+.kr-tautan-luar a { word-break: break-word; }
+
+.kr-bekal { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.kr-bekal li { display: grid; grid-template-columns: minmax(0, 1fr) 5rem 2.8rem;
+               align-items: center; gap: var(--s3); }
+.kr-bekal-nama { display: flex; flex-wrap: wrap; gap: 2px var(--s2); align-items: baseline;
+                 min-width: 0; }
+.kr-bekal-nama a { color: var(--teks); text-decoration: none; }
+.kr-bekal-nama a:hover { text-decoration: underline; }
+.kr-bekal-nama a:not(.wakil):not(:only-child) { color: var(--redup); }
+.kr-atau { font-size: var(--t-mikro); color: var(--redup); }
+.kr-bekal-bilah { height: 6px; border-radius: var(--r-penuh); background: var(--garis);
+                  overflow: hidden; }
+.kr-bekal-bilah > i { display: block; height: 100%; background: var(--nyala);
+                      border-radius: inherit; }
+.kr-persen { font-size: var(--t-kecil); color: var(--teks-2); text-align: right; }
+
+.kr-bagian { margin-top: var(--s8); }
+.kr-bagian-kepala { max-width: 62ch; margin-bottom: var(--s5); }
+.kr-bagian-kepala h2 { font-size: var(--t-judul-1); line-height: var(--tinggi-rapat);
+                       letter-spacing: -.025em; margin: var(--s2) 0 var(--s3); text-wrap: balance; }
+.kr-bagian-kepala p { color: var(--teks-2); line-height: var(--tinggi-badan); margin: 0; }
+
+.kr-soal-kisi { display: grid; gap: var(--s4);
+                grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr)); }
+.kr-soal { margin: 0; padding: var(--s4); min-width: 0;
+           border: var(--tebal-garis) solid var(--garis); border-radius: var(--r-besar);
+           background: var(--kartu); }
+/* float + lebar penuh: satu-satunya cara memasukkan <legend> ke DALAM
+   bingkai fieldset; tanpa itu ia duduk menimpa garis atasnya. */
+.kr-soal legend { float: left; width: 100%; padding: 0;
+                  display: flex; gap: var(--s3); align-items: baseline;
+                  font-weight: 600; line-height: var(--tinggi-ui); }
+.kr-soal-no { font-family: var(--f-kode); font-size: var(--t-kecil); color: var(--nyala-lembut); }
+.kr-opsi { clear: both; display: grid; gap: var(--s2); padding-top: var(--s3); }
+.kr-pilihan {
+  text-align: left; font: inherit; font-size: var(--t-ui); cursor: pointer;
+  padding: var(--s3) var(--s4); border-radius: var(--r);
+  border: var(--tebal-garis) solid var(--garis); background: var(--dasar);
+  color: var(--teks-2); line-height: var(--tinggi-ui);
+  transition: border-color var(--cepat), color var(--cepat), background-color var(--cepat);
+}
+.kr-pilihan:hover { border-color: var(--garis-kuat); color: var(--teks); }
+.kr-pilihan:active { translate: 0 1px; }
+.kr-pilihan[aria-pressed="true"] { border-color: var(--nyala); color: var(--teks);
+  background: color-mix(in srgb, var(--nyala) 12%, var(--dasar)); }
+.kr-hasil-kuis { margin-top: var(--s5); }
+.kr-juara { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.kr-juara li { display: flex; align-items: center; gap: var(--s4); padding: var(--s4);
+               border-radius: var(--r-besar); background: var(--kartu);
+               border: var(--tebal-garis) solid var(--garis); }
+.kr-juara li:first-child { border-color: var(--nyala); }
+.kr-juara .isi { flex: 1; min-width: 0; }
+.kr-juara .judul { font-weight: 700; font-size: var(--t-judul-3); }
+.kr-juara .ket { color: var(--redup); font-size: var(--t-kecil); margin-top: 2px; }
+.kr-juara-no { font-size: var(--t-nomor); font-weight: 700; color: var(--redup);
+               width: 2ch; text-align: center; }
+
+.kr-pilih-jalur { display: flex; flex-wrap: wrap; align-items: end; gap: var(--s4); }
+.kr-pilih-jalur label { display: grid; gap: var(--s1); font-size: var(--t-kecil);
+                        color: var(--redup); min-width: 16rem; }
+.kr-panah { color: var(--redup); padding-bottom: var(--s3); }
+.kr-jalur { margin-top: var(--s5); }
+.kr-langkah { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap;
+              align-items: center; gap: var(--s2); }
+.kr-langkah li { display: flex; align-items: center; gap: var(--s2); }
+.kr-langkah li + li::before { content: ""; width: var(--s6); height: 0;
+                              border-top: 1.5px dashed var(--garis-kuat); }
+.kr-langkah-tbl {
+  display: grid; gap: 2px; text-align: left; font: inherit; cursor: pointer;
+  padding: var(--s3) var(--s4); border-radius: var(--r);
+  border: var(--tebal-garis) solid var(--garis); background: var(--kartu); color: var(--teks);
+  transition: border-color var(--cepat);
+}
+.kr-langkah-tbl:hover { border-color: var(--garis-kuat); }
+.kr-langkah li:last-child .kr-langkah-tbl { border-color: var(--nyala); }
+.kr-langkah-no { font-size: var(--t-mikro); color: var(--redup); text-transform: uppercase;
+                 letter-spacing: .08em; }
+.kr-celah { margin-top: var(--s5); }
+.kr-celah h3 { font-size: var(--t-judul-3); margin: 0 0 var(--s3); }
+.kr-celah ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s2); }
+.kr-celah li { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2); }
+.kr-celah a { display: inline-flex; gap: var(--s2); align-items: baseline; }
+
+.kr-indeks { display: grid; gap: var(--s4);
+             grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr)); }
+.kr-rumpun-kartu { padding: var(--s5); border-radius: var(--r-besar); min-width: 0;
+                   background: var(--kartu); border: var(--tebal-garis) solid var(--garis); }
+.kr-rumpun-kartu h3 { margin: 0; font-size: var(--t-judul-3); }
+.kr-rumpun-kartu p { color: var(--redup); font-size: var(--t-kecil); line-height: var(--tinggi-ui);
+                     margin: var(--s2) 0 var(--s3); }
+.kr-rumpun-kartu ul { list-style: none; margin: 0; padding: 0; }
+.kr-rumpun-kartu button {
+  display: flex; width: 100%; justify-content: space-between; gap: var(--s3);
+  font: inherit; text-align: left; cursor: pointer; color: var(--teks);
+  background: none; border: 0; border-top: var(--tebal-garis) solid var(--garis);
+  padding: var(--s2) 0;
+}
+.kr-rumpun-kartu button:hover { color: var(--nyala-lembut); }
+
+/* ============================================================= permukaan
+   Lapisan bahan di atas komponen yang sudah ada. Semuanya MENAMBAH pada
+   aturannya, tidak mengganti perilakunya, dan tidak satu pun memakai
+   `transform`: transform tombol dan baris dipegang WAAPI (tekan/lepas di
+   gerak.js), dan dua mesin pada satu properti saling mengejar. */
+
+/* -- tombol di dalam tombol --
+   Panah tombol Lanjutkan duduk di lingkarannya sendiri, dan lingkaran itu
+   yang bergerak saat kartunya disentuh — tegangan kecil DI DALAM tombol,
+   bukan tombol yang melompat. Lewat properti `translate`, terpisah dari
+   transform yang dipegang mesin pegas. */
+.lanjutkan-tbl { padding-right: var(--s2); }
+.lanjutkan-tbl svg {
+  box-sizing: content-box;
+  padding: 6px;
+  border-radius: var(--r-penuh);
+  background: color-mix(in srgb, var(--di-atas-aksen) 14%, transparent);
+  transition: translate var(--pegas-jawab-ms) var(--pegas-jawab),
+              background var(--cepat);
+}
+.lanjutkan:hover .lanjutkan-tbl svg {
+  translate: 2px -1px;
+  background: color-mix(in srgb, var(--di-atas-aksen) 24%, transparent);
+}
+
+/* -- sorot di bawah kursor --
+   Baris, kartu, dan kartu Lanjutkan menyala samar tepat di bawah kursor.
+   Posisinya (--kx/--ky) disetel js/permukaan.js, HANYA untuk penunjuk
+   halus (mouse); nilai bawaannya jauh di luar kotak, jadi tanpa JS, di
+   layar sentuh, atau sebelum kursor datang, tidak ada apa pun yang terlihat.
+   Ini cahaya, bukan gerak: ia tidak beranimasi sendiri dan tidak berpindah
+   tanpa tangan yang menggerakkannya. */
+.senarai > .baris, .kartu, .lanjutkan {
+  background-image: radial-gradient(280px circle at var(--kx, -999px) var(--ky, -999px),
+    color-mix(in srgb, var(--nyala) 8%, transparent), transparent 70%);
+}
+[data-tema="kontras"] :is(.senarai > .baris, .kartu, .lanjutkan) { background-image: none; }
+
+/* -- mode fokus pembaca --
+   Kelas di <html>, dipasang dan DICABUT oleh pasangFokus() di
+   layar-belajar.js selama pembaca terpasang. Kolom daftar materi dan peta
+   halaman disingkirkan, kolom baca jadi satu-satunya track (lebarnya tetap
+   --baca-kolom, jadi measure-nya tidak berubah — yang berubah cuma apa yang
+   tertangkap sudut mata), dan navbar meredup sampai disentuh. Spesifisitas
+   `html.fokus-baca .x` mengalahkan aturan @container di kaki berkas tanpa
+   bergantung pada urutan. Opacity, bukan visibility: navbar yang redup tetap
+   bisa ditemukan, diklik, dan difokus papan ketik. */
+html.fokus-baca .materi-tata {
+  grid-template-columns: minmax(0, var(--baca-kolom, 1fr));
+}
+html.fokus-baca :is(.materi-rel, .materi-peta) { display: none; }
+html.fokus-baca #rel {
+  opacity: .32;
+  transition: opacity var(--d-sedang) var(--gaya-pelan);
+}
+html.fokus-baca #rel:is(:hover, :focus-within) { opacity: 1; }
+
+/* -- navbar padat di tema kontras -- */
+[data-tema="kontras"] #rel {
+  background: var(--dasar-dalam);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* ==================================================================== gerak
    Yang tinggal di sini cuma gerak yang tidak dimiliki satu komponen pun:
    kelas yang dipakai js/gerak.js, dan tiga tingkat gerak. Animasi yang
@@ -4340,8 +4669,7 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
    60 kolom menolak menyusut ke lebar panelnya, dan prosa di sebelahnya ikut
    terpotong di tepi. Yang terlihat pelajar bukan "contohnya kepanjangan"
    melainkan kalimat soal yang hurufnya hilang separuh. */
-.kerja-soal > *, .kerja-kode > *, .prosa-soal > *,
-.dasbor-utama > *, .dasbor-sisi > * { min-width: 0; }
+.kerja-soal > *, .kerja-kode > *, .prosa-soal > * { min-width: 0; }
 .bara-petak, .terminal, .pra, pre.kode, .diff, .berkas-jalur { max-width: 100%; }
 /* Kartu tindakan utama pernah jadi benda terlebar di halaman justru di layar
    tersempit: `min-width: 260px` pada isinya, ditambah padding 38 px di kedua
@@ -4369,12 +4697,6 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
    + 38 (gap) + 300 (kolom sisi) + 76 (padding #layar) = 1014 -> 1020. */
 @container panggung (min-width: 1020px) {
   .dasbor { grid-template-columns: minmax(0, 1fr) 300px; }
-  /* Kolom sisi menempel: ia berisi keadaan, bukan pekerjaan, jadi ia boleh
-     tinggal di tempat sementara antrean di kiri digulir. */
-  .dasbor-sisi {
-    position: sticky;
-    top: calc(var(--lengket-atas) + var(--s5));
-  }
 }
 
 /* ---- pembaca materi ---------------------------------------------------
@@ -4668,6 +4990,7 @@ html[data-gerak="mati"] .aksi-tepi { position: static; }
 
 @media (max-width: 560px) {
   #layar { padding: var(--s4) var(--s3) var(--s7); }
+  .pil-jenis { min-width: 0; }   /* baris menumpuk: tak ada kolom yang perlu rata */
 
   /* --- baris perkakas di ponsel ---
      Di 360 px baris ini meluber: 369 px isi di dalam 360 px layar. Yang
@@ -4854,7 +5177,7 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
    Kenapa opt-in dan bukan dipasang ke .senarai/.kartu/.keadaan seperti yang
    sempat direncanakan — tiga alasan yang diukur, bukan ditebak:
 
-     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:453 memanggil
+     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:581 memanggil
                      ungkap(senarai), dan ungkap() menganimasikan induk.children
                      satu per satu. Memberinya entrance CSS berarti dua mesin
                      pada properti yang sama di elemen yang sama.
@@ -4910,7 +5233,7 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
 
 /* ---- 4. popover + anchor ---------------------------------------------
    Pola untuk panel yang menggantung pada pemicunya. Anchor positioning belum
-   aman di semua Firefox, jadi penempatan CSS biasa di :897 tetap jadi jalur
+   aman di semua Firefox, jadi penempatan CSS biasa di :907 tetap jadi jalur
    untuk browser tanpa dukungan; blok ini mengambil alih sepenuhnya di browser
    yang mendukungnya penuh, dan hanya untuk elemen yang menandai dirinya
    .pakai-jangkar. Penandanya dipasang `jangkarAktif()` di aplikasi.js, yang
@@ -4923,14 +5246,14 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
     position-area: bottom span-right;
     position-try-fallbacks: bottom span-left, top span-right;
     margin: var(--s2) 0 0;
-    /* Elemen di top layer tetap MEWARISI `top`/`left` dari :897, dan tepi yang
+    /* Elemen di top layer tetap MEWARISI `top`/`left` dari :907, dan tepi yang
        dipatok tidak menyisakan kesempatan bagi `position-area`: tanpa baris ini
        blok ini bukan mengambil alih penempatan, ia menabraknya. */
     inset: auto;
-    /* `.rel-turun.buka .rel-panel` di :916 memasang `animation: masuk`,
+    /* `.rel-turun.buka .rel-panel` di :926 memasang `animation: masuk`,
        sementara blok ini menganimasikan opacity/transform lewat `transition` +
        `@starting-style` di bawah. Dua mesin atas satu properti pada satu elemen
-       -- persis tersendat yang paling sulit didiagnosis. :916 sendiri tidak
+       -- persis tersendat yang paling sulit didiagnosis. :926 sendiri tidak
        disentuh; spesifisitas (0,3,0 lawan 0,2,0) membuat satu baris cukup. */
     animation: none;
   }
@@ -5055,3 +5378,460 @@ html.lingkar-tema::view-transition-new(root) {
 .celah b { color: var(--teks); font-weight: 600; }
 .celah-jarak { color: var(--redup); }
 
+/* Yang meminta transparansi dikurangi mendapat bilah padat. */
+@media (prefers-reduced-transparency: reduce) {
+  #rel {
+    background: var(--dasar-dalam);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ============================================================== pil atas
+   CANGKANG LAPTOP (2026-10-14). Pemiliknya menolak cangkang IDE (bilah
+   aktivitas, Explorer, tab, bilah status) karena "berantakan dan memusingkan",
+   dan aplikasi ini dipakai HANYA di laptop. Penggantinya satu benda: PIL
+   KACA yang melayang di tengah atas, berisi semua tujuan, dan satu kanvas
+   lapang di bawahnya. Tidak ada panel samping yang memakan lebar, tidak ada
+   bilah kedua yang memakan tinggi.
+
+   DOM-nya SAMA dengan bilah atas lebar sempit -- yang berubah cuma bentuknya
+   -- jadi panel Bahasa/Lainnya, aria-current, pintasan, dan hamburger tetap
+   perilaku yang sudah teruji. Ambangnya 861 px, pasangan AMBANG_PANEL di
+   aplikasi.js.
+
+   Yang dibayar di sini:
+     · --rel-tinggi tetap dipakai SEMUA yang menempel (strip konteks,
+       scroll-padding, kolom lengket) sebagai "apa yang ada di atasku". Pil
+       setinggi 52 px melayang 14 px dari tepi, jadi tokennya 80 px: isi yang
+       menempel berhenti tepat di bawah pil, bukan di belakangnya.
+     · #rel memakai transform untuk berdiri di tengah, dan transform menjadikan
+       #rel blok pemuat bagi #maju-baca yang `fixed`. Itu dipakai, bukan
+       dilawan: kemajuan membaca jadi garis tipis di KAKI PIL itu sendiri.
+     · Panel turun berlabuh di bawah pil, bukan di bawah pemicunya, supaya
+       panel Bahasa bisa selebar kisi empat kolom tanpa keluar layar. */
+@media (min-width: 861px) {
+  :root { --rel-tinggi: 80px; --pil-tinggi: 52px; --pil-jarak: 14px; }
+
+  #cangkang { display: block; }
+  #panggung { min-height: 100vh; padding-top: var(--rel-tinggi); }
+
+  #rel {
+    position: fixed;
+    top: var(--pil-jarak);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100vw - var(--s7));
+    height: var(--pil-tinggi);
+    padding: 0 var(--s2) 0 var(--s3);
+    gap: var(--s1);
+    border: var(--tebal-garis) solid color-mix(in srgb, var(--garis-kuat) 70%, transparent);
+    border-radius: var(--r-penuh);
+    background: color-mix(in srgb, var(--kartu) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    backdrop-filter: blur(20px) saturate(1.5);
+    box-shadow: var(--kilau-tepi),
+      0 1px 2px color-mix(in srgb, var(--dasar-dalam) 50%, transparent),
+      0 22px 50px -24px color-mix(in srgb, var(--dasar-dalam) 90%, transparent);
+  }
+
+  .merek { margin-right: var(--s2); }
+  .merek-teks { display: none; }
+  .merek-bara {
+    display: grid; place-items: center;
+    width: 34px; height: 34px; border-radius: var(--r-penuh);
+    background: var(--nyala);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 35%, transparent);
+  }
+  .merek-bara::after {
+    content: "b";
+    font: 800 18px/1 var(--f-judul);
+    letter-spacing: -.04em;
+    color: var(--di-atas-aksen);
+    margin-top: -2px;
+  }
+
+  .rel-lipat { gap: 2px; }
+  .rel-menu a, .rel-pemicu {
+    height: 38px;
+    padding: 0 var(--s3);
+    border-radius: var(--r-penuh);
+    font-family: var(--f-ui);
+    font-size: var(--t-ui);
+    font-weight: 500;
+    color: var(--teks-2);
+  }
+  .rel-menu a:hover, .rel-pemicu:hover { color: var(--teks); background: color-mix(in srgb, var(--teks) 6%, transparent); }
+  #rel-utama a.kini, .rel-pemicu.kini { color: var(--teks); background: color-mix(in srgb, var(--teks) 9%, transparent); }
+  /* Penanda garis bawah lama tidak dipakai di pil: latar butir aktif sudah
+     cukup, dan dua penanda untuk satu keadaan terbaca sebagai dua keadaan. */
+  .rel-tanda, #rel-utama a.kini::before, .rel-pemicu.kini::before { display: none; }
+  #rel-utama .ikon, .rel-pemicu .ikon { display: none; }
+
+  .rel-tombol {
+    height: 38px; padding: 0 var(--s3);
+    border-radius: var(--r-penuh);
+    border: var(--tebal-garis) solid var(--garis);
+    background: color-mix(in srgb, var(--dasar) 50%, transparent);
+    color: var(--redup);
+    font-size: var(--t-kecil);
+  }
+  .rel-tombol:hover { color: var(--teks); border-color: var(--garis-kuat); }
+  #ukuran { gap: var(--s1); margin-left: var(--s1); }
+  #rel-alih { display: none; }
+
+  /* Panel turun: lembar kaca selebar kebutuhannya, berlabuh di bawah pil. */
+  .rel-turun { position: static; }
+  .rel-panel {
+    top: calc(var(--pil-tinggi) + var(--s3));
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 0;
+    width: max-content;
+    max-width: calc(100vw - var(--s7));
+    padding: var(--s4);
+    border-radius: var(--r-besar);
+    background: color-mix(in srgb, var(--kartu) 92%, transparent);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+  }
+  .rel-turun-kanan .rel-panel { left: 50%; right: auto; }
+  #rel-panel-bahasa .rel-menu {
+    grid-template-columns: repeat(4, minmax(10rem, 1fr));
+    gap: 2px var(--s2);
+  }
+  #rel-panel-bahasa .rel-menu a { height: auto; padding: var(--s2) var(--s3); border-radius: var(--r); }
+
+  #maju-baca {
+    position: absolute;
+    top: auto; bottom: -1px;
+    left: var(--s5); right: var(--s5);
+    width: auto;
+    border-radius: var(--r-penuh);
+  }
+
+  /* Strip konteks: tidak lagi bilah selebar layar, melainkan baris tenang
+     di bawah pil, selebar isinya. */
+  #konteks {
+    top: var(--rel-tinggi);
+    border-bottom: 0;
+    background: transparent;
+  }
+}
+
+/* ============================================================ meja hari ini
+   Susunan dasbor berjalan (dasborBerjalan di layar-belajar.js): Lanjutkan
+   selebar meja, minggu ini, daftar kerja + kartu level, ritme enam bulan.
+   Ditulis di kaki berkas karena tidak satu pun aturan @media di atas
+   menyentuh kelas-kelas ini; bentuk sempitnya ada di blok @media tepat di
+   bawahnya. */
+.meja { display: grid; gap: var(--s6); }
+.meja > .sambut { margin-bottom: 0; }
+
+/* Lanjutkan sebagai panggung, bukan baris: lebih tinggi, judulnya sekelas
+   judul halaman, dan nomornya jadi patokan besar di kiri. */
+.meja > .lanjutkan { padding: var(--s7) var(--s7); gap: var(--s6); }
+.meja > .lanjutkan .lanjutkan-isi h2 { font-size: var(--t-judul-2); }
+.meja > .lanjutkan .lanjutkan-nomor { font-size: clamp(2.4rem, 1.8rem + 2vw, 3.4rem); }
+
+/* -- minggu ini -- */
+.pekan { min-width: 0; }
+.pekan-petak {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--s3);
+  padding: var(--s5) var(--s5) var(--s4);
+  border: var(--tebal-garis) solid var(--garis);
+  border-radius: var(--r);
+  background: var(--kartu);
+}
+.pekan-hari {
+  display: grid;
+  grid-template-rows: auto 96px auto;
+  justify-items: center;
+  gap: var(--s2);
+  min-width: 0;
+}
+.pekan-xp {
+  min-height: 1.2em;
+  font-size: var(--t-mikro);
+  color: var(--redup);
+  font-variant-numeric: tabular-nums;
+}
+/* Batang berdiri di atas lantai; garis target melintang di ketinggian
+   --target (dihitung pekanIni dari target harian), dibuat dengan gradien
+   tipis supaya tidak butuh elemen kedua per hari. */
+.pekan-batang {
+  position: relative;
+  width: min(36px, 100%);
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  border-radius: var(--r-kecil);
+  background:
+    linear-gradient(to top, transparent calc(var(--target) - 1px),
+      color-mix(in srgb, var(--teks) 22%, transparent) calc(var(--target) - 1px),
+      color-mix(in srgb, var(--teks) 22%, transparent) var(--target),
+      transparent var(--target)),
+    color-mix(in srgb, var(--teks) 5%, transparent);
+}
+.pekan-batang i {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  border-radius: var(--r-kecil);
+  background: color-mix(in srgb, var(--nyala) 45%, transparent);
+}
+.pekan-hari.capai .pekan-batang i { background: var(--nyala); }
+.pekan-hari.kini .pekan-xp { color: var(--teks); font-weight: 600; }
+.pekan-nama { font-size: var(--t-kecil); color: var(--redup); white-space: nowrap; }
+.pekan-hari.kini .pekan-nama { color: var(--nyala); font-weight: 600; }
+
+/* -- ritme enam bulan selebar beranda --
+   Sel bara dibesarkan ke 14 px di sini saja: selebar beranda, kisi 11 px
+   terbaca sebagai noktah. Tetap ukuran tetap, bukan 1fr (alasannya di blok
+   hamparan bara). */
+.meja-ritme { min-width: 0; }
+.meja-ritme .bara-petak {
+  grid-template-rows: repeat(7, 14px);
+  grid-auto-columns: 14px;
+  gap: 4px;
+}
+.meja-ritme .bara-sel { width: 14px; height: 14px; }
+
+@media (max-width: 560px) {
+  .meja { gap: var(--s5); }
+  .meja > .lanjutkan { padding: var(--s5); }
+  .pekan-petak { gap: var(--s1); padding: var(--s4) var(--s3) var(--s3); }
+  .pekan-hari { grid-template-rows: auto 72px auto; }
+  .pekan-nama { font-size: var(--t-mikro); }
+}
+
+/* Tombol di dalam .kuis-kemajuan mewarisi monospace wadahnya — yang mono
+   itu angka penghitungnya (dijaga test_web), bukan tombol "Hentikan". */
+.kuis-kemajuan .tbl { font-family: var(--f-teks); }
+
+/* ========================================================== bahasa visual
+   Satu bahasa untuk semua layar laptop sesudah cangkang pil (2026-10-14):
+   judul halaman berukuran display dalam Outfit, tombol berbentuk pil,
+   permukaan bersudut lembut. Desktop saja, seperti cangkangnya. */
+@media (min-width: 861px) {
+  .kepala-besar { margin-bottom: var(--s7); }
+  .kepala-besar h1 {
+    font-size: clamp(2.6rem, 1.5rem + 2.6vw, 4.2rem);
+    line-height: 1;
+    letter-spacing: -.032em;
+    font-weight: 700;
+    margin-block: var(--s2) var(--s5);
+    padding-bottom: .08em;  /* ruang huruf turun (y, g, p) pada line-height 1 */
+  }
+  .kepala-sub { font-size: 1.1rem; color: var(--teks-2); max-width: 62ch; }
+  /* Layar kerja (pembaca materi) tidak memakai ukuran display: ia dibuka
+     ratusan kali per sesi, dan judul raksasa di sana cuma mendorong prosa
+     ke bawah lipatan layar. */
+  .kepala-materi h1 { font-size: clamp(2rem, 1.3rem + 1.4vw, 2.8rem); letter-spacing: -.028em;
+                      line-height: 1.08; }
+
+  /* Kartu Lanjutkan di MANA PUN: tepi dan cahaya beraksen menggantikan
+     cincin abu ganda. Tetap satu-satunya permukaan beraksen di layarnya. */
+  .lanjutkan {
+    border-radius: 24px;
+    border-color: color-mix(in srgb, var(--nyala) 40%, var(--garis));
+    background:
+      radial-gradient(520px 240px at 100% 0%,
+        color-mix(in srgb, var(--nyala) 13%, transparent), transparent 70%),
+      var(--kartu);
+    box-shadow: var(--kilau-tepi),
+      0 26px 60px -34px color-mix(in srgb, var(--nyala) 55%, transparent);
+  }
+  .lanjutkan:hover { border-color: var(--nyala); }
+  .lanjutkan-tbl { border-radius: var(--r-penuh); }
+  h2 { font-weight: 650; letter-spacing: -.025em; }
+  .mata { font-family: var(--f-ui); font-weight: 500; color: var(--teks-2); letter-spacing: .01em; }
+
+  .tbl { border-radius: var(--r-penuh); font-family: var(--f-ui); font-weight: 600; }
+  .tbl:active { transform: translateY(1px); }
+
+  .kartu { border-radius: 22px; }
+  .senarai:has(> .baris) { border-radius: 22px; }
+  .baris .judul { font-family: var(--f-ui); font-weight: 600; letter-spacing: -.005em; }
+  .pil { border-radius: var(--r-penuh); }
+  .keadaan { border-radius: 22px; }
+
+  /* Hover menyala SEKETIKA dan padam pelan (pola Linear: masuk 0 ms, keluar
+     150 ms). Baris yang menunggu sebelum menyala terasa lamban di bawah
+     kursor; yang padam seketika terasa berkedip. Cuma warna latar, jadi
+     tidak ada mesin gerak kedua yang ikut berebut properti ini. */
+  .baris { transition: background-color 150ms var(--gaya-keluar); }
+  .baris:hover { transition-duration: 0s; }
+}
+
+/* ================================================================= beranda
+   Dasbor berjalan (beranda.js + dasborBerjalan). Desktop saja, seperti
+   cangkang pil. Bab demi bab dengan jarak lapang: hero Editorial Split,
+   bento tanpa celah, kalimat yang menyala saat digulir, akordeon bahasa,
+   ritme enam bulan, marquee kurikulum, ajakan penutup. */
+@media (min-width: 861px) {
+  .beranda { display: grid; gap: var(--s8); padding-block: var(--s6) var(--s8); }
+  .beranda-hero-teks, .beranda-akordeon-bagian { min-width: 0; }
+
+  /* -- hero ------------------------------------------------------------ */
+  .beranda-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: var(--s7);
+    align-items: center;
+    min-height: min(62vh, 560px);
+  }
+  .beranda-hero h1 {
+    font-size: clamp(3rem, 1.6rem + 3.6vw, 5.4rem);
+    line-height: .98;
+    letter-spacing: -.035em;
+    font-weight: 700;
+    margin: var(--s3) 0 var(--s4);
+  }
+  .beranda-hero .sambut-sub { font-size: 1.15rem; color: var(--teks-2); max-width: 44ch; }
+  .beranda-aksi { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s6); }
+  .tbl-besar { min-height: 52px; padding: 0 var(--s5); border-radius: var(--r-penuh);
+               font-family: var(--f-ui); font-size: 1rem; font-weight: 600; }
+  .beranda-hero .lanjutkan {
+    flex-direction: column; align-items: flex-start; gap: var(--s4);
+    padding: var(--s6);
+    border-radius: 28px;
+    transform-origin: 50% 80%;
+    border-color: color-mix(in srgb, var(--nyala) 40%, var(--garis));
+    background:
+      radial-gradient(420px 260px at 100% 0%,
+        color-mix(in srgb, var(--nyala) 16%, transparent), transparent 70%),
+      var(--kartu);
+    box-shadow: var(--kilau-tepi),
+      0 30px 70px -36px color-mix(in srgb, var(--nyala) 60%, transparent);
+  }
+  .beranda-hero .lanjutkan:hover { border-color: var(--nyala); }
+  .beranda-hero .lanjutkan-nomor { font-size: clamp(4rem, 2.6rem + 3vw, 6.5rem); line-height: .9; }
+  .beranda-hero .lanjutkan-isi h2 { font-size: clamp(1.4rem, 1rem + 1vw, 1.9rem); }
+  .beranda-hero .lanjutkan-tbl { align-self: stretch; justify-content: space-between;
+                                 border-radius: var(--r-penuh); }
+
+  /* -- bento: 6 kolom, dense, tanpa sel kosong --------------------------
+     Kolom: level 2 + pekan 4 = 6 (baris 1); antrean 4 + karier 2 = 6 dan
+     pustaka 2 berdiri di bawah karier (antrean membentang 2 baris), jadi
+     baris 2 dan 3 sama-sama penuh. Kalau antrean tidak ada, karier dan
+     pustaka masing-masing 3 kolom dan baris 2 tetap penuh. */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-flow: dense;
+    gap: var(--s4);
+  }
+  .bento > * { min-width: 0; }
+  .bento-level { grid-column: span 2; }
+  .bento-pekan { grid-column: span 4; }
+  .bento-antrean { grid-column: span 4; grid-row: span 2; }
+  .bento-karier, .bento-pustaka { grid-column: span 2; }
+  .bento:not(:has(.bento-antrean)) :is(.bento-karier, .bento-pustaka) { grid-column: span 3; }
+  .bento-level > *, .bento-pekan > *, .bento-karier > *, .bento-pustaka > * { height: 100%; }
+  .bento .pekan { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+
+  .meja-ubin-satu {
+    display: grid; align-content: space-between; gap: var(--s4);
+    padding: var(--s5);
+    border-radius: 22px;
+    border: var(--tebal-garis) solid var(--garis);
+    background: var(--kartu);
+    color: var(--teks);
+    transition: border-color var(--cepat), transform var(--sedang);
+  }
+  .meja-ubin-satu:hover { text-decoration: none; border-color: var(--garis-kuat);
+                          transform: translateY(-3px); }
+  .meja-ubin-satu:active { transform: translateY(0); }
+  .meja-ubin-kepala { display: flex; align-items: center; gap: var(--s2);
+                      font-family: var(--f-ui); font-size: var(--t-kecil);
+                      font-weight: 600; color: var(--teks-2); }
+  .meja-ubin-isi { display: grid; gap: var(--s1); color: var(--teks-2); }
+  .meja-ubin-isi b { color: var(--teks); font-family: var(--f-judul); font-size: 1.35rem;
+                     line-height: 1.15; letter-spacing: -.02em; }
+  .meja-ubin-angka { font-size: var(--t-kecil); color: var(--redup); }
+  .meja-ubin-bilah { display: block; margin-top: var(--s2); }
+
+  /* -- kalimat perjalanan ----------------------------------------------- */
+  .beranda-kalimat { padding-block: var(--s7); }
+  .beranda-kalimat-isi {
+    max-width: 30ch;
+    margin: 0;
+    font-family: var(--f-judul);
+    font-size: clamp(2rem, 1.2rem + 2.2vw, 3.4rem);
+    line-height: 1.12;
+    letter-spacing: -.035em;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  /* -- akordeon horizontal ---------------------------------------------- */
+  .beranda-judul-bagian { font-size: var(--t-judul-2); margin-bottom: var(--s5); }
+  .akordeon { display: flex; gap: var(--s3); height: 320px; }
+  .akordeon-iris {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: var(--s5);
+    border-radius: 24px;
+    border: var(--tebal-garis) solid var(--garis);
+    background: var(--kartu);
+    color: var(--teks);
+    overflow: hidden;
+    transition: flex-grow var(--pegas-halus-ms) var(--pegas-halus),
+                border-color var(--cepat);
+  }
+  .akordeon-iris:hover, .akordeon-iris:focus-visible { flex-grow: 3.2; text-decoration: none;
+                                                       border-color: var(--garis-kuat); }
+  .akordeon-nomor { font-family: var(--f-ui); font-size: var(--t-kecil); color: var(--redup); }
+  .akordeon-nama {
+    align-self: end;
+    font-family: var(--f-judul); font-weight: 700;
+    font-size: clamp(1.4rem, 1rem + 1.2vw, 2.2rem); letter-spacing: -.03em;
+    white-space: nowrap;
+    /* Nama yang lebih panjang dari irisannya memudar, bukan terpotong
+       tajam; begitu irisannya melebar, pudarnya hilang. */
+    mask-image: linear-gradient(90deg, black 70%, transparent);
+  }
+  .akordeon-iris:hover .akordeon-nama, .akordeon-iris:focus-visible .akordeon-nama { mask-image: none; }
+  .akordeon-isi { display: grid; gap: var(--s2); margin-top: var(--s3); color: var(--teks-2);
+                  font-size: var(--t-ui); white-space: nowrap;
+                  opacity: 0; transition: opacity var(--sedang); }
+  .akordeon-iris:hover .akordeon-isi, .akordeon-iris:focus-visible .akordeon-isi { opacity: 1; }
+  .akordeon-persen { font-family: var(--f-judul); font-size: 2.6rem; line-height: 1;
+                     letter-spacing: -.04em; color: var(--teks); }
+  .akordeon-bilah { display: block; height: 4px; border-radius: var(--r-penuh);
+                    background: var(--garis); overflow: hidden; max-width: 18rem; }
+  .akordeon-bilah > i { display: block; height: 100%; background: var(--nyala); }
+  .akordeon-pergi { display: inline-flex; gap: var(--s1); align-items: center; color: var(--nyala-lembut); }
+
+  /* -- marquee ---------------------------------------------------------- */
+  .marquee {
+    overflow: hidden;
+    padding-block: var(--s5);
+    border-block: var(--tebal-garis) solid var(--garis);
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+  .marquee-jalur { display: flex; width: max-content; animation: marquee 60s linear infinite; }
+  .marquee:hover .marquee-jalur { animation-play-state: paused; }
+  .marquee-baris { display: flex; gap: var(--s7); padding-right: var(--s7); }
+  .marquee-butir {
+    font-family: var(--f-judul); font-size: clamp(1.8rem, 1rem + 2vw, 3rem);
+    font-weight: 600; letter-spacing: -.03em; color: var(--redup);
+    white-space: nowrap; transition: color var(--cepat);
+  }
+  .marquee-butir:hover { color: var(--teks); text-decoration: none; }
+
+  /* -- penutup ---------------------------------------------------------- */
+  .beranda-tutup { display: grid; justify-items: start; gap: var(--s5);
+                   padding-block: var(--s7) var(--s6); }
+  .beranda-tutup h2 { font-size: clamp(2rem, 1.2rem + 2vw, 3.2rem); max-width: 22ch;
+                      line-height: 1.05; letter-spacing: -.035em; }
+}
+@keyframes marquee { to { transform: translateX(-50%); } }

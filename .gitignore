@@ -35,3 +35,6 @@ progres-belajar.json
 
 # Log pemasang pihak ketiga yang kebetulan jatuh di sini
 install.log
+
+# Tangkapan layar dan snapshot alat uji browser (Playwright MCP)
+.playwright-mcp/

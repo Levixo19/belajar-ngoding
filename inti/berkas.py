@@ -99,7 +99,7 @@ EKSTENSI = {
     "html": ".html", "css": ".css",
     "csharp": ".cs", "vb": ".vb", "rust": ".rs", "php": ".php",
     "ruby": ".rb", "kotlin": ".kt", "typescript": ".ts",
-    "fedora": ".sh",
+    "fedora": ".sh", "git": ".sh",
 }
 
 
@@ -156,6 +156,7 @@ def perintah_jalan(bahasa, nama):
         "typescript": [f"tsc {nama}", f"node {batang}.js"],
         "bash": [f"bash {nama}"],
         "fedora": [f"chmod +x {nama}", f"./{nama}"],
+        "git": [f"bash {nama}"],
         "sql": [f"sqlite3 belajar.db < {nama}"],
         # HTML dan CSS tidak dijalankan dari terminal: keduanya dibuka browser.
         # Perintah yang benar-benar dipakai orang untuk melihat hasilnya adalah
@@ -431,13 +432,19 @@ def jenis_kode(bahasa, kode):
         # diketik di sesi database yang sudah berisi data.
         return PROGRAM if re.search(r"\bCREATE\s+TABLE\b", kode, re.I) else SESI
 
-    if bahasa == "fedora":
+    if bahasa in ("fedora", "git"):
         # Blok materi CLI berisi PERINTAH yang diketik manusia di terminal --
         # termasuk `sudo dnf5 install` dan `systemctl enable`. Menyebutnya
         # "program utuh" berarti aplikasi menawarkan tombol Jalankan yang
         # benar-benar mengeksekusinya di mesin pelajar, mengubah sistemnya
         # tanpa ia memintanya. Hanya blok yang memang berupa SKRIP -- ditandai
         # shebang di baris pertama -- yang disebut berkas.
+        #
+        # Git ikut aturan yang sama persis. `git reset --hard`, `git push
+        # --force`, dan `git clean -fd` di materinya ditujukan ke repositori
+        # MILIK PELAJAR, dan satu-satunya tempat yang aman untuk itu adalah
+        # terminalnya sendiri. Latihannya (bershebang) membuat repositori
+        # sendiri di mktemp -d, jadi yang itu memang boleh dijalankan.
         return PROGRAM if kode.lstrip().startswith("#!") else SESI
 
     if bahasa == "html":
@@ -477,6 +484,10 @@ LABEL_SESI = {
     "fedora": ("Ketik langsung di terminal",
                "Perintah ini mengubah sistemmu sendiri, jadi BACA dulu sebelum "
                "menjalankannya. Yang berawalan sudo perlu hak administrator."),
+    "git": ("Ketik langsung di terminal, di dalam repositorimu",
+            "Perintah ini mengubah riwayat repositori yang sedang kamu buka, "
+            "jadi BACA dulu; reset --hard dan push --force tidak bisa dibatalkan "
+            "sembarangan."),
 }
 
 
@@ -493,6 +504,9 @@ LABEL_SESI = {
 #            `sudo dnf5 install`, `systemctl enable`, dan `mkfs.ext4` hanya
 #            bermakna kalau ia sendiri yang mengetiknya. Menjalankannya atas
 #            namanya berarti mengubah sistemnya tanpa ia meminta.
+#   git    : sama dengan fedora -- sesinya repositori milik pelajar, dan
+#            `reset --hard` atau `push --force` di sana mengubah riwayat
+#            sungguhan. Yang boleh dijalankan cuma skrip latihan bershebang.
 #
 # Menyamakan keduanya PERNAH terjadi: `bisa_dijalankan` dulu berbunyi
 # `jenis in (PROGRAM, SESI)`, dan halaman materi Fedora menawarkan tombol

@@ -151,7 +151,7 @@ class _Pembaca(html.parser.HTMLParser):
     def handle_endtag(self, tag):
         if tag in KOSONG:
             self.masalah.append(
-                f"baris {self.getpos()[0]}: </{tag}> tidak diperlukan — "
+                f"baris {self.getpos()[0]}: </{tag}> tidak diperlukan: "
                 f"<{tag}> memang tidak punya tag penutup")
             return
         for i in range(len(self.tumpukan) - 1, -1, -1):
@@ -309,7 +309,7 @@ def baca_css(kode):
         if buka < 0:
             sisa = _rapikan(bersih[i:])
             if sisa and sisa != "}":
-                masalah.append(f"'{_potong(sisa, 40)}' tidak diikuti '{{' — "
+                masalah.append(f"'{_potong(sisa, 40)}' tidak diikuti '{{'; "
                                "aturan CSS selalu berbentuk pemilih { … }")
             break
 
@@ -345,7 +345,7 @@ def baca_css(kode):
         for prop, nilai in isi:
             if nilai is None:
                 masalah.append(f"'{_potong(prop, 40)}' bukan deklarasi yang "
-                               "sah — bentuknya selalu properti: nilai;")
+                               "sah; bentuknya selalu properti: nilai;")
                 continue
             baris.append(f"{INDENT * (dalam + 1)}{prop}: {nilai}")
         i = tutup + 1

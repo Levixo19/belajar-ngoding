@@ -30,6 +30,9 @@ from layar.materials import materials_menu, render_material
 from layar.quiz import quiz_menu, menu_satu_kuis
 from layar.exercises import exercise_menu, show_exercise
 from layar.navigasi import cari_global, menu_bookmark, lanjut_terakhir
+from layar.pustaka import menu_pustaka, menu_bacaan_bahasa
+from layar.karier import menu_karier
+from inti import pustaka
 from pelajar.saran import langkah_berikutnya, tantangan_harian
 from pelajar.progress import (
     load_progress, statistik_bahasa, info_level, gelar_dari_level, DAFTAR_BADGE,
@@ -56,6 +59,7 @@ from data import (
     TYPESCRIPT_MATERIALS, TYPESCRIPT_QUIZZES, TYPESCRIPT_EXERCISES,
     VB_MATERIALS, VB_QUIZZES, VB_EXERCISES,
     FEDORA_MATERIALS, FEDORA_QUIZZES, FEDORA_EXERCISES,
+    GIT_MATERIALS, GIT_QUIZZES, GIT_EXERCISES,
 )
 
 VERSI = "2.0"
@@ -220,6 +224,18 @@ LANGUAGES = [
                      "sudo mengubah sistemmu sungguhan.",
                      "Latihannya aman: semuanya bekerja di direktori sementara",
                      "dengan hak pengguna biasa, tidak ada yang perlu sudo."],
+    },
+    {
+        "key": "git", "label": "Git & GitHub", "runner": "git",
+        "tematik": True,
+        "materials": GIT_MATERIALS, "quizzes": GIT_QUIZZES,
+        "exercises": GIT_EXERCISES,
+        "run_info": ["Jalankan : bash nama_file.sh",
+                     "Latihannya skrip bash yang membuat repositori sendiri di",
+                     "direktori sementara (mktemp -d), jadi repositorimu aman.",
+                     "Blok perintah di materi adalah SESI TERMINAL: ketik sendiri",
+                     "di repositorimu, jangan dijalankan aplikasi. reset --hard",
+                     "dan push --force mengubah riwayat sungguhan."],
     },
 ]
 
@@ -474,6 +490,7 @@ def language_menu(lang):
                 f"Kuis          ({s['kuis']}/{s['total_kuis']} dikerjakan)",
                 f"Latihan Kode  ({selesai_latihan}/{s['total_latihan']} selesai)",
                 "Cara menjalankan kode " + lang["label"],
+                f"Bacaan & Pustaka  ({pustaka.ringkasan_kurikulum(lang['key'])['total']} tautan)",
             ],
         )
         if pilih == 0:
@@ -488,6 +505,8 @@ def language_menu(lang):
                           lang["runner"])
         elif pilih == 4:
             _cara_jalan(lang)
+        elif pilih == 5:
+            menu_bacaan_bahasa(lang, LANGUAGES)
 
 
 def _cara_jalan(lang):
@@ -812,6 +831,8 @@ def main_menu():
                 "l": "Lanjutkan dari terakhir",
                 "c": "Cari di semua bahasa",
                 "b": "Bookmark",
+                "u": "Pustaka: buku, kursus, proyek gratis",
+                "r": "Peta karier: profesi & kesiapanmu",
                 "s": "Statistik, badge & data",
                 "p": "Pengaturan",
                 "t": "Tentang aplikasi",
@@ -835,6 +856,10 @@ def main_menu():
             cari_global(LANGUAGES)
         elif pilih == "b":
             menu_bookmark(LANGUAGES)
+        elif pilih == "u":
+            menu_pustaka(LANGUAGES)
+        elif pilih == "r":
+            menu_karier(LANGUAGES)
         elif pilih == "s":
             _menu_statistik()
         elif pilih == "p":

@@ -319,7 +319,7 @@ HINT_HITAM = {
     "fedora": ["Mulai dengan shebang", "{ lapor a; galat b;", "if periksa_ambang"],
 }
 
-HINT_TOTAL = 1043
+HINT_TOTAL = 1112
 
 
 def _hint_lanjut(a, b):

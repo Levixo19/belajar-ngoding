@@ -25,11 +25,12 @@ import {
   ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak, animasi, saatTampak,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
+import { bacaJedaMata, setelJedaMata } from "./istirahat.js";
 
 export const TEMA = [
-  ["gelap", "Gelap", "Ungu-tinta. Bawaan, untuk pemakaian sehari-hari."],
+  ["gelap", "Gelap", "Grafit netral. Bawaan, untuk pemakaian sehari-hari."],
   ["malam", "Malam", "Serba hangat, kontras rendah. Untuk mata yang lelah."],
-  ["terang", "Terang", "Kertas berkabut. Untuk ruangan yang benderang."],
+  ["terang", "Terang", "Kertas putih yang tenang. Untuk ruangan benderang."],
   ["kontras", "Kontras tinggi", "Warna dikuatkan, garis dipertebal."],
 ];
 
@@ -266,7 +267,7 @@ function blokBadge(s, punya, belum) {
   const petak = h("div.petak.petak-2", {}, punya.map(medali), belum.map(medali));
   ungkap(petak, { per: 26, maks: 320, geser: 8 });
   return h("section", {},
-    h("span.mata", {}, `Badge — ${punya.length} dari ${s.semua_badge.length}`),
+    h("span.mata", {}, `Badge, ${punya.length} dari ${s.semua_badge.length}`),
     petak);
 }
 
@@ -534,7 +535,7 @@ export async function layarAtur(_params, ctx) {
     "Getar perangkat saat naik level",
     adaGetarPerangkat
       ? "Satu sentakan singkat, hanya untuk naik level dan badge baru. "
-        + "Berdiri sendiri — ia tidak ikut mati kalau suara dimatikan."
+        + "Berdiri sendiri: ia tidak ikut mati kalau suara dimatikan."
       : "Perangkat ini tidak punya motor getar, jadi saklar ini tidak akan "
         + "terasa apa pun di sini. Setelannya tetap tersimpan untuk perangkat "
         + "lain yang memakai browser yang sama.",
@@ -549,6 +550,14 @@ export async function layarAtur(_params, ctx) {
          `sentuhPerangkat()` memeriksa saklar itu sebelum berbuat apa pun. */
       if (v) mainkanContoh("getar");
     });
+
+  const barisJeda = sakelarBaris(
+    "Pengingat istirahat mata",
+    "Setiap 20 menit belajar aktif, satu pengingat tenang selama 20 detik: "
+      + "pandang sesuatu sejauh 6 meter. Waktu tab tidak terlihat atau saat "
+      + "kamu diam tidak dihitung.",
+    bacaJedaMata(),
+    (v) => setelJedaMata(v));
 
   // Sistem yang menyetel "kurangi gerak" membuat pilihan di sini tak berarti.
   // Katakan itu terus terang alih-alih membiarkan kartunya tampak berfungsi.
@@ -571,13 +580,13 @@ export async function layarAtur(_params, ctx) {
         + "di aplikasi terminal.")),
 
     h("section", {},
-      h("span.mata", {}, "Tampilan — hanya untuk browser ini"),
+      h("span.mata", {}, "Tampilan, hanya untuk browser ini"),
       h("div.kartu", {},
         h("div.medan", {}, h("label", {}, "Tema warna"), petakTema),
         h("div.medan", {}, h("label", {}, "Ukuran huruf"), deretUkuran),
         h("div.medan", {}, labelLebar,
           h("div.ket", {}, "Baris yang terlalu panjang membuat mata kehilangan "
-            + "awal baris berikutnya. 60–75 karakter biasanya paling nyaman."),
+            + "awal baris berikutnya. 60-75 karakter biasanya paling nyaman."),
           geser),
         h("div.medan", {},
           h("label", {}, "Gerak"),
@@ -587,6 +596,7 @@ export async function layarAtur(_params, ctx) {
             + "yang bergerak apa pun yang kamu pilih."),
           petakGerak,
           tahanGerak),
+        h("div.medan", {}, barisJeda),
         /* Saluran non-visual duduk PALING BAWAH di kartu Tampilan, sesudah
            tema, huruf, lebar baca, dan gerak. Urutannya bukan kebetulan:
            empat yang di atas berlaku untuk semua orang setiap saat, sedangkan
@@ -598,14 +608,14 @@ export async function layarAtur(_params, ctx) {
           h("label", {}, "Suara"),
           h("div.ket", {},
             "Bawaannya mati, dan suara tidak pernah jadi satu-satunya cara "
-            + "mengetahui apa pun di aplikasi ini — semua yang berbunyi juga "
+            + "mengetahui apa pun di aplikasi ini; semua yang berbunyi juga "
             + "muncul di layar. Tidak ada bunyi per tombol dan tidak ada "
             + "bunyi untuk jawaban yang salah."),
           petakSuara),
         h("div.medan", {}, barisGetar))),
 
     h("section", {},
-      h("span.mata", {}, "Belajar — berlaku juga di aplikasi terminal"),
+      h("span.mata", {}, "Belajar, berlaku juga di aplikasi terminal"),
       h("div.kartu", { gaya: { display: "grid", gap: "var(--s1)" } },
         // Berdiri PALING ATAS di kartu ini, dan itu disengaja. Dua layar lain
         // menjanjikannya dengan kalimat "buka semua bab di Pengaturan" — bab
@@ -652,7 +662,7 @@ export async function layarAtur(_params, ctx) {
       h("span.mata", {}, "Tentang"),
       h("div.kartu", {},
         h("p", {}, `Belajar Ngoding versi ${ctx.awal.versi} `
-          + `(antarmuka web ${ctx.awal.versi_web}). Tanpa dependensi luar — `
+          + `(antarmuka web ${ctx.awal.versi_web}). Tanpa dependensi luar: `
           + "cukup Python 3.8+ dan sebuah browser."),
         h("p.baris-sisi", { gaya: { margin: "0" } },
           `Kode yang kamu jalankan dibatasi ${ctx.awal.batas.waktu} detik dan `
@@ -729,7 +739,7 @@ function blokBahaya(ctx) {
       borderColor: "color-mix(in srgb, var(--salah) 32%, transparent)" } },
       h("p", { gaya: { color: "var(--teks-2)", fontSize: "var(--t-ui)" } },
         "Cadangan otomatis dibuat sebelum menghapus, di sebelah berkas "
-        + "progresnya. Catatan pribadimu tidak ikut terhapus — ia tinggal di "
+        + "progresnya. Catatan pribadimu tidak ikut terhapus; ia tinggal di "
         + "berkas yang lain."),
       h("div.deret", {},
         pilih,
@@ -753,7 +763,7 @@ function blokBahaya(ctx) {
 
 async function resetSemua() {
   if (!await konfirmasi(
-    "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di sebelas "
+    "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di SEMUA "
     + "bahasa sekaligus.",
     { judul: "Reset seluruh progres", labelYa: "Lanjut", bahaya: true })) return;
 
@@ -783,8 +793,8 @@ async function resetSemua() {
 /* ================================================================= bantuan */
 
 export const PINTASAN = [
-  ["Ctrl K", "Palet perintah — lompat ke mana saja"],
-  ["Ctrl B", "Buka / tutup menu (hanya di layar sempit)"],
+  ["Ctrl K", "Palet perintah: lompat ke mana saja"],
+  ["Ctrl B", "Buka / tutup Explorer (di layar sempit: menu)"],
   ["Ctrl J", "Ganti tema"],
   ["G lalu D", "Ke dasbor"],
   ["G lalu C", "Ke ruang coba"],
@@ -794,7 +804,7 @@ export const PINTASAN = [
   ["G lalu P", "Ke pengaturan"],
   ["?", "Tampilkan daftar ini"],
   ["Esc", "Tutup dialog"],
-  ["1–9 atau A–J", "Menjawab soal kuis"],
+  ["1-9 atau A-J", "Menjawab soal kuis"],
   ["Ctrl ⏎", "Jalankan kode di editor"],
   ["Ctrl ⇧ ⏎", "Periksa jawaban latihan"],
   ["Ctrl S", "Simpan kode"],
@@ -804,6 +814,7 @@ export const PINTASAN = [
   ["k", "Blok kode sebelumnya (di halaman materi)"],
   ["]", "Bagian berikutnya (di halaman materi)"],
   ["[", "Bagian sebelumnya (di halaman materi)"],
+  ["f", "Mode fokus (di halaman materi)"],
   ["⏎", "Jalankan blok kode yang sedang difokus"],
 ];
 
