@@ -22,6 +22,7 @@ import {
   adaGerak,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
+import { kepalaBersampul } from "./sampul.js";
 import { praKode, token } from "./sorot.js";
 import { Editor } from "./editor.js";
 import {
@@ -88,7 +89,7 @@ export async function layarKuis({ key, indeks }, ctx) {
     let timer = false;
 
     isikan(panggung,
-      h("header.kepala-besar", {},
+      kepalaBersampul(`${key}/kuis-${nomorKuis}`, { bahasa: key, ragam: "kisi", pita: true },
         h("span.mata", {}, `${b.label} · kuis ${nomorKuis + 1} dari ${b.kuis.length}`),
         h("h1", {}, q.judul),
         h("p.kepala-sub", {}, `${q.soal} soal pilihan ganda. Jawaban yang `
@@ -257,7 +258,7 @@ export async function layarKuis({ key, indeks }, ctx) {
       // melewati `[tabindex="-1"]` saat menghitung penghuni perangkap fokus).
       //
       // `preventScroll: true` mengikuti konvensi rumah (`aplikasi.js:272`,
-      // `aplikasi.js:297`, `layar-belajar.js:2635`): memindahkan fokus tidak
+      // `aplikasi.js:297`, `layar-belajar.js:2660`): memindahkan fokus tidak
       // boleh sekaligus menggeser halaman, karena soal berikutnya sudah
       // berada di tempat yang benar dan geseran kedua terasa seperti layar
       // yang meloncat sendiri.
@@ -396,7 +397,7 @@ export async function layarKuis({ key, indeks }, ctx) {
     }
 
     isikan(panggung, h("div.masuk", {},
-      h("header.kepala-besar", {},
+      kepalaBersampul(`${key}/kuis-${nomorKuis}`, { bahasa: key, ragam: "kisi", pita: true },
         h("span.mata", {}, kehabisanWaktu ? "Waktu habis" : "Hasil"),
         h("h1", {}, angkaBenar, ` dari ${r.total} benar`),
         h("p.kepala-sub", {}, kalimat)),
@@ -726,7 +727,7 @@ export async function layarLatihan({ key, indeks }) {
         //
         // Yang dibuang denyut TANGAN pada `kotakStatus`, bukan `dari`-nya:
         // pil status tetap terbaca tanpa gerak sama sekali. `gambarStatus()`
-        // di atas (:618) terukur mengubah LIMA hal serentak — teks
+        // di atas (:619) terukur mengubah LIMA hal serentak — teks
         // `belum selesai` -> `LULUS`, kelas `pil` -> `pil-tumbuh`, warna
         // rgb(179,166,198) -> rgb(52,211,153), latar rgb(29,22,48) -> tint
         // `--tumbuh` 11%, dan ikon 0 -> 1 svg — dan kartu hasil yang baru
@@ -1273,7 +1274,7 @@ function kartuJalan(r, x, kode, simpanLepas, tuju) {
 const SENTUHAN_HASIL = ["wheel", "pointerdown", "keydown"];
 
 /* Batas waktu pengamat ukuran panel hasil. Angkanya kembar dengan
-   `PIN_BARA_MS` (layar-belajar.js:770) dan itu disengaja: keduanya menjawab
+   `PIN_BARA_MS` (layar-belajar.js:791) dan itu disengaja: keduanya menjawab
    satu pertanyaan — berapa lama sebuah pengamat boleh hidup di layar yang
    dibuka lalu ditinggal. */
 const PIN_HASIL_MS = 4000;
@@ -1318,7 +1319,7 @@ const PIN_HASIL_MS = 4000;
  *  Pin-nya WAJIB lepas. Posisi gulir adalah keadaan PENGGUNA, dan merebutnya
  *  kembali sesudah dia menggeser sendiri lebih buruk daripada tidak mem-pin
  *  sama sekali. Bentuknya sengaja kembar dengan `pinKeHariIni()`
- *  (layar-belajar.js:805): putus pada sentuhan pertama, dan putus pada batas
+ *  (layar-belajar.js:826): putus pada sentuhan pertama, dan putus pada batas
  *  waktu. */
 function pinKeGalat(panel) {
   const chipBawah = panel.querySelector('[data-lebih="bawah"]');

@@ -24,7 +24,7 @@ import { praKode } from "./sorot.js";
 import { Editor } from "./editor.js";
 import { barisTautan } from "./layar-pustaka.js";
 import { kalimatGulir, akordeonBahasa, marqueeBahasa, gerakBeranda } from "./beranda.js";
-import { sampul } from "./sampul.js";
+import { sampul, kepalaBersampul } from "./sampul.js";
 import {
   pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
 } from "./pratinjau.js";
@@ -374,7 +374,7 @@ function dasborBerjalan(d, ctx) {
       h("div.beranda-hero-teks", {},
         h("span.mata", {}, new Date().toLocaleDateString("id-ID",
           { weekday: "long", day: "numeric", month: "long", year: "numeric" })),
-        h("h1", {}, d.nama ? `${sapa}, ${d.nama}.` : `${sapa}.`),
+        judulSapa(sapa, d.nama, utama ? utama.bahasa : null),
         h("p.sambut-sub", {}, kalimatPembuka(d)),
         h("div.beranda-aksi", {},
           utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
@@ -384,18 +384,37 @@ function dasborBerjalan(d, ctx) {
     bento,
     kalimatGulir(d),
     akordeonBahasa(dijalani),
-    h("section.meja-ritme", {}, blokBara(d)),
+    h("section.meja-ritme", {}, blokBara(d),
+      h("div.ritme-sampul", {}, sampul("ritme", { ragam: "gelombang", lebar: 480, tinggi: 360 }))),
     marqueeBahasa(ctx.awal.bahasa || []),
     h("section.beranda-tutup", {},
-      h("h2", {}, "Sepuluh menit hari ini lebih baik daripada dua jam minggu depan."),
-      utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
-        "Lanjutkan: " + tanpaNomor(utama.judul), ikon("lanjut", { ukuran: 18 })) : null),
+      h("div.beranda-tutup-teks", {},
+        h("h2", {}, "Sepuluh menit hari ini lebih baik daripada dua jam minggu depan."),
+        utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
+          "Lanjutkan: " + tanpaNomor(utama.judul), ikon("lanjut", { ukuran: 18 })) : null),
+      h("div.beranda-tutup-sampul", {},
+        sampul(utama ? `${utama.bahasa}/tutup` : "tutup",
+               { bahasa: utama ? utama.bahasa : null, ragam: "orbit", lebar: 560, tinggi: 360 }))),
   );
 
   ungkap(bento, { per: 60, maks: 360, geser: 18, pegas: "halus" });
   let lepasGerak = () => {};
   saatSiap(el, () => { lepasGerak = gerakBeranda(el); });
   return { el, judul: "Dasbor", saatKeluar: () => lepasGerak() };
+}
+
+/** Sapaan beranda dengan satu pil gambar DI DALAM judulnya, sesudah kata
+ *  pertama ("Selamat [gambar] malam."). Pilnya sampul bahasa yang sedang
+ *  dijalani, jadi gambar pertama yang dilihat pagi itu adalah pelajaran yang
+ *  menunggu. Judulnya tetap terbaca utuh: pil itu aria-hidden dan kosong
+ *  teks, jadi pembaca layar mendengar "Selamat malam." apa adanya. */
+function judulSapa(sapa, nama, bahasa) {
+  const [awal, ...sisa] = sapa.split(" ");
+  return h("h1", {},
+    awal, " ",
+    h("span.judul-pil", { "aria-hidden": "true" },
+      sampul(bahasa ? `${bahasa}/sapa` : "sapa", { bahasa, ragam: "gelombang", lebar: 240, tinggi: 110 })),
+    " ", sisa.join(" ") + (nama ? `, ${nama}.` : "."));
 }
 
 /** Kartu tindakan utama dasbor.
@@ -429,6 +448,7 @@ function kartuLanjutkan(s) {
 function ubinKarier() {
   const isi = h("span.meja-ubin-isi", {}, "Lihat profesi yang bisa kamu tuju.");
   const el = h("a.meja-ubin-satu", { href: "#/karier" },
+    h("span.meja-ubin-sampul", {}, sampul("karier", { ragam: "orbit", lebar: 480, tinggi: 200 })),
     h("span.meja-ubin-kepala", {}, ikon("karier", { ukuran: 18 }), "Peta karier"),
     isi);
   api.ambil("/api/karier").then((k) => {
@@ -448,6 +468,7 @@ function ubinPustaka(kunci, label) {
   const href = kunci ? "#/pustaka?kurikulum=" + encodeURIComponent(kunci) : "#/pustaka";
   const isi = h("span.meja-ubin-isi", {}, "Buku, kursus, dan proyek gratis.");
   const el = h("a.meja-ubin-satu", { href },
+    h("span.meja-ubin-sampul", {}, sampul("pustaka", { bahasa: kunci, ragam: "kisi", lebar: 480, tinggi: 200 })),
     h("span.meja-ubin-kepala", {}, ikon("pustaka", { ukuran: 18 }),
       label ? `Bacaan ${label}` : "Pustaka"),
     isi);
@@ -1240,7 +1261,7 @@ function daftarMateri(b, ctx) {
         // dibuka supaya halaman ini tidak pernah tampil sebagai sebelas kepala
         // tanpa satu pun isi.
         open: terbuka },
-      kepalaBab(bab, sedang),
+      kepalaBab(bab, sedang, b.key),
       // `.masuk-mandiri` (util S01) dipakai apa adanya, bukan mesin entrance
       // kedua. Ia `@starting-style` + `transition-behavior: allow-discrete`, jadi
       // di browser tanpa dukungan itu — dan saat gerak dimatikan — isinya tetap
@@ -1565,7 +1586,7 @@ function cincinBab(bab, animasikan) {
  *  bab yang sedang dikerjakan, dan aksen sudah dipakai untuk menandai bab itu;
  *  memberi warna yang sama kepada setiap pil "Menengah" berarti membuat
  *  penanda itu hilang di tengah keramaian. */
-function kepalaBab(bab, sedang) {
+function kepalaBab(bab, sedang, kunci) {
   return h("summary.bab-kepala", {},
     cincinBab(bab, bab === sedang),
     h("div.bab-teks", {},
@@ -1582,6 +1603,10 @@ function kepalaBab(bab, sedang) {
       bab.ket ? h("p.bab-ket", {}, bab.ket) : null),
     h("div.bab-maju", {},
       h("span.bab-angka", {}, `${bab.selesai}/${bab.jumlah} materi`)),
+    // Benih dan ukurannya SAMA dengan sampul di kepala materi bab ini, jadi
+    // gambar yang dilihat di daftar adalah gambar yang menyambut di halaman.
+    h("span.bab-sampul", { kelas: bab.status === "terkunci" ? "bab-sampul-kunci" : "" },
+      sampul(`${kunci}/bab-${bab.nomor}`, { bahasa: kunci, lebar: 320, tinggi: 220 })),
     h("span.bab-lipat", {}, ikon("lanjut", { ukuran: 18 })));
 }
 
@@ -2215,7 +2240,7 @@ function layarMateriTerkunci(key, indeks, pesan, b, ctx) {
     (x) => (x.materi || []).includes(nomor)) : null;
 
   const el = h("div.masuk", {},
-    h("header.kepala-besar", {},
+    kepalaBersampul(bab ? `${key}/bab-${bab.nomor}` : `${key}/materi`, { bahasa: key },
       h("span.mata", {}, "Belum terbuka"),
       h("h1", {}, m ? tanpaNomor(m.judul) : "Materi ini belum terbuka"),
       // Kalimat aturannya datang dari server, bukan ditulis ulang di sini:
@@ -2596,7 +2621,7 @@ const TOMBOL_TAMPIL = { Enter: "⏎" };
  *  bukan ditemukan lagi sebagai kejutan.
  *
  *  Mengembalikan fungsi pelepas — WAJIB dipanggil `saatKeluar` (preseden
- *  `layar-kerja.js:519`). Pendengar `keydown` di `document` yang tertinggal
+ *  `layar-kerja.js:520`). Pendengar `keydown` di `document` yang tertinggal
  *  membuat dua layar bereaksi terhadap satu tombol. */
 function pintasanPembaca(artikel, peta, fokus) {
   // Urutan sasaran dihitung dari posisi VERTIKAL nyata, bukan dari urutan
@@ -3170,7 +3195,7 @@ export async function layarBookmark() {
 
   return {
     el: h("div.masuk", {},
-      h("header.kepala-besar", {},
+      kepalaBersampul("bookmark", { ragam: "pecahan" },
         h("span.mata", {}, "Tersimpan"),
         h("h1", {}, "Bookmark"),
         h("p.kepala-sub", {}, "Halaman yang kamu tandai untuk dibuka lagi.")),
@@ -3209,7 +3234,7 @@ export async function layarCatatan() {
 
   return {
     el: h("div.masuk", {},
-      h("header.kepala-besar", {},
+      kepalaBersampul("catatan", { ragam: "gelombang" },
         h("span.mata", {}, "Milikmu sendiri"),
         h("h1", {}, "Catatanku"),
         h("p.kepala-sub", {}, "Menuliskan ulang dengan bahasamu sendiri "
@@ -3247,7 +3272,7 @@ export async function layarCari({ q, tipe }, ctx) {
   }
 
   const el = h("div.masuk", {},
-    h("header.kepala-besar", {},
+    kepalaBersampul("cari", { ragam: "orbit" },
       h("span.mata", {}, "Pencarian"),
       h("h1", {}, "Cari"),
       h("p.kepala-sub", {}, "Menjangkau judul, isi materi, soal kuis, dan "

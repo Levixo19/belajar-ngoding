@@ -68,7 +68,8 @@ export function marqueeBahasa(bahasa) {
   const baris = (sembunyi) => h("div.marquee-baris", sembunyi ? { "aria-hidden": "true" } : {},
     bahasa.map((b) => h("a.marquee-butir", {
       href: "#/bahasa/" + b.key, tabindex: sembunyi ? "-1" : null,
-    }, b.label)));
+    }, h("span.marquee-sampul", {}, sampul(b.key, { bahasa: b.key, lebar: 120, tinggi: 120 })),
+      b.label)));
   return h("section.marquee", { "aria-label": "Semua kurikulum" },
     h("div.marquee-jalur", {}, baris(false), baris(true)));
 }

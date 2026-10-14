@@ -25,6 +25,7 @@ import {
   ungkap, angkaKe, denyut, getar, tingkatGerak, adaGerak, animasi, saatTampak,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
+import { kepalaBersampul } from "./sampul.js";
 import { bacaJedaMata, setelJedaMata } from "./istirahat.js";
 
 export const TEMA = [
@@ -121,7 +122,7 @@ export async function layarStatistik() {
   const belum = s.semua_badge.filter((b) => !b.punya);
 
   const el = h("div.masuk-urut", {},
-    h("header.kepala-besar", {},
+    kepalaBersampul("statistik", { ragam: "gelombang" },
       h("span.mata", {}, "Sejauh ini"),
       h("h1", {}, "Statistik"),
       h("p.kepala-sub", {},
@@ -572,7 +573,7 @@ export async function layarAtur(_params, ctx) {
     : null;
 
   const el = h("div.masuk-urut", {},
-    h("header.kepala-besar", {},
+    kepalaBersampul("pengaturan", { ragam: "orbit" },
       h("span.mata", {}, "Sesuaikan"),
       h("h1", {}, "Pengaturan"),
       h("p.kepala-sub", {}, "Yang mengatur TAMPILAN disimpan di browser ini "

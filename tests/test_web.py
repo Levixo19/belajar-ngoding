@@ -4941,7 +4941,7 @@ class TestLompatKeIsi(unittest.TestCase):
         Dihitung SESUDAH komentar ditanggalkan, dan itu bukan kerapian:
         `grep` mentah tak berbatas memberi SEPULUH baris di pohon ini —
         tujuh situs sungguhan, satu `transition-behavior:` (komentar
-        `layar-belajar.js:1245`), dan dua baris docstring `pulihkanBaca`
+        `layar-belajar.js:1266`), dan dua baris docstring `pulihkanBaca`
         (:1642 dan :1644, yang kedua menyebut `scroll-behavior:`).
 
         Batas `(?<![-\w])` wajib ada dan bekerja dua kali: ia menahan
@@ -5015,7 +5015,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
     tidak satu pun kuis membawa durasi. `sesi.durasi` baru bernyawa kalau badan
     permintaan mengirim `timer` (`api.py:597-600`, `per_soal` dari
     `konfigurasi.detik_per_soal`, bawaan 30 detik, setelannya di
-    `layar-lain.js:489`), dan `if (sesi.durasi)` (`layar-kerja.js:195`) adalah
+    `layar-lain.js:490`), dan `if (sesi.durasi)` (`layar-kerja.js:196`) adalah
     SATU-SATUNYA jalan masuk ke `jalankanJam()` dan pendengar
     `visibilitychange`. Jadi pagar-pagar itu bukan tidak berguna — ia menjaga
     batas yang dipegang orang yang nanti menyalakan timer; dan siapa pun yang
@@ -5407,7 +5407,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
 
         SATU ARAH, DAN ITU BUKAN UTANG. Tidak ada transisi "mundur" di layar
         ini karena tidak ada jalan mundur: di badan `layarKuis` hanya ada
-        `lanjut.click()` (`layar-kerja.js:360`) dan `tombol[i].click()`
+        `lanjut.click()` (`layar-kerja.js:361`) dan `tombol[i].click()`
         (`:368`), keduanya MAJU. Kuis menilai seketika, jadi "mundur" berarti
         menghidupkan kembali soal yang sudah dijawab -- itu perubahan BENTUK
         SESI di `webapp/sesi.py`, bukan perubahan gerak. Siapa pun yang
@@ -5489,7 +5489,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
         JALURNYA, lengkap: `data-gerak="mati"` di `<html>` -> `tingkatGerak()`
         -> `adaGerak()` false (`gerak.js:297`) -> `animasi()` memulangkan
         `kendaliKosong()` (`gerak.js:366`, di dalam fungsi yang dibuka `:363`)
-        -> `div.kuis-soal` (`layar-kerja.js:232`) muncul tanpa satu transisi
+        -> `div.kuis-soal` (`layar-kerja.js:233`) muncul tanpa satu transisi
         pun. `el.animate()` LANGSUNG tidak pernah bertanya: ia menjalankan
         animasinya apa pun tingkat geraknya.
 
@@ -5505,7 +5505,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
 
         YANG TIDAK DIJAGA: jumlah pemanggilan `skala()`. Memanggilnya sekali
         lalu menyinggahkannya (`const jauh = ...`, dipakai di
-        `layar-kerja.js:247` dan `:270`) dan memanggilnya dua kali sama
+        `layar-kerja.js:248` dan `:270`) dan memanggilnya dua kali sama
         sahnya; yang dijaga SINGGAHAN-nya, bukan cacahnya.
         """
         kuis = self._wilayah("layarKuis")
@@ -5549,7 +5549,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
               `animation: masuk var(--sedang) both;` di `:3912` (`--sedang` =
               `220ms cubic-bezier(.32,.72,.36,1)` di `:433`). Jadi penjelasan
               punya satu pemilik: CSS. Node `div.penjelasan` itu disisipkan JS
-              di `layar-kerja.js:322` dan TIDAK pernah lewat `animasi()`.
+              di `layar-kerja.js:323` dan TIDAK pernah lewat `animasi()`.
 
         `both` adalah `fill` yang tidak berhenti sendiri. Pemilik KEDUA di
         atas node yang sama karena itu bukan "dua animasi", melainkan dua
@@ -5564,7 +5564,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
 
         BATAS YANG DIKETAHUI: hanya sasaran berupa PENGENAL TELANJANG yang
         ditelusuri kelasnya. Sasaran berbentuk ekspresi -- hari ini tepat satu,
-        `[...opsiEl.children]` di `layar-kerja.js:268` -- tidak bisa dipetakan
+        `[...opsiEl.children]` di `layar-kerja.js:269` -- tidak bisa dipetakan
         ke sebuah kelas dari teks saja, karena kelas anak-anak sebuah wadah
         tidak tertulis di tempat pemanggilan. Yang menutupinya di sana bukan
         pagar ini melainkan pilihan properti `translate` di CSS-nya.
@@ -5637,14 +5637,14 @@ class TestKuisUmpanBalik(unittest.TestCase):
         `(?<![\\w$.])durasi\\s*:` atas badan `layarKuis` di pohon
         `_telanjang`, pembaca: `re.findall`, satuan: cacah kemunculan ->
         SATU), yaitu `angkaKe(angkaBenar, r.benar, { dari: 0, durasi: 520 })`
-        di `layar-kerja.js:393`. Itu bukan transisi berpegas melainkan durasi
+        di `layar-kerja.js:394`. Itu bukan transisi berpegas melainkan durasi
         PENCACAHAN angka skor, dan `angkaKe` tidak menerima `pegas` sama
         sekali -- menstempel nama pegas di sana tidak punya arti. Sapuan yang
         menuduhnya akan MERAH-palsu di pohon yang benar, jadi yang disempitkan
         predikatnya, bukan kodenya.
 
         YANG TIDAK DIJAGA: angka `delay`-nya. `delay: (i) => 40 + i * 26`
-        (`layar-kerja.js:271`) boleh berubah; ia menjadwalkan KAPAN tiap opsi
+        (`layar-kerja.js:272`) boleh berubah; ia menjadwalkan KAPAN tiap opsi
         berangkat, bukan berapa lama satu gerakan berlangsung.
         """
         kuis = self._wilayah("layarKuis")
@@ -5883,17 +5883,17 @@ class TestKuisUmpanBalik(unittest.TestCase):
         urutan Tab (`inti.js:464` melewati `[tabindex="-1"]`). Dua ejaan
         diterima karena rumah ini memakai keduanya: `tabIndex: -1`
         (`inti.js:771`, lewat jalur properti `k in el` di `inti.js:124`) dan
-        `tabindex: "-1"` (`layar-belajar.js:3030`, lewat `setAttribute`, dengan
+        `tabindex: "-1"` (`layar-belajar.js:3055`, lewat `setAttribute`, dengan
         alasan yang sama persis -- pembungkus yang harus bisa difokus).
 
-        (iv) berdiri karena `lanjut.focus()` (`layar-kerja.js:332`) menjawab
+        (iv) berdiri karena `lanjut.focus()` (`layar-kerja.js:333`) menjawab
         pertanyaan yang lain: sesudah JAWABAN dirender, yang berikutnya
         ditekan orang adalah "Lanjut". Yang ditambahkan di hun ini fokus
         sesudah SOAL dirender; keduanya hidup bersama, bukan menggantikan.
 
         `Enter` = lanjut TIDAK bergantung fokus, dan itu penting supaya
         pembaca tidak wajib menavigasi ke tombolnya: `saatTombol` dipasang di
-        `document` (`layar-kerja.js:200`), dilepas di `bersihkan` (`:207`), dan
+        `document` (`layar-kerja.js:201`), dilepas di `bersihkan` (`:207`), dan
         mencari tombolnya lewat `querySelector(".penjelasan .tbl")` (`:359`) --
         bukan lewat `document.activeElement`.
 
@@ -5930,7 +5930,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
             "Memindahkan fokus tidak boleh sekaligus menggeser halaman -- "
             "soalnya sudah berada di tempat yang benar, dan geseran kedua "
             "terasa seperti layar yang meloncat sendiri. Konvensi rumahnya "
-            "`aplikasi.js:272`, `aplikasi.js:297`, `layar-belajar.js:2635`. "
+            "`aplikasi.js:272`, `aplikasi.js:297`, `layar-belajar.js:2660`. "
             f"Yang terbaca: {fok.group(1)}")
         self.assertRegex(
             kuis, r"(?<![\w$.])lanjut\s*\.\s*focus\s*\(",
@@ -5975,7 +5975,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
 
         Invarian rumah: animasi tidak boleh jadi SATU-SATUNYA cara sebuah
         elemen terlihat. Angka benar di layar hasil dihitung naik dari nol
-        lewat `angkaKe` di dalam `if (adaGerak())` (`layar-kerja.js:391-393`),
+        lewat `angkaKe` di dalam `if (adaGerak())` (`layar-kerja.js:392-394`),
         dan cabang `else` (`:395`) menyetelnya langsung. Buang cabang `else`
         itu dan `data-gerak="mati"` menampilkan "0 dari 20 benar" selamanya --
         tidak ada satu tes pun yang memerah sebelum hun ini.
@@ -6443,7 +6443,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
             `.jam` ATAU `.menipis`, jadi `.menipis { color: var(--salah) }`
             dan `.menipis { background: #dc2626 }` keduanya MERAH. Sebelum
             itu keduanya hijau, padahal `.menipis` cuma dipasang di satu
-            tempat di seluruh aplikasi — `layar-kerja.js:177`, pada jam ini.
+            tempat di seluruh aplikasi — `layar-kerja.js:178`, pada jam ini.
 
         (ii) selektor ber-NAMA ELEMEN telanjang yang menyetel warna. `span
             { color: var(--salah) }` HIJAU, dan itu keputusan: nama elemen
@@ -6549,7 +6549,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
                   for sel in prelude.split(",")]
         # DUA KATA IDENTITAS, dan keduanya milik jam yang sama.
         # `jam.classList.toggle("menipis", sisaDetik <= 30)`
-        # (`layar-kerja.js:177`) adalah SATU-SATUNYA pemakaian `menipis`
+        # (`layar-kerja.js:178`) adalah SATU-SATUNYA pemakaian `menipis`
         # sebagai kelas di seluruh `webapp/statik/js/`, dan `.jam.menipis`
         # (`gaya.css:3941`) satu-satunya prelude yang menyebutnya. Mengunci
         # `.jam` sendirian karena itu meloloskan `.menipis { background:
@@ -7301,7 +7301,7 @@ class TestAlamatKomentar(unittest.TestCase):
 
         inti.js            `gerak.js:784`       -> `}`
         layar-belajar.js   `gaya.css` baris 4625 -> `align-items: stretch;`
-        layar-belajar.js   `layar-kerja.js:183` -> komentar jam kuis
+        layar-belajar.js   `layar-kerja.js:184` -> komentar jam kuis
 
     Empat lapis, dan hitungan inilah yang membuat lapis keempat WAJIB: cek
     (i) berkas-ada dan (ii) nomor-dalam-rentang menangkap 0 dari 3; cek
@@ -7358,15 +7358,15 @@ class TestAlamatKomentar(unittest.TestCase):
         "aplikasi.js:272": "preventScroll: true",
         "aplikasi.js:297": "preventScroll: true",
         "aplikasi.js:625": "denyut(xp)",
-        "layar-kerja.js:519": "if (bersihkan) bersihkan()",
-        "layar-belajar.js:2635": "preventScroll: true",
+        "layar-kerja.js:520": "if (bersihkan) bersihkan()",
+        "layar-belajar.js:2660": "preventScroll: true",
         "gerak.js:303": "export function skala()",
         # Kaki akibat panel hasil (S08 hun 4): keempat alamat ini dirujuk dari
         # `pinKeGalat()` di layar-kerja.js dan dari chip sinyalnya.
         "gaya.css:4879": "container-type: size",
         "gaya.css:4896": "overflow-y: auto; scrollbar-width: thin",
-        "layar-belajar.js:770": "const PIN_BARA_MS = 4000",
-        "layar-belajar.js:805": "function pinKeHariIni(petak, geser)",
+        "layar-belajar.js:791": "const PIN_BARA_MS = 4000",
+        "layar-belajar.js:826": "function pinKeHariIni(petak, geser)",
         # Klaim bernama yang dibetulkan di hun 4: komentar port nomor baris
         # dulu menyebut `TestPortNomorBarisGalat`, kelas yang tidak pernah ada.
         # Dulu `:8951`. Entri `beda.py:189` di kaki tabel ini menyisip di ATAS
@@ -7405,7 +7405,7 @@ class TestAlamatKomentar(unittest.TestCase):
         # `layarLatihan` dan menggeser isinya 51 baris. Komentar `(:618)`
         # di layar-kerja.js ikut dibetulkan -- nomornya yang bergerak, bukan
         # klaimnya.
-        "layar-kerja.js:618": "function gambarStatus()",
+        "layar-kerja.js:619": "function gambarStatus()",
         # Dulu `:287` (`e.preventDefault();`) sementara klaim komentarnya soal
         # PENJEPITAN; reviewer membuka alamatnya di hun 5 dan komentarnya kini
         # menunjuk penjepit yang sebenarnya. Kunci lamanya dihapus karena ia
@@ -7441,7 +7441,7 @@ class TestAlamatKomentar(unittest.TestCase):
     # `ALAMAT` di atas tidak bisa melihatnya sama sekali (ia menuntut nama
     # berkas berekstensi), jadi sebelum pagar ini empat anchor hidup di pohon
     # tanpa satu pun pemegang: `editor.js:159 (:285)`, `editor.js:241
-    # (:316-:317)`, `layar-belajar.js:2626 (:287)`, `layar-kerja.js:674
+    # (:316-:317)`, `layar-belajar.js:2651 (:287)`, `layar-kerja.js:675
     # (:567)`. Keempatnya kebetulan benar hari ini, dan `editor.js` sendiri
     # tumbuh 92 baris dalam satu hun — satu sisipan di atas `:285` akan
     # membuat klaimnya menunjuk `}` tanpa satu tes pun memerah.
@@ -11906,6 +11906,22 @@ class TestSatuAngkaSatuPermukaan(unittest.TestCase):
         return badan[awal:cls._tutup_kurung(badan, buka) + 1]
 
     @classmethod
+    def _blok_kepala(cls, badan):
+        """Teks kepala sambutan layar beserta seluruh anaknya.
+
+        Kepala itu dulu selalu `h("header.kepala-besar", ...)`; sejak layar
+        daftar diberi sampul, ia dibangun `kepalaBersampul(benih, opsi, ...)`
+        dari sampul.js, yang menerima ANAK yang sama persis. Yang diiris tetap
+        seluruh panggilannya, jadi kalimat dan angka di dalamnya terbaca sama
+        oleh pagar di bawah apa pun pembungkusnya."""
+        tanda = "kepalaBersampul("
+        if tanda in badan:
+            awal = badan.index(tanda)
+            buka = badan.index("(", awal)
+            return badan[awal:cls._tutup_kurung(badan, buka) + 1]
+        return cls._blok_h(badan, "header.kepala-besar")
+
+    @classmethod
     def _lokal_dari_muatan(cls, badan):
         """Nama `const` di blok ini yang nilainya diturunkan dari muatan.
 
@@ -11939,7 +11955,7 @@ class TestSatuAngkaSatuPermukaan(unittest.TestCase):
         penjelasan yang menyebut `s.xp` tidak memerahkan apa pun.
         """
         _, badan = self._blok_statistik()
-        header = self._blok_h(badan, "header.kepala-besar")
+        header = self._blok_kepala(badan)
         f_header = set(self.BIDANG.findall(header))
         f_kartu = self._bidang_kartu(badan, 2)
         self.assertEqual(
@@ -12011,7 +12027,7 @@ class TestSatuAngkaSatuPermukaan(unittest.TestCase):
         JavaScript yang dijalankan.
         """
         _, badan = self._blok_statistik()
-        header = self._blok_h(badan, "header.kepala-besar")
+        header = self._blok_kepala(badan)
         sub = self._blok_h(header, "p.kepala-sub")
 
         f_sub = set(self.BIDANG.findall(sub))
@@ -14941,7 +14957,7 @@ class TestPengaitNonVisualTerikat(unittest.TestCase):
              "export function rayakan(h, { diam = false } = {}) {\n"
              "  mainkanContoh();\n}\n", []),
             # Parameter fungsi dalam: terikat. `kartuPilihan(..., saatPilih)`
-            # di layar-lain.js:415 adalah bentuk yang ditangguhkan klausa
+            # di layar-lain.js:416 adalah bentuk yang ditangguhkan klausa
             # parameter di `_ikatan()`, dan yang membayar klausa itu cuma
             # `test_pengaturan_memanggil_nama_yang_terikat`: melumpuhkan
             # penangkap parameter bentuk `function` memerahkannya, sedangkan
@@ -19627,8 +19643,8 @@ class TestKontrakKelasHidup(unittest.TestCase):
         MANA uangnya datang.
 
         Yang dibayar produk hari ini, dan ini populasi penuhnya: empat rujukan
-        di `layar-kerja.js:1248`, `layar-kerja.js:1284`, `layar-kerja.js:1286`,
-        `layar-kerja.js:1340` plus satu di `layar-belajar.js:1778` -- lima
+        di `layar-kerja.js:1249`, `layar-kerja.js:1285`, `layar-kerja.js:1287`,
+        `layar-kerja.js:1341` plus satu di `layar-belajar.js:1803` -- lima
         rujukan di dua berkas, dan angka itu sama untuk KEDUA ampunan, karena
         kelimanya menunjuk alamat jauh di bawah 1255 maupun 2746. Dari situ
         `AMBANG_LUAR = 2`: kelonggaran tiga rujukan, tanpa menahan keduanya di
@@ -19688,7 +19704,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
       yang disambung `+` ke argumen itu. Tanpa bentuk sambungan, `.bab-kini`
       dan `.bab-terkunci` -- dua kelas yang menentukan tampilan SELURUH daftar
       bab -- terbaca tidak pernah dipakai: panggilan yang mulai di
-      `layar-belajar.js:1227` menempelkan keduanya sebagai fragmen terpisah,
+      `layar-belajar.js:1248` menempelkan keduanya sebagai fragmen terpisah,
       dan tidak satu pun punya literal utuh di mana pun.
     * (b) `classList.add|remove|toggle|contains("a", ...)`.
     * (c) `className = "..."` / `className: "..."`.
@@ -19710,7 +19726,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
     * (f) field opsi `kelas: "literal"` di sebuah pemanggilan fungsi, yang
       baru menempel ke elemen satu lapis kemudian -- di PEMANGGILNYA, bukan
       di situs literalnya: `r.kelas` disambung ke argumen `h()` di
-      `layar-lain.js:211`, `a.kelas` di `inti.js:428`, dan parameter `kelas`
+      `layar-lain.js:212`, `a.kelas` di `inti.js:428`, dan parameter `kelas`
       di `inti.js:638` (`bilah`), `sorot.js:302` (`praKode`), serta
       `ikon.js:118` yang memasangnya lewat `setAttribute`. Tanpa bentuk ini
       `.ruas-kuis` dan `.ruas-latihan` -- dua warna yang membedakan ketiga
@@ -19750,12 +19766,12 @@ class TestKontrakKelasPakai(unittest.TestCase):
     Tiga batas yang dipilih SADAR, dan ketiganya terukur:
 
     * Klausul kepala-aturan hanya berlaku untuk berkas `.css`. Tanpa batasan
-      itu `layar-lain.js:211` -- `h("div.ruas." + r.kelas, { title: ... })` --
+      itu `layar-lain.js:212` -- `h("div.ruas." + r.kelas, { title: ... })` --
       lolos sebagai "kepala aturan", padahal kurung kurawal di sana literal
       objek. Diadu dua arah: dengan batasan baris itu GAGAL, tanpa batasan ia
       LOLOS, dan `gaya.css:3996` (`.ruas {`) lolos di kedua keadaan.
     * MINIMAL satu alamat, bukan setiap alamat. `ruas-materi` menyebut
-      `layar-lain.js:211` justru untuk menerangkan dari mana simpulnya lahir,
+      `layar-lain.js:212` justru untuk menerangkan dari mana simpulnya lahir,
       dan baris itu memang bukan kepala aturan; yang membuktikan gayanya
       adalah dua alamat CSS di sebelahnya. Menuntut SETIAP alamat berarti
       memerahkan sebuah alasan yang jujur.
@@ -19789,7 +19805,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
             " SENGAJA tidak punya aturan: item kisi mengambil ukurannya dari"
             " track, jadi menuliskan 11px lagi jadi salinan ketiga",
         "diff-kata":
-            "inline -- `layar-kerja.js:1887` menerangkan gayanya dipasang"
+            "inline -- `layar-kerja.js:1888` menerangkan gayanya dipasang"
             " lewat argumen `gaya:` justru supaya coretannya tidak bisa"
             " ditimpa; nol aturan `text-decoration` di lembar gaya"
             " menyentuhnya",
@@ -19802,7 +19818,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
             " `min-width: 0` dan `gaya.css:2659` mematok lebar anak-anak"
             " `.mulai`; keduanya mengenainya tanpa menyebut namanya",
         "pratinjau-lebar":
-            "inline -- `layar-kerja.js:1210` menerangkan jaraknya dipasang"
+            "inline -- `layar-kerja.js:1211` menerangkan jaraknya dipasang"
             " lewat argumen `gaya:` karena baris itu tidak membawa satu pun"
             " aturan gaya BARU: pilnya sudah `.tbl`, labelnya sudah `.mata`",
         "rel-kaki":
@@ -19810,7 +19826,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
             " yang membawa seluruh gayanya, dan JS mengenalinya lewat ID di"
             " `aplikasi.js:474`; kelasnya cermin id-nya, bukan kontrak gaya",
         "ruas-materi":
-            "strukturnya -- `layar-lain.js:211` menyusun simpulnya dengan"
+            "strukturnya -- `layar-lain.js:212` menyusun simpulnya dengan"
             " menyambung `div.ruas.` ke `r.kelas`, jadi tiap segmen selalu"
             " memakai DUA kelas dan gayanya datang dari `.ruas` di"
             " `gaya.css:3996`, yang memang memuat"
@@ -19822,7 +19838,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
             " `querySelector` untuk menaruh angka streak dan XP; gayanya"
             " datang dari `.tanda` induknya",
         "tbl-pintu":
-            "penanda -- `layar-belajar.js:1892` membacanya dengan"
+            "penanda -- `layar-belajar.js:1917` membacanya dengan"
             " `querySelector` sebagai penjaga 'tombolnya sudah ada belum';"
             " gayanya seluruhnya dari `.tbl` + `.tbl-utama`",
     }
@@ -19860,7 +19876,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
     OPSI_KELAS = re.compile(r"\bkelas\s*:\s*[\"']([^\"']*)[\"']")
     # Bukti untuk jenis `inline`: argumen `gaya:` yang memasang gayanya, atau
     # kata `inline` di komentar yang menerangkan kenapa ia dipasang begitu.
-    # Dua-duanya hidup di korpus hari ini -- `layar-kerja.js:1887` memakai
+    # Dua-duanya hidup di korpus hari ini -- `layar-kerja.js:1888` memakai
     # bentuk kedua, `:1210` memakai keduanya sekaligus.
     BUKTI_INLINE = re.compile(r"gaya\s*:|inline", re.I)
 
@@ -21623,8 +21639,8 @@ class TestJamKuisBertahanDiLatar(unittest.TestCase):
 
     Yang belum dibayar siapa pun LAJUNYA. Dua mutasi lolos SELURUH 1.039 tes
     di pohon ini: `sisaDetik -= 2` di `detak`
-    (`webapp/statik/js/layar-kerja.js:174`) dan `setInterval(detak, 2000)` di
-    `jalankanJam` (`layar-kerja.js:180`). Yang pertama menelan dua detik per
+    (`webapp/statik/js/layar-kerja.js:175`) dan `setInterval(detak, 2000)` di
+    `jalankanJam` (`layar-kerja.js:181`). Yang pertama menelan dua detik per
     detik; yang kedua memberi dua kali waktu kepada siapa pun yang tahu. Dan
     persis keduanya yang dijanjikan dua baris S07: sembunyikan tab 6 detik ->
     jam kehilangan paling banyak 1 detik; tampilkan lagi -> meneruskan dari
@@ -21632,10 +21648,10 @@ class TestJamKuisBertahanDiLatar(unittest.TestCase):
     angkanya pernah dihitung oleh tes mana pun.
 
     SUMBERNYA DIEKSTRAK, BUKAN DISALIN. Enam potongan diambil LEWAT NAMA dari
-    `layar-kerja.js`: baris `let sisaDetik =` (`layar-kerja.js:161`), baris
-    `let jamId =` (`layar-kerja.js:162`), ketiga arrow `detak`, `jalankanJam`
-    (`layar-kerja.js:180`) dan `saatTampil` (`layar-kerja.js:192`), lalu blok
-    pemasangnya (`layar-kerja.js:195`). Alasannya sudah tertulis di
+    `layar-kerja.js`: baris `let sisaDetik =` (`layar-kerja.js:162`), baris
+    `let jamId =` (`layar-kerja.js:163`), ketiga arrow `detak`, `jalankanJam`
+    (`layar-kerja.js:181`) dan `saatTampil` (`layar-kerja.js:193`), lalu blok
+    pemasangnya (`layar-kerja.js:196`). Alasannya sudah tertulis di
     `_SKRIP_BEDA_KATA` (`tests/test_web.py:9389`): salinan akan terus lulus
     sesudah aslinya berubah, dan pagar yang lulus untuk kode yang sudah tidak
     ada lebih buruk daripada tidak ada pagar. Arrow dipotong dengan HITUNG

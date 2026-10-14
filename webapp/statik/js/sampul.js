@@ -15,8 +15,11 @@
  * Gambar ini HIASAN: aria-hidden, tidak bisa difokus, dan tidak pernah jadi
  * satu-satunya pembawa informasi.
  *
- * Importir: layar-belajar.js, beranda.js, layar-karier.js.
+ * Importir: layar-belajar.js, beranda.js, layar-karier.js, layar-pustaka.js,
+ * layar-lain.js, layar-kerja.js.
  */
+
+import { h } from "./inti.js";
 
 const NS = "http://www.w3.org/2000/svg";
 
@@ -162,6 +165,13 @@ const RAGAM = {
 
 const NAMA_RAGAM = Object.keys(RAGAM);
 
+/* Penomor id gradien/filter. Benih yang sama bisa muncul dua kali di satu
+   halaman (akordeon dan marquee sama-sama menggambar "python"), dan url(#id)
+   yang kembar selalu menunjuk ke definisi PERTAMA di dokumen -- yang bisa saja
+   sudah dilepas bersama layar sebelumnya. Gambarnya tetap ditentukan benih;
+   yang dibuat unik cuma alamat definisinya. */
+let nomorSampul = 0;
+
 /**
  * Bangun satu sampul.
  *
@@ -180,7 +190,7 @@ export function sampul(teks, opsi = {}) {
   const teksTanda = tanda && bahasa ? TANDA[bahasa] : null;
   const ragam = opsi.ragam && RAGAM[opsi.ragam] ? opsi.ragam
     : NAMA_RAGAM[s % NAMA_RAGAM.length];
-  const idg = "sg" + s.toString(36);
+  const idg = "sg" + s.toString(36) + "-" + (++nomorSampul).toString(36);
 
   return el("svg", {
     viewBox: `0 0 ${w} ${tg}`, preserveAspectRatio: "xMidYMid slice",
@@ -205,3 +215,19 @@ export function sampul(teks, opsi = {}) {
     el("rect", { width: w, height: tg, filter: `url(#${idg}b)` }));
 }
 
+/** Kepala halaman bersampul: teks di kiri, sampul di kanan.
+ *
+ *  Argumen sesudah `opsi` adalah ISI kepala, persis yang dulu diberikan ke
+ *  h("header.kepala-besar", {}, ...). Jadi mengubah sebuah layar cukup
+ *  mengganti pembukanya; kurung penutup dan isinya tidak disentuh, dan
+ *  susunan teks di kiri tetap sama dengan versi tanpa sampul. */
+export function kepalaBersampul(benih, opsi, ...isi) {
+  // `pita`: untuk layar yang kolomnya sempit (kuis, sekitar 720 px). Di sana
+  // sampul di samping memeras judul jadi lima baris; sebagai pita melebar di
+  // ATAS judul, judulnya kembali ke dua baris.
+  const { pita = false, ...sisa } = opsi;
+  return h("header.kepala-besar.kepala-bersampul", { kelas: pita ? "kepala-berpita" : "" },
+    h("div.kepala-teks", {}, ...isi),
+    h("div.kepala-sampul", {},
+      sampul(benih, pita ? { lebar: 960, tinggi: 200, ...sisa } : { lebar: 560, tinggi: 400, ...sisa })));
+}

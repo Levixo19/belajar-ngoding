@@ -20,6 +20,7 @@
 
 import { api, h, isikan, kosong, tandai, angka } from "./inti.js";
 import { ikon } from "./ikon.js";
+import { kepalaBersampul } from "./sampul.js";
 
 const PENYARING = ["q", "kurikulum", "jenis", "bahasa", "sumber"];
 
@@ -139,7 +140,7 @@ export async function layarPustaka(params) {
     : `${angka(data.total)} dari ${angka(data.semua)} tautan cocok.`;
 
   const el = h("div.masuk", {},
-    h("header.kepala-besar", {},
+    kepalaBersampul("pustaka", { ragam: "kisi" },
       h("span.mata", {}, "Pustaka"),
       h("h1", {}, "Bacaan, kursus, dan proyek"),
       h("p.kepala-sub", {},

@@ -5183,7 +5183,7 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
    Kenapa opt-in dan bukan dipasang ke .senarai/.kartu/.keadaan seperti yang
    sempat direncanakan — tiga alasan yang diukur, bukan ditebak:
 
-     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:585 memanggil
+     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:606 memanggil
                      ungkap(senarai), dan ungkap() menganimasikan induk.children
                      satu per satu. Memberinya entrance CSS berarti dua mesin
                      pada properti yang sama di elemen yang sama.
@@ -5518,11 +5518,14 @@ html.lingkar-tema::view-transition-new(root) {
   }
 
   /* Strip konteks: tidak lagi bilah selebar layar, melainkan baris tenang
-     di bawah pil, selebar isinya. */
+     di bawah pil. Latarnya KACA, bukan transparan: strip ini menempel, dan
+     latar transparan berarti judul bab yang digulir lewat di bawahnya
+     terbaca bertumpuk dengan "Dasbor · Python" di atasnya. */
   #konteks {
     top: var(--rel-tinggi);
     border-bottom: 0;
-    background: transparent;
+    background: color-mix(in srgb, var(--dasar) 88%, transparent);
+    backdrop-filter: blur(12px) saturate(1.2);
   }
 }
 
@@ -5902,7 +5905,11 @@ html.lingkar-tema::view-transition-new(root) {
 
   /* Kartu Lanjutkan di beranda: pita gambar di atas, menyatu dengan tepi. */
   .beranda-hero .lanjutkan { overflow: hidden; }
-  .beranda-hero .lanjutkan-isi { flex-grow: 0; }  /* sisa ruangnya milik sampul */
+  /* Basis 260 px milik `.lanjutkan-isi` (dibuat untuk kartu MENDATAR) di
+     kartu hero yang berarah kolom berubah jadi TINGGI 260 px -- itulah
+     rongga di bawah kalimat alasannya. Di sini isinya setinggi isinya, dan
+     sisa ruang kartu milik sampul. */
+  .beranda-hero .lanjutkan-isi { flex: 0 0 auto; }
   .lanjutkan-sampul {
     display: block;
     align-self: stretch;
@@ -5936,7 +5943,78 @@ html.lingkar-tema::view-transition-new(root) {
     overflow: hidden;
     border: var(--tebal-garis) solid var(--garis);
   }
+
+  /* Kepala bersampul (sampul.js kepalaBersampul) di layar daftar. */
+  .kepala-bersampul .kepala-sampul { max-height: 300px; }
+  .kepala-berpita { display: flex; flex-direction: column; gap: var(--s5); }
+  .kepala-berpita .kepala-sampul { order: -1; aspect-ratio: auto; height: 132px;
+                                    align-self: stretch; width: 100%; }
+
+  /* Daftar bab: tiap bab membawa sampulnya sendiri -- benih dan ukurannya
+     sama dengan sampul di kepala materi bab itu. Bab yang belum terbuka
+     sampulnya dipudarkan, tapi tetap ada: bab terkunci tetap DITAMPILKAN. */
+  .bab-sampul {
+    flex: none; align-self: center;
+    width: 156px; aspect-ratio: 16 / 11;
+    border-radius: 16px; overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+  }
+  .bab-sampul-kunci { filter: grayscale(.85); opacity: .55; }
+
+  /* Pil gambar di dalam judul sapaan. Tingginya mengikuti huruf (em), jadi
+     ia ikut membesar bersama clamp() judulnya. */
+  .judul-pil {
+    display: inline-block; vertical-align: middle;
+    width: 1.55em; height: .74em; margin-top: -.12em;
+    border-radius: var(--r-penuh); overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+  }
+
+  /* Ubin bento Peta Karier & Pustaka: pita gambar di kepala ubin. */
+  .meja-ubin-satu { overflow: hidden; }
+  .meja-ubin-sampul {
+    display: block; height: 92px;
+    margin: calc(var(--s5) * -1) calc(var(--s5) * -1) 0;
+    border-bottom: var(--tebal-garis) solid var(--garis);
+  }
+
+  /* Marquee: tiap bahasa didahului bulatan sampulnya. */
+  .marquee-butir { display: inline-flex; align-items: center; gap: var(--s3); }
+  .marquee-sampul {
+    flex: none; width: .9em; height: .9em;
+    border-radius: 50%; overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+  }
+
+  /* Ritme enam bulan: kisi bara + panel gambar yang mengisi sisa lebarnya. */
+  .meja-ritme {
+    display: grid; grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--s4); align-items: stretch;
+  }
+  .meja-ritme .bara-petak {
+    grid-template-rows: repeat(7, 20px);
+    grid-auto-columns: 20px;
+    gap: 5px;
+  }
+  .meja-ritme .bara-sel { width: 20px; height: 20px; border-radius: 5px; }
+  .ritme-sampul {
+    min-height: 200px; border-radius: 22px; overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+  }
+
+  /* Penutup: ajakan di kiri, sampul di kanan. */
+  .beranda-tutup {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center; justify-items: stretch;
+  }
+  .beranda-tutup-teks { display: grid; justify-items: start; gap: var(--s5); min-width: 0; }
+  .beranda-tutup-sampul {
+    aspect-ratio: 14 / 9; border-radius: 28px; overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+  }
 }
 @media (max-width: 860px) {
-  .kepala-sampul, .ubin-sampul, .lanjutkan-sampul, .akordeon-sampul, .kr-sampul { display: none; }
+  .kepala-sampul, .ubin-sampul, .lanjutkan-sampul, .akordeon-sampul, .kr-sampul,
+  .bab-sampul, .judul-pil, .meja-ubin-sampul, .marquee-sampul, .ritme-sampul,
+  .beranda-tutup-sampul { display: none; }
 }
