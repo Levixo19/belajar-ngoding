@@ -23,6 +23,7 @@
 import { h } from "./inti.js";
 import { ikon } from "./ikon.js";
 import { gerakPenuh } from "./gerak.js";
+import { sampul } from "./sampul.js";
 
 /** Kalimat ringkas perjalanan pelajar. Hanya merangkai angka dari server. */
 export function kalimatGulir(d) {
@@ -50,6 +51,7 @@ export function akordeonBahasa(daftar) {
     h("div.akordeon", {}, daftar.map((b, i) => h("a.akordeon-iris", {
       href: "#/bahasa/" + b.key,
     },
+      h("span.akordeon-sampul", {}, sampul(b.key, { bahasa: b.key, lebar: 720, tinggi: 320 })),
       h("span.akordeon-nomor", {}, String(i + 1).padStart(2, "0")),
       h("span.akordeon-nama", {}, b.label),
       h("span.akordeon-isi", {},

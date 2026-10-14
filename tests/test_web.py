@@ -4941,7 +4941,7 @@ class TestLompatKeIsi(unittest.TestCase):
         Dihitung SESUDAH komentar ditanggalkan, dan itu bukan kerapian:
         `grep` mentah tak berbatas memberi SEPULUH baris di pohon ini —
         tujuh situs sungguhan, satu `transition-behavior:` (komentar
-        `layar-belajar.js:1239`), dan dua baris docstring `pulihkanBaca`
+        `layar-belajar.js:1245`), dan dua baris docstring `pulihkanBaca`
         (:1642 dan :1644, yang kedua menyebut `scroll-behavior:`).
 
         Batas `(?<![-\w])` wajib ada dan bekerja dua kali: ia menahan
@@ -5883,7 +5883,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
         urutan Tab (`inti.js:464` melewati `[tabindex="-1"]`). Dua ejaan
         diterima karena rumah ini memakai keduanya: `tabIndex: -1`
         (`inti.js:771`, lewat jalur properti `k in el` di `inti.js:124`) dan
-        `tabindex: "-1"` (`layar-belajar.js:3019`, lewat `setAttribute`, dengan
+        `tabindex: "-1"` (`layar-belajar.js:3030`, lewat `setAttribute`, dengan
         alasan yang sama persis -- pembungkus yang harus bisa difokus).
 
         (iv) berdiri karena `lanjut.focus()` (`layar-kerja.js:332`) menjawab
@@ -5930,7 +5930,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
             "Memindahkan fokus tidak boleh sekaligus menggeser halaman -- "
             "soalnya sudah berada di tempat yang benar, dan geseran kedua "
             "terasa seperti layar yang meloncat sendiri. Konvensi rumahnya "
-            "`aplikasi.js:272`, `aplikasi.js:297`, `layar-belajar.js:2624`. "
+            "`aplikasi.js:272`, `aplikasi.js:297`, `layar-belajar.js:2635`. "
             f"Yang terbaca: {fok.group(1)}")
         self.assertRegex(
             kuis, r"(?<![\w$.])lanjut\s*\.\s*focus\s*\(",
@@ -7359,14 +7359,14 @@ class TestAlamatKomentar(unittest.TestCase):
         "aplikasi.js:297": "preventScroll: true",
         "aplikasi.js:625": "denyut(xp)",
         "layar-kerja.js:519": "if (bersihkan) bersihkan()",
-        "layar-belajar.js:2624": "preventScroll: true",
+        "layar-belajar.js:2635": "preventScroll: true",
         "gerak.js:303": "export function skala()",
         # Kaki akibat panel hasil (S08 hun 4): keempat alamat ini dirujuk dari
         # `pinKeGalat()` di layar-kerja.js dan dari chip sinyalnya.
         "gaya.css:4873": "container-type: size",
         "gaya.css:4890": "overflow-y: auto; scrollbar-width: thin",
-        "layar-belajar.js:766": "const PIN_BARA_MS = 4000",
-        "layar-belajar.js:801": "function pinKeHariIni(petak, geser)",
+        "layar-belajar.js:770": "const PIN_BARA_MS = 4000",
+        "layar-belajar.js:805": "function pinKeHariIni(petak, geser)",
         # Klaim bernama yang dibetulkan di hun 4: komentar port nomor baris
         # dulu menyebut `TestPortNomorBarisGalat`, kelas yang tidak pernah ada.
         # Dulu `:8951`. Entri `beda.py:189` di kaki tabel ini menyisip di ATAS
@@ -7410,7 +7410,7 @@ class TestAlamatKomentar(unittest.TestCase):
         # PENJEPITAN; reviewer membuka alamatnya di hun 5 dan komentarnya kini
         # menunjuk penjepit yang sebenarnya. Kunci lamanya dihapus karena ia
         # jadi YATIM, dan kunci yatim dipagari metode di bawah.
-        "layar-belajar.js:291": "Math.max(0, Math.min(",
+        "layar-belajar.js:292": "Math.max(0, Math.min(",
         # R1: tiga koordinat yang menopang diagnosis residu -7 px. Komentar
         # `kotak()` menyebut ketiganya, jadi ketiganya ikut diadu.
         "gaya.css:1192": "transform: translateY(7px)",
@@ -7441,7 +7441,7 @@ class TestAlamatKomentar(unittest.TestCase):
     # `ALAMAT` di atas tidak bisa melihatnya sama sekali (ia menuntut nama
     # berkas berekstensi), jadi sebelum pagar ini empat anchor hidup di pohon
     # tanpa satu pun pemegang: `editor.js:159 (:285)`, `editor.js:241
-    # (:316-:317)`, `layar-belajar.js:2615 (:287)`, `layar-kerja.js:674
+    # (:316-:317)`, `layar-belajar.js:2626 (:287)`, `layar-kerja.js:674
     # (:567)`. Keempatnya kebetulan benar hari ini, dan `editor.js` sendiri
     # tumbuh 92 baris dalam satu hun — satu sisipan di atas `:285` akan
     # membuat klaimnya menunjuk `}` tanpa satu tes pun memerah.
@@ -7478,7 +7478,7 @@ class TestAlamatKomentar(unittest.TestCase):
         dengan klaim palsu. Keduanya membuat pembaca berikutnya percaya ada
         pagar di tempat yang tidak dijaga siapa pun.
 
-        Kejadiannya nyata di hun 5: `layar-belajar.js:289` tinggal di `TABEL`
+        Kejadiannya nyata di hun 5: `layar-belajar.js:290` tinggal di `TABEL`
         sesudah komentarnya dibetulkan ke `:288`, dan tak satu pun asersi
         memerah — kuncinya cuma duduk di sana, menjaga alamat yang tidak lagi
         diklaim siapa pun.
@@ -19628,7 +19628,7 @@ class TestKontrakKelasHidup(unittest.TestCase):
 
         Yang dibayar produk hari ini, dan ini populasi penuhnya: empat rujukan
         di `layar-kerja.js:1248`, `layar-kerja.js:1284`, `layar-kerja.js:1286`,
-        `layar-kerja.js:1340` plus satu di `layar-belajar.js:1772` -- lima
+        `layar-kerja.js:1340` plus satu di `layar-belajar.js:1778` -- lima
         rujukan di dua berkas, dan angka itu sama untuk KEDUA ampunan, karena
         kelimanya menunjuk alamat jauh di bawah 1255 maupun 2746. Dari situ
         `AMBANG_LUAR = 2`: kelonggaran tiga rujukan, tanpa menahan keduanya di
@@ -19688,7 +19688,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
       yang disambung `+` ke argumen itu. Tanpa bentuk sambungan, `.bab-kini`
       dan `.bab-terkunci` -- dua kelas yang menentukan tampilan SELURUH daftar
       bab -- terbaca tidak pernah dipakai: panggilan yang mulai di
-      `layar-belajar.js:1221` menempelkan keduanya sebagai fragmen terpisah,
+      `layar-belajar.js:1227` menempelkan keduanya sebagai fragmen terpisah,
       dan tidak satu pun punya literal utuh di mana pun.
     * (b) `classList.add|remove|toggle|contains("a", ...)`.
     * (c) `className = "..."` / `className: "..."`.
@@ -19822,7 +19822,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
             " `querySelector` untuk menaruh angka streak dan XP; gayanya"
             " datang dari `.tanda` induknya",
         "tbl-pintu":
-            "penanda -- `layar-belajar.js:1886` membacanya dengan"
+            "penanda -- `layar-belajar.js:1892` membacanya dengan"
             " `querySelector` sebagai penjaga 'tombolnya sudah ada belum';"
             " gayanya seluruhnya dari `.tbl` + `.tbl-utama`",
     }

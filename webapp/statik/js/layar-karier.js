@@ -20,6 +20,7 @@
 
 import { api, h, isikan, bulat } from "./inti.js";
 import { ikon } from "./ikon.js";
+import { sampul } from "./sampul.js";
 
 const NS = "http://www.w3.org/2000/svg";
 // Tangga karier: BARIS adalah rumpun, KOLOM adalah jenjang (pemula,
@@ -337,22 +338,25 @@ export async function layarKarier({ key: id }) {
 
   /* ------------------------------------------------------------ rangka */
   const el = h("div.masuk", {},
-    h("header.kepala-besar.kr-kepala", {},
-      h("span.mata", {}, "Peta karier"),
-      h("h1", {}, `${data.profesi.length} profesi, satu jalan belajar.`),
-      h("p.kepala-sub", {},
-        "Kesiapan tiap profesi dihitung dari kurikulum yang sudah kamu kerjakan "
-        + "di aplikasi ini. Arahkan kursor ke sebuah profesi untuk melihat ke mana "
-        + "ia terhubung, lalu pilih untuk membaca rinciannya."),
-      h("div.kr-aksi", {},
-        h("button.tbl.tbl-utama", {
-          type: "button",
-          onclick: () => document.getElementById("kr-cocok").scrollIntoView({ block: "start" }),
-        }, "Cari yang cocok", ikon("lanjut", { ukuran: 16 })),
-        palingSiap.kesiapan > 0
-          ? h("button.kr-tautan", { type: "button", onclick: () => pilih(palingSiap.id, true) },
-              `Paling siap: ${pendek(palingSiap.nama)} (${persenTeks(palingSiap.kesiapan)})`)
-          : null)),
+    h("header.kepala-besar.kr-kepala.kepala-bersampul", {},
+      h("div.kepala-teks", {},
+        h("span.mata", {}, "Peta karier"),
+        h("h1", {}, `${data.profesi.length} profesi, satu jalan belajar.`),
+        h("p.kepala-sub", {},
+          "Kesiapan tiap profesi dihitung dari kurikulum yang sudah kamu kerjakan "
+          + "di aplikasi ini. Arahkan kursor ke sebuah profesi untuk melihat ke mana "
+          + "ia terhubung, lalu pilih untuk membaca rinciannya."),
+        h("div.kr-aksi", {},
+          h("button.tbl.tbl-utama", {
+            type: "button",
+            onclick: () => document.getElementById("kr-cocok").scrollIntoView({ block: "start" }),
+          }, "Cari yang cocok", ikon("lanjut", { ukuran: 16 })),
+          palingSiap.kesiapan > 0
+            ? h("button.kr-tautan", { type: "button", onclick: () => pilih(palingSiap.id, true) },
+                `Paling siap: ${pendek(palingSiap.nama)} (${persenTeks(palingSiap.kesiapan)})`)
+            : null)),
+      // Orbit: profesi yang berputar di sekitar satu pusat -- kurikulummu.
+      h("div.kepala-sampul", {}, sampul("karier", { ragam: "orbit", lebar: 560, tinggi: 400 }))),
 
     saring,
     h("div.kr-utama", {},
@@ -412,7 +416,11 @@ function panelDetail(p, data, pilih) {
   }));
   const rumpun = data.rumpun.find((r) => r.id === p.rumpun) || {};
 
+  // Rona sampulnya rona kurikulum bekal PERTAMA profesi itu, jadi profesi
+  // yang bertumpu pada bahasa yang sama terlihat sekerabat.
   return h("div.kr-panel-isi", {},
+    h("div.kr-sampul", {}, sampul("karier/" + p.id,
+      { bahasa: p.kelompok[0] ? p.kelompok[0].wakil : null, lebar: 720, tinggi: 200 })),
     h("div.kr-panel-kepala", {},
       h("div", {},
         h("span.mata", {}, rumpun.label),

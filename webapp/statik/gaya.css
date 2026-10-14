@@ -5177,7 +5177,7 @@ html[data-gerak="mati"] { scroll-behavior: auto; }
    Kenapa opt-in dan bukan dipasang ke .senarai/.kartu/.keadaan seperti yang
    sempat direncanakan — tiga alasan yang diukur, bukan ditebak:
 
-     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:581 memanggil
+     · .senarai > *  SUDAH dianimasikan JS. layar-belajar.js:585 memanggil
                      ungkap(senarai), dan ungkap() menganimasikan induk.children
                      satu per satu. Memberinya entrance CSS berarti dua mesin
                      pada properti yang sama di elemen yang sama.
@@ -5839,3 +5839,98 @@ html.lingkar-tema::view-transition-new(root) {
                       line-height: 1.05; letter-spacing: -.035em; }
 }
 @keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ================================================================== sampul
+   Gambar generatif dari sampul.js: satu komposisi geometris per bahasa, bab,
+   dan profesi, dibangkitkan dari namanya sendiri (tanpa berkas gambar, tanpa
+   internet). Gambar ini HIASAN -- aria-hidden, dan tidak satu pun informasi
+   yang cuma dibawa olehnya. Teks yang menumpang di atasnya selalu berdiri di
+   atas lapisan --kartu yang pekat, jadi kontrasnya tetap kontras teks biasa.
+   Desktop saja, seperti cangkang pil; di layar sempit wadahnya disembunyikan
+   (lihat blok max-width tepat di bawah). */
+@media (min-width: 861px) {
+  .sampul { display: block; width: 100%; height: 100%; --sampul-s: 46%; --sampul-l: 58%; }
+  /* Di atas kertas terang, rona 58% pudar jadi krem; digelapkan supaya
+     bentuknya tetap terbaca sebagai bentuk. */
+  [data-tema="terang"] .sampul { --sampul-s: 52%; --sampul-l: 46%; }
+  .sampul-tanda { font-family: var(--f-kode); font-weight: 600; letter-spacing: -.04em;
+                  opacity: .14; }
+
+  /* Halaman bahasa: teks di kiri, sampul di kanan. */
+  .kepala-bersampul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+    gap: var(--s7);
+    align-items: center;
+  }
+  .kepala-teks { min-width: 0; }
+  .kepala-sampul {
+    aspect-ratio: 7 / 5;
+    border-radius: 28px;
+    overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+    box-shadow: var(--kilau-tepi);
+  }
+  /* Kepala materi: ubin kecil di kanan judul, sampul milik BAB-nya. */
+  .kepala-materi:has(> .kepala-sampul-kecil) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 152px;
+    column-gap: var(--s6);
+    align-items: start;
+  }
+  .kepala-materi > :not(.kepala-sampul-kecil) { grid-column: 1; min-width: 0; }
+  .kepala-sampul-kecil {
+    grid-column: 2; grid-row: 1 / span 3;
+    border-radius: 22px;
+    aspect-ratio: 16 / 11;
+  }
+
+  /* Ubin bahasa di layar mulai: pita gambar di kepala ubin. */
+  .ubin { overflow: hidden; }
+  .ubin-sampul {
+    display: block;
+    height: 76px;
+    margin: calc(var(--s4) * -1) calc(var(--s4) * -1) var(--s2);
+    border-bottom: var(--tebal-garis) solid var(--garis);
+  }
+
+  /* Kartu Lanjutkan di beranda: pita gambar di atas, menyatu dengan tepi. */
+  .beranda-hero .lanjutkan { overflow: hidden; }
+  .beranda-hero .lanjutkan-isi { flex-grow: 0; }  /* sisa ruangnya milik sampul */
+  .lanjutkan-sampul {
+    display: block;
+    align-self: stretch;
+    /* Mengisi ruang yang tersisa di kartu hero (setinggi kolom sapaan),
+       jadi kartu tidak lagi menyimpan rongga kosong di atas tombolnya. */
+    flex: 1 1 140px;
+    min-height: 120px;
+    margin: calc(var(--s6) * -1) calc(var(--s6) * -1) 0;
+    border-bottom: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 30%, var(--garis));
+  }
+
+  /* Akordeon: sampul jadi latar irisan, ditutup lapisan kartu yang makin
+     pekat ke bawah -- nama dan angka berdiri di atas --kartu penuh. */
+  .akordeon-sampul { position: absolute; inset: 0; z-index: 0; }
+  .akordeon-sampul::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--kartu) 55%, transparent) 0%,
+      color-mix(in srgb, var(--kartu) 8%, transparent) 32%,
+      color-mix(in srgb, var(--kartu) 50%, transparent) 58%,
+      var(--kartu) 84%);
+  }
+  .akordeon-iris > :not(.akordeon-sampul) { position: relative; z-index: 1; }
+
+  /* Peta Karier: pita sampul di kepala panel rincian. */
+  .kr-sampul {
+    height: 104px;
+    margin-bottom: var(--s5);
+    border-radius: 18px;
+    overflow: hidden;
+    border: var(--tebal-garis) solid var(--garis);
+  }
+}
+@media (max-width: 860px) {
+  .kepala-sampul, .ubin-sampul, .lanjutkan-sampul, .akordeon-sampul, .kr-sampul { display: none; }
+}

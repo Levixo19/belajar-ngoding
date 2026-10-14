@@ -116,6 +116,7 @@ belajar sendiri — semuanya dipinjam.
 | `statik/js/permukaan.js` | Sorot samar di bawah kursor pada baris, kartu, dan kartu Lanjutkan (mouse saja) |
 | `statik/js/istirahat.js` | Pengingat istirahat mata 20-20-20, menghitung waktu AKTIF saja |
 | `statik/js/beranda.js` | Beranda: kalimat yang menyala saat digulir, akordeon bahasa, marquee kurikulum, gerak gulir (ScrollTrigger, hanya tingkat gerak penuh) |
+| `statik/js/sampul.js` | Gambar sampul SVG generatif (bahasa, bab, profesi), deterministik dari namanya; hiasan, aria-hidden |
 | `statik/js/layar-pustaka.js` | Layar Pustaka: cari dan saring 9.809 tautan dari `/api/pustaka` |
 | `statik/js/layar-karier.js` | Layar Peta Karier: tangga karier SVG, panel rincian, kuis, perencana jalur |
 | `statik/vendor/gsap/` | GSAP 3.15.0 + SplitText + ScrollTrigger, disimpan lokal, header lisensi utuh |

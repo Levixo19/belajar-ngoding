@@ -24,6 +24,7 @@ import { praKode } from "./sorot.js";
 import { Editor } from "./editor.js";
 import { barisTautan } from "./layar-pustaka.js";
 import { kalimatGulir, akordeonBahasa, marqueeBahasa, gerakBeranda } from "./beranda.js";
+import { sampul } from "./sampul.js";
 import {
   pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
 } from "./pratinjau.js";
@@ -325,6 +326,7 @@ function ubinBahasa(b) {
       ? ["ubin-bebas", "tanpa pasang apa pun"]
       : null;
   return h("a.ubin", { href: "#/bahasa/" + b.key },
+    h("span.ubin-sampul", {}, sampul(b.key, { bahasa: b.key, lebar: 360, tinggi: 120 })),
     h("b.ubin-nama", {}, b.label),
     h("span.ubin-jml", {}, `${b.materi} materi · ${b.latihan} latihan`),
     tanda ? h("span.ubin-tanda", { kelas: tanda[0] }, tanda[1]) : null);
@@ -406,6 +408,8 @@ function kartuLanjutkan(s) {
   const jenis = { materi: "Baca materi", kuis: "Kerjakan kuis",
                   latihan: "Kerjakan latihan" }[s.tipe] || "Lanjutkan";
   return h("a.lanjutkan", { href: tautanLangkah(s) },
+    h("span.lanjutkan-sampul", {},
+      sampul(`${s.bahasa}/${s.tipe}/${s.indeks}`, { bahasa: s.bahasa, lebar: 640, tinggi: 260 })),
     h("span.lanjutkan-nomor", {}, String(s.indeks + 1)),
     h("div.lanjutkan-isi", {},
       h("span.mata", {}, `${jenis} · ${s.label_bahasa}`),
@@ -1004,11 +1008,13 @@ export async function layarBahasa({ key }, ctx) {
   }
 
   const el = h("div.masuk", {},
-    h("header.kepala-besar", {},
-      h("span.mata", {}, "Bahasa"),
-      h("h1", {}, b.label),
-      h("p.kepala-sub", {}, kalimatBahasa(b, s)),
-      barisFakta(b, s)),
+    h("header.kepala-besar.kepala-bersampul", {},
+      h("div.kepala-teks", {},
+        h("span.mata", {}, "Bahasa"),
+        h("h1", {}, b.label),
+        h("p.kepala-sub", {}, kalimatBahasa(b, s)),
+        barisFakta(b, s)),
+      h("div.kepala-sampul", {}, sampul(key, { bahasa: key, lebar: 560, tinggi: 400, tanda: true }))),
 
     kartuLanjutBahasa(b, key),
 
@@ -2031,6 +2037,11 @@ export async function layarMateri({ key, indeks }, ctx) {
       // bertahan di atas cuma posisi — dan itu pun sekarang ikut dibawa strip
       // konteks yang menempel, jadi ia tidak pernah hilang saat digulir.
       h("header.kepala-besar.kepala-materi", {},
+        // Sampul per BAB, bukan per materi: materi dalam bab yang sama berbagi
+        // gambar, jadi berpindah bab terasa seperti berpindah ruang.
+        h("div.kepala-sampul.kepala-sampul-kecil", {},
+          sampul(berbab && m.bab ? `${key}/bab-${m.bab.nomor}` : `${key}/materi`,
+                 { bahasa: key, lebar: 320, tinggi: 220 })),
         h("span.mata", {},
           berbab && m.bab
             ? `Bab ${m.bab.nomor} · ${m.bab.judul}`
@@ -2612,7 +2623,7 @@ function pintasanPembaca(artikel, peta, fokus) {
       const pertama = bawah < 0 ? daftar.length : bawah;
       tuju = arah > 0 ? pertama : pertama - 1;
     }
-    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:291).
+    // DIJEPIT di ujung, tidak dilingkar — preseden `panahAntarUbin` (:292).
     // Melingkar berarti satu penekanan di blok terakhir memindahkan layar
     // sejauh seluruh halaman, dan tidak ada yang meminta perpindahan sebesar
     // itu dari tombol yang artinya "berikutnya".
