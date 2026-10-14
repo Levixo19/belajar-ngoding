@@ -1245,7 +1245,7 @@ function kartuJalan(r, x, kode, simpanLepas, tuju) {
       // cuma pengukuran di `pinKeGalat()`, bukan dugaan dari panjang keluaran.
       // Tanpa chip ini keluaran 301 baris di tata letak lebar terbaca sebagai
       // keluaran 8 baris — satu-satunya isyarat hari ini sebuah bilah gulir
-      // setipis `scrollbar-width: thin` (gaya.css:4890).
+      // setipis `scrollbar-width: thin` (gaya.css:4896).
       h("span.pil.pil-tenang", { hidden: true, data: { lebih: "bawah" } },
         "keluaran lebih panjang dari panel, gulir ke bawah")),
     r.stdin ? h("div", { gaya: { marginBottom: "var(--s2)" } },
@@ -1281,9 +1281,9 @@ const PIN_HASIL_MS = 4000;
 /** Nyalakan sinyal "ada lebih di bawah", lalu antar panel ke pesan galatnya.
  *
  *  Panel hasil DIPAGARI tingginya, tapi hanya di tata letak lebar:
- *  `gaya.css:4890` memberi `.kerja-hasil { overflow-y: auto; max-height:
+ *  `gaya.css:4896` memberi `.kerja-hasil { overflow-y: auto; max-height:
  *  46cqh }` di dalam `@container panggung (min-width: 1100px)`, dengan
- *  `container-type: size` di `.kerja-kode` (`gaya.css:4873`). Akibatnya
+ *  `container-type: size` di `.kerja-kode` (`gaya.css:4879`). Akibatnya
  *  keluaran panjang + blok galat di bawahnya = blok galat SELURUHNYA di luar
  *  jendela panel sementara `scrollTop` tetap 0, dan satu-satunya isyarat
  *  bahwa jawabannya ada di bawah sebuah bilah gulir setipis `thin`.
@@ -1337,7 +1337,7 @@ function pinKeGalat(panel) {
    * Terukur, Chrome 152, `#/latihan/python/0`, 300 baris + ZeroDivisionError:
    * pada `penuh` residu -3 -> -6 -> -7 seiring translateY 3,39 -> 0,41 -> 0 px
    * (animasi 50 -> 133 -> 220 md) dengan `scrollTop` 532; pada `mati`, tempat
-   * `gaya.css:5125` mematikan animasinya, `transform: none` dan `scrollTop`
+   * `gaya.css:5131` mematikan animasinya, `transform: none` dan `scrollTop`
    * 525 -- tepat tujuh kurang, residu 0. Selisihnya ADALAH translateY-nya.
    *
    * Jalan keluarnya DUA, dan yang pertama saya coba lalu tolak: akumulasi

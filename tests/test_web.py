@@ -6087,7 +6087,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
             gaya.css:1424  `.deret`
             gaya.css:1675  `.keadaan-isi .deret`
             gaya.css:2094  `.keluaran-kartu.deret`
-            gaya.css:5096  `.deret`, di dalam daftar `#rel, #konteks, …`
+            gaya.css:5102  `.deret`, di dalam daftar `#rel, #konteks, …`
 
         LIMA baris prelude, EMPAT selector-string berbeda — `.deret` sendirian
         muncul di dua baris. Bedakan kedua cacah itu sebelum memakainya, dan
@@ -6132,7 +6132,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
                 di pohon `_telanjang` -> NOL
                 di ruang MENTAH       -> SATU, dan itu bukan aturan: contoh
                   di dalam blok komentar yang MEMBUKA dengan
-                  `/* ==== @media` — hari ini `gaya.css:4791`, contohnya di
+                  `/* ==== @media` — hari ini `gaya.css:4797`, contohnya di
                   `:4474`. Cari teks pembukanya, bukan nomor barisnya:
                   nomornya bergeser tiap kali berkas ini tumbuh.
               predikat yang SAMA tanpa batas baris (`[^{]`, `[^{}]`)
@@ -6495,7 +6495,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
                 di pohon `_telanjang` -> NOL
                 di ruang MENTAH       -> SATU, dan itu bukan aturan: contoh
                   di dalam blok komentar yang MEMBUKA dengan
-                  `/* ==== @media` — hari ini `gaya.css:4791`, contohnya di
+                  `/* ==== @media` — hari ini `gaya.css:4797`, contohnya di
                   `:4474`. Cari teks pembukanya, bukan nomor barisnya:
                   nomornya bergeser tiap kali berkas ini tumbuh.
               predikat yang SAMA tanpa batas baris (`[^{]`, `[^{}]`)
@@ -7330,7 +7330,7 @@ class TestAlamatKomentar(unittest.TestCase):
         # (pemandu indentasi) menyisip di akhir palet `.tk-*`, tepat sesudah
         # `.tk-teks` — jauh di atas keempat sasaran ini. Dulu `:4750`, `:4493`,
         # `:4510`, `:4744`. Sasarannya sama, nomornya saja yang bergerak.
-        "gaya.css:5131": "scroll-behavior: auto",
+        "gaya.css:5137": "scroll-behavior: auto",
         # `gerak.js:801` dulu `:795`: enam baris D5 di `angkaKe()` memindahkan
         # isinya, dan kunci lamanya DIHAPUS atas putusan reviewer — sebuah
         # kunci yang sasarannya sudah bukan isi itu lagi adalah klaim basi,
@@ -7363,8 +7363,8 @@ class TestAlamatKomentar(unittest.TestCase):
         "gerak.js:303": "export function skala()",
         # Kaki akibat panel hasil (S08 hun 4): keempat alamat ini dirujuk dari
         # `pinKeGalat()` di layar-kerja.js dan dari chip sinyalnya.
-        "gaya.css:4873": "container-type: size",
-        "gaya.css:4890": "overflow-y: auto; scrollbar-width: thin",
+        "gaya.css:4879": "container-type: size",
+        "gaya.css:4896": "overflow-y: auto; scrollbar-width: thin",
         "layar-belajar.js:770": "const PIN_BARA_MS = 4000",
         "layar-belajar.js:805": "function pinKeHariIni(petak, geser)",
         # Klaim bernama yang dibetulkan di hun 4: komentar port nomor baris
@@ -7415,7 +7415,7 @@ class TestAlamatKomentar(unittest.TestCase):
         # `kotak()` menyebut ketiganya, jadi ketiganya ikut diadu.
         "gaya.css:1192": "transform: translateY(7px)",
         "gaya.css:442": "--sedang: 220ms",
-        "gaya.css:5125": "animation: none !important",
+        "gaya.css:5131": "animation: none !important",
         # H9-A: `gambarBeda` menciutkan pasangan yang cuma beda spasi, dan
         # syaratnya `tanda === "~"` DAN `tampak` -- bukan `tampak` sendirian.
         # Komentarnya menopang klaim itu dengan menunjuk baris yang mengisi
@@ -7864,9 +7864,9 @@ class TestRujukanAntarBerkasTidakMenunjukRuangKosong(unittest.TestCase):
 class TestKakiAkibatPanelHasil(unittest.TestCase):
     """Panel hasil memotong, dan sebelum hun ini ia memotong TANPA SATU TANDA.
 
-    `gaya.css:4890` memberi `.kerja-hasil { overflow-y: auto; max-height:
+    `gaya.css:4896` memberi `.kerja-hasil { overflow-y: auto; max-height:
     46cqh }` di dalam `@container panggung (min-width: 1100px)`, dengan
-    `container-type: size` di `.kerja-kode` (`gaya.css:4873`). Diukur di tata
+    `container-type: size` di `.kerja-kode` (`gaya.css:4879`). Diukur di tata
     letak lebar: keluaran 301 baris + `ZeroDivisionError` di bawahnya =
     `scrollTop` tetap 0 dan blok galatnya seluruhnya di luar jendela panel.
     Satu-satunya isyarat bahwa jawabannya ada di bawah sebuah bilah gulir
@@ -19577,7 +19577,7 @@ class TestKontrakKelasHidup(unittest.TestCase):
         pajak tidak boleh seluruhnya jadi milik berkas yang menulis daftar
         ampunannya. Ia TIDAK membuktikan satu kelas pun DIPAKAI, dan tidak
         pula membuktikan sebuah rujukan mengutip aturan yang diampuni. Lima
-        rujukan LUAR hari ini menunjuk `gaya.css:4873` sampai `gaya.css:5131`
+        rujukan LUAR hari ini menunjuk `gaya.css:4879` sampai `gaya.css:5137`
         -- sama sekali bukan `gaya.css:1273` atau `gaya.css:2788` -- karena
         yang diukur "apa yang bergeser kalau gaya.css di atas situ disunting",
         bukan "siapa mengutip aturan ini". Kalau halaman ini terbaca seperti
@@ -19798,7 +19798,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
             " `.keluaran-kartu` di `gaya.css:2089` dan isinya"
             " `.keluaran-kartu .terminal` di `gaya.css:2106`",
         "mulai-pilih":
-            "strukturnya -- `gaya.css:4666` memberi `.mulai > *` pengaman"
+            "strukturnya -- `gaya.css:4672` memberi `.mulai > *` pengaman"
             " `min-width: 0` dan `gaya.css:2659` mematok lebar anak-anak"
             " `.mulai`; keduanya mengenainya tanpa menyebut namanya",
         "pratinjau-lebar":
@@ -20288,7 +20288,7 @@ class TestTokenTemaTidakDimatikanBlokAkar(unittest.TestCase):
         539: ("html", (0, 0, 1)),
         1052: ("html:has(#panggung.berkonteks)", (1, 1, 1)),
         4301: ("html.alih-tema", (0, 1, 1)),
-        5131: ('html[data-gerak="mati"]', (0, 1, 1)), 5414: (":root", (0, 1, 0)),
+        5137: ('html[data-gerak="mati"]', (0, 1, 1)), 5420: (":root", (0, 1, 0)),
     }
 
     KOMBINATOR = re.compile(r"[ \t\n>+~]")
@@ -20801,8 +20801,8 @@ class TestTokenTemaTidakDimatikanBlokAkar(unittest.TestCase):
             baca, self.POPULASI,
             "himpunan aturan yang menunjuk <html> bergeser. Yang masuk harus "
             "pemilih tanpa kombinator dan tanpa ::pseudo-element; "
-            "`[data-tema=\"terang\"] #latar` (:671) dan "
-            "`html.lingkar-tema::view-transition-new(root)` (:5065) TIDAK "
+            "`[data-tema=\"terang\"] #latar` (:679) dan "
+            "`html.lingkar-tema::view-transition-new(root)` (:5295) TIDAK "
             "ikut. Kalau ini berubah karena gaya.css memang berubah, "
             "perbarui POPULASI dan hitung ulang kematiannya")
 

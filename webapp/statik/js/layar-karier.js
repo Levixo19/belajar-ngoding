@@ -21,37 +21,53 @@
 import { api, h, isikan, bulat } from "./inti.js";
 import { ikon } from "./ikon.js";
 import { sampul } from "./sampul.js";
+import { gerakPenuh } from "./gerak.js";
+import { saatSiap } from "./layar-belajar.js";
 
 const NS = "http://www.w3.org/2000/svg";
 // Tangga karier: BARIS adalah rumpun, KOLOM adalah jenjang (pemula,
-// menengah, senior). Versi pertamanya konstelasi melingkar seperti proyek
-// networking, dan di kanvas selebar ini (sekitar 680 px di samping panel)
-// hasilnya benang kusut: garis lintas-rumpun bersilangan di tengah dan nama
-// rumpun menimpa simpul. Kisi memberi tiap label tempat tetap, dan arah
-// "naik" terbaca langsung sebagai gerak ke kanan.
-const W = 860;
-const KIRI = 168;
-const ATAS = 48;
-const BARIS = 84;
+// menengah, senior). Versi pertamanya konstelasi melingkar, versi keduanya
+// menggambar SEMUA sisi sekaligus sebagai kurva-S -- dua-duanya benang kusut:
+// empat puluhan garis abu yang bersilangan, plus sisi antar-profesi SATU
+// jenjang yang dirutekan menyusuri kolom simpul dan menembus label-label di
+// bawahnya. Aturannya sekarang:
+//   * Garis cuma digambar untuk profesi yang sedang dipilih/disorot. Peta
+//     dalam keadaan diam adalah kisi nama yang tenang, bukan gulungan kabel.
+//   * Garis selalu berangkat dari UJUNG label sumber dan tiba di sisi kiri
+//     simpul tujuan, jadi tidak pernah melintasi huruf.
+//   * Tetangga dalam satu kolom tidak digaris sama sekali; simpulnya diberi
+//     cincin. Hubungan itu sudah dibawa daftar "dekat" di panel.
+// Tinggi tiap baris dihitung dari sel terpadatnya, bukan dipatok: tiga
+// profesi menengah di satu rumpun tidak lagi berdesakan dalam 84 unit.
+const W = 1040;
+const KIRI = 196;
+const ATAS = 52;
 const KOLOM = (W - KIRI) / 3;
-const LANGKAH = 25;
+const LANGKAH = 32;
+const BARIS_MIN = 76;
 const JENJANG_KOLOM = { pemula: 0, menengah: 1, senior: 2 };
 
 function tataLetak(data) {
   const pos = new Map();
-  data.rumpun.forEach((r, i) => {
-    for (const [jenjang, j] of Object.entries(JENJANG_KOLOM)) {
-      const sel = data.profesi.filter((p) => p.rumpun === r.id && p.jenjang === jenjang);
-      const tinggi = (sel.length - 1) * LANGKAH;
-      sel.forEach((p, k) => {
-        pos.set(p.id, {
-          x: KIRI + j * KOLOM + 22,
-          y: ATAS + i * BARIS + BARIS / 2 - tinggi / 2 + k * LANGKAH,
-        });
-      });
-    }
-  });
-  return { pos, tinggi: ATAS + data.rumpun.length * BARIS + 12 };
+  const baris = [];
+  let y = ATAS;
+  for (const r of data.rumpun) {
+    const sel = Object.keys(JENJANG_KOLOM).map((jenjang) =>
+      data.profesi.filter((p) => p.rumpun === r.id && p.jenjang === jenjang));
+    const tinggi = Math.max(BARIS_MIN, Math.max(...sel.map((x) => x.length)) * LANGKAH + 28);
+    sel.forEach((isi, j) => {
+      const blok = (isi.length - 1) * LANGKAH;
+      isi.forEach((p, k) => pos.set(p.id, {
+        x: KIRI + j * KOLOM + 24,
+        y: y + tinggi / 2 - blok / 2 + k * LANGKAH,
+        kolom: j,
+        R: p.jenjang === "senior" ? 8 : p.jenjang === "menengah" ? 7 : 6,
+      }));
+    });
+    baris.push({ id: r.id, label: r.label, y, tinggi });
+    y += tinggi;
+  }
+  return { pos, baris, tinggi: y + 12 };
 }
 
 function s(tag, sifat = {}, ...anak) {
@@ -64,18 +80,40 @@ function s(tag, sifat = {}, ...anak) {
   return el;
 }
 
-/** Garis antar dua simpul: lengkung-S kalau beda kolom, busur ke kiri kalau
- *  satu kolom (supaya tidak menembus label di kanan simpul). */
-function jalurGaris(a, b) {
-  if (Math.abs(a.x - b.x) < 1) {
-    // Dipatok 18 unit: lebih lebar dari itu, busurnya menembus nama rumpun.
-    const lengkung = Math.min(18, 8 + Math.abs(a.y - b.y) * 0.05);
-    return `M${a.x},${a.y.toFixed(1)} C${a.x - lengkung},${a.y.toFixed(1)} `
-      + `${b.x - lengkung},${b.y.toFixed(1)} ${b.x},${b.y.toFixed(1)}`;
+/** Garis dari ujung label simpul KIRI ke sisi kiri simpul KANAN, dirutekan
+ *  seperti peta metro: mendatar ke BATANG di talang sesudah kolom simpul
+ *  kiri, tegak di sepanjang batang itu, lalu mendatar masuk ke simpul kanan.
+ *  Semua garis dari satu simpul berbagi batang yang sama, jadi sepuluh
+ *  hubungan terbaca sebagai satu pohon bercabang, bukan sepuluh kurva yang
+ *  saling melintas. Sudutnya dibulatkan dengan radius R_SUDUT. */
+const R_SUDUT = 9;
+function jalurGaris(kiri, ujungLabel, kanan, geser = 0) {
+  const x1 = ujungLabel + 14;
+  const x2 = kanan.x - kanan.R - 9;
+  const talang = KIRI + (kiri.kolom + 1) * KOLOM + 24 - 30 + geser;
+  const xt = Math.min(Math.max(talang, x1 + R_SUDUT + 4), x2 - R_SUDUT - 4);
+  const y1 = kiri.y;
+  const y2 = kanan.y;
+  const f = (n) => n.toFixed(1);
+  const dy = y2 - y1;
+  if (Math.abs(dy) < 1) return `M${f(x1)},${f(y1)} H${f(x2)}`;
+  const r = Math.min(R_SUDUT, Math.abs(dy) / 2);
+  const arah = Math.sign(dy);
+  return `M${f(x1)},${f(y1)} H${f(xt - r)} Q${f(xt)},${f(y1)} ${f(xt)},${f(y1 + arah * r)} `
+    + `V${f(y2 - arah * r)} Q${f(xt)},${f(y2)} ${f(xt + r)},${f(y2)} H${f(x2)}`;
+}
+
+/** Nama rumpun yang panjang dipecah dua baris di batas kata terdekat dari
+ *  tengahnya, supaya tidak menabrak kolom pemula. */
+function labelRumpun(teks, x, yTengah, sifat) {
+  if (teks.length <= 18) {
+    return s("text", { ...sifat, x, y: yTengah, dy: "0.35em" }, document.createTextNode(teks));
   }
-  const tengah = (a.x + b.x) / 2;
-  return `M${a.x},${a.y.toFixed(1)} C${tengah},${a.y.toFixed(1)} `
-    + `${tengah},${b.y.toFixed(1)} ${b.x},${b.y.toFixed(1)}`;
+  const spasi = [...teks.matchAll(/ /g)].map((m) => m.index);
+  const potong = spasi.reduce((a, b) => (Math.abs(b - teks.length / 2) < Math.abs(a - teks.length / 2) ? b : a));
+  return s("text", { ...sifat, x, y: yTengah },
+    s("tspan", { x, dy: "-0.25em" }, document.createTextNode(teks.slice(0, potong))),
+    s("tspan", { x, dy: "1.2em" }, document.createTextNode(teks.slice(potong + 1))));
 }
 
 const pendek = (nama) => nama.replace(/\s*\(.*?\)\s*/g, " ").replace(/ \/ .*$/, "").trim();
@@ -108,24 +146,24 @@ export async function layarKarier({ key: id }) {
   let saringRumpun = "semua";
 
   /* ------------------------------------------------------- konstelasi */
-  const { pos, tinggi: H } = tataLetak(data);
+  const { pos, baris: barisRumpun, tinggi: H } = tataLetak(data);
   const tetangga = new Map(data.profesi.map((p) => [p.id, new Set()]));
   for (const e of data.sisi) {
     tetangga.get(e.a).add(e.b);
     tetangga.get(e.b).add(e.a);
   }
 
-  const garis = data.sisi.map((e) => {
-    return s("path", {
-      d: jalurGaris(pos.get(e.a), pos.get(e.b)),
-      class: "kr-sisi kr-sisi-" + e.jenis, pathLength: 1,
-      "data-a": e.a, "data-b": e.b,
-    });
-  });
+  const jenisSisi = new Map();
+  for (const e of data.sisi) {
+    jenisSisi.set(e.a + "|" + e.b, e.jenis);
+    jenisSisi.set(e.b + "|" + e.a, e.jenis);
+  }
+  // Diisi ulang tiap kali sorotan berpindah; lihat gambarGaris().
+  const lapisGaris = s("g", { class: "kr-lapis-garis" });
 
   const simpul = data.profesi.map((p) => {
     const t = pos.get(p.id);
-    const R = p.jenjang === "senior" ? 8 : p.jenjang === "menengah" ? 7 : 6;
+    const R = t.R;
     const keliling = 2 * Math.PI * (R + 4);
     const g = s("g", {
       class: "kr-simpul", tabindex: 0, role: "button",
@@ -133,8 +171,9 @@ export async function layarKarier({ key: id }) {
       "aria-label": `${p.nama}, kesiapan ${bulat(p.kesiapan)} persen`,
       transform: `translate(${t.x.toFixed(1)},${t.y.toFixed(1)})`,
     },
-      s("rect", { x: -R - 8, y: -LANGKAH / 2, width: KOLOM - 14, height: LANGKAH,
-                  rx: 6, class: "kr-sasaran" }),
+      s("rect", { x: -R - 8, y: -LANGKAH / 2 + 2, width: KOLOM - 20, height: LANGKAH - 4,
+                  rx: 8, class: "kr-sasaran" }),
+      s("circle", { r: R + 9, class: "kr-halo" }),
       s("circle", { r: R + 4, class: "kr-cincin-alas" }),
       p.kesiapan > 0 ? s("circle", {
         r: R + 4, class: "kr-cincin-isi",
@@ -156,16 +195,14 @@ export async function layarKarier({ key: id }) {
   });
 
   // Pita baris selang-seling + nama rumpun di kiri + judul jenjang di atas.
-  const pita = data.rumpun.map((r, i) => s("rect", {
-    x: 0, y: ATAS + i * BARIS, width: W, height: BARIS,
+  const pita = barisRumpun.map((r, i) => s("rect", {
+    x: 0, y: r.y, width: W, height: r.tinggi,
     class: "kr-pita" + (i % 2 ? " kr-pita-genap" : ""), "data-rumpun": r.id,
   }));
-  const label = data.rumpun.map((r, i) => s("text", {
-    class: "kr-rumpun", x: 20, y: ATAS + i * BARIS + BARIS / 2, dy: "0.35em",
-    "data-rumpun": r.id,
-  }, document.createTextNode(r.label)));
+  const label = barisRumpun.map((r) => labelRumpun(r.label, 22, r.y + r.tinggi / 2,
+    { class: "kr-rumpun", "data-rumpun": r.id }));
   const kepalaKolom = Object.keys(JENJANG_KOLOM).map((j, i) => s("text", {
-    class: "kr-kolom", x: KIRI + i * KOLOM + 14, y: 28,
+    class: "kr-kolom", x: KIRI + i * KOLOM + 16, y: 30,
   }, document.createTextNode(data.jenjang[j].startsWith("Bisa") ? "Pemula"
     : j === "menengah" ? "Menengah" : "Senior")));
 
@@ -173,7 +210,7 @@ export async function layarKarier({ key: id }) {
     viewBox: `0 0 ${W} ${H}`, class: "kr-graf", role: "group",
     "aria-label": "Konstelasi profesi. Pilih satu untuk melihat rinciannya.",
   }, s("g", {}, pita), s("g", {}, kepalaKolom), s("g", {}, label),
-     s("g", {}, garis), s("g", {}, simpul));
+     lapisGaris, s("g", {}, simpul));
 
   // Dihitung di luar classList.toggle: pemanen kelas di test_web membaca
   // setiap literal di dalam panggilan itu sebagai nama kelas.
@@ -190,17 +227,70 @@ export async function layarKarier({ key: id }) {
       // Label hanya untuk yang sedang dibicarakan: dua puluh satu nama
       // sekaligus di kanvas selebar ini saling menimpa.
       g.classList.toggle("tampak", ini === fokus || ini === terpilih.id || dekat.has(ini));
+      // Tetangga SEJENJANG tidak digaris (lihat gambarGaris); lingkar putus-
+      // putus di LUAR cincin kesiapannya yang membawa hubungan itu.
+      g.classList.toggle("sejajar", dekat.has(ini) && pos.get(ini).kolom === pos.get(fokus).kolom);
       g.setAttribute("aria-pressed", String(ini === terpilih.id));
     }
-    for (const p of garis) {
-      const kena = p.dataset.a === fokus || p.dataset.b === fokus;
-      p.classList.toggle("nyala", kena);
-      p.classList.toggle("redup", !kena);
-    }
+    gambarGaris(fokus, dekat);
     for (const t of [...label, ...pita]) {
       const jauh = tersaring(t.dataset.rumpun);
       t.classList.toggle("redup", jauh);
     }
+  }
+
+  // Ujung label diukur dari teksnya sendiri (getComputedTextLength), sekali
+  // per simpul. Gambar PERTAMA terjadi sebelum layar menempel (pilih() di
+  // bawah), jadi di sana yang ada cuma perkiraan per huruf -- perkiraan itu
+  // tidak disimpan, `perkiraan` menandai gambarnya, dan saatSiap di akhir
+  // layar menggambar ulang dengan ukuran sungguhan. Tanpa itu garis pertama
+  // yang dilihat orang bisa menempel ke huruf terakhir label.
+  const ujungLabel = new Map();
+  let perkiraan = false;
+  const simpulPer = new Map(simpul.map((g) => [g.dataset.id, g]));
+  function ujung(pid) {
+    if (ujungLabel.has(pid)) return ujungLabel.get(pid);
+    const t = pos.get(pid);
+    const teks = simpulPer.get(pid).querySelector(".kr-label");
+    const panjang = teks.isConnected ? teks.getComputedTextLength() : 0;
+    const x = t.x + t.R + 10 + (panjang || pendek(perId.get(pid).nama).length * 7.6);
+    if (panjang) ujungLabel.set(pid, x);
+    else perkiraan = true;
+    return x;
+  }
+
+  let fokusGaris = null;
+  function gambarGaris(fokus, dekat) {
+    if (fokus === fokusGaris && !perkiraan && lapisGaris.childElementCount) return;
+    fokusGaris = fokus;
+    perkiraan = false;
+    const baru = [];
+    for (const lain of dekat) {
+      const a = pos.get(fokus);
+      const b = pos.get(lain);
+      if (a.kolom === b.kolom) continue;  // satu jenjang: cincin, bukan garis
+      const [kiri, kanan] = a.kolom < b.kolom ? [fokus, lain] : [lain, fokus];
+      const jenis = jenisSisi.get(fokus + "|" + lain);
+      if (tersaring(perId.get(lain).rumpun)) continue;
+      const garis = s("path", {
+        d: jalurGaris(pos.get(kiri), ujung(kiri), pos.get(kanan), jenis === "naik" ? 0 : -8),
+        class: "kr-sisi kr-sisi-" + jenis, pathLength: jenis === "naik" ? 1 : null,
+      });
+      const t = pos.get(kanan);
+      baru.push(garis, s("circle", {
+        class: "kr-ujung kr-ujung-" + jenis, r: 2.6,
+        cx: (t.x - t.R - 9).toFixed(1), cy: t.y.toFixed(1),
+      }));
+      // Garis "naik" ditarik dari kiri ke kanan. Keadaan akhirnya keadaan
+      // alami (dashoffset 0), jadi gerak yang dimatikan tidak menyembunyikan
+      // apa pun.
+      if (jenis === "naik" && gerakPenuh()) {
+        garis.setAttribute("stroke-dasharray", "1");
+        garis.animate({ strokeDashoffset: [1, 0] },
+          { duration: 420, easing: "cubic-bezier(.2,.7,.2,1)" });
+      }
+    }
+    isikan(lapisGaris, ...baru);
   }
 
   /* ----------------------------------------------------- panel detail */
@@ -365,8 +455,9 @@ export async function layarKarier({ key: id }) {
         h("figcaption.kr-legenda", {},
           h("span", {}, h("i.kr-leg-naik"), "Jalur naik"),
           h("span", {}, h("i.kr-leg-dekat"), "Keahlian beririsan"),
+          h("span", {}, h("i.kr-leg-sejajar"), "Sejenjang & beririsan"),
           h("span", {}, h("i.kr-leg-siap"), "Kesiapanmu"),
-          h("span", {}, "Makin ke kanan, makin senior perannya."))),
+          h("span", {}, "Garis muncul untuk profesi yang dipilih. Makin ke kanan, makin senior."))),
       panel),
 
     h("section.kr-bagian#kr-cocok", { "aria-labelledby": "kr-judul-cocok" },
@@ -400,6 +491,7 @@ export async function layarKarier({ key: id }) {
   );
 
   pilih(terpilih.id, false);
+  saatSiap(el, () => { if (perkiraan) gambarGaris(terpilih.id, tetangga.get(terpilih.id)); });
   return { el, judul: "Peta Karier" };
 }
 

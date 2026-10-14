@@ -1775,7 +1775,7 @@ function kunciBaca(key, indeks) {
  *  CSSOM-View mendefinisikan `"auto"` sebagai "ikuti `scroll-behavior` kotak
  *  yang digulir", dan `gaya.css:541` memasang `html { scroll-behavior: smooth }`.
  *  Jadi `"auto"` MULUS di tingkat gerak `penuh` dan `halus`; yang instan cuma
- *  `"mati"`, karena di sana `gaya.css:5131` menimpanya jadi `auto`. Terukur
+ *  `"mati"`, karena di sana `gaya.css:5137` menimpanya jadi `auto`. Terukur
  *  sebelum diperbaiki: pemulihan ke 700 px menghasilkan sembilan cuplikan yang
  *  berubah sepanjang ~650 ms. `"instant"` mengabaikan `scroll-behavior` dan
  *  terjadi sinkron, apa pun setelannya.
