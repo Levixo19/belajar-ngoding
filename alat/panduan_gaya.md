@@ -17,6 +17,36 @@ atau kuliah. Ia tidak butuh dikagumi; ia butuh mengerti, lalu bisa mencoba.
 Bayangkan kamu duduk di sebelahnya dan menjelaskan dengan sabar, seperti
 teman yang sudah lebih dulu bisa.
 
+## Nadanya: ngobrol (dipilih pemilik, 2026-10-15)
+
+Pemilik membandingkan tiga nada (baku, ngobrol, ringkas) dan memilih
+NGOBROL. Patokannya kalimat ini:
+
+    Kenapa tag harus ditutup? Gampangnya, tag pembuka itu cuma bilang
+    "mulai dari sini". Kalau nggak ada penutupnya, browser bingung
+    elemennya selesai di mana, jadi dia nebak sendiri.
+
+    Masalahnya, browser nggak pernah protes. Halamannya tetap tampil,
+    kelihatan hampir benar, dan kamu nggak dikasih tahu salahnya di mana.
+
+Ciri-cirinya:
+
+- **"nggak" untuk tidak, di seluruh prosa.** Konsisten; jangan dicampur
+  "tidak" dan "nggak" di paragraf yang sama. Pengecualian: label aturan dan
+  isi tabel/contoh boleh tetap "tidak".
+- **Kata sehari-hari yang wajar:** cuma, aja, bikin, kasih, pakai, gampangnya,
+  intinya, masalahnya, ternyata, biasanya, misalnya. Kata kerja bentuk lisan
+  boleh (nebak, ngecek, nyimpen) asal tidak tiap kalimat.
+- **Browser, program, atau komputer boleh disebut "dia"** kalau bikin kalimat
+  lebih enak dibaca.
+- **Partikel "sih", "kok", "lho", "kan" paling banyak sekali-dua per materi.**
+  Lebih dari itu terdengar dibuat-buat.
+- **Tetap jelas dan benar.** Santai bukan berarti asal: istilah teknis tetap
+  disebut dengan nama aslinya dan dijelaskan, angka tetap persis, dan setiap
+  fakta tetap ada.
+- **Jangan:** "gaes", "bro", "wkwk", emoji, singkatan chat (yg, gmn, bgt),
+  candaan yang memotong penjelasan, atau sok akrab ("Nah, sobat ngoding!").
+
 ## Aturan menulis
 
 1. **Satu gagasan per kalimat.** Kalimat rata-rata 10 sampai 20 kata. Kalau
@@ -38,11 +68,10 @@ teman yang sudah lebih dulu bisa.
    dipahami sekarang.
 7. **Perumpamaan boleh, asal sederhana dan sekali saja per konsep.** Satu
    perumpamaan yang pas lebih menolong daripada tiga yang ditumpuk.
-8. **Bahasa Indonesia baku tapi santai.** "Tapi" dan "cuma" tidak apa-apa.
-   Kata asing yang memang dipakai programmer (browser, error, loop) boleh
-   tetap; jangan dipaksakan diterjemahkan, jangan juga dijejali bahasa Inggris
-   yang ada padanannya ("berkas" untuk file sudah dipakai di seluruh
-   aplikasi, pertahankan).
+8. **Kata asing secukupnya.** Kata yang memang dipakai programmer (browser,
+   error, loop) boleh tetap; jangan dipaksakan diterjemahkan, jangan juga
+   dijejali bahasa Inggris yang ada padanannya ("berkas" untuk file sudah
+   dipakai di seluruh aplikasi, pertahankan).
 
 ## Yang dilarang (dihitung `periksa_gaya.py`)
 
@@ -108,16 +137,18 @@ Sebelum:
 
 Sesudah:
 
-    Kenapa tag harus ditutup? Tag pembuka cuma berarti "mulai dari
-    sini". Kalau penutupnya tidak ada, browser tidak tahu elemennya
-    berakhir di mana, lalu menebak sendiri.
+    Kenapa tag harus ditutup? Gampangnya, tag pembuka itu cuma bilang
+    "mulai dari sini". Kalau nggak ada penutupnya, browser bingung
+    elemennya selesai di mana, jadi dia nebak sendiri.
 
-    Browser juga tidak menampilkan pesan error untuk HTML yang salah.
-    Halamannya tetap tampil, kelihatan hampir benar, dan kamu tidak
-    diberi tahu bagian mana yang keliru. Karena itu kesalahan HTML
-    lebih susah dicari daripada kesalahan Python, yang langsung
-    menunjukkan baris yang salah.
+    Masalahnya, browser nggak pernah protes. Halamannya tetap tampil,
+    kelihatan hampir benar, dan kamu nggak dikasih tahu salahnya di
+    mana. Makanya kesalahan HTML lebih susah dicari daripada kesalahan
+    Python, yang langsung nunjukin baris mana yang salah.
 
-Yang berubah: tidak ada huruf kapital untuk penekanan, tidak ada "diam-diam"
-dan "berteriak", kalimat lebih pendek, dan alasannya disebut dengan fakta
-("menunjukkan baris yang salah"), bukan dengan gaya.
+Yang berubah: nggak ada huruf kapital untuk penekanan, nggak ada "diam-diam"
+dan "berteriak", kalimatnya lebih pendek, dan alasannya disebut dengan fakta
+("nunjukin baris mana yang salah"), bukan dengan gaya.
+
+Contoh lengkap yang sudah memakai nada ini: bab 1 HTML (materi 1 sampai 4
+di `data/html_materials.py`). Baca dulu sebelum mulai menulis.
