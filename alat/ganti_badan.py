@@ -27,7 +27,8 @@ adanya, termasuk indentasi (yang punya arti bagi pengurai, lihat
 "Membaca badan materi" di AGENTS.md).
 
 Pagar yang membuat alat ini MENOLAK menulis:
-  * baris lebih dari LEBAR_MAKS karakter;
+  * baris baru lebih dari LEBAR_MAKS karakter (baris yang disalin persis
+    dari prosa asli dibebaskan, karena blok Keluaran wajib identik);
   * em dash atau en dash di mana pun (panduan gaya melarangnya);
   * blok "Keluaran:" yang tidak sama persis dengan aslinya. Blok itu janji
     yang diuji test_solutions.test_janji_keluaran_di_materi_sesuai_kenyataan
@@ -140,10 +141,15 @@ def format_daftar(baris_baru, indent):
     return "[\n" + isi + " " * indent + "]"
 
 
-def periksa_baris(baris_baru, label):
+def periksa_baris(baris_baru, label, asli=()):
     salah = []
+    # Baris yang disalin PERSIS dari prosa asli dibebaskan dari batas lebar:
+    # blok Keluaran wajib identik, dan beberapa di antaranya memang memuat
+    # baris 80-an karakter. Batas 78 untuk tulisan baru; batas proyek yang
+    # dijaga test_data tetap 100.
+    asli = set(asli)
     for b in baris_baru:
-        if len(b) > LEBAR_MAKS:
+        if len(b) > LEBAR_MAKS and b not in asli:
             salah.append(f"{label}: baris {len(b)} karakter: {b[:50]}...")
     # Dash hanya dilarang di PROSA. Contoh yang menjorok boleh memuatnya:
     # materi HTML mengajarkan entitas &mdash; dan menampilkan karakternya.
@@ -167,7 +173,7 @@ def proses(jalur_berkas, naskah_berkas, tulis):
         for indeks, baru in bagian.items():
             label = f"{judul} [{indeks}]"
             asli = per_judul[judul]["sections"][indeks].get("body") or []
-            salah += periksa_baris(baru, label)
+            salah += periksa_baris(baru, label, asli)
             if blok_keluaran(asli) != blok_keluaran(baru):
                 salah.append(f"{label}: blok Keluaran berubah atau hilang")
             ganti.append((cari_rentang(sumber, judul, indeks), baru))

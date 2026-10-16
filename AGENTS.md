@@ -22,7 +22,7 @@ Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
 Status: 20 kurikulum, 537 materi dalam 142 bab bertingkat, 121 kuis / 968 soal,
-319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1088 tes.
+319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1096 tes.
 Ditambah Pustaka (9.809 tautan belajar beratribusi) dan Peta Karier (21 profesi).
 
 144 materi ditambahkan sekaligus setelah audit cakupan tiga sudut (kode nyata,
@@ -965,6 +965,25 @@ Semuanya dijaga `test_web.TestPenyajianIsi`, dan
 `test_web.TestIsiSamaDenganTerminal` tetap mengadu SELURUH baris body di
 SELURUH kurikulum supaya tidak ada kalimat yang hilang saat dirapikan.
 
+Tiga aturan yang ditambahkan saat prosa ditulis ulang (2026-10-16), masing-
+masing dengan pagarnya sendiri di kaki `test_web.py`:
+
+* **Daftar bernomor membawa nomor awalnya (`"mulai"`).** Butir bernomor yang
+  dipotong contoh kode atau baris kosong pecah jadi beberapa blok; tanpa
+  nomor awal, tiap potongan digambar sebagai `<ol>` baru dan web menampilkan
+  1, 1, 1 padahal sumber dan terminal menulis 1, 2, 3. 179 potongan di
+  seluruh kurikulum kena. `senarai()` meneruskannya ke `<ol start>`.
+  (`TestDaftarBernomorBersambung`)
+* **Butir YAML di dalam contoh adalah contoh, bukan daftar.** `- uses: ...`
+  yang menempel di bawah kunci YAML polos (`steps:`) ikut blok kodenya.
+  Syaratnya sengaja sempit (kunci berhuruf kecil tanpa spasi), karena
+  puluhan materi menulis daftar prosa "- Istilah: penjelasan" di bawah label
+  menjorok. (`TestButirYamlDiContoh`)
+* **`` `kode` `` di prosa digambar sebagai `<code>`, tanpa backtick-nya.**
+  Kurikulum C#, Kotlin, PHP, Ruby, Rust, TypeScript, dan VB ditulis dengan
+  backtick sejak awal, dan web dulu menampilkannya mentah. Terminal tetap
+  menampilkan backtick sebagai penanda; isinya sama.
+
 **Blok kode di halaman materi bisa dijalankan dan disunting DI TEMPAT.**
 Tombolnya dulu melempar ke Ruang Coba — layar lain, alamat lain, dan kembali
 berarti kehilangan posisi baca. Untuk pertanyaan sekecil "keluarnya apa kalau
@@ -977,6 +996,35 @@ tombolnya, dan KEDUANYA jawaban server, bukan tebakan: `bisa_dijalankan` dari
 tetap cuma satu dan tempatnya `runner.periksa`. Editor sisipannya WAJIB dilepas
 di `saatKeluar` — kalau tidak, pendengar papan ketik dan pengamat ukurannya
 hidup terus di belakang layar berikutnya.
+
+## Gaya bahasa materi
+
+Pemilik menilai materi lama "masih AI banget" dan membingungkan, sampai
+bilang lebih baik belajar di situs berbayar. Seluruh prosa materi ditulis
+ulang (2026-10-15/16) dengan nada NGOBROL yang ia pilih sendiri dari tiga
+contoh. Yang mengikat untuk tulisan baru:
+
+* **Aturannya di `alat/panduan_gaya.md`**, contoh acuannya materi HTML 1-4.
+  "nggak" konsisten di prosa; istilah dijelaskan saat pertama muncul;
+  tanpa em dash, HURUF KAPITAL untuk penekanan, "bukan X melainkan Y",
+  pepatah, atau drama. Label `Jebakan:`/`Ingat:` di awal paragraf boleh
+  (aplikasi menggambarnya sebagai kotak), paling banyak dua-tiga per materi.
+* **Ukur dengan `python3 alat/periksa_gaya.py [key] [awal judul]`.** Alat
+  itu memakai `isi.blok_badan`, jadi contoh kode dan tabel tidak ikut
+  terhitung. Garis dasar sebelum penulisan ulang: 12.821 temuan dalam 218
+  ribu kata (58,7/1000); sesudahnya sekitar 1/1000, dan sisanya salah
+  tangkap (konstanta enum, kata kunci SQL). Singkatan baru yang memang
+  kapital didaftarkan di `AKRONIM`, jangan dibiarkan jadi angka palsu.
+* **Tulis lewat `python3 alat/ganti_badan.py naskah.txt --tulis`.** Ia cuma
+  mengganti field `body`, dan menolak menulis kalau baris > 78 karakter,
+  ada dash di prosa, blok `Keluaran:` berubah, atau judul/kode/bagian lain
+  ikut berubah. Heading dan kode boleh dibetulkan, tapi dengan tangan dan
+  dengan alasan: judul tidak pernah, karena ia kunci progres.
+* **Menulis ulang juga berarti memeriksa fakta.** Putaran ini menemukan
+  puluhan klaim yang salah di prosa lama (int(-3.99) bukan "dibulatkan ke
+  bawah", PriorityQueue bukan antrean FIFO, contoh `[InlineData(10, "E")]`
+  yang gagal kalau dijalankan, `nice -n -5 sudo` yang diam-diam tidak
+  menaikkan prioritas). Kalau bahasanya terpasang, uji dulu.
 
 ## Menambah bahasa
 

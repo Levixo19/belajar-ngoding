@@ -22272,5 +22272,118 @@ class TestAlamatGayaDiTesMenunjukBloknya(unittest.TestCase):
             "komentar. Perbaiki NOMORNYA, jangan menyunting `gaya.css`.")
 
 
+
+class TestDaftarBernomorBersambung(unittest.TestCase):
+    """Daftar bernomor yang dipotong contoh kode tetap bernomor 1, 2, 3.
+
+    Penulis sering menyisipkan contoh menjorok atau baris kosong di antara
+    butir bernomor. Pengurai memecahnya jadi beberapa blok daftar, dan
+    sebelum "mulai" dicatat, tiap potongan digambar sebagai <ol> baru: di
+    web nomornya tampil 1, 1, 1 padahal di sumber dan di terminal tertulis
+    1, 2, 3. Waktu ditemukan, enam materi HTML saja sudah kena.
+    """
+
+    def test_nomor_awal_potongan_dicatat(self):
+        blok = isi.blok_badan([
+            "  1. Pertama.",
+            "",
+            "       contoh();",
+            "",
+            "  2. Kedua.",
+            "  3. Ketiga.",
+        ])
+        daftar = [b for b in blok if b["jenis"] == "daftar"]
+        self.assertEqual([d["mulai"] for d in daftar], [1, 2])
+        self.assertEqual([len(d["butir"]) for d in daftar], [1, 2])
+
+    def test_daftar_tak_bernomor_mulai_satu(self):
+        blok = isi.blok_badan(["  - satu", "  - dua"])
+        self.assertEqual(blok[0]["mulai"], 1)
+
+    def test_perender_memakai_nomor_awal(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        jalur = os.path.join(akar, "webapp", "statik", "js", "layar-belajar.js")
+        with open(jalur, encoding="utf-8") as f:
+            sumber = f.read()
+        self.assertIn("start: d.mulai > 1 ? d.mulai : null", sumber,
+                      "senarai() harus meneruskan nomor awal ke <ol start>")
+
+
+
+class TestButirYamlDiContoh(unittest.TestCase):
+    """Contoh berkas YAML yang menjorok tetap satu blok kode.
+
+    Tanda hubung di "- uses: actions/checkout@v4" adalah sintaks YAML. Dulu
+    pengurai memotong contoh GitHub Actions di Git 21 tepat di steps:, lalu
+    menggambar sisanya sebagai daftar berbulatan di tengah berkas YAML.
+    Kebalikannya juga dijaga: label prosa yang diikuti butir "Istilah: ..."
+    tetap daftar, karena bentuk itu dipakai di puluhan materi.
+    """
+
+    def test_steps_yaml_tidak_dipotong(self):
+        blok = isi.blok_badan([
+            "Contoh:",
+            "",
+            "  jobs:",
+            "    tes:",
+            "      steps:",
+            "        - uses: actions/checkout@v4",
+            "          with: { python-version: \"3.12\" }",
+            "        - run: python3 -m unittest",
+        ])
+        self.assertEqual([b["jenis"] for b in blok], ["teks", "pra"])
+        self.assertIn("- run: python3 -m unittest", blok[1]["teks"])
+
+    def test_label_prosa_dengan_butir_istilah_tetap_daftar(self):
+        blok = isi.blok_badan([
+            "  Dua jenis exception:",
+            "  - Checked: compiler memaksa kamu mengurusnya.",
+            "  - Unchecked: compiler nggak memaksa.",
+        ])
+        self.assertEqual([b["jenis"] for b in blok], ["pra", "daftar"])
+        self.assertEqual(len(blok[1]["butir"]), 2)
+
+
+
+class TestGayaProsaMateri(unittest.TestCase):
+    """Prosa materi tetap bebas em dash dan en dash.
+
+    Seluruh prosa materi ditulis ulang (2026-10-15/16) karena pemiliknya
+    menilai bahasanya "masih AI banget"; em dash adalah salah satu ciri
+    paling mudah dikenali dari tulisan begitu (aturannya di
+    alat/panduan_gaya.md). Yang diperiksa hanya PROSA hasil isi.blok_badan:
+    contoh menjorok boleh memuat dash, karena materi HTML mengajarkan
+    entitas &mdash; dan menampilkan karakternya.
+    """
+
+    @staticmethod
+    def _prosa(body):
+        keluar = []
+
+        def jelajah(blok):
+            for b in blok:
+                if b["jenis"] in ("teks", "catatan"):
+                    keluar.append(b["teks"])
+                elif b["jenis"] == "daftar":
+                    for butir in b["butir"]:
+                        keluar.append(butir["teks"])
+                        jelajah([x for x in butir.get("blok") or []
+                                 if x["jenis"] != "pra"])
+                        if butir.get("anak"):
+                            jelajah([{"jenis": "daftar", **butir["anak"]}])
+        jelajah(isi.blok_badan(body))
+        return keluar
+
+    def test_tidak_ada_dash_di_prosa_materi(self):
+        kena = []
+        for lang in api.LANGUAGES:
+            for m in lang["materials"]:
+                for s in m["sections"]:
+                    for p in self._prosa(s.get("body") or []):
+                        if "\u2014" in p or "\u2013" in p:
+                            kena.append(f"{lang['key']} {m['title']}: {p[:60]}")
+        self.assertEqual(kena, [], "em/en dash di prosa materi: " + "; ".join(kena[:10]))
+
+
 if __name__ == "__main__":
     unittest.main()

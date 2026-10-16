@@ -64,7 +64,17 @@ def token_kode(kode, bahasa):
 # di Bash Pola). Menerima `\s+` berarti mengubah tabel operator jadi daftar
 # berbulatan dan membuang perataan kolom yang justru isi informasinya.
 _POLA_BUTIR = re.compile(r"^(\s*)[-*•] (?=\S)")
-_POLA_NOMOR = re.compile(r"^(\s*)\d+[.)] (?=\S)")
+_POLA_NOMOR = re.compile(r"^(\s*)(\d+)[.)] (?=\S)")
+
+# Butir YAML ("- uses: actions/checkout@v4", "- run: ...") di dalam contoh
+# berkas konfigurasi. Tanda hubungnya bagian dari sintaks YAML, bukan penanda
+# daftar prosa, dan bentuk "kata: " sesudahnya nggak pernah muncul di butir
+# daftar berbahasa Indonesia di kurikulum ini.
+_POLA_BUTIR_YAML = re.compile(r"^- [\w-]+:(\s|$)")
+# Kunci YAML polos di baris sebelumnya ("steps:"). Huruf kecil dan tanpa spasi:
+# label prosa seperti "Dua jenis exception:" atau "Interface:" nggak cocok,
+# jadi daftar "- Checked: ..." di bawah label begitu tetap daftar.
+_POLA_KUNCI_YAML = re.compile(r"^[a-z][\w-]*:$")
 
 # Baris yang kolomnya disejajarkan dengan spasi ganda. Di dalam sebuah daftar,
 # baris begini adalah contoh kode atau tabel milik butirnya -- bukan sambungan
@@ -305,7 +315,7 @@ def blok_badan(baris_list):
       {"jenis": "teks",   "teks": "..."}      paragraf, baris aslinya dipertahankan
       {"jenis": "pra",    "teks": "..."}      spasi bermakna (tabel, contoh menjorok)
       {"jenis": "catatan","teks": "..."}      paragraf yang kebetulan ditulis menjorok
-      {"jenis": "daftar", "butir": [...], "urut": bool}
+      {"jenis": "daftar", "butir": [...], "urut": bool, "mulai": int}
 
     Baris menjorok digabung apa adanya termasuk indentasi relatifnya, karena di
     situlah letak informasinya: tabel tipe data di materi Java hanya terbaca
@@ -340,8 +350,14 @@ def blok_badan(baris_list):
                 blok.append({"jenis": "pra", "teks": "\n".join(rata)})
         elif jenis_kini == "daftar":
             tanda = _penanda(kini[0])
+            # Nomor awal ikut dicatat. Daftar bernomor yang dipotong contoh
+            # kode atau baris kosong pecah jadi beberapa blok; tanpa "mulai",
+            # tiap potongan digambar sebagai <ol> baru dan nomornya tampil
+            # 1, 1, 1, padahal di sumber (dan di terminal) tertulis 1, 2, 3.
+            mulai = int(_POLA_NOMOR.match(kini[0]).group(2)) if tanda[1] else 1
             blok.append({"jenis": "daftar",
                          "urut": tanda[1],
+                         "mulai": mulai,
                          "butir": _susun_daftar(kini)})
         else:
             # Paragraf disambung jadi satu baris, bukan dipertahankan
@@ -374,6 +390,16 @@ def blok_badan(baris_list):
         # Baris menjorok tanpa penanda di TENGAH daftar adalah lanjutan butir
         # terakhir, jadi ia tidak menutup bloknya.
         if jenis == "pra" and jenis_kini == "daftar":
+            kini.append(baris.rstrip())
+            continue
+        # Kebalikannya: butir YAML yang menempel di bawah contoh menjorok
+        # adalah bagian contoh itu. Tanpa aturan ini, steps: di contoh
+        # GitHub Actions terpotong dan sisanya digambar sebagai daftar
+        # berbulatan di tengah berkas YAML.
+        if (jenis == "daftar" and jenis_kini == "pra"
+                and _POLA_BUTIR_YAML.match(baris.strip())
+                and (_POLA_KUNCI_YAML.match(kini[-1].strip())
+                     or any(_POLA_BUTIR_YAML.match(x.strip()) for x in kini))):
             kini.append(baris.rstrip())
             continue
         if jenis_kini is not None and jenis != jenis_kini:

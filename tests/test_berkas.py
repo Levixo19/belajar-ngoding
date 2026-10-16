@@ -413,5 +413,33 @@ class PagarPerintahSistem(unittest.TestCase):
         self.assertFalse(berkas.boleh_dijalankan_aplikasi("python", berkas.POTONGAN))
 
 
+
+class TestRubyMethodSatuBaris(unittest.TestCase):
+    """Method satu baris Ruby 3 (`def luas = @sisi**2`) tidak butuh `end`.
+
+    Dulu setiap `def` dihitung sebagai pembuka, jadi program yang memakai
+    bentuk ini digolongkan potongan: tombol Jalankan-nya hilang dan blok
+    Keluaran-nya tidak pernah diuji. Delapan dari dua puluh program Ruby kena,
+    dan di baliknya bersembunyi dua setter yang SyntaxError dan dua keluaran
+    yang salah. Setter biasa (`def warna=(w)`) tetap butuh `end`.
+    """
+
+    def test_program_bermethod_satu_baris_tetap_program(self):
+        kode = (
+            "class Persegi\n"
+            "  def initialize(sisi) = @sisi = sisi\n"
+            "  def luas = @sisi**2\n"
+            "  def +(lain) = Persegi.new(@sisi + lain.sisi)\n"
+            "  def self.nama = \"persegi\"\n"
+            "end\n"
+            "puts Persegi.new(3).luas\n"
+        )
+        self.assertEqual(berkas.jenis_kode("ruby", kode), berkas.PROGRAM)
+
+    def test_setter_biasa_tetap_butuh_end(self):
+        kode = "class A\n  def warna=(w)\n    @warna = w\nend\n"
+        self.assertEqual(berkas.jenis_kode("ruby", kode), berkas.POTONGAN)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

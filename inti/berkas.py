@@ -362,7 +362,25 @@ def _ruby_lengkap(kode):
     penutup = len(re.findall(r"^\s*end\b", kode, re.MULTILINE))
     # `x if y` satu baris tidak butuh end; hitungan pembuka hanya mengambil
     # yang berada di AWAL baris, jadi bentuk itu tidak ikut terhitung.
-    return penutup >= pembuka - _ruby_satu_baris(kode)
+    # Begitu juga method satu baris Ruby 3 (`def luas = @sisi**2`): tanpa
+    # pengecualian ini, setiap program yang memakainya digolongkan potongan,
+    # tombol Jalankan-nya hilang, dan blok Keluaran-nya tidak pernah diuji --
+    # begitulah dua setter yang SyntaxError dan dua keluaran yang salah di
+    # kurikulum Ruby lolos tanpa ketahuan.
+    return penutup >= pembuka - _ruby_satu_baris(kode) - _ruby_def_satu_baris(kode)
+
+
+# Method satu baris: `def nama = ...`, `def nama(x) = ...`, `def +(lain) = ...`,
+# `def self.nama = ...`. Tanda `=` dipisah spasi dari nama/argumen; setter
+# biasa `def warna=(w)` (tanda `=` menempel pada nama) tetap butuh `end`.
+_RUBY_DEF_SATU_BARIS = re.compile(
+    r"^\s*def\s+(?:self\.)?(?:[A-Za-z_]\w*[?!]?|[-+*/%<>=!~^&|\[\]]+)"
+    r"(?:\([^)]*\))?\s+=\s", re.MULTILINE)
+
+
+def _ruby_def_satu_baris(kode):
+    """Berapa banyak `def` yang berbentuk method satu baris (tanpa `end`)."""
+    return len(_RUBY_DEF_SATU_BARIS.findall(kode))
 
 
 def _ruby_satu_baris(kode):

@@ -2876,7 +2876,7 @@ export function kartuKeluaran(r, runner, kode, saatTutup, simpanLepas) {
  * satunya cara mengenalinya adalah sudah tahu lebih dulu.
  *
  * Polanya sengaja cuma yang MUSTAHIL jadi kata Indonesia biasa: kurung sudut,
- * tanda kurung kosong, tanda sama dengan berkutip, dan akhiran berkas.
+ * tanda kurung kosong, tanda sama dengan berkutip, akhiran berkas, dan `kode`.
  * Properti CSS telanjang seperti `color` atau `grid` TIDAK ikut — kata-kata
  * itu muncul sebagai kata biasa di kalimat Indonesia, dan menandainya sebagai
  * kode berarti menaruh kotak di tengah kalimat yang bukan kode.
@@ -2886,7 +2886,7 @@ export function kartuKeluaran(r, runner, kode, saatTutup, simpanLepas) {
  * paragraf punya, tidak ada yang punya.
  */
 const POLA_KODE = new RegExp(
-  "</?[a-zA-Z][\\w-]*\\s*/?>"                    // <tag> </tag> <br/>
+  "`[^`]+`|</?[a-zA-Z][\\w-]*\\s*/?>"             // `kode` <tag> </tag> <br/>
   + "|\\b[a-zA-Z_][\\w.]*\\(\\)"                    // fungsi()
   + "|\\b[a-zA-Z-]+=\"[^\"]{1,30}\""              // atribut="nilai"
   + "|\\b[\\w-]+\\.(?:py|js|java|c|cpp|h|css|html|sql|sh|go|json|txt|md)\\b",
@@ -2900,7 +2900,7 @@ function berkode(teks) {
   let m;
   while ((m = POLA_KODE.exec(teks)) !== null) {
     if (m.index > akhir) keluar.push(teks.slice(akhir, m.index));
-    keluar.push(h("code", {}, m[0]));
+    keluar.push(h("code", {}, m[0][0] === "`" ? m[0].slice(1, -1) : m[0]));
     akhir = m.index + m[0].length;
   }
   if (!keluar.length) return [teks];
@@ -2917,7 +2917,7 @@ function berkode(teks) {
  * pembaca layar mengumumkannya sebagai isi yang tidak dimiliki siapa pun.
  */
 function senarai(d) {
-  return h(d.urut ? "ol" : "ul", {}, d.butir.map((x) =>
+  return h(d.urut ? "ol" : "ul", { start: d.mulai > 1 ? d.mulai : null }, d.butir.map((x) =>
     h("li", {}, berkode(x.teks),
       (x.blok || []).map((sub) => sub.jenis === "pra"
         ? h("div.pra.pra-butir", {}, sub.teks)
