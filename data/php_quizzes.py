@@ -132,7 +132,7 @@ PHP_QUIZZES = [
                     "null, karena array aslinya diubah lewat referensi",
                     "true; array aslinya yang diurutkan di tempat",
                 ],
-                "answer": 1,
+                "answer": 3,
                 "explanation": "`$b = sort($a);` adalah kesalahan yang sering: $b cuma berisi true. Seluruh keluarga sort di PHP mengubah array aslinya lewat referensi.",
             },
             {
@@ -356,7 +356,7 @@ PHP_QUIZZES = [
         "questions": [
             {
                 "q": "Apa interface induk dari Error dan Exception sejak PHP 7?",
-                "options": ["Stringable", "Throwable", "Serializable", "Countable"],
+                "options": ["JsonSerializable", "Throwable", "Serializable", "Countable"],
                 "answer": 1,
                 "explanation": "Sebelum PHP 7, kesalahan mesin PHP (seperti memanggil method pada null) tidak bisa ditangkap sama sekali. Throwable menyatukan keduanya.",
             },

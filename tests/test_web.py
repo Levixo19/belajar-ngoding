@@ -22385,5 +22385,36 @@ class TestGayaProsaMateri(unittest.TestCase):
         self.assertEqual(kena, [], "em/en dash di prosa materi: " + "; ".join(kena[:10]))
 
 
+
+class TestBlokKeluaranApaAdanya(unittest.TestCase):
+    """Sesudah kepala keluaran, baris-baris sampai baris kosong = satu contoh utuh.
+
+    Audit 2026-10-17: 19 soal (13 di HTML) menampilkan pohon yang diharapkan
+    patah: `<!doctype html>` dan `html lang="id"` yang tidak menjorok disambung
+    jadi paragraf prosa, baru `head` dst. masuk blok kode.
+    """
+
+    def test_pohon_html_di_soal_utuh_satu_blok(self):
+        from main import LANGUAGES
+        html = next(l for l in LANGUAGES if l["key"] == "html")
+        blok = isi.blok_badan(html["exercises"][0]["question"])
+        kepala = next(i for i, b in enumerate(blok)
+                      if b.get("teks", "").startswith("Keluaran yang diharapkan"))
+        sesudah = blok[kepala + 1]
+        self.assertEqual(sesudah["jenis"], "pra")
+        self.assertTrue(sesudah["teks"].startswith("<!doctype html>\nhtml lang="))
+
+    def test_output_di_dalam_contoh_kode_tidak_memotong(self):
+        blok = isi.blok_badan(["Contohnya:", "    for i in x:", "        cetak(i)",
+                               "    Output:", "    1", "    2"])
+        self.assertEqual([b["jenis"] for b in blok], ["teks", "pra"])
+
+    def test_baris_kosong_sebelum_blok_dilewati_sesudahnya_menutup(self):
+        blok = isi.blok_badan(["Untuk input 80, keluarannya:", "", "Lulus", "B",
+                               "", "Penjelasan biasa yang panjang di sini."])
+        self.assertEqual([b["jenis"] for b in blok], ["teks", "pra", "teks"])
+        self.assertEqual(blok[1]["teks"], "Lulus\nB")
+
+
 if __name__ == "__main__":
     unittest.main()

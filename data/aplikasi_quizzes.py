@@ -174,7 +174,7 @@ APLIKASI_QUIZZES = [
                                "membuat halaman terakhir jadi GET biasa yang aman di-refresh.",
             },
             {
-                "q": "Mana penulisan yang BENAR di dalam JSP?",
+                "q": "Mana penulisan yang paling tepat di dalam JSP?",
                 "options": [
                     "<c:if test=\"${item.stok <= item.stokMin}\">",
                     "<c:if test=\"${item.stokMenipis}\">",
@@ -260,7 +260,7 @@ APLIKASI_QUIZZES = [
                     "Karena akun admin tidak tercatat di log akses",
                     "Karena peran admin dibuat ulang setiap kali login",
                 ],
-                "answer": 1,
+                "answer": 0,
                 "explanation": "Admin memang boleh segalanya, jadi uji dari akun admin selalu lolos "
                                "dan nggak menemukan apa pun. Bug hak akses cuma terlihat kalau kamu "
                                "mencoba menembus endpoint admin dari akun berperan rendah.",

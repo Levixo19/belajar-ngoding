@@ -59,11 +59,15 @@ SQL_QUIZZES = [
                                 "tabel yang belum ada."),
             },
             {
-                "q": "Perintah yang menghapus seluruh tabel beserta strukturnya?",
-                "options": ["DELETE FROM", "TRUNCATE", "DROP TABLE", "ALTER TABLE"],
+                "q": "Bagaimana mengganti nama tabel pelanggan jadi klien tanpa kehilangan isinya?",
+                "options": ["UPDATE TABLE pelanggan SET nama = 'klien'",
+                            "ALTER COLUMN pelanggan TO klien",
+                            "ALTER TABLE pelanggan RENAME TO klien",
+                            "CREATE TABLE klien AS pelanggan"],
                 "answer": 2,
-                "explanation": ("DROP TABLE menghapus struktur dan datanya sekaligus, jadi hati-hati. "
-                                "DELETE FROM dan TRUNCATE cuma mengosongkan isi."),
+                "explanation": ("Mengganti nama tabel itu urusan struktur, jadi pintunya ALTER TABLE. "
+                                "UPDATE cuma mengubah isi baris, dan CREATE TABLE ... AS butuh SELECT "
+                                "serta membuat tabel kedua, bukan mengganti nama yang pertama."),
             },
             {
                 "q": "Setiap statement SQL harus diakhiri dengan?",

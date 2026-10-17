@@ -308,6 +308,11 @@ def _susun_daftar(baris_list):
     return butir
 
 
+_POLA_KEPALA_KELUARAN = re.compile(
+    r"^(?:untuk input\s+.+?,\s*)?(?:keluaran|output)(?:nya)?"
+    r"(?:\s+yang\s+(?:benar|diharapkan))?\s*(?:\([^)]*\))?\s*:$", re.I)
+
+
 def blok_badan(baris_list):
     """Kelompokkan daftar baris jadi blok bertipe.
 
@@ -331,13 +336,13 @@ def blok_badan(baris_list):
         nonlocal kini, jenis_kini
         if not kini:
             return
-        if jenis_kini == "pra":
+        if jenis_kini in ("pra", "keluaran"):
             # Buang indentasi BERSAMA supaya tidak ada lautan spasi di kiri,
             # tapi pertahankan indentasi relatif antar baris.
             umum = min((len(b) - len(b.lstrip()) for b in kini if b.strip()),
                        default=0)
             rata = [b[umum:] if b.strip() else "" for b in kini]
-            if _prosa_menjorok(rata):
+            if jenis_kini == "pra" and _prosa_menjorok(rata):
                 # Baris digabung, BUKAN dipertahankan: lebar barisnya berasal
                 # dari kolom berkas sumbernya (~62 huruf), bukan dari kolom
                 # baca di layar. Menahannya berarti paragraf yang patah di
@@ -382,11 +387,34 @@ def blok_badan(baris_list):
         kini = []
         jenis_kini = None
 
+    # Blok sesudah kepala keluaran ("Keluaran yang diharapkan:", "Untuk input
+    # 80, keluarannya:") adalah contoh APA ADANYA sampai baris kosong pertama,
+    # menjorok atau tidak. Pohon HTML yang diharapkan berbaris
+    # `<!doctype html>` tanpa indentasi dulu disambung jadi paragraf prosa dan
+    # baru `head` dst. masuk blok kode (19 soal, audit 2026-10-17), padahal
+    # soalnya meminta "cocokkan sampai ke tanda bacanya". Semantiknya sama
+    # dengan pembaca janji keluaran di tests/test_solutions.py: baris kosong
+    # SEBELUM bloknya dilewati, baris kosong SESUDAHNYA menutupnya.
+    menunggu_keluaran = False
     for baris in baris_list:
         jenis = _jenis_baris(baris)
         if jenis == "kosong":
+            if jenis_kini == "keluaran":
+                menunggu_keluaran = False
             tutup()
             continue
+        if menunggu_keluaran or jenis_kini == "keluaran":
+            if jenis_kini != "keluaran":
+                tutup()
+                jenis_kini = "keluaran"
+                menunggu_keluaran = False
+            kini.append(baris.rstrip())
+            continue
+        # Hanya kepala yang berdiri sebagai PROSA (tidak menjorok). "Output:"
+        # di dalam contoh kode yang menjorok adalah bagian contoh itu, dan
+        # memotongnya di situ memisahkan kode dari keluarannya.
+        if baris[:1].strip() and _POLA_KEPALA_KELUARAN.match(baris.strip()):
+            menunggu_keluaran = True
         # Baris menjorok tanpa penanda di TENGAH daftar adalah lanjutan butir
         # terakhir, jadi ia tidak menutup bloknya.
         if jenis == "pra" and jenis_kini == "daftar":

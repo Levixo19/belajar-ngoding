@@ -512,7 +512,7 @@ RUST_QUIZZES = [
                 "explanation": "Kesalahan paling umum di bahasa lain, yaitu lupa mengunci sebelum mengakses, jadi mustahil karena datanya cuma bisa diraih lewat lock(). Deadlock tetap mungkin terjadi.",
             },
             {
-                "q": "Apa satu-satunya kebocoran memori yang mungkin di Rust aman?",
+                "q": "Kebocoran memori tak disengaja apa yang paling khas di Rust aman?",
                 "options": [
                     "Vec yang lupa di-drop manual",
                     "Siklus Rc yang hitungannya nggak pernah nol",
