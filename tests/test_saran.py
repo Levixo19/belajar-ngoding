@@ -142,6 +142,72 @@ class TestTantanganHarian(BasisSaran):
         self.assertEqual(t.tipe, "latihan")
 
 
+class TestAntreanJujur(BasisSaran):
+    """Audit 2026-10-17: kuis ulang membanjiri antrean, 'Lanjutkan' membuka kuis."""
+
+    def _jatuh_tempo(self, lang, judul):
+        d = progress.load_progress()
+        d["jadwal_kuis"][f"{lang['key']}_kuis::{progress.judul_kunci(judul)}"] = {
+            "interval": 1, "jatuh_tempo": (date.today() - timedelta(days=2)).isoformat()}
+        progress.save_progress(d)
+
+    def test_sesudah_membaca_lanjutkan_bacaan_bukan_kuis(self):
+        sql = next(l for l in LANGUAGES if l["key"] == "sql")
+        py = next(l for l in LANGUAGES if l["key"] == "python")
+        q = sql["quizzes"][0]
+        progress.record_quiz_score("sql_kuis", q["title"], 3, len(q["questions"]))
+        self._jatuh_tempo(sql, q["title"])
+        progress.record_material_read("python_materi", py["materials"][0]["title"])
+        pertama = saran.langkah_berikutnya(LANGUAGES, progress.load_progress())[0]
+        self.assertEqual((pertama.tipe, pertama.lang["key"]), ("materi", "python"))
+        self.assertEqual(pertama.judul, py["materials"][1]["title"])
+
+    def test_kuis_jatuh_tempo_paling_banyak_dua(self):
+        for lang in LANGUAGES[:3]:
+            for q in lang["quizzes"][:2]:
+                progress.record_quiz_score(f"{lang['key']}_kuis", q["title"], 2, 8)
+                self._jatuh_tempo(lang, q["title"])
+        langkah = saran.langkah_berikutnya(LANGUAGES, progress.load_progress(), maks=10)
+        self.assertLessEqual(sum(s.tipe == "kuis" and "diulang" in s.alasan
+                                 for s in langkah), 2)
+        self.assertTrue(any(s.tipe == "materi" for s in langkah))
+
+    def test_latihan_macet_didahulukan(self):
+        lang = next(l for l in LANGUAGES if l["key"] == "python")
+        ke3 = lang["exercises"][2]
+        progress.record_material_read("python_materi", lang["materials"][0]["title"])
+        progress.record_exercise_viewed("python_latihan", ke3["title"])
+        langkah = saran.langkah_berikutnya(LANGUAGES, progress.load_progress(), maks=10)
+        latihan = [s for s in langkah if s.tipe == "latihan"]
+        self.assertEqual(latihan[0].judul, ke3["title"])
+
+
+class TestTantanganMasukAkal(BasisSaran):
+    def test_profil_baru_cuma_latihan_mudah_bahasa_pertama(self):
+        for i in range(30):
+            t = saran.tantangan_harian(LANGUAGES, self.data(), date(2026, 1, 1) + timedelta(days=i))
+            self.assertEqual(t.lang["key"], LANGUAGES[0]["key"])
+            self.assertEqual(t.obj["difficulty"], "Mudah")
+
+    def test_hanya_bahasa_yang_disentuh(self):
+        progress.record_material_read("python_materi", "1. Pengenalan Python & Instalasi")
+        for i in range(30):
+            t = saran.tantangan_harian(LANGUAGES, progress.load_progress(),
+                                       date(2026, 1, 1) + timedelta(days=i))
+            self.assertEqual(t.lang["key"], "python")
+            self.assertFalse(t.obj.get("proyek"))
+
+    def test_tidak_berganti_saat_latihan_lain_lulus(self):
+        progress.record_material_read("python_materi", "1. Pengenalan Python & Instalasi")
+        hari = date(2026, 3, 3)
+        a = saran.tantangan_harian(LANGUAGES, progress.load_progress(), hari)
+        lain = next(e for e in next(l for l in LANGUAGES if l["key"] == "python")["exercises"]
+                    if e["title"] != a.judul)
+        progress.record_exercise_passed("python_latihan", lain["title"])
+        b = saran.tantangan_harian(LANGUAGES, progress.load_progress(), hari)
+        self.assertEqual(a.judul, b.judul)
+
+
 class TestRingkasanHariIni(BasisSaran):
     def test_belum_ada_aktivitas(self):
         xp, target, tercapai = saran.ringkasan_hari_ini(self.data(), 60)

@@ -8,10 +8,13 @@ yang justru membuka ulang hal yang BARU SAJA selesai dikerjakan.
 Modul ini menyusun antrean langkah berikutnya dengan urutan prioritas yang
 mencerminkan cara belajar yang efektif:
 
-1. Kuis yang jatuh tempo diulang -- ingatan yang mau luruh diselamatkan dulu.
+0. Kalau yang terakhir dikerjakan adalah membaca: bacaan itu, atau materi
+   sesudahnya -- "lanjutkan" berarti melanjutkan.
+1. Kuis yang jatuh tempo diulang, paling banyak dua -- ingatan yang mau luruh
+   diselamatkan dulu, tanpa menenggelamkan semua yang lain.
 2. Materi yang berhenti di tengah -- tutup dulu yang menggantung.
 3. Materi berikutnya di bahasa yang sedang dikerjakan -- jaga momentum.
-4. Latihan yang materinya sudah dibaca -- ubah bacaan jadi keterampilan.
+4. Latihan yang macet (dibuka, belum lulus), atau latihan berikutnya.
 5. Kuis pertama untuk materi yang sudah dibaca -- uji pemahaman.
 6. Bahasa berikutnya -- menambah lebar hanya setelah ada kedalaman.
 
@@ -27,10 +30,12 @@ Semua murni fungsi baca; tidak ada yang disimpan dari sini.
 Importir: main.py. Hanya membaca dict progres dari progress.load_progress().
 """
 
+import hashlib
 from datetime import date
 
+from inti import runner
 from pelajar import bab
-from pelajar.progress import kunci, kuis_jatuh_tempo, xp_hari_ini
+from pelajar.progress import judul_kunci, kunci, kuis_jatuh_tempo, xp_hari_ini
 
 
 class Langkah:
@@ -98,13 +103,30 @@ def langkah_berikutnya(languages, data, maks=6):
     bahasa_aktif = urutan[0]
     singgahan = {}          # status bab per bahasa, dihitung sekali seperlunya
 
+    # Kalau yang terakhir dikerjakan adalah MEMBACA, lanjutkan bacaannya dulu.
+    # Persona audit 2026-10-17 menekan "Lanjutkan belajar" sesudah membaca
+    # materi Python 19 dan malah dibukakan Kuis SQL 1: empat kuis ulang yang
+    # jatuh tempo menyerobot di depan. Kata "lanjutkan" harus berarti
+    # melanjutkan apa yang sedang dikerjakan.
+    lanjut_baca = (data.get("terakhir") or {}).get("tipe") == "materi"
+
     # 1. Kuis jatuh tempo -- lintas bahasa, karena lupa tidak kenal bahasa.
+    # Paling banyak DUA: semua kuis jatuh tempo dulu berprioritas 1 tanpa batas,
+    # jadi enam di antaranya cukup untuk menghapus materi berikutnya dari
+    # antrean. Bahasa yang sedang dipelajari dulu, lalu skor terburuk.
+    jatuh = []
     for lang in languages:
         kat = f"{lang['key']}_kuis"
         for q in lang["quizzes"]:
             if kuis_jatuh_tempo(data, kat, q["title"]):
-                saran.append(Langkah("kuis", lang, q,
-                                     "sudah waktunya diulang biar tidak lupa", 1))
+                info = data["kuis_skor"].get(kunci(kat, q["title"]), {})
+                rasio = info.get("terbaik", 0) / max(info.get("total_soal", 0)
+                                                     or len(q["questions"]), 1)
+                jatuh.append((lang is not bahasa_aktif, rasio, lang, q))
+    jatuh.sort(key=lambda x: (x[0], x[1]))
+    for _, _, lang, q in jatuh[:2]:
+        saran.append(Langkah("kuis", lang, q,
+                             "sudah waktunya diulang biar tidak lupa", 1))
 
     # 2. Materi yang berhenti di tengah.
     for lang in urutan:
@@ -121,8 +143,13 @@ def langkah_berikutnya(languages, data, maks=6):
                 # sini. Materi yang baru dibuka lima menit lalu masuk kategori
                 # yang sama, dan menyebutnya "kemarin" adalah aplikasi yang
                 # mengaku tahu sesuatu tentang pemakainya padahal tidak.
+                terakhir = data.get("terakhir") or {}
+                yang_terakhir = (lanjut_baca and terakhir.get("kategori") == kat
+                                 and judul_kunci(terakhir.get("judul", "")) ==
+                                 judul_kunci(m["title"]))
                 saran.append(Langkah("materi", lang, m,
-                                     "dibuka tapi belum tuntas dibaca", 2))
+                                     "dibuka tapi belum tuntas dibaca",
+                                     0 if yang_terakhir else 2))
 
     kat_m = f"{bahasa_aktif['key']}_materi"
     kat_k = f"{bahasa_aktif['key']}_kuis"
@@ -135,14 +162,22 @@ def langkah_berikutnya(languages, data, maks=6):
                     and not _sudah(data, kat_m, m["title"], "materi_dibaca")), None)
     if berikut:
         saran.append(Langkah("materi", bahasa_aktif, berikut,
-                             "materi berikutnya di bahasa yang sedang kamu pelajari", 3))
+                             "materi berikutnya di bahasa yang sedang kamu pelajari",
+                             0 if lanjut_baca else 3))
 
-    # 4. Latihan yang belum tuntas.
-    latihan = next((e for e in bahasa_aktif["exercises"]
-                    if not _sudah(data, kat_l, e["title"], "latihan_lulus")
-                    and not _sudah(data, kat_l, e["title"], "latihan_manual")), None)
-    if latihan:
-        saran.append(Langkah("latihan", bahasa_aktif, latihan,
+    # 4. Latihan yang belum tuntas. Yang sudah pernah DIBUKA tapi belum lulus
+    # didahulukan: itu latihan yang sedang macet, dan macet yang ditinggal
+    # diam-diam paling sering jadi alasan orang berhenti.
+    belum = [e for e in bahasa_aktif["exercises"]
+             if not _sudah(data, kat_l, e["title"], "latihan_lulus")
+             and not _sudah(data, kat_l, e["title"], "latihan_manual")]
+    macet = next((e for e in belum
+                  if _sudah(data, kat_l, e["title"], "latihan_dilihat")), None)
+    if macet:
+        saran.append(Langkah("latihan", bahasa_aktif, macet,
+                             "sudah kamu buka tapi belum lulus, coba lagi", 4))
+    elif belum:
+        saran.append(Langkah("latihan", bahasa_aktif, belum[0],
                              "ubah yang sudah dibaca jadi kode beneran", 4))
 
     # 5. Kuis yang belum pernah dikerjakan.
@@ -199,33 +234,84 @@ def _benih_hari(hari=None):
     return hari.toordinal()
 
 
-def tantangan_harian(languages, data, hari=None):
-    """Satu latihan pilihan untuk hari ini, atau None kalau semua sudah tuntas.
+# Urutan tingkat latihan, dari yang paling ringan. Sama dengan TINGKAT_URUT di
+# tests/test_data.py, yang menjaga bahwa hanya empat nilai ini yang dipakai.
+TINGKAT = ("Mudah", "Menengah", "Lanjut", "Sulit")
 
-    Kandidatnya hanya latihan, dan latihan tidak pernah dikunci bab (lihat
-    bab.py) -- jadi tidak ada yang perlu disaring di sini. Itu bukan kebetulan
-    yang boleh diubah diam-diam: pilihan hari ini diambil dari POSISI di dalam
-    daftar kandidat, sehingga apa pun yang membuat daftar itu memanjang atau
-    memendek di tengah hari akan mengganti tantangan yang sedang dikerjakan
-    orang dengan tantangan lain. Status bab persis seperti itu -- ia berubah
-    justru pada saat sebuah bab terbuka. Kalau suatu saat materi ikut jadi
-    kandidat, penguncian harus diperiksa saat materinya DIBUKA, bukan dengan
-    membuang kandidatnya dari daftar ini.
-    """
-    kandidat = []
+
+def _bahasa_tersentuh(languages, data):
+    """Bahasa yang materinya pernah dibuka, urut seperti di LANGUAGES."""
+    hasil = []
     for lang in languages:
+        awalan = f"{lang['key']}_materi::"
+        if any(k.startswith(awalan) for k in data.get("materi_dibaca", [])) or \
+                any(k.startswith(awalan) for k in data.get("materi_sebagian", [])):
+            hasil.append(lang)
+    return hasil
+
+
+def _tingkat_maks(lang, data):
+    """Indeks tingkat tertinggi yang boleh ditawarkan: satu di atas yang sudah lulus."""
+    kat = f"{lang['key']}_latihan"
+    lulus = [TINGKAT.index(e["difficulty"]) for e in lang["exercises"]
+             if e.get("difficulty") in TINGKAT
+             and _sudah(data, kat, e["title"], "latihan_lulus")]
+    return (max(lulus) + 1) if lulus else 0
+
+
+def _undian(hari, lang, ex):
+    """Angka acak-tapi-tetap untuk satu latihan pada satu hari."""
+    teks = f"{_benih_hari(hari)}:{lang['key']}:{ex['title']}"
+    return hashlib.md5(teks.encode("utf-8")).hexdigest()
+
+
+def tantangan_harian(languages, data, hari=None):
+    """Satu latihan pilihan untuk hari ini, atau None kalau tidak ada yang cocok.
+
+    Dulu kandidatnya SELURUH latihan di dua puluh kurikulum, dipilih dengan
+    `hari % jumlah`. Audit 2026-10-17 (tiga agen terpisah) mengukurnya: pada
+    profil baru, 54 dari 60 hari jatuh ke bahasa yang toolchain-nya tidak
+    terpasang, 16 hari berupa latihan Sulit atau proyek akhir, dan pemula
+    HTML di hari pertama disodori Kotlin Latihan 10. Tantangan yang mustahil
+    dikerjakan merusak rasa mampu, bukan menantang.
+
+    Sekarang kandidatnya:
+      * dari bahasa yang sedang dipelajari (materinya pernah dibuka); profil
+        yang belum menyentuh apa pun memakai bahasa pertama di LANGUAGES,
+        pintu masuk yang memang tidak butuh pemasangan apa pun;
+      * yang toolchain-nya siap di mesin ini (tombol yang berujung "belum
+        terpasang" adalah tombol yang berujung penolakan);
+      * paling tinggi SATU tingkat di atas latihan tersulit yang sudah lulus
+        di bahasa itu; proyek akhir baru ikut kalau sisanya sudah lulus.
+
+    Pilihannya memakai undian per latihan (hash tanggal + judul), bukan posisi
+    di daftar. Daftar kandidat memang bisa berubah di tengah hari (bahasa baru
+    disentuh, tingkat berikutnya terbuka); dengan undian, tantangan yang
+    sedang dikerjakan hanya berganti kalau latihan itu sendiri sudah lulus.
+
+    Latihan tidak pernah dikunci bab (lihat bab.py), jadi tidak ada penyaringan
+    penguncian di sini.
+    """
+    bahasa = _bahasa_tersentuh(languages, data) or list(languages[:1])
+    kandidat = []
+    for lang in bahasa:
+        if not runner.tersedia(lang["runner"]):
+            continue
         kat = f"{lang['key']}_latihan"
-        for e in lang["exercises"]:
-            if _sudah(data, kat, e["title"], "latihan_lulus"):
-                continue
-            if _sudah(data, kat, e["title"], "latihan_manual"):
+        batas = _tingkat_maks(lang, data)
+        sisa = [e for e in lang["exercises"]
+                if not _sudah(data, kat, e["title"], "latihan_lulus")
+                and not _sudah(data, kat, e["title"], "latihan_manual")]
+        biasa = [e for e in sisa if not e.get("proyek")]
+        for e in (biasa or sisa):
+            if e.get("difficulty") in TINGKAT and TINGKAT.index(e["difficulty"]) > batas:
                 continue
             kandidat.append((lang, e))
 
     if not kandidat:
         return None
 
-    lang, ex = kandidat[_benih_hari(hari) % len(kandidat)]
+    lang, ex = min(kandidat, key=lambda le: _undian(hari, *le))
     return Langkah("latihan", lang, ex, "tantangan hari ini", 0)
 
 
