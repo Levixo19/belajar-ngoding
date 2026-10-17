@@ -27,7 +27,10 @@ SQL_QUIZZES = [
                 "answer": 1,
                 "explanation": ("PRIMARY KEY itu unik sekaligus nggak boleh kosong. UNIQUE cuma "
                                 "menjamin unik, NOT NULL cuma menjamin terisi, dan CHECK "
-                                "menguji syarat yang kamu tulis sendiri, misalnya harga > 0."),
+                                "menguji syarat yang kamu tulis sendiri, misalnya harga > 0. "
+                                "Catatan: SQLite, yang dipakai aplikasi ini untuk menjalankan "
+                                "latihan, punya keanehan lama: PRIMARY KEY yang bukan INTEGER "
+                                "masih menerima NULL. Tulis NOT NULL juga kalau mau aman."),
             },
             {
                 "q": "Tipe data yang tepat untuk teks pendek (misal nama)?",

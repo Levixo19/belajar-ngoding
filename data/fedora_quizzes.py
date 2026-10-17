@@ -388,7 +388,7 @@ FEDORA_QUIZZES = [
                 "explanation": "reject mengirim pesan penolakan, sedangkan drop membuang paket diam-diam sehingga pengirim menunggu sampai timeout. drop memperlambat pemindaian port bagi penyerang, tapi juga membuat pengguna sah menunggu tanpa penjelasan. Untuk jaringan internal, reject lebih ramah.",
             },
             {
-                "q": "Kamu menyalin berkas web dari home ke /var/www/html. Izinnya 644 dan pemiliknya benar, tapi server web tetap menolak dengan 403. Tersangka utama?",
+                "q": "Kamu memindahkan (mv) berkas web dari home ke /var/www/html. Izinnya 644 dan pemiliknya benar, tapi server web tetap menolak dengan 403. Tersangka utama?",
                 "options": [
                     "Berkasnya perlu diberi izin 777 dulu",
                     "Label SELinux-nya salah, perbaiki dengan restorecon",
