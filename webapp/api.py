@@ -408,6 +408,7 @@ def statistik(_=None):
     dimiliki = set(data.get("badge", []))
     return {
         **dasbor(),
+        "kuis_lemah": modul_saran.kuis_perlu_diulang(LANGUAGES, data),
         "semua_badge": [{"id": b, "nama": n, "deskripsi": d, "punya": b in dimiliki}
                         for b, n, d, _syarat in progress.DAFTAR_BADGE],
         "toolchain": [{

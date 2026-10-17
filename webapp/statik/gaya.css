@@ -6111,3 +6111,7 @@ html.lingkar-tema::view-transition-new(root) {
     margin: 0; font-size: var(--t-ui); color: var(--teks-2);
   }
 }
+@media (min-width: 861px) {
+  .kuis-lemah-angka { font-family: var(--f-ui); font-size: var(--t-ui); color: var(--teks-2); white-space: nowrap; }
+  .kuis-lemah-bilah { width: 96px; flex: none; }
+}

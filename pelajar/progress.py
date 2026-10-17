@@ -41,6 +41,7 @@ XP_LATIHAN_LULUS = 25
 XP_LATIHAN_MANUAL = 8
 XP_PER_JAWABAN_BENAR = 2
 XP_BONUS_KUIS_SEMPURNA = 20
+RIWAYAT_KUIS_MAKS = 12
 
 
 def _default():
@@ -55,6 +56,11 @@ def _default():
         "bookmark": [],
         "salah_kuis": {},
         "jadwal_kuis": {},
+        # Riwayat skor sesi PENUH per kuis: [[tanggal, benar, total], ...],
+        # paling banyak RIWAYAT_KUIS_MAKS terbaru. Dulu cuma skor terbaik dan
+        # terakhir yang disimpan, jadi "4/10 -> 9/10" (bukti ulangan berjadwal
+        # bekerja) tidak bisa ditunjukkan ke pelajar.
+        "kuis_riwayat": {},
         "riwayat_harian": {},
         "terakhir": {},
         "xp": 0,
@@ -95,6 +101,11 @@ def _migrasi(data):
         info.setdefault("total_soal", 0)
 
     data["jadwal_kuis"] = {k: v for k, v in data["jadwal_kuis"].items() if isinstance(v, dict)}
+    data["kuis_riwayat"] = {
+        k: [e for e in v if isinstance(e, list) and len(e) == 3
+            and isinstance(e[0], str) and isinstance(e[1], int) and isinstance(e[2], int)]
+        for k, v in data["kuis_riwayat"].items() if isinstance(v, list)
+    }
     data["salah_kuis"] = {
         k: [i for i in v if isinstance(i, int)]
         for k, v in data["salah_kuis"].items() if isinstance(v, list)
@@ -124,7 +135,7 @@ def _migrasi(data):
 
 _BIDANG_DAFTAR_KUNCI = ("materi_dibaca", "materi_sebagian", "latihan_dilihat",
                         "latihan_lulus", "latihan_manual", "bookmark")
-_BIDANG_PETA_KUNCI = ("kuis_skor", "jadwal_kuis", "salah_kuis")
+_BIDANG_PETA_KUNCI = ("kuis_skor", "jadwal_kuis", "salah_kuis", "kuis_riwayat")
 
 
 def _normalkan_kunci(data):
@@ -602,6 +613,9 @@ def record_quiz_score(kategori, judul, benar, total, salah_index=None,
     _catat_harian(data, "kuis")
 
     _simpan_salah(data, k, salah_index)
+    riwayat_skor = data["kuis_riwayat"].setdefault(k, [])
+    riwayat_skor.append([date.today().isoformat(), benar, total])
+    del riwayat_skor[:-RIWAYAT_KUIS_MAKS]
     _jadwalkan_ulang(data, k, benar, total, jatuh_tempo)
     _tandai_terakhir(data, "kuis", kategori, judul)
     return _selesaikan(data)
@@ -841,7 +855,7 @@ def reset(bagian="semua"):
     for daftar in ("materi_dibaca", "materi_sebagian", "latihan_dilihat",
                    "latihan_lulus", "latihan_manual", "bookmark"):
         data[daftar] = [k for k in data[daftar] if not k.startswith(f"{bagian}_")]
-    for peta in ("kuis_skor", "salah_kuis", "jadwal_kuis"):
+    for peta in ("kuis_skor", "salah_kuis", "jadwal_kuis", "kuis_riwayat"):
         data[peta] = {k: v for k, v in data[peta].items()
                       if not k.startswith(f"{bagian}_")}
     if (data.get("terakhir") or {}).get("kategori", "").startswith(f"{bagian}_"):

@@ -141,7 +141,7 @@ export async function layarStatistik() {
       angkaBesar(String(s.streak), "hari beruntun",
                  `rekor ${s.streak_rekor} hari`, s.streak)),
 
-    blokRingkasan(s),
+    blokRingkasan(s), blokKuisLemah(s.kuis_lemah || []),
 
     h("section", {},
       h("span.mata", {}, "Tangga gelar"),
@@ -840,3 +840,28 @@ function medanPilihan(opsi, label, saatSimpan) {
   pilih.addEventListener("change", () => saatSimpan(pilih.value));
   return medan(label, pilih, opsi.keterangan);
 }
+
+/** "Di mana aku lemah?": kuis yang sudah dikerjakan tapi belum dikuasai.
+ *
+ *  Urutan dan isinya dari server (saran.kuis_perlu_diulang). Bilahnya skor
+ *  TERBAIK dengan garis dasar nol; riwayat ditulis sebagai angka ("3/8 ->
+ *  6/8"), bukan grafik, karena paling banyak dua belas titik per kuis dan
+ *  yang ingin dilihat cuma arahnya. */
+function blokKuisLemah(daftar) {
+  if (!daftar.length) return null;
+  return h("section", {},
+    h("span.mata", {}, "Paling perlu diulang"),
+    h("div.senarai", {}, daftar.map((q) => {
+      const persen = q.total ? q.terbaik / q.total * 100 : 0;
+      const jejak = q.riwayat.slice(-4).map((r) => `${r[1]}/${r[2]}`).join(" → ");
+      const ket = [q.label_bahasa,
+        q.salah_tersisa ? `${q.salah_tersisa} soal masih salah` : null,
+        q.jadwal ? `ulang ${tanggalRamah(q.jadwal)}` : null,
+        q.riwayat.length > 1 ? `riwayat ${jejak}` : null].filter(Boolean).join(" · ");
+      return h("a.baris", { href: `#/kuis/${q.bahasa}/${q.indeks}` },
+        h("div.isi", {}, h("div.judul", {}, q.judul), h("div.ket", {}, ket)),
+        h("span.kuis-lemah-angka", {}, `terbaik ${q.terbaik}/${q.total}`),
+        h("span.kuis-lemah-bilah", {}, bilah(persen, persen >= 70 ? "tumbuh" : "")));
+    })));
+}
+

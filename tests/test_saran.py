@@ -208,6 +208,26 @@ class TestTantanganMasukAkal(BasisSaran):
         self.assertEqual(a.judul, b.judul)
 
 
+class TestKuisPerluDiulang(BasisSaran):
+    def test_terlemah_dulu_dan_yang_dikuasai_tidak_ikut(self):
+        py = next(l for l in LANGUAGES if l["key"] == "python")
+        a, b, c = py["quizzes"][:3]
+        progress.record_quiz_score("python_kuis", a["title"], 6, 8, [1, 2])
+        progress.record_quiz_score("python_kuis", b["title"], 2, 8, [0, 1, 3, 4, 5, 6])
+        progress.record_quiz_score("python_kuis", c["title"], 8, 8, [])
+        hasil = saran.kuis_perlu_diulang(LANGUAGES, progress.load_progress())
+        self.assertEqual([q["judul"] for q in hasil], [b["title"], a["title"]])
+        self.assertEqual(hasil[0]["riwayat"][-1][1:], [2, 8])
+
+    def test_riwayat_skor_tercatat_dan_dibatasi(self):
+        q = LANGUAGES[0]["quizzes"][0]
+        kat = f"{LANGUAGES[0]['key']}_kuis"
+        for i in range(15):
+            progress.record_quiz_score(kat, q["title"], i % 8, 8)
+        r = progress.load_progress()["kuis_riwayat"][progress.kunci(kat, q["title"])]
+        self.assertEqual(len(r), progress.RIWAYAT_KUIS_MAKS)
+
+
 class TestRingkasanHariIni(BasisSaran):
     def test_belum_ada_aktivitas(self):
         xp, target, tercapai = saran.ringkasan_hari_ini(self.data(), 60)

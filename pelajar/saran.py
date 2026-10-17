@@ -325,6 +325,39 @@ def tantangan_harian(languages, data, hari=None):
     return Langkah("latihan", lang, ex, "tantangan hari ini", 0)
 
 
+def kuis_perlu_diulang(languages, data, maks=6):
+    """Kuis yang sudah dikerjakan tapi belum dikuasai, yang terlemah dulu.
+
+    Menjawab "di mana aku lemah?" (audit visualisasi 2026-10-17): datanya sudah
+    tercatat (kuis_skor, salah_kuis, jadwal_kuis, kuis_riwayat) tapi dulu cuma
+    tampil per baris di tab Kuis tiap bahasa. Urutannya: rasio skor terbaik
+    terendah, lalu yang soal salahnya paling banyak.
+    """
+    hasil = []
+    for lang in languages:
+        kat = f"{lang['key']}_kuis"
+        for i, q in enumerate(lang["quizzes"]):
+            k = kunci(kat, q["title"])
+            info = data.get("kuis_skor", {}).get(k)
+            if not info:
+                continue
+            total = info.get("total_soal") or len(q["questions"])
+            terbaik = min(info.get("terbaik", 0), total)
+            salah = len(data.get("salah_kuis", {}).get(k, []))
+            if terbaik >= total and not salah:
+                continue
+            hasil.append({
+                "bahasa": lang["key"], "label_bahasa": lang["label"],
+                "indeks": i, "judul": q["title"],
+                "terbaik": terbaik, "total": total, "salah_tersisa": salah,
+                "jadwal": (data.get("jadwal_kuis", {}).get(k) or {}).get("jatuh_tempo", ""),
+                "riwayat": [list(e) for e in data.get("kuis_riwayat", {}).get(k, [])],
+            })
+    hasil.sort(key=lambda x: (x["terbaik"] / x["total"] if x["total"] else 1,
+                              -x["salah_tersisa"]))
+    return hasil[:maks]
+
+
 def ringkasan_hari_ini(data, target):
     """(xp_hari_ini, target, tercapai?) untuk bar target harian."""
     xp = xp_hari_ini(data)

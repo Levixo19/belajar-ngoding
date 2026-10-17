@@ -538,7 +538,7 @@ class TestSesiKuis(BasisWeb):
         0/10" -- kalimat yang terbaca sebagai penghukuman.
 
         Dijalankan lewat `api`, bukan dibaca dari teks: yang diuji di sini
-        bahwa potret `sebelum` (`api.py:629`, di dalam `_KUNCI_PROGRES`)
+        bahwa potret `sebelum` (`api.py:669`, di dalam `_KUNCI_PROGRES`)
         benar-benar diambil SEBELUM `record_quiz_score` menimpa
         `terakhir_skor` (`pelajar/progress.py:595`). Mengikuti preseden
         `TestFieldPembandingDasbor` (`tests/test_web.py:369`), yang
@@ -5673,10 +5673,10 @@ class TestKuisUmpanBalik(unittest.TestCase):
         """Angka pembandingnya datang dari `sebelum`, dan hanya dirender penuh.
 
         `kuis_selesai` memuat DUA potret progres: `sebelum` di dalam
-        `_KUNCI_PROGRES` (`api.py:629`, sebelum `record_quiz_score`
+        `_KUNCI_PROGRES` (`api.py:669`, sebelum `record_quiz_score`
         `:556-558`) dan `sesudah` di `:570`. `terakhir_skor` ditimpa di sisi
         penyimpan (`pelajar/progress.py:595`, di dalam `riwayat` yang diambil
-        `:590`), jadi tepat saat `api.py:629` dijalankan nilainya masih
+        `:590`), jadi tepat saat `api.py:669` dijalankan nilainya masih
         milik
         percobaan SEBELUMNYA. Membacanya dari `sesudah` memulangkan skor
         percobaan yang baru saja selesai -- dan pembandingnya berubah jadi
@@ -12087,8 +12087,8 @@ class TestKomposisiPerBahasa(unittest.TestCase):
     # hitungan yang ditulis sebagai kata, sebab persis di situ versi
     # sebelumnya berbohong: ia menyebut jumlahnya sebagai kata, kata itu
     # salah, dan tidak ada yang menghitungnya ulang.
-    #   [komposisi-layar-lain] polos=17 export=4 async=4 export_async=2
-    #   [komposisi-layar-lain] indentasi=4 total=31 ditangkap=27
+    #   [komposisi-layar-lain] polos=18 export=4 async=4 export_async=2
+    #   [komposisi-layar-lain] indentasi=4 total=32 ditangkap=28
     #   [komposisi-layar-lain] konstanta=4 konstanta_fungsi=0
     # `polos` berarti kolom nol tanpa prelude, `total` seluruh deklarasi
     # `function` BERNAMA pada indentasi apa pun, dan `ditangkap` yang dilihat

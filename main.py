@@ -34,7 +34,7 @@ from layar.navigasi import cari_global, menu_bookmark, lanjut_terakhir
 from layar.pustaka import menu_pustaka, menu_bacaan_bahasa
 from layar.karier import menu_karier
 from inti import pustaka
-from pelajar.saran import langkah_berikutnya, tantangan_harian
+from pelajar.saran import kuis_perlu_diulang, langkah_berikutnya, tantangan_harian
 from pelajar.progress import (
     load_progress, statistik_bahasa, info_level, gelar_dari_level, DAFTAR_BADGE,
     streak_aktif, xp_hari_ini, riwayat_harian, ekspor, impor, reset, cadangkan,
@@ -572,6 +572,21 @@ def menu_statistik():
     for line in baris_heatmap(data):
         print(line)
     print(rule("-", C.DIM, bold=False))
+
+    # Daftar yang sama dengan blok "Paling perlu diulang" di Statistik web.
+    lemah = kuis_perlu_diulang(LANGUAGES, data)
+    if lemah:
+        print(tema.cat("  Paling perlu diulang:", "judul", tema.TEBAL))
+        for q in lemah:
+            jejak = " -> ".join(f"{r[1]}/{r[2]}" for r in q["riwayat"][-4:])
+            ket = f"terbaik {q['terbaik']}/{q['total']}"
+            if q["salah_tersisa"]:
+                ket += f", {q['salah_tersisa']} soal masih salah"
+            if len(q["riwayat"]) > 1:
+                ket += f", riwayat {jejak}"
+            print(tema.cat(f"   {q['label_bahasa']} - {q['judul']}", "teks"))
+            print(tema.cat(f"      {ket}", "redup"))
+        print(rule("-", C.DIM, bold=False))
 
     print(tema.cat("  Ketersediaan runner:", "judul", tema.TEBAL))
     for lang in LANGUAGES:
