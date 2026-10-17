@@ -96,12 +96,16 @@ public class CekNilai {
         "question": [
             "Tampilkan semua bilangan genap dari 1 sampai 20",
             "beserta total jumlahnya.",
-            "Contoh output: 2 4 6 8 10 12 14 16 18 20, Total: 110",
+            "",
+            "Keluaran yang diharapkan (dua baris):",
+            "",
+            "  2 4 6 8 10 12 14 16 18 20",
+            "  Total: 110",
         ],
         "hints": [
             "Ini soal perulangan plus pengecekan genap. Materi 'Perulangan (Loop)' dan operator sisa bagi di materi 'Operator' yang kamu perlukan.",
             "Loop dari 1 sampai 20. Kalau angkanya habis dibagi 2 (n % 2 == 0), cetak angka itu diikuti spasi lewat System.out.print tanpa ln, lalu tambahkan ke variabel total. Sesudah loop, pindah baris dan cetak totalnya.",
-            "Keluarannya dua baris: deret '2 4 6 ... 20' lalu 'Total: 110'. Contoh di soal menulisnya dalam satu baris, tapi penilai mengikuti dua baris ini; spasi di ujung baris nggak dihitung.",
+            "Keluarannya dua baris: deret '2 4 6 ... 20' lalu 'Total: 110'. Spasi di ujung baris pertama nggak dihitung.",
         ],
         "solution": """public class Genap {
     public static void main(String[] args) {

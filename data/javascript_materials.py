@@ -239,9 +239,10 @@ console.log(user.profil?.nama);   // undefined (tidak error walau profil null)""
                     "2. Optional chaining punya bentuk lain selain titik yang kamu lihat di",
                     "   atas:",
                     "     obj?.[key]     indeks opsional, untuk nama key yang dinamis",
-                    "     callback?.()   PANGGIL fungsinya hanya kalau fungsinya ada",
-                    "   Bentuk kedua itu pengganti 'if (callback) callback();'. Callback",
-                    "   adalah fungsi yang dikirim ke fungsi lain untuk dipanggil nanti.",
+                    "   Ada satu bentuk lagi, fn?.(), yang memanggil sebuah fungsi hanya",
+                    "   kalau fungsinya ada. Bentuk itu baru kepakai sesudah kamu kenal",
+                    "   fungsi, jadi contohnya ada nanti di materi \"Function: Declaration,",
+                    "   Expression & Arrow Function\".",
                     "",
                     "3. Operator bitwise: &  |  ^  ~  <<  >>  >>>",
                     "   Operator ini bekerja pada bit, yaitu angka 0 dan 1 penyusun sebuah",
@@ -268,13 +269,7 @@ console.log(pesan);             // HALO
 const kunci = "nama";
 const user = { nama: "Andi" };
 console.log(user?.[kunci]);         // Andi        indeks opsional
-console.log(user.alamat?.[kunci]);  // undefined   aman, bukan TypeError
-
-function jalankan(selesai) {
-    selesai?.();                    // panggil HANYA kalau callback-nya dikirim
-}
-jalankan();                                        // aman, tidak error
-jalankan(() => console.log("callback dipanggil")); // callback dipanggil"""
+console.log(user.alamat?.[kunci]);  // undefined   aman, bukan TypeError"""
             },
             {
                 "heading": "Operator bitwise dan idiom yang membuatnya muncul",
@@ -299,13 +294,11 @@ const izin = BACA | TULIS;          // 3 -> bit baca dan tulis menyala
 console.log((izin & TULIS) !== 0);  // true  boleh menulis
 console.log((izin & HAPUS) !== 0);  // false tidak boleh menghapus
 
-// Hash string sederhana - bentuk yang sering ditemui di utilitas kecil.
-let hash = 0;
-for (const ch of "halo") {
-    hash = (hash << 5) - hash + ch.charCodeAt(0);
-    hash |= 0;                      // paksa hasilnya kembali ke 32-bit
-}
-console.log(hash);                  // 3194940"""
+// x |= 0 memaksa angka kembali ke bulat 32-bit bertanda. Bentuk ini sering
+// ditemui di fungsi hash kecil, supaya angkanya tidak membengkak.
+let hash = 2147483647 + 1;          // 2147483648, lewat batas 32-bit
+hash |= 0;                          // paksa kembali ke 32-bit
+console.log(hash);                  // -2147483648"""
             },
         ],
     },
@@ -2218,7 +2211,17 @@ sapaOrang("Budi", "Hai");       // Hai, Budi!
 function total(...angka) {      // rest parameter: kumpulkan jadi array
     return angka.reduce((a, b) => a + b, 0);
 }
-console.log(total(1, 2, 3, 4)); // 10"""
+console.log(total(1, 2, 3, 4)); // 10
+
+// Optional call ?.() (bentuk lain optional chaining dari materi Operator):
+// panggil fungsinya HANYA kalau fungsinya ada. Pengganti if (selesai) selesai();
+// selesai di sini callback, yaitu fungsi yang dikirim ke fungsi lain untuk
+// dipanggil nanti.
+function jalankan(selesai) {
+    selesai?.();
+}
+jalankan();                                  // aman, tidak error
+jalankan(() => console.log("callback dipanggil")); // callback dipanggil"""
             },
             {
                 "body": [

@@ -840,18 +840,16 @@ print(Fraction(1, 10) + Fraction(2, 10) == Fraction(3, 10))   # True""",
                     "chmod 755, dan di balik tulisan seperti re.IGNORECASE | re.MULTILINE",
                     "yang bakal kamu temui di banyak library.",
                     "",
-                    "Perhatikan: simbol | & ^ juga dipakai untuk set dan dict, yang dibahas",
-                    "di materi Dictionary & Set. Di sana | artinya union (gabungan) set dan",
-                    "penggabung dict. Simbolnya sama, artinya beda. Yang menentukan artinya",
-                    "adalah tipe nilai di kiri dan kanannya (operand):",
+                    "Simbol | & ^ nanti muncul lagi di materi Dictionary & Set dengan arti",
+                    "lain, yaitu untuk menggabungkan set dan dict. Itu belum perlu dipahami",
+                    "sekarang. Cukup ingat bahwa simbolnya sama, tapi artinya bisa beda. Yang",
+                    "menentukan artinya adalah tipe nilai di kiri dan kanannya (operand):",
                     "",
-                    "  3 | 4                 ->  7            int  : gabungkan bit",
-                    "  {3} | {4}             ->  {3, 4}       set  : union himpunan",
-                    "  {\"a\": 1} | {\"b\": 2}   ->  dict gabungan (Python 3.9+)",
+                    "  3 | 4           ->  7       int  : gabungkan bit",
+                    "  True | False    ->  True    bool : hasilnya tetap bool",
                     "",
-                    "Kalau kamu membaca izin | TULIS pada dua int sebagai \"union himpunan\",",
-                    "baris itu bakal terasa nggak masuk akal sama sekali. Di situ yang",
-                    "digabung bitnya.",
+                    "Jadi waktu kamu membaca izin | TULIS di kode, ingat bahwa yang digabung",
+                    "di situ bitnya.",
                     "",
                     "Perbandingan berantai",
                     "",
@@ -902,6 +900,9 @@ print(Fraction(1, 10) + Fraction(2, 10) == Fraction(3, 10))   # True""",
                     "    padahal 0 itu data yang sah.",
                     "  - Jangan pakai := cuma karena bisa. Kalau nilainya cuma dipakai",
                     "    sekali, = biasa di baris atasnya lebih enak dibaca.",
+                    "",
+                    ":= juga boleh dipakai di dalam list comprehension. Contohnya ada nanti",
+                    "di materi List Comprehension & Generator Expression.",
                 ],
             },
             {
@@ -928,9 +929,8 @@ print(40 >> 2)   # 10  geser kanan 2 bit, sama dengan 40 // 4
 
 # Simbol yang SAMA, arti ditentukan TIPE operandnya:
 print(6 | 1)                  # 7 : int, gabungkan bit
-print({1, 2} | {2, 3})        # {1, 2, 3} : set, union
-print({"a": 1} | {"b": 2})    # {'a': 1, 'b': 2} : dict, gabungan
-print(True | False)           # True : bool""",
+print(True | False)           # True : bool, hasilnya tetap bool
+# Untuk set dan dict, | punya arti lain lagi (nanti di materi Dictionary & Set)""",
             },
             {
                 "heading": "Perbandingan berantai & operator walrus",
@@ -938,13 +938,9 @@ print(True | False)           # True : bool""",
 print(0 < nilai <= 100)              # True
 print(0 < nilai and nilai <= 100)    # True, arti yang sama persis
 
-def ambil():
-    print("dipanggil")
-    return 5
-
-print(1 < ambil() < 10)   # "dipanggil" cuma sekali, lalu True
-
 daftar = [3, 1, 4, 1, 5, 9, 2, 6]
+print(0 < len(daftar) < 10)          # True, dan len() cuma dipanggil sekali
+
 if (n := len(daftar)) > 5:
     print(f"daftar panjang: {n} elemen")   # n masih bisa dipakai di sini
 
@@ -953,14 +949,12 @@ if n := len(daftar) > 5:
     print(n)                         # True, bukan 8
 
 # Pola sentinel, kembaran dari  while (baris := f.readline()):
+# iter() dan next() baru dibahas di materi Iterator & Generator. Untuk
+# sekarang cukup tahu: next(sisa, None) mengambil isi berikutnya, atau None
+# kalau isinya sudah habis.
 sisa = iter([3, 0, 7])
 while (x := next(sisa, None)) is not None:
-    print("dapat", x)                # 3, lalu 0, lalu 7
-
-# Di dalam comprehension: hitung sekali, pakai dua kali
-harga = [1000, 5000, 20000]
-mahal = [p for h in harga if (p := h // 10) > 400]
-print(mahal)                         # [500, 2000]""",
+    print("dapat", x)                # 3, lalu 0, lalu 7""",
             },
         ],
     },
@@ -2238,12 +2232,10 @@ with TemporaryDirectory() as tmp:           # folder contoh, dihapus otomatis
                 ],
             },
             {
-                "heading": "Kenapa fibonacci rekursif lambat, dan apa yang ditolong @lru_cache",
+                "heading": "Kenapa fibonacci rekursif lambat, dan apa yang ditolong cache",
                 "code": """# Materi Decorator nanti memakai fibonacci ber-@lru_cache sambil menyebut
 # "tanpa cache SANGAT lambat". Ini alasannya, dalam angka - jalankan sendiri
 # dan perhatikan penghitung panggilannya.
-
-from functools import lru_cache
 
 panggilan = 0
 
@@ -2262,17 +2254,22 @@ print("fib(25) =", fib(25), "dengan", panggilan, "panggilan")
 # n naik 5, pekerjaannya naik 11 kali lipat. fib(50) tak selesai hari ini.
 
 # Sebabnya: fib(23) dihitung ulang dari nol setiap kali dibutuhkan, dan itu
-# terjadi ratusan kali. @lru_cache menyimpan hasil per argumen, sehingga
-# tiap n dihitung TEPAT sekali.
-@lru_cache(maxsize=None)
-def fib_cepat(n):
-    if n < 2:
-        return n
-    return fib_cepat(n - 1) + fib_cepat(n - 2)
+# terjadi ratusan kali. Obatnya cache: dict yang menyimpan hasil per argumen,
+# sehingga tiap n dihitung TEPAT sekali.
+cache = {}
 
-print("fib_cepat(25) =", fib_cepat(25), fib_cepat.cache_info())
-# fib_cepat(25) = 75025 CacheInfo(hits=23, misses=26, maxsize=None, currsize=26)
+def fib_cepat(n):
+    if n in cache:                     # sudah pernah dihitung? ambil saja
+        return cache[n]
+    hasil = n if n < 2 else fib_cepat(n - 1) + fib_cepat(n - 2)
+    cache[n] = hasil                   # simpan untuk panggilan berikutnya
+    return hasil
+
+print("fib_cepat(25) =", fib_cepat(25), "dengan", len(cache), "hasil di cache")
+# fib_cepat(25) = 75025 dengan 26 hasil di cache
 # 26 perhitungan sungguhan; sisanya diambil dari cache.
+# Python punya alat siap pakai untuk ini, @lru_cache dari functools. Tanda @
+# itu baru dibahas nanti di materi Decorator & Context Manager.
 
 # Versi loop: tanpa cache, tanpa batas kedalaman, satu lintasan saja.
 def fib_loop(n):
@@ -2287,8 +2284,7 @@ print("fib_loop(500) punya", len(str(fib_loop(500))), "digit")
 # fib_loop(500) punya 105 digit
 
 # Pelajarannya: rekursi yang lambat biasanya bukan salah rekursinya, tapi
-# salah karena pekerjaan yang sama dikerjakan berkali-kali. Cara kerja tanda @
-# dan cara membuat decorator sendiri dibahas di materi Decorator.""",
+# salah karena pekerjaan yang sama dikerjakan berkali-kali.""",
             },
         ],
     },
@@ -2348,27 +2344,27 @@ print(genap)                # [2, 4, 6, 8]  -> 1 argumen, dicetak apa adanya
 print(*genap)               # 2 4 6 8       -> 4 argumen, dipisah spasi
 print(*genap, sep=" | ")    # 2 | 4 | 6 | 8
 
-# Inilah kenapa wrapper decorator SELALU ditulis seperti ini:
-def catat(fungsi):
-    def wrapper(*args, **kwargs):        # KUMPULKAN apa pun yang dikirim
-        print(f"-> memanggil {fungsi.__name__}")
-        return fungsi(*args, **kwargs)   # BONGKAR lagi, persis seperti semula
-    return wrapper
-
-@catat
+# Pasangan * di def dan * di pemanggilan sering muncul bersama:
 def luas(panjang, lebar=2):
     return panjang * lebar
 
-print(luas(5))
-print(luas(5, lebar=3))""",
+def luas_dicatat(*args, **kwargs):   # KUMPULKAN apa pun yang dikirim
+    print(f"-> luas dipanggil dengan {args} {kwargs}")
+    return luas(*args, **kwargs)     # BONGKAR lagi, persis seperti semula
+
+print(luas_dicatat(5))
+print(luas_dicatat(5, lebar=3))""",
             },
             {
                 "body": [
-                    "Di materi Decorator kamu udah lihat pasangan itu, tapi belum dijelaskan.",
-                    "wrapper menampung argumen apa pun ke args dan kwargs, lalu membongkarnya",
-                    "lagi waktu meneruskan ke fungsi asli. Kalau bintang di baris kedua nggak",
-                    "ada, fungsi aslinya menerima satu tuple dan satu dict. Bukan argumen yang",
-                    "tadi dikirim pemanggil.",
+                    "luas_dicatat menampung argumen apa pun ke args dan kwargs, lalu",
+                    "membongkarnya lagi waktu meneruskan ke luas. Kalau bintang di baris",
+                    "terakhirnya nggak ada, luas menerima satu tuple dan satu dict, bukan",
+                    "argumen yang tadi dikirim pemanggil.",
+                    "",
+                    "Pasangan kumpulkan-lalu-bongkar ini bakal kamu temui lagi nanti di",
+                    "materi Decorator & Context Manager. Di sana bentuknya persis seperti",
+                    "ini.",
                     "",
                     "Bintang juga bisa dipakai di dalam kurung pembuat koleksi. Di sana",
                     "bintang menuang isi koleksi lain ke dalam koleksi baru:",
@@ -3030,8 +3026,9 @@ print("hitung" in dir())                    # False""",
                     "    NamaKelas.faktor.",
                     "",
                     "Closure ini muncul di kode nyata dalam beberapa bentuk:",
-                    "  - Decorator: wrapper mengingat fungsi yang dibungkusnya (materi",
-                    "    Decorator).",
+                    "  - Fungsi pembungkus: wrapper mengingat fungsi yang dibungkusnya.",
+                    "    Contohnya ada di bawah. Pola ini namanya decorator, dan dibahas",
+                    "    nanti di materi Decorator & Context Manager.",
                     "  - Callback dan event handler: fungsinya dititipkan sekarang, dipanggil",
                     "    nanti, dan tetap perlu tahu konteks waktu dia dibuat.",
                     "  - Factory: satu fungsi mencetak banyak fungsi dengan setelan berbeda.",
@@ -3046,7 +3043,7 @@ print("hitung" in dir())                    # False""",
                 ],
             },
             {
-                "heading": "Jebakan late binding, dan closure di balik decorator",
+                "heading": "Jebakan late binding, dan closure yang membungkus fungsi",
                 "code": """# Closure menyimpan VARIABELnya, bukan nilai variabel itu saat closure dibuat.
 # Nilainya baru dibaca ketika fungsinya DIPANGGIL. Itu namanya late binding,
 # dan inilah akibatnya:
@@ -3080,8 +3077,8 @@ print([f() for f in fungsi])        # [0, 1, 2]
 # Referensi Objek, Salinan & Jebakan Mutable).
 
 # ---------------------------------------------------------------------------
-# Dan inilah mesin di balik decorator: wrapper adalah closure yang mengingat
-# 'fungsi' dan 'jumlah' dari scope pembungkusnya.
+# Closure juga bisa membungkus fungsi lain. wrapper di bawah adalah closure
+# yang mengingat 'fungsi' dan 'jumlah' dari scope pembungkusnya.
 
 def hitung_panggilan(fungsi):
     jumlah = 0
@@ -3094,9 +3091,10 @@ def hitung_panggilan(fungsi):
 
     return wrapper
 
-@hitung_panggilan
 def sapa(nama):
     return f"Halo, {nama}"
+
+sapa = hitung_panggilan(sapa)           # nama sapa sekarang menunjuk ke wrapper
 
 print(sapa("Andi"))
 print(sapa("Budi"))
@@ -3105,11 +3103,12 @@ print(sapa("Budi"))
 # [sapa dipanggil ke-2]
 # Halo, Budi
 
-# Nama sapa sekarang menunjuk ke wrapper, dan wrapper membawa dua tumpangan:
+# wrapper membawa dua tumpangan dari scope pembungkusnya:
 print(sapa.__code__.co_freevars)        # ('fungsi', 'jumlah')
-# Tanpa closure, decorator mustahil: wrapper harus bisa menyebut fungsi aslinya
-# padahal hitung_panggilan sudah lama selesai. Sintaks @ dan pemakaiannya
-# dibahas tuntas di materi Decorator & Context Manager.""",
+# hitung_panggilan sudah lama selesai, tapi wrapper masih bisa menyebut fungsi
+# aslinya. Itu cuma mungkin karena closure. Pola "bungkus fungsi lalu timpa
+# namanya" ini disebut decorator, dan Python punya tanda @ untuk menulisnya
+# lebih singkat. Itu dibahas nanti di materi Decorator & Context Manager.""",
             },
         ],
     },
@@ -3159,7 +3158,13 @@ print(datar)      # [1, 2, 3, 4, 5, 6]
 # Dict comprehension
 nama = ["andi", "budi", "citra"]
 panjang = {n: len(n) for n in nama}
-print(panjang)    # {'andi': 4, 'budi': 4, 'citra': 6}"""
+print(panjang)    # {'andi': 4, 'budi': 4, 'citra': 5}
+
+# Operator walrus := (materi Angka, Perbandingan & Operator yang Belum
+# Dibahas) di kondisi: hitung sekali, pakai dua kali
+harga = [1000, 5000, 20000]
+mahal = [p for h in harga if (p := h // 10) > 400]
+print(mahal)      # [500, 2000]"""
             },
             {
                 "body": [

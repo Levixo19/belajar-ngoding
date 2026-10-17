@@ -4,7 +4,7 @@ TYPESCRIPT_EXERCISES = [
         "difficulty": "Mudah",
         "question": [
             "Buat program TypeScript yang menampilkan tepat tiga baris.",
-            "Simpan nama, bahasa, dan tahun sebagai variabel BERTIPE.",
+            "Simpan nama dan bahasa sebagai variabel bertipe string.",
             "",
             "Keluaran yang diharapkan:",
             "",

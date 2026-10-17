@@ -269,7 +269,7 @@ int main(void) {
     printf("Panjang: %d\\n", panjangString(kata));
 
     balikString(kata);
-    printf("Dibalik: %s\\n", kata);   // ralajeB
+    printf("Dibalik: %s\\n", kata);   // rajaleB
     return 0;
 }""",
     },
@@ -625,7 +625,7 @@ int main(void) {
         "title": "Latihan 16: Linked List - Insert, Delete & Search",
         "difficulty": "Sulit",
         "question": [
-            "Perluas linked list dari materi 18 dengan menambah fungsi:",
+            "Perluas linked list dari materi \"Linked List: Struktur Data Dinamis\" dengan menambah fungsi:",
             "  1. cariNode(Node *head, int nilai) -> kembalikan 1 jika",
             "     ditemukan, 0 jika tidak.",
             "  2. hapusNode(Node *head, int nilai) -> hapus node PERTAMA",

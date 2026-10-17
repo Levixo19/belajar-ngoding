@@ -118,7 +118,9 @@ SQL_QUIZZES = [
                 ],
                 "answer": 2,
                 "explanation": ("Tanpa WHERE, semua baris kena dan database nggak protes sama sekali. "
-                                "Biasakan menulis WHERE dulu sebelum SET."),
+                                "Kebiasaan yang aman: waktu mengetik, tulis UPDATE tabel WHERE kondisi "
+                                "dulu, baru sisipkan SET di tengahnya. Ini cuma soal urutan mengetik; "
+                                "perintah yang dijalankan tetap berurutan UPDATE, SET, lalu WHERE."),
             },
             {
                 "q": "DELETE FROM mahasiswa WHERE nim = 101; Maksudnya?",
