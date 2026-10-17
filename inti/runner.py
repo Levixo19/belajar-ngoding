@@ -263,7 +263,11 @@ def _php_ekstensi():
         keluar = subprocess.run(
             ["php", "-n", "-r", 'echo ini_get("extension_dir"), "\\n", '
              'implode(",", get_loaded_extensions());'],
-            capture_output=True, text=True, timeout=10).stdout.split("\n", 1)
+            capture_output=True, text=True, timeout=10,
+            # Lingkungan diseka seperti jalur anak lain: warna yang dipaksa
+            # induk tidak boleh menyusup ke teks yang diurai di bawah.
+            env={k: v for k, v in os.environ.items() if k != "FORCE_COLOR"},
+        ).stdout.split("\n", 1)
         folder = keluar[0].strip()
         termuat = {e.lower() for e in (keluar[1] if len(keluar) > 1 else "").split(",")}
         for nama in _EKSTENSI_PHP:
