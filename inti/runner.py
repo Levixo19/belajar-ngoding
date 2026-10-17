@@ -29,6 +29,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import time
 from dataclasses import dataclass, field
 
 try:
@@ -573,12 +574,24 @@ TOOLCHAINS = {
 }
 
 
+_MEMO_TERSEDIA = {}
+TTL_TERSEDIA = 30.0
+
+
 def tersedia(bahasa):
     """True kalau semua program yang dibutuhkan bahasa ini ada di PATH."""
     tc = TOOLCHAINS.get(bahasa)
     if not tc:
         return False
-    return all(shutil.which(prog) for prog in tc.butuh)
+    sekarang = time.monotonic()
+    ada = _MEMO_TERSEDIA.get(bahasa)
+    # Memo 30 detik: /api/awal menanyakan semua toolchain tiap muat, dan
+    # shutil.which menyisir PATH. Pemasangan baru terbaca dalam setengah menit.
+    if ada is not None and sekarang - ada[0] < TTL_TERSEDIA:
+        return ada[1]
+    hasil = all(shutil.which(prog) for prog in tc.butuh)
+    _MEMO_TERSEDIA[bahasa] = (sekarang, hasil)
+    return hasil
 
 
 def program_hilang(bahasa):

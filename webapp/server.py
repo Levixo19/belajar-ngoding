@@ -27,6 +27,7 @@ di jaringan yang sama bisa menjalankan kode di komputer ini.
 Importir: belajar-web.py, tests/test_web.py.
 """
 
+import gzip
 import json
 import mimetypes
 import os
@@ -37,6 +38,7 @@ import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
+from inti import pustaka
 from webapp import api
 
 STATIK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "statik")
@@ -56,6 +58,45 @@ _TIPE = {
     ".png": "image/png",
     ".ico": "image/x-icon",
 }
+
+
+# Kebijakan keamanan konten untuk halaman. Gaya inline diizinkan karena
+# aplikasi memasang atribut style lewat DOM.
+#
+# Dua varian skrip, karena pratinjau HTML pelajar (iframe srcdoc, lihat
+# statik/js/pratinjau.js) MEWARISI CSP halaman induk -- diukur di Chrome:
+# "Executing inline script violates ... source: about:srcdoc". Dengan nonce,
+# skrip pelapor tinggi pratinjau dan skrip buatan pelajar ikut diblokir.
+#
+#   CSP_KETAT = False (bawaan): script-src 'self' 'unsafe-inline'. Semua
+#     pembatas lain tetap (default-src/connect-src/object-src/base-uri/
+#     form-action), jadi tidak ada skrip atau permintaan keluar dari asal
+#     sendiri; yang hilang hanya perlindungan terhadap injeksi skrip inline.
+#   CSP_KETAT = True: nonce per respons. Hanya aman dinyalakan setelah
+#     pratinjau disajikan dari rute sendiri berkebijakan longgar (bukan srcdoc).
+CSP_KETAT = False
+_CSP_DASAR = ("default-src 'self'; script-src 'self' {skrip}; "
+              "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+              "connect-src 'self'; frame-src 'self' about: data:; "
+              "object-src 'none'; base-uri 'none'; form-action 'none'")
+
+
+def kebijakan_csp(nonce=None):
+    if CSP_KETAT and nonce:
+        return _CSP_DASAR.format(skrip=f"'nonce-{nonce}'")
+    return _CSP_DASAR.format(skrip="'unsafe-inline'")
+
+
+# Yang layak dimampatkan, dan ambang ukurannya.
+_MAMPAT_TIPE = ("text/", "application/json", "image/svg+xml",
+                "text/javascript")
+_MAMPAT_MIN = 1024
+_MAMPAT_JSON_MIN = 8 * 1024
+_MEMO_MAMPAT = {}                    # (path, etag) -> bytes gzip
+
+
+def _mampat(isi):
+    return gzip.compress(isi, compresslevel=6, mtime=0)
 
 
 # (metode, path) -> (fungsi, sumber_argumen)
@@ -118,9 +159,25 @@ class Penangan(BaseHTTPRequestHandler):
 
     # ------------------------------------------------------------- keluaran
 
-    def _kirim(self, kode, isi, tipe, tambahan=None):
+    def _boleh_gzip(self):
+        return "gzip" in (self.headers.get("Accept-Encoding") or "").lower()
+
+    def _kirim(self, kode, isi, tipe, tambahan=None, ambang=None):
         if isinstance(isi, str):
             isi = isi.encode("utf-8")
+        tambahan = dict(tambahan or {})
+        if (ambang is not None and len(isi) >= ambang and self._boleh_gzip()
+                and tipe.startswith(_MAMPAT_TIPE) and kode == 200):
+            kunci = tambahan.pop("_kunci_mampat", None)
+            mampat = _MEMO_MAMPAT.get(kunci) if kunci else None
+            if mampat is None:
+                mampat = _mampat(isi)
+                if kunci:
+                    _MEMO_MAMPAT[kunci] = mampat
+            isi = mampat
+            tambahan["Content-Encoding"] = "gzip"
+            tambahan["Vary"] = "Accept-Encoding"
+        tambahan.pop("_kunci_mampat", None)
         self.send_response(kode)
         self.send_header("Content-Type", tipe)
         self.send_header("Content-Length", str(len(isi)))
@@ -129,7 +186,7 @@ class Penangan(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
-        for k, v in (tambahan or {}).items():
+        for k, v in tambahan.items():
             self.send_header(k, v)
         self.end_headers()
         if self.command != "HEAD":
@@ -138,7 +195,7 @@ class Penangan(BaseHTTPRequestHandler):
     def _json(self, kode, muatan):
         self._kirim(kode, json.dumps(muatan, ensure_ascii=False),
                     "application/json; charset=utf-8",
-                    {"Cache-Control": "no-store"})
+                    {"Cache-Control": "no-store"}, ambang=_MAMPAT_JSON_MIN)
 
     def _galat(self, kode, pesan):
         self._json(kode, {"galat": pesan})
@@ -176,14 +233,24 @@ class Penangan(BaseHTTPRequestHandler):
         tipe = (_TIPE.get(ext) or mimetypes.guess_type(penuh)[0]
                 or "application/octet-stream")
         try:
+            st = os.stat(penuh)
+            etag = f'"{st.st_mtime_ns:x}-{st.st_size:x}"'
+            # `no-cache` + ETag: browser SELALU bertanya, jadi berkas yang baru
+            # disunting terbaca ulang, tapi yang tidak berubah cukup dijawab 304
+            # tanpa badan. Aplikasi ini dijalankan langsung dari sumbernya, dan
+            # berkas yang tersangkut di cache setelah diperbarui adalah jenis
+            # kebingungan yang paling mahal untuk didiagnosis.
+            kepala = {"Cache-Control": "no-cache", "ETag": etag}
+            if etag in [t.strip()[2:] if t.strip().startswith("W/") else t.strip()
+                        for t in
+                        (self.headers.get("If-None-Match") or "").split(",")]:
+                return self._kirim(304, b"", tipe, kepala)
             with open(penuh, "rb") as f:
                 isi = f.read()
         except OSError:
             return self._galat(500, "Gagal membaca berkas.")
-        # Tanpa cache: aplikasi ini dijalankan langsung dari sumbernya, dan
-        # berkas yang tersangkut di cache browser setelah diperbarui adalah
-        # jenis kebingungan yang paling mahal untuk didiagnosis.
-        self._kirim(200, isi, tipe, {"Cache-Control": "no-cache"})
+        kepala["_kunci_mampat"] = (penuh, etag)
+        self._kirim(200, isi, tipe, kepala, ambang=_MAMPAT_MIN)
 
     def _halaman(self):
         try:
@@ -194,8 +261,15 @@ class Penangan(BaseHTTPRequestHandler):
         # Token ditanam ke dalam halaman, bukan diletakkan di URL: URL tersimpan
         # di riwayat browser dan ikut terkirim lewat Referer.
         html = html.replace("{{TOKEN}}", self.server.token)
+        # Nonce baru untuk SETIAP respons: skrip inline yang dikenal server
+        # saja yang boleh jalan. Dipasang di sini (bukan di index.html) supaya
+        # markup-nya tetap bisa dibuka apa adanya.
+        nonce = secrets.token_urlsafe(18)
+        if CSP_KETAT:
+            html = html.replace("<script>", f'<script nonce="{nonce}">')
         self._kirim(200, html, "text/html; charset=utf-8",
-                    {"Cache-Control": "no-store"})
+                    {"Cache-Control": "no-store",
+                     "Content-Security-Policy": kebijakan_csp(nonce)})
 
     # ----------------------------------------------------------------- rute
 
@@ -312,6 +386,9 @@ def buat(host="127.0.0.1", port=7777, berisik=False):
         raise OSError(f"Tidak ada port bebas mulai dari {port}. "
                       "Mungkin aplikasinya sudah jalan di jendela lain?")
 
+    # Data Pustaka butuh ~0,2 detik untuk dimuat; muat sekarang di latar supaya
+    # halaman bahasa pertama tidak membayarnya.
+    pustaka.panaskan()
     server = Server((host, terpakai), secrets.token_urlsafe(24), berisik=berisik)
     return server, f"http://{host}:{terpakai}/"
 

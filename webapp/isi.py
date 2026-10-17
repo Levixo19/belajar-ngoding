@@ -617,11 +617,17 @@ def daftar_latihan(lang, data):
 
 # ------------------------------------------------------------------ pencarian
 
-def _cuplik(baris_list, kata, panjang=150):
-    """Potongan teks di sekitar kata yang dicari."""
+def _cuplik(baris_list, kata, panjang=150, rendah_list=None):
+    """Potongan teks di sekitar kata yang dicari.
+
+    `rendah_list` (opsional) adalah `baris_list` yang sudah dikecilkan, dari
+    indeks pencarian; hasilnya sama persis, tanpa mengecilkan ulang.
+    """
     rendah = kata.lower()
-    for baris in baris_list:
-        pos = baris.lower().find(rendah)
+    kecil = rendah_list if rendah_list is not None else (
+        b.lower() for b in baris_list)
+    for baris, bawah in zip(baris_list, kecil):
+        pos = bawah.find(rendah)
         if pos < 0:
             continue
         mulai = max(0, pos - panjang // 3)
@@ -640,6 +646,54 @@ def _teks_materi(m):
         if "code" in bagian:
             keluar.extend(bagian["code"].splitlines())
     return keluar
+
+
+_INDEKS_CARI = {}
+
+
+def _entri_indeks(baris):
+    """(baris, versi huruf kecil, gabungan huruf kecil) untuk satu butir."""
+    kecil = [b.lower() for b in baris]
+    return baris, kecil, "\x00".join(kecil)
+
+
+def _indeks_bahasa(lang):
+    """Teks tiap materi/kuis/latihan, dikecilkan SEKALI lalu dipakai ulang.
+
+    Pencarian dipanggil tiap ketikan; mengecilkan ulang jutaan baris per
+    permintaan adalah biaya terbesarnya. Kurikulum statis selama proses hidup,
+    tapi indeks disahkan dengan identitas daftar sumbernya supaya tes yang
+    memasang bahasa buatan tidak membaca indeks bahasa lain.
+    """
+    sumber = (lang["materials"], lang["quizzes"], lang["exercises"])
+    ada = _INDEKS_CARI.get(lang["key"])
+    if ada is not None and all(a is b for a, b in zip(ada[0], sumber)):
+        return ada[1]
+    materi = [_entri_indeks(_teks_materi(m)) for m in lang["materials"]]
+    kuis = []
+    for q in lang["quizzes"]:
+        baris = [q["title"]]
+        for s in q["questions"]:
+            baris.append(s["q"])
+            baris.extend(s["options"])
+            baris.append(s.get("explanation", ""))
+        kuis.append(_entri_indeks(baris))
+    latihan = []
+    for e in lang["exercises"]:
+        baris = ([e["title"]] + list(e.get("question") or [])
+                 + list(e.get("hints") or [])
+                 + e.get("solution", "").splitlines())
+        latihan.append(_entri_indeks(baris))
+    indeks = {"materi": materi, "kuis": kuis, "latihan": latihan}
+    _INDEKS_CARI[lang["key"]] = (sumber, indeks)
+    return indeks
+
+
+def _ada(entri, rendah):
+    """Sama dengan `any(rendah in b.lower() for b in baris)`."""
+    if "\x00" in rendah:
+        return any(rendah in b for b in entri[1])
+    return rendah in entri[2]
 
 
 def cari(languages, kata, tipe="semua", batas=80, data=None):
@@ -674,46 +728,50 @@ def cari(languages, kata, tipe="semua", batas=80, data=None):
         return terbuka[lang["key"]]
 
     for lang in languages:
+        indeks = _indeks_bahasa(lang)
         if tipe in ("semua", "materi"):
             for i, m in enumerate(lang["materials"]):
-                baris = _teks_materi(m)
-                if not any(rendah in b.lower() for b in baris):
+                entri = indeks["materi"][i]
+                baris = entri[0]
+                if not _ada(entri, rendah):
                     continue
                 hasil.append({
                     "tipe": "materi", "bahasa": lang["key"],
                     "label_bahasa": lang["label"], "indeks": i,
-                    "judul": m["title"], "cuplikan": _cuplik(baris[1:], kata),
+                    "judul": m["title"],
+                    "cuplikan": _cuplik(baris[1:], kata,
+                                        rendah_list=entri[1][1:]),
                     "terkunci": i not in _terbuka(lang),
                     "skor": 0 if rendah in m["title"].lower() else 1,
                 })
 
         if tipe in ("semua", "kuis"):
             for i, q in enumerate(lang["quizzes"]):
-                baris = [q["title"]]
-                for s in q["questions"]:
-                    baris.append(s["q"])
-                    baris.extend(s["options"])
-                    baris.append(s.get("explanation", ""))
-                if not any(rendah in b.lower() for b in baris):
+                entri = indeks["kuis"][i]
+                baris = entri[0]
+                if not _ada(entri, rendah):
                     continue
                 hasil.append({
                     "tipe": "kuis", "bahasa": lang["key"],
                     "label_bahasa": lang["label"], "indeks": i,
-                    "judul": q["title"], "cuplikan": _cuplik(baris[1:], kata),
+                    "judul": q["title"],
+                    "cuplikan": _cuplik(baris[1:], kata,
+                                        rendah_list=entri[1][1:]),
                     "skor": 0 if rendah in q["title"].lower() else 1,
                 })
 
         if tipe in ("semua", "latihan"):
             for i, e in enumerate(lang["exercises"]):
-                baris = ([e["title"]] + list(e.get("question") or [])
-                         + list(e.get("hints") or [])
-                         + e.get("solution", "").splitlines())
-                if not any(rendah in b.lower() for b in baris):
+                entri = indeks["latihan"][i]
+                baris = entri[0]
+                if not _ada(entri, rendah):
                     continue
                 hasil.append({
                     "tipe": "latihan", "bahasa": lang["key"],
                     "label_bahasa": lang["label"], "indeks": i,
-                    "judul": e["title"], "cuplikan": _cuplik(baris[1:], kata),
+                    "judul": e["title"],
+                    "cuplikan": _cuplik(baris[1:], kata,
+                                        rendah_list=entri[1][1:]),
                     "skor": 0 if rendah in e["title"].lower() else 1,
                 })
 

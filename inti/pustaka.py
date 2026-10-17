@@ -13,9 +13,11 @@ data pustaka milik repo sumbernya. Menambah kurikulum baru cukup menambah satu
 baris di `TOPIK_KURIKULUM`, tanpa memanen ulang.
 """
 
+import copy
 import json
 import os
 import re
+import threading
 
 FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                       "data", "pustaka")
@@ -103,6 +105,14 @@ PETA_KURIKULUM = {
 }
 
 _CACHE = None
+_KUNCI = threading.Lock()
+
+# Datanya statis selama proses hidup, jadi hasil `cari()` dan
+# `ringkasan_kurikulum()` dimemo. Isinya SALINAN yang dikembalikan, supaya
+# pemanggil yang menyunting hasilnya tidak meracuni pemanggil berikutnya.
+_MEMO_CARI = {}
+_MEMO_RINGKASAN = {}
+_MAKS_MEMO = 512
 
 
 def _kurikulum_entri(e, sumber):
@@ -124,6 +134,20 @@ def _muat():
     global _CACHE
     if _CACHE is not None:
         return _CACHE
+    with _KUNCI:
+        if _CACHE is None:
+            _CACHE = _muat_dari_berkas()
+    return _CACHE
+
+
+def panaskan():
+    """Muat data di thread latar supaya permintaan pertama tidak membayarnya."""
+    utas = threading.Thread(target=_muat, daemon=True, name="pustaka-panas")
+    utas.start()
+    return utas
+
+
+def _muat_dari_berkas():
     sumber = {}
     entri = []
     if os.path.isdir(FOLDER):
@@ -144,14 +168,16 @@ def _muat():
                 e["_semua"] = " ".join([e["judul"], " ".join(e["topik"]),
                                         e.get("catatan", "")]).lower()
                 entri.append(e)
-    _CACHE = {"sumber": sumber, "entri": entri}
-    return _CACHE
+    return {"sumber": sumber, "entri": entri}
 
 
 def lupakan_cache():
     """Untuk tes yang mengganti FOLDER."""
     global _CACHE
-    _CACHE = None
+    with _KUNCI:
+        _CACHE = None
+        _MEMO_CARI.clear()
+        _MEMO_RINGKASAN.clear()
 
 
 def daftar_sumber():
@@ -186,6 +212,24 @@ def _skor(e, kata):
 
 def cari(kueri="", kurikulum=None, jenis=None, bahasa=None, sumber=None,
          halaman=1, per_halaman=40):
+    """Cari dan saring (dimemo; lihat `_cari_hitung` untuk aturannya)."""
+    kunci = (kueri or "", kurikulum or None, jenis or None, bahasa or None,
+             sumber or None, halaman, per_halaman)
+    try:
+        hasil = _MEMO_CARI.get(kunci)
+    except TypeError:               # argumen tak bisa di-hash: hitung saja
+        return _cari_hitung(kueri, kurikulum, jenis, bahasa, sumber,
+                            halaman, per_halaman)
+    if hasil is None:
+        hasil = _cari_hitung(kueri, kurikulum, jenis, bahasa, sumber,
+                             halaman, per_halaman)
+        if len(_MEMO_CARI) >= _MAKS_MEMO:
+            _MEMO_CARI.clear()
+        _MEMO_CARI[kunci] = hasil
+    return copy.deepcopy(hasil)
+
+
+def _cari_hitung(kueri, kurikulum, jenis, bahasa, sumber, halaman, per_halaman):
     """Cari dan saring. Semua penyaring opsional; kueri kosong = jelajah.
 
     Mengembalikan hasil SATU halaman plus `segi`: cacah tiap nilai penyaring
@@ -227,9 +271,9 @@ def cari(kueri="", kurikulum=None, jenis=None, bahasa=None, sumber=None,
     # Bahasa Indonesia lebih dulu: hanya sedikit, dan itulah yang paling
     # mungkin dibaca sampai habis oleh pelajar aplikasi ini.
     urutan_jenis = list(JENIS)
+    peringkat = {j: n for n, j in enumerate(urutan_jenis)}
     hasil.sort(key=lambda p: (-p[0], p[1]["bahasa"] != "id",
-                              urutan_jenis.index(p[1]["jenis"])
-                              if p[1]["jenis"] in urutan_jenis else 99,
+                              peringkat.get(p[1]["jenis"], 99),
                               p[1]["_judul"]))
     halaman = max(1, int(halaman or 1))
     per_halaman = max(1, min(int(per_halaman or 40), 200))
@@ -244,6 +288,16 @@ def cari(kueri="", kurikulum=None, jenis=None, bahasa=None, sumber=None,
 
 
 def ringkasan_kurikulum(kunci, pilihan=6):
+    """Dimemo; lihat `_ringkasan_hitung`."""
+    k = (kunci, pilihan)
+    hasil = _MEMO_RINGKASAN.get(k)
+    if hasil is None:
+        hasil = _ringkasan_hitung(kunci, pilihan)
+        _MEMO_RINGKASAN[k] = hasil
+    return copy.deepcopy(hasil)
+
+
+def _ringkasan_hitung(kunci, pilihan):
     """Cacah per jenis untuk satu kurikulum, plus beberapa tautan pembuka.
 
     Pembukanya dipilih tetap (bukan acak) supaya terminal dan web
