@@ -16,12 +16,13 @@ Importir: main.py, layar/navigasi.py.
 """
 
 import random
+import textwrap
 
 from inti import tema
 from pelajar import kuis_materi
 from layar.utils import (
     C, paint, clear, press_enter, ask, ask_atau_eof, ask_choice, header, rule,
-    bar, wrap, lebar, angka_pilihan, ask_timed,
+    bar, lebar, angka_pilihan, ask_timed,
 )
 from pelajar.progress import (
     record_quiz_score, perbarui_soal_salah, soal_salah_terakhir, load_progress,
@@ -50,6 +51,40 @@ def _acak_bawaan():
     if konfigurasi is not None:
         return bool(konfigurasi.ambil("acak_bawaan", True))
     return True
+
+
+def _bungkus(teks, awalan, lanjutan=None):
+    """Bungkus `teks` selebar layar, mengembalikan daftar baris.
+
+    846 dari 968 penjelasan kuis lebih panjang dari 80 kolom, dan dulu
+    dicetak sebaris penuh: terminal melipatnya di tengah kata dan baris
+    lipatannya mulai di kolom 0, menempel ke tepi kiri di bawah label
+    "Penjelasan:". Di sini baris lanjutan menjorok sejajar awal isinya
+    (`lanjutan`, bawaannya selebar `awalan`), jadi nomor opsi dan label tetap
+    jadi satu-satunya hal di kolom kirinya.
+
+    Isinya tidak diubah sehuruf pun, cuma tempat patahnya: web menampilkan
+    kalimat yang sama. Patah baris di sumber dipertahankan, dan kata panjang
+    (potongan kode, alamat) tidak pernah dipenggal.
+    """
+    if lanjutan is None:
+        lanjutan = " " * len(awalan)
+    lebar_baris = max(len(awalan) + 20, lebar())
+    keluar = []
+    for i, paragraf in enumerate(str(teks).split("\n")):
+        keluar.extend(textwrap.wrap(
+            paragraf, width=lebar_baris,
+            initial_indent=awalan if i == 0 else lanjutan,
+            subsequent_indent=lanjutan,
+            break_long_words=False, break_on_hyphens=False,
+        ) or [awalan if i == 0 else ""])
+    return keluar
+
+
+def _cetak(teks, awalan, peran, *gaya, lanjutan=None):
+    """`_bungkus` lalu cetak; warna dipasang per baris supaya tidak bocor."""
+    for baris in _bungkus(teks, awalan, lanjutan):
+        print(tema.cat(baris, peran, *gaya))
 
 
 def _status_kuis(data, kategori, quiz):
@@ -110,19 +145,19 @@ def _tampilkan_review(salah, kategori="", judul=""):
     clear()
     header("REVIEW JAWABAN SALAH", f"{len(salah)} soal perlu kamu pelajari lagi")
     for n, item in enumerate(salah, start=1):
-        print(tema.cat(f"\n  {n}. {item['q']}", "teks", tema.TEBAL))
+        print()
+        _cetak(item["q"], f"  {n}. ", "teks", tema.TEBAL, lanjutan="     ")
         if item["dipilih"] is None:
-            print(tema.cat("     Jawabanmu    : (kehabisan waktu)", "galat"))
+            _cetak("(kehabisan waktu)", "     Jawabanmu    : ", "galat")
         else:
-            print(tema.cat(f"     Jawabanmu    : {item['options'][item['dipilih']]}",
-                           "galat"))
-        print(tema.cat(f"     Yang benar   : {item['options'][item['answer']]}", "sukses"))
+            _cetak(item["options"][item["dipilih"]], "     Jawabanmu    : ", "galat")
+        _cetak(item["options"][item["answer"]], "     Yang benar   : ", "sukses")
         if item["explanation"]:
-            print(tema.cat(wrap(item["explanation"], lebar() - 2, "     "), "redup"))
+            _cetak(item["explanation"], "     ", "redup")
         sumber = kuis_materi.materi_soal_key(kategori.rsplit("_", 1)[0], judul,
                                              item["asli"]) if kategori else None
         if sumber:
-            print(tema.cat(f"     Baca lagi    : {sumber[1]}", "aksen"))
+            _cetak(sumber[1], "     Baca lagi    : ", "aksen")
     print()
     press_enter("Tekan ENTER untuk kembali...")
 
@@ -181,11 +216,10 @@ def run_quiz(quiz, kategori="kuis", indeks=None, acak_soal=True, acak_opsi=True,
         print(tema.cat(f"\n  Soal {index + 1}/{total}", "info", tema.TEBAL),
               "  ", bar(index, total, 16))
         print(tema.cat("  " + "-" * (lebar() - 4), "redup"))
-        for baris in wrap(so["q"], lebar() - 2, "  ").splitlines():
-            print(tema.cat(baris, "teks", tema.TEBAL))
+        _cetak(so["q"], "  ", "teks", tema.TEBAL)
         print()
         for i, opt in enumerate(so["options"]):
-            print(tema.cat(f"    {i + 1}. {opt}", "teks"))
+            _cetak(opt, f"    {i + 1}. ", "teks")
         print()
 
         raw, habis, eof = _baca_jawaban(detik_per_soal)
@@ -197,12 +231,12 @@ def run_quiz(quiz, kategori="kuis", indeks=None, acak_soal=True, acak_opsi=True,
 
         if habis:
             print(tema.cat("  [LEWAT] Dihitung salah.", "galat", tema.TEBAL))
-            print(tema.cat(f"     Jawaban benar: {so['options'][so['answer']]}", "sukses"))
+            _cetak(so["options"][so["answer"]], "     Jawaban benar: ", "sukses")
             so_salah = dict(so)
             so_salah["dipilih"] = None
             salah.append(so_salah)
             if so["explanation"]:
-                print(tema.cat("  Penjelasan: " + so["explanation"], "redup"))
+                _cetak(so["explanation"], "  Penjelasan: ", "redup")
             index += 1
             salah_ketik = 0
             continue
@@ -231,13 +265,13 @@ def run_quiz(quiz, kategori="kuis", indeks=None, acak_soal=True, acak_opsi=True,
             print(tema.cat("  [BENAR]", "sukses", tema.TEBAL))
         else:
             print(tema.cat("  [SALAH]", "galat", tema.TEBAL))
-            print(tema.cat(f"     Jawaban benar: {so['options'][so['answer']]}", "sukses"))
+            _cetak(so["options"][so["answer"]], "     Jawaban benar: ", "sukses")
             so_salah = dict(so)
             so_salah["dipilih"] = dipilih
             salah.append(so_salah)
 
         if so["explanation"]:
-            print(tema.cat("  Penjelasan: " + so["explanation"], "redup"))
+            _cetak(so["explanation"], "  Penjelasan: ", "redup")
         index += 1
 
     # ---- rekap

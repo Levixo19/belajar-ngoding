@@ -12,23 +12,30 @@ import webbrowser
 from inti import pustaka
 from inti import tema
 from layar.utils import (
-    C, paint, clear, ask, ask_choice, press_enter, header, rule, lebar,
-    bungkus_baris, sorot_kata, potong,
+    C, paint, clear, ask, ask_choice, press_enter, header, rule,
+    bungkus_baris, sorot_kata, potong, lebar_menu,
 )
 
 PER_HALAMAN = 20
 
 
 def _baris_entri(e, kata=""):
+    """Satu entri sebagai opsi menu dua baris: jenis + judul, lalu keterangan.
+
+    Kedua baris dipendekkan di sini, selebar `lebar_menu()`, supaya menu
+    panah tidak perlu memotongnya lagi: potongan di sana jatuh di ujung
+    baris, tepat di penanda "[Indonesia]". 7 kolom untuk awalan "   nn. ".
+    """
+    maks = lebar_menu() - 7
     jenis = tema.cat(f"{pustaka.JENIS.get(e['jenis'], e['jenis']):<20}", "info")
-    judul = potong(e["judul"], max(20, lebar() - 34))
+    penanda = "  [Indonesia]" if e["bahasa"] == "id" else ""
+    judul = potong(e["judul"], max(20, maks - 21 - len(penanda)))
     if kata:
         judul = sorot_kata(judul, kata)
-    penanda = tema.cat("  [Indonesia]", "sukses") if e["bahasa"] == "id" else ""
     ket = e.get("catatan") or (e["topik"][0] if e["topik"] else "")
-    baris = f"{jenis} {judul}{penanda}"
+    baris = f"{jenis} {judul}{tema.cat(penanda, 'sukses') if penanda else ''}"
     if ket:
-        baris += "\n       " + tema.cat(potong(ket, max(20, lebar() - 10)), "redup")
+        baris += "\n       " + tema.cat(potong(ket, max(20, maks - 7)), "redup")
     return baris
 
 
@@ -120,8 +127,9 @@ def menu_pustaka(languages, kurikulum=None):
             aktif.append(saring["sumber"])
         header("PUSTAKA", f"{r['total']} dari {pustaka.total()} tautan"
                + (" - " + ", ".join(aktif) if aktif else ""))
-        print(tema.cat("  Buku, kursus, proyek, dan API gratis. Yang berbahasa "
-                       "Indonesia tampil lebih dulu.", "redup"))
+        for b in bungkus_baris("Buku, kursus, proyek, dan API gratis. Yang "
+                               "berbahasa Indonesia tampil lebih dulu."):
+            print(tema.cat(b, "redup"))
         print(rule("-", C.DIM, bold=False))
 
         extra = {"c": "Cari kata", "k": "Saring kurikulum", "j": "Saring jenis",

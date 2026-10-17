@@ -93,8 +93,14 @@ def _tanda_kunci(h):
 
     Berupa KATA, bukan sekadar warna: tema `mono` tidak punya warna sama
     sekali, dan penanda yang lenyap di satu tema sama saja dengan tidak ada.
+
+    Ditaruh SEBELUM judul. Menu panah memotong tiap baris selebar terminal,
+    dan penanda di UJUNG baris (sesudah judul panjang dan cacah kemunculan)
+    yang paling dulu termakan: hasil yang akan menolak dibuka tampil tanpa
+    tanda apa pun. Di depan ia tidak pernah terpotong, dan judulnya tetap
+    utuh di menu bernomor yang membiarkan baris melipat.
     """
-    return ("  " + tema.cat("[terkunci]", "peringatan")) if h.get("kunci") else ""
+    return (tema.cat("[terkunci]", "peringatan") + " ") if h.get("kunci") else ""
 
 
 def _layar_terkunci(h):
@@ -235,7 +241,7 @@ def cari_global(languages):
             tipe = tema.cat(f"{h['tipe']:<8}", WARNA_TIPE[h["tipe"]], tema.TEBAL)
             bahasa = tema.cat(f"{h['lang']['label']:<11}", "info")
             jumlah = tema.cat(f"({h['jumlah']}x)", "redup")
-            baris = f"{tipe} {bahasa} {h['judul']}  {jumlah}{_tanda_kunci(h)}"
+            baris = f"{tipe} {bahasa} {_tanda_kunci(h)}{h['judul']}  {jumlah}"
             if h["cuplikan"]:
                 baris += "\n       " + sorot_kata(tema.cat(h["cuplikan"], "redup"), kata)
             names.append(baris)
@@ -359,8 +365,8 @@ def menu_bookmark(languages):
         # matikan lagi. Bookmark-nya tetap ada, babnya menutup kembali.
         _tandai_kunci(entri, data)
         names = [f"{tema.cat(e['lang']['label'] + ':', 'info')} "
-                 f"{tema.cat(e['tipe'], WARNA_TIPE[e['tipe']])} {e['judul']}"
-                 f"{_tanda_kunci(e)}"
+                 f"{tema.cat(e['tipe'], WARNA_TIPE[e['tipe']])} "
+                 f"{_tanda_kunci(e)}{e['judul']}"
                  for e in entri]
         extra = {"x": f"Bersihkan {basi} bookmark tidak valid"} if basi else None
         pilih = ask_choice(paint("  Buka bookmark:", C.BLUE, C.BOLD), names, extra=extra)

@@ -879,28 +879,164 @@ def main_menu():
 
 # ----------------------------------------------------------------------- CLI
 
+class _FormatIndonesia(argparse.RawDescriptionHelpFormatter):
+    """Formatter bantuan yang menulis "cara pakai:", bukan "usage:"."""
+
+    def add_usage(self, usage, actions, groups, prefix=None):
+        return super().add_usage(usage, actions, groups,
+                                 prefix="cara pakai: " if prefix is None else prefix)
+
+
+class _ParserIndonesia(argparse.ArgumentParser):
+    """ArgumentParser yang menegur dalam Bahasa Indonesia dan menyarankan ejaan.
+
+    Teks galat argparse bawaan berbahasa Inggris dan cuma bilang apa yang
+    salah ("unrecognized arguments: --bahsa go"). Di sini kalimatnya
+    diterjemahkan, opsi yang salah ketik diberi tebakan terdekatnya, dan
+    setiap galat ditutup dengan jalan keluarnya. Kode keluar tetap 2, sama
+    dengan argparse, karena skrip yang memanggil aplikasi ini bergantung
+    padanya.
+    """
+
+    _TERJEMAHAN = (
+        (r"unrecognized arguments: (.*)", "argumen tidak dikenal: {0}"),
+        (r"argument (\S+): expected one argument", "{0} butuh satu nilai sesudahnya"),
+        (r"argument (\S+): expected at most one argument",
+         "{0} cuma menerima satu nilai"),
+        (r"argument (\S+): invalid int value: (.*)",
+         "{0} butuh bilangan bulat, bukan {1}"),
+        (r"argument (\S+): ignored explicit argument (.*)",
+         "{0} tidak menerima nilai (dapat {1})"),
+        (r"ambiguous option: (\S+) could match (.*)",
+         "{0} ambigu, bisa berarti {1}"),
+        (r"argument (\S+): (.*)", "{0}: {1}"),
+    )
+
+    def _terjemahkan(self, pesan):
+        import re
+        for pola, ganti in self._TERJEMAHAN:
+            m = re.fullmatch(pola, pesan, re.DOTALL)
+            if m:
+                return ganti.format(*m.groups())
+        return pesan
+
+    def _tebakan_opsi(self, pesan):
+        """'Maksudmu --bahasa?' untuk tiap opsi tak dikenal yang mirip opsi sah."""
+        import difflib
+        import re
+        m = re.fullmatch(r"unrecognized arguments: (.*)", pesan)
+        if not m:
+            return []
+        sah = [o for a in self._actions for o in a.option_strings if o.startswith("--")]
+        saran = []
+        for kata in m.group(1).split():
+            if not kata.startswith("--"):
+                continue
+            cocok = difflib.get_close_matches(kata.split("=", 1)[0], sah, n=1)
+            if cocok:
+                saran.append(f"  Maksudmu {cocok[0]}? (bukan {kata})")
+        return saran
+
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        baris = [f"{self.prog}: galat: {self._terjemahkan(message)}"]
+        baris += self._tebakan_opsi(message)
+        baris.append("  Lihat semua pilihan: python3 main.py --bantuan")
+        self.exit(2, "\n".join(baris) + "\n")
+
+
+def _kunci_bahasa(nilai):
+    """Validasi --bahasa: terima key ("cpp") atau label ("C++"), apa pun kapitalnya.
+
+    Salah ketik ditolak SEBELUM aplikasi dibuka, dengan tebakan terdekat dari
+    difflib: "--bahasa pyhton" lebih berguna dijawab "maksudmu python?"
+    daripada dua puluh nama bahasa yang harus dibaca satu-satu.
+    """
+    import difflib
+    dicari = nilai.strip().lower()
+    for l in LANGUAGES:
+        if dicari in (l["key"], l["label"].lower()):
+            return l["key"]
+    nama = {l["key"]: l["key"] for l in LANGUAGES}
+    nama.update({l["label"].lower(): l["key"] for l in LANGUAGES})
+    cocok = difflib.get_close_matches(dicari, list(nama), n=3, cutoff=0.6)
+    tebakan = list(dict.fromkeys(nama[c] for c in cocok))
+    import textwrap
+    pesan = f"'{nilai}' tidak dikenal."
+    if tebakan:
+        pesan += " Maksudmu " + " atau ".join(tebakan) + "?"
+    pesan += "\n" + textwrap.fill(
+        "Pilihan: " + ", ".join(l["key"] for l in LANGUAGES), width=78,
+        initial_indent="  ", subsequent_indent="           ")
+    raise argparse.ArgumentTypeError(pesan)
+
+
+def _setuju_impor(arg):
+    """Tanya dulu sebelum --impor menimpa progres, kalau ada orang yang bisa ditanya.
+
+    Menu Kelola Data selalu bertanya; jalur CLI dulu langsung menimpa. Yang
+    ditanya hanya orang di terminal: skrip (stdin bukan TTY) dan `--ya` jalan
+    tanpa tanya seperti sebelumnya, supaya otomasi lama tidak tiba-tiba
+    menggantung menunggu jawaban. Cadangan tetap dibuat `impor()` apa pun
+    jawabannya di sini. Berkas yang tidak ada tidak ditanyakan: `impor()`
+    sendiri yang akan melaporkannya.
+    """
+    if arg.ya or not os.path.isfile(os.path.expanduser(arg.impor)):
+        return True
+    # Pilihan yang dikerjakan cli() LEBIH DULU daripada --impor: kalau salah
+    # satunya ada, impornya tidak pernah jalan, jadi jangan bertanya.
+    if (arg.bantuan or arg.versi or arg.cek_toolchain or arg.statistik
+            or arg.laporan or arg.ekspor):
+        return True
+    try:
+        if not sys.stdin.isatty():
+            return True
+    except (AttributeError, ValueError):
+        return True
+    from pelajar import progress as _progres
+    print(f"Progres di {_progres.PROGRESS_FILE} akan DIGANTI isi {arg.impor}.")
+    print("Progres yang sekarang dicadangkan dulu, jadi masih bisa dikembalikan.")
+    return confirm("Lanjut impor?")
+
+
 def _argumen(argv=None):
-    p = argparse.ArgumentParser(
-        prog="belajar", add_help=False,
-        description="Aplikasi belajar pemrograman berbahasa Indonesia di terminal.")
-    p.add_argument("--bantuan", "-h", action="store_true", help="tampilkan bantuan ini")
-    p.add_argument("--versi", "-v", action="store_true", help="tampilkan versi")
-    p.add_argument("--tanpa-warna", action="store_true", help="matikan semua warna")
-    p.add_argument("--tema", metavar="NAMA",
+    p = _ParserIndonesia(
+        prog="belajar", add_help=False, formatter_class=_FormatIndonesia,
+        description="Aplikasi belajar pemrograman berbahasa Indonesia di terminal.",
+        epilog="contoh:\n"
+               "  python3 main.py                     buka menu utama\n"
+               "  python3 main.py --bahasa python     langsung ke Python\n"
+               "  python3 main.py --laporan hasil.md  tulis laporan kemajuan\n"
+               "  python3 main.py --impor cadangan.json --ya\n"
+               "                                      impor tanpa ditanya")
+    g = p.add_argument_group("pilihan")
+    g.add_argument("--bantuan", "-h", action="store_true", help="tampilkan bantuan ini")
+    g.add_argument("--versi", "-v", action="store_true", help="tampilkan versi")
+    g.add_argument("--tanpa-warna", action="store_true", help="matikan semua warna")
+    g.add_argument("--tema", metavar="NAMA",
                    help="paksa tema: " + ", ".join(tema.TEMA))
-    p.add_argument("--lebar", type=int, metavar="N", help="kunci lebar layar")
-    p.add_argument("--bahasa", metavar="KEY",
+    g.add_argument("--lebar", type=int, metavar="N", help="kunci lebar layar")
+    g.add_argument("--bahasa", metavar="KEY", type=_kunci_bahasa,
                    help="langsung buka satu bahasa: "
                         + ", ".join(l["key"] for l in LANGUAGES))
-    p.add_argument("--statistik", action="store_true",
+    g.add_argument("--statistik", action="store_true",
                    help="cetak ringkasan progres lalu keluar")
-    p.add_argument("--laporan", nargs="?", const="-", metavar="BERKAS",
+    g.add_argument("--laporan", nargs="?", const="-", metavar="BERKAS",
                    help="tulis laporan Markdown (tanpa nama berkas = ke layar)")
-    p.add_argument("--cek-toolchain", action="store_true",
+    g.add_argument("--cek-toolchain", action="store_true",
                    help="periksa compiler/interpreter yang terpasang")
-    p.add_argument("--ekspor", metavar="BERKAS", help="ekspor progres ke JSON")
-    p.add_argument("--impor", metavar="BERKAS", help="impor progres dari JSON")
-    return p, p.parse_args(argv)
+    g.add_argument("--ekspor", metavar="BERKAS", help="ekspor progres ke JSON")
+    g.add_argument("--impor", metavar="BERKAS",
+                   help="impor progres dari JSON (progres lama dicadangkan; "
+                        "di terminal ditanya dulu)")
+    g.add_argument("--ya", "-y", action="store_true",
+                   help="jangan tanya konfirmasi (untuk --impor)")
+    arg = p.parse_args(argv)
+    # Konfirmasi tinggal di sini, bukan di cli(): pembatalan keluar dengan
+    # kode 1 sebelum apa pun disentuh, dan cli() cukup menjalankan impornya.
+    if arg.impor and not _setuju_impor(arg):
+        p.exit(1, "Impor dibatalkan. Progres tidak diubah.\n")
+    return p, arg
 
 
 def _cetak_cek_toolchain():

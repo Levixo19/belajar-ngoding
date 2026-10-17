@@ -145,13 +145,45 @@ WIDTH = lebar()
 # ------------------------------------------------------------------ bingkai
 
 def potong(teks, maks):
-    """Potong teks (sadar ANSI) supaya tidak merusak bingkai."""
+    """Potong teks (sadar ANSI) supaya tidak merusak bingkai.
+
+    Diukur PER BARIS. Teks bermultibaris dulu diukur sebagai satu string:
+    baris kedua ikut dihitung panjangnya, lalu seluruhnya dipangkas jadi satu
+    potongan yang memakan baris kedua (alasan saran di menu "Langkah
+    berikutnya" tinggal "materi berik…"). Sekarang tiap baris dipotong
+    sendiri dan jumlah barisnya tidak berubah.
+
+    Kode warna di dalam baris yang dipotong ikut dipertahankan (dulu dibuang
+    semua), dan warnanya ditutup di ujung supaya tidak bocor ke baris lain.
+    """
+    if "\n" in teks:
+        return "\n".join(potong(b, maks) for b in teks.split("\n"))
     if maks <= 1:
         return ""
     if visible_len(teks) <= maks:
         return teks
-    polos = strip_ansi(teks)
-    return polos[: maks - 1] + "…"
+    keluar = []
+    terlihat = 0
+    ada_warna = False
+    pos = 0
+    for m in _POLA_ANSI.finditer(teks):
+        polos = teks[pos:m.start()]
+        sisa = maks - 1 - terlihat
+        if len(polos) > sisa:
+            keluar.append(polos[:sisa])
+            terlihat = maks - 1
+            break
+        keluar.append(polos)
+        terlihat += len(polos)
+        keluar.append(m.group(0))
+        ada_warna = True
+        pos = m.end()
+    else:
+        keluar.append(teks[pos:][: maks - 1 - terlihat])
+    keluar.append("…")
+    if ada_warna:
+        keluar.append("\033[0m")
+    return "".join(keluar)
 
 
 def pusatkan(teks, kolom=None):
@@ -387,25 +419,60 @@ def _baca_tombol():
         termios.tcsetattr(fd, termios.TCSADRAIN, lama)
 
 
+def lebar_menu():
+    """Lebar baris menu panah: `lebar()`, tapi tidak pernah melebihi terminal.
+
+    `lebar()` bisa dikunci pengguna (Pengaturan atau `--lebar`) lebih lebar
+    dari jendelanya. Baris selebar itu melipat, dan satu lipatan saja sudah
+    membuat penggambar ulang naik kurang dari yang tercetak. Sisa satu kolom
+    untuk terminal yang langsung turun baris begitu kolom terakhir terisi.
+
+    Publik karena pemanggil yang menaruh penanda penting di UJUNG baris
+    (mis. "[terkunci]" di hasil pencarian) perlu memendekkan judulnya sendiri
+    lebih dulu; kalau tidak, pemotongan di sini yang memakan penandanya.
+    """
+    return max(10, min(lebar(), _ukuran_terminal().columns - 1))
+
+
+def _baris_opsi(awalan, opsi, maks, warna):
+    """Satu opsi menu jadi baris-baris layar.
+
+    Opsi boleh bermultibaris ("judul\\n       alasan"); baris lanjutannya
+    sudah membawa indentasinya sendiri. Tiap baris dipotong sendiri, jadi
+    satu elemen kembalian = tepat satu baris di layar.
+    """
+    potongan = str(opsi).split("\n")
+    keluar = [paint(potong(awalan + potongan[0], maks), *warna)]
+    for lanjut in potongan[1:]:
+        keluar.append(paint(potong(lanjut, maks), *warna))
+    return keluar
+
+
 def _baris_menu(options, extra, allow_back, back_label, kursor, ketikan):
-    """Susun seluruh baris menu. Dipotong selebar layar supaya tidak melipat -
-    baris yang melipat merusak hitungan kursor saat digambar ulang."""
-    maks = lebar()
+    """Susun seluruh baris menu, SATU elemen untuk SATU baris layar.
+
+    Penggambar ulang di `_ask_choice_panah` naik sebanyak `len()` hasil
+    fungsi ini, jadi janji itu yang membuat menu tidak menumpuk. Dulu satu
+    opsi bermultibaris dihitung satu baris padahal tercetak dua: tiap
+    tekanan panah naik terlalu sedikit dan blok lama tertinggal di atas blok
+    baru. Baris juga dipotong selebar terminal karena baris yang melipat
+    merusak hitungan yang sama.
+    """
+    maks = lebar_menu()
     baris = []
 
     for i, opt in enumerate(options):
         nomor = f"{i + 1:>2}"
         if i == kursor:
-            teks = potong(f" > {nomor}. {opt}", maks)
-            baris.append(paint(teks, C.BOLD, C.CYAN))
+            baris.extend(_baris_opsi(f" > {nomor}. ", opt, maks, (C.BOLD, C.CYAN)))
         else:
-            baris.append(paint(potong(f"   {nomor}. {opt}", maks), C.WHITE))
+            baris.extend(_baris_opsi(f"   {nomor}. ", opt, maks, (C.WHITE,)))
 
     for key, label in extra.items():
-        baris.append(paint(potong(f"    {key}. {label}", maks), C.CYAN))
+        baris.extend(_baris_opsi(f"    {key}. ", label, maks, (C.CYAN,)))
 
     if allow_back:
-        baris.append(paint(potong(f"    0. {back_label}", maks), C.DIM))
+        baris.extend(_baris_opsi("    0. ", back_label, maks, (C.DIM,)))
 
     petunjuk = "   panah pindah  ENTER pilih  angka lompat"
     if allow_back:
@@ -530,7 +597,9 @@ def ask_choice(prompt, options, allow_back=True, back_label="Kembali", extra=Non
     if not options:
         return 0
 
-    tinggi_blok = len(options) + len(extra) + (1 if allow_back else 0) + 1
+    # Tinggi blok dihitung dari baris yang SUNGGUH digambar, bukan dari
+    # jumlah opsi: opsi bermultibaris memakan lebih dari satu baris.
+    tinggi_blok = len(_baris_menu(options, extra, allow_back, back_label, 0, ""))
     if _bisa_panah(tinggi_blok):
         try:
             return _ask_choice_panah(prompt, options, allow_back, back_label, extra)
