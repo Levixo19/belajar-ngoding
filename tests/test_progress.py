@@ -763,5 +763,64 @@ class TestBerkasRusakTidakDitimpa(BasisProgres):
             konfigurasi.lupakan_cache()
 
 
+class TestJadwalDanXpKuisJujur(BasisProgres):
+    """Audit 2026-10-17: jadwal ulang terbalik, bisa digeber, dan XP bisa dipanen."""
+
+    def _jeda(self, judul="Kuis 1: Dasar"):
+        return progress.load_progress()["jadwal_kuis"][
+            progress.kunci("html_kuis", judul)]["interval"]
+
+    def test_skor_lebih_baik_tidak_pernah_diulang_lebih_cepat(self):
+        progress.record_quiz_score("html_kuis", "Kuis A", 4, 8)
+        progress.record_quiz_score("html_kuis", "Kuis B", 7, 8)
+        progress.record_quiz_score("html_kuis", "Kuis C", 8, 8)
+        a, b, c = (self._jeda(j) for j in ("Kuis A", "Kuis B", "Kuis C"))
+        self.assertLess(a, b, "7/8 dulu dijadwalkan LEBIH CEPAT dari 4/8")
+        self.assertLess(b, c)
+
+    def test_ulangan_dini_yang_bagus_tidak_menggeser_jadwal(self):
+        for _ in range(7):
+            progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 8, 8)
+        self.assertLessEqual(self._jeda(), 4,
+                             "tujuh ulangan sehari dulu mendorong jeda ke 120 hari")
+
+    def test_ulangan_dini_yang_jelek_memendekkan_jadwal(self):
+        progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 8, 8)
+        progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 2, 8)
+        self.assertEqual(self._jeda(), 1)
+
+    def test_xp_ulangan_dini_hanya_untuk_peningkatan(self):
+        progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 5, 8)
+        xp1 = progress.load_progress()["xp"]
+        progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 5, 8)
+        self.assertEqual(progress.load_progress()["xp"], xp1, "skor sama = 0 XP")
+        progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 8, 8)
+        xp2 = progress.load_progress()["xp"]
+        self.assertEqual(xp2 - xp1, 3 * progress.XP_PER_JAWABAN_BENAR
+                         + progress.XP_BONUS_KUIS_SEMPURNA)
+        progress.record_quiz_score("html_kuis", "Kuis 1: Dasar", 8, 8)
+        self.assertEqual(progress.load_progress()["xp"], xp2,
+                         "bonus sempurna cuma sekali sebelum jatuh tempo")
+
+
+class TestKuisSelesaiButuhAmbang(BasisProgres):
+    """Kuis dihitung selesai kalau skor terbaik >= 70% (keputusan pemilik 2026-10-17)."""
+
+    def test_skor_rendah_dikerjakan_tapi_belum_selesai(self):
+        progress.record_quiz_score("java_kuis", "Kuis 1: A", 3, 8)
+        progress.record_quiz_score("java_kuis", "Kuis 2: B", 6, 8)
+        s = progress.statistik_bahasa(progress.load_progress(), "java", 10, 3, 5)
+        self.assertEqual(s["kuis_dikerjakan"], 2)
+        self.assertEqual(s["kuis"], 1, "3/8 (38%) tidak boleh dihitung selesai")
+
+    def test_ambang_tepat_terhitung(self):
+        progress.record_quiz_score("java_kuis", "Kuis 1: A", 7, 10)
+        s = progress.statistik_bahasa(progress.load_progress(), "java", 10, 3, 5)
+        self.assertEqual(s["kuis"], 1)
+
+    def test_entri_lama_tanpa_penyebut_tetap_dihitung(self):
+        self.assertTrue(progress.kuis_lulus({"terbaik": 3}))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

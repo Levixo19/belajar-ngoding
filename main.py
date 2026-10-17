@@ -690,7 +690,7 @@ def menu_data():
         data = load_progress()
         print(tema.cat(f"  XP {data.get('xp', 0)} | "
                        f"{len(data['materi_dibaca'])} materi | "
-                       f"{len(data['kuis_skor'])} kuis | "
+                       f"{len(data['kuis_skor'])} kuis dikerjakan | "
                        f"{len(data['latihan_lulus'])} latihan lulus", "teks"))
         print(rule("-", C.DIM, bold=False))
 

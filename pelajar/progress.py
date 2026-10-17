@@ -576,6 +576,10 @@ def record_quiz_score(kategori, judul, benar, total, salah_index=None,
         _tandai_terakhir(data, "kuis", kategori, judul)
         return _selesaikan(data)
 
+    # Dibaca SEBELUM riwayat diubah: apakah sesi ini ulangan yang memang
+    # sudah waktunya (atau percobaan pertama), dan berapa skor terbaik lama.
+    jatuh_tempo = kuis_jatuh_tempo(data, kategori, judul) or k not in data["kuis_skor"]
+    terbaik_lama = data["kuis_skor"].get(k, {}).get("terbaik", 0)
     riwayat = data["kuis_skor"].get(k, {"terbaik": 0, "percobaan": 0})
     riwayat["percobaan"] = riwayat.get("percobaan", 0) + 1
     riwayat["terbaik"] = max(riwayat.get("terbaik", 0), benar)
@@ -585,13 +589,20 @@ def record_quiz_score(kategori, judul, benar, total, salah_index=None,
     riwayat["terakhir_waktu"] = datetime.now().isoformat(timespec="seconds")
     data["kuis_skor"][k] = riwayat
 
-    tambah_xp(data, benar * XP_PER_JAWABAN_BENAR)
-    if total > 0 and benar == total:
+    # XP penuh hanya untuk percobaan pertama dan ulangan yang jatuh tempo.
+    # Mengulang kuis yang jawabannya masih segar di kepala dulu memberi 252 XP
+    # sehari (audit 2026-10-17); sekarang yang dihargai cuma PENINGKATAN di
+    # atas skor terbaik lama, dan bonus sempurna cuma sekali per kuis.
+    if jatuh_tempo:
+        tambah_xp(data, benar * XP_PER_JAWABAN_BENAR)
+    else:
+        tambah_xp(data, max(0, benar - terbaik_lama) * XP_PER_JAWABAN_BENAR)
+    if total > 0 and benar == total and (jatuh_tempo or terbaik_lama < total):
         tambah_xp(data, XP_BONUS_KUIS_SEMPURNA)
     _catat_harian(data, "kuis")
 
     _simpan_salah(data, k, salah_index)
-    _jadwalkan_ulang(data, k, benar, total)
+    _jadwalkan_ulang(data, k, benar, total, jatuh_tempo)
     _tandai_terakhir(data, "kuis", kategori, judul)
     return _selesaikan(data)
 
@@ -608,19 +619,36 @@ def soal_salah_terakhir(kategori, judul):
 
 # ---------------------------------------------------- spaced repetition ringan
 
-def _jadwalkan_ulang(data, k, benar, total):
-    """SM-2 versi sederhana: makin bagus skornya, makin jauh jadwal ulangnya."""
+def _jadwalkan_ulang(data, k, benar, total, jatuh_tempo=True):
+    """SM-2 versi sederhana: makin bagus skornya, makin jauh jadwal ulangnya.
+
+    Dua aturan yang dulu dilanggar (audit 2026-10-17):
+
+    * MONOTON. Pada percobaan pertama 7/8 dulu memberi jeda int(1*1.6)=1
+      hari sementara 4/8 memberi 2: yang lebih lemah diulang lebih lambat.
+      Sekarang tiap tingkat punya lantai yang lebih tinggi dari tingkat di
+      bawahnya.
+    * JEDA HANYA TUMBUH KALAU MEMANG SUDAH WAKTUNYA. Mengulang kuis yang sama
+      tujuh kali sehari dulu mendorong jedanya sampai 120 hari, padahal
+      jawabannya baru saja dilihat. Ulangan sebelum jatuh tempo yang bagus
+      tidak menggeser jadwal; yang jelek tetap memendekkannya, karena
+      lupa adalah informasi.
+    """
     jadwal = data["jadwal_kuis"].get(k, {"interval": 1})
     rasio = (benar / total) if total else 0
+    lama = max(1, int(jadwal.get("interval", 1) or 1))
 
     if rasio >= 0.9:
-        interval = max(1, int(jadwal.get("interval", 1) * 2.5))
+        interval = max(4, int(lama * 2.5))
     elif rasio >= 0.7:
-        interval = max(1, int(jadwal.get("interval", 1) * 1.6))
+        interval = max(3, int(lama * 1.6))
     elif rasio >= 0.5:
         interval = 2
     else:
         interval = 1
+
+    if not jatuh_tempo and rasio >= 0.7 and jadwal.get("jatuh_tempo"):
+        return  # ulangan dini yang bagus: jadwal lama tetap berlaku
 
     interval = min(interval, 120)
     data["jadwal_kuis"][k] = {
@@ -681,6 +709,29 @@ def bersihkan_bookmark(kunci_valid):
 
 # ------------------------------------------------------------------ statistik
 
+# Kuis dihitung SELESAI kalau skor terbaiknya mencapai ambang ini. Dulu cukup
+# "pernah dikerjakan": Java 3/3 kuis "selesai" dengan skor 23%, dan angka itu
+# ikut menaikkan persen bahasa dan kesiapan Peta Karier. Diputuskan pemilik
+# 2026-10-17. Ini SATU-SATUNYA definisi; terminal, web, dan karier membacanya
+# lewat statistik_bahasa / kuis_lulus.
+AMBANG_KUIS_LULUS = 0.7
+
+
+def kuis_lulus(info, jumlah_soal=0):
+    """True kalau satu entri kuis_skor sudah mencapai AMBANG_KUIS_LULUS.
+
+    Entri lama (migrasi skema v1) kadang tidak punya penyebut sama sekali;
+    tanpa jumlah soal, kita tidak bisa menghitung rasio, dan menghukum
+    pelajar karena data lama yang tidak lengkap bukan pilihan yang adil.
+    """
+    if not info:
+        return False
+    maks = info.get("total_soal", 0) or jumlah_soal
+    if not maks:
+        return True
+    return min(info.get("terbaik", 0), maks) / maks >= AMBANG_KUIS_LULUS
+
+
 def statistik_bahasa(data, prefix, total_materi, total_kuis, total_latihan,
                      soal_per_kuis=None, latihan_tak_dinilai=0):
     """Ringkasan progres satu bahasa.
@@ -695,7 +746,11 @@ def statistik_bahasa(data, prefix, total_materi, total_kuis, total_latihan,
 
     materi = sum(1 for k in data["materi_dibaca"] if k.startswith(awalan_materi))
     sebagian = sum(1 for k in data["materi_sebagian"] if k.startswith(awalan_materi))
-    kuis = sum(1 for k in data["kuis_skor"] if k.startswith(awalan_kuis))
+    dikerjakan = sum(1 for k in data["kuis_skor"] if k.startswith(awalan_kuis))
+    kuis = sum(
+        1 for k, info in data["kuis_skor"].items()
+        if k.startswith(awalan_kuis) and kuis_lulus(
+            info, (soal_per_kuis or {}).get(judul_kunci(k.split("::", 1)[1]), 0)))
     lulus = sum(1 for k in data["latihan_lulus"] if k.startswith(awalan_latihan))
     manual = sum(1 for k in data["latihan_manual"]
                  if k.startswith(awalan_latihan) and k not in data["latihan_lulus"])
@@ -718,7 +773,7 @@ def statistik_bahasa(data, prefix, total_materi, total_kuis, total_latihan,
     target = total_materi + total_kuis + total_latihan
     return {
         "materi": materi, "materi_sebagian": sebagian, "total_materi": total_materi,
-        "kuis": kuis, "total_kuis": total_kuis,
+        "kuis": kuis, "kuis_dikerjakan": dikerjakan, "total_kuis": total_kuis,
         "latihan_lulus": lulus, "latihan_manual": manual,
         "latihan_dilihat": dilihat, "total_latihan": total_latihan,
         "latihan_tak_dinilai": latihan_tak_dinilai,
