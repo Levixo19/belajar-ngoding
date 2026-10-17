@@ -1,0 +1,916 @@
+"""Gambar konsep kurikulum CLI Fedora. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Mengenal Fedora & Anatomi Sistemnya": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Empat hal yang bikin Fedora terasa beda",
+            "ket": "Keempatnya dibahas lengkap di materi-materi berikutnya. "
+                   "Untuk sekarang, cukup tahu bentuknya.",
+            "tabel": [{
+                "nama": "empat pilar Fedora",
+                "kolom": ["urusan", "di Fedora"],
+                "baris": [
+                    ["paket", "DNF5 dan RPM"],
+                    ["keamanan", "SELinux aktif"],
+                    ["filesystem", "Btrfs, zstd"],
+                    ["firewall", "firewalld, zona"],
+                ],
+            }],
+        },
+    ],
+    "Shell, Terminal & Cara Bertanya ke Sistem": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Satu perintah, empat bagian",
+            "ket": "Contohnya ls -l --human-readable /var/log. Opsi mengatur cara "
+                   "kerja, argumen adalah sasarannya.",
+            "tabel": [{
+                "nama": "contoh perintah",
+                "kolom": ["potongan", "perannya"],
+                "baris": [
+                    ["ls", "nama perintah"],
+                    ["-l", "opsi pendek"],
+                    ["--human-readable", "opsi panjang"],
+                    ["/var/log", "argumen"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Mau tahu cara pakai sebuah perintah? Pilih jalan bertanyanya",
+            "ket": "Kalau nama perintahnya saja belum tahu, mulai dari apropos. "
+                   "Kalau sudah tahu, --help dulu, baru man kalau butuh rincian.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Butuh bantuan soal perintah"},
+                {"jenis": "keputusan", "teks": "Sudah tahu nama perintahnya?",
+                 "tidak": 5},
+                {"jenis": "keputusan", "teks": "Cukup ringkasan satu layar?",
+                 "tidak": 4},
+                {"jenis": "keluaran", "teks": "perintah --help", "ke": 6},
+                {"jenis": "keluaran", "teks": "man perintah", "ke": 6},
+                {"jenis": "keluaran", "teks": "apropos \"kata kunci\""},
+                {"jenis": "selesai", "teks": "Coba perintahnya"},
+            ],
+        },
+    ],
+    "Navigasi & Peta Direktori Fedora": [
+        {
+            "setelah": 0,
+            "jenis": "pohon",
+            "judul": "Satu pohon dengan akar /, bukan C: dan D:",
+            "ket": "Sebagian kecil saja dari isinya. Jalur absolut selalu dibaca "
+                   "dari akar ke bawah, misalnya /var/log atau /home/vi.",
+            "akar": {"teks": "/", "anak": [
+                {"teks": "etc"},
+                {"teks": "home", "anak": [{"teks": "vi"}]},
+                {"teks": "var", "anak": [{"teks": "log"}]},
+                {"teks": "usr", "anak": [{"teks": "bin"}, {"teks": "lib"}]},
+                {"teks": "tmp"},
+                {"teks": "boot"},
+            ]},
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Di Fedora, /bin dan kawan-kawannya cuma jalan pintas ke /usr",
+            "ket": "Karena itu /bin/bash dan /usr/bin/bash adalah berkas yang sama.",
+            "tabel": [{
+                "nama": "ls -ld /bin /sbin ...",
+                "kolom": ["symlink", "menunjuk ke"],
+                "baris": [
+                    ["/bin", "usr/bin"],
+                    ["/sbin", "usr/sbin"],
+                    ["/lib", "usr/lib"],
+                    ["/lib64", "usr/lib64"],
+                ],
+            }],
+        },
+    ],
+    "Membuat, Menyalin, Memindah & Menghapus": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "cp -r src tujuan menghasilkan dua hal berbeda",
+            "ket": "Hasilnya bergantung pada ada atau nggaknya direktori tujuan. "
+                   "Cek pakai ls sesudahnya, jangan menebak.",
+            "tabel": [{
+                "nama": "cp -r src tujuan",
+                "kolom": ["keadaan tujuan", "hasilnya"],
+                "baris": [
+                    ["sudah ada", "tujuan/src"],
+                    ["belum ada", "tujuan = salinan"],
+                ],
+                "sorot_baris": [0],
+            }],
+        },
+    ],
+    "Membaca Isi Berkas": [
+        {
+            "setelah": 0,
+            "jenis": "alur",
+            "judul": "Pilih alat baca sesuai ukuran berkasnya",
+            "ket": "Kalau kamu nggak yakin berkasnya kecil, anggap besar dan pakai "
+                   "less.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Mau membaca sebuah berkas"},
+                {"jenis": "keputusan", "teks": "Berkasnya kecil?", "tidak": 3},
+                {"jenis": "keluaran", "teks": "cat: tumpahkan semuanya", "ke": 6},
+                {"jenis": "keputusan", "teks": "Cuma perlu awal atau akhirnya?",
+                 "tidak": 5},
+                {"jenis": "keluaran", "teks": "head atau tail", "ke": 6},
+                {"jenis": "keluaran", "teks": "less: gulir pelan-pelan"},
+                {"jenis": "selesai", "teks": "Selesai membaca"},
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "Beda satu pasang tanda kutip di here-document",
+            "ket": "Baris yang ditulis sama-sama Pengguna: $USER. Yang berbeda cuma "
+                   "penandanya dikutip atau nggak. Contoh ini untuk pengguna vi.",
+            "tabel": [{
+                "nama": "isi berkas yang tertulis",
+                "kolom": ["penanda", "hasilnya"],
+                "baris": [
+                    ["<<'EOF'", "Pengguna: $USER"],
+                    ["<<EOF", "Pengguna: vi"],
+                ],
+            }],
+        },
+    ],
+    "Mencari Berkas & Isi Berkas": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tanda di depan angka find mengubah artinya",
+            "ket": "Tanpa tanda artinya tepat. Untuk seminggu terakhir, tulis -mtime -7.",
+            "tabel": [{
+                "nama": "find . -mtime ...",
+                "kolom": ["kriteria", "umur dalam hari"],
+                "baris": [
+                    ["-mtime -7", "kurang dari 7"],
+                    ["-mtime 7", "tepat 7"],
+                    ["-mtime +7", "lebih dari 7"],
+                ],
+                "sorot_baris": [0],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "\\; menjalankan sekali per berkas, + mengumpulkan dulu",
+            "ket": "Pakai + kalau perintahnya bisa menerima banyak berkas sekaligus, "
+                   "seperti wc, grep, atau rm.",
+            "tabel": [{
+                "nama": "1000 berkas .txt",
+                "kolom": ["bentuk", "jumlah proses", "kecepatan"],
+                "baris": [
+                    ["-exec ... {} \\;", "1000", "lambat"],
+                    ["-exec ... {} +", "mungkin cuma 1", "cepat"],
+                ],
+                "sorot_baris": [1],
+            }],
+        },
+    ],
+    "Izin Berkas & Kepemilikan": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "r, w, dan x berganti arti di direktori",
+            "ket": "Boleh atau nggaknya menghapus berkas ditentukan w di "
+                   "direktorinya, bukan izin berkas itu sendiri.",
+            "tabel": [{
+                "nama": "arti tiap hak",
+                "kolom": ["hak", "pada berkas", "pada direktori"],
+                "baris": [
+                    ["r", "baca isi", "lihat daftar"],
+                    ["w", "ubah isi", "buat/hapus isi"],
+                    ["x", "jalankan", "masuk (cd)"],
+                ],
+                "sorot_kolom": ["pada direktori"],
+            }],
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Blok rwxr-xr-- jadi angka 754",
+            "ket": "Tiap hak punya nilai: r = 4, w = 2, x = 1. Jumlahkan per "
+                   "kelompok, urutannya user, group, lalu other.",
+            "tabel": [{
+                "nama": "-rwxr-xr--",
+                "kolom": ["kelompok", "huruf", "hitungan", "digit"],
+                "baris": [
+                    ["user", "rwx", "4+2+1", "7"],
+                    ["group", "r-x", "4+0+1", "5"],
+                    ["other", "r--", "4+0+0", "4"],
+                ],
+                "sorot_kolom": ["digit"],
+            }],
+            "panah": "dibaca dari atas ke bawah: chmod 754",
+        },
+    ],
+    "ACL & Atribut Berkas Lanjutan": [
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Mask memotong izin yang tertulis di ACL",
+            "ket": "auditor tertulis rwx, tapi mask-nya r--, jadi yang berlaku cuma "
+                   "r. getfacl menandainya dengan #effective:r--.",
+            "tabel": [{
+                "nama": "getfacl berkas.txt",
+                "kolom": ["entri", "tertulis", "berlaku"],
+                "baris": [
+                    ["user:auditor", "rwx", "r--"],
+                    ["mask", "r--", "r--"],
+                ],
+                "sorot_baris": [0],
+                "sorot_kolom": ["berlaku"],
+            }],
+        },
+    ],
+    "Pengguna, Grup, sudo & polkit": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Satu baris /etc/passwd, tujuh kolom dipisah titik dua",
+            "ket": "Barisnya vi:x:1000:1000:Vi:/home/vi:/bin/bash. Kata sandinya "
+                   "sendiri nggak ada di sini; x menunjuk ke /etc/shadow.",
+            "tabel": [{
+                "nama": "vi:x:1000:1000:...",
+                "kolom": ["kolom", "isi", "artinya"],
+                "baris": [
+                    ["1", "vi", "nama pengguna"],
+                    ["2", "x", "sandi di shadow"],
+                    ["3", "1000", "UID"],
+                    ["4", "1000", "GID grup utama"],
+                    ["5", "Vi", "nama lengkap"],
+                    ["6", "/home/vi", "direktori home"],
+                    ["7", "/bin/bash", "shell login"],
+                ],
+            }],
+        },
+        {
+            "setelah": 5,
+            "jenis": "urutan",
+            "judul": "Kenapa sudo echo > berkas gagal, sedangkan sudo tee berhasil",
+            "ket": "Tanda > dikerjakan shell-mu sendiri yang haknya biasa. Dengan "
+                   "pipa ke sudo tee, yang menulis berkasnya adalah tee yang "
+                   "berjalan sebagai root.",
+            "pelaku": ["shell-mu", "sudo tee", "berkas root"],
+            "pesan": [
+                [0, 2, "> dibuka dengan hak biasa"],
+                [2, 0, "Permission denied"],
+                [0, 1, "pipa: kirim teks ke tee"],
+                [1, 2, "tee menulis sebagai root"],
+            ],
+        },
+    ],
+    "Pipa, Redirect & Aliran Data": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Urutan 2>&1 menentukan ke mana galat pergi",
+            "ket": "Shell membaca redirect dari kiri ke kanan. 2>&1 menyalin tujuan "
+                   "stdout saat itu juga, jadi stdout harus dipindah lebih dulu.",
+            "tabel": [{
+                "nama": "ls /etc /tidak-ada ...",
+                "kolom": ["ditulis", "stdout ke", "stderr ke"],
+                "baris": [
+                    ["> berkas 2>&1", "berkas", "berkas"],
+                    ["2>&1 > berkas", "berkas", "layar"],
+                ],
+                "sorot_baris": [0],
+            }],
+        },
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "Pipa mengalirkan stdout dari kiri ke kanan",
+            "ket": "Contoh cat /etc/passwd | grep bash | wc -l. Tiap perintah cuma "
+                   "mengerjakan satu hal. Pesan galat nggak ikut lewat pipa.",
+            "langkah": [
+                {"jenis": "masukan", "teks": "cat /etc/passwd"},
+                {"jenis": "proses", "teks": "grep bash: sisakan baris bash"},
+                {"jenis": "proses", "teks": "wc -l: hitung barisnya"},
+                {"jenis": "keluaran", "teks": "satu angka di layar"},
+            ],
+        },
+    ],
+    "Mengolah Teks: cut, sort, uniq, tr": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "sort biasa mengurutkan seperti kamus, sort -n seperti angka",
+            "ket": "Tanpa -n, 10 datang sebelum 2, karena karakter 1 ada sebelum 2.",
+            "tabel": [
+                {"nama": "sort", "kolom": ["hasil"],
+                 "baris": [["10"], ["2"], ["9"]]},
+                {"nama": "sort -n", "kolom": ["hasil"],
+                 "baris": [["2"], ["9"], ["10"]]},
+            ],
+        },
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "sort | uniq -c | sort -rn, langkah demi langkah",
+            "ket": "Lima baris contoh dari cut -d: -f7 /etc/passwd. uniq cuma "
+                   "membandingkan baris yang bersebelahan, makanya sort duluan.",
+            "tabel": [
+                {"nama": "cut -d: -f7", "kolom": ["shell"],
+                 "baris": [["/bin/bash"], ["/sbin/nologin"], ["/bin/bash"],
+                           ["/sbin/nologin"], ["/sbin/nologin"]]},
+                {"nama": "| sort", "kolom": ["shell"],
+                 "baris": [["/bin/bash"], ["/bin/bash"], ["/sbin/nologin"],
+                           ["/sbin/nologin"], ["/sbin/nologin"]]},
+                {"nama": "| uniq -c | sort -rn", "kolom": ["jumlah", "shell"],
+                 "baris": [["3", "/sbin/nologin"], ["2", "/bin/bash"]],
+                 "sorot_baris": [0]},
+            ],
+            "panah": "hasilnya dialirkan lewat pipa",
+        },
+    ],
+    "sed & awk": [
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "awk memecah satu baris df -h jadi kolom $1 sampai $6",
+            "ket": "Angkanya contoh. Berapa pun spasi berderet dihitung satu pemisah, "
+                   "jadi df -h | awk '{print $6, $5}' mencetak titik mount dan "
+                   "persennya.",
+            "tabel": [{
+                "nama": "satu baris df -h",
+                "kolom": ["$1", "$2", "$3", "$4", "$5", "$6"],
+                "baris": [["/dev/nvme0n1p3", "475G", "120G", "355G", "26%", "/"]],
+                "sorot_kolom": ["$5", "$6"],
+            }],
+        },
+        {
+            "setelah": 8,
+            "jenis": "alur",
+            "judul": "Jalan awk pemburu disk penuh, baris demi baris",
+            "ket": "Ini perintah df -h | awk 'NR>1 {gsub(/%/,\"\",$5); if ($5+0 > 80) "
+                   "print ...}'. awk mengulang langkah yang sama untuk tiap baris.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "awk membaca keluaran df -h"},
+                {"jenis": "keputusan", "teks": "Masih ada baris?", "tidak": 6},
+                {"jenis": "keputusan", "teks": "NR > 1 (bukan baris judul)?",
+                 "tidak": 1},
+                {"jenis": "proses", "teks": "gsub: buang % dari $5"},
+                {"jenis": "keputusan", "teks": "$5+0 > 80?", "tidak": 1},
+                {"jenis": "keluaran", "teks": "cetak $6 penuh $5%", "ke": 1},
+                {"jenis": "selesai", "teks": "Semua baris selesai"},
+            ],
+        },
+    ],
+    "Manajemen Paket dengan DNF5": [
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "rollback 40 membatalkan semua transaksi sesudah 40",
+            "ket": "Nomor dan isinya contoh. undo 42 cuma membatalkan transaksi 42, "
+                   "sedangkan rollback 40 mengembalikan keadaan sesudah transaksi 40.",
+            "tabel": [{
+                "nama": "dnf5 history list",
+                "kolom": ["ID", "transaksi"],
+                "baris": [
+                    ["40", "install htop"],
+                    ["41", "install vlc"],
+                    ["42", "upgrade"],
+                ],
+                "sorot_baris": [1, 2],
+            }],
+            "panah": "rollback 40: 41 dan 42 dibatalkan",
+        },
+        {
+            "setelah": 11,
+            "jenis": "alur",
+            "judul": "Naik ke versi Fedora berikutnya, empat langkah berurutan",
+            "ket": "Jangan matikan komputer selama langkah terakhir, karena paket "
+                   "sedang dipasang di mode offline.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Cadangkan data penting"},
+                {"jenis": "proses", "teks": "dnf5 upgrade --refresh"},
+                {"jenis": "proses", "teks": "systemctl reboot"},
+                {"jenis": "proses", "teks": "system-upgrade download"},
+                {"jenis": "proses", "teks": "system-upgrade reboot"},
+                {"jenis": "selesai", "teks": "Fedora versi baru"},
+            ],
+        },
+    ],
+    "RPM, Repositori, COPR & RPM Fusion": [
+        {
+            "setelah": 0,
+            "jenis": "urutan",
+            "judul": "dnf5 mengurus dependensi, rpm yang memasang berkasnya",
+            "ket": "Kalau kamu memakai rpm -i langsung, langkah mencari dependensi "
+                   "di repositori ikut terlewat.",
+            "pelaku": ["kamu", "dnf5", "repositori", "rpm"],
+            "pesan": [
+                [0, 1, "dnf5 install paket"],
+                [1, 2, "cari paket dan dependensinya"],
+                [2, 1, "unduh berkas .rpm"],
+                [1, 3, "pasang berkas ke sistem"],
+                [1, 0, "ringkasan transaksi"],
+            ],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Membaca nama lengkap paket bash-5.3.9-3.fc44.x86_64",
+            "ket": "Kalau cuma release yang naik, versi dari pembuat aslinya tetap "
+                   "sama. Yang berubah hasil kerja pemaketnya.",
+            "tabel": [{
+                "nama": "bash-5.3.9-3.fc44.x86_64",
+                "kolom": ["potongan", "isi", "artinya"],
+                "baris": [
+                    ["name", "bash", "nama paket"],
+                    ["version", "5.3.9", "versi upstream"],
+                    ["release", "3", "bangun ulang ke-"],
+                    ["distro", "fc44", "dibangun untuk"],
+                    ["arch", "x86_64", "arsitektur CPU"],
+                ],
+                "sorot_baris": [1, 2],
+            }],
+        },
+    ],
+    "Flatpak & Aplikasi Terkurung": [
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Override mempersempit akses GIMP ke ~/Pictures saja",
+            "ket": "Hasil dua perintah override di atas, untuk aplikasi yang "
+                   "tadinya boleh membaca home: --nofilesystem=home lalu "
+                   "--filesystem=~/Pictures.",
+            "tabel": [{
+                "nama": "org.gimp.GIMP",
+                "kolom": ["jalur", "sesudah override"],
+                "baris": [
+                    ["seluruh home", "dicabut"],
+                    ["~/.ssh", "ikut dicabut"],
+                    ["~/Pictures", "boleh"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+        {
+            "setelah": 7,
+            "jenis": "urutan",
+            "judul": "Portal membuka berkas tanpa memberi akses ke seluruh home",
+            "ket": "Dialog pemilih berkasnya milik sistem. Aplikasi cuma menerima "
+                   "berkas yang kamu pilih.",
+            "pelaku": ["aplikasi", "portal", "kamu"],
+            "pesan": [
+                [0, 1, "minta membuka sebuah berkas"],
+                [1, 2, "tampilkan dialog pemilih berkas"],
+                [2, 1, "pilih foto.png"],
+                [1, 0, "akses ke foto.png saja"],
+            ],
+        },
+    ],
+    "systemd: Unit, Layanan & Target": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "start soal sekarang, enable soal boot berikutnya",
+            "ket": "Kalau mau dua-duanya, pakai enable --now.",
+            "tabel": [{
+                "nama": "systemctl ... sshd",
+                "kolom": ["kata kerja", "sekarang", "saat boot"],
+                "baris": [
+                    ["start", "nyala", "nggak berubah"],
+                    ["stop", "mati", "nggak berubah"],
+                    ["enable", "nggak berubah", "nyala"],
+                    ["disable", "nggak berubah", "nggak nyala"],
+                    ["enable --now", "nyala", "nyala"],
+                ],
+                "sorot_baris": [4],
+            }],
+        },
+    ],
+    "journalctl & Membaca Log": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "-p warning artinya warning dan semua yang lebih gawat",
+            "ket": "Makin kecil angkanya, makin gawat. Baris yang disorot adalah "
+                   "yang ikut tampil dengan -p warning.",
+            "tabel": [{
+                "nama": "prioritas syslog",
+                "kolom": ["angka", "nama"],
+                "baris": [
+                    ["0", "emerg"], ["1", "alert"], ["2", "crit"], ["3", "err"],
+                    ["4", "warning"], ["5", "notice"], ["6", "info"], ["7", "debug"],
+                ],
+                "sorot_baris": [0, 1, 2, 3, 4],
+            }],
+        },
+    ],
+    "Penjadwalan: systemd Timer & cron": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Yang di-enable timer-nya, yang bekerja service-nya",
+            "ket": "Karena namanya sama, cadangan.timer otomatis memicu "
+                   "cadangan.service. Lognya bisa dibaca dengan journalctl -u.",
+            "pelaku": ["kamu", "cadangan.timer", "cadangan.svc", "jurnal"],
+            "pesan": [
+                [0, 1, "enable --now cadangan.timer"],
+                [1, 2, "02:00: picu pekerjaannya"],
+                [2, 3, "keluaran skrip masuk jurnal"],
+                [0, 2, "start: uji tanpa menunggu"],
+            ],
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Contoh OnCalendar dan artinya",
+            "ket": "Tanda * artinya setiap. Uji ekspresimu dengan systemd-analyze "
+                   "calendar sebelum dipakai.",
+            "tabel": [{
+                "nama": "OnCalendar=",
+                "kolom": ["ekspresi", "artinya"],
+                "baris": [
+                    ["*-*-* 02:00:00", "tiap hari 02:00"],
+                    ["Mon *-*-* 09:00", "tiap Senin 09:00"],
+                    ["*-*-01 00:00:00", "tiap tanggal 1"],
+                    ["*-*-* *:0/15", "tiap 15 menit"],
+                ],
+            }],
+        },
+    ],
+    "Proses, Sinyal & Sumber Daya": [
+        {
+            "setelah": 5,
+            "jenis": "alur",
+            "judul": "Mematikan proses yang bandel: sopan dulu, paksa belakangan",
+            "ket": "SIGTERM memberi program kesempatan menyimpan data. SIGKILL "
+                   "nggak bisa ditolak, dan nggak memberi kesempatan apa pun.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Proses bandel, PID diketahui"},
+                {"jenis": "proses", "teks": "kill PID (SIGTERM)"},
+                {"jenis": "proses", "teks": "tunggu beberapa detik"},
+                {"jenis": "keputusan", "teks": "Prosesnya masih ada?", "tidak": 5},
+                {"jenis": "proses", "teks": "kill -9 PID (SIGKILL)"},
+                {"jenis": "selesai", "teks": "Proses berhenti"},
+            ],
+        },
+    ],
+    "Jaringan: NetworkManager & nmcli": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Perangkat itu kartunya, profil itu setelannya",
+            "ket": "Satu perangkat bisa punya banyak profil, misalnya kantor dan "
+                   "rumah. Yang aktif cuma satu per perangkat.",
+            "akar": {"teks": "NetworkManager", "anak": [
+                {"teks": "enp3s0 (kabel)", "anak": [
+                    {"teks": "profil statis"}, {"teks": "profil rumah"}]},
+                {"teks": "wlp2s0 (Wi-Fi)", "anak": [
+                    {"teks": "profil kantor"}]},
+            ]},
+        },
+    ],
+    "Diagnosis Jaringan: ip, ss, DNS": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Alamat lokal di ss menentukan siapa yang bisa menyambung",
+            "ket": "Layanan di 0.0.0.0 yang nggak kamu butuhkan dari luar sebaiknya "
+                   "diikat ke 127.0.0.1, atau dimatikan.",
+            "tabel": [{
+                "nama": "ss -tulnp",
+                "kolom": ["Local Address", "bisa diakses"],
+                "baris": [
+                    ["127.0.0.1:631", "mesin ini saja"],
+                    ["0.0.0.0:22", "seluruh jaringan"],
+                    ["[::]:22", "seluruh jaringan"],
+                ],
+                "sorot_baris": [1, 2],
+            }],
+        },
+        {
+            "setelah": 8,
+            "jenis": "alur",
+            "judul": "Internet nggak jalan? Uji dari lapisan paling bawah",
+            "ket": "Tiap pertanyaan menyingkirkan satu kemungkinan. Kalau 1.1.1.1 "
+                   "bisa di-ping tapi nama domain nggak, masalahnya pasti di DNS.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Internet nggak jalan"},
+                {"jenis": "keputusan", "teks": "Kartu hidup dan punya IP?",
+                 "tidak": 6},
+                {"jenis": "keputusan", "teks": "ping gerbang (router) berhasil?",
+                 "tidak": 6},
+                {"jenis": "keputusan", "teks": "ping 1.1.1.1 berhasil?", "tidak": 7},
+                {"jenis": "keputusan", "teks": "ping fedoraproject.org berhasil?",
+                 "tidak": 8},
+                {"jenis": "keluaran", "teks": "Jaringan sehat", "ke": 9},
+                {"jenis": "keluaran", "teks": "Cek kabel, Wi-Fi, router", "ke": 9},
+                {"jenis": "keluaran", "teks": "Masalah di jalur ke internet",
+                 "ke": 9},
+                {"jenis": "keluaran", "teks": "Masalah di DNS"},
+                {"jenis": "selesai", "teks": "Lapisan bermasalah ketemu"},
+            ],
+        },
+    ],
+    "firewalld: Zona & Layanan": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Runtime dan permanent itu dua daftar aturan terpisah",
+            "ket": "Cara yang paling aman: tulis dengan --permanent, lalu jalankan "
+                   "--reload supaya keduanya sama.",
+            "tabel": [{
+                "nama": "--add-service=http",
+                "kolom": ["ditulis", "berlaku sekarang", "sesudah reboot"],
+                "baris": [
+                    ["tanpa permanent", "ya", "hilang"],
+                    ["--permanent", "belum", "ya"],
+                    ["permanent+reload", "ya", "ya"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+    ],
+    "SELinux: Lapisan Keamanan Khas Fedora": [
+        {
+            "setelah": 0,
+            "jenis": "alur",
+            "judul": "Akses baru jalan kalau dua lapisan sama-sama mengizinkan",
+            "ket": "Izin rwx bertanya kamu siapa. SELinux bertanya proses jenis ini "
+                   "boleh menyentuh berkas jenis apa.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Proses minta membaca berkas"},
+                {"jenis": "keputusan", "teks": "Izin rwx mengizinkan?", "tidak": 4},
+                {"jenis": "keputusan", "teks": "Kebijakan SELinux mengizinkan?",
+                 "tidak": 4},
+                {"jenis": "keluaran", "teks": "Akses diberikan", "ke": 5},
+                {"jenis": "keluaran", "teks": "Ditolak"},
+                {"jenis": "selesai", "teks": "Selesai"},
+            ],
+        },
+        {
+            "setelah": 13,
+            "jenis": "alur",
+            "judul": "Urutan diagnosis penolakan SELinux, dari yang paling sering",
+            "ket": "Modul kebijakan sendiri adalah langkah terakhir. Kebanyakan "
+                   "masalah selesai di label, boolean, atau port.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Ada penolakan AVC"},
+                {"jenis": "keputusan", "teks": "Labelnya salah? (matchpathcon)",
+                 "tidak": 3},
+                {"jenis": "keluaran", "teks": "restorecon", "ke": 8},
+                {"jenis": "keputusan", "teks": "Ada boolean yang cocok?", "tidak": 5},
+                {"jenis": "keluaran", "teks": "setsebool -P", "ke": 8},
+                {"jenis": "keputusan", "teks": "Port nggak standar?", "tidak": 7},
+                {"jenis": "keluaran", "teks": "semanage port -a", "ke": 8},
+                {"jenis": "keluaran", "teks": "Baru buat modul kebijakan"},
+                {"jenis": "selesai", "teks": "Akses beres, tetap Enforcing"},
+            ],
+        },
+    ],
+    "Penyimpanan: Disk, Mount & fstab": [
+        {
+            "setelah": 0,
+            "jenis": "pohon",
+            "judul": "Tata letak disk bawaan Fedora Workstation",
+            "ket": "Partisi ketiga muncul dua kali di daftar mount, karena / dan "
+                   "/home adalah dua subvolume di partisi yang sama.",
+            "akar": {"teks": "nvme0n1", "anak": [
+                {"teks": "p1 vfat /boot/efi"},
+                {"teks": "p2 ext4 /boot"},
+                {"teks": "p3 btrfs", "anak": [
+                    {"teks": "root -> /"},
+                    {"teks": "home -> /home"},
+                ]},
+            ]},
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Enam kolom satu baris fstab",
+            "ket": "Pakai UUID, jangan /dev/sdb1, karena nama perangkat bisa berubah. "
+                   "Pass 1 untuk /, 2 untuk lainnya, 0 berarti lewati.",
+            "tabel": [{
+                "nama": "/etc/fstab",
+                "kolom": ["perangkat", "mount point", "jenis", "opsi", "dump", "pass"],
+                "baris": [["UUID=a1b2...", "/mnt/data", "ext4",
+                           "defaults,noatime", "0", "2"]],
+                "sorot_kolom": ["perangkat"],
+            }],
+        },
+    ],
+    "Btrfs: Subvolume, Snapshot & Kompresi": [
+        {
+            "setelah": 6,
+            "jenis": "pohon",
+            "judul": "Dilihat dari subvolid=5, subvolume berdampingan",
+            "ket": "Snapshot di /.snapshots tinggal di dalam subvolume root. "
+                   "Snapshot dari / nggak memuat isi /home, karena home subvolume "
+                   "terpisah.",
+            "akar": {"teks": "subvolid=5 (akar)", "anak": [
+                {"teks": "root -> /", "anak": [
+                    {"teks": ".snapshots", "anak": [
+                        {"teks": "root-sebelum-upg"}]},
+                ]},
+                {"teks": "home -> /home"},
+            ]},
+        },
+    ],
+    "LVM, RAID & Enkripsi LUKS": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Dua partisi dituang ke satu VG, lalu dipotong jadi LV",
+            "ket": "Sama dengan contoh di atas. PV itu botol, VG baknya, dan LV gelas "
+                   "yang diisi dari bak itu.",
+            "tabel": [
+                {"nama": "PV", "kolom": ["partisi"],
+                 "baris": [["/dev/sdb1"], ["/dev/sdc1"]]},
+                {"nama": "VG", "kolom": ["kolam"], "baris": [["data_vg"]]},
+                {"nama": "LV", "kolom": ["nama", "ukuran"],
+                 "baris": [["arsip_lv", "50G"], ["sisa_lv", "100%FREE"]]},
+            ],
+            "panah": "diteruskan ke lapis berikutnya",
+        },
+        {
+            "setelah": 11,
+            "jenis": "tabel",
+            "judul": "Level RAID yang paling sering dipakai",
+            "ket": "Apa pun levelnya, RAID bukan cadangan: berkas yang terhapus nggak "
+                   "sengaja langsung tercermin ke semua disk.",
+            "tabel": [{
+                "nama": "mdadm --level=",
+                "kolom": ["level", "tahan disk mati", "catatan"],
+                "baris": [
+                    ["RAID 0", "nggak tahan", "cepat"],
+                    ["RAID 1", "satu disk", "kapasitas 1/2"],
+                    ["RAID 5", "satu disk", "butuh 3+ disk"],
+                    ["RAID 10", "satu per cermin", "cepat dan tahan"],
+                ],
+            }],
+        },
+    ],
+    "Arsip, Kompresi & rsync": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Empat kompresor: kecepatan lawan rasio",
+            "ket": "zstd pilihan yang paling enak untuk kebanyakan hal sekarang. xz "
+                   "dipakai untuk paket yang dikompresi sekali lalu diunduh berulang.",
+            "tabel": [{
+                "nama": "kompresor",
+                "kolom": ["kompresor", "kecepatan", "rasio"],
+                "baris": [
+                    ["gzip", "lebih lambat", "biasa"],
+                    ["zstd", "cepat", "sama/lebih baik"],
+                    ["bzip2", "lambat", "menengah"],
+                    ["xz", "paling lambat", "paling bagus"],
+                ],
+                "sorot_baris": [1],
+            }],
+        },
+        {
+            "setelah": 8,
+            "jenis": "tabel",
+            "judul": "Satu garis miring di belakang sumber mengubah hasil rsync",
+            "ket": "Selalu jalankan --dry-run dulu dan baca daftarnya.",
+            "tabel": [{
+                "nama": "rsync -av ... tujuan/",
+                "kolom": ["sumber ditulis", "hasil di tujuan"],
+                "baris": [
+                    ["sumber/", "isi sumber"],
+                    ["sumber", "tujuan/sumber/"],
+                ],
+                "sorot_baris": [0],
+            }],
+        },
+    ],
+    "SSH & Akses Jarak Jauh": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Kunci privat nggak pernah meninggalkan laptopmu",
+            "ket": "Disederhanakan. Yang dikirim ke server cuma kunci publik. Waktu "
+                   "login, laptop membuktikan ia memegang kunci privatnya.",
+            "pelaku": ["laptop", "server"],
+            "pesan": [
+                [0, 1, "ssh-copy-id: kirim kunci .pub"],
+                [0, 1, "minta masuk sebagai pengguna"],
+                [1, 0, "buktikan punya kunci privat"],
+                [0, 1, "bukti dari kunci privat"],
+                [1, 0, "cocok: shell terbuka"],
+            ],
+        },
+        {
+            "setelah": 14,
+            "jenis": "urutan",
+            "judul": "Terowongan -L: database server terasa ada di laptop",
+            "ket": "Contohnya ssh -L 5432:localhost:5432 pengguna@server. Port "
+                   "database nggak perlu dibuka ke internet sama sekali.",
+            "pelaku": ["alat di laptop", "ssh di laptop", "sshd di server",
+                       "database"],
+            "pesan": [
+                [0, 1, "sambung ke localhost:5432"],
+                [1, 2, "lewat koneksi SSH terenkripsi"],
+                [2, 3, "teruskan ke localhost:5432"],
+                [3, 0, "jawaban kembali lewat jalan sama"],
+            ],
+        },
+    ],
+    "Container: Podman, Toolbox & Distrobox": [
+        {
+            "setelah": 12,
+            "jenis": "tabel",
+            "judul": "Empat alat terkurung, empat kegunaan",
+            "ket": "Keempatnya memakai container, tapi tujuannya beda. Flatpak untuk aplikasi yang mau kamu pakai, dan nggak sedang kamu kembangkan.",
+            "tabel": [{
+                "nama": "kapan memilih yang mana",
+                "kolom": ["alat", "dipakai untuk"],
+                "baris": [
+                    ["podman", "layanan, citra"],
+                    ["toolbox", "kerja ala Fedora"],
+                    ["distrobox", "distro lain"],
+                    ["flatpak", "aplikasi desktop"],
+                ],
+            }],
+        },
+    ],
+    "Fedora Atomic: rpm-ostree & bootc": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Di Atomic, pilih cara memasang dari yang paling dianjurkan",
+            "ket": "Layering lewat rpm-ostree install jadi pilihan terakhir, karena "
+                   "tiap paket yang di-layer memperlambat pembaruan.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Mau memasang perangkat lunak"},
+                {"jenis": "keputusan", "teks": "Aplikasi desktop?", "tidak": 3},
+                {"jenis": "keluaran", "teks": "Flatpak", "ke": 8},
+                {"jenis": "keputusan", "teks": "Alat CLI atau pengembangan?",
+                 "tidak": 5},
+                {"jenis": "keluaran", "teks": "Toolbox", "ke": 8},
+                {"jenis": "keputusan", "teks": "Sebuah layanan?", "tidak": 7},
+                {"jenis": "keluaran", "teks": "Podman", "ke": 8},
+                {"jenis": "keluaran", "teks": "rpm-ostree install"},
+                {"jenis": "selesai", "teks": "Terpasang"},
+            ],
+        },
+    ],
+    "Boot, Kernel & Pemulihan Sistem": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Urutan boot Fedora, dari tombol power sampai layar login",
+            "ket": "Dari langkah tempat boot berhenti, kamu bisa menebak di mana "
+                   "masalahnya: firmware, bootloader, kernel, atau layanan.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Tombol power ditekan"},
+                {"jenis": "proses", "teks": "UEFI/BIOS menyalakan perangkat"},
+                {"jenis": "proses", "teks": "GRUB2 memilih kernel"},
+                {"jenis": "proses", "teks": "Kernel dimuat"},
+                {"jenis": "proses", "teks": "initramfs menemukan disk"},
+                {"jenis": "proses", "teks": "systemd jalan sebagai PID 1"},
+                {"jenis": "proses", "teks": "Layanan sesuai dependensi"},
+                {"jenis": "selesai", "teks": "Login: gdm atau getty"},
+            ],
+        },
+    ],
+    "Skrip Otomasi: Menyatukan Semuanya": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tiga pengaman di baris set -euo pipefail",
+            "ket": "Variabel yang diisi teks kosong tetap lolos dari -u. Untuk itu "
+                   "pakai bentuk ${VAR:?pesan}.",
+            "tabel": [{
+                "nama": "set -euo pipefail",
+                "kolom": ["opsi", "berhenti kalau"],
+                "baris": [
+                    ["-e", "perintah gagal"],
+                    ["-u", "belum diisi"],
+                    ["-o pipefail", "satu pipa gagal"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Ekspansi variabel memotong jalur tanpa perintah lain",
+            "ket": "Contoh dengan jalur=/srv/lap.csv dan nama yang kosong.",
+            "tabel": [{
+                "nama": "jalur=/srv/lap.csv",
+                "kolom": ["ekspansi", "hasilnya"],
+                "baris": [
+                    ["${jalur##*/}", "lap.csv"],
+                    ["${jalur%/*}", "/srv"],
+                    ["${jalur%.*}", "/srv/lap"],
+                    ["${nama:-dunia}", "dunia"],
+                ],
+            }],
+        },
+    ],
+}

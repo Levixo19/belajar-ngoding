@@ -1249,3 +1249,52 @@ def data_reset(body):
     with _KUNCI_PROGRES:
         cadangan = progress.reset(bagian)
     return {"ok": True, "cadangan": cadangan or "", "bagian": bagian}
+
+
+def jejak(body):
+    """Langkah demi langkah sebuah program Python ("Lihat jalannya").
+
+    Seperti /api/coba: bukan latihan, tidak dinilai, tidak menyentuh progres.
+    Pelacakannya di inti/jejak.py, di balik pagar runner yang sama.
+    """
+    from inti import jejak as modul_jejak
+    if (body.get("bahasa") or "python") != "python":
+        raise Galat("Lihat jalannya baru tersedia untuk Python.", 400)
+    if not runner.tersedia("python"):
+        raise Galat("Python belum terpasang di komputermu.", 409)
+    kode = body.get("kode") or ""
+    if len(kode) > MAKS_KODE:
+        raise Galat("Kodenya terlalu panjang untuk dilacak di sini.", 413)
+    return modul_jejak.lacak(kode)
+
+
+def langit(params):
+    """Seluruh langit belajar: tiap kurikulum, tiap materi, dan status bacanya.
+
+    Satu permintaan untuk peta rasi (dasbor) dan layar Bimasakti. Status dan
+    "terkunci" diambil dari jalur yang sama dengan halaman bahasa
+    (bab.status -> isi.daftar_materi), jadi peta tidak pernah berpendapat lain
+    soal materi mana yang terbuka. Profesi Peta Karier ikut dikirim beserta
+    kurikulum bekalnya: layar Bimasakti menarik garis antar rasinya.
+    """
+    from data import karier as data_karier
+    data = progress.load_progress()
+    keluar = []
+    for lang in LANGUAGES:
+        daftar_bab = modul_bab.status(lang, data)
+        materi = isi.daftar_materi(lang, data, daftar_bab)
+        stat = _stat(lang, data)
+        keluar.append({
+            "key": lang["key"], "label": lang["label"],
+            "persen": stat.get("persen", 0),
+            "materi": [{"judul": m["judul"], "status": m["status"],
+                        "terkunci": m["terkunci"]} for m in materi],
+            "bab": [{"nomor": b["nomor"], "judul": b["judul"], "materi": b["materi"]}
+                    for b in daftar_bab],
+        })
+    # `bekal` dikirim apa adanya: satu kelompok = "salah satu dari"
+    # (pelajar/karier.py), bukan daftar yang semuanya wajib.
+    profesi = [{"id": p["id"], "nama": p["nama"], "bekal": p["bekal"]}
+               for p in data_karier.PROFESI]
+    return {"bahasa": keluar, "profesi": profesi,
+            "tujuan": konfigurasi.ambil("tujuan_karier", "") or ""}

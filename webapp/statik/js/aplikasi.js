@@ -33,7 +33,7 @@ import {
 } from "./layar-belajar.js";
 import { layarKuis, layarLatihan, layarCoba } from "./layar-kerja.js";
 import { layarPustaka } from "./layar-pustaka.js";
-import { layarKarier } from "./layar-karier.js"; import { layarTebak } from "./layar-tebak.js";
+import { layarKarier } from "./layar-karier.js"; import { layarTebak } from "./layar-tebak.js"; import { layarLangit } from "./layar-langit.js";
 import {
   layarStatistik, layarAtur, terapkanTampilan, temaBerikutnya, tampilkanBantuan,
 } from "./layar-lain.js";
@@ -51,12 +51,12 @@ const LAYAR = {
   statistik: layarStatistik,
   atur: layarAtur,
   pustaka: layarPustaka,
-  karier: layarKarier, tebak: layarTebak,
+  karier: layarKarier, tebak: layarTebak, langit: layarLangit,
 };
 
 // Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
 // lebih enak tanpa batas lebar.
-const LAYAR_LEBAR = new Set(["latihan", "coba", "materi"]);
+const LAYAR_LEBAR = new Set(["latihan", "coba", "materi", "langit"]);
 // Layar yang mengisi TINGGI jendela alih-alih tumbuh dari isinya: dua layar
 // tempat orang MENULIS KODE. Editor yang setinggi isinya berarti kerangka tiga
 // baris menyisakan empat ratus piksel kosong di bawahnya — ruang kerja yang
@@ -97,7 +97,7 @@ const LAYAR_KOLOM = new Set([
 const AMBANG_PANEL = 860;
 
 const MENU_UTAMA = [
-  ["dasbor", "dasbor", "Dasbor", "#/dasbor"],
+  ["dasbor", "dasbor", "Dasbor", "#/dasbor"], ["langit", "bintang", "Langit", "#/langit"],
   ["pustaka", "pustaka", "Pustaka", "#/pustaka"],
   ["karier", "karier", "Karier", "#/karier"],
   ["coba", "jalankan", "Ruang Coba", "#/coba"],
@@ -720,7 +720,7 @@ function daftarPerintah() {
     // Sesudah enam perintah tetap, bukan di antaranya: urutan enam itu
     // kontrak palet (TestPaletCombobox membaca indeksnya).
     { label: "Pustaka", ket: "Buku, kursus, proyek, dan API gratis", href: "#/pustaka" },
-    { label: "Peta Karier", ket: "21 profesi, kesiapan, dan jalur pindah", href: "#/karier" },
+    { label: "Peta Karier", ket: "21 profesi, kesiapan, dan jalur pindah", href: "#/karier" }, { label: "Langit", ket: "Seluruh kurikulum sebagai peta bintang", href: "#/langit" },
   ];
   for (const b of ctx.awal.bahasa) {
     daftar.push({
@@ -1560,3 +1560,11 @@ async function mulai() {
 }
 
 mulai();
+
+/* Langit dan reticle kursor: lapisan suasana di luar layar mana pun. Import
+   ES boleh berdiri di kaki modul; keduanya ditaruh di sini supaya tidak
+   menggeser alamat baris yang dipatok tests/test_web.py di atas. */
+import { nyalakanLangit } from "./langit.js";
+import { nyalakanKursor } from "./kursor.js";
+nyalakanLangit();
+nyalakanKursor();

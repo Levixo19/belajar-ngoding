@@ -36,6 +36,7 @@ from pelajar import waktu
 from inti import berkas
 from inti import runner
 from inti import sorot
+from inti import visual
 from pelajar.progress import kunci, kuis_jatuh_tempo
 
 # Bahasa yang aturan penyorotannya ada di sorot.py. "aplikasi" memakai aturan
@@ -463,8 +464,9 @@ def bagian_materi(materi, lang):
     bhs_sorot = bahasa_sorot(lang)
     bhs_berkas = lang["runner"]
     keluar = []
+    gambar = visual.untuk(lang["key"], materi["title"])
 
-    for bagian in materi["sections"]:
+    for indeks_bagian, bagian in enumerate(materi["sections"]):
         # Sebuah bagian boleh punya body DAN code sekaligus, dan kalau begitu
         # keduanya harus keluar. Versi sebelumnya menulis if/else: begitu ada
         # "code", prosanya dibuang tanpa jejak — sementara antarmuka terminal
@@ -503,6 +505,20 @@ def bagian_materi(materi, lang):
                 "judul": bagian.get("heading", ""),
                 "blok": [],
             })
+        # Gambar konsep menempel pada blok TERAKHIR bagiannya, bukan jadi
+        # blok sendiri: peta bagian dan tautan Ruang Coba menunjuk blok lewat
+        # indeksnya, dan satu blok baru di tengah akan menggeser semuanya.
+        milik = [g for g in gambar if g["setelah"] == indeks_bagian]
+        if milik:
+            keluar[-1]["visual"] = milik
+    nomor = 0
+    for blok in keluar:
+        if "visual" in blok:
+            daftar = []
+            for g in blok["visual"]:
+                nomor += 1
+                daftar.append({**g, "nomor": nomor})
+            blok["visual"] = daftar
     return keluar
 
 

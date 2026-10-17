@@ -1,0 +1,866 @@
+"""Gambar konsep kurikulum Java. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Pengenalan Java & Persiapan": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Dari Hello.java sampai Halo Dunia! muncul di layar",
+            "ket": "javac menerjemahkan kodemu jadi bytecode di Hello.class, lalu "
+                   "perintah java menyalakan JVM yang menjalankan bytecode itu.",
+            "langkah": [
+                {"jenis": "masukan", "teks": "Hello.java (kode yang kamu tulis)"},
+                {"jenis": "proses", "teks": "javac Hello.java"},
+                {"jenis": "proses", "teks": "Hello.class (bytecode)"},
+                {"jenis": "proses", "teks": "java Hello: JVM menjalankan main"},
+                {"jenis": "keluaran", "teks": "Halo Dunia!"},
+            ],
+        },
+    ],
+    "Anatomi Berkas Java: package, import, dan komentar": [
+        {
+            "setelah": 0,
+            "jenis": "pohon",
+            "judul": "Susunan folder proyek bergaya Maven",
+            "ket": "Folder com/tokobuku/penjualan/ disingkat jadi com/.../penjualan/. "
+                   "Kode dan tes tinggal di dua pohon berbeda, tapi package-nya sama.",
+            "akar": {"teks": "proyek-toko/", "anak": [
+                {"teks": "pom.xml"},
+                {"teks": "src/main/java/", "anak": [
+                    {"teks": "com/.../penjualan/", "anak": [
+                        {"teks": "Keranjang.java"},
+                        {"teks": "Faktur.java"},
+                    ]},
+                ]},
+                {"teks": "src/main/resources"},
+                {"teks": "src/test/java/", "anak": [
+                    {"teks": "com/.../penjualan/", "anak": [
+                        {"teks": "KeranjangTest.java"},
+                    ]},
+                ]},
+                {"teks": "target/ (hasil)"},
+            ]},
+        },
+    ],
+    "Variabel & Tipe Data": [
+        {
+            "setelah": 1,
+            "jenis": "variabel",
+            "judul": "Tujuh variabel dari contoh tadi, masing-masing dengan tipenya",
+            "ket": "Akhiran L menandai long dan akhiran f menandai float. "
+                   "Kutip tunggal untuk char, kutip ganda untuk String.",
+            "isi": [
+                ["umur", "20", "int"],
+                ["harga", "15000.50", "double"],
+                ["grade", "'A'", "char"],
+                ["lulus", "true", "boolean"],
+                ["nama", "\"Budi\"", "String"],
+                ["saldoBank", "1000000000L", "long"],
+                ["tinggi", "170.5f", "float"],
+            ],
+        },
+    ],
+    "Kelas Pembungkus & Konversi Tipe": [
+        {
+            "setelah": 3,
+            "jenis": "memori",
+            "judul": "Kenapa a == b true tapi c == d false",
+            "ket": "a dan b menunjuk satu objek dari cache -128 sampai 127. c dan d "
+                   "dua objek berbeda walau isinya sama. e int biasa, nilainya "
+                   "langsung di variabel.",
+            "tumpukan": [
+                ["a", "@I1"],
+                ["b", "@I1"],
+                ["c", "@I2"],
+                ["d", "@I3"],
+                ["e", "1000"],
+                ["belumDiisi", "null"],
+            ],
+            "heap": [
+                {"id": "I1", "isi": "Integer 127 (dari cache)"},
+                {"id": "I2", "isi": "Integer 1000"},
+                {"id": "I3", "isi": "Integer 1000"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "Operator": [
+        {
+            "setelah": 3,
+            "jenis": "bit",
+            "judul": "izin = BACA | HAPUS menyalakan bit ke-0 dan bit ke-2",
+            "ket": "BACA = 1 (0001) dan HAPUS = 4 (0100). Digabung dengan | jadi "
+                   "0101, yaitu 5. Bit ke-1 (TULIS) masih mati.",
+            "angka": 5,
+            "lebar": 4,
+            "label": "izin = 5",
+        },
+    ],
+    "Percabangan (if / switch)": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Jalan yang ditempuh nilai = 85 di rantai if tadi",
+            "ket": "Kondisi diperiksa dari atas. Begitu nilai >= 80 bernilai true, "
+                   "B dicetak dan sisa cabangnya dilewati.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "nilai = 85"},
+                {"jenis": "keputusan", "teks": "nilai >= 90?", "tidak": 3},
+                {"jenis": "keluaran", "teks": "cetak A", "ke": 8},
+                {"jenis": "keputusan", "teks": "nilai >= 80?", "tidak": 5},
+                {"jenis": "keluaran", "teks": "cetak B (yang terjadi)", "ke": 8},
+                {"jenis": "keputusan", "teks": "nilai >= 70?", "tidak": 7},
+                {"jenis": "keluaran", "teks": "cetak C", "ke": 8},
+                {"jenis": "keluaran", "teks": "cetak D"},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "Perulangan (Loop)": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Urutan kerja for (int i = 1; i <= 5; i++)",
+            "ket": "Kondisi dicek sebelum tiap putaran, dan i++ jalan sesudah isi "
+                   "loop. Begitu i jadi 6, kondisinya false dan loop berhenti.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "int i = 1"},
+                {"jenis": "keputusan", "teks": "i <= 5?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "cetak i lalu spasi"},
+                {"jenis": "proses", "teks": "i++", "ke": 1},
+                {"jenis": "selesai", "teks": "lanjut ke baris sesudah loop"},
+            ],
+        },
+    ],
+    "Array": [
+        {
+            "setelah": 1,
+            "jenis": "larik",
+            "judul": "Array nilai: empat slot, indeksnya 0 sampai 3",
+            "ket": "nilai.length bernilai 4, jadi indeks terakhir 3. nilai[4] "
+                   "melempar ArrayIndexOutOfBoundsException.",
+            "nama": "int[] nilai",
+            "isi": ["80", "90", "75", "85"],
+            "penunjuk": {"pertama": 0, "terakhir": 3},
+        },
+        {
+            "setelah": 4,
+            "jenis": "larik",
+            "judul": "Arrays.copyOfRange(nilai, 1, 3) mengambil indeks 1 dan 2",
+            "ket": "Batas akhir nggak ikut. Hasilnya array baru [90, 75], dan nilai "
+                   "aslinya nggak berubah.",
+            "nama": "int[] nilai",
+            "isi": ["80", "90", "75", "85"],
+            "rentang": [1, 3],
+        },
+    ],
+    "Method (Fungsi)": [
+        {
+            "setelah": 1,
+            "jenis": "tumpukan",
+            "judul": "Waktu tambah(10, 5) jalan, main menunggu di bawahnya",
+            "ket": "tambah punya a dan b sendiri. Begitu return 15, kotaknya dibuang "
+                   "dan main lanjut mengisi hasil.",
+            "mode": "tumpukan",
+            "isi": ["main()", "tambah(10, 5)"],
+            "label": "call stack",
+            "operasi": "return 15",
+        },
+    ],
+    "Rekursi": [
+        {
+            "setelah": 1,
+            "jenis": "tumpukan",
+            "judul": "Saat faktorial(1) menjawab, empat pemanggilan sedang bertumpuk",
+            "ket": "Tiap kotak memegang n-nya sendiri. Sesudah base case, jawabannya "
+                   "naik: 1, lalu 2, lalu 6, lalu 24.",
+            "mode": "tumpukan",
+            "isi": ["main()", "faktorial(4)", "faktorial(3)", "faktorial(2)",
+                    "faktorial(1)"],
+            "label": "call stack",
+            "operasi": "base case: return 1",
+        },
+        {
+            "setelah": 3,
+            "jenis": "pohon",
+            "judul": "fib(4) versi naif menghitung fib(2) dua kali",
+            "ket": "Tiap simpul satu pemanggilan. Makin besar n, makin banyak cabang "
+                   "kembar, dan memoization memotong cabang yang sudah pernah dihitung.",
+            "akar": {"teks": "fib(4)", "anak": [
+                {"teks": "fib(3)", "anak": [
+                    {"teks": "fib(2)", "anak": [
+                        {"teks": "fib(1)"},
+                        {"teks": "fib(0)"},
+                    ]},
+                    {"teks": "fib(1)"},
+                ]},
+                {"teks": "fib(2) (ulang)", "anak": [
+                    {"teks": "fib(1)"},
+                    {"teks": "fib(0)"},
+                ]},
+            ]},
+        },
+        {
+            "setelah": 4,
+            "jenis": "pohon",
+            "judul": "Pohon folder dari program Folder, dengan ukuran tiap folder",
+            "ket": "total(0) menjumlah ukuran sendiri ditambah total tiap anak: "
+                   "2 + (0 + 40 + 25) + 8 = 75 KB.",
+            "akar": {"teks": "proyek/ 2 KB", "anak": [
+                {"teks": "src/ 0 KB", "anak": [
+                    {"teks": "model/ 40 KB"},
+                    {"teks": "web/ 25 KB"},
+                ]},
+                {"teks": "docs/ 8 KB"},
+            ]},
+        },
+    ],
+    "OOP: Class & Object": [
+        {
+            "setelah": 1,
+            "jenis": "memori",
+            "judul": "Satu class Mahasiswa, dua objek dengan datanya sendiri",
+            "ket": "m1 dan m2 cuma menyimpan alamat objeknya. new Mahasiswa(...) "
+                   "membuat objek baru di heap.",
+            "tumpukan": [["m1", "@M1"], ["m2", "@M2"]],
+            "heap": [
+                {"id": "M1", "isi": "Mahasiswa \"Andi\", 20"},
+                {"id": "M2", "isi": "Mahasiswa \"Budi\", 22"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "Anggota Class: Constructor, static, dan Konstanta": [
+        {
+            "setelah": 3,
+            "jenis": "memori",
+            "judul": "Kode menempel di tiap tiket, jumlahTerjual menempel di class",
+            "ket": "Gambar disederhanakan: field static disimpan bersama class Tiket, "
+                   "satu untuk semua objek, jadi kedua tiket menaikkan angka yang sama.",
+            "tumpukan": [["a", "@T1"], ["b", "@T2"]],
+            "heap": [
+                {"id": "T1", "isi": "Tiket kode=\"TKT-1\""},
+                {"id": "T2", "isi": "Tiket kode=\"TKT-2\""},
+                {"id": "K", "isi": "class Tiket: jumlahTerjual=2"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek & class",
+        },
+    ],
+    "Enum: Himpunan Nilai Tetap": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Yang dikembalikan Status.values() beserta ordinal dan name-nya",
+            "ket": "ordinal cuma cerminan urutan ketik. Simpan name() ke database, "
+                   "jangan ordinal().",
+            "tabel": [{
+                "nama": "Status.values()",
+                "kolom": ["ordinal()", "name()"],
+                "baris": [["0", "AKTIF"], ["1", "NONAKTIF"], ["2", "DIBLOKIR"]],
+                "sorot_kolom": ["name()"],
+            }],
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Tiga konstanta Paket dan data yang dibawa masing-masing",
+            "ket": "Angka di dalam kurung masuk ke constructor enum. biaya() dihitung "
+                   "dari kuota x 2000.",
+            "tabel": [{
+                "nama": "enum Paket",
+                "kolom": ["konstanta", "label", "kuotaGb", "biaya()"],
+                "baris": [
+                    ["HEMAT", "Hemat", "10", "20000"],
+                    ["STANDAR", "Standar", "25", "50000"],
+                    ["PREMIUM", "Premium", "60", "120000"],
+                ],
+            }],
+        },
+    ],
+    "OOP: Encapsulation": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Satu-satunya jalan mengurangi saldo: lewat tarik(jumlah)",
+            "ket": "saldo private, jadi kode luar nggak bisa menyentuhnya langsung. "
+                   "Pengecekan di sini yang membuat saldo nggak pernah negatif.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "tarik(jumlah)"},
+                {"jenis": "keputusan", "teks": "jumlah > 0 && jumlah <= saldo?",
+                 "tidak": 4},
+                {"jenis": "proses", "teks": "saldo -= jumlah"},
+                {"jenis": "keluaran", "teks": "return true", "ke": 5},
+                {"jenis": "keluaran", "teks": "return false (saldo utuh)"},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "OOP: Inheritance (Pewarisan)": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Apa yang ditulis Hewan dan apa yang didapat Kucing",
+            "ket": "Kucing nggak menulis field nama, tapi tetap punya karena mewarisi "
+                   "dari Hewan. bersuara() ditulis ulang dengan @Override.",
+            "tabel": [{
+                "kolom": ["anggota", "di Hewan", "di Kucing"],
+                "baris": [
+                    ["nama", "ditulis", "diwarisi"],
+                    ["constructor", "Hewan(nama)", "super(nama)"],
+                    ["bersuara()", "Hewan bersuara.", "Meow! (override)"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+    ],
+    "OOP: Polymorphism": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Dua anak Hewan, masing-masing dengan bersuara() sendiri",
+            "akar": {"teks": "Hewan: bersuara()", "anak": [
+                {"teks": "Kucing: Meow!"},
+                {"teks": "Anjing: Guk!"},
+            ]},
+        },
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "Variabelnya bertipe Hewan, objeknya tetap Kucing dan Anjing",
+            "ket": "h1.bersuara() mengikuti objek yang ditunjuk, bukan tipe variabelnya. "
+                   "Makanya yang tercetak Meow! dan Guk!.",
+            "tumpukan": [["Hewan h1", "@K"], ["Hewan h2", "@A"]],
+            "heap": [
+                {"id": "K", "isi": "objek Kucing"},
+                {"id": "A", "isi": "objek Anjing"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "Class Object: toString, equals, dan hashCode": [
+        {
+            "setelah": 1,
+            "jenis": "memori",
+            "judul": "a dan b isinya sama, tapi dua objek yang berbeda",
+            "ket": "== membandingkan alamat, jadi false. equals bawaan Object juga "
+                   "cuma membandingkan alamat, sampai kamu meng-override-nya.",
+            "tumpukan": [["a", "@T1"], ["b", "@T2"]],
+            "heap": [
+                {"id": "T1", "isi": "Titik x=3, y=4"},
+                {"id": "T2", "isi": "Titik x=3, y=4"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "OOP: Abstract & Interface": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Satu interface Kendaraan, dua class yang memenuhi kontraknya",
+            "ket": "Mobil dan SepedaMotor wajib menulis start() dan berhenti(), "
+                   "masing-masing dengan caranya sendiri.",
+            "akar": {"teks": "Kendaraan", "anak": [
+                {"teks": "Mobil"},
+                {"teks": "SepedaMotor"},
+            ]},
+        },
+    ],
+    "Anotasi: Metadata untuk Compiler & Framework": [
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Sampai kapan sebuah anotasi bertahan, menurut @Retention",
+            "ket": "Framework membaca anotasi saat program berjalan, jadi anotasinya "
+                   "wajib RUNTIME. CLASS adalah bawaannya.",
+            "tabel": [{
+                "kolom": ["Retention", "di .class?", "terbaca jalan?"],
+                "baris": [
+                    ["SOURCE", "tidak", "tidak"],
+                    ["CLASS", "ya", "tidak"],
+                    ["RUNTIME", "ya", "ya"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+    ],
+    "Record & Sintaks Java Modern": [
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "denganAngka(70) membuat objek baru, a tetap seperti semula",
+            "ket": "Record nggak bisa diubah. Yang terlihat seperti mengubah "
+                   "membuat Nilai baru dengan angka berbeda.",
+            "tumpukan": [["a", "@N1"], ["c", "@N2"]],
+            "heap": [
+                {"id": "N1", "isi": "Nilai[nama=Andi, angka=92]"},
+                {"id": "N2", "isi": "Nilai[nama=Andi, angka=70]"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+        {
+            "setelah": 4,
+            "jenis": "pohon",
+            "judul": "sealed Bentuk cuma mengizinkan tiga turunan ini",
+            "ket": "Karena daftarnya tertutup, switch yang mencakup ketiganya "
+                   "dianggap lengkap tanpa default.",
+            "akar": {"teks": "sealed Bentuk", "anak": [
+                {"teks": "record Lingkaran"},
+                {"teks": "record Persegi"},
+                {"teks": "record Segitiga"},
+            ]},
+        },
+    ],
+    "Exception Handling": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Jalannya try, catch, dan finally saat 10 / 0 dijalankan",
+            "ket": "Baris cetak hasil dilewati karena exception terjadi di baris "
+                   "sebelumnya. finally tetap jalan, lalu program lanjut.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "masuk blok try"},
+                {"jenis": "proses", "teks": "int hasil = 10 / 0"},
+                {"jenis": "keputusan", "teks": "ada exception dilempar?",
+                 "tidak": 4},
+                {"jenis": "keluaran", "teks": "catch: pesan bagi nol", "ke": 5},
+                {"jenis": "keluaran", "teks": "cetak hasil (dilewati)"},
+                {"jenis": "keluaran", "teks": "finally selalu jalan"},
+                {"jenis": "keluaran", "teks": "Program tetap lanjut."},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "Membaca Error: Stack Trace, Throwable, dan Logging": [
+        {
+            "setelah": 1,
+            "jenis": "tumpukan",
+            "judul": "Tumpukan pemanggilan saat parseInt menolak \"8.000\"",
+            "ket": "Disederhanakan: tiga baris java.base dirangkum jadi Integer.parseInt. "
+                   "Baris pertama milikmu yang perlu dibuka: hargaDari di baris 6.",
+            "mode": "tumpukan",
+            "isi": ["main :19", "totalBelanja :12", "hargaDari :6",
+                    "Integer.parseInt"],
+            "label": "call stack",
+            "operasi": "lempar exception",
+        },
+        {
+            "setelah": 2,
+            "jenis": "pohon",
+            "judul": "Silsilah Throwable: Error di satu cabang, Exception di cabang lain",
+            "ket": "Semua di bawah RuntimeException itu unchecked. Nama yang terlalu "
+                   "panjang disingkat: NPE untuk NullPointerException.",
+            "akar": {"teks": "Throwable", "anak": [
+                {"teks": "Error", "anak": [
+                    {"teks": "OutOfMemoryError"},
+                    {"teks": "StackOverflowError"},
+                ]},
+                {"teks": "Exception", "anak": [
+                    {"teks": "IOException"},
+                    {"teks": "SQLException"},
+                    {"teks": "RuntimeException", "anak": [
+                        {"teks": "NPE"},
+                        {"teks": "NumberFormatExc."},
+                        {"teks": "ArithmeticExc."},
+                    ]},
+                ]},
+            ]},
+        },
+    ],
+    "Collection Framework": [
+        {
+            "setelah": 0,
+            "jenis": "pohon",
+            "judul": "Interface Collection dan class yang bisa langsung kamu buat",
+            "ket": "Map nggak ada di pohon ini, karena Map bukan turunan Collection. "
+                   "Dia punya pohon sendiri, dengan HashMap dan TreeMap.",
+            "akar": {"teks": "Collection", "anak": [
+                {"teks": "List", "anak": [
+                    {"teks": "ArrayList"},
+                    {"teks": "LinkedList"},
+                ]},
+                {"teks": "Set", "anak": [
+                    {"teks": "HashSet"},
+                ]},
+                {"teks": "Queue", "anak": [
+                    {"teks": "ArrayDeque"},
+                    {"teks": "PriorityQueue"},
+                ]},
+            ]},
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Isi Map nilai dari contoh: tiap key punya satu value",
+            "ket": "nilai.get(\"Andi\") mencari baris dengan key Andi dan "
+                   "mengembalikan 85. Urutan baris di HashMap nggak dijamin.",
+            "tabel": [{
+                "nama": "Map<String, Integer>",
+                "kolom": ["key", "value"],
+                "baris": [["Andi", "85"], ["Budi", "90"]],
+                "sorot_baris": [0],
+            }],
+        },
+    ],
+    "Iterasi, Perubahan, dan Idiom Collection Modern": [
+        {
+            "setelah": 1,
+            "jenis": "larik",
+            "judul": "Elemen yang dibuang removeIf(x -> x.startsWith(\"M\"))",
+            "ket": "Cuma Mangga yang diawali M. Hasilnya [Apel, Jeruk, Durian], "
+                   "tanpa ConcurrentModificationException.",
+            "nama": "buah",
+            "isi": ["Apel", "Mangga", "Jeruk", "Durian"],
+            "sorot": [1],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Hasil merge(kata, 1, Integer::sum) untuk kalimat tadi",
+            "ket": "Kalimatnya roti susu roti kopi susu roti. TreeMap menyusun key "
+                   "menurut abjad.",
+            "tabel": [{
+                "nama": "hitung (TreeMap)",
+                "kolom": ["key", "value"],
+                "baris": [["kopi", "1"], ["roti", "3"], ["susu", "2"]],
+                "sorot_baris": [1],
+            }],
+        },
+    ],
+    "Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque": [
+        {
+            "setelah": 1,
+            "jenis": "tumpukan",
+            "judul": "Antrean: Ani datang pertama, Ani juga yang dilayani pertama",
+            "ket": "addLast menaruh di belakang, removeFirst mengambil dari depan.",
+            "mode": "antrean",
+            "isi": ["Ani", "Budi", "Cici"],
+            "label": "Deque antrean",
+            "operasi": "removeFirst()",
+        },
+        {
+            "setelah": 1,
+            "jenis": "tumpukan",
+            "judul": "Tumpukan: piring 3 ditaruh terakhir, diambil paling dulu",
+            "ket": "addFirst dan removeFirst sama-sama memakai ujung depan, jadi "
+                   "yang terakhir masuk keluar duluan.",
+            "mode": "tumpukan",
+            "isi": ["piring 1", "piring 2", "piring 3"],
+            "label": "Deque tumpukan",
+            "operasi": "removeFirst()",
+        },
+    ],
+    "String & Scanner (Input)": [
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "Dua literal \"Andi\" berbagi objek, new String membuat objek lain",
+            "ket": "s1 == s2 true karena alamatnya sama. s3 == s1 false walau "
+                   "isinya sama, jadi bandingkan isi teks dengan equals.",
+            "tumpukan": [["s1", "@S1"], ["s2", "@S1"], ["s3", "@S2"]],
+            "heap": [
+                {"id": "S1", "isi": "String \"Andi\" (literal)"},
+                {"id": "S2", "isi": "String \"Andi\" (new)"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "Tanggal & Waktu (java.time)": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Lima tipe java.time dan isinya masing-masing",
+            "ket": "Local artinya tanpa zona waktu. Instant selalu UTC, ditandai "
+                   "huruf Z. Contoh yang panjang dipotong, dan ZonedDateTime "
+                   "aslinya diakhiri [Asia/Jakarta].",
+            "tabel": [{
+                "kolom": ["tipe", "contoh"],
+                "baris": [
+                    ["LocalDate", "2026-01-15"],
+                    ["LocalTime", "08:30"],
+                    ["LocalDateTime", "2026-01-15T13:45"],
+                    ["Instant", "...T02:30:00Z"],
+                    ["ZonedDateTime", "...T09:30+07:00"],
+                ],
+            }],
+        },
+        {
+            "setelah": 1,
+            "jenis": "variabel",
+            "judul": "plusDays(10) menghasilkan tanggal baru, jatuhTempo nggak bergeser",
+            "ket": "Baris jatuhTempo.plusDays(10); yang hasilnya nggak ditampung "
+                   "nggak mengubah apa pun.",
+            "isi": [
+                ["jatuhTempo", "2026-01-15", "LocalDate"],
+                ["tenggat", "2026-01-25", "LocalDate"],
+            ],
+            "sorot": ["tenggat"],
+        },
+    ],
+    "Lambda Expression & Functional Interface": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Empat functional interface yang paling sering kamu pakai",
+            "ket": "Lambda bisa mengisi semuanya, asal jumlah parameter dan nilai "
+                   "kembaliannya cocok.",
+            "tabel": [{
+                "nama": "java.util.function",
+                "kolom": ["interface", "menerima", "mengembalikan", "method"],
+                "baris": [
+                    ["Function<T,R>", "T", "R", "apply"],
+                    ["Predicate<T>", "T", "boolean", "test"],
+                    ["Consumer<T>", "T", "(tidak ada)", "accept"],
+                    ["Supplier<T>", "(tidak ada)", "T", "get"],
+                ],
+            }],
+        },
+    ],
+    "Mengurutkan Objek: Comparable & Comparator": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Daftar yang sama, dua comparator, dua urutan",
+            "ket": "Tabel pertama: IPK turun, Andi dan Budi seri jadi urutannya tetap. "
+                   "Tabel kedua: jurusan A-Z dulu, lalu IPK turun di tiap jurusan.",
+            "tabel": [
+                {
+                    "nama": "IPK turun",
+                    "kolom": ["nama", "ipk"],
+                    "baris": [["Citra", "3.85"], ["Andi", "3.2"], ["Budi", "3.2"],
+                              ["Dewi", "2.95"]],
+                    "sorot_kolom": ["ipk"],
+                },
+                {
+                    "nama": "jurusan+IPK",
+                    "kolom": ["nama", "jurusan", "ipk"],
+                    "baris": [["Andi", "Mesin", "3.2"], ["Budi", "Mesin", "3.2"],
+                              ["Citra", "Sipil", "3.85"], ["Dewi", "Sipil", "2.95"]],
+                    "sorot_kolom": ["jurusan"],
+                },
+            ],
+        },
+    ],
+    "Class di dalam Class: Nested, Inner, dan Anonymous": [
+        {
+            "setelah": 1,
+            "jenis": "memori",
+            "judul": "Sesudah dorong A, B, C: puncak menunjuk C, lalu B, lalu A",
+            "ket": "Tiap Node menyimpan isinya dan penunjuk ke Node di bawahnya. "
+                   "Node A paling bawah, jadi bawah-nya null.",
+            "tumpukan": [["t", "@T"]],
+            "heap": [
+                {"id": "T", "isi": "Tumpukan puncak=@C"},
+                {"id": "C", "isi": "Node \"C\", bawah=@B"},
+                {"id": "B", "isi": "Node \"B\", bawah=@A"},
+                {"id": "A", "isi": "Node \"A\", bawah=null"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+        {
+            "setelah": 3,
+            "jenis": "memori",
+            "judul": "Objek inner Absen selalu membawa penunjuk ke Sekolah-nya",
+            "ket": "Lewat penunjuk itu Absen bisa membaca murid dan Sekolah.this.nama. "
+                   "Static nested class nggak punya penunjuk ini.",
+            "tumpukan": [["s", "@S"], ["a", "@A"]],
+            "heap": [
+                {"id": "S", "isi": "Sekolah \"SMA 1\", 2 murid"},
+                {"id": "A", "isi": "Absen, Sekolah.this=@S"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "Stream API": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Perjalanan list angka lewat filter, sorted, lalu collect",
+            "ket": "Tiap operasi perantara menghasilkan stream baru. List angka "
+                   "aslinya nggak berubah.",
+            "langkah": [
+                {"jenis": "masukan", "teks": "angka [5, 3, 8, 1, 9, 2, 7]"},
+                {"jenis": "proses", "teks": "filter genap: 8, 2"},
+                {"jenis": "proses", "teks": "sorted: 2, 8"},
+                {"jenis": "keluaran", "teks": "collect: [2, 8]"},
+            ],
+        },
+    ],
+    "Generics": [
+        {
+            "setelah": 4,
+            "jenis": "pohon",
+            "judul": "Siapa saja yang boleh jadi T di <T extends Number>",
+            "ket": "Semuanya turunan Number, jadi doubleValue() pasti ada. int dan "
+                   "double nggak ada di pohon ini karena primitif bukan objek.",
+            "akar": {"teks": "Number", "anak": [
+                {"teks": "Integer"},
+                {"teks": "Long"},
+                {"teks": "Double"},
+                {"teks": "Float"},
+                {"teks": "BigDecimal"},
+            ]},
+        },
+    ],
+    "Optional & Null Safety": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "cariNama(99).orElse(\"Tidak ditemukan\") langkah demi langkah",
+            "ket": "id 99 nggak ada, jadi cariNama mengembalikan Optional kosong dan "
+                   "orElse memakai nilai cadangannya.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "cariNama(99)"},
+                {"jenis": "keputusan", "teks": "Optional ada isinya?", "tidak": 3},
+                {"jenis": "keluaran", "teks": "pakai isinya", "ke": 4},
+                {"jenis": "keluaran", "teks": "orElse: \"Tidak ditemukan\""},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "Multithreading & Concurrency Dasar": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "main menyalakan dua thread, lalu menunggu keduanya dengan join",
+            "ket": "Thread-A dan Thread-B jalan bersamaan, jadi baris cetakan mereka "
+                   "bisa bercampur. Baris terakhir selalu Semua thread selesai.",
+            "pelaku": ["main", "t1 (Thread-A)", "t2 (Thread-B)"],
+            "pesan": [
+                [0, 1, "start()"],
+                [0, 2, "start()"],
+                [1, 0, "selesai, join() kembali"],
+                [2, 0, "selesai, join() kembali"],
+            ],
+        },
+    ],
+    "Concurrency Lanjutan: Future, Atomic, dan Koleksi Aman-Thread": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "Dua thread menjalankan counter++, satu kenaikan hilang",
+            "ket": "Keduanya membaca 100 sebelum ada yang sempat menulis. Hasil "
+                   "akhirnya 101, padahal seharusnya 102.",
+            "pelaku": ["Thread 1", "counter", "Thread 2"],
+            "pesan": [
+                [1, 0, "baca: 100"],
+                [1, 2, "baca: 100"],
+                [0, 1, "tulis 100 + 1 = 101"],
+                [2, 1, "tulis 100 + 1 = 101"],
+            ],
+        },
+    ],
+    "File I/O & Serialization": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Loop readLine membaca catatan.txt sampai habis",
+            "ket": "readLine mengembalikan null sesudah baris terakhir. "
+                   "try-with-resources menutup berkasnya otomatis.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "buka BufferedReader"},
+                {"jenis": "masukan", "teks": "baris = br.readLine()"},
+                {"jenis": "keputusan", "teks": "baris != null?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "cetak Baca: + baris", "ke": 1},
+                {"jenis": "selesai", "teks": "close() otomatis"},
+            ],
+        },
+    ],
+    "JDBC: Menghubungkan Java ke Database": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Perjalanan satu query dari program Java ke MySQL dan kembali",
+            "ket": "Driver yang menerjemahkan panggilan JDBC ke bahasa MySQL. Tanpa "
+                   "driver, yang muncul No suitable driver found.",
+            "pelaku": ["Program", "Driver JDBC", "MySQL"],
+            "pesan": [
+                [0, 1, "getConnection(url, user, pass)"],
+                [1, 2, "buka koneksi ke port 3306"],
+                [0, 1, "setDouble(1, 3.0), executeQuery"],
+                [1, 2, "SELECT ... WHERE ipk > 3.0"],
+                [2, 1, "baris-baris hasil"],
+                [1, 0, "ResultSet, dibaca rs.next()"],
+            ],
+        },
+    ],
+    "Unit Testing dengan JUnit": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Yang dikerjakan JUnit untuk setiap method @Test",
+            "ket": "@BeforeEach jalan lagi sebelum tiap tes, jadi tiap tes dapat "
+                   "objek Kalkulator yang baru.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "JUnit memindai class tes"},
+                {"jenis": "proses", "teks": "@BeforeEach: setUp()"},
+                {"jenis": "proses", "teks": "jalankan satu method @Test"},
+                {"jenis": "keputusan", "teks": "semua assert terpenuhi?",
+                 "tidak": 5},
+                {"jenis": "keluaran", "teks": "catat: lulus", "ke": 6},
+                {"jenis": "keluaran", "teks": "catat: gagal + pesannya"},
+                {"jenis": "keputusan", "teks": "masih ada @Test lain?", "ya": 1,
+                 "tidak": 7},
+                {"jenis": "selesai", "teks": "laporan hasil tes"},
+            ],
+        },
+    ],
+    "Design Pattern & Clean Code": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "getInstance() membuat objek cuma di panggilan pertama",
+            "ket": "Panggilan berikutnya melihat instance sudah terisi, jadi objek "
+                   "yang sama dikembalikan terus.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "getInstance()"},
+                {"jenis": "keputusan", "teks": "instance == null?", "tidak": 3},
+                {"jenis": "proses", "teks": "instance = new Konfigurasi()"},
+                {"jenis": "keluaran", "teks": "return instance"},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "Git, Maven/Gradle & Alur Kerja Developer": [
+        {
+            "setelah": 1,
+            "jenis": "git",
+            "judul": "Alur kerja tadi dalam bentuk graf commit",
+            "ket": "Kerjamu di branch fitur. Sementara itu main bertambah satu commit "
+                   "dari teman, lalu PR yang disetujui digabung dengan merge.",
+            "commit": [
+                {"id": "a1", "cabang": "main", "pesan": "proyek awal"},
+                {"id": "b1", "induk": ["a1"], "cabang": "fitur", "pesan": "tambah driver"},
+                {"id": "a2", "induk": ["a1"], "cabang": "main", "pesan": "perbaikan teman"},
+                {"id": "b2", "induk": ["b1"], "cabang": "fitur", "pesan": "tes JDBC"},
+                {"id": "m1", "induk": ["a2", "b2"], "cabang": "main", "pesan": "merge PR"},
+            ],
+            "label": {"main": "m1", "fitur": "b2"},
+            "head": "main",
+        },
+    ],
+    "Roadmap Menjadi Programmer Handal": [
+        {
+            "setelah": 2,
+            "jenis": "alur",
+            "judul": "Empat tahap roadmap, dari fondasi sampai kebiasaan profesional",
+            "ket": "Lama tiap tahap cuma perkiraan dari materi ini. Tahap 4 berjalan "
+                   "terus, bersamaan dengan tahap lain.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Tahap 1: kuatkan fondasi"},
+                {"jenis": "proses", "teks": "Tahap 2: proyek nyata, 3-6 bulan"},
+                {"jenis": "proses", "teks": "Tahap 3: ekosistem, 6-12 bulan"},
+                {"jenis": "proses", "teks": "Tahap 4: soft skill & kebiasaan"},
+                {"jenis": "selesai", "teks": "siap kerja di industri"},
+            ],
+        },
+    ],
+}

@@ -31,6 +31,7 @@ from pelajar import waktu
 from inti import berkas
 from inti import sorot
 from inti import tema
+from inti import visual
 from layar.utils import (
     C, paint, clear, paginate, ask, ask_atau_eof, ask_choice, header, rule,
     lebar, bungkus_baris, sorot_kata, tinggi_halaman, press_enter, potong,
@@ -138,11 +139,13 @@ def _kotak_kode(kode, bahasa, konteks, lbr, sorot_nyala):
     return baris
 
 
-def baris_materi(topic, bahasa="", kata_sorot=""):
+def baris_materi(topic, bahasa="", kata_sorot="", kunci_bahasa=""):
     """Ubah satu topik jadi daftar baris siap tampil."""
     lbr = lebar()
     sorot_nyala = konfigurasi is None or konfigurasi.ambil("sorot_sintaks", True)
     lines = []
+    gambar = visual.untuk(kunci_bahasa, topic["title"]) if kunci_bahasa else []
+    nomor_gambar = 0
 
     for i, section in enumerate(topic["sections"]):
         if i > 0:
@@ -160,6 +163,17 @@ def baris_materi(topic, bahasa="", kata_sorot=""):
             konteks = section.get("heading") or topic["title"]
             lines.extend(_kotak_kode(section["code"], bahasa, konteks,
                                      lbr, sorot_nyala))
+
+        # Gambar konsep yang sama dengan SVG di web (inti/visual.py).
+        for g in gambar:
+            if g["setelah"] != i:
+                continue
+            nomor_gambar += 1
+            lines.append("")
+            kepala, badan, ket = visual.susun(g, min(lbr, 80) - 4, nomor_gambar)
+            lines.extend(tema.cat("  " + b, "subjudul") for b in kepala)
+            lines.extend(tema.cat("  " + b, "kode_kunci") for b in badan)
+            lines.extend(tema.cat("  " + b, "redup") for b in ket)
 
     return lines
 
@@ -226,7 +240,7 @@ def _baca(topic, kategori, bahasa, kata_sorot, entri):
     """
     sebelum = bab.indeks_terbuka(entri, load_progress())
     tuntas = paginate(topic["title"],
-                      baris_materi(topic, bahasa, kata_sorot),
+                      baris_materi(topic, bahasa, kata_sorot, entri.get("key", "")),
                       chunk_size=tinggi_halaman(sisa=9))
     # Dicatat SESUDAH dibaca: berhenti di tengah tidak boleh dihitung selesai.
     record_material_read(kategori, topic["title"], tuntas=tuntas)

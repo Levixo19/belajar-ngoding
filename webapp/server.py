@@ -126,7 +126,9 @@ RUTE = {
 
     ("POST", "/api/coba"): (api.coba, "muatan"),
     ("POST", "/api/tebak"): (api.tebak, "muatan"),
+    ("POST", "/api/jejak"): (api.jejak, "muatan"),
     ("GET", "/api/tebak/kartu"): (api.tebak_kartu, "kueri"),
+    ("GET", "/api/langit"): (api.langit, "kueri"),
 
     ("GET", "/api/cari"): (api.cari, "kueri"),
     ("GET", "/api/pustaka"): (api.pustaka, "kueri"),

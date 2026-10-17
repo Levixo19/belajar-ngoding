@@ -22,7 +22,9 @@ Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
 Status: 20 kurikulum, 537 materi dalam 142 bab bertingkat, 121 kuis / 968 soal,
-319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1193 tes.
+319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1210 tes.
+Tiap materi ditutup bagian "Di dunia nyata" (kasus nyata + cara memecahkannya),
+dan 745 gambar konsep tersebar di 528 materi (lihat "Observatorium" di bawah).
 Ditambah Pustaka (9.809 tautan belajar beratribusi) dan Peta Karier (21 profesi).
 
 144 materi ditambahkan sekaligus setelah audit cakupan tiga sudut (kode nyata,
@@ -125,7 +127,13 @@ belajar sendiri — semuanya dipinjam.
 | `statik/js/layar-karier.js` | Layar Peta Karier: tangga karier SVG, panel rincian, kuis, perencana jalur, "Jadikan tujuanku" |
 | `statik/js/layar-tebak.js` | Layar "Tebak keluarannya" (`#/tebak/<key>`): lima kartu contoh materi, kunci dari server |
 | `statik/vendor/gsap/` | GSAP 3.15.0 + SplitText + ScrollTrigger, disimpan lokal, header lisensi utuh |
-| `statik/huruf/` | Atkinson Hyperlegible Next + Mono (prosa, kode) dan Outfit (judul, antarmuka); semua OFL, lokal |
+| `statik/js/visual.js` | Penggambar SVG gambar konsep materi (13 jenis); spesifikasinya di `inti/visual.py` |
+| `statik/js/jejak.js` | Panel "Lihat jalannya": rekaman langkah program Python dari `/api/jejak` |
+| `statik/js/langit.js` | Langit malam di belakang aplikasi: graticule kutub, bintang bermagnitudo, kelip & paralaks (penuh saja) |
+| `statik/js/kursor.js` | Reticle teleskop yang mengunci sasaran klik dan fokus papan ketik; kursor asli tidak disembunyikan |
+| `statik/js/rasi.js` | Peta rasi: materi = bintang, bab = rasi; dipakai kepala halaman bahasa dan panel "Langitmu" dasbor |
+| `statik/js/layar-langit.js` | Layar Langit (`#/langit`): 20 kurikulum sebagai rasi, garis profesi, konsep yang sama |
+| `statik/huruf/` | Atkinson Hyperlegible Next + Mono (prosa, kode), Jost (antarmuka), Bodoni Moda (judul besar); semua OFL, lokal |
 | `statik/js/sorot.js` | Port `inti/sorot.py` ke JS untuk penyorotan langsung di editor |
 | `statik/js/editor.js` | Editor kode: textarea transparan di atas `<pre>` bertoken |
 | `statik/js/pratinjau.js` | Bingkai pratinjau halaman HTML/CSS pelajar (sandbox, tanpa allow-same-origin) |
@@ -338,7 +346,7 @@ di mesin siapa pun yang pernah menyalakan saklar itu. Jangan lupa
 
 ### Khusus antarmuka web
 
-**Cangkang laptop = satu pil kaca melayang (blok "pil atas" di gaya.css).**
+**Cangkang laptop = satu bilah instrumen melayang (blok "pil atas" + "observatorium" di gaya.css).**
 Aplikasi ini dipakai HANYA di laptop. Cangkang IDE (bilah aktivitas, Explorer,
 tab, bilah status) sudah DICABUT atas permintaan pemilik karena "berantakan
 dan memusingkan"; jangan dikembalikan. Yang tersisa satu pil di tengah atas
@@ -346,9 +354,12 @@ berisi semua tujuan (Dasbor, Pustaka, Karier, Ruang Coba, Bahasa, Lainnya,
 cari, XP) dan satu kanvas lapang di bawahnya. Lapisan desain laptop hidup di
 blok `@media (min-width: 861px)` di kaki berkas ("pil atas", "bahasa visual",
 "beranda"), jadi aturan lebar sempit yang dijaga tes tidak tersentuh. Palet:
-grafit hangat + SATU aksen amber (`--nyala`); huruf judul dan antarmuka Outfit
-(`--f-judul`, `--f-ui`), prosa tetap Atkinson. `--rel-tinggi` (80 px) tetap
-arti "apa yang ada di atasku" untuk semua yang menempel.
+langit malam biru-hitam + rentang kuningan (`--nyala`) + verdigris
+(`--tumbuh`); antarmuka Jost (`--f-judul`, `--f-ui`), judul besar Bodoni Moda
+(`--f-plakat`, didefinisikan di `body`), prosa tetap Atkinson. Kaca buram
+(backdrop-filter) sudah dibuang dari bilah dan panelnya: riset 2026-10-18
+menandainya sebagai ciri template AI paling mudah dikenali. `--rel-tinggi`
+(80 px) tetap arti "apa yang ada di atasku" untuk semua yang menempel.
 
 **Terminal dan web wajib menampilkan ISI yang sama.** Tata letaknya memang
 sengaja berbeda; yang tidak boleh adalah ada kalimat yang terbaca di satu
@@ -1063,6 +1074,50 @@ mengikat:
   Suntingan di berkas yang dipatok dibuat net-zero baris atau di kaki berkas;
   rujukan yang bergeser dipetakan ulang dari isi barisnya di HEAD.
 
+## Observatorium (2026-10-18)
+
+Pemilik menilai desain "masih kosong, tidak ada jiwanya" dan minta rasa "out
+of this world": efek kursor, visualisasi di materi, ornamen yang tidak
+terlihat buatan AI, dan interkoneksi antar desain. Arahnya: aplikasi ini
+sebuah OBSERVATORIUM. Yang dibangun dan sekarang mengikat:
+
+* **Satu bahasa bentuk.** Braket sudut = "ini sasaranmu" (reticle kursor,
+  bintang berikutnya di peta, sudut lembar gambar dan kartu Lanjutkan).
+  Magnitudo = "seberapa jauh" (terang bintang mengikuti status materi, rumus
+  ukuran d3-celestial). Kuningan = sedang dikerjakan, verdigris = sudah jadi.
+  Jangan menambah ornamen yang tidak mengodekan sesuatu yang benar.
+* **Gerak tetap lewat `tingkatGerak()`.** Langit: kelip dan paralaks hanya
+  "penuh" (paralaks = gerak akibat interaksi, WCAG 2.3.3), dan berhenti di
+  layar baca/kerja. Kursor: "mati" = tidak ada, "halus" = melompat tanpa
+  pegas dan jejak, "penuh" = pegas + jejak meteor. Kursor ASLI tidak pernah
+  disembunyikan. Animasi garis-tergambar (`.v-hidup`, `.rasi-hidup`) cuma
+  berangkat dari kosong; keadaan alaminya tergambar utuh.
+* **Gambar konsep = DATA.** `data/visual/<key>.py` berisi spesifikasi (13
+  jenis: variabel, larik, alur, tumpukan, pohon, tabel, urutan, kotak, tata,
+  git, memori, bit, kurva); skema, pemeriksa, dan penggambar terminalnya di
+  `inti/visual.py`, penggambar SVG-nya di `statik/js/visual.js`. Keduanya
+  menampilkan judul, label, dan keterangan yang sama (aturan "isi sama di
+  dua antarmuka"). Gambar menempel pada blok TERAKHIR bagiannya (`blok.visual`),
+  tidak pernah jadi blok sendiri: peta bagian dan tautan Ruang Coba menunjuk
+  blok lewat indeks. Periksa dengan `python3 alat/periksa_visual.py <key>`;
+  dijaga `tests/test_visual.py`. Nilai di gambar wajib sama dengan contoh kode
+  di dekatnya, dan penyederhanaan disebut di `ket`.
+* **Bagian "Di dunia nyata" selalu TERAKHIR** di tiap materi (indeks bagian
+  lama tidak bergeser). Ditulis lewat `alat/tambah_bagian.py`, yang menolak
+  baris > 78, dash, kepala Keluaran, dan bagian tanpa label `Kasus kecil:` /
+  `Cara memecahkannya:`. Sketsa kodenya sudah dijalankan agen dengan
+  toolchain masing-masing; klaim yang tidak bisa diuji ditulis berhati-hati.
+* **"Lihat jalannya"** (`inti/jejak.py`, `/api/jejak`): pelacak Python lewat
+  `sys.settrace` di balik pagar runner yang sama; hasil ditulis ke BERKAS di
+  direktori sementara (stdout runner dipotong 20.000 karakter). Program
+  dihentikan di 400 langkah, bukan dilanjutkan tanpa dicatat. Bukan penilai.
+* **Peta rasi tidak memutuskan apa pun.** Status dan "terkunci" datang dari
+  `bab.status` -> `isi.daftar_materi` (`/api/bahasa`, `/api/langit`); garis
+  profesi dari `data/karier.py`. Layar Langit menautkan ke Peta Karier, tidak
+  menghitung kesiapan kedua.
+* **Pemilih yang menunjuk `<html>` dilarang di lapisan baru** (pagar POPULASI
+  menghitungnya, termasuk di dalam `@media`). Token baru dipasang di `body`.
+
 ## Gaya bahasa materi
 
 Pemilik menilai materi lama "masih AI banget" dan membingungkan, sampai
@@ -1159,6 +1214,12 @@ berjalan dengan hak akses user yang sama.
 
 Fedora 44 Workstation. Terpasang bawaan: `python3` `node` `javac/java` `gcc`
 `g++` `sqlite3` `bash` `ruby` `git`.
+
+Per 2026-10-18 ketujuh toolchain di bawah SUDAH terpasang di mesin pemilik
+(Kotlin lewat SDKMAN di `~/.sdkman/candidates/kotlin/current/bin`, tidak ada di
+PATH shell non-interaktif; tambahkan sendiri). PHP distro Fedora butuh
+`php-mbstring php-pdo` untuk Latihan 14-15 dan materi PDO; runner memuat
+modulnya eksplisit karena PHP dijalankan dengan `-n`.
 
 **Tujuh toolchain TIDAK ada bawaan**, dan tanpa semuanya `test_solutions`
 melewati 111 dari 303 latihan sambil tetap melaporkan OK — jadi "tesnya hijau"

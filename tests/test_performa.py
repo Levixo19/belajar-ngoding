@@ -79,7 +79,7 @@ class TestServerCacheDanCsp(BasisWeb):
         self.assertNotIn("content-encoding", kepala)
 
     def test_font_tidak_dimampatkan(self):
-        _, kepala, _ = self.ambil("/huruf/outfit.woff", {"Accept-Encoding": "gzip"})
+        _, kepala, _ = self.ambil("/huruf/jost.woff2", {"Accept-Encoding": "gzip"})
         self.assertNotIn("content-encoding", kepala)
 
     def test_json_besar_dimampatkan_dan_sama_dengan_aslinya(self):

@@ -116,16 +116,16 @@
 @font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal;
   font-weight: 200 800; font-display: swap;
   src: url("/huruf/atkinson-mono.woff2") format("woff2"); }
-/* Outfit (SIL OFL 1.1, huruf/LISENSI-outfit.txt): huruf JUDUL dan ANTARMUKA.
-   Prosa materi tetap Atkinson -- yang dibaca berjam-jam memakai huruf yang
-   dirancang untuk keterbacaan, yang dilirik sekilas memakai huruf yang
-   punya watak. WOFF (zlib), dipangkas ke Latin, 41 KB. */
-@font-face { font-family: "Outfit"; font-style: normal;
-  font-weight: 100 900; font-display: swap;
-  src: url("/huruf/outfit.woff") format("woff"); }
+/* Jost (Futura terbuka; Futura huruf plakat Apollo 11 di Bulan): ANTARMUKA.
+   Bodoni Moda (Didone, zaman atlas langit Uranographia 1801): JUDUL BESAR
+   saja, lewat --f-plakat. Keduanya SIL OFL 1.1, lisensi di huruf/LISENSI-*. */
+@font-face { font-family: "Jost"; font-weight: 100 900; font-display: swap; src: url("/huruf/jost.woff2") format("woff2"); }
+@font-face { font-family: "Bodoni Moda"; font-weight: 400 900; font-display: swap; src: url("/huruf/bodoni-moda.woff2") format("woff2"); }
+@font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400 900; font-display: swap;
+  src: url("/huruf/bodoni-moda-italic.woff2") format("woff2"); }
 /* `font-display: swap`: teks langsung terbaca dengan huruf sistem selagi
    berkasnya dimuat — halaman kosong sebentar demi huruf yang "benar" adalah
-   pertukaran yang salah di aplikasi belajar. Total 89 KB, semuanya lokal.
+   pertukaran yang salah di aplikasi belajar. Total 216 KB, semuanya lokal.
    */
 
 /* ============================================================ token warna
@@ -136,28 +136,28 @@
    menyentuh apa pun lagi. */
 
 :root {
-  /* GELAP — bawaan. Grafit netral: bukan hitam, bukan ungu, bukan biru-batu.
-     Latar tanpa semburat warna membuat satu-satunya aksen (kobalt) terbaca
-     sebagai PENANDA, bukan sebagai suasana yang menyelimuti seluruh layar. */
-  --dasar:        #0f1012;
-  --dasar-dalam:  #0b0c0e;
-  --kartu:        #16171a;
-  --kartu-naik:   #1c1d21;
-  --garis:        #2c2e33;
-  --garis-kuat:   #3d4047;
-  --teks:         #ececee;
-  --teks-2:       #b4b6bc;
+  /* GELAP — bawaan. Langit malam: tinta biru-hitam, rentang kuningan untuk
+     aksen, verdigris untuk "selesai". Diukur: --redup 5,48:1 di kartu naik,
+     teks 13,9:1; tiap aksen >= 6,8:1 di ketiga latar. */
+  --dasar:        #0a0e1a;
+  --dasar-dalam:  #070a13;
+  --kartu:        #10162a;
+  --kartu-naik:   #151c33;
+  --garis:        #232c47;
+  --garis-kuat:   #36415f;
+  --teks:         #ece9df;
+  --teks-2:       #b4b7c7;
   /* --redup dipakai untuk KETERANGAN 12-13 px, bukan hiasan, jadi ia harus
      tetap lolos 4,5:1 di atas ketiga latar DAN di atas tint pil 11%-nya
      sendiri. Terukur 6,05 / 5,69 / 5,35, pil 4,55. */
-  --redup:        #8f9198;
+  --redup:        #8d92aa;
 
-  --nyala:        #e8b25e;   /* amber: aksen "yang sedang dikerjakan"       */
-  --nyala-lembut: #f2cd92;
-  --nyala-gelap:  #3a2c12;
-  --tumbuh:       #5cc995;   /* hijau: benar, lulus, tumbuh                 */
-  --salah:        #f27b7f;   /* merah redup: salah — tegas tanpa menampar   */
-  --tenang:       #8fb6cc;   /* biru-baja: keterangan, nilai terukur        */
+  --nyala:        #e4b96b;   /* kuningan: aksen "yang sedang dikerjakan"    */
+  --nyala-lembut: #f1d39d;
+  --nyala-gelap:  #3a2d14;
+  --tumbuh:       #63bfa5;   /* verdigris: benar, lulus, tumbuh             */
+  --salah:        #ef8a84;   /* merah redup: salah — tegas tanpa menampar   */
+  --tenang:       #94b6d8;   /* biru-baja: keterangan, nilai terukur        */
   /* Namanya tetap --ungu walau nilainya sekarang kuning-tembaga: ia dipakai
      di puluhan tempat sebagai "warna kuis & pengulangan terjadwal", dan
      mengganti namanya berarti menyunting semuanya demi nol perubahan hasil. */
@@ -171,8 +171,8 @@
      huruf gelap di atas hijau gelap: 2,5:1, praktis tak terbaca. */
   --di-atas-aksen: #1b1407;
 
-  --kode-latar:   #131417;
-  --k-komentar:   #83868e;
+  --kode-latar:   #0d1222;
+  --k-komentar:   #868ba3;
   --k-string:     #9fd4a9;
   --k-angka:      #e8b97c;
   --k-kunci:      #8eaeff;
@@ -185,7 +185,7 @@
 
   --bayang: 0 1px 2px rgba(0,0,0,.28), 0 12px 28px -18px rgba(0,0,0,.6);
   --bayang-naik: 0 2px 6px rgba(0,0,0,.32), 0 24px 56px -24px rgba(0,0,0,.72);
-  --cahaya: 0 0 0 1px rgba(232,178,94,.38);
+  --cahaya: 0 0 0 1px rgba(228,185,107,.38);
   /* Kilau tepi: satu piksel yang sedikit lebih terang di sisi ATAS permukaan
      yang terangkat. Ini sisa "bahan" yang dipakai desain ini — pengganti
      bayangan besar yang membuat kartu tampak melayang di atas halaman. */
@@ -354,7 +354,7 @@
      @font-face di atas), BUKAN diambil dari CDN: aplikasi ini harus utuh
      tanpa internet. Cadangannya huruf humanis sistem, bukan grotesk:
      kalau berkasnya gagal dimuat, rasanya tetap sejenis. */
-  --f-judul: "Outfit", "Atkinson Hyperlegible Next", "Noto Sans", "Cantarell",
+  --f-judul: "Jost", "Atkinson Hyperlegible Next", "Noto Sans", "Cantarell",
              "Adwaita Sans", system-ui, sans-serif;
   --f-ui:    var(--f-judul);
   --f-teks:  "Atkinson Hyperlegible Next", "Noto Sans", "Cantarell",
@@ -6155,4 +6155,354 @@ html.lingkar-tema::view-transition-new(root) {
   .bab-tuntas:not([open]) .bab-ket,
   .bab-tuntas:not([open]) .bab-maju { display: none; }
   .bab-tuntas:not([open]) > .bab-kepala { align-items: center; padding-block: var(--s1); }
+}
+
+/* ===================================================== observatorium (2026-10-18)
+   Arah desain sesudah audit "masih kosong, tidak ada jiwanya": aplikasi ini
+   sebuah OBSERVATORIUM. Langit malam di belakang segalanya (langit.js), tiap
+   materi satu bintang (rasi.js), kursor reticle teleskop yang mengunci
+   sasaran (kursor.js), gambar konsep bergaris atlas (visual.js). Satu bahasa
+   bentuk mengikat semuanya: BRAKET SUDUT = "ini sasaranmu" (kursor, bintang
+   berikutnya, sudut lembar gambar), MAGNITUDO = "seberapa jauh" (terang
+   bintang), kuningan = yang sedang dikerjakan, verdigris = yang sudah jadi.
+   Huruf: Bodoni Moda (Didone zaman Uranographia 1801) untuk judul besar
+   lewat --f-plakat, Jost (Futura terbuka, huruf plakat Apollo 11) untuk
+   antarmuka, Atkinson untuk prosa. Glass dan pil kaca dibuang: kaca
+   buram adalah ciri template yang paling mudah dikenali. */
+
+/* Pencegah luber di SEMUA lebar: SVG berlebar tetap tidak boleh memelarkan
+   halaman (lihat "tidak meluber"). Sisanya desktop saja, seperti cangkangnya. */
+.visual-svg, .rasi-svg { display: block; max-width: 100%; height: auto; }
+.visual-kanvas { overflow-x: auto; }
+.rasi-tip:not(.rasi-tip-tampil) { display: none; }
+.rasi-ringkasan {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+@media (min-width: 861px) {
+  body {
+    --f-plakat: "Bodoni Moda", "Libre Bodoni", "Didot", Georgia, serif;
+    --langit-bintang: #ebe6d5;
+    --langit-hangat: #e4b96b;
+    --langit-garis: rgba(150, 162, 210, .075);
+    --langit-kabut: rgba(205, 210, 240, .42);
+    --langit-label: rgba(150, 162, 210, .34);
+  }
+  [data-tema="malam"] body {
+    --langit-bintang: #d9cfb8;
+    --langit-garis: rgba(170, 150, 120, .065);
+    --langit-kabut: rgba(210, 190, 160, .3);
+    --langit-label: rgba(170, 150, 120, .3);
+  }
+  /* Tema terang: peta bertinta di atas kertas, tanpa Bimasakti. */
+  [data-tema="terang"] body {
+    --langit-bintang: #2c3454;
+    --langit-hangat: #8a5a0e;
+    --langit-garis: rgba(44, 52, 84, .085);
+    --langit-kabut: ;
+    --langit-label: rgba(44, 52, 84, .38);
+  }
+  [data-tema="kontras"] .langit, [data-tema="kontras"] .langit-kelip { display: none; }
+
+  /* ---- langit */
+  #latar { background-image: radial-gradient(1200px 520px at 62% -160px,
+             color-mix(in srgb, var(--nyala) 5%, transparent), transparent 70%); }
+  .langit, .langit-kelip { position: absolute; top: 0; left: 0; will-change: transform; }
+  .langit-tenang .langit { opacity: .5; }
+
+  /* ---- kursor reticle */
+  .kursor {
+    position: fixed; left: 0; top: 0; width: 0; height: 0;
+    pointer-events: none; z-index: 2147483000; color: var(--nyala);
+    transition: opacity var(--d-cepat) ease;
+  }
+  .kursor-sudut {
+    position: absolute; left: 0; top: 0; width: 7px; height: 7px;
+    border-top: 1.5px solid currentColor; border-left: 1.5px solid currentColor;
+    transform-origin: 0 0; opacity: .6;
+  }
+  .kursor-kunci .kursor-sudut { width: 10px; height: 10px; opacity: 1; }
+  .kursor-tekan { color: var(--nyala-lembut); }
+  .kursor-sembunyi, .kursor-ketik { opacity: 0; }
+  .kursor-jejak {
+    position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 2147482999;
+  }
+
+  /* ---- huruf: judul besar dalam Bodoni, hanya di tempat yang memang judul */
+  .kepala-besar h1, .kepala-materi h1, .meja-kini h1 {
+    font-family: var(--f-plakat);
+    font-weight: 600;
+    letter-spacing: -.012em;
+    font-variation-settings: "opsz" 26;
+  }
+  .kepala-besar h1 { font-size: clamp(2.8rem, 1.6rem + 2.8vw, 4.6rem); line-height: 1.02; }
+  .kepala-materi h1 { font-variation-settings: "opsz" 18; letter-spacing: -.008em; }
+  .kepala-latihan h1 { font-family: var(--f-ui); }
+  /* Label kecil di atas judul: bukan huruf kapital berjarak (ciri template),
+     tapi nomor katalog bertitik bintang. */
+  .mata { font-family: var(--f-ui); font-weight: 500; font-size: .8rem; letter-spacing: .03em;
+          color: var(--redup); display: inline-flex; align-items: center; gap: .55em; }
+  .mata::before {
+    content: ""; width: 5px; height: 5px; border-radius: 50%; flex: none;
+    background: var(--nyala); box-shadow: 0 0 6px color-mix(in srgb, var(--nyala) 70%, transparent);
+  }
+
+  /* ---- bilah instrumen (pengganti pil kaca) */
+  #rel {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-radius: 14px;
+    border-color: color-mix(in srgb, var(--nyala) 24%, var(--garis));
+    background:
+      repeating-linear-gradient(90deg, color-mix(in srgb, var(--nyala) 34%, transparent) 0 1px,
+        transparent 1px 11px) left 22px bottom 5px / calc(100% - 44px) 3px no-repeat,
+      linear-gradient(180deg, var(--kartu-naik), var(--dasar-dalam));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--nyala) 16%, transparent),
+      0 20px 44px -28px rgba(0, 0, 0, .9);
+  }
+  .rel-panel {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    background: var(--kartu-naik);
+    border-color: color-mix(in srgb, var(--nyala) 20%, var(--garis));
+  }
+  .rel-menu a, .rel-pemicu { border-radius: 9px; }
+  /* Tanda merek: astrolab kecil. Cincin kuningan, satu bintang di tengah,
+     dua belas tanda derajat di tepinya. */
+  .merek-bara {
+    position: relative; background: transparent; box-shadow: none;
+    border: 1.5px solid var(--nyala);
+  }
+  .merek-bara::after {
+    content: ""; width: 6px; height: 6px; margin: 0; border-radius: 50%;
+    background: var(--nyala); box-shadow: 0 0 10px var(--nyala);
+  }
+  .merek-bara::before {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    background: repeating-conic-gradient(from -1deg, color-mix(in srgb, var(--nyala) 75%, transparent) 0 2deg,
+      transparent 2deg 30deg);
+    -webkit-mask: radial-gradient(circle, transparent 0 18px, #000 18.5px 22px, transparent 22.5px);
+    mask: radial-gradient(circle, transparent 0 18px, #000 18.5px 22px, transparent 22.5px);
+  }
+
+  /* ---- kartu Lanjutkan: lembar beraksen dengan tanda registrasi di sudut */
+  .lanjutkan {
+    border-radius: 18px;
+    background:
+      linear-gradient(var(--nyala), var(--nyala)) left 12px top 12px / 12px 1.5px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) left 12px top 12px / 1.5px 12px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) right 12px bottom 12px / 12px 1.5px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) right 12px bottom 12px / 1.5px 12px no-repeat,
+      radial-gradient(520px 240px at 100% 0%, color-mix(in srgb, var(--nyala) 12%, transparent), transparent 70%),
+      var(--kartu);
+  }
+  .kartu { border-radius: 16px; }
+  .tbl { border-radius: 10px; }
+
+  /* ---- bagian "Di dunia nyata": catatan lapangan bertepi verdigris */
+  .prosa .dunia-nyata {
+    margin-top: var(--s7); padding: var(--s5) var(--s5) var(--s2);
+    border: var(--tebal-garis) solid color-mix(in srgb, var(--tumbuh) 32%, var(--garis));
+    border-radius: 16px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tumbuh) 6%, var(--kartu)), var(--kartu) 60%);
+  }
+  .prosa .dunia-nyata > h3 {
+    margin-top: 0; font-family: var(--f-plakat); font-style: italic; font-weight: 600;
+    font-variation-settings: "opsz" 20; color: var(--tumbuh);
+  }
+
+  /* ---- gambar konsep: lembar atlas dengan empat sudut registrasi */
+  .visual {
+    margin: var(--s5) 0; padding: var(--s5) var(--s5) var(--s4);
+    border: var(--tebal-garis) solid var(--garis); border-radius: 14px;
+    background:
+      linear-gradient(var(--nyala), var(--nyala)) left 10px top 10px / 10px 1px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) left 10px top 10px / 1px 10px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) right 10px top 10px / 10px 1px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) right 10px top 10px / 1px 10px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) left 10px bottom 10px / 10px 1px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) left 10px bottom 10px / 1px 10px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) right 10px bottom 10px / 10px 1px no-repeat,
+      linear-gradient(var(--nyala), var(--nyala)) right 10px bottom 10px / 1px 10px no-repeat,
+      color-mix(in srgb, var(--kode-latar) 82%, transparent);
+  }
+  .blok-bergambar > .visual { margin-top: var(--s3); }
+  .visual-svg { color: var(--teks-2); }
+  .visual-judul { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25em .7em;
+                  margin-top: var(--s4); font: 500 .92rem/1.45 var(--f-ui); }
+  .visual-nomor { font-family: var(--f-plakat); font-style: italic; font-weight: 600; color: var(--nyala); }
+  .visual-teks { color: var(--teks); }
+  .visual-ket { flex-basis: 100%; color: var(--teks-2); font-family: var(--f-teks); font-size: .9rem; }
+  .v-teks { font: 13px var(--f-kode); fill: var(--teks); stroke: none; }
+  .v-teks-ui { font-family: var(--f-ui); }
+  .v-teks-tebal { font-weight: 700; }
+  .v-nama { fill: var(--teks-2); }
+  .v-nama-sorot { fill: var(--nyala); }
+  .v-label { font: 12.5px var(--f-ui); fill: var(--redup); stroke: none; }
+  .v-label-kecil { font-size: 11px; }
+  .v-label-sorot { fill: var(--nyala); }
+  .v-label-tumbuh { fill: var(--tumbuh); }
+  .v-label-cabang { font-family: var(--f-kode); fill: var(--teks-2); }
+  .v-kotak { fill: var(--kartu-naik); stroke: var(--garis-kuat); stroke-width: 1; }
+  .v-kepala { fill: color-mix(in srgb, var(--garis) 75%, var(--kartu)); stroke: var(--garis-kuat); stroke-width: 1; }
+  .v-sorot { fill: color-mix(in srgb, var(--nyala) 15%, var(--kartu-naik)); stroke: var(--nyala); }
+  .v-sorot-lembut { fill: color-mix(in srgb, var(--nyala) 6%, var(--kartu-naik));
+                    stroke: color-mix(in srgb, var(--nyala) 50%, var(--garis-kuat)); }
+  .v-isi { fill: color-mix(in srgb, var(--tumbuh) 12%, var(--kartu-naik)); stroke: var(--tumbuh); }
+  .v-ujung { fill: color-mix(in srgb, var(--tenang) 9%, var(--kartu-naik)); stroke: var(--tenang); }
+  .v-redup { opacity: .62; }
+  .v-garis { fill: none; stroke: var(--garis-kuat); stroke-width: 1.2; }
+  .v-garis-tebal { stroke: var(--teks-2); stroke-width: 2; }
+  .v-garis-putus { stroke-dasharray: 4 4; }
+  .v-garis-redup { stroke: var(--garis); }
+  .v-garis-tumbuh { stroke: var(--tumbuh); }
+  .v-panah { fill: none; stroke: var(--teks-2); stroke-width: 1.3; }
+  .v-panah-sorot { stroke: var(--nyala); }
+  .v-panah-tumbuh { stroke: var(--tumbuh); }
+  .v-ujung-panah { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .v-kurva { fill: none; stroke: var(--garis-kuat); stroke-width: 1.6; }
+  .v-kurva-sorot { stroke: var(--nyala); stroke-width: 2.6; }
+  .v-bintang { fill: var(--kartu-naik); stroke: var(--teks-2); stroke-width: 1.6; }
+  .v-bintang.v-sorot { fill: var(--nyala); stroke: var(--nyala-lembut); }
+  .v-label-kotak { fill: var(--kartu); stroke: var(--garis-kuat); }
+  .v-titik { fill: var(--nyala); }
+  .v-hidup .v-gambar:not(.v-garis-putus) { animation: garis-tergambar 1100ms var(--gaya-masuk) backwards; }
+  @keyframes garis-tergambar {
+    from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    to   { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  }
+
+  /* ---- Lihat jalannya (jejak.js) */
+  .jejak {
+    margin-top: var(--s3); padding: var(--s4); display: grid; gap: var(--s3);
+    border-top: var(--tebal-garis) solid var(--garis);
+    background: color-mix(in srgb, var(--dasar-dalam) 60%, transparent);
+  }
+  .jejak:focus { outline: none; }
+  .jejak:focus-visible { outline: 2px solid var(--nyala); outline-offset: 2px; }
+  .jejak-kepala { display: flex; align-items: baseline; gap: var(--s3); font-family: var(--f-ui); }
+  .jejak-kepala b { font-family: var(--f-plakat); font-style: italic; font-size: 1.1rem; color: var(--nyala); }
+  .jejak-hitung { color: var(--redup); font-size: var(--t-kecil); margin-right: auto; }
+  .jejak-tata { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--s4); }
+  .jejak-kode {
+    list-style: none; margin: 0; padding: var(--s2) 0; max-height: 340px; overflow: auto;
+    font: .88rem/1.65 var(--f-kode); background: var(--kode-latar); border-radius: 10px;
+    border: var(--tebal-garis) solid var(--garis);
+  }
+  .jejak-kode { position: relative; }
+  .jejak-kode code { background: none; border: 0; padding: 0; margin: 0; box-shadow: none; font: inherit; color: var(--k-teks); }
+  .jejak-kode li { display: flex; gap: var(--s3); padding: 0 var(--s3); border-left: 3px solid transparent; white-space: pre; }
+  .jejak-nomor { width: 2.2em; flex: none; text-align: right; color: var(--redup); user-select: none; }
+  .jejak-kode li.jejak-lalu { background: color-mix(in srgb, var(--teks) 4%, transparent); border-left-color: var(--garis-kuat); }
+  .jejak-kode li.jejak-kini { background: color-mix(in srgb, var(--nyala) 13%, transparent); border-left-color: var(--nyala); }
+  .jejak-kanan { display: grid; align-content: start; gap: var(--s2); min-width: 0; }
+  .jejak-label { font: 600 .78rem var(--f-ui); letter-spacing: .03em; color: var(--redup); }
+  .jejak-bingkai { display: grid; gap: var(--s2); }
+  .jejak-satu { border: var(--tebal-garis) solid var(--garis); border-radius: 10px; padding: var(--s2) var(--s3); background: var(--kartu); }
+  .jejak-satu.jejak-atas { border-color: color-mix(in srgb, var(--nyala) 45%, var(--garis)); }
+  .jejak-nama { font: 600 .85rem var(--f-ui); color: var(--teks-2); margin-bottom: var(--s1); }
+  .jejak-satu table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  .jejak-satu th { text-align: left; font: 500 .86rem var(--f-kode); color: var(--teks-2); padding: 2px var(--s2) 2px 0; width: 1%; white-space: nowrap; }
+  .jejak-satu td { padding: 2px 0; overflow-wrap: anywhere; }
+  .jejak-berubah td code { color: var(--nyala); }
+  .jejak-berubah th { color: var(--nyala); }
+  .jejak-objek { margin-left: var(--s2); padding: 0 .5em; border-radius: 6px; font: 600 .72rem var(--f-ui);
+                 color: var(--tenang); border: 1px solid color-mix(in srgb, var(--tenang) 45%, transparent); }
+  .jejak-kosong { margin: 0; color: var(--redup); font-size: .85rem; }
+  .jejak-keluaran { margin: 0; max-height: 140px; overflow: auto; }
+  .jejak-ket { margin: 0; font-family: var(--f-ui); color: var(--teks); }
+  .jejak-galat { margin: 0; color: var(--salah); }
+  .jejak-alat { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .jejak-geser { flex: 1; min-width: 160px; accent-color: var(--nyala); }
+
+  /* ---- peta rasi */
+  .rasi { position: relative; }
+  .rasi-svg { overflow: visible; }
+  .rasi-garis { stroke: color-mix(in srgb, var(--teks) 20%, transparent); stroke-width: 1; fill: none; }
+  .rasi-garis-terang { stroke: color-mix(in srgb, var(--nyala) 72%, transparent); stroke-width: 1.4; }
+  .rasi-garis-jalur { stroke: color-mix(in srgb, var(--teks) 14%, transparent); stroke-dasharray: 2 6; }
+  .rasi-sorot .rasi-garis, .rasi-kelompok:hover .rasi-garis { stroke: color-mix(in srgb, var(--nyala) 50%, transparent); }
+  .rasi-titik { fill: var(--teks); }
+  .rasi-selesai { fill: var(--nyala-lembut); }
+  .rasi-sebagian { fill: color-mix(in srgb, var(--nyala) 55%, var(--teks)); }
+  .rasi-baru { fill: color-mix(in srgb, var(--teks) 52%, transparent); }
+  .rasi-terkunci { fill: none; stroke: color-mix(in srgb, var(--teks) 32%, transparent); stroke-width: 1; }
+  .rasi-cahaya { fill: var(--nyala); opacity: .15; pointer-events: none; }
+  .rasi-sasaran { fill: transparent; pointer-events: all; }
+  .rasi-bintang { cursor: pointer; outline: none; }
+  .rasi-bintang-kunci { cursor: default; }
+  .rasi-bintang .rasi-titik { transform-box: fill-box; transform-origin: center; transition: transform var(--d-cepat) var(--gaya-masuk); }
+  .rasi-bintang:hover .rasi-titik { transform: scale(1.8); fill: var(--nyala); }
+  .rasi-bintang-kunci:hover .rasi-titik { transform: none; fill: none; }
+  .rasi-label-bab { font: italic 500 12.5px var(--f-plakat); font-variation-settings: "opsz" 12; fill: var(--teks-2); }
+  .rasi-nomor { font: normal 600 9.5px var(--f-ui); letter-spacing: .12em; fill: var(--nyala); }
+  .rasi-reticle circle, .rasi-reticle line { fill: none; stroke: var(--nyala); stroke-width: 1.3; }
+  .rasi-reticle-putar { transform-box: view-box; transform-origin: 0 0; }
+  .rasi-hidup .rasi-bintang { animation: rasi-muncul 700ms var(--gaya-masuk) backwards; animation-delay: calc(var(--i, 0) * 14ms); }
+  .rasi-hidup .rasi-garis:not(.rasi-garis-jalur) { animation: garis-tergambar 900ms var(--gaya-masuk) backwards;
+                                                   animation-delay: calc(var(--i, 0) * 14ms + 180ms); }
+  .rasi-hidup .rasi-reticle-putar { animation: reticle-putar 36s linear infinite; }
+  @keyframes rasi-muncul { from { opacity: 0; } }
+  @keyframes reticle-putar { to { transform: rotate(360deg); } }
+  .rasi-tip {
+    position: absolute; z-index: 5; display: grid; gap: 2px; max-width: 260px;
+    padding: var(--s2) var(--s3); pointer-events: none;
+    background: var(--kartu-naik); border: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 35%, var(--garis));
+    border-radius: 10px; box-shadow: var(--bayang); font: .86rem/1.35 var(--f-ui);
+  }
+  .rasi-tip b { font-family: var(--f-plakat); font-style: italic; font-weight: 600; color: var(--teks); }
+  .rasi-tip span { color: var(--redup); }
+
+  /* Kepala halaman bahasa: peta rasi menggantikan sampul generatif. */
+  .kepala-sampul.kepala-rasi {
+    aspect-ratio: auto; overflow: visible; padding: var(--s3);
+    background: radial-gradient(120% 90% at 50% 40%, color-mix(in srgb, var(--kode-latar) 70%, transparent), transparent 75%);
+    border-color: color-mix(in srgb, var(--nyala) 18%, var(--garis));
+  }
+  .kepala-bersampul .kepala-sampul.kepala-rasi { max-height: none; }
+  /* Peta rasi butuh lebar, bukan tinggi: ia jadi pita di bawah judul. */
+  .kepala-bersampul:has(> .kepala-rasi) { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+
+  /* Dasbor: panel Langitmu */
+  .meja-langit {
+    margin-block: var(--s6); padding: var(--s4) var(--s5) var(--s3);
+    border: var(--tebal-garis) solid var(--garis); border-radius: 18px;
+    background: color-mix(in srgb, var(--dasar-dalam) 55%, transparent);
+  }
+  .meja-langit-kepala { display: flex; align-items: baseline; gap: var(--s4); flex-wrap: wrap; }
+  .meja-langit-kepala .meja-judul { font-family: var(--f-plakat); font-style: italic; font-weight: 600; margin: 0; }
+  .meja-langit-ket { color: var(--redup); font-size: var(--t-kecil); margin-right: auto; }
+  .meja-langit-tautan { font-family: var(--f-ui); font-weight: 600; }
+  .meja-langit-isi { min-height: 180px; margin-top: var(--s4); }
+
+  /* ---- layar Langit (Bimasakti) */
+  .bimasakti { display: grid; gap: var(--s4); padding-bottom: var(--s8); }
+  .bimasakti-kepala { margin-bottom: var(--s3); }
+  .langit-alat, .langit-konsep-deret { display: flex; align-items: center; gap: var(--s2) var(--s3); flex-wrap: wrap; }
+  .langit-label { display: inline-flex; align-items: center; gap: var(--s2); font: 600 .85rem var(--f-ui); color: var(--teks-2); }
+  .langit-pilih { font: inherit; font-weight: 500; color: var(--teks); background: var(--kartu); border: var(--tebal-garis) solid var(--garis-kuat);
+                  border-radius: 10px; padding: .35em .7em; }
+  .langit-konsep[aria-pressed="true"] { color: var(--di-atas-aksen); background: var(--nyala); border-color: var(--nyala); }
+  .langit-keterangan { margin: 0; min-height: 1.5em; color: var(--teks); font-family: var(--f-ui); }
+  .langit-svg { max-height: calc(100vh - 220px); }
+  .langit-peta {
+    border: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 16%, var(--garis)); border-radius: 22px;
+    padding: var(--s3);
+    background: radial-gradient(90% 80% at 50% 40%, color-mix(in srgb, var(--dasar-dalam) 45%, transparent), transparent 80%);
+  }
+  .langit-keluarga { font: italic 600 24px var(--f-plakat); font-variation-settings: "opsz" 24;
+                     fill: color-mix(in srgb, var(--teks) 26%, transparent); }
+  .langit-nama { cursor: pointer; outline: none; }
+  .langit-nama-teks { font: 600 14px var(--f-ui); fill: var(--teks-2); }
+  .langit-nama-angka { font: 11px var(--f-kode); fill: var(--redup); }
+  .langit-nama:hover .langit-nama-teks, .langit-nama:focus-visible .langit-nama-teks { fill: var(--nyala); }
+  .ada-profesi .langit-rasi:not(.langit-terpilih), .ada-profesi .langit-nama:not(.langit-terpilih) { opacity: .25; }
+  .langit-profesi-garis { stroke: var(--nyala); stroke-width: 1.6; stroke-dasharray: 7 6; opacity: .85; }
+  .ada-konsep .rasi-bintang:not(.rasi-konsep) { opacity: .22; }
+  .rasi-konsep .rasi-titik { fill: var(--nyala); stroke: var(--nyala-lembut); stroke-width: 1.5; }
+  .langit-legenda { display: flex; gap: var(--s5); flex-wrap: wrap; color: var(--redup); font: .85rem var(--f-ui); }
+  .langit-legenda-butir { display: inline-flex; align-items: center; gap: var(--s2); }
+}
+@media (forced-colors: active) {
+  .kursor, .kursor-jejak, .langit, .langit-kelip { display: none; }
 }

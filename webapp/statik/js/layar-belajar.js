@@ -20,7 +20,7 @@ import {
   berurut, tata, saatGulir, tingkatGerak,
 } from "./gerak.js";
 import { ikon, ikonTipe } from "./ikon.js";
-import { praKode } from "./sorot.js";
+import { praKode } from "./sorot.js"; import { gambarVisual } from "./visual.js"; import { tombolJejak } from "./jejak.js"; import { petaRasi, dariBahasa, panelLangitMeja } from "./rasi.js";
 import { Editor } from "./editor.js";
 import { barisTautan } from "./layar-pustaka.js";
 import { gerakBeranda } from "./beranda.js";  // kalimatGulir/akordeon/marquee: tak dipakai meja kerja
@@ -1035,7 +1035,7 @@ export async function layarBahasa({ key }, ctx) {
         h("h1", {}, b.label),
         h("p.kepala-sub", {}, kalimatBahasa(b, s)),
         barisFakta(b, s)),
-      h("div.kepala-sampul", {}, sampul(key, { bahasa: key, lebar: 560, tinggi: 400, tanda: true }))),
+      h("div.kepala-sampul.kepala-rasi", {}, petaRasi(dariBahasa(b), { tinggi: 250 }))),
 
     kartuLanjutBahasa(b, key),
 
@@ -2776,11 +2776,11 @@ export function blokProsa(blk) {
 
 function bagianMateri(b, i, m, key, bhs, bersih) {
   if (b.jenis === "prosa") {
-    return h("section", {},
+    return h(b.judul === "Di dunia nyata" ? "section.dunia-nyata" : "section", {},
       b.judul ? h("h3", {}, b.judul) : null,
-      b.blok.map(blokProsa));
+      b.blok.map(blokProsa), (b.visual || []).map(gambarVisual));
   }
-  return blokKode(b, i, m, key, bhs, bersih);
+  return b.visual ? h("div.blok-bergambar", {}, blokKode(b, i, m, key, bhs, bersih), b.visual.map(gambarVisual)) : blokKode(b, i, m, key, bhs, bersih);
 }
 
 /* Kartu keluaran satu kali jalan.
@@ -3062,6 +3062,10 @@ function blokKode(b, i, m, key, bhs, bersih) {
         h("button.tbl.tbl-kecil.tbl-hantu", {
           onclick: (e) => salin(b.kode, "Kode disalin.", e.currentTarget),
         }, "Salin"),
+        // "Lihat jalannya" (jejak.js): rekaman langkah demi langkah dari
+        // /api/jejak. Hanya Python, dan hanya contoh yang tidak menunggu input.
+        bisaJalan && bhs.runner === "python" && !/\binput\s*\(/.test(b.kode)
+          ? tombolJejak(b.kode, b.token, () => (editor ? editor.nilai : b.kode)) : null,
         // Ruang Coba tetap ada, tapi tidak lagi jadi satu-satunya jalan: untuk
         // kerja yang lebih panjang (stdin, ganti bahasa, draf tersimpan) ia
         // punya yang tidak muat di sini.
@@ -3379,6 +3383,7 @@ function dasborMeja(d, ctx, { utama, sisaLangkah, dijalani, bento, sapa }) {
         // tinggi daripada antrean, dan ruang di bawah antrean itulah tempat
         // persen tiap bahasa terlihat tanpa menggulir.
         barisBahasaMeja(dijalani.slice(0, 4)))),
+    panelLangitMeja(p ? p.key : null),
     bento,
     h("section.meja-ritme", {}, blokBara(d),
       h("div.ritme-sampul", {}, sampul("ritme", { ragam: "gelombang", lebar: 480, tinggi: 360 }))));

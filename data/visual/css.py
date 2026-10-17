@@ -1,0 +1,703 @@
+"""Gambar konsep kurikulum CSS. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Apa Itu CSS & Tiga Cara Menautkannya": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Tiga cara memasang CSS, dari yang jangkauannya paling sempit",
+            "ket": "Makin ke bawah makin luas yang kena. Proyek sungguhan memakai baris terakhir.",
+            "tabel": [{
+                "kolom": ["cara", "ditulis di", "kena ke"],
+                "baris": [
+                    ["inline", "atribut style", "satu elemen"],
+                    ["blok <style>", "<head> halaman", "satu halaman"],
+                    ["berkas terpisah", "<link> gaya.css", "semua halaman"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+    ],
+    "Pemilih: Elemen, Class, dan ID": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Tiga pertanyaan cascade, ditanyakan berurutan",
+            "ket": "Disederhanakan: kalau dua-duanya !important, pertanyaan kedua dan ketiga "
+                   "tetap dipakai di antara keduanya.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Dua aturan, satu properti"},
+                {"jenis": "keputusan", "teks": "Salah satunya !important?", "tidak": 3},
+                {"jenis": "selesai", "teks": "Yang !important dipakai"},
+                {"jenis": "keputusan", "teks": "Spesifisitasnya beda?", "tidak": 5},
+                {"jenis": "selesai", "teks": "Yang lebih spesifik dipakai"},
+                {"jenis": "selesai", "teks": "Yang ditulis belakangan dipakai"},
+            ],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Spesifisitas dibandingkan dari kiri, bukan dijumlahkan",
+            "ket": "Satu id di kolom a mengalahkan berapa pun class dan nama elemen.",
+            "tabel": [{
+                "kolom": ["pemilih", "a (id)", "b (class)", "c (elemen)"],
+                "baris": [
+                    ["p", "0", "0", "1"],
+                    [".kartu", "0", "1", "0"],
+                    [".kartu p", "0", "1", "1"],
+                    ["#menu", "1", "0", "0"],
+                    ["#menu.menu-gelap", "1", "1", "0"],
+                ],
+                "sorot_kolom": ["a (id)"],
+            }],
+        },
+    ],
+    "Membaca Halaman dengan DevTools Browser": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Panel Styles untuk tombol hijau: pemenangnya di atas",
+            "ket": "Urutannya urutan cascade, bukan urutan di berkas. Dua baris bawah tercoret.",
+            "tabel": [{
+                "kolom": ["aturan", "spesifisitas", "background", "keadaan"],
+                "baris": [
+                    [".panel .tombol", "(0,2,0)", "#2f7d32", "dipakai"],
+                    [".bahaya", "(0,1,0)", "#b3261e", "dicoret"],
+                    [".tombol", "(0,1,0)", "#1a4fa0", "dicoret"],
+                ],
+                "sorot_baris": [0],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "kotak",
+            "judul": "Diagram box model tombol contoh di panel Computed",
+            "ket": "Angkanya dari .tombol: margin 8px, border 2px, padding 12px 20px.",
+            "label": "button.tombol",
+            "margin": "8px",
+            "border": "2px",
+            "padding": "12px 20px",
+            "isi": "teks Hapus",
+        },
+    ],
+    "Warna dan Satuan": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "em menumpuk tiap tingkat, rem nggak",
+            "ket": "Dengan font-size <html> 16px. Tiga tingkat 1.5em jadi 3,375 kali ukuran asal.",
+            "tabel": [{
+                "kolom": ["tingkat", "pakai 1.5em", "pakai 1.5rem"],
+                "baris": [
+                    ["1 (.luar)", "24px", "24px"],
+                    ["2 (.dalam)", "36px", "24px"],
+                    ["3", "54px", "24px"],
+                ],
+                "sorot_kolom": ["pakai 1.5em"],
+            }],
+        },
+    ],
+    "Satuan Lanjut dan Menghitung di Dalam CSS": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "clamp(1.5rem, 4vw, 2.5rem) di tiga lebar layar",
+            "ket": "Dengan 1rem = 16px, batasnya 24px dan 40px. Nilai tengah dipakai selama "
+                   "masih di antara keduanya.",
+            "tabel": [{
+                "kolom": ["lebar layar", "4vw", "hasil clamp", "kenapa"],
+                "baris": [
+                    ["400px", "16px", "24px", "batas bawah"],
+                    ["800px", "32px", "32px", "nilai tengah"],
+                    ["1200px", "48px", "40px", "batas atas"],
+                ],
+                "sorot_kolom": ["hasil clamp"],
+            }],
+        },
+    ],
+    "Teks dan Font": [
+        {
+            "setelah": 0,
+            "jenis": "alur",
+            "judul": "Cara browser memilih dari daftar font-family",
+            "ket": "Disingkat dari daftar di atas: Helvetica dan Arial ditanyakan dengan cara "
+                   "yang sama sebelum sans-serif.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Baca daftar dari kiri"},
+                {"jenis": "keputusan", "teks": "Segoe UI terpasang?", "tidak": 3},
+                {"jenis": "selesai", "teks": "Pakai Segoe UI"},
+                {"jenis": "keputusan", "teks": "Roboto terpasang?", "tidak": 5},
+                {"jenis": "selesai", "teks": "Pakai Roboto"},
+                {"jenis": "selesai", "teks": "Pakai sans-serif sistem"},
+            ],
+        },
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "font-family di body menurun ke keturunannya, kecuali tombol",
+            "ket": "border yang ditulis di body nggak menurun ke anak mana pun. button pakai "
+                   "font sistem sampai diberi font: inherit.",
+            "akar": {"teks": "body font+border", "anak": [
+                {"teks": "h1: font ikut"},
+                {"teks": "p: font ikut", "anak": [
+                    {"teks": "a: font ikut"},
+                ]},
+                {"teks": "button: font OS"},
+            ]},
+        },
+    ],
+    "Box Model: margin, border, padding, content": [
+        {
+            "setelah": 2,
+            "jenis": "kotak",
+            "judul": "Tanpa border-box, width: 200px makan tempat 244px",
+            "ket": "2 + 20 + 200 + 20 + 2 = 244. width cuma mengukur kotak paling dalam.",
+            "label": "content-box (bawaan)",
+            "margin": "0",
+            "border": "2px",
+            "padding": "20px",
+            "isi": "200px",
+        },
+        {
+            "setelah": 4,
+            "jenis": "kotak",
+            "judul": ".kartu di contoh: width 300px sudah termasuk padding dan border",
+            "ket": "Dengan border-box, ruang isinya yang menyusut: 300 - 24 - 24 - 1 - 1 = 250px.",
+            "label": ".kartu (border-box)",
+            "margin": "bawah 16px",
+            "border": "1px solid #d8d8d8",
+            "padding": "24px",
+            "isi": "lebar 250px",
+        },
+    ],
+    "Display dan Alur Dokumen": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "block, inline, dan inline-block menurut ukurannya",
+            "tabel": [{
+                "kolom": ["display", "lebar", "width/height", "contoh"],
+                "baris": [
+                    ["block", "selebar wadah", "berlaku", "div, p, h1"],
+                    ["inline", "sebesar isi", "diabaikan", "span, a"],
+                    ["inline-block", "sebesar isi", "berlaku", "tombol"],
+                ],
+                "sorot_kolom": ["width/height"],
+            }],
+        },
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tiga cara menyembunyikan, tiga akibat yang beda",
+            "ket": "Baris opacity: 0 itu jebakannya: nggak kelihatan tapi masih bisa diklik.",
+            "tabel": [{
+                "kolom": ["cara", "ruangnya", "bisa diklik", "dibacakan"],
+                "baris": [
+                    ["display: none", "hilang", "nggak", "nggak"],
+                    ["visibility", "tetap", "nggak", "nggak"],
+                    ["opacity: 0", "tetap", "bisa", "ya"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+    ],
+    "Latar, Gradien, dan Gambar dalam Kotak": [
+        {
+            "setelah": 2,
+            "jenis": "tumpukan",
+            "judul": "Lapisan latar .hero: yang ditulis pertama ada paling atas",
+            "ket": "Gradien gelap ditulis pertama, jadi menutupi foto. Warna latar selalu di bawah semuanya.",
+            "mode": "tumpukan",
+            "isi": ["background-color", "url(hero.jpg)", "gradien gelap"],
+            "label": "lapisan latar .hero",
+            "operasi": "atas = ditulis dulu",
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Empat nilai object-fit untuk foto di kotak berukuran tetap",
+            "tabel": [{
+                "kolom": ["object-fit", "hasilnya"],
+                "baris": [
+                    ["fill (bawaan)", "ditarik, gepeng"],
+                    ["cover", "dipotong, utuh"],
+                    ["contain", "muat, ada sisa"],
+                    ["none", "ukuran asli"],
+                ],
+                "sorot_baris": [1],
+            }],
+        },
+    ],
+    "Bayangan dan Filter": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Tangga elevasi: tiga tingkat bayangan, disepakati sekali",
+            "ket": "Nilainya ada di :root pada contoh. Kartu yang disentuh naik satu anak tangga.",
+            "tabel": [{
+                "kolom": ["variabel", "dipakai di", "kesannya"],
+                "baris": [
+                    ["--bayang-1", ".kartu", "menempel"],
+                    ["--bayang-2", ".kartu:hover", "terangkat"],
+                    ["--bayang-3", ".dialog", "mengambang"],
+                ],
+            }],
+        },
+    ],
+    "Transform: Menggeser, Memutar, dan Menskala": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Persen yang sama, diukur ke tiga hal berbeda",
+            "ket": "translateX(100%) selalu menggeser sejauh lebar elemen itu sendiri.",
+            "tabel": [{
+                "kolom": ["ditulis", "50% dari"],
+                "baris": [
+                    ["width: 50%", "lebar induk"],
+                    ["left: 50%", "lebar acuan"],
+                    ["translateX(50%)", "elemen sendiri"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Tahap gambar yang diulang browser saat sebuah properti berubah",
+            "ket": "transform dan opacity cuma mengulang tahap terakhir, makanya geraknya mulus.",
+            "tabel": [{
+                "kolom": ["yang diubah", "layout", "paint", "composite"],
+                "baris": [
+                    ["width, top", "ulang", "ulang", "ulang"],
+                    ["color", "-", "ulang", "ulang"],
+                    ["transform", "-", "-", "ulang"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+    ],
+    "Memotong dan Membungkus Teks": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Nilai white-space: apa yang dipertahankan, apa yang diciutkan",
+            "tabel": [{
+                "kolom": ["nilai", "spasi", "ganti baris", "turun sendiri"],
+                "baris": [
+                    ["normal", "diciutkan", "diciutkan", "ya"],
+                    ["nowrap", "diciutkan", "diciutkan", "nggak"],
+                    ["pre", "utuh", "utuh", "nggak"],
+                    ["pre-wrap", "utuh", "utuh", "ya"],
+                    ["pre-line", "diciutkan", "utuh", "ya"],
+                ],
+            }],
+        },
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "Urutan ngecek kalau titik-titiknya nggak muncul",
+            "ket": "Ketiga properti dipasang di elemen yang memuat teksnya, bukan di wadahnya.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Titik-titik nggak muncul"},
+                {"jenis": "keputusan", "teks": "Ada text-overflow: ellipsis?", "tidak": 5},
+                {"jenis": "keputusan", "teks": "Ada white-space: nowrap?", "tidak": 6},
+                {"jenis": "keputusan", "teks": "overflow-nya hidden?", "tidak": 7},
+                {"jenis": "keputusan", "teks": "Kotaknya punya batas lebar?", "ya": 9, "tidak": 8},
+                {"jenis": "proses", "teks": "Tambah text-overflow: ellipsis", "ke": 2},
+                {"jenis": "proses", "teks": "Tambah white-space: nowrap", "ke": 3},
+                {"jenis": "proses", "teks": "Pasang overflow: hidden", "ke": 4},
+                {"jenis": "proses", "teks": "min-width: 0 di pembungkus"},
+                {"jenis": "selesai", "teks": "Titik-titik muncul"},
+            ],
+        },
+    ],
+    "Flexbox": [
+        {
+            "setelah": 0,
+            "jenis": "tata",
+            "judul": "Dengan column, justify-content pindah mengatur atas-bawah",
+            "ket": "Sumbu utama ikut flex-direction. Di sini sumbu utama menurun, jadi item dikumpulkan "
+                   "di tengah secara tegak.",
+            "mode": "flex",
+            "arah": "column",
+            "justify": "center",
+            "item": ["A", "B", "C"],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tata",
+            "judul": "Bilah .kepala: judul di kiri, menu di kanan",
+            "ket": "space-between menempelkan item pertama ke kiri dan item terakhir ke kanan.",
+            "mode": "flex",
+            "arah": "row",
+            "justify": "space-between",
+            "align": "center",
+            "item": ["judul", "menu"],
+        },
+    ],
+    "Grid": [
+        {
+            "setelah": 2,
+            "jenis": "tata",
+            "judul": ".papan saat layarnya muat tiga kolom, dengan .sorotan selebar dua",
+            "ket": "auto-fit memutuskan jumlah kolomnya sendiri. Di layar ini hasilnya sama dengan "
+                   "tiga kolom 1fr.",
+            "mode": "grid",
+            "kolom": 3,
+            "item": [["sorotan", 2], "kartu", "kartu", "kartu", "kartu"],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tata",
+            "judul": "grid-template-areas .halaman: kepala dan kaki selebar dua kolom",
+            "ket": "Disederhanakan jadi dua kolom sama lebar. Di kode, kolom sisi tetap 240px.",
+            "mode": "grid",
+            "kolom": 2,
+            "item": [["kepala", 2], "sisi", "isi", ["kaki", 2]],
+        },
+    ],
+    "Perataan Lanjut dan Grid Implisit": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tiga pasang perataan di grid",
+            "ket": "-items dan -self mengatur isi sel. -content mengatur letak seluruh kisi.",
+            "tabel": [{
+                "kolom": ["properti", "dipasang di", "mengatur"],
+                "baris": [
+                    ["justify-items", "wadah", "isi sel, datar"],
+                    ["align-items", "wadah", "isi sel, tegak"],
+                    ["justify-self", "satu item", "satu sel, datar"],
+                    ["align-self", "satu item", "satu sel, tegak"],
+                    ["justify-content", "wadah", "kisi, datar"],
+                    ["align-content", "wadah", "kisi, tegak"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tata",
+            "judul": "Tanpa dense, item yang kebesaran turun dan meninggalkan lubang",
+            "ket": "Item 3 butuh dua kolom, sisa baris pertama cuma satu. Sel ketiga di baris "
+                   "pertama dibiarkan kosong.",
+            "mode": "grid",
+            "kolom": 3,
+            "item": ["1", "2", ["3 (span 2)", 2], "4"],
+        },
+    ],
+    "Tata Letak Warisan: float, clear, dan flow-root": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tiga cara membungkus float supaya tinggi wadahnya nggak nol",
+            "tabel": [{
+                "kolom": ["cara", "panjangnya", "efek samping"],
+                "baris": [
+                    ["clearfix ::after", "3 baris", "nggak ada"],
+                    ["flow-root", "1 baris", "nggak ada"],
+                    ["overflow: hidden", "1 baris", "memotong isi"],
+                ],
+                "sorot_baris": [1],
+            }],
+        },
+    ],
+    "Position: static, relative, absolute, fixed, sticky": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Lima nilai position: ikut alur atau nggak, dan diukur dari mana",
+            "ket": "Baris absolute disingkat: acuannya leluhur terdekat yang position-nya "
+                   "bukan static, biasanya relative.",
+            "tabel": [{
+                "kolom": ["position", "ikut alur", "top/left dari"],
+                "baris": [
+                    ["static", "ya", "diabaikan"],
+                    ["relative", "ya", "tempat aslinya"],
+                    ["absolute", "nggak", "leluhur relative"],
+                    ["fixed", "nggak", "jendela browser"],
+                    ["sticky", "ya", "wadah gulir"],
+                ],
+            }],
+        },
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Lencana absolute mencari leluhur pertama yang bukan static",
+            "ket": "Dari .lencana naik satu per satu. .kartu yang pertama punya position "
+                   "relative, jadi dia acuannya.",
+            "akar": {"teks": "body: static", "anak": [
+                {"teks": "main: static", "anak": [
+                    {"teks": ".kartu: relative", "anak": [
+                        {"teks": ".lencana: absolute"},
+                    ]},
+                ]},
+            ]},
+        },
+    ],
+    "Pseudo-class dan Pseudo-element": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": ":nth-child menghitung semua anak, :nth-of-type cuma yang setipe",
+            "ket": "Untuk <div><h2>Judul</h2><p>A</p><p>B</p></div>. Anak pertama h2, jadi "
+                   "p:nth-child(1) nggak cocok apa pun.",
+            "tabel": [{
+                "kolom": ["anak ke-", "elemen", "p:nth-child", "p:nth-of-type"],
+                "baris": [
+                    ["1", "h2", "-", "-"],
+                    ["2", "p A", "(2)", "(1)"],
+                    ["3", "p B", "(3)", "(2)"],
+                ],
+                "sorot_baris": [1],
+            }],
+        },
+    ],
+    "Transisi dan Animasi": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Empat bagian transition: background-color 0.2s ease 0s",
+            "ket": "Dua nilai waktu dibedakan dari urutannya: yang pertama durasi, yang kedua jeda.",
+            "tabel": [{
+                "kolom": ["bagian", "nilai"],
+                "baris": [
+                    ["properti", "background-color"],
+                    ["durasi", "0.2s"],
+                    ["kurva waktu", "ease"],
+                    ["jeda", "0s"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "animation-fill-mode: nilai yang dipakai sebelum mulai dan sesudah selesai",
+            "tabel": [{
+                "kolom": ["fill-mode", "selama jeda", "sesudah selesai"],
+                "baris": [
+                    ["none", "aturan biasa", "aturan biasa"],
+                    ["forwards", "aturan biasa", "keyframe akhir"],
+                    ["backwards", "keyframe awal", "aturan biasa"],
+                    ["both", "keyframe awal", "keyframe akhir"],
+                ],
+            }],
+        },
+    ],
+    "Menata Tabel": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "table-layout auto dan fixed, dibandingkan",
+            "ket": "fixed tanpa width di tabelnya nggak ngapa-ngapain.",
+            "tabel": [{
+                "kolom": ["hal", "auto (bawaan)", "fixed"],
+                "baris": [
+                    ["lebar kolom dari", "seluruh isi", "baris pertama"],
+                    ["butuh width", "nggak", "wajib"],
+                    ["teks panjang", "melebarkan kolom", "meluber sel"],
+                    ["tabel panjang", "lebih lambat", "lebih cepat"],
+                ],
+            }],
+        },
+    ],
+    "Menata Formulir": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": ":invalid menyala terlalu cepat, :user-invalid menunggu orangnya",
+            "ket": "Untuk isian surel yang required. Bedanya cuma di baris pertama, dan baris "
+                   "itu yang dilihat semua orang.",
+            "tabel": [{
+                "kolom": ["keadaan isian", ":invalid", ":user-invalid"],
+                "baris": [
+                    ["baru dibuka", "ya", "nggak"],
+                    ["salah, pindah", "ya", "ya"],
+                    ["kosong, Kirim", "ya", "ya"],
+                    ["diisi benar", "nggak", "nggak"],
+                ],
+                "sorot_baris": [0],
+            }],
+        },
+    ],
+    "Responsif: media query": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Kolom .halaman di contoh mobile first, menurut lebar jendela",
+            "ket": "Gaya dasarnya satu kolom. Tiap @media min-width cuma menambah.",
+            "tabel": [{
+                "kolom": ["lebar jendela", "kolom grid"],
+                "baris": [
+                    ["di bawah 720px", "1fr"],
+                    ["720px - 1099px", "240px 1fr"],
+                    ["1100px ke atas", "240px 1fr 280px"],
+                ],
+            }],
+        },
+    ],
+    "Variabel CSS dan Cara Menata Berkas Gaya": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Urutan blok tema di berkas: pilihan pemakai ditulis paling bawah",
+            "ket": "Spesifisitasnya sama, jadi yang belakangan dipakai. Pilihan di halaman "
+                   "mengalahkan selera sistem.",
+            "tabel": [{
+                "kolom": ["urutan", "blok", "berlaku kalau"],
+                "baris": [
+                    ["1", ":root", "selalu (terang)"],
+                    ["2", "@media dark", "sistemnya gelap"],
+                    ["3", "data-tema gelap", "pilih gelap"],
+                    ["4", "data-tema terang", "pilih terang"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Urutan isi berkas gaya: yang umum di atas, yang khusus di bawah",
+            "tabel": [{
+                "kolom": ["urutan", "bagian", "contoh"],
+                "baris": [
+                    ["1", "reset", "box-sizing"],
+                    ["2", "variabel", ":root { --... }"],
+                    ["3", "elemen dasar", "body, h1, a"],
+                    ["4", "tata letak", ".halaman"],
+                    ["5", "komponen", ".kartu, .tombol"],
+                    ["6", "bantuan", ".sembunyi"],
+                    ["7", "media query", "semua @media"],
+                ],
+            }],
+        },
+    ],
+    "Pemilih Modern dan Lapisan Cascade": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": ":is() ikut argumen terkuat, :where() selalu nol",
+            "tabel": [{
+                "kolom": ["pemilih", "spesifisitas"],
+                "baris": [
+                    [":is(h1, h2, h3)", "(0,0,1)"],
+                    [":is(p, #judul)", "(1,0,0)"],
+                    [":where(p,#judul)", "(0,0,0)"],
+                    ["p:not(.penting)", "(0,1,1)"],
+                ],
+                "sorot_baris": [2],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tumpukan",
+            "judul": "Urutan lapisan: makin atas makin kuat, aturan polos paling atas",
+            "ket": "Dari @layer reset, pustaka, komponen, utility. Aturan tanpa lapisan "
+                   "mengalahkan semua lapisan, berapa pun spesifisitasnya.",
+            "mode": "tumpukan",
+            "isi": ["reset", "pustaka", "komponen", "utility", "tanpa lapisan"],
+            "label": "kekuatan lapisan",
+            "operasi": "atas menang",
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Hasil contoh: spesifisitas cuma ditanya di dalam lapisan yang sama",
+            "tabel": [{
+                "kolom": ["pemilih", "lapisan", "spesifisitas", "hasil"],
+                "baris": [
+                    ["#halaman ... h3", "pustaka", "(1,2,1)", "kalah semua"],
+                    ["h3", "komponen", "(0,0,1)", "font-size 24px"],
+                    ["h3", "tanpa lapisan", "(0,0,1)", "color #7a1f1f"],
+                ],
+            }],
+        },
+    ],
+    "CSS yang Bertahan: Prefiks Vendor, @supports, dan Properti Logis": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Empat prefiks vendor yang bakal kamu temui",
+            "tabel": [{
+                "kolom": ["prefiks", "browser"],
+                "baris": [
+                    ["-webkit-", "Safari, Chrome"],
+                    ["-moz-", "Firefox"],
+                    ["-ms-", "IE, Edge lama"],
+                    ["-o-", "Opera lama"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Sisi logis menunjuk tempat yang beda di halaman kanan-ke-kiri",
+            "ket": "Kolom terakhir untuk <html dir=\"rtl\">. Sumbu block nggak berubah, sumbu inline yang terbalik.",
+            "tabel": [{
+                "kolom": ["sisi logis", "Indonesia", "Arab (rtl)"],
+                "baris": [
+                    ["inline-start", "kiri", "kanan"],
+                    ["inline-end", "kanan", "kiri"],
+                    ["block-start", "atas", "atas"],
+                    ["block-end", "bawah", "bawah"],
+                ],
+                "sorot_baris": [0, 1],
+            }],
+        },
+    ],
+    "Container Queries dan CSS Nesting": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Widget yang sama, dua wadah, dua tampilan",
+            "ket": "Yang ditanya @container lebar .slot-widget, bukan lebar layar.",
+            "tabel": [{
+                "kolom": ["dipasang di", "lebar wadah", "min-width 400px", "tampilan"],
+                "baris": [
+                    ["sidebar", "250px", "nggak", "bertumpuk"],
+                    ["area utama", "700px", "menyala", "flex"],
+                ],
+            }],
+        },
+        {
+            "setelah": 2,
+            "jenis": "pohon",
+            "judul": "Isi blok .kartu-produk yang bersarang",
+            "ket": "& menempel tanpa spasi: &:hover jadi .kartu-produk:hover. .judul tanpa & "
+                   "jadi .kartu-produk .judul.",
+            "akar": {"teks": ".kartu-produk", "anak": [
+                {"teks": "&:hover"},
+                {"teks": "&.terjual-habis"},
+                {"teks": ".judul (turunan)"},
+                {"teks": "@media 480px"},
+            ]},
+        },
+    ],
+    "Membaca CSS di Proyek Nyata": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Cara membaca nama class BEM",
+            "ket": "Dua garis bawah dibaca \"milik\", dua tanda minus dibaca \"versi\".",
+            "tabel": [{
+                "kolom": ["class", "bagian BEM", "artinya"],
+                "baris": [
+                    [".kartu", "block", "benda utuh"],
+                    [".kartu__judul", "element", "bagian kartu"],
+                    [".kartu--sorot", "modifier", "versi kartu"],
+                ],
+            }],
+        },
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Dari gaya.scss yang kamu sunting ke gaya.css yang dibaca browser",
+            "ket": "Browser nggak pernah melihat berkas .scss. $sorot dan komentar // sudah lenyap "
+                   "di hasilnya.",
+            "pelaku": ["gaya.scss", "compiler Sass", "gaya.css", "browser"],
+            "pesan": [
+                [0, 1, "dibaca saat build"],
+                [1, 2, "ditulis jadi CSS biasa"],
+                [3, 2, "diunduh lewat <link>"],
+            ],
+        },
+    ],
+}

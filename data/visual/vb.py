@@ -1,0 +1,387 @@
+"""Gambar konsep kurikulum Visual Basic .NET. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Pengenalan Visual Basic .NET": [
+        {
+            "setelah": 0,
+            "jenis": "alur",
+            "judul": "Dari Program.vb sampai teks muncul di layar",
+            "ket": "dotnet run mengompilasi kodemu jadi IL di dalam program.dll, lalu "
+                   "runtime .NET yang menjalankannya. C# melewati jalur yang sama.",
+            "langkah": [
+                {"jenis": "masukan", "teks": "Program.vb (kode VB.NET)"},
+                {"jenis": "proses", "teks": "compiler VB menerjemahkan ke IL"},
+                {"jenis": "proses", "teks": "program.dll berisi IL"},
+                {"jenis": "proses", "teks": "runtime .NET menjalankan"},
+                {"jenis": "keluaran", "teks": "Halo Dunia!"},
+            ],
+        },
+    ],
+    "Option Strict & Tipe Data": [
+        {
+            "setelah": 1,
+            "jenis": "variabel",
+            "judul": "Lima variabel dari contoh tadi, masing-masing dengan tipenya",
+            "ket": "Akhiran D bikin 25000D jadi Decimal, akhiran c bikin \"V\"c jadi "
+                   "Char. Uang disimpan di Decimal.",
+            "isi": [
+                ["umur", "20", "Integer"],
+                ["tinggi", "172.5", "Double"],
+                ["harga", "25000D", "Decimal"],
+                ["aktif", "True", "Boolean"],
+                ["huruf", "\"V\"c", "Char"],
+            ],
+            "sorot": ["harga"],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Empat operator pembagian dan pangkat, beserta tipe hasilnya",
+            "ket": "Untuk dua Integer, / selalu menghasilkan Double, sedangkan \\ "
+                   "membuang sisanya dan tetap Integer.",
+            "tabel": [
+                {
+                    "kolom": ["ekspresi", "hasil", "tipe"],
+                    "baris": [["7 / 2", "3.5", "Double"], ["7 \\ 2", "3", "Integer"],
+                              ["7 Mod 2", "1", "Integer"], ["2 ^ 10", "1024", "Double"]],
+                    "sorot_baris": [0, 1],
+                },
+            ],
+        },
+    ],
+    "Operator & Perbandingan": [
+        {
+            "setelah": 2,
+            "jenis": "alur",
+            "judul": "kosong IsNot Nothing AndAlso kosong.Length > 0, untuk kosong = Nothing",
+            "ket": "AndAlso berhenti di sisi kiri yang False, jadi kosong.Length nggak "
+                   "pernah dibaca. And tetap membacanya lalu melempar exception.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "kosong = Nothing"},
+                {"jenis": "keputusan", "teks": "kosong IsNot Nothing?", "tidak": 4},
+                {"jenis": "keputusan", "teks": "kosong.Length > 0?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "True", "ke": 5},
+                {"jenis": "keluaran", "teks": "False (sisi kanan dilewati)"},
+                {"jenis": "selesai", "teks": "aman : False"},
+            ],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Empat teks dicocokkan dengan pola Like \"B##\"",
+            "ket": "# cocok dengan tepat satu angka. Huruf kecil b ditolak karena "
+                   "Option Compare Binary membedakan huruf besar dan kecil.",
+            "tabel": [
+                {
+                    "kolom": ["teks", "Like \"B##\""],
+                    "baris": [["B01", "True"], ["B123", "False"], ["X01", "False"],
+                              ["b01", "False"]],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+    ],
+    "Percabangan: If & Select Case": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Select Case di Grade mencoba Case dari atas, yang pertama cocok menang",
+            "ket": "Nilai 78 gagal di Case pertama lalu cocok di Case 75 To 84, jadi "
+                   "hasilnya B. Case sesudahnya nggak diperiksa lagi.",
+            "langkah": [
+                {"jenis": "keputusan", "teks": "Case Is >= 85", "tidak": 2},
+                {"jenis": "keluaran", "teks": "Return \"A\" (92)", "ke": 9},
+                {"jenis": "keputusan", "teks": "Case 75 To 84", "tidak": 4},
+                {"jenis": "keluaran", "teks": "Return \"B\" (78)", "ke": 9},
+                {"jenis": "keputusan", "teks": "Case 60 To 74", "tidak": 6},
+                {"jenis": "keluaran", "teks": "Return \"C\" (65)", "ke": 9},
+                {"jenis": "keputusan", "teks": "Case 40 To 59", "tidak": 8},
+                {"jenis": "keluaran", "teks": "Return \"D\" (45)", "ke": 9},
+                {"jenis": "keluaran", "teks": "Case Else: Return \"E\" (12)"},
+                {"jenis": "selesai", "teks": "End Select"},
+            ],
+        },
+    ],
+    "Perulangan": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "For i As Integer = 1 To 5 berjalan lima kali, batas 5 ikut dihitung",
+            "ket": "Pemeriksaannya i <= 5, bukan i < 5. Karena itu 5 ikut tercetak.",
+            "langkah": [
+                {"jenis": "proses", "teks": "i = 1"},
+                {"jenis": "keputusan", "teks": "i <= 5?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "Console.Write($\"{i} \")"},
+                {"jenis": "proses", "teks": "Next: i += 1", "ke": 1},
+                {"jenis": "selesai", "teks": "tercetak 1 2 3 4 5"},
+            ],
+        },
+    ],
+    "Array & Koleksi": [
+        {
+            "setelah": 0,
+            "jenis": "larik",
+            "judul": "Dim kosong(4) As Integer membuat lima kotak, bukan empat",
+            "ket": "Angka 4 adalah indeks terakhir. Kotaknya bernomor 0 sampai 4 dan "
+                   "semuanya berisi 0.",
+            "nama": "kosong(4)",
+            "isi": ["0", "0", "0", "0", "0"],
+            "sorot": [4],
+            "penunjuk": {"UBound": 4},
+        },
+        {
+            "setelah": 1,
+            "jenis": "larik",
+            "judul": "Array nilai dari contoh, dengan letak nilai tertinggi dan terendah",
+            "ket": "nilai.Max() menemukan 95 di indeks 5, nilai.Min() menemukan 59 di "
+                   "indeks 6. Array aslinya tetap begini karena yang diurutkan salinannya.",
+            "nama": "nilai",
+            "isi": ["78", "92", "65", "88", "71", "95", "59", "83"],
+            "sorot": [5, 6],
+            "penunjuk": {"Max": 5, "Min": 6},
+        },
+    ],
+    "Sub, Function & Parameter": [
+        {
+            "setelah": 1,
+            "jenis": "variabel",
+            "judul": "x sesudah dioper ByVal lalu ByRef",
+            "ket": "ByVal memberi salinan, jadi x tetap 5. ByRef memberi variabel "
+                   "aslinya, jadi n += 100 langsung mengubah x.",
+            "isi": [
+                ["x awal", "5"],
+                ["n (ByVal)", "salinan: 5 jadi 105"],
+                ["x sesudah ByVal", "5"],
+                ["n (ByRef)", "x itu sendiri"],
+                ["x sesudah ByRef", "105"],
+            ],
+            "sorot": ["x sesudah ByRef"],
+        },
+        {
+            "setelah": 1,
+            "jenis": "variabel",
+            "judul": "Garis(\" TEBAL \", pengisi:=\"=\"c) mengisi parameternya begini",
+            "ket": "lebar nggak disebut, jadi nilai bawaan 30 yang dipakai. pengisi "
+                   "diisi lewat namanya, melompati lebar.",
+            "isi": [
+                ["isi", "\" TEBAL \"", "String"],
+                ["lebar", "30 (bawaan)", "Integer"],
+                ["pengisi", "\"=\"c", "Char"],
+            ],
+            "sorot": ["pengisi"],
+        },
+    ],
+    "Teks & Format": [
+        {
+            "setelah": 1,
+            "jenis": "larik",
+            "judul": "kalimat.Split(\" \"c) memecah kalimat jadi tujuh kata",
+            "ket": "Perulangan mencari kata terpanjang dan menemukan membuat, tujuh "
+                   "huruf, di indeks 2.",
+            "nama": "Split(\" \"c)",
+            "isi": ["Visual", "Basic", "membuat", "kode", "bisnis", "mudah", "dibaca"],
+            "sorot": [2],
+        },
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tabel barang yang disusun dengan perataan {x,-12} dan {x,15:N0}",
+            "ket": "Pemisah ribuan koma karena budaya invariant. Di komputer dengan "
+                   "setelan Indonesia, pemisahnya titik.",
+            "tabel": [
+                {
+                    "kolom": ["Barang", "Qty", "Subtotal"],
+                    "baris": [["Keyboard", "3", "1,050,000"], ["Mouse", "12", "1,020,000"],
+                              ["Monitor", "2", "3,500,000"], ["TOTAL", "", "5,570,000"]],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+    ],
+    "Class, Property & Constructor": [
+        {
+            "setelah": 1,
+            "jenis": "memori",
+            "judul": "a dan b menunjuk dua objek Rekening yang berbeda",
+            "ket": "Saldo a: 500000 + 250000, tarik 900000 ditolak, tarik 300000 "
+                   "diterima. _saldo Private, jadi cuma Setor dan Tarik yang mengubahnya.",
+            "tumpukan": [["a", "@R1"], ["b", "@R2"]],
+            "heap": [
+                {"id": "R1", "isi": "AC0001 Andi _saldo 450000"},
+                {"id": "R2", "isi": "AC0002 Budi _saldo 100000"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+    ],
+    "Pewarisan, Interface & MustInherit": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "IBangun, class MustInherit, dan dua turunannya",
+            "ket": "IBangun cuma kontrak. BangunDasar nggak bisa di-New karena "
+                   "MustInherit. Persegi dan Lingkaran mengisi Luas dan Keliling.",
+            "akar": {"teks": "IBangun", "anak": [
+                {"teks": "BangunDasar", "anak": [
+                    {"teks": "Persegi"},
+                    {"teks": "Lingkaran"},
+                ]},
+            ]},
+        },
+    ],
+    "Structure, Enum & Module": [
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "Structure disalin isinya, Class disalin alamatnya",
+            "ket": "s2 punya salinan (1, 2) sendiri. c1 dan c2 menunjuk objek yang "
+                   "sama, jadi c2.X = 99 ikut terlihat lewat c1.",
+            "tumpukan": [["s1", "(1, 2)"], ["s2", "(1, 2)"], ["c1", "@T1"],
+                         ["c2", "@T1"]],
+            "heap": [{"id": "T1", "isi": "TitikKelas X=99, Y=2"}],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek",
+        },
+        {
+            "setelah": 2,
+            "jenis": "bit",
+            "judul": "editor = Izin.Baca Or Izin.Tulis disimpan sebagai angka 3",
+            "ket": "Baca = 1 dan Tulis = 2 masing-masing punya satu bit. Or menyalakan "
+                   "keduanya, jadi HasFlag(Izin.Tulis) True.",
+            "angka": 3,
+            "lebar": 4,
+            "label": "Baca Or Tulis = 3",
+        },
+    ],
+    "Exception & Penanganan Galat": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "DenganPengukur: Finally jalan, berhasil atau gagal",
+            "ket": "Untuk \"hitung\", jalurnya lewat cabang tidak dan hasilnya 42. Untuk "
+                   "\"gagal\", kerja() melempar dan Catch mengembalikan Nothing.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "Try: kerja()"},
+                {"jenis": "keputusan", "teks": "kerja() melempar?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "Catch: galat: rusak"},
+                {"jenis": "proses", "teks": "Return Nothing", "ke": 6},
+                {"jenis": "keluaran", "teks": "selesai hitung"},
+                {"jenis": "proses", "teks": "Return hasil (42)"},
+                {"jenis": "keluaran", "teks": "Finally: (bersih ...)"},
+                {"jenis": "selesai", "teks": "nilai sampai ke pemanggil"},
+            ],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Empat tagihan ke dompet berisi 50000",
+            "ket": "-5 memicu ArgumentOutOfRangeException, 100000 memicu "
+                   "SaldoKurangException dengan Kurang = 70000. Masing-masing "
+                   "ditangkap Catch-nya sendiri, dan saldonya nggak berubah.",
+            "tabel": [
+                {
+                    "kolom": ["tagihan", "hasil", "sisa"],
+                    "baris": [["20000", "berhasil", "30000"],
+                              ["-5", "DITOLAK", "30000"],
+                              ["100000", "GAGAL, kurang", "30000"],
+                              ["30000", "berhasil", "0"]],
+                    "sorot_baris": [1, 2],
+                },
+            ],
+        },
+    ],
+    "LINQ & Lambda": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Data murid dan hasil Group By per kelas",
+            "ket": "Baris yang disorot lolos Where m.Nilai >= 75. Group By menghasilkan "
+                   "satu baris per kelas, lengkap dengan Count dan Average.",
+            "tabel": [
+                {
+                    "nama": "data",
+                    "kolom": ["Nama", "Kelas", "Nilai"],
+                    "baris": [["Andi", "A", "88"], ["Budi", "B", "72"], ["Cici", "A", "95"],
+                              ["Dedi", "B", "64"], ["Euis", "A", "79"], ["Fajar", "B", "91"]],
+                    "sorot_baris": [0, 2, 4, 5],
+                },
+                {
+                    "nama": "perKelas",
+                    "kolom": ["kelas", "Jumlah", "Rata"],
+                    "baris": [["A", "3", "87.3"], ["B", "3", "75.7"]],
+                },
+            ],
+            "panah": "Group m By kelas = m.Kelas",
+        },
+    ],
+    "Berkas, Data & Using": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Using menutup berkas di End Using, sebelum berkasnya dibaca lagi",
+            "pelaku": ["Main", "StreamWriter", "belajar-vb.csv"],
+            "pesan": [
+                [0, 1, "New StreamWriter(berkas)"],
+                [1, 2, "buka berkas"],
+                [0, 1, "WriteLine x4"],
+                [1, 2, "tulis 4 baris"],
+                [0, 1, "End Using: Dispose()"],
+                [1, 2, "tutup berkas"],
+                [0, 2, "File.ReadAllLines(berkas)"],
+                [2, 0, "4 baris teks"],
+            ],
+        },
+    ],
+    "Praktik Baik & Jebakan Umum": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "GayaLama(80): mengisi nama fungsi nggak menghentikannya",
+            "ket": "Sesudah GayaLama = \"B\", fungsinya jalan terus ke If berikutnya. "
+                   "Hasilnya benar cuma karena 80 nggak di bawah 75.",
+            "langkah": [
+                {"jenis": "proses", "teks": "GayaLama = \"A\""},
+                {"jenis": "keputusan", "teks": "nilai < 85?", "tidak": 3},
+                {"jenis": "proses", "teks": "GayaLama = \"B\", lanjut terus"},
+                {"jenis": "keputusan", "teks": "nilai < 75?", "tidak": 5},
+                {"jenis": "proses", "teks": "GayaLama = \"C\""},
+                {"jenis": "selesai", "teks": "End Function: hasil \"B\""},
+            ],
+        },
+    ],
+    "Proyek Utuh: Menggabungkan Semuanya": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Keluarga exception gudang, semuanya berinduk GudangException",
+            "ket": "Akhiran Exception disingkat dari nama anaknya. Satu Catch ex As "
+                   "GudangException menangkap keempatnya, error lain tetap naik.",
+            "akar": {"teks": "Exception", "anak": [
+                {"teks": "GudangException", "anak": [
+                    {"teks": "KodeSudahAda"},
+                    {"teks": "KodeTidakDikenal"},
+                    {"teks": "JumlahTidakSah"},
+                    {"teks": "StokTidakCukup"},
+                ]},
+            ]},
+        },
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Isi gudang sesudah lima langkah, tiga di antaranya ditolak",
+            "ket": "B02 tetap 4 karena keluar 10 ditolak. Nilai persediaannya "
+                   "375000 + 340000 + 2400000 = 3115000.",
+            "tabel": [
+                {
+                    "kolom": ["Kode", "Nama", "Stok", "Harga", "Subtotal"],
+                    "baris": [
+                        ["B01", "Kabel", "25", "15000", "375000"],
+                        ["B02", "Adaptor", "4", "85000", "340000"],
+                        ["B03", "Mouse", "20", "120000", "2400000"],
+                    ],
+                    "sorot_baris": [1],
+                },
+            ],
+        },
+    ],
+}

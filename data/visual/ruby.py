@@ -1,0 +1,526 @@
+"""Gambar konsep kurikulum Ruby. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Pengenalan Ruby & Instalasi": [
+        {
+            "setelah": 2,
+            "jenis": "alur",
+            "judul": "3.times { |i| ... } menjalankan bloknya tiga kali",
+            "ket": "Disederhanakan. i mulai dari 0, makanya yang dicetak i + 1.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "3.times, i = 0"},
+                {"jenis": "keputusan", "teks": "i < 3?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "puts \"baris ke-#{i + 1}\""},
+                {"jenis": "proses", "teks": "i bertambah 1", "ke": 1},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "Variabel, Tipe & Objek": [
+        {
+            "setelah": 0,
+            "jenis": "memori",
+            "judul": "Dua String \"a\" itu dua objek, dua Symbol :a itu satu objek",
+            "ket": "Makanya \"a\".equal?(\"a\") memberi false, sedangkan "
+                   ":a.equal?(:a) memberi true.",
+            "tumpukan": [
+                ["\"a\" pertama", "@str1"],
+                ["\"a\" kedua", "@str2"],
+                [":a pertama", "@sym"],
+                [":a kedua", "@sym"],
+            ],
+            "heap": [
+                {"id": "str1", "isi": "String \"a\""},
+                {"id": "str2", "isi": "String \"a\""},
+                {"id": "sym", "isi": "Symbol :a"},
+            ],
+            "label_tumpukan": "yang ditulis",
+            "label_heap": "objek di memori",
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Cuma false dan nil yang dianggap salah",
+            "ket": "0, teks kosong, array kosong, dan hash kosong semuanya truthy.",
+            "tabel": [
+                {
+                    "nama": "nilai sebagai kondisi",
+                    "kolom": ["nilai", "hasilnya"],
+                    "baris": [
+                        ["0", "truthy"],
+                        ["\"\"", "truthy"],
+                        ["[]", "truthy"],
+                        ["{}", "truthy"],
+                        ["false", "falsy"],
+                        ["nil", "falsy"],
+                    ],
+                    "sorot_baris": [4, 5],
+                },
+            ],
+        },
+    ],
+    "String & Symbol": [
+        {
+            "setelah": 0,
+            "jenis": "memori",
+            "judul": "<< mengubah string yang sama, upcase membuat string baru",
+            "ket": "s << \" dunia\" mengubah objek s; t = s.upcase membuat objek kedua.",
+            "tumpukan": [
+                ["s", "@obj1"],
+                ["t", "@obj2"],
+            ],
+            "heap": [
+                {"id": "obj1", "isi": "\"halo dunia\""},
+                {"id": "obj2", "isi": "\"HALO DUNIA\""},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek String",
+        },
+    ],
+    "Array & Hash": [
+        {
+            "setelah": 0,
+            "jenis": "larik",
+            "judul": "Index mulai dari 0, index negatif menghitung dari belakang",
+            "ket": "nilai[0] adalah 78, nilai[-1] adalah 83, nilai[1..2] berisi [92, 65].",
+            "nama": "nilai",
+            "isi": ["78", "92", "65", "88", "71", "95", "59", "83"],
+            "penunjuk": {"[0]": 0, "[-1]": 7},
+            "rentang": [1, 3],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Hash.new(0) sesudah menghitung tujuh kata",
+            "ket": "Tiap kata jadi kunci, nilainya berapa kali kata itu muncul.",
+            "tabel": [
+                {
+                    "nama": "hitung",
+                    "kolom": ["kunci", "nilai"],
+                    "baris": [
+                        ["\"kucing\"", "3"],
+                        ["\"ikan\"", "2"],
+                        ["\"makan\"", "1"],
+                        ["\"tidur\"", "1"],
+                    ],
+                    "sorot_kolom": ["nilai"],
+                },
+            ],
+        },
+    ],
+    "Kendali Alur": [
+        {
+            "setelah": 0,
+            "jenis": "alur",
+            "judul": "case dicek dari when paling atas, yang pertama cocok menang",
+            "ket": "Nilai 80 gagal di 85..100, lalu cocok di 75...85, jadi hasilnya \"B\".",
+            "langkah": [
+                {"jenis": "mulai", "teks": "case nilai"},
+                {"jenis": "keputusan", "teks": "when 85..100?", "tidak": 3},
+                {"jenis": "keluaran", "teks": "\"A\"", "ke": 8},
+                {"jenis": "keputusan", "teks": "when 75...85?", "tidak": 5},
+                {"jenis": "keluaran", "teks": "\"B\"", "ke": 8},
+                {"jenis": "keputusan", "teks": "when 60...75?", "tidak": 7},
+                {"jenis": "keluaran", "teks": "\"C\"", "ke": 8},
+                {"jenis": "keluaran", "teks": "else: \"D\""},
+                {"jenis": "selesai", "teks": "end"},
+            ],
+        },
+    ],
+    "Blok, Proc & Lambda": [
+        {
+            "setelah": 0,
+            "jenis": "urutan",
+            "judul": "Tiap yield menyerahkan giliran ke blok, lalu balik lagi",
+            "ket": "Untuk tiga_kali { |n| puts \"ke-#{n}\" } dari penjelasan di atas.",
+            "pelaku": ["pemanggil", "tiga_kali", "blok"],
+            "pesan": [
+                [0, 1, "panggil, bawa blok"],
+                [1, 2, "yield 1"],
+                [2, 1, "cetak ke-1, kembali"],
+                [1, 2, "yield 2"],
+                [2, 1, "cetak ke-2, kembali"],
+                [1, 2, "yield 3"],
+                [2, 1, "cetak ke-3, kembali"],
+                [1, 0, "method selesai"],
+            ],
+        },
+    ],
+    "Enumerable: Kekuatan Sesungguhnya": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "group_by(&:kelas) lalu rata-rata tiap kelompok",
+            "ket": "transform_values menghitung rata-rata tiap kelompok kelas.",
+            "tabel": [
+                {
+                    "nama": "data",
+                    "kolom": ["nama", "kelas", "nilai"],
+                    "baris": [
+                        ["Andi", "A", "88"],
+                        ["Budi", "B", "72"],
+                        ["Cici", "A", "95"],
+                        ["Dedi", "B", "64"],
+                        ["Euis", "A", "79"],
+                        ["Fajar", "B", "91"],
+                    ],
+                    "sorot_kolom": ["kelas"],
+                },
+                {
+                    "nama": "hasil",
+                    "kolom": ["kelas", "rata-rata"],
+                    "baris": [
+                        ["A", "87.3"],
+                        ["B", "75.7"],
+                    ],
+                },
+            ],
+            "panah": "group_by(&:kelas) + transform_values",
+        },
+        {
+            "setelah": 2,
+            "jenis": "larik",
+            "judul": "each_cons(2) menggeser jendela dua elemen",
+            "ket": "[64, 72] memberi 8, [72, 79] memberi 7, dan seterusnya: [8, 7, 9, 3, 4].",
+            "nama": "terurut",
+            "isi": ["64", "72", "79", "88", "91", "95"],
+            "penunjuk": {"a": 0, "b": 1},
+            "rentang": [0, 2],
+        },
+    ],
+    "Method & Argumen": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Ke mana tiap argumen laporan(...) pergi",
+            "ket": "Kunci yang nggak punya parameter sendiri ditampung **opsi.",
+            "tabel": [
+                {
+                    "nama": "panggilan pertama",
+                    "kolom": ["argumen", "masuk ke"],
+                    "baris": [
+                        ["\"REKAP\"", "judul"],
+                        ["\"Kopi 3x\"", "baris[0]"],
+                        ["\"Teh 5x\"", "baris[1]"],
+                        ["\"Roti 2x\"", "baris[2]"],
+                        ["pemisah: \"=\"", "pemisah"],
+                        ["lebar: 30", "lebar"],
+                        ["tanggal: ...", "opsi[:tanggal]"],
+                        ["kasir: \"Andi\"", "opsi[:kasir]"],
+                    ],
+                    "sorot_baris": [6, 7],
+                },
+            ],
+        },
+    ],
+    "Class & Objek": [
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "Tiap objek Rekening punya variabel instance sendiri",
+            "ket": "Sesudah a dan b dibuat. @@urutan cuma satu, milik class Rekening.",
+            "tumpukan": [
+                ["a", "@obj1"],
+                ["b", "@obj2"],
+                ["Rekening", "@kelas"],
+            ],
+            "heap": [
+                {"id": "obj1", "isi": "@nomor AC0001, @saldo 450000"},
+                {"id": "obj2", "isi": "@nomor AC0002, @saldo 100000"},
+                {"id": "kelas", "isi": "Class, @@urutan = 2"},
+            ],
+            "label_tumpukan": "nama",
+            "label_heap": "objek",
+        },
+    ],
+    "Pewarisan, Module & Mixin": [
+        {
+            "setelah": 0,
+            "jenis": "pohon",
+            "judul": "Persegi dan Lingkaran sama-sama turunan Bangun",
+            "ket": "Pohon pewarisan dari contoh di bawah. Tiap class cuma "
+                   "punya satu induk.",
+            "akar": {"teks": "BasicObject", "anak": [
+                {"teks": "Object", "anak": [
+                    {"teks": "Bangun", "anak": [
+                        {"teks": "Persegi"},
+                        {"teks": "Lingkaran"},
+                    ]},
+                ]},
+            ]},
+        },
+        {
+            "setelah": 2,
+            "jenis": "tumpukan",
+            "judul": "Ruby mencari method dari atas daftar ancestors",
+            "ket": "Module yang di-include terakhir (Berwarna) ada di atas BisaDiringkas.",
+            "mode": "tumpukan",
+            "isi": ["BasicObject", "Kernel", "Object", "BisaDiringkas",
+                    "Berwarna", "Bangun", "Lingkaran"],
+            "label": "Lingkaran.ancestors",
+            "operasi": "cari dari atas",
+        },
+    ],
+    "Exception & Penanganan Galat": [
+        {
+            "setelah": 0,
+            "jenis": "pohon",
+            "judul": "rescue tanpa nama class cuma menangkap cabang StandardError",
+            "ket": "Diringkas. Ctrl-C (SignalException) sengaja nggak ikut tertangkap.",
+            "akar": {"teks": "Exception", "anak": [
+                {"teks": "NoMemoryError"},
+                {"teks": "SignalException"},
+                {"teks": "ScriptError"},
+                {"teks": "StandardError", "anak": [
+                    {"teks": "ArgumentError"},
+                    {"teks": "NameError", "anak": [{"teks": "NoMethodError"}]},
+                    {"teks": "ZeroDivisionError"},
+                    {"teks": "IOError"},
+                    {"teks": "RuntimeError"},
+                    {"teks": "IndexError", "anak": [{"teks": "KeyError"}]},
+                ]},
+            ]},
+        },
+        {
+            "setelah": 2,
+            "jenis": "alur",
+            "judul": "retry kembali ke awal begin, tapi dibatasi penghitung",
+            "ket": "Dengan gagal_sampai: 2, percobaan ketiga berhasil, raise nggak tercapai.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "percobaan = 0"},
+                {"jenis": "proses", "teks": "percobaan += 1"},
+                {"jenis": "keputusan", "teks": "ambil_data berhasil?", "tidak": 4},
+                {"jenis": "keluaran", "teks": "cetak hasilnya", "ke": 6},
+                {"jenis": "keputusan", "teks": "percobaan < 5?", "ya": 1, "tidak": 5},
+                {"jenis": "keluaran", "teks": "raise (lempar ulang)"},
+                {"jenis": "selesai", "teks": "end"},
+            ],
+        },
+    ],
+    "Berkas, JSON & Baris Perintah": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Baris teks di berkas jadi hash berkunci Symbol",
+            "ket": "Baris pertama jadi kunci. Berkat .to_i, nilai 88 tersimpan sebagai angka.",
+            "tabel": [
+                {
+                    "nama": "belajar-ruby.csv",
+                    "kolom": ["baris"],
+                    "baris": [
+                        ["nama,kelas,nilai"],
+                        ["Andi,A,88"],
+                        ["Budi,B,72"],
+                        ["Cici,A,95"],
+                    ],
+                    "sorot_baris": [0],
+                },
+                {
+                    "nama": "data",
+                    "kolom": [":nama", ":kelas", ":nilai"],
+                    "baris": [
+                        ["\"Andi\"", "\"A\"", "88"],
+                        ["\"Budi\"", "\"B\"", "72"],
+                        ["\"Cici\"", "\"A\"", "95"],
+                    ],
+                    "sorot_kolom": [":nilai"],
+                },
+            ],
+            "panah": "kunci.zip(baris.split(\",\")).to_h",
+        },
+    ],
+    "Gem, Bundler & Struktur Proyek": [
+        {
+            "setelah": 0,
+            "jenis": "urutan",
+            "judul": "bundle install mencatat versi, bundle exec memakainya",
+            "ket": "Kalau Gemfile.lock sudah ada, bundle install memakai versi persisnya.",
+            "pelaku": ["kamu", "Bundler", "rubygems.org"],
+            "pesan": [
+                [0, 1, "bundle install"],
+                [1, 2, "cari sinatra ~> 4.0"],
+                [2, 1, "versi 4.x terbaru"],
+                [1, 0, "versi persis ke Gemfile.lock"],
+                [0, 1, "bundle exec rspec"],
+                [1, 0, "jalan dengan versi terkunci"],
+            ],
+        },
+    ],
+    "Pengujian dengan Minitest & RSpec": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Nilai uji dipilih tepat di kiri dan kanan tiap batas",
+            "ket": "Isi test_grade_tepat_di_batas. Salah ketik >= ketahuan di 85 dan 84.",
+            "tabel": [
+                {
+                    "nama": "nilai -> harap",
+                    "kolom": ["nilai", "harap"],
+                    "baris": [
+                        ["85", "A"],
+                        ["84", "B"],
+                        ["75", "B"],
+                        ["74", "C"],
+                        ["60", "C"],
+                        ["59", "D"],
+                        ["0", "D"],
+                    ],
+                    "sorot_baris": [0, 1, 2, 3, 4, 5],
+                },
+            ],
+        },
+    ],
+    "Metaprogramming Secukupnya": [
+        {
+            "setelah": 2,
+            "jenis": "alur",
+            "judul": "Yang terjadi waktu c.judul dipanggil pada objek Catatan",
+            "ket": "Cabang setter dilewati. super membuat NoMethodError tetap muncul.",
+            "langkah": [
+                {"jenis": "mulai", "teks": "c.judul"},
+                {"jenis": "keputusan", "teks": "ada method judul?", "tidak": 3},
+                {"jenis": "proses", "teks": "jalankan method itu", "ke": 8},
+                {"jenis": "proses", "teks": "method_missing(:judul)"},
+                {"jenis": "keputusan", "teks": "@data.key?(:judul)?", "tidak": 6},
+                {"jenis": "keluaran", "teks": "@data[:judul]", "ke": 8},
+                {"jenis": "proses", "teks": "super"},
+                {"jenis": "keluaran", "teks": "NoMethodError"},
+                {"jenis": "selesai", "teks": "selesai"},
+            ],
+        },
+    ],
+    "Ekspresi Reguler": [
+        {
+            "setelah": 0,
+            "jenis": "larik",
+            "judul": "Grup bernama thn dan bln di \"2026-09-22\"",
+            "ket": "Polanya cocok di 7 huruf pertama. Sisanya, \"-22\", jadi post_match.",
+            "nama": "\"2026-09-22\"",
+            "isi": ["2", "0", "2", "6", "-", "0", "9", "-", "2", "2"],
+            "penunjuk": {"thn": 0, "bln": 5},
+            "rentang": [0, 7],
+        },
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "^...$ memeriksa satu baris, \\A...\\z memeriksa seluruh teks",
+            "ket": "Baris terakhir aslinya \"2026-09-22\\nsisipan\" dari contoh di atas.",
+            "tabel": [
+                {
+                    "kolom": ["teks", "longgar ^$", "ketat \\A\\z"],
+                    "baris": [
+                        ["2026-09-22", "true", "true"],
+                        ["22/09/2026", "false", "false"],
+                        ["2026-13-40", "true", "false"],
+                        ["2026-09-22\\n...", "true", "false"],
+                    ],
+                    "sorot_baris": [2, 3],
+                },
+            ],
+        },
+    ],
+    "Waktu & Tanggal": [
+        {
+            "setelah": 2,
+            "jenis": "larik",
+            "judul": "partition memisahkan akhir pekan dari hari kerja",
+            "ket": "Tujuh hari mulai 15 Januari 2026. Sabtu dan Minggu masuk pekan.",
+            "nama": "mulai..mulai+6",
+            "isi": ["Kam 15", "Jum 16", "Sab 17", "Min 18", "Sen 19",
+                    "Sel 20", "Rab 21"],
+            "sorot": [2, 3],
+        },
+    ],
+    "Set, Struct & Data": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Irisan ikut_a & ikut_b berisi yang ada di dua kelas",
+            "ket": "Yang disorot adalah irisan. ikut_a - ikut_b berisi Andi dan Budi.",
+            "tabel": [
+                {
+                    "kolom": ["nama", "kelas A", "kelas B"],
+                    "baris": [
+                        ["Andi", "ya", ""],
+                        ["Budi", "ya", ""],
+                        ["Cici", "ya", "ya"],
+                        ["Dedi", "ya", "ya"],
+                        ["Euis", "", "ya"],
+                    ],
+                    "sorot_baris": [2, 3],
+                },
+            ],
+        },
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "with membuat objek Data baru, objek lama tetap",
+            "ket": "naik = kopi.with(harga: 120_000), dan kopi tetap berharga 25000.",
+            "tumpukan": [
+                ["kopi", "@obj1"],
+                ["naik", "@obj2"],
+            ],
+            "heap": [
+                {"id": "obj1", "isi": "Produk Kopi, harga 25000"},
+                {"id": "obj2", "isi": "Produk Kopi, harga 120000"},
+            ],
+            "label_tumpukan": "variabel",
+            "label_heap": "objek Data beku",
+        },
+    ],
+    "Ruby untuk Skrip Sistem": [
+        {
+            "setelah": 0,
+            "jenis": "urutan",
+            "judul": "Masukan, dua jalur keluaran, dan kode status",
+            "ket": "Kode keluar dibaca terminal untuk memutuskan langkah berikutnya.",
+            "pelaku": ["terminal", "skrip", "stdout", "stderr"],
+            "pesan": [
+                [0, 1, "argumen lewat ARGV"],
+                [0, 1, "aliran stdin lewat |"],
+                [1, 2, "puts: hasil"],
+                [1, 3, "warn: pesan status"],
+                [1, 0, "exit 0 atau exit 1"],
+            ],
+        },
+    ],
+    "Gaya, Kualitas & Jebakan Umum": [
+        {
+            "setelah": 2,
+            "jenis": "memori",
+            "judul": "Hash.new([]) memakai satu array untuk semua kunci",
+            "ket": "Hash salah tetap kosong. Bentuk blok membuat array sendiri tiap kunci.",
+            "tumpukan": [
+                ["salah[:a]", "@bawaan"],
+                ["salah[:b]", "@bawaan"],
+                ["benar[:a]", "@arr_a"],
+                ["benar[:b]", "@arr_b"],
+            ],
+            "heap": [
+                {"id": "bawaan", "isi": "[1, 2], nggak tersimpan"},
+                {"id": "arr_a", "isi": "[1], tersimpan di benar"},
+                {"id": "arr_b", "isi": "[2], tersimpan di benar"},
+            ],
+            "label_tumpukan": "ekspresi",
+            "label_heap": "array",
+        },
+    ],
+    "Proyek Utuh: Menggabungkan Semuanya": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "Antarmuka memanggil Gudang, Gudang memakai Barang",
+            "ket": "Dua langkah dari program. Cuma antarmuka yang mencetak ke layar.",
+            "pelaku": ["Antarmuka", "Gudang", "Barang"],
+            "pesan": [
+                [0, 1, "catat(\"B01\", :masuk, 15)"],
+                [1, 2, "stok = 25"],
+                [1, 0, "kembalikan 25"],
+                [0, 1, "catat(\"B02\", :keluar, 10)"],
+                [1, 2, "baca stok: 4"],
+                [1, 0, "raise StokTidakCukupError"],
+                [0, 0, "puts \"... DITOLAK: ...\""],
+            ],
+        },
+    ],
+}
