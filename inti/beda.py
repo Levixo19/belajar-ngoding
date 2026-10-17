@@ -303,6 +303,19 @@ def render(beda, lebar=76, maks_baris=14):
     return keluar
 
 
+# Diagnosis yang berarti "isinya sudah benar, tinggal bentuknya". Layar latihan
+# memakainya untuk berkata "Hampir" alih-alih vonis gagal berwarna merah: kalau
+# kemajuan sebagian tidak terlihat, mencoba lagi terasa seperti mulai dari nol.
+_AWALAN_NYARIS = ("Isinya sudah benar", "Semua barisnya benar", "Semua ANGKANYA",
+                  "Nilainya sudah benar", "Hanya beda TANDA BACA",
+                  "Semua baris yang diminta sudah ada")
+
+
+def nyaris(beda):
+    """True kalau output pelajar hampir benar menurut diagnosis di atas."""
+    return any(c.startswith(_AWALAN_NYARIS) for c in beda.catatan)
+
+
 def ringkas(beda):
     """Satu kalimat rangkuman, untuk daftar hasil uji."""
     if beda.sama:

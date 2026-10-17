@@ -113,7 +113,7 @@ export async function layarKuis({ key, indeks }, ctx) {
           q.jatuh_tempo ? h("span.pil.pil-ungu", {}, "sudah waktunya diulang")
             : q.jadwal ? h("span.pil", {}, jadwalRamah(q.jadwal)) : null,
           q.salah_tersisa
-            ? h("span.pil.pil-salah", {}, `${q.salah_tersisa} soal masih salah`)
+            ? h("span.pil", {}, `${q.salah_tersisa} soal untuk diulang`)
             : null)) : null,
 
       // Tindakan utama berdiri PALING ATAS, setelannya menyusul di balik
@@ -440,7 +440,7 @@ export async function layarKuis({ key, indeks }, ctx) {
           h("span.pil", {}, `${Math.round(r.detik)} detik`),
           r.jadwal ? h("span.pil.pil-ungu", {}, jadwalRamah(r.jadwal)) : null,
           r.salah_tersisa
-            ? h("span.pil.pil-salah", {}, `${r.salah_tersisa} soal masih salah`)
+            ? h("span.pil", {}, `${r.salah_tersisa} soal untuk diulang`)
             : h("span.pil.pil-tumbuh", {}, "tidak ada soal tersisa")),
         !r.sesi_penuh ? h("p.baris-sisi", { gaya: { margin: "var(--s3) 0 0" } },
           "Ini sesi ulangan, jadi skor terbaikmu sengaja tidak disentuh.") : null),
@@ -1142,7 +1142,7 @@ function kartuBerkas(x) {
 /* --------------------------------------------------------- hasil eksekusi */
 
 function kartuGalat(pesan) {
-  return keadaan({ jenis: "salah", gambar: "belum", judul: "Gagal", ket: pesan });
+  return keadaan({ jenis: "salah", gambar: "belum", judul: "Belum jalan", ket: pesan });
 }
 
 /* Lebar perangkat yang bisa dipilih untuk pratinjau. Urutannya dari sempit ke
@@ -1551,17 +1551,17 @@ function kartuPeriksa(r, x, tuju) {
     return keadaan({ jenis: "kunci", gambar: "belum",
                      judul: "Belum bisa dinilai", ket: r.alasan });
   }
-  const lulus = r.uji.filter((u) => u.lulus).length;
-  return h("div.masuk", {},
+  const lulus = r.uji.filter((u) => u.lulus).length; const tadi = lulusTadi(x, lulus);
+  const nyaris = !r.lulus && r.uji.some((u) => !u.lulus && u.beda && u.beda.nyaris); return h("div.masuk", {},
     h("div.kartu", { gaya: { marginBottom: "var(--s3)",
       borderColor: r.lulus ? "var(--tumbuh)"
         : "color-mix(in srgb, var(--salah) 40%, transparent)" } },
       h("div.deret", {},
-        h("h3", { gaya: { color: r.lulus ? "var(--tumbuh)" : "var(--salah)" } },
+        h("h3", { gaya: { color: r.lulus ? "var(--tumbuh)" : nyaris ? "var(--nyala)" : "var(--teks)" } },
           r.lulus ? "Benar. Outputmu sudah sesuai."
-                  : "Belum sesuai. Lihat bedanya di bawah."),
+                  : nyaris ? "Hampir. Isinya sudah benar, tinggal bentuknya." : "Belum sesuai. Lihat bedanya di bawah."),
         h("span.deret-kanan"),
-        h("span.pil", {}, `${lulus}/${r.uji.length} uji lulus`),
+        h("span.pil" + (tadi !== null && lulus > tadi ? ".pil-tumbuh" : ""), {}, (tadi !== null && tadi !== lulus ? `tadi ${tadi}, sekarang ` : "") + `${lulus}/${r.uji.length} uji lulus`),
         h("span.pil", {}, r.detik + " detik")),
       !r.lulus ? h("p", { gaya: { margin: "var(--s2) 0 0",
                                   color: "var(--teks-2)",
@@ -1584,7 +1584,7 @@ function deretUji(r, tuju) {
 function kartuUji(u, tuju) {
   return h("div.uji" + (u.lulus ? ".lulus" : ".gagal"), {},
     h("div.uji-kepala", {},
-      h("span.uji-cap", {}, u.lulus ? "LULUS" : "GAGAL"),
+      h("span.uji-cap", {}, u.lulus ? "LULUS" : "BELUM"),
       h("span.uji-nama", {}, u.nama),
       u.stdin ? h("span.pil", {},
         "input: " + u.stdin.replace(/\n/g, "⏎").slice(0, 24)) : null),
@@ -2158,3 +2158,15 @@ function bacaLagi(d, key) {
   return h("div.baca-lagi", {}, "Baca lagi: ",
     h("a", { href: `#/materi/${key}/${m.indeks}` }, m.judul));
 }
+
+/* Jumlah uji yang lulus pada pemeriksaan SEBELUMNYA untuk latihan yang sama,
+   selama halaman ini hidup. "tadi 1/3, sekarang 2/3" adalah satu-satunya cara
+   kemajuan sebagian terlihat; tanpa itu, dua kegagalan tampak sama persis. */
+const LULUS_TADI = new Map();
+function lulusTadi(x, lulus) {
+  const k = x && (x.judul || x.title || JSON.stringify(x));
+  const tadi = LULUS_TADI.has(k) ? LULUS_TADI.get(k) : null;
+  LULUS_TADI.set(k, lulus);
+  return tadi;
+}
+

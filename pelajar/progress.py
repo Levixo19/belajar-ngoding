@@ -434,7 +434,7 @@ DAFTAR_BADGE = [
      lambda d: len(_bahasa_tersentuh(d)) >= 3),
     ("poliglot_sejati", "Poliglot Sejati", "Sentuh 6 bahasa berbeda",
      lambda d: len(_bahasa_tersentuh(d)) >= 6),
-    ("poliglot_lengkap", "Poliglot Lengkap", "Sentuh semua 8 bahasa",
+    ("poliglot_lengkap", "Poliglot Lengkap", "Sentuh 8 kurikulum berbeda",
      lambda d: len(_bahasa_tersentuh(d)) >= 8),
     ("tiga_hari", "Konsisten", "Belajar 3 hari beruntun",
      lambda d: d["streak"].get("terpanjang", 0) >= 3),

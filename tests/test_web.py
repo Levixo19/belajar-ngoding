@@ -538,7 +538,7 @@ class TestSesiKuis(BasisWeb):
         0/10" -- kalimat yang terbaca sebagai penghukuman.
 
         Dijalankan lewat `api`, bukan dibaca dari teks: yang diuji di sini
-        bahwa potret `sebelum` (`api.py:673`, di dalam `_KUNCI_PROGRES`)
+        bahwa potret `sebelum` (`api.py:674`, di dalam `_KUNCI_PROGRES`)
         benar-benar diambil SEBELUM `record_quiz_score` menimpa
         `terakhir_skor` (`pelajar/progress.py:595`). Mengikuti preseden
         `TestFieldPembandingDasbor` (`tests/test_web.py:369`), yang
@@ -5013,7 +5013,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
     tiap kuis di `main.LANGUAGES` (ruang: seluruh kurikulum, pembaca: impor
     modul, satuan: cacah kuis) memberi NOL dari 116 kuis pada 2026-09-30 —
     tidak satu pun kuis membawa durasi. `sesi.durasi` baru bernyawa kalau badan
-    permintaan mengirim `timer` (`api.py:641-639`, `per_soal` dari
+    permintaan mengirim `timer` (`api.py:642-639`, `per_soal` dari
     `konfigurasi.detik_per_soal`, bawaan 30 detik, setelannya di
     `layar-lain.js:490`), dan `if (sesi.durasi)` (`layar-kerja.js:196`) adalah
     SATU-SATUNYA jalan masuk ke `jalankanJam()` dan pendengar
@@ -5673,10 +5673,10 @@ class TestKuisUmpanBalik(unittest.TestCase):
         """Angka pembandingnya datang dari `sebelum`, dan hanya dirender penuh.
 
         `kuis_selesai` memuat DUA potret progres: `sebelum` di dalam
-        `_KUNCI_PROGRES` (`api.py:673`, sebelum `record_quiz_score`
+        `_KUNCI_PROGRES` (`api.py:674`, sebelum `record_quiz_score`
         `:556-558`) dan `sesudah` di `:570`. `terakhir_skor` ditimpa di sisi
         penyimpan (`pelajar/progress.py:595`, di dalam `riwayat` yang diambil
-        `:590`), jadi tepat saat `api.py:673` dijalankan nilainya masih
+        `:590`), jadi tepat saat `api.py:674` dijalankan nilainya masih
         milik
         percobaan SEBELUMNYA. Membacanya dari `sesudah` memulangkan skor
         percobaan yang baru saja selesai -- dan pembandingnya berubah jadi
@@ -5898,7 +5898,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
         bukan lewat `document.activeElement`.
 
         YANG TIDAK DIPASANG, dan itu keputusan: `Backspace` sebagai jalan
-        keluar. `kuis_batal` ada (`api.py:679`), tapi memanggilnya dari sebuah
+        keluar. `kuis_batal` ada (`api.py:680`), tapi memanggilnya dari sebuah
         tombol yang sering ditekan tanpa sengaja adalah cara tercepat membuat
         orang kehilangan lima belas jawaban tanpa satu pun jejak visual.
         """

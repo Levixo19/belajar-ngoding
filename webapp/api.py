@@ -175,6 +175,7 @@ def _beda_json(b):
         "kolom_beda": b.kolom_beda,
         "catatan": list(b.catatan),
         "ringkas": beda.ringkas(b),
+        "nyaris": beda.nyaris(b),
     }
 
 

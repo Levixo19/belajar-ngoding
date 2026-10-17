@@ -139,5 +139,18 @@ class TestRender(unittest.TestCase):
             self.assertTrue(r.strip())
 
 
+class TestNyaris(unittest.TestCase):
+    """Penanda 'hampir benar' untuk layar latihan ("Hampir", bukan vonis merah)."""
+
+    def test_hanya_beda_huruf_besar_kecil_itu_nyaris(self):
+        self.assertTrue(beda.nyaris(beda.bandingkan("Halo Dunia", "halo dunia")))
+
+    def test_urutan_tertukar_itu_nyaris(self):
+        self.assertTrue(beda.nyaris(beda.bandingkan("a\nb", "b\na")))
+
+    def test_isi_yang_memang_salah_bukan_nyaris(self):
+        self.assertFalse(beda.nyaris(beda.bandingkan("Total: 110", "Halo")))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
