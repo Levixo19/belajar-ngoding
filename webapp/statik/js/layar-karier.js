@@ -18,7 +18,7 @@
  * Importir: aplikasi.js.
  */
 
-import { api, h, isikan, bulat } from "./inti.js";
+import { api, h, isikan, bulat, urlAman } from "./inti.js";
 import { ikon } from "./ikon.js";
 import { sampul } from "./sampul.js";
 import { gerakPenuh } from "./gerak.js";
@@ -551,7 +551,7 @@ function panelDetail(p, data, pilih) {
       ? blok("Gaji di Indonesia",
           h("p.kr-gaji", {}, p.gaji.rentang),
           h("p.kr-catatan", {}, p.gaji.konteks, " Sumber: ",
-            h("a", { href: p.gaji.url, target: "_blank", rel: "noopener noreferrer" },
+            h("a", { href: urlAman(p.gaji.url), target: "_blank", rel: "noopener noreferrer" },
               p.gaji.sumber), `, diperiksa ${p.gaji.diperiksa}.`))
       : blok("Gaji di Indonesia", h("p.kr-catatan", {},
           "Belum ada sumber publik yang angkanya bisa diperiksa untuk peran ini, "
@@ -573,7 +573,7 @@ function panelDetail(p, data, pilih) {
           href: "https://roadmap.sh/" + slug, target: "_blank", rel: "noopener noreferrer",
         }, "roadmap.sh/" + slug))),
         p.sumber.map((x) => h("li", {}, h("a", {
-          href: x.url, target: "_blank", rel: "noopener noreferrer",
+          href: urlAman(x.url), target: "_blank", rel: "noopener noreferrer",
         }, x.judul))),
         h("li", {}, h("a", {
           href: "#/pustaka?kurikulum=" + p.kelompok[0].wakil,

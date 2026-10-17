@@ -211,5 +211,29 @@ class TestDataHasilPemanen(unittest.TestCase):
                         self.assertEqual(a.read(), b.read())
 
 
+class TestTautanBerskemaAman(unittest.TestCase):
+    """Semua tautan Pustaka & Karier http(s). Web juga menyaringnya (urlAman di
+    inti.js), tapi data yang dipanen ulang dengan skema lain sebaiknya merah
+    di sini lebih dulu, bukan diam-diam jadi tautan mati."""
+
+    def test_url_pustaka_http_atau_kosong(self):
+        from inti import pustaka
+        entri = pustaka._muat()["entri"]
+        self.assertGreater(len(entri), 9000, "tes ini harus benar-benar menyapu Pustaka")
+        for e in entri:
+            for medan in ("url", "repo"):
+                u = (e.get(medan) or "").strip()
+                if u:
+                    with self.subTest(url=u[:60]):
+                        self.assertRegex(u, r"^https?://")
+
+    def test_url_karier_http(self):
+        from data.karier import PROFESI
+        for p in PROFESI:
+            gaji = p.get("gaji") or {}
+            if isinstance(gaji, dict) and gaji.get("url"):
+                self.assertRegex(gaji["url"], r"^https?://")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

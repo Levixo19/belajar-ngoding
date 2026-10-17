@@ -15,7 +15,7 @@
 
 import {
   api, h, isikan, kosongkan, bilah, sorak, rayakan, salin, konfirmasi, jendela,
-  jamMundur, tunda, medan, selisihHari, keadaan, jendelaTerbuka,
+  jamMundur, tunda, medan, selisihHari, keadaan, jendelaTerbuka, umumkan,
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, getar, denyut, percikBara, magnet, skala, angkaKe,
@@ -320,7 +320,7 @@ export async function layarKuis({ key, indeks }, ctx) {
       // dijaga bersih dari kunci jawaban, jadi menaruh penjelasan di sana
       // berarti membocorkan jawabannya ke tab Network sebelum orangnya
       // menjawab.
-      const blok = h("div.penjelasan", {},
+      umumkan(r.benar ? "Benar." : "Belum tepat. " + (r.penjelasan || "")); const blok = h("div.penjelasan", {},
         h("b", {}, r.benar ? "Benar. " : "Belum tepat. "),
         berkode(r.penjelasan || (r.benar ? "" : "Jawaban yang benar disorot hijau.")),
         h("div.deret", { gaya: { marginTop: "var(--s3)" } }, lanjut));
@@ -692,7 +692,7 @@ export async function layarLatihan({ key, indeks }) {
     try {
       const r = await api.kirim("/api/latihan/periksa",
                                 { key, indeks, kode: editor.nilai });
-      isikan(hasil, kartuPeriksa(r, x, tuju));
+      isikan(hasil, kartuPeriksa(r, x, tuju)); if (r.lulus) tawarkanLatihanBerikut(hasil, key, x); if (r.bisa_dinilai) umumkan(r.lulus ? "Benar. Outputmu sudah sesuai." : `Belum sesuai. ${r.uji.filter((u) => u.lulus).length} dari ${r.uji.length} uji lulus.`);
       if (r.lulus) {
         status = "lulus";
         gambarStatus();
@@ -2168,5 +2168,15 @@ function lulusTadi(x, lulus) {
   const tadi = LULUS_TADI.has(k) ? LULUS_TADI.get(k) : null;
   LULUS_TADI.set(k, lulus);
   return tadi;
+}
+
+/** Sesudah lulus: satu tombol ke latihan berikutnya, tepat di bawah kartu hasil.
+ *  Dulu satu-satunya jalan maju adalah panah 32 px di strip konteks, di pojok
+ *  kanan atas, jauh dari mata yang sedang membaca kartu "Benar". */
+function tawarkanLatihanBerikut(hasil, key, x) {
+  if (x.indeks + 1 >= x.jumlah || hasil.querySelector(".tbl-latihan-berikut")) return;
+  const tbl = h("a.tbl.tbl-utama.tbl-latihan-berikut", { href: `#/latihan/${key}/${x.indeks + 1}` },
+    "Latihan berikutnya", ikon("lanjut", { ukuran: 16 }));
+  hasil.appendChild(h("div.deret", { gaya: { marginTop: "var(--s3)" } }, tbl));
 }
 

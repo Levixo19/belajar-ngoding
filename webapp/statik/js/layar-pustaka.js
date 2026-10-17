@@ -18,7 +18,7 @@
  * Importir: aplikasi.js, layar-belajar.js.
  */
 
-import { api, h, isikan, kosong, tandai, angka } from "./inti.js";
+import { api, h, isikan, kosong, tandai, angka, urlAman } from "./inti.js";
 import { ikon } from "./ikon.js";
 import { kepalaBersampul } from "./sampul.js";
 
@@ -38,7 +38,7 @@ export function barisTautan(e, labelJenis, kata) {
     e.topik && e.topik.length ? e.topik[0] : null,
   ].filter(Boolean).join(" · ");
   return h("a.baris", {
-    href: e.url, target: "_blank", rel: "noopener noreferrer", title: e.url,
+    href: urlAman(e.url), target: "_blank", rel: "noopener noreferrer", title: e.url,
   },
     h("span.pil.pil-jenis", {}, labelJenis[e.jenis] || e.jenis),
     h("div.isi", {},
@@ -191,7 +191,7 @@ function blokSumber(sumber) {
   return h("details.bantuan-isi", { gaya: { marginTop: "var(--s7)" } },
     h("summary", {}, "Sumber dan lisensi"),
     h("div.senarai", {}, sumber.map((s) => h(s.repo ? "a.baris" : "div.baris", {
-      href: s.repo || null, target: s.repo ? "_blank" : null,
+      href: urlAman(s.repo), target: urlAman(s.repo) ? "_blank" : null,
       rel: s.repo ? "noopener noreferrer" : null,
     },
       h("span.pil", {}, s.lisensi),

@@ -613,7 +613,7 @@ async function segarkanUkuran() {
     streak.classList.toggle("menyala", d.streak > 0);
     streak.title = d.streak
       ? `Streak ${d.streak} hari berjalan · rekor ${d.streak_rekor} hari`
-      : "Streak terputus. Kerjakan satu hal apa pun hari ini untuk memulai lagi.";
+      : "Streak terputus. Kerjakan satu hal apa pun hari ini untuk memulai lagi."; streak.setAttribute("aria-label", streak.title);  // title bukan nama aksesibel (WCAG 4.1.2)
     if (streakNaik && xpTerakhir !== null) denyut(streak);
 
     const xp = $("#tanda-xp");
@@ -625,7 +625,7 @@ async function segarkanUkuran() {
     if (xpTerakhir !== null && d.xp > xpTerakhir) denyut(xp);
     xpTerakhir = d.xp;
     xp.title = `Level ${d.level}, ${d.gelar} · ${d.xp_hari_ini} dari `
-      + `${d.target_harian} XP hari ini`;
+      + `${d.target_harian} XP hari ini`; xp.setAttribute("aria-label", `${d.xp} XP total. ` + xp.title);
 
     for (const b of d.bahasa) {
       const a = document.querySelector(`#rel-bahasa a[data-key="${b.key}"]`);

@@ -1709,7 +1709,7 @@ input[type="text"], input[type="number"], textarea, select {
   width: 100%;
 }
 input:focus, textarea:focus, select:focus {
-  outline: none;
+  outline: 2px solid var(--nyala); outline-offset: 1px;  /* WCAG 2.4.7: cincin 1px alfa .38 dulu ~2,4:1 */
   border-color: var(--nyala-gelap);
   box-shadow: var(--cahaya);
 }
@@ -2246,7 +2246,7 @@ pre.kode {
   overflow: hidden;
   transition: border-color var(--cepat), box-shadow var(--cepat);
 }
-.editor:focus-within { border-color: var(--nyala-gelap); box-shadow: var(--cahaya); }
+.editor:focus-within { border-color: var(--nyala-gelap); box-shadow: var(--cahaya); outline: 2px solid var(--nyala); outline-offset: 1px; }
 /* Aturan `.editor-isi-ruang` TIDAK ada di sini melainkan di dalam
    @container ruang kerja, di kaki berkas. Alasannya bukan kerapian: di layar
    sempit tinggi editor tetap datang dari isinya, dan memberi grid ini sebuah
@@ -6134,4 +6134,12 @@ html.lingkar-tema::view-transition-new(root) {
   .tebak-tabel th { text-align: left; color: var(--redup); font-weight: 600; padding: var(--s1) var(--s2); }
   .tebak-tabel td { padding: var(--s1) var(--s2); vertical-align: top; white-space: pre-wrap; }
   .tebak-beda-baris td { background: color-mix(in srgb, var(--salah) 10%, transparent); }
+}
+/* Pengumum pembaca layar (umumkan() di inti.js): ada untuk dibacakan, tidak terlihat. */
+.pengumum {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+@media (min-width: 861px) {
+  .tbl-latihan-berikut { align-self: flex-start; }
 }

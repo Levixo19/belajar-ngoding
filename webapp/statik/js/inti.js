@@ -573,9 +573,9 @@ export function rayakan(hadiah, { diam = false, dari = null } = {}) {
     isyarat("capai");
   }
 
-  for (const b of hadiah.badge || []) {
-    sorak(`Badge baru, ${b.nama}: ${b.deskripsi}`, "nyala", 6);
-  }
+  const bb = hadiah.badge || [];  // beberapa badge sekaligus = SATU toast, bukan tumpukan di atas tombol
+  if (bb.length) sorak(bb.length === 1 ? `Badge baru, ${bb[0].nama}: ${bb[0].deskripsi}`
+    : `${bb.length} badge baru: ${bb.map((b) => b.nama).join(", ")}`, "nyala", 6);
 
   document.dispatchEvent(new CustomEvent("progres-berubah",
     { detail: { ...hadiah, tingkat } }));
@@ -776,3 +776,28 @@ function cadanganSalin(teks, selesai) {
   catch (e) { sorak("Browser ini tidak mengizinkan penyalinan otomatis.", "salah"); }
   ta.remove();
 }
+
+/** Tautan eksternal hanya boleh http(s). Data Pustaka dan Karier dipanen dari
+ *  sumber luar (alat/panen_pustaka.py); satu `javascript:` yang lolos di sana
+ *  akan berjalan di asal aplikasi ini, yang memegang token API. Selain itu
+ *  kembali null, dan h() melewati atribut bernilai null. */
+export function urlAman(u) {
+  return typeof u === "string" && /^https?:\/\//i.test(u.trim()) ? u : null;
+}
+
+/** Bacakan sebuah kalimat ke pembaca layar tanpa menampilkan apa pun.
+ *
+ *  Hasil kuis (benar/salah) dan hasil Periksa latihan dulu cuma ditandai warna
+ *  dan kelas; fokus pindah ke tombol berikutnya dan pembaca layar hanya
+ *  mendengar nama tombol itu (WCAG 4.1.3). `#sorak` juga live region, tapi
+ *  isinya muncul sebagai toast di layar, jadi tidak dipakai di sini. */
+let pengumum = null;
+export function umumkan(teks) {
+  if (!pengumum) {
+    pengumum = h("div.pengumum", { "aria-live": "polite", role: "status" });
+    document.body.appendChild(pengumum);
+  }
+  pengumum.textContent = "";
+  setTimeout(() => { pengumum.textContent = teks; }, 60);
+}
+
