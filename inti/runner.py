@@ -686,6 +686,24 @@ def _bunuh(proc):
             pass
 
 
+def _bunuh_sisa(proc):
+    """Bunuh keturunan yang masih hidup SESUDAH program utamanya selesai.
+
+    `_bunuh` dulu cuma dipanggil saat timeout. Program yang selesai normal
+    tapi meninggalkan anak di latar (`sleep 300 &`, `subprocess.Popen`, server
+    kecil di latihan Bash/Python) membiarkan anak itu hidup sampai komputer
+    dimatikan, bekerja di direktori sementara yang sudah dihapus. Proses
+    dijalankan dengan `start_new_session`, jadi PID-nya juga nomor grupnya:
+    grup itu bisa dibunuh walau pemimpinnya sudah dipanen `wait`.
+    """
+    if os.name == "nt":
+        return
+    try:
+        os.killpg(proc.pid, signal.SIGKILL)
+    except (OSError, ProcessLookupError):
+        pass  # grupnya sudah kosong: kasus yang paling sering
+
+
 def _lingkungan(cwd, tc):
     lingkungan = dict(os.environ)
     lingkungan["HOME"] = cwd
@@ -772,6 +790,7 @@ def _proses(cmd, cwd, tc, timeout, stdin_data=None, stdin_file=None):
                 pass
 
         rc = 124 if kena_timeout else (proc.returncode or 0)
+        _bunuh_sisa(proc)
     except (OSError, ValueError) as e:
         return 127, "", f"Gagal menjalankan: {e}", False
     finally:

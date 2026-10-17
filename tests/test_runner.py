@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 from inti import galat as modul_galat
@@ -765,6 +766,36 @@ class TestJalurAnakTanpaPagar(unittest.TestCase):
             f"ampunan yang tidak menutupi satu pun situs tanpa `env=`: {mati}. "
             f"Hapus entrinya -- ampunan yang tidak dibeli akan diwarisi tanpa "
             f"dibaca. Situs tanpa `env=` hari ini: {sorted(dipakai)}")
+
+
+@unittest.skipIf(os.name == "nt", "grup proses POSIX")
+class TestTidakAdaProsesYatim(unittest.TestCase):
+    """Anak latar yang ditinggal program yang SELESAI NORMAL ikut dibunuh.
+
+    Audit 2026-10-17: `os.system("sleep 300 &")` lewat /api/coba selesai dengan
+    rc=0 dan `sleep 300` masih hidup sesudahnya. Pelajar yang mencoba server
+    kecil atau `&` di latihan Bash akan menumpuk proses sampai reboot.
+    """
+
+    def test_anak_latar_mati_sesudah_program_selesai(self):
+        if not runner.tersedia("python"):
+            self.skipTest("python tidak tersedia")
+        kode = ("import subprocess, sys\n"
+                "p = subprocess.Popen(['sleep', '300'])\n"
+                "print(p.pid)\n")
+        hasil = runner.jalankan("python", kode, timeout=10)
+        self.assertEqual(hasil.kode_keluar, 0, hasil.galat)
+        pid = int(hasil.keluaran.strip())
+        for _ in range(50):
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                return
+            time.sleep(0.05)
+        try:
+            os.kill(pid, 9)
+        finally:
+            self.fail(f"proses anak {pid} masih hidup sesudah program selesai")
 
 
 if __name__ == "__main__":
