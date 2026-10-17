@@ -4201,7 +4201,7 @@ mark {
   border: var(--tebal-garis) solid var(--nyala);
   background: var(--kartu);
   box-shadow: var(--bayang-naik), var(--cahaya);
-  animation: jendela-masuk 380ms cubic-bezier(.2,.9,.3,1) both;
+  /* tanpa animation: masuk() (WAAPI) sudah menggerakkannya; satu properti, satu mesin */
 }
 .naik-level .angka {
   font-family: var(--f-judul); font-size: 4rem; font-weight: 700;

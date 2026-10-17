@@ -2893,7 +2893,7 @@ const POLA_KODE = new RegExp(
   "g");
 
 /** Teks -> [string | <code>] siap dijadikan anak sebuah elemen. */
-function berkode(teks) {
+export function berkode(teks) {
   const keluar = [];
   let akhir = 0;
   POLA_KODE.lastIndex = 0;

@@ -15,7 +15,7 @@
 
 import {
   api, h, isikan, kosongkan, bilah, sorak, rayakan, salin, konfirmasi, jendela,
-  jamMundur, tunda, medan, selisihHari, keadaan,
+  jamMundur, tunda, medan, selisihHari, keadaan, jendelaTerbuka,
 } from "./inti.js";
 import {
   animasi, masuk, ungkap, getar, denyut, percikBara, magnet, skala, angkaKe,
@@ -26,7 +26,7 @@ import { kepalaBersampul } from "./sampul.js";
 import { praKode, token } from "./sorot.js";
 import { Editor } from "./editor.js";
 import {
-  tombolBookmark, tombolCatatan, kartuKeluaran, blokProsa, saatSiap,
+  tombolBookmark, tombolCatatan, kartuKeluaran, blokProsa, saatSiap, berkode,
 } from "./layar-belajar.js";
 import {
   pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
@@ -228,9 +228,9 @@ export async function layarKuis({ key, indeks }, ctx) {
       // dan di layar ini dua warna itulah SELURUH umpan baliknya.
       const tombol = s.options.map((teks, i) => h("button", {
         onclick: () => jawab(i, tombol),
-      }, h("span.huruf", {}, h("span", {}, HURUF[i])), h("span", {}, teks)));
+      }, h("span.huruf", {}, h("span", {}, HURUF[i])), h("span", {}, berkode(teks))));
 
-      const soalEl = h("div.kuis-soal", { tabIndex: -1 }, s.q);
+      const soalEl = h("div.kuis-soal", { tabIndex: -1 }, berkode(s.q));
       const opsiEl = h("div.opsi", {}, tombol);
       isikan(isi, h("div", {},
         soalEl,
@@ -322,7 +322,7 @@ export async function layarKuis({ key, indeks }, ctx) {
       // menjawab.
       const blok = h("div.penjelasan", {},
         h("b", {}, r.benar ? "Benar. " : "Belum tepat. "),
-        r.penjelasan || (r.benar ? "" : "Jawaban yang benar disorot hijau."),
+        berkode(r.penjelasan || (r.benar ? "" : "Jawaban yang benar disorot hijau.")),
         h("div.deret", { gaya: { marginTop: "var(--s3)" } }, lanjut));
       const dipilih = tombol[pilihan] || tombol[r.jawaban_benar];
       if (dipilih && dipilih.parentNode) {
@@ -350,9 +350,9 @@ export async function layarKuis({ key, indeks }, ctx) {
       }
     }
 
-    function saatTombol(e) {
-      if (e.target instanceof Element
-          && e.target.matches("input, textarea, select")) return;
+    function saatTombol(e) {  // dialog terbuka (mis. "Hentikan kuis?") = pintasan diam: jangan menjawab di balik tirai
+      if (jendelaTerbuka() || e.ctrlKey || e.metaKey || e.altKey || (e.target instanceof Element
+          && e.target.matches("input, textarea, select"))) return;
       const tombol = [...isi.querySelectorAll(".opsi button")];
       if (!tombol.length) return;
       if (tombol[0].disabled) {
@@ -492,15 +492,15 @@ export async function layarKuis({ key, indeks }, ctx) {
     return h("div.uji" + (d.benar ? ".lulus" : ".gagal"), {},
       h("div.uji-kepala", {},
         h("span.uji-cap", {}, d.benar ? "BENAR" : "SALAH"),
-        h("span.uji-nama", {}, `${i + 1}. ${d.q}`)),
+        h("span.uji-nama", {}, `${i + 1}. `, berkode(d.q))),
       !d.benar ? h("div.uji-badan", {},
         h("div", { gaya: { fontSize: "var(--t-ui)" } },
           h("div", { gaya: { color: "var(--salah)" } },
-            "Jawabanmu: " + (punya ? d.options[d.pilihanmu] : "(tidak dijawab)")),
+            "Jawabanmu: ", punya ? berkode(d.options[d.pilihanmu]) : "(tidak dijawab)"),
           h("div", { gaya: { color: "var(--tumbuh)" } },
-            "Seharusnya: " + d.options[d.jawaban_benar])),
+            "Seharusnya: ", berkode(d.options[d.jawaban_benar]))),
         d.penjelasan ? h("div.arti", {},
-          h("b", {}, "Kenapa"), h("div", {}, d.penjelasan)) : null, bacaLagi(d, key)) : null);
+          h("b", {}, "Kenapa"), h("div", {}, berkode(d.penjelasan))) : null, bacaLagi(d, key)) : null);
   }
 
   gambarPersiapan();

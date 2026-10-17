@@ -593,10 +593,10 @@ class TestSesiKuis(BasisWeb):
           2. SIMPANAN -- `record_quiz_score(salah_index=...)` menaruhnya di
              bawah kunci `kategori`/`judul` yang sama, dan
              `progress.soal_salah_terakhir(kategori, judul)` membacanya balik.
-          3. PENYUSUN ULANG -- `kuis_mulai` mode `salah` (`webapp/api.py:603`)
+          3. PENYUSUN ULANG -- `kuis_mulai` mode `salah` (`webapp/api.py:619`)
              memanggil `progress.soal_salah_terakhir(kat, q["title"])`
-             (`:529`) dan menyerahkan hasilnya sebagai `hanya=` ke
-             `sesi.buat`; kalau kosong ia menolak dengan 409 (`:531`).
+             (`:620`) dan menyerahkan hasilnya sebagai `hanya=` ke
+             `sesi.buat`; kalau kosong ia menolak dengan 409 (`:622`).
 
         Kalau satu saja dari ketiganya memakai penomoran atau kunci yang lain,
         tombol itu menyusun sesi yang berisi soal LAIN -- dan pelajar

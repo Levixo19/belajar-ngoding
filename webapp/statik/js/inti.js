@@ -16,7 +16,7 @@
 
 import {
   animasi, masuk, keluar, tata, saatTampak, percikBara, denyut, jepit,
-  adaGerak, PEGAS,
+  adaGerak, gerakPenuh, PEGAS,
 } from "./gerak.js";
 import { ikon } from "./ikon.js";
 /* Saluran non-visual. Berkas ini SATU-SATUNYA yang memuatnya — sama seperti
@@ -115,7 +115,7 @@ export function h(pemerian, sifat, ...anak) {
   if (id) el.id = id;
 
   for (const [k, v] of Object.entries(sifat || {})) {
-    if (v === null || v === undefined || v === false) continue;
+    if (v === null || v === undefined || (v === false && !(k in el))) continue;  // properti DOM (spellcheck) butuh false-nya
     if (k === "kelas") el.className = [el.className, v].filter(Boolean).join(" ");
     else if (k === "gaya") Object.assign(el.style, v);
     else if (k === "data") for (const [dk, dv] of Object.entries(v)) el.dataset[dk] = dv;
@@ -586,7 +586,7 @@ export function rayakan(hadiah, { diam = false, dari = null } = {}) {
  *  menempel pada BENDA yang baru saja berhasil, bukan melayang di ruang
  *  kosong. */
 export function kilau(dari) {
-  if (!adaGerak()) return;
+  if (!gerakPenuh()) return;  // bergerak sendiri: tingkat "halus" menjanjikan diam
   const el = h("div.kilau");
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1600);
@@ -598,8 +598,8 @@ function tampilNaikLevel(hadiah) {
   const kotak = h("div.isi", {},
     h("div.mata", {}, "Naik level"),
     angkaEl,
-    h("div", { gaya: { fontSize: "1.1rem", marginTop: "6px" } }, hadiah.gelar));
-  const el = h("div.naik-level", {}, kotak);
+    h("div", { gaya: { fontSize: "1.1rem", marginTop: "6px" } }, hadiah.gelar_baru ? "Gelar baru: " + hadiah.gelar : hadiah.gelar));
+  const el = h("div.naik-level", {}, kotak); sorak(`Naik ke level ${hadiah.level}` + (hadiah.gelar_baru ? `, gelar baru: ${hadiah.gelar}` : ""), "nyala", 4);
   document.body.appendChild(el);
 
   masuk(kotak, { geser: 14, zum: 0.9, pegas: "lentur" });

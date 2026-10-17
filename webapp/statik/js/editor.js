@@ -93,7 +93,7 @@ export class Editor {
     this.kaki = h("div.editor-kaki", {},
       this.posisi, this.jumlahBaris, this.pesan,
       h("span.sembunyi-hp", { gaya: { marginLeft: "auto" } },
-        "Tab menambah indentasi · Ctrl+/ komentari"));
+        "Tab menambah indentasi · Esc lalu Tab untuk keluar · Ctrl+/ komentari"));
 
     this.el = h("div.editor", {}, this.nomor, this.lapis, this.kaki);
 
@@ -430,13 +430,13 @@ export class Editor {
       e.key.toLowerCase(),
     ].filter(Boolean).join("+");
 
-    const fn = this.pintasan[kombinasi];
+    const fn = this.pintasan[kombinasi]; this._lepasTab = e.key === "Escape" || ((e.key === "Tab" || e.key === "Shift") && this._lepasTab);  // Esc lalu Tab = keluar editor (WCAG 2.1.2)
     if (fn) { e.preventDefault(); fn(); return; }
 
     if (kombinasi === "ctrl+/" || kombinasi === "ctrl+shift+7") {
       e.preventDefault(); this._alihKomentar(); return;
     }
-    if (e.key === "Tab") { e.preventDefault(); this._tab(e.shiftKey); return; }
+    if (e.key === "Tab") { if (this._lepasTab) { this._lepasTab = false; return; } e.preventDefault(); this._tab(e.shiftKey); return; }
     if (e.key === "Enter") { e.preventDefault(); this._enter(); return; }
     if (e.key === "Backspace") { this._hapusMundur(e); return; }
     if (PASANGAN[e.key]) { this._kurung(e); return; }

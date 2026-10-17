@@ -112,6 +112,10 @@ def _xp_dan_badge(sebelum, badge_baru):
         "level": level_baru,
         "naik_level": level_baru > level_lama,
         "gelar": progress.gelar_dari_level(level_baru),
+        # Gelar cuma berganti di beberapa ambang; layar naik level menyorotnya
+        # hanya saat memang berganti, bukan di setiap level.
+        "gelar_baru": (level_baru > level_lama and progress.gelar_dari_level(level_baru)
+                       != progress.gelar_dari_level(level_lama)),
         "di_level": di_level,
         "butuh_level": butuh,
         "badge": [{"id": b, "nama": n, "deskripsi": d}
