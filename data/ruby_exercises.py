@@ -12,9 +12,8 @@ RUBY_EXERCISES = [
             "  Di Ruby, semuanya adalah objek.",
         ],
         "hints": [
-            "puts mencetak lalu pindah baris.",
-            "Tidak perlu titik koma dan tidak perlu fungsi main.",
-            "Kode dijalankan dari atas ke bawah.",
+            "Latihan ini cuma butuh perintah cetak, tiga kali. Baca ulang materi \"Pengenalan Ruby & Instalasi\".",
+            "puts mencetak teks lalu pindah baris. Nggak perlu titik koma dan nggak perlu fungsi main; kode dijalankan dari atas ke bawah.",
         ],
         "solution": """puts "Halo, namaku Andi!"
 puts "Aku sedang belajar Ruby."
@@ -37,10 +36,9 @@ puts "Di Ruby, semuanya adalah objek.\"""",
             "  17 / 5 = 3.40 (desimal)",
         ],
         "hints": [
-            "Interpolasi: puts \"#{a} + #{b} = #{a + b}\"",
-            "Dua Integer dibagi menghasilkan Integer; sisanya dibuang.",
-            "Untuk desimal, panggil .to_f pada salah satu sisi.",
-            "Format dua desimal: '%.2f' % nilai",
+            "Ini latihan operator aritmetika dan interpolasi string. Baca ulang materi \"Variabel, Tipe & Objek\" dan \"String & Symbol\".",
+            "Dua Integer dibagi menghasilkan Integer dan sisanya dibuang, jadi 17 / 5 memberi 3. Untuk baris desimal, panggil .to_f pada salah satu sisi, lalu format dua desimal dengan '%.2f' % nilai.",
+            "Interpolasi menaruh hasil ekspresi langsung di dalam string berkutip ganda: \"#{a} + #{b} = #{a + b}\".",
         ],
         "solution": """a = 17
 b = 5
@@ -71,10 +69,9 @@ puts "#{a} / #{b} = #{'%.2f' % (a.to_f / b)} (desimal)\"""",
             "  Kelvin     : 298.15",
         ],
         "hints": [
-            "gets membaca satu baris; .to_f mengubahnya jadi Float.",
-            "Pakai 9.0 / 5 supaya pembagiannya bukan pembagian Integer.",
-            "format('%.2f', x) atau '%.2f' % x untuk dua desimal.",
-            "Jangan mencetak apa pun sebelum gets.",
+            "Alurnya tiga langkah: baca masukan, hitung dengan rumus, cetak dua desimal. Baca ulang materi \"Berkas, JSON & Baris Perintah\" untuk gets, dan \"Variabel, Tipe & Objek\" untuk konversi angka.",
+            "gets membaca satu baris dan .to_f mengubahnya jadi Float. Jangan mencetak apa pun sebelum gets. Kalau rumusnya memakai 9 / 5 dengan dua Integer, hasilnya 1, jadi tulis 9.0 / 5.",
+            "format('%.2f', x) atau '%.2f' % x mencetak dua desimal, dan hasilnya bisa diselipkan lewat interpolasi.",
         ],
         "stdin": "25\n",
         "solution": """c = gets.to_f
@@ -106,10 +103,9 @@ puts "Kelvin     : #{'%.2f' % k}\"""",
             "  Status: Lulus",
         ],
         "hints": [
-            "case dengan rentang: when 85..100 then 'A'",
-            "Rentang inklusif memakai .. dan eksklusif memakai ...",
-            "case adalah ekspresi, jadi hasilnya langsung bisa ditugaskan.",
-            "if juga ekspresi: status = nilai >= 75 ? 'Lulus' : 'Tidak Lulus'",
+            "Ada dua keputusan: grade dari beberapa rentang, dan status dari satu ambang. Baca ulang materi \"Kendali Alur\" bagian case dan rentang.",
+            "case ... when mencocokkan rentang lewat ===, dan case adalah ekspresi, jadi hasilnya bisa langsung ditugaskan ke variabel grade. Rentang inklusif memakai .. dan eksklusif memakai ..., jadi B ditulis sebagai 75...85.",
+            "Status cukup satu ekspresi ternary: nilai >= 75 ? 'Lulus' : 'Tidak Lulus'.",
         ],
         "stdin_list": ["92\n", "78\n", "65\n", "45\n", "12\n"],
         "solution": """nilai = gets.to_i
@@ -143,10 +139,9 @@ puts "Status: #{nilai >= 75 ? 'Lulus' : 'Tidak Lulus'}\"""",
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "(1..5).each { |b| ... } untuk tiap baris.",
-            "print mencetak tanpa pindah baris; puts kosong hanya pindah baris.",
-            "rjust(2) meratakan ke kanan selebar 2 karakter.",
-            "Kumpulkan sel-selnya ke array lalu join dengan tiga spasi.",
+            "Tabel dua dimensi berarti dua perulangan: luar untuk baris, dalam untuk sel. Baca ulang materi \"Enumerable: Kekuatan Sesungguhnya\" dan \"String & Symbol\" untuk perataan teks.",
+            "Untuk tiap baris, bangun lima sel dengan map pada (1..5), gabungkan dengan join tiga spasi, lalu cetak dengan dua spasi di depannya. Cara ini menghindari pemisah ekstra di ujung baris.",
+            "Hasil perkalian diratakan kanan dengan (b * k).to_s.rjust(2).",
         ],
         "solution": """(1..5).each do |b|
   sel = (1..5).map { |k| "#{b} x #{k} = #{(b * k).to_s.rjust(2)}" }
@@ -172,10 +167,9 @@ end""",
             "  Di atas rata-rata: 92, 88, 95, 83",
         ],
         "hints": [
-            "join(', ') menggabungkan array jadi teks.",
-            "sort mengembalikan array BARU, sort! mengubah yang asli.",
-            "sum, min, max, dan size sudah tersedia di Array.",
-            "Jangan lupa .to_f supaya rata-ratanya bukan pembagian Integer.",
+            "Hampir semua yang diminta sudah ada sebagai method Array. Baca ulang materi \"Array & Hash\" dan \"Enumerable: Kekuatan Sesungguhnya\".",
+            "sort mengembalikan array baru dan sort! mengubah yang asli, jadi data aslinya aman kalau kamu pakai sort. sum, min, max, dan size sudah tersedia; join(', ') menggabungkan array jadi teks.",
+            "Hitung rata-rata dengan nilai.sum.to_f / nilai.size supaya bukan pembagian Integer, lalu saring dengan select { |n| n > rata }.",
         ],
         "solution": """nilai = [78, 92, 65, 88, 71, 95, 59, 83]
 rata = nilai.sum.to_f / nilai.size
@@ -207,10 +201,9 @@ puts "Di atas rata-rata: #{nilai.select { |n| n > rata }.join(', ')}\"""",
             "  Palindrom: ya",
         ],
         "hints": [
-            "reverse membalik string.",
-            "delete(' ') atau gsub(/\\s/, '') membuang spasi.",
-            "downcase untuk mengabaikan besar-kecil huruf.",
-            "chomp membuang karakter baris baru dari gets.",
+            "Latihan ini soal method string: membalik, membuang spasi, dan menyamakan huruf. Baca ulang materi \"String & Symbol\".",
+            "Baca baris dengan gets lalu buang baris barunya dengan chomp. Siapkan satu versi tanpa spasi untuk menghitung huruf, dan satu lagi tanpa spasi plus downcase untuk mengecek palindrom.",
+            "delete(' ') atau gsub(/\\s/, '') membuang spasi, dan reverse membalik string. Teks bersih adalah palindrom kalau sama dengan reverse-nya.",
         ],
         "stdin_list": ["Kasur ini rusak\n", "Belajar Ruby\n", "Ini\n"],
         "solution": """teks = gets.chomp
@@ -246,10 +239,9 @@ puts "Palindrom: #{bersih == bersih.reverse ? 'ya' : 'bukan'}\"""",
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "split memecah kalimat jadi array kata.",
-            "tally menghitung frekuensi dalam satu panggilan.",
-            "Dua kunci urutan: sort_by { |k, n| [-n, k] }",
-            "ljust(7) meratakan ke kiri selebar 7.",
+            "Pecah kalimat jadi kata, hitung kemunculannya, lalu urutkan dengan dua kunci. Baca ulang materi \"Enumerable: Kekuatan Sesungguhnya\".",
+            "split memecah kalimat jadi array kata, dan tally menghitung frekuensi dalam satu panggilan, hasilnya Hash kata -> jumlah. Urutkan pasangan itu dengan sort_by memakai array sebagai kunci.",
+            "Kunci urutnya [-n, k]: jumlah menurun dulu, lalu kata menaik. ljust(7) meratakan nama ke kiri selebar 7.",
         ],
         "solution": """kalimat = "kucing makan ikan kucing tidur ikan kucing"
 kata = kalimat.split
@@ -287,10 +279,9 @@ puts "Total kata : #{kata.size}\"""",
             "  Ditolak: nilai di luar 0..100",
         ],
         "hints": [
-            "attr_reader membuat getter; setternya ditulis tangan: def nilai=(baru)",
-            "Di dalam initialize, panggil `self.nilai = nilai` supaya validasinya ikut.",
-            "(0..100).cover?(baru) memeriksa rentang.",
-            "puts pada objek memanggil to_s secara otomatis.",
+            "Validasi tinggal di satu tempat, yaitu setter, dan initialize ikut memakainya. Baca ulang materi \"Class & Objek\".",
+            "attr_reader membuat getter untuk nama dan nilai; setternya ditulis tangan sebagai def nilai=(baru), yang melempar ArgumentError kalau di luar rentang. Di dalam initialize, panggil self.nilai = nilai supaya validasinya ikut jalan. (0..100).cover?(baru) memeriksa rentang.",
+            "puts pada objek memanggil to_s otomatis. Isinya cukup format('%-8s%3d %s', @nama, @nilai, grade).",
         ],
         "solution": """class Murid
   attr_reader :nama, :nilai
@@ -353,10 +344,9 @@ end""",
             "  terluas: Lingkaran",
         ],
         "hints": [
-            "include BisaDiringkas dan include Comparable di class induknya.",
-            "super('Persegi') memanggil initialize induk.",
-            "Dengan <=> dan Comparable, .max pada array langsung bekerja.",
-            "sum(&:luas) menjumlahkan hasil method luas tiap elemen.",
+            "Module dipakai sebagai mixin untuk ringkas, Comparable memberi operator pembanding dari satu <=>. Baca ulang materi \"Pewarisan, Module & Mixin\".",
+            "Class induk Bangun memakai include BisaDiringkas dan include Comparable, menyimpan nama, dan luas-nya melempar NotImplementedError. Tiap turunan memanggil super('Persegi') di initialize lalu menulis luas sendiri.",
+            "Kalau <=> membandingkan luas, .max pada array langsung bekerja. sum(&:luas) menjumlahkan hasil method luas tiap elemen.",
         ],
         "solution": """module BisaDiringkas
   def ringkas = format("%-16s%8.2f", nama, luas)
@@ -445,10 +435,9 @@ puts "terluas: #{semua.max.nama}\"""",
             "  kali   (9, 4) = 36",
         ],
         "hints": [
-            "yield(i) menjalankan bloknya dengan argumen i.",
-            "ensure di dalam method berlaku untuk seluruh badan method.",
-            "Lambda ditulis ->(a, b) { ... } dan dipanggil dengan .call(a, b).",
-            "inspect menampilkan nil sebagai 'nil' dan array dengan kurung siku.",
+            "Latihan ini soal blok, yield, ensure, dan lambda. Baca ulang materi \"Blok, Proc & Lambda\" dan \"Exception & Penanganan Galat\".",
+            "ulangi cukup memetakan (1..n) sambil memanggil yield(i). Di dengan_pengukur, rescue dan ensure bisa ditulis langsung di badan method; ensure berlaku untuk seluruh badan method, jadi baris bersih tercetak gagal maupun berhasil.",
+            "Lambda ditulis ->(a, b) { a + b } dan dipanggil dengan .call(9, 4). inspect menampilkan nil sebagai 'nil' dan array dengan kurung siku.",
         ],
         "solution": """def ulangi(n)
   (1..n).map { |i| yield(i) }
@@ -516,10 +505,9 @@ end""",
             "kanan 2, harga rata kanan 6, subtotal rata kanan 8.",
         ],
         "hints": [
-            "Struct.new(:a, :b) do ... end boleh memuat method sendiri.",
-            "Dua kunci urutan: sort_by { |t| [-t.subtotal, t.barang] }",
-            "group_by(&:kategori) menghasilkan Hash kategori -> array.",
-            "max_by(&:subtotal) mencari elemen dengan nilai terbesar.",
+            "Struct memberi class data dalam satu baris, dan rantai Enumerable mengerjakan sisanya. Baca ulang materi \"Set, Struct & Data\" dan \"Enumerable: Kekuatan Sesungguhnya\".",
+            "Struct.new(:barang, :kategori, :jumlah, :harga) do ... end boleh memuat method sendiri, termasuk subtotal. Urutkan dengan sort_by dua kunci, rekap dengan group_by(&:kategori) lalu sort, dan cari termahal dengan max_by(&:subtotal).",
+            "Kunci urutnya [-t.subtotal, t.barang]: minus membalik urutan subtotal, nama barang jadi pemecah seri.",
         ],
         "solution": """Transaksi = Struct.new(:barang, :kategori, :jumlah, :harga) do
   def subtotal = jumlah * harga
@@ -580,10 +568,9 @@ puts format("%-10s: %s", "Termahal", data.max_by(&:subtotal).barang)""",
             "Angka tagihan dicetak rata kanan selebar 7.",
         ],
         "hints": [
-            "initialize exception sendiri memanggil super(pesan) di akhir.",
-            "rescue boleh ditulis langsung di dalam blok do...end sejak Ruby 2.6.",
-            "retry mengulang blok begin dari awal — WAJIB dibatasi penghitung.",
-            "Tangkap yang PALING SPESIFIK lebih dulu.",
+            "Exception sendiri, beberapa rescue, dan retry yang dibatasi. Baca ulang materi \"Exception & Penanganan Galat\".",
+            "initialize exception sendiri menyimpan kurang lalu memanggil super(pesan) di akhir. Di perulangan pembayaran, rescue boleh ditulis langsung di dalam blok do...end sejak Ruby 2.6; tangkap yang paling spesifik lebih dulu.",
+            "retry mengulang blok begin dari awal, jadi wajib dibatasi penghitung: tambah percobaan di awal begin, lalu tulis retry if percobaan < 5 di rescue.",
         ],
         "solution": """class SaldoKurangError < StandardError
   attr_reader :kurang
@@ -674,10 +661,9 @@ end""",
             "  ulang    : Budi, Dedi",
         ],
         "hints": [
-            "include Enumerable menuntut method each yang memakai yield.",
-            "sort_by dengan array kunci: [-nilai, nama]",
-            "first memberi elemen pertama dari each — di sini pasangan array.",
-            "partition memecah jadi dua array: yang cocok dan yang tidak.",
+            "Dengan mixin Enumerable, cukup satu method each yang memakai yield, dan count, first, map, select, sum, serta partition ikut tersedia. Baca ulang materi \"Pewarisan, Module & Mixin\".",
+            "Simpan murid di Hash nama -> nilai. tambah mengisi Hash lalu mengembalikan self supaya bisa dirantai. each mengurutkan pasangan dengan sort_by memakai kunci [-nilai, nama], lalu yield tiap pasangan.",
+            "first memberi elemen pertama dari each, di sini pasangan [nama, nilai], jadi namanya k.first[0]. partition memecah jadi dua array: yang cocok dan yang nggak.",
         ],
         "solution": """class Kelas
   include Enumerable
@@ -752,10 +738,9 @@ puts "ulang    : #{ulang.map(&:first).join(', ')}\"""",
             "Keadaan rata kiri 10, aksi rata kiri 11.",
         ],
         "hints": [
-            "Hash berkunci array: { [:draf, :kirim] => :ditinjau, ... }",
-            "TRANSISI.fetch([keadaan, aksi], nil) mencari dengan aman.",
-            "freeze pada konstanta mencegahnya diubah tanpa sengaja.",
-            "Simpan keadaan sebelum mencoba, supaya bisa dicetak apa pun hasilnya.",
+            "Mesin keadaan cukup satu tabel: pasangan (keadaan, aksi) menunjuk ke keadaan baru. Baca ulang materi \"Array & Hash\" dan \"Exception & Penanganan Galat\".",
+            "Simpan tabelnya sebagai konstanta Hash berkunci array, misalnya { [:draf, :kirim] => :ditinjau, ... }, dan pasang freeze supaya nggak berubah tanpa sengaja. lanjut mencari pasangan [keadaan, aksi]; kalau nil, lempar ArgumentError sebelum mengubah apa pun.",
+            "Di perulangan, simpan keadaan sebelum mencoba, supaya baris yang ditolak tetap bisa mencetak keadaan awalnya. Formatnya format('%-10s+ %-11s-> %s', sebelum, aksi, hasil).",
         ],
         "solution": """class Dokumen
   TRANSISI = {
@@ -842,14 +827,9 @@ puts "keadaan akhir: #{d.keadaan}\"""",
             "  stok menipis (<10): B02 Adaptor (4)",
         ],
         "hints": [
-            "Struct.new(...) do ... end boleh memuat method sendiri.",
-            "Satu `rescue GudangError` di antarmuka cukup menangani keempat "
-            "galat sekaligus, sementara bug sungguhan tetap naik dan terlihat.",
-            "include Enumerable + satu `each` langsung memberi sum, select, "
-            "sort_by, dan count tanpa menulisnya.",
-            "each WAJIB mengurutkan: keluaran yang urutannya tidak pasti "
-            "mustahil diuji.",
-            "capitalize pada :masuk memberi \"Masuk\".",
+            "Pisahkan tiga lapisan: model menyimpan data, layanan menegakkan aturan dan melempar galat, antarmuka mencetak. Materi \"Proyek Utuh: Menggabungkan Semuanya\" memakai pola yang sama.",
+            "Semua galat gudang mewarisi GudangError, jadi satu rescue GudangError di antarmuka menangani keempatnya, sementara bug sungguhan tetap naik dan terlihat. Di catat, periksa kode dulu, lalu jumlah, baru kecukupan stok.",
+            "include Enumerable plus satu each langsung memberi sum, select, dan sort_by. each wajib mengurutkan menurut kode, karena keluaran yang urutannya nggak pasti mustahil diuji. :masuk.to_s.capitalize memberi \"Masuk\".",
         ],
         "solution": """# ---------------------------------------------------------------- MODEL
 Barang = Struct.new(:kode, :nama, :stok, :harga) do

@@ -311,15 +311,15 @@ class TestLatihan(unittest.TestCase):
 _HINT_LARANG = tuple('.!?:;)]}>"\'`”’’')
 _HINT_HURUF = re.compile(r"[A-Za-zÀ-ž]")
 
-# Lima pasangan yang memang BUKAN lanjutan: tiap butirnya langkah kode yang
-# berdiri sendiri, jadi predikat di bawah sengaja dibiarkan keliru di situ.
-HINT_HITAM = {
-    "python": ["@property def saldo"],
-    "c": ["int top = -1"],
-    "fedora": ["Mulai dengan shebang", "{ lapor a; galat b;", "if periksa_ambang"],
-}
+# Pasangan yang memang BUKAN lanjutan (tiap butirnya langkah kode yang berdiri
+# sendiri), tempat predikat di bawah sengaja dibiarkan keliru. Kosong sejak
+# petunjuk ditulis ulang jadi tangga konsep -> strategi -> kode (2026-10-17):
+# kelima pasangan lama ikut hilang bersama petunjuk yang memuatnya.
+HINT_HITAM = {}
 
-HINT_TOTAL = 1112
+# 1112 -> 953 pada penulisan ulang yang sama: tiap latihan kini 2-3 petunjuk
+# bertangga (tests/test_mutu_soal.py), bukan 1-6 potongan kode.
+HINT_TOTAL = 953
 
 
 def _hint_lanjut(a, b):
@@ -366,9 +366,12 @@ class TestHintSatuKalimat(unittest.TestCase):
             "butir hints ini lanjutan kalimat butir sebelumnya, gabungkan "
             "jadi satu butir: " + "; ".join("%s %s [%d]" % p for p in terbelah),
         )
+        self.assertEqual(len(hitam), 0, "daftar pengecualian bergeser: %r" % (hitam,))
         # Tanpa ini, predikat yang rusak sampai tidak pernah cocok lagi akan
-        # membuat asersi di atas lulus diam-diam.
-        self.assertEqual(len(hitam), 5, "daftar pengecualian bergeser: %r" % (hitam,))
+        # membuat asersi di atas lulus diam-diam. Dulu tugas itu dipikul lima
+        # pengecualian nyata; sekarang dipikul satu contoh buatan.
+        self.assertTrue(_hint_lanjut("Pakai sed pada baris ke-n untuk", "mengganti teksnya."))
+        self.assertFalse(_hint_lanjut("Pakai sed pada baris ke-n.", "lalu cetak."))
 
     def test_cacah_butir_hints(self):
         _, _, total = _sapu_hints()

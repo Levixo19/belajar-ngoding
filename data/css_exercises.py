@@ -19,9 +19,9 @@ CSS_EXERCISES = [
             "    font-family: sans-serif",
         ],
         "hints": [
-            "Bentuk satu aturan CSS: pemilih { properti: nilai; }",
-            "Tiap deklarasi ditutup titik koma, termasuk yang terakhir.",
-            "Warna heks selalu diawali tanda pagar: #f5f5f5, bukan f5f5f5.",
+            "Baca ulang Apa Itu CSS & Tiga Cara Menautkannya. Satu aturan CSS terdiri dari pemilih, lalu kurung kurawal berisi deklarasi; tiap deklarasi berbentuk properti, titik dua, nilai, lalu titik koma.",
+            "Tulis pemilih body, buka kurung kurawal, lalu tiga deklarasi sesuai urutan di soal, satu per baris. Urutan properti ikut dinilai. Tiap deklarasi ditutup titik koma, termasuk yang terakhir, baru kurungnya ditutup.",
+            "Bentuk umumnya pemilih { properti: nilai; }. Warna heks selalu diawali tanda pagar: #f5f5f5, bukan f5f5f5.",
         ],
         "solution": """body {
   background-color: #f5f5f5;
@@ -54,10 +54,9 @@ CSS_EXERCISES = [
             "    line-height: 1.6",
         ],
         "hints": [
-            "Pemilih elemen ditulis apa adanya: h1, bukan <h1> atau .h1.",
-            "Satu berkas CSS boleh berisi banyak aturan; tulis berurutan.",
-            "line-height tanpa satuan (1.6) artinya 1,6 kali ukuran huruf "
-            "elemen itu sendiri — nilai yang paling aman untuk teks.",
+            "Materi Pemilih: Elemen, Class, dan ID menjelaskan pemilih elemen: nama tagnya ditulis apa adanya, tanpa kurung sudut dan tanpa titik. Untuk line-height, lihat Teks dan Font.",
+            "Satu berkas CSS boleh berisi banyak aturan. Tulis dua aturan berurutan: h1 dengan tiga deklarasi, lalu p dengan dua. Pemilihnya h1, bukan <h1> atau .h1.",
+            "line-height tanpa satuan artinya kelipatan ukuran huruf elemen itu sendiri, nilai yang paling aman untuk teks. Tulis angkanya saja, 1.6, tanpa px.",
         ],
         "solution": """h1 {
   color: #1a4d8f;
@@ -95,10 +94,9 @@ p {
             "    padding: 10px 20px",
         ],
         "hints": [
-            "Kelas diawali titik (.tombol), id diawali pagar (#judul-utama).",
-            "Satu id hanya boleh dipakai sekali di satu halaman; kelas boleh "
-            "dipakai berkali-kali. Karena itu tombol memakai kelas.",
-            "padding: 10px 20px berarti 10px atas-bawah, 20px kiri-kanan.",
+            "Baca lagi Pemilih: Elemen, Class, dan ID. Kelas dipilih dengan awalan titik, id dengan awalan pagar. Satu id cuma boleh dipakai sekali di satu halaman, sedangkan kelas boleh berkali-kali, makanya tombol memakai kelas.",
+            "Tulis aturan untuk id judul-utama lebih dulu (dua deklarasi), lalu aturan untuk kelas tombol (tiga deklarasi). Nama di pemilih harus sama persis dengan nama di HTML, termasuk tanda hubungnya. Singkatan padding dua nilai dibahas di Box Model: margin, border, padding, content.",
+            "padding dengan dua nilai berarti nilai pertama untuk atas-bawah dan nilai kedua untuk kiri-kanan, jadi 10px 20px artinya 10px atas-bawah dan 20px kiri-kanan.",
         ],
         "solution": """#judul-utama {
   font-size: 28px;
@@ -133,9 +131,9 @@ p {
             "    margin: 24px",
         ],
         "hints": [
-            "border ditulis singkat dalam satu baris: tebal, gaya, warna.",
-            "Gaya garis yang paling umum: solid, dashed, dotted.",
-            "Satu nilai pada padding/margin berlaku untuk keempat sisi.",
+            "Materi Box Model: margin, border, padding, content menjelaskan lapisan kotak dari dalam ke luar: isi (width), padding sebagai ruang di dalam garis tepi, border sebagai garisnya, lalu margin sebagai ruang di luar.",
+            "Tulis satu aturan .kartu dengan empat deklarasi sesuai urutan lapisan itu. Satu nilai pada padding atau margin berlaku untuk keempat sisi sekaligus.",
+            "border ditulis singkat dalam satu baris: tebal, gaya, warna, misalnya border: 1px dashed #999999. Gaya garis yang paling umum: solid, dashed, dotted.",
         ],
         "solution": """.kartu {
   width: 300px;
@@ -162,11 +160,9 @@ p {
             "    margin: 0",
         ],
         "hints": [
-            "Pisahkan pemilih dengan koma: h1, h2, h3 { ... }",
-            "Spasi di sekitar koma tidak berpengaruh — h1,h2,h3 dan "
-            "h1 , h2 , h3 menghasilkan aturan yang sama persis.",
-            "Menyalin tiga aturan yang isinya sama berarti tiga tempat yang "
-            "harus diubah nanti; satu aturan bergabung cuma satu tempat.",
+            "Baca ulang Pemilih: Elemen, Class, dan ID, bagian menggabungkan pemilih. Beberapa pemilih bisa berbagi satu blok aturan kalau dipisah koma. Menyalin tiga aturan yang isinya sama berarti tiga tempat yang harus diubah nanti; satu aturan gabungan cuma satu tempat.",
+            "Tulis ketiga nama elemen di depan satu kurung kurawal, dipisah koma, lalu tiga deklarasi di dalamnya. Spasi di sekitar koma nggak berpengaruh: h1,h2,h3 dan h1 , h2 , h3 menghasilkan aturan yang sama persis.",
+            "Kerangkanya: h1, h2, h3 { ... }.",
         ],
         "solution": """h1, h2, h3 {
   font-family: sans-serif;
@@ -199,10 +195,9 @@ p {
             "    margin-right: 12px",
         ],
         "hints": [
-            "Spasi antar-pemilih berarti 'di dalam': nav a.",
-            "Tanda > berarti 'anak langsung': .menu > li. Bedanya terasa saat "
-            "ada daftar bersarang — li di dalam li tidak ikut kena.",
-            "text-decoration: none yang menghapus garis bawah tautan.",
+            "Materi Pemilih: Elemen, Class, dan ID membahas pemilih turunan dan pemilih anak. Spasi di antara dua pemilih berarti 'di dalam, sedalam apa pun', sedangkan tanda > berarti 'anak langsung saja'.",
+            "Aturan pertama memakai spasi (a di dalam nav), aturan kedua memakai > (li yang anak langsung .menu). Bedanya terasa saat ada daftar bersarang: li di dalam li nggak ikut kena aturan kedua.",
+            "Pemilihnya nav a dan .menu > li. Garis bawah tautan dihapus dengan text-decoration bernilai none.",
         ],
         "solution": """nav a {
   color: #1a4d8f;
@@ -242,10 +237,9 @@ p {
             "    font-weight: 700",
         ],
         "hints": [
-            "Pseudo-class ditempel langsung tanpa spasi: a:hover, bukan a :hover.",
-            "Aturan :hover harus ditulis SESUDAH aturan a biasa — kalau "
-            "spesifisitasnya sama, yang belakangan yang menang.",
-            ":first-child memilih elemen yang jadi anak pertama induknya.",
+            "Baca lagi Pseudo-class dan Pseudo-element. Pseudo-class memilih elemen berdasarkan keadaannya (sedang disorot kursor) atau posisinya (anak pertama induknya).",
+            "Tulis tiga aturan sesuai urutan di soal: a biasa, lalu a saat disorot, lalu li yang jadi anak pertama. a:hover lebih spesifik daripada a karena ada pseudo-class, jadi ia menang di mana pun ditulis; urutannya tetap dinilai karena penilai mencetak aturanmu apa adanya.",
+            "Pseudo-class ditempel langsung tanpa spasi: a:hover, bukan a :hover. Dengan spasi artinya berubah jadi 'elemen apa pun yang disorot di dalam a'. Begitu juga li:first-child.",
         ],
         "solution": """a {
   color: #1a4d8f;
@@ -288,11 +282,9 @@ li:first-child {
             "    min-width: 0",
         ],
         "hints": [
-            "display: flex dipasang di WADAHNYA, bukan di isinya.",
-            "justify-content mengatur sepanjang baris (kiri-kanan), "
-            "align-items mengatur melintangnya (atas-bawah).",
-            "min-width: 0 mencegah isi yang panjang melebarkan kolomnya — "
-            "bawaan min-width adalah auto, yang berarti 'jangan menyusut'.",
+            "Materi Flexbox menjelaskan bahwa flex dipasang di wadahnya, bukan di isinya. justify-content mengatur posisi item sepanjang sumbu utama (kiri-kanan pada baris), align-items mengatur arah melintangnya (atas-bawah).",
+            "Aturan .baris berisi empat deklarasi: jadikan wadah flex, sebar item dengan space-between, tengahkan melintang, lalu beri celah 12px. Aturan .baris > .item membuat tiap item berbagi sisa ruang (flex bernilai 1) dan boleh menyusut.",
+            "min-width: 0 mencegah isi yang panjang melebarkan kolomnya. Bawaan min-width pada item flex adalah auto, yang berarti 'jangan menyusut di bawah lebar isinya'.",
         ],
         "solution": """.baris {
   display: flex;
@@ -329,11 +321,9 @@ li:first-child {
             "    padding: var(--jarak)",
         ],
         "hints": [
-            "Nama variabel WAJIB diawali dua tanda minus: --warna-utama.",
-            "Memakainya lewat var(): background-color: var(--warna-utama);",
-            ":root adalah elemen <html>. Variabel yang ditaruh di sana "
-            "terbaca oleh seluruh halaman, jadi satu warna cukup diubah "
-            "di satu tempat.",
+            "Baca ulang Variabel CSS dan Cara Menata Berkas Gaya. Variabel CSS (custom property) disimpan di satu tempat lalu dipakai berkali-kali. :root adalah elemen <html>, jadi variabel di sana terbaca seluruh halaman dan satu warna cukup diubah di satu tempat.",
+            "Tulis aturan :root berisi dua variabel, lalu aturan .kotak yang memakainya. Nama variabel wajib diawali dua tanda minus, dan memakainya selalu lewat fungsi var() berisi nama itu.",
+            "Di :root variabel ditulis seperti deklarasi biasa, misalnya --jarak: 16px; dan dipakai seperti background-color: var(--warna-utama);",
         ],
         "solution": """:root {
   --warna-utama: #1a4d8f;
@@ -373,11 +363,9 @@ li:first-child {
             "      gap: 8px",
         ],
         "hints": [
-            "Bentuknya: @media (max-width: 600px) { .wadah { ... } }",
-            "Ada dua kurung kurawal yang harus ditutup, bukan satu.",
-            "Blok @media ditulis SESUDAH aturan biasa. Kalau ditulis lebih "
-            "dulu, aturan biasa yang datang belakangan justru menimpanya "
-            "dan tata letak ponselnya diam-diam tidak berlaku.",
+            "Materi Responsif: media query menjelaskan @media. max-width adalah batas atas, jadi aturannya menyala di layar yang lebarnya sama atau kurang dari angka itu. Untuk grid-template-columns dan satuan fr, lihat Grid.",
+            "Tulis aturan .wadah biasa dulu (tiga kolom), lalu blok @media sesudahnya yang berisi aturan .wadah lagi dengan dua deklarasi penimpa. Blok @media harus di bawah: kalau ditulis lebih dulu, aturan biasa yang datang belakangan menimpanya dan tata letak ponselnya diam-diam nggak berlaku.",
+            "Bentuknya @media (max-width: 600px) { .wadah { ... } }. Ada dua kurung kurawal yang harus ditutup, bukan satu.",
         ],
         "solution": """.wadah {
   display: grid;
@@ -426,11 +414,9 @@ li:first-child {
             "    grid-area: isi",
         ],
         "hints": [
-            "Tiap baris grid ditulis sebagai satu string berkutip ganda.",
-            "Dua string itu ditulis berdampingan dipisah satu spasi:",
-            '  grid-template-areas: "kepala kepala" "sisi isi";',
-            "Nama area di grid-area ditulis TANPA kutip dan tanpa titik —",
-            "'kepala', bukan '.kepala'. Yang pakai titik cuma pemilihnya.",
+            "Baca lagi Grid, bagian area bernama. grid-template-areas menggambar peta tata letak: tiap baris grid ditulis sebagai satu string berkutip ganda, dan nama yang diulang berarti area itu membentang ke beberapa sel.",
+            "Aturan .tata berisi lima deklarasi: jadikan grid, dua kolom (200px dan 1fr), dua baris (auto dan 1fr), peta areanya, lalu gap. Sesudahnya tiga aturan pendek yang menaruh tiap kelas ke areanya lewat grid-area.",
+            "Dua string peta ditulis berdampingan dipisah satu spasi: \"kepala kepala\" \"sisi isi\". Nama area di grid-area ditulis tanpa kutip dan tanpa titik: kepala, bukan .kepala. Yang pakai titik cuma pemilihnya.",
         ],
         "solution": """.tata {
   display: grid;
@@ -500,14 +486,9 @@ li:first-child {
             "      transition: none",
         ],
         "hints": [
-            "Variabel boleh dipakai di tengah nilai gabungan:",
-            "  border: 1px solid var(--garis);",
-            "Tulis rgba persis dengan spasi sesudah tiap koma:",
-            "  rgba(0, 0, 0, 0.15) — koma di dalam kurung bukan pemisah "
-            "deklarasi, jadi tidak perlu titik koma di dalamnya.",
-            "prefers-reduced-motion: reduce menyala kalau orangnya sudah "
-            "meminta sistemnya mengurangi gerak. Menghormatinya bukan fitur "
-            "tambahan — bagi sebagian orang, gerak bikin pusing sungguhan.",
+            "Latihan ini menggabungkan Variabel CSS dan Cara Menata Berkas Gaya, Bayangan dan Filter, Transisi dan Animasi, serta Responsif: media query. Fitur prefers-reduced-motion menyala kalau orangnya sudah meminta sistemnya mengurangi gerak; bagi sebagian orang, gerak bikin pusing sungguhan.",
+            "Urutannya: :root dengan empat variabel, aturan kartu dengan enam deklarasi, aturan :hover yang cuma menambah bayangan, lalu blok @media di paling bawah yang mematikan transisi. Variabel boleh dipakai di tengah nilai gabungan, misalnya di border dan transition.",
+            "Contoh variabel di tengah nilai: border: 1px solid var(--garis); Tulis rgba persis dengan spasi sesudah tiap koma: rgba(0, 0, 0, 0.15). Koma di dalam kurung bukan pemisah deklarasi, jadi nggak perlu titik koma di dalamnya.",
         ],
         "solution": """:root {
   --latar: #ffffff;
@@ -567,11 +548,9 @@ li:first-child {
             "    font-size: 1.25rem",
         ],
         "hints": [
-            "container-type: inline-size ditulis di .widget, BUKAN di dalam @container.",
-            "@container (min-width: 500px) { ... } - tanpa nama container, langsung "
-            "syaratnya di dalam kurung, sama seperti @media.",
-            "Urutan dua aturan di dalam @container mengikuti urutan di soal: .widget "
-            "dulu (display + grid-template-columns), baru .widget .judul.",
+            "Baca ulang Container Queries dan CSS Nesting. Container query bereaksi ke lebar wadahnya, bukan lebar layar, dan wadah itu harus diumumkan dulu sebagai container lewat properti container-type di aturan biasa.",
+            "Tulis dua aturan biasa dulu (.widget sebagai container, .widget .judul dengan ukuran dasar), lalu blok @container berisi dua aturan penimpa sesuai urutan di soal: .widget dulu (display dan grid-template-columns), baru .widget .judul. container-type ditaruh di .widget, bukan di dalam @container.",
+            "Syaratnya ditulis langsung di dalam kurung tanpa nama container, sama seperti @media: @container (min-width: 500px) { ... }.",
         ],
         "solution": """.widget {
   container-type: inline-size;
@@ -714,11 +693,11 @@ li:first-child {
         '    h1',
         '      font-size: 1.5rem',
     ],
-        'hints': [
-        "Selector bertumpuk ditulis dengan koma: 'header, main, footer { ... }' menghasilkan satu aturan untuk tiga elemen, bukan tiga aturan.",
-        'tabular-nums membuat angka punya lebar sama, jadi kolom harga bisa dibandingkan sekilas tanpa perlu diratakan manual.',
-        'Media query ditaruh terakhir karena spesifisitasnya sama dengan aturan biasa -- yang ditulis belakangan yang menang.',
-    ],
+        "hints": [
+            "Baca lagi Variabel CSS dan Cara Menata Berkas Gaya (token di :root), Menata Tabel, Grid, dan Menata Formulir. Kerjakan berurutan seperti pohon keluarannya; penilai mencetak aturanmu apa adanya, jadi urutan aturan dan urutan properti ikut dinilai.",
+            "Pemilih bertumpuk ditulis dengan koma: satu aturan untuk header, main, dan footer sekaligus, bukan tiga aturan. Baris genap tabel dipilih dengan tbody tr:nth-child(even), kolom terakhir dengan td:last-child. tabular-nums membuat angka punya lebar sama, jadi kolom harga bisa dibandingkan sekilas tanpa diratakan manual.",
+            "Media query ditaruh paling akhir karena spesifisitas aturan di dalamnya sama dengan aturan biasa, jadi yang ditulis belakangan yang menang: @media (max-width: 480px) { dl { ... } h1 { ... } }. dl jadi grid dua kolom lewat grid-template-columns: max-content 1fr.",
+        ],
         'solution': """/* Sistem Gaya Warung Kopi Pagi -- token, tata letak, tabel, formulir. */
 
 :root {

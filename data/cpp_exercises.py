@@ -11,8 +11,8 @@ CPP_EXERCISES = [
             "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
-            "Gunakan cout << ... << endl; untuk tiap baris.",
-            "Jangan lupa #include <iostream> dan using namespace std;.",
+            "Baca materi \"Input/Output Modern (cin & cout)\": cout mencetak teks, dan endl memindah ke baris baru.",
+            "Kerangkanya: #include <iostream>, using namespace std;, int main(), dua baris cout yang masing-masing diakhiri endl, lalu return 0;.",
         ],
         "solution": """#include <iostream>
 using namespace std;
@@ -32,8 +32,9 @@ int main() {
             "pembagian (int), dan sisa bagi menggunakan cout.",
         ],
         "hints": [
-            "int a = 15, b = 4;",
-            "cout << a << \" + \" << b << \" = \" << (a+b) << endl;",
+            "Operator aritmetikanya sama dengan di C; yang baru cuma cara mencetaknya, lihat materi \"Input/Output Modern (cin & cout)\". Pembagian int dengan int membuang sisa di belakang koma.",
+            "Pakai a = 15 dan b = 4 supaya keluaranmu cocok dengan penilai. Satu baris per operasi dengan format seperti 15 + 4 = 19: sambung angka dan teks dengan <<, dan bungkus operasinya dengan kurung supaya jelas.",
+            "Contoh satu baris: cout << a << \" + \" << b << \" = \" << (a + b) << endl; empat baris lainnya polanya sama. Di cout, tanda % bisa ditulis langsung, nggak perlu %% seperti printf.",
         ],
         "solution": """#include <iostream>
 using namespace std;
@@ -60,9 +61,9 @@ int main() {
             "satu baris berisi Lulus atau Tidak Lulus.",
         ],
         "hints": [
-            "int nilai; cin >> nilai;",
-            "Jangan ada cout sebelum cin -- penilaian membandingkan output.",
-            "Gunakan if-else biasa.",
+            "Baca materi \"Input/Output Modern (cin & cout)\" untuk membaca angka dengan cin, lalu satu if-else dengan kondisi nilai >= 75.",
+            "Baca nilai dengan cin >> ke variabel int. Jangan ada cout sebelum cin: penilai membandingkan seluruh keluaran, jadi teks ajakan seperti \"Masukkan nilai:\" bikin jawabanmu dianggap salah.",
+            "Cabang if mencetak Lulus, cabang else mencetak Tidak Lulus, masing-masing diakhiri endl.",
         ],
         # Dua input supaya KEDUA cabang benar-benar diuji.
         "stdin_list": ["80\n", "60\n"],
@@ -90,8 +91,9 @@ int main() {
             "dari 1 sampai 20, tampilkan semuanya beserta total jumlahnya.",
         ],
         "hints": [
-            "vector<int> genap; lalu push_back di dalam loop for jika i%2==0.",
-            "Gunakan range-based for untuk mencetak & akumulasi total.",
+            "Baca materi \"STL: Vector & Array Container\": vector bisa tumbuh lewat push_back, dan isinya bisa ditelusuri dengan range-based for.",
+            "Ulangi i dari 1 sampai 20 dan masukkan i ke vector kalau genap (sisa baginya dengan 2 nol). Lalu telusuri vector-nya: cetak tiap angka diikuti spasi sambil menambahkannya ke total yang mulai dari 0. Terakhir pindah baris dan cetak Total: diikuti jumlahnya.",
+            "Range-based for bentuknya for (int n : genap) { ... }, jadi kamu nggak perlu indeks sama sekali.",
         ],
         "solution": """#include <iostream>
 #include <vector>
@@ -126,8 +128,9 @@ int main() {
             "  *****",
         ],
         "hints": [
-            "Gunakan nested loop (for di dalam for).",
-            "string(n, '*') membuat string berisi n karakter '*' berulang.",
+            "Cara paling langsung sama seperti di C: nested loop, loop luar untuk baris dan loop dalam untuk bintang. Dasar string C++ ada di materi \"String C++ Lebih Dalam & stringstream\".",
+            "Baris ke-i berisi i bintang. Dengan nested loop: cetak satu '*' di loop dalam, lalu endl sesudah loop dalam selesai.",
+            "Versi lebih pendek: string(i, '*') membuat string berisi i karakter '*', jadi isi loop luar cukup satu baris cout << string(i, '*') << endl;.",
         ],
         "solution": """#include <iostream>
 #include <string>
@@ -149,8 +152,9 @@ int main() {
             "terurut (descending) menggunakan <algorithm>.",
         ],
         "hints": [
-            "max_element/min_element dari <algorithm> (ingat: hasilnya iterator, pakai * untuk deref).",
-            "sort(v.begin(), v.end(), greater<int>()); untuk descending.",
+            "Baca materi \"STL: Algorithm Library\": max_element, min_element, dan sort bekerja dengan pasangan iterator begin() dan end().",
+            "max_element dan min_element mengembalikan iterator, jadi ambil nilainya dengan *. Rata-rata adalah jumlah semua nilai dibagi banyaknya; pastikan pembagiannya pecahan, bukan bagi int. Urutan menurun didapat dari sort dengan pembanding greater<int>().",
+            "accumulate dari <numeric> menjumlahkan isinya: accumulate(nilai.begin(), nilai.end(), 0). Bagi dengan (double) nilai.size() supaya hasilnya 79.2857, bukan 79. Format keluaran: Terbesar: 95, Terkecil: 60, Rata-rata: 79.2857, lalu Urutan menurun: diikuti angka-angkanya.",
         ],
         "solution": """#include <iostream>
 #include <vector>
@@ -187,8 +191,9 @@ int main() {
             "Panggil ketiganya dan tampilkan hasilnya.",
         ],
         "hints": [
-            "Compiler membedakan berdasarkan jumlah & tipe parameter.",
-            "double luas(double r) { ... } - beda tipe dari int luas(int sisi).",
+            "Baca materi \"Function Overloading & Default Parameter\": compiler memilih versi fungsi dari jumlah dan tipe argumen yang kamu kirim.",
+            "Tulis tiga fungsi bernama luas: versi (int) mengembalikan sisi * sisi, versi (int, int) mengembalikan p * l, dan versi (double) bertipe kembali double. Saat memanggil versi lingkaran, kirim 7.0, bukan 7; angka 7 bertipe int dan akan memanggil luas persegi.",
+            "Keluaran solusi contoh: Persegi (5): 25, lalu Persegi Panjang (4x6): 24, lalu Lingkaran (r=7.0): 153.938, masing-masing satu baris.",
         ],
         "solution": """#include <iostream>
 using namespace std;
@@ -223,8 +228,9 @@ int main() {
             "  - method setor(double) dan tarik(double) (return bool)",
         ],
         "hints": [
-            "class Rekening { private: ... public: Rekening(string p, double s) : pemilik(p), saldo(s) {} ... };",
-            "tarik return true jika saldo cukup, false jika tidak.",
+            "Baca materi \"Encapsulation: private, public, protected\" dan \"Constructor & Destructor\": atribut disembunyikan di private, dan cuma method public yang boleh mengubahnya.",
+            "Constructor mengisi pemilik dan saldo, paling rapi lewat initializer list. getSaldo diberi const karena cuma membaca. setor menambah saldo kalau jumlahnya positif; tarik mengurangi saldo dan mengembalikan true kalau jumlahnya positif dan saldonya cukup, selain itu false.",
+            "Skenario solusi contoh: Rekening(\"Andi\", 100000), setor 50000, cetak Saldo: 150000, lalu tarik 20000 dan 999999, lalu Saldo akhir: 130000. cout mencetak bool sebagai 1 atau 0, jadi barisnya Tarik 20000 berhasil? 1.",
         ],
         "solution": """#include <iostream>
 #include <string>
@@ -273,9 +279,9 @@ int main() {
             "tidak ada dengan aman (tanpa error) memakai .count().",
         ],
         "hints": [
-            "map<string,string> kontak; kontak[\"Andi\"] = \"0812xxxx\";",
-            "for (const auto &p : kontak) { cout << p.first << \": \" << p.second; }",
-            "if (kontak.count(\"Zaki\") == 0) { ... }",
+            "Baca materi \"STL: Map, Set & Pair\": map menyimpan pasangan kunci-nilai dan selalu terurut menurut kuncinya.",
+            "Isi tiga kontak dengan kontak[nama] = nomor. Telusuri dengan range-based for; tiap elemen adalah pair, jadi namanya .first dan nomornya .second. Untuk nama yang belum tentu ada, cek dengan .count(), karena kontak[nama] justru menambahkan entri kosong kalau namanya belum ada.",
+            "Data solusi contoh: Andi 0812-1111-1111, Budi 0813-2222-2222, Citra 0812-3333-3333, dicetak sebagai Andi: 0812-1111-1111. Nama yang dicek Zaki, dengan pesan Zaki tidak ditemukan.",
         ],
         "solution": """#include <iostream>
 #include <map>
@@ -308,9 +314,9 @@ int main() {
             "semua (polymorphism), lalu bersihkan memori dengan delete.",
         ],
         "hints": [
-            "virtual void bersuara() di base class, override di subclass.",
-            "vector<Hewan*> daftar = { new Kucing(...), new Anjing(...) };",
-            "Jangan lupa virtual destructor & delete tiap elemen di akhir.",
+            "Baca materi \"Polymorphism & Virtual Function\": method yang diberi virtual di class induk akan menjalankan versi anak walau dipanggil lewat pointer ke induk.",
+            "Hewan menyimpan nama (protected supaya anak bisa memakainya) dan punya method virtual bersuara(). Kucing dan Anjing meneruskan nama ke constructor Hewan lalu override bersuara(). Simpan objek hasil new di vector<Hewan*>, panggil bersuara() lewat loop, lalu delete tiap elemen.",
+            "Beri Hewan destructor virtual (virtual ~Hewan() {}) supaya delete lewat Hewan* membersihkan objek anak dengan benar. Keluaran solusi contoh: Tom: Meong! lalu Bobby: Guk!",
         ],
         "solution": """#include <iostream>
 #include <vector>
@@ -367,8 +373,9 @@ int main() {
             "dan tampilkan luas+keliling semua bentuk.",
         ],
         "hints": [
-            "virtual double luas() = 0; virtual double keliling() = 0;",
-            "Lingkaran butuh nilai PI (bisa const double PI = 3.14159;).",
+            "Baca materi \"Abstract Class & Pure Virtual Function\": method yang diakhiri = 0 wajib diisi class turunan, dan class induknya nggak bisa dibuat objeknya.",
+            "Persegi menyimpan sisi (luas sisi * sisi, keliling 4 * sisi); Lingkaran menyimpan jari-jari (luas PI * r * r, keliling 2 * PI * r). Simpan new Persegi(5) dan new Lingkaran(7) di vector<Bentuk*>, cetak keduanya dalam satu loop, lalu delete.",
+            "Pakai PI = 3.14159 dan format Luas: 25, Keliling: 20 per bentuk. Jangan lupa destructor virtual di Bentuk.",
         ],
         "solution": """#include <iostream>
 #include <vector>
@@ -422,8 +429,9 @@ int main() {
             "  << (agar bisa langsung di-cout)",
         ],
         "hints": [
-            "Vector2D operator+(const Vector2D &lain) const { return Vector2D(x+lain.x, y+lain.y); }",
-            "friend ostream& operator<<(ostream &os, const Vector2D &v) {...}",
+            "Baca materi \"Operator Overloading\": operator ditulis sebagai fungsi bernama operator+, operator==, dan seterusnya.",
+            "+ dan - mengembalikan Vector2D baru dari penjumlahan atau pengurangan tiap komponen; == mengembalikan true kalau x dan y sama-sama cocok. Ketiganya bisa jadi method const yang menerima const Vector2D&. << beda sendiri: operan kirinya ostream, jadi ia ditulis sebagai fungsi friend dan mengembalikan ostream-nya.",
+            "Bentuk <<: friend ostream& operator<<(ostream &os, const Vector2D &v) { os << ...; return os; }. Formatnya (x, y), jadi solusi contoh dengan a(1, 2) dan b(3, 4) mencetak a + b = (4, 6), a - b = (-2, -2), dan a == Vector2D(1,2)? 1.",
         ],
         "solution": """#include <iostream>
 using namespace std;
@@ -467,9 +475,9 @@ int main() {
             "dengan method push(T), pop(), dan isEmpty(), berbasis vector<T>.",
         ],
         "hints": [
-            "template <typename T> T cariMax(vector<T> data) { ... }",
-            "template <typename T> class StackSederhana { private: vector<T> data; public: ... };",
-            "pop(): ambil data.back(), lalu data.pop_back().",
+            "Baca materi \"Templates (Generic Programming)\": fungsi atau class cukup ditulis sekali dengan parameter tipe T, lalu compiler membuatkan versinya untuk tiap tipe yang dipakai.",
+            "cariMax: anggap data[0] terbesar, lalu bandingkan dengan sisa elemen lewat loop biasa. StackSederhana menyimpan vector<T> secara private; push memanggil push_back, isEmpty memanggil empty(), dan pop mengambil elemen paling belakang lalu membuangnya.",
+            "Di pop, simpan dulu data.back() ke variabel, baru panggil data.pop_back(), lalu kembalikan variabelnya; pop_back sendiri nggak mengembalikan apa-apa. Solusi contoh mencetak Max: 9 dari {5, 8, 2, 9, 1}, lalu push Andi, Budi, Citra dan pop sampai kosong (Citra, Budi, Andi).",
         ],
         "solution": """#include <iostream>
 #include <vector>
@@ -523,9 +531,9 @@ int main() {
             "pada fungsi akarKuadrat(double x). Uji keduanya dengan try-catch.",
         ],
         "hints": [
-            "#include <stdexcept> untuk runtime_error.",
-            "class NilaiNegatifException : public exception { ... const char* what() const noexcept override {...} };",
-            "#include <cmath> untuk sqrt().",
+            "Baca materi \"Exception Handling\": throw melempar objek exception, dan catch yang tipenya cocok akan menangkapnya.",
+            "bagi melempar runtime_error (dari <stdexcept>) kalau b == 0. NilaiNegatifException mewarisi exception, menyimpan pesannya sendiri, dan override what(). akarKuadrat melempar exception itu kalau x < 0, selain itu mengembalikan sqrt(x) dari <cmath>. Uji keduanya dengan dua blok try-catch terpisah.",
+            "Bentuk what(): const char* what() const noexcept override { return pesan.c_str(); }. Solusi contoh mencetak 5 dari bagi(10, 2), lalu Error: Tidak bisa membagi dengan nol!, lalu Error khusus: Tidak bisa akar dari bilangan negatif!",
         ],
         "solution": """#include <iostream>
 #include <stdexcept>
@@ -582,9 +590,9 @@ int main() {
             "total gaji semua karyawan menggunakan loop atas vector tersebut.",
         ],
         "hints": [
-            "vector<unique_ptr<Karyawan>> daftar;",
-            "daftar.push_back(make_unique<Karyawan>(\"Andi\", 5000000));",
-            "Akses lewat -> karena elemen vector adalah unique_ptr.",
+            "Baca materi \"Smart Pointer: unique_ptr & shared_ptr\": unique_ptr menghapus objeknya sendiri saat ia hilang, jadi kamu nggak perlu menulis delete.",
+            "Constructor Karyawan mencetak pesan ditambahkan, destructor mencetak pesan dibersihkan. Buat objeknya dengan make_unique<Karyawan>(nama, gaji) dan masukkan ke vector lewat push_back. Tiap elemen vector adalah unique_ptr, jadi akses gajinya dengan ->.",
+            "Total 18000000 tercetak sebagai 1.8e+07 kalau dibiarkan, jadi pasang cout << fixed << setprecision(0); dari <iomanip> di awal main. Pesan Karyawan Andi dibersihkan. dan seterusnya muncul sendiri di akhir main, saat vector-nya dihancurkan.",
         ],
         "solution": """#include <iostream>
 #include <iomanip>
@@ -634,9 +642,9 @@ int main() {
             "  3. Cari produk dengan stok < 10 menggunakan find_if.",
         ],
         "hints": [
-            "sort(v.begin(), v.end(), [](const Produk &a, const Produk &b){ return a.harga > b.harga; });",
-            "accumulate butuh lambda sebagai operator kustom untuk tipe non-angka langsung.",
-            "find_if(v.begin(), v.end(), [](const Produk &p){ return p.stok < 10; });",
+            "Baca materi \"STL: Algorithm Library\" dan \"Lambda Expression & Fitur Modern C++\": sort, accumulate, dan find_if bisa menerima lambda sebagai aturan buatanmu sendiri.",
+            "sort dengan lambda pembanding yang bernilai true kalau harga a lebih besar dari harga b. Total nilai adalah jumlah harga * stok tiap produk; kalau pakai accumulate, ia butuh lambda karena elemennya Produk, bukan angka. find_if dengan lambda stok < 10 mengembalikan iterator, jadi cek dulu iteratornya != end() sebelum dipakai.",
+            "Data solusi contoh: Laptop 7500000 stok 5, Mouse 150000 stok 50, Keyboard 350000 stok 8, Monitor 2000000 stok 15. Pasang cout << fixed << setprecision(0); supaya harga besar nggak tercetak dalam notasi ilmiah. Format: Laptop: 7500000, Total nilai inventori: 77800000, Stok menipis: Laptop (stok: 5).",
         ],
         "solution": """#include <iostream>
 #include <iomanip>
@@ -698,9 +706,9 @@ int main() {
             "memori otomatis terbebaskan lewat chain unique_ptr.",
         ],
         "hints": [
-            "struct Node { int data; unique_ptr<Node> next; Node(int d): data(d), next(nullptr) {} };",
-            "head adalah unique_ptr<Node> juga; tambahDiAwal butuh std::move(head).",
-            "tampilkan() bisa pakai raw pointer sementara (Node*) untuk iterasi tanpa memindah kepemilikan.",
+            "Baca materi \"Smart Pointer: unique_ptr & shared_ptr\" dan \"RAII & Move Semantics (Lanjutan)\": unique_ptr nggak bisa disalin, cuma bisa dipindah dengan std::move.",
+            "Node berisi data dan unique_ptr<Node> next. LinkedList memegang unique_ptr<Node> head. Menambah di awal: buat node baru, pindahkan head lama ke next milik node baru, lalu pindahkan node baru ke head. Destructor nggak perlu ditulis: saat head hilang, seluruh rantai ikut terhapus.",
+            "Untuk menampilkan, telusuri dengan pointer mentah yang cuma meminjam: Node *current = head.get(); lalu maju dengan current = current->next.get(). Keluaran solusi contoh: 10 -> 20 -> 30 -> NULL.",
         ],
         "solution": """#include <iostream>
 #include <memory>
@@ -758,9 +766,9 @@ int main() {
             "  4. topMahasiswa() - kembalikan mahasiswa dengan IPK tertinggi",
         ],
         "hints": [
-            "cariByNim: gunakan find_if, jika iterator == end() maka throw runtime_error.",
-            "rataRataIpk: accumulate dengan lambda karena field ipk ada di dalam objek.",
-            "topMahasiswa: max_element dengan lambda comparator.",
+            "Ini gabungan materi \"Exception Handling\", \"STL: Algorithm Library\", dan \"Lambda Expression & Fitur Modern C++\". Bikin class Mahasiswa dulu, lalu tambahkan method ManajemenMahasiswa satu per satu.",
+            "cariByNim: find_if dengan lambda yang menangkap nim; kalau iteratornya sama dengan end(), throw runtime_error. rataRataIpk: accumulate dengan nilai awal 0.0 dan lambda yang menambahkan ipk tiap mahasiswa, karena ipk ada di dalam objek. topMahasiswa: max_element dengan lambda yang membandingkan ipk.",
+            "Data solusi contoh: (101, Andi, 3.5), (102, Budi, 3.9), (103, Citra, 3.2), lalu cari NIM 999. Keluarannya: Rata-rata IPK: 3.53333, Top mahasiswa: Budi (IPK 3.9), dan Error: Mahasiswa dengan NIM 999 tidak ditemukan! (pesannya disusun dengan to_string(nim)).",
         ],
         "solution": """#include <iostream>
 #include <vector>
@@ -873,10 +881,10 @@ int main() {
         '  Ekspresi diuji : 7',
     ],
         'hints': [
-        'using Pohon = std::unique_ptr<Simpul>; dan pindahkan kepemilikan dengan std::move(kiri) saat membentuk Operasi.',
-        'Fungsi faktor() memanggil ekspresi() untuk isi kurung -- itu rekursinya, dan itu yang membuat kurung bersarang bekerja sendirinya.',
-        'Negatif di depan angka cukup diperlakukan sebagai 0 - faktor(), jadi tidak perlu jenis simpul baru.',
-    ],
+            "Ini recursive descent parser: tiap baris tata bahasa jadi satu fungsi, dan fungsi tingkat atas memanggil tingkat di bawahnya. Bekalnya ada di materi \"Abstract Class & Pure Virtual Function\", \"Smart Pointer: unique_ptr & shared_ptr\", dan \"Exception Handling\".",
+            "ekspresi() memanggil suku(), suku() memanggil faktor(), dan faktor() memanggil ekspresi() lagi untuk isi kurung. Itu rekursinya, dan itu juga yang membuat kurung bersarang bekerja sendiri. Tanda minus di depan cukup diperlakukan sebagai 0 - faktor(), jadi nggak perlu jenis simpul baru.",
+            "using Pohon = std::unique_ptr<Simpul>; lalu bentuk simpul operasi dengan std::make_unique<Operasi>(op, std::move(kiri), suku()). Hitung nilai() dulu ke variabel, baru cetak tulis() dan hasilnya, supaya galat pembagian dengan nol nggak muncul di tengah baris.",
+        ],
         'solution': """// Kalkulator Ekspresi -- recursive descent parser dengan pohon sintaks.
 #include <iostream>
 #include <memory>

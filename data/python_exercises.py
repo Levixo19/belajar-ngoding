@@ -11,9 +11,9 @@ PYTHON_EXERCISES = [
             "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
-            "Gunakan print() untuk tiap baris.",
-            "Teks diapit tanda kutip ' atau \".",
-            "Python tidak butuh titik koma di akhir baris.",
+            "Baca ulang materi \"Pengenalan Python & Instalasi\". Satu baris teks di layar berarti satu kali memanggil fungsi untuk mencetak.",
+            "Panggil print() dua kali, satu untuk tiap baris. Teksnya diapit tanda kutip ' atau \", dan Python nggak butuh titik koma di akhir baris.",
+            "Salin teksnya persis, termasuk nama Andi, koma, tanda seru, dan titiknya. Penilaian membandingkan keluaranmu huruf demi huruf.",
         ],
         "solution": """print("Halo, namaku Andi!")
 print("Aku sedang belajar Python.")""",
@@ -27,9 +27,9 @@ print("Aku sedang belajar Python.")""",
             "pembagian biasa, pembagian bulat (//), dan sisa bagi (%).",
         ],
         "hints": [
-            "a = 15; b = 4",
-            "Ingat / selalu hasil float, // hasil bulat.",
-            "Gunakan f-string untuk menampilkan hasil dengan rapi.",
+            "Keenam operator yang diminta dibahas di materi \"Operator\", termasuk beda / dan //.",
+            "Simpan dua angkanya di variabel (misalnya a dan b), lalu cetak tiap hasil dengan f-string supaya angka dan hasilnya bisa ditulis dalam satu teks. Ingat, / selalu menghasilkan float, sedangkan // menghasilkan bilangan bulat.",
+            "Contoh satu baris: print(f\"{a} // {b} = {a // b}\"). Lima baris lainnya polanya sama.",
         ],
         "solution": """a = 15
 b = 4
@@ -52,9 +52,9 @@ print(f"{a} % {b} = {a % b}")""",
             "satu baris berisi Lulus atau Tidak Lulus.",
         ],
         "hints": [
-            "Gunakan input() untuk membaca dari keyboard (hasilnya string).",
-            "Ubah ke int dengan int(input()), tanpa argumen di dalam input().",
-            "Gunakan if-else atau ternary satu baris.",
+            "Ini soal percabangan. Baca ulang \"Percabangan (if / elif / else)\" dan bagian input() di \"Masukan, Keluaran & Modul Bawaan\".",
+            "input() selalu mengembalikan string, jadi ubah dulu ke int sebelum dibandingkan dengan 75. Panggil input() tanpa argumen: teks prompt di dalamnya ikut tercetak dan membuat keluaranmu dianggap salah.",
+            "Kerangkanya: nilai = int(input()), lalu if nilai >= 75: cetak Lulus, else: cetak Tidak Lulus. Ternary satu baris juga boleh.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -79,8 +79,9 @@ else:
             "Contoh output: 2 4 6 8 10 12 14 16 18 20, Total: 110",
         ],
         "hints": [
-            "Gunakan for dengan range(1, 21) dan cek n % 2 == 0.",
-            "Kumpulkan angka genap ke list, lalu pakai sum().",
+            "Kamu butuh perulangan, cek genap dengan operator %, dan penjumlahan. Lihat \"Perulangan (for & while)\" dan \"Fungsi Bawaan untuk Koleksi\".",
+            "Ulangi range(1, 21), kumpulkan angka yang n % 2 == 0 ke sebuah list, lalu cetak isinya dipisah spasi. Di baris kedua cetak Total: diikuti sum() dari list itu.",
+            "print(*genap) mencetak isi list dipisah spasi, tanpa kurung siku dan koma.",
         ],
         "solution": """genap = [n for n in range(1, 21) if n % 2 == 0]
 
@@ -99,8 +100,9 @@ print(f"Total: {sum(genap)}")""",
             "  *****",
         ],
         "hints": [
-            "Gunakan nested loop (for di dalam for).",
-            "print('*' * i) bisa dipakai untuk mengulang karakter tanpa loop dalam.",
+            "Baris ke-i berisi i bintang. Baca ulang \"Perulangan (for & while)\", lalu bagian operator * untuk string di \"String & Formatting\".",
+            "Ulangi i dari 1 sampai 5 dengan range(1, 6). Di tiap putaran cetak bintang sebanyak i, bisa dengan loop di dalam loop atau tanpa loop dalam sama sekali.",
+            "String bisa dikalikan dengan angka: \"*\" * 3 menghasilkan '***'.",
         ],
         "solution": """for i in range(1, 6):
     print("*" * i)
@@ -120,8 +122,9 @@ print(f"Total: {sum(genap)}")""",
             "list nilai yang sudah diurutkan dari terbesar ke terkecil.",
         ],
         "hints": [
-            "Gunakan fungsi bawaan max(), min(), sum(), len().",
-            "sorted(list, reverse=True) untuk urutan menurun.",
+            "Semua yang diminta sudah tersedia sebagai fungsi bawaan. Lihat \"Fungsi Bawaan untuk Koleksi\" dan \"List & Tuple\".",
+            "max() dan min() untuk terbesar dan terkecil, sum() dibagi len() untuk rata-rata, dan sorted() dengan reverse=True untuk urutan dari terbesar ke terkecil.",
+            "Rata-rata dengan dua angka di belakang koma ditulis lewat f-string seperti f\"{rata:.2f}\".",
         ],
         "solution": """nilai = [80, 90, 75, 85, 60, 95, 70]
 
@@ -141,8 +144,9 @@ print(f"Urutan menurun: {sorted(nilai, reverse=True)}")""",
             "Panggil ketiganya dan tampilkan hasilnya.",
         ],
         "hints": [
-            "import math lalu pakai math.pi.",
-            "def nama_fungsi(parameter): ... return hasil",
+            "Baca ulang \"Function (Fungsi)\" untuk def dan return, dan bagian module math di \"Masukan, Keluaran & Modul Bawaan\".",
+            "Tulis tiga fungsi yang masing-masing mengembalikan hasil hitungannya dengan return, bukan mencetaknya. Untuk pi, tulis import math di atas berkas lalu pakai math.pi. Pencetakan dilakukan di luar fungsi.",
+            "Kerangka satu fungsi: def luas_persegi(sisi): lalu di baris berikutnya return sisi * sisi. Luas lingkaran enak dicetak dengan format :.2f.",
         ],
         "solution": """import math
 
@@ -171,9 +175,9 @@ print(f"Lingkaran (r=7): {luas_lingkaran(7):.2f}")""",
             "  4. Kalimat dengan kata 'Python' diganti 'Coding'.",
         ],
         "hints": [
-            "strip() untuk buang spasi ujung.",
-            "split() memecah kalimat jadi list kata, len() untuk menghitung.",
-            "replace(lama, baru) untuk mengganti kata.",
+            "Semua langkah dikerjakan dengan method string. Baca ulang \"String & Formatting\".",
+            "strip() membuang spasi di kedua ujung, upper() mengubah ke huruf besar, split() memecah kalimat jadi list kata (hitung dengan len()), dan replace(lama, baru) mengganti kata.",
+            "Jalankan strip() sekali dan simpan hasilnya di variabel, lalu pakai variabel itu untuk tiga langkah sisanya.",
         ],
         "solution": """kalimat = "  Belajar Python itu Menyenangkan  "
 
@@ -194,10 +198,9 @@ print(f"4. {bersih.replace('Python', 'Coding')}")""",
             "(tanpa error) menggunakan .get().",
         ],
         "hints": [
-            "kontak = {}",
-            "kontak['Andi'] = '0812xxxx'",
-            "for nama, no in kontak.items(): ...",
-            "kontak.get('Zaki', 'Tidak ditemukan')",
+            "Baca ulang \"Dictionary & Set\": cara menambah pasangan key-value, mengulang isinya, dan mengambil nilai tanpa KeyError.",
+            "Mulai dari dict kosong {}, tambahkan tiga kontak dengan kontak[nama] = nomor, ulangi semuanya dengan for nama, nomor in kontak.items(), lalu cari nama yang nggak ada memakai .get().",
+            "kontak.get(\"Zaki\", \"Kontak tidak ditemukan\") mengembalikan argumen keduanya kalau key itu nggak ada, tanpa melempar error.",
         ],
         "solution": """kontak = {}
 kontak["Andi"] = "0812-1111-1111"
@@ -221,9 +224,9 @@ print(hasil)""",
             "  3. Buat dictionary {angka: 'genap'/'ganjil'} untuk 1-10.",
         ],
         "hints": [
-            "[x for x in angka if x % 3 == 0]",
-            "[x**2 for x in angka if x % 2 != 0]",
-            "{x: ('genap' if x % 2 == 0 else 'ganjil') for x in range(1, 11)}",
+            "Baca ulang \"List Comprehension & Generator Expression\", termasuk bagian dict comprehension dan ekspresi if-else di dalamnya.",
+            "Bentuk umumnya [ekspresi for x in angka if syarat]. Kelipatan 3 berarti x % 3 == 0, ganjil berarti x % 2 != 0. Untuk dict, pakai kurung kurawal dengan pasangan kunci: nilai.",
+            "Nilai dict-nya berupa ternary, (\"genap\" if x % 2 == 0 else \"ganjil\"), dengan x diambil dari range(1, 11).",
         ],
         "solution": """angka = list(range(1, 21))
 
@@ -248,9 +251,9 @@ print(label_genap_ganjil)""",
             "  - method __str__ untuk menampilkan info rekening dengan rapi",
         ],
         "hints": [
-            "self._saldo untuk atribut 'protected' secara konvensi.",
-            "@property def saldo(self): return self._saldo",
-            "def __str__(self): return f'...'",
+            "Baca ulang \"OOP: Class & Object\" dan \"OOP: Encapsulation & Dunder Methods\" untuk __init__, @property, dan __str__.",
+            "Simpan saldo di self._saldo; garis bawah di depan artinya 'jangan disentuh dari luar' secara konvensi. Properti saldo cukup mengembalikannya. tarik() mengecek dulu apakah saldonya cukup, mengurangi saldo cuma kalau cukup, lalu mengembalikan True atau False.",
+            "Getter-nya: @property di atas def saldo(self): return self._saldo. __str__ harus mengembalikan string dengan return f\"...\", bukan mencetaknya.",
         ],
         "solution": """class Rekening:
     def __init__(self, pemilik, saldo):
@@ -294,9 +297,9 @@ print(r)""",
             "untuk semua (polymorphism).",
         ],
         "hints": [
-            "class Kucing(Hewan): def bersuara(self): ...",
-            "super().__init__(nama) untuk memanggil constructor induk.",
-            "for h in daftar_hewan: h.bersuara()",
+            "Baca ulang \"OOP: Inheritance & Polymorphism\".",
+            "Hewan menyimpan nama di __init__ dan punya method bersuara(). Kucing dan Anjing mewarisi Hewan, lalu menulis ulang bersuara() masing-masing. Taruh objek keduanya di satu list dan panggil bersuara() di dalam for.",
+            "class Kucing(Hewan): sudah cukup untuk mewarisi. Kalau subclass butuh __init__ sendiri, panggil super().__init__(nama) di dalamnya.",
         ],
         "solution": """class Hewan:
     def __init__(self, nama):
@@ -331,9 +334,9 @@ for h in daftar_hewan:
             "beberapa kasus termasuk yang error.",
         ],
         "hints": [
-            "except ZeroDivisionError: ...",
-            "except TypeError: ...",
-            "else dijalankan jika tidak ada error, finally selalu jalan.",
+            "Baca ulang \"Exception Handling\": urutan try, except, else, dan finally, serta kapan masing-masing jalan.",
+            "Lakukan pembagian di dalam try. Tulis satu except untuk ZeroDivisionError dan satu untuk TypeError, kembalikan hasilnya di else, dan cetak penanda selesai di finally. Uji dengan pembagi biasa, nol, dan sebuah string.",
+            "else cuma jalan kalau try nggak melempar error. finally selalu jalan, bahkan sesudah return di except atau else.",
         ],
         "solution": """def bagi(a, b):
     try:
@@ -367,9 +370,9 @@ print(bagi(10, "a"))""",
             "  3. Buat list nama SAJA (tanpa nilai) dari hasil nomor 2.",
         ],
         "hints": [
-            "filter(lambda m: m[1] >= 75, mahasiswa)",
-            "sorted(hasil, key=lambda m: m[1], reverse=True)",
-            "map(lambda m: m[0], hasil_urut)",
+            "Baca ulang \"Lambda & Higher-Order Function\": filter, sorted dengan key, dan map.",
+            "Kerjakan berantai: filter dengan syarat nilai >= 75, urutkan hasilnya dengan sorted() memakai key nilai dan reverse=True, lalu map untuk mengambil namanya saja. Bungkus hasil filter dan map dengan list() supaya bisa dicetak.",
+            "Di tiap tuple, m[0] adalah nama dan m[1] nilainya, jadi key untuk sorted() adalah lambda m: m[1].",
         ],
         "solution": """mahasiswa = [("Andi", 80), ("Budi", 65), ("Citra", 92), ("Dedi", 70)]
 
@@ -392,8 +395,9 @@ print(nama_saja)      # ['Citra', 'Andi']""",
             "Tampilkan 10 bilangan pertama.",
         ],
         "hints": [
-            "Gunakan dua variabel a, b untuk melacak dua nilai terakhir.",
-            "yield a, lalu a, b = b, a + b di dalam loop.",
+            "Baca ulang \"Iterator & Generator\": fungsi yang memakai yield menghasilkan nilai satu per satu, tanpa list.",
+            "Simpan dua nilai terakhir di a dan b, mulai dari 0 dan 1. Dalam perulangan sebanyak n kali, yield a lalu geser kedua nilainya. Cetak hasilnya dalam satu baris, dipisah spasi.",
+            "Penggeserannya cukup satu baris: a, b = b, a + b. Untuk mencetak satu baris, pakai print(angka, end=\" \") di dalam for, lalu satu print() kosong sesudahnya.",
         ],
         "solution": """def fibonacci(n):
     a, b = 0, 1
@@ -418,9 +422,9 @@ print()
             "juga nilai yang dikembalikan. Terapkan ke fungsi tambah(a, b).",
         ],
         "hints": [
-            "def log_panggilan(fungsi): def wrapper(*args, **kwargs): ...",
-            "Panggil fungsi asli di dalam wrapper, simpan hasilnya, lalu return.",
-            "Gunakan fungsi.__name__ untuk mendapat nama fungsi asli.",
+            "Baca ulang \"Decorator & Context Manager\": decorator adalah fungsi yang menerima fungsi lain dan mengembalikan fungsi pembungkus.",
+            "Di dalam log_panggilan, buat fungsi wrapper(*args, **kwargs). Wrapper mencetak nama fungsi dan argumennya, memanggil fungsi asli, menyimpan hasilnya, mencetak hasil itu, lalu me-return-nya. log_panggilan sendiri mengembalikan wrapper.",
+            "Nama fungsi asli ada di fungsi.__name__. Keluaran untuk tambah(3, 4) berbentuk: Memanggil tambah dengan args=(3, 4), kwargs={} lalu tambah mengembalikan: 7.",
         ],
         "solution": """def log_panggilan(fungsi):
     def wrapper(*args, **kwargs):
@@ -453,9 +457,9 @@ tambah(3, 4)
             "Gunakan 'with' statement untuk semua operasi file.",
         ],
         "hints": [
-            "json.dump(data, f, indent=2) untuk menulis.",
-            "json.load(f) untuk membaca.",
-            "Gabungkan langkah baca -> update dict -> tulis ulang.",
+            "Baca ulang \"File I/O\": blok with untuk membuka berkas, dan module json (dump untuk menulis, load untuk membaca).",
+            "Pakai tiga blok with berurutan: tulis dict ke kontak.json dengan mode 'w', baca lagi dengan mode 'r' ke dict baru, tambahkan satu kontak, lalu tulis ulang dengan mode 'w'.",
+            "json.dump(data, f, indent=2) menulis dengan rapi, dan json.load(f) mengembalikan dict.",
         ],
         "solution": """import json
 
@@ -491,9 +495,9 @@ print("Kontak berhasil diperbarui:", data_dibaca)""",
             "sebelum setiap test (menggantikan setUp di JUnit).",
         ],
         "hints": [
-            "import pytest, gunakan @pytest.fixture untuk membuat objek.",
-            "Fungsi test menerima fixture sebagai parameter.",
-            "assert hasil == nilai_yang_diharapkan",
+            "Baca ulang \"Virtual Environment, pip & Testing (pytest)\" dan \"Testing Lebih Dalam: fixture, parametrize & unittest\".",
+            "Buat fungsi bertanda @pytest.fixture yang mengembalikan Rekening baru. Tiap fungsi test_... menerima fixture itu lewat nama parameternya, memanggil setor() atau tarik(), lalu memeriksa hasil dan saldonya dengan assert.",
+            "Untuk kasus saldo nggak cukup, periksa dua hal: hasilnya False, dan saldonya masih sama dengan saldo awal.",
         ],
         "auto_check": False,
         "alasan_tidak_dicek": "butuh pytest terpasang dan file rekening.py terpisah",
@@ -577,11 +581,11 @@ def test_tarik_gagal_jika_saldo_tidak_cukup(rekening):
         '    - stok kurang - Spidol: diminta 10, tersisa 6',
         '    - kode tidak dikenal - XX99',
     ],
-        'hints': [
-        'Pakai dict {kode: Barang} supaya pencarian kode jadi satu langkah, dan `if kode not in self.barang: raise KeyError(kode)`.',
-        'Exception sendiri cukup: `class StokKurang(Exception): pass`. Tangkap dua-duanya terpisah: `except StokKurang as e:` lalu `except KeyError as e:` -- urutan except menentukan siapa yang kena.',
-        'Lebar kolom pakai f-string: f"{b.kode:<6}{b.nama:<14}{laku:>6}". Pemisah ribuan: f"{n:,}".replace(",", ".").',
-    ],
+        "hints": [
+            "Ulang materi \"OOP: Class & Object\", \"Exception Handling\", dan \"String & Formatting\". Rancang dulu tiga class-nya: Barang, exception untuk stok kurang, dan Koperasi yang menyimpan dict berkunci kode.",
+            "Method jual() melempar KeyError kalau kodenya nggak ada dan exception buatanmu kalau stoknya kurang. Pemanggilnya menangkap keduanya dengan dua except terpisah, mencatat pesan gagalnya, lalu lanjut ke permintaan berikutnya. Penjualan yang berhasil dicatat sebagai pasangan (kode, jumlah), supaya pemasukan dan jumlah laku per barang bisa dihitung belakangan.",
+            "Exception sendiri cukup class StokKurang(Exception): pass, dan urutan except menentukan siapa yang kena. Lebar kolom pakai f-string seperti f\"{b.kode:<6}{b.nama:<14}{laku:>6}\". Pemisah ribuan: f\"{n:,}\".replace(\",\", \".\").",
+        ],
         'solution': """\"\"\"Koperasi Sekolah -- laporan penjualan satu hari.\"\"\"
 
 

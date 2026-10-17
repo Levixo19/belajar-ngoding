@@ -13,9 +13,9 @@ TYPESCRIPT_EXERCISES = [
             "  Tipe hilang saat program jalan.",
         ],
         "hints": [
-            "Anotasi tipe ditulis sesudah titik dua: const nama: string = ...",
-            "console.log() mencetak lalu pindah baris.",
-            "Template literal memakai backtick dan ${...}.",
+            "Anotasi tipe ditulis sesudah nama variabel dengan titik dua, dan ia hilang begitu programnya dikompilasi. Baca ulang materi \"Tipe Dasar\".",
+            "Simpan nama dan bahasa di variabel bertipe string, lalu sisipkan ke template literal (backtick dan ${...}). Baris ketiga cukup teks biasa. console.log() mencetak lalu pindah baris.",
+            "Contoh satu variabel bertipe: const nama: string = \"Andi\";",
         ],
         "solution": """const nama: string = "Andi";
 const bahasa: string = "TypeScript";
@@ -41,10 +41,9 @@ console.log("Tipe hilang saat program jalan.");""",
             "  17 / 5 = 3 (dibulatkan ke bawah)",
         ],
         "hints": [
-            "TypeScript cuma punya satu tipe angka: number, berupa pecahan.",
-            "Pembagian TIDAK memotong: 17 / 5 langsung memberi 3.4.",
-            "Untuk membulatkan ke bawah, pakai Math.floor atau Math.trunc.",
-            "Operator pangkat adalah **.",
+            "TypeScript cuma punya satu tipe angka, number, dan pembagiannya nggak memotong: 17 / 5 langsung memberi 3.4. Baca ulang materi \"Tipe Dasar\".",
+            "Simpan a dan b sebagai number, lalu cetak tiap baris dengan template literal. Operator pangkat ditulis **.",
+            "Baris terakhir butuh pembulatan ke bawah: Math.floor(a / b) atau Math.trunc(a / b).",
         ],
         "solution": """const a: number = 17;
 const b: number = 5;
@@ -83,10 +82,9 @@ console.log(`${a} / ${b} = ${Math.floor(a / b)} (dibulatkan ke bawah)`);""",
             "  Kelvin     : 233.15",
         ],
         "hints": [
-            "toFixed(2) mengubah angka jadi teks dengan dua desimal.",
-            "Tulis tipe di parameter dan kembalian: (c: number): void",
-            "Cetak pemisah --- di antara pemanggilan, bukan sesudah yang terakhir.",
-            "Perhatikan -40 adalah titik di mana Celsius dan Fahrenheit bertemu.",
+            "Satu fungsi bertipe menghitung dua rumus lalu mencetak tiga baris berdesimal dua. Baca ulang materi \"Fungsi & Tipe Fungsi\".",
+            "Tulis tipe di parameter dan kembalian: (c: number): void. toFixed(2) mengubah angka jadi teks dengan dua desimal. Panggil fungsinya untuk 25, 0, dan -40.",
+            "Pemisah --- dicetak di antara pemanggilan, bukan sesudah yang terakhir: di dalam forEach((c, i) => ...), cetak kalau i > 0. Hasil -40 yang sama itu benar, karena di situ Celsius dan Fahrenheit bertemu.",
         ],
         "solution": """function konversi(c: number): void {
   const f = c * 9 / 5 + 32;
@@ -127,11 +125,9 @@ suhu.forEach((c, i) => {
             "Nilai dicetak rata kanan selebar 3.",
         ],
         "hints": [
-            "Tipe kembalian union literal: \"A\" | \"B\" | ...",
-            "String(n).padStart(3) meratakan ke kanan.",
-            "Union literal lebih ringan daripada enum: ia hilang saat kompilasi.",
-            "JANGAN menamainya `status`: itu variabel GLOBAL milik lib.dom, "
-            "dan mendeklarasikannya ulang menghasilkan Duplicate identifier.",
+            "Union literal membatasi nilai kembalian ke beberapa teks tertentu, dan lebih ringan daripada enum karena hilang saat kompilasi. Baca ulang materi \"Union, Literal & Narrowing\".",
+            "Tulis tipe grade (\"A\" | \"B\" | ...) dan tipe kelulusan sebagai union literal, lalu periksa ambang dari yang tertinggi ke terendah dan return begitu cocok. Ratakan nilainya ke kanan dengan String(n).padStart(3).",
+            "Jangan menamai variabel atau tipenya status: itu variabel global milik lib.dom, dan mendeklarasikannya ulang menghasilkan Duplicate identifier.",
         ],
         "solution": """type Grade = "A" | "B" | "C" | "D" | "E";
 type Kelulusan = "Lulus" | "Tidak Lulus";
@@ -171,10 +167,9 @@ for (const n of nilai) {
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "Array.from({ length: 5 }, (_, i) => i + 1) membuat [1..5].",
-            "map lalu join(\"   \") menyusun satu baris.",
-            "padStart(2) meratakan hasil perkaliannya.",
-            "Tanda garis bawah dipakai untuk parameter yang tidak terpakai.",
+            "Tabelnya dua lapis: satu perulangan untuk baris, dan di dalam tiap baris satu daftar sel. Baca ulang materi \"Bekerja dengan Data & Koleksi\".",
+            "Buat array [1..5]. Untuk tiap baris, map() array itu jadi teks sel lalu gabungkan dengan join(\"   \") (tiga spasi). Awali tiap baris dengan dua spasi, dan ratakan hasil kalinya dengan padStart(2).",
+            "Array.from({ length: 5 }, (_, i) => i + 1) membuat [1, 2, 3, 4, 5]. Garis bawah dipakai untuk parameter yang nggak terpakai.",
         ],
         "solution": """const angka: number[] = Array.from({ length: 5 }, (_, i) => i + 1);
 
@@ -204,10 +199,9 @@ for (const b of angka) {
             "  Data ASLI tetap: 78, 92, 65, 88, 71, 95, 59, 83",
         ],
         "hints": [
-            "Pakai toSorted(), BUKAN sort() — sort mengubah array aslinya.",
-            "Math.max(...arr) dan Math.min(...arr) memakai spread.",
-            "reduce((a, b) => a + b, 0) menjumlahkan.",
-            "Baris terakhir membuktikan toSorted tidak merusak data aslinya.",
+            "Baris terakhir membuktikan data asli tetap utuh, jadi yang diurutkan cukup salinannya. Baca ulang materi \"Bekerja dengan Data & Koleksi\".",
+            "toSorted() mengembalikan salinan terurut, sedangkan sort() mengubah array aslinya. Jumlahkan dengan reduce((a, b) => a + b, 0), lalu bagi dengan length untuk rata-rata dua desimal. Math.max(...arr) dan Math.min(...arr) memakai spread.",
+            "Di atas rata-rata: filter((n) => n > rata), lalu join(\", \").",
         ],
         "solution": """const nilai: number[] = [78, 92, 65, 88, 71, 95, 59, 83];
 
@@ -256,10 +250,9 @@ console.log(`Data ASLI tetap: ${nilai.join(", ")}`);""",
             "  Palindrom: ya",
         ],
         "hints": [
-            "Membalik: [...teks].reverse().join(\"\") atau split(\"\").reverse().join(\"\")",
-            "replaceAll(\" \", \"\") membuang spasi.",
-            "toLowerCase() untuk mengabaikan besar-kecil huruf.",
-            "Cetak pemisah hanya DI ANTARA, bukan sesudah yang terakhir.",
+            "Membalik teks berarti memecahnya jadi array huruf, membalik array itu, lalu menyambungnya lagi. Baca ulang materi \"Bekerja dengan Data & Koleksi\".",
+            "Untuk hitungan huruf dan palindrom, buang spasi dulu dengan replaceAll(\" \", \"\"). Palindrom diperiksa sesudah toLowerCase(), tapi baris Dibalik memakai teks aslinya apa adanya. Cetak pemisah --- cuma di antara pemeriksaan, bukan sesudah yang terakhir.",
+            "Membalik: [...teks].reverse().join(\"\") atau split(\"\").reverse().join(\"\").",
         ],
         "solution": """function balik(s: string): string {
   return [...s].reverse().join("");
@@ -305,10 +298,9 @@ contoh.forEach((t, i) => {
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "Map.get mengembalikan V | undefined — tangani dengan ?? 0.",
-            "[...peta] mengubah Map jadi array pasangan [kunci, nilai].",
-            "Dua kunci urutan: b[1] - a[1] || a[0].localeCompare(b[0])",
-            "padEnd(7) meratakan ke kiri.",
+            "Map<string, number> cocok untuk menghitung: kata jadi kunci, jumlahnya jadi nilai. Baca ulang materi \"Bekerja dengan Data & Koleksi\".",
+            "Pecah kalimat dengan split(\" \"), lalu tambah hitungan tiap kata. Map.get mengembalikan number | undefined, jadi tangani dengan ?? 0. Ubah Map jadi array pasangan [kunci, nilai] dengan [...peta], urutkan, lalu ratakan nama kata ke kiri dengan padEnd(7).",
+            "Dua kunci urutan: (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]).",
         ],
         "solution": """const kalimat = "kucing makan ikan kucing tidur ikan kucing";
 const kata: string[] = kalimat.split(" ");
@@ -355,10 +347,9 @@ console.log(`Total kata : ${kata.length}`);""",
             "  Budi    guru    72 (Matematika)",
         ],
         "hints": [
-            "Predikat tipe ditulis sebagai tipe kembalian: o is Guru",
-            "\"mapel\" in o mempersempit union berdasarkan properti.",
-            "Sesudah type guard, o.mapel boleh diakses tanpa cast.",
-            "toSorted((a, b) => b.nilai - a.nilai) untuk urutan menurun.",
+            "Type guard adalah fungsi yang mengembalikan boolean sekaligus memberi tahu compiler tipe parameternya kalau hasilnya true. Baca ulang materi \"Interface & Type Alias\".",
+            "Tulis predikat tipe sebagai tipe kembalian adalahGuru, lalu periksa dengan operator in apakah properti \"mapel\" ada. Sesudah type guard bernilai true, o.mapel boleh diakses tanpa cast. Susun kolomnya dengan padEnd(8), padEnd(7), dan padStart(3).",
+            "Urutan menurun tanpa mengubah array asli: toSorted((a, b) => b.nilai - a.nilai).",
         ],
         "solution": """interface Murid {
   readonly id: number;
@@ -427,10 +418,9 @@ for (const o of semua.toSorted((a, b) => b.nilai - a.nilai)) {
             "Nama rata kiri 16, luas rata kanan 8 dengan dua desimal.",
         ],
         "hints": [
-            "Di dalam tiap case, TypeScript tahu properti apa yang tersedia.",
-            "const _lengkap: never = b; di default memastikan kelengkapannya.",
-            "padEnd(16) dan toFixed(2).padStart(8) untuk kolomnya.",
-            "reduce untuk menjumlahkan luas seluruh bentuk.",
+            "Dengan properti penanda jenis, switch di atasnya membuat TypeScript tahu properti apa yang tersedia di tiap case. Baca ulang materi \"Union, Literal & Narrowing\".",
+            "Satu case per jenis, masing-masing mengembalikan rumus luasnya. Di default, tugaskan b ke variabel bertipe never supaya compiler protes kalau ada jenis baru yang lupa ditangani. Jumlahkan seluruh luas dengan reduce.",
+            "Kolomnya: nama(b).padEnd(16) lalu luas(b).toFixed(2).padStart(8). Baris terakhir memakai label TOTAL dengan lebar yang sama.",
         ],
         "solution": """type Bentuk =
   | { jenis: "lingkaran"; jari: number }
@@ -500,10 +490,9 @@ console.log("TOTAL".padEnd(16) + total.toFixed(2).padStart(8));""",
             "  Kelas B: Budi, Dedi (rata-rata 68.0)",
         ],
         "hints": [
-            "keyof T menghasilkan union dari nama-nama propertinya.",
-            "T[K] adalah tipe properti K di dalam T — indexed access type.",
-            "Map.get mengembalikan V | undefined; pakai ?? [] saat mengelompokkan.",
-            "toFixed(1) untuk rata-rata dengan satu desimal.",
+            "keyof T menghasilkan union nama-nama properti T, dan T[K] (indexed access type) adalah tipe properti K di dalam T. Baca ulang materi \"Generic\".",
+            "ambil cukup mengembalikan properti k milik o. terpanjang membandingkan length kedua argumennya. kelompokkan menelusuri data, menghitung kunci tiap anggota, lalu menambahkannya ke daftar milik kunci itu di Map; Map.get mengembalikan T[] | undefined, jadi pakai ?? [] saat mengelompokkan.",
+            "Cetak kelompoknya terurut menurut kunci, dengan rata-rata satu desimal lewat toFixed(1).",
         ],
         "solution": """interface Murid {
   id: number;
@@ -586,10 +575,9 @@ for (const [k, anggota] of [...per].toSorted((a, b) => a[0].localeCompare(b[0]))
             "  TOLAK JSON tidak bisa diurai",
         ],
         "hints": [
-            "JSON.parse mengembalikan any — tampung ke variabel bertipe unknown.",
-            "Cast ke Record<string, unknown> untuk memeriksa propertinya.",
-            "Number.isInteger memeriksa bilangan bulat sekaligus menolak NaN.",
-            "try/catch di sekitar JSON.parse, bukan di sekitar seluruh fungsi.",
+            "Data hasil JSON.parse belum tentu sesuai interface-mu, jadi perlakukan sebagai unknown lalu periksa bentuknya dengan type guard. Baca ulang materi \"Data dari Luar: Tipe Bukan Jaminan\".",
+            "JSON.parse mengembalikan any; tampung ke variabel bertipe unknown. Bungkus cuma JSON.parse dengan try/catch, bukan seluruh fungsi, supaya JSON rusak dan bentuk yang salah menghasilkan pesan berbeda. Di type guard, pastikan dulu nilainya objek dan bukan null, lalu cast ke Record<string, unknown> untuk memeriksa propertinya.",
+            "Number.isInteger memeriksa bilangan bulat sekaligus menolak NaN. Tambahkan syarat nilai 0 sampai 100 dan nama yang nggak kosong.",
         ],
         "solution": """interface Murid {
   nama: string;
@@ -677,10 +665,9 @@ for (const teks of masukan) {
             "kanan 2, harga rata kanan 6, subtotal rata kanan 8.",
         ],
         "hints": [
-            "toSorted menjaga array aslinya tetap utuh.",
-            "Dua kunci urutan: sub(b) - sub(a) || a.barang.localeCompare(b.barang)",
-            "Map untuk rekap, lalu urutkan kuncinya sebelum mencetak.",
-            "reduce dengan pembanding untuk mencari yang termahal.",
+            "Urutkan dengan dua kunci tanpa merusak data asli, lalu rekap per kategori. Baca ulang materi \"Bekerja dengan Data & Koleksi\".",
+            "toSorted menjaga array aslinya tetap utuh. Pembandingnya: subtotal menurun dulu, kalau seri nama barang menaik. Rekap kategori dengan Map, lalu urutkan kuncinya sebelum mencetak. Barang termahal bisa dicari dengan reduce yang menyimpan pemenang sementara.",
+            "Dua kunci urutan: sub(b) - sub(a) || a.barang.localeCompare(b.barang).",
         ],
         "solution": """interface Transaksi {
   barang: string;
@@ -758,10 +745,9 @@ console.log(`${"Termahal".padEnd(10)}: ${termahal.barang}`);""",
             "  wajib   : {\"id\":3,\"nama\":\"Euis\",\"nilai\":79,\"catatan\":\"ada\"}",
         ],
         "hints": [
-            "Omit<T, K>, Partial<T>, dan Pick<T, K> sudah tersedia.",
-            "Mapped type: { -readonly [K in keyof T]: T[K] }",
-            "Tanda minus MENGHAPUS penanda; -? membuang opsional.",
-            "Spread { ...asal, ...tambalan } menimpa dengan yang belakangan.",
+            "Tiga tipe pertama sudah tersedia sebagai utility type bawaan; dua sisanya kamu tulis sendiri sebagai mapped type. Baca ulang materi \"Generic\" dan \"Tipe Lanjut\".",
+            "Omit<T, K> membuang properti, Partial<T> membuat semuanya opsional, dan Pick<T, K> mengambil sebagian. Mapped type menelusuri [K in keyof T]; tanda minus menghapus penanda: -readonly membuang readonly, -? membuang opsional.",
+            "Bentuk mapped type: { -readonly [K in keyof T]: T[K] }. Spread { ...asal, ...tambalan } menimpa properti dengan nilai yang belakangan.",
         ],
         "solution": """interface Murid {
   readonly id: number;
@@ -825,10 +811,9 @@ console.log(`wajib   : ${JSON.stringify(wajib)}`);""",
             "  bersamaan : satu=4, dua=3, tiga=4, empat=5",
         ],
         "hints": [
-            "new Promise<void>((selesai) => setTimeout(selesai, ms))",
-            "Variabel di blok catch bertipe unknown — periksa instanceof Error.",
-            "allSettled memberi { status, value } atau { status, reason }.",
-            "map dengan async callback menghasilkan array Promise.",
+            "Promise.all gagal begitu satu anggotanya gagal, sedangkan Promise.allSettled menunggu semuanya lalu melaporkan hasil masing-masing. Baca ulang materi \"Async, Promise & await\".",
+            "tunggu(ms) membungkus setTimeout di dalam new Promise<void>. Tangkap kegagalan Promise.all dengan try/catch; variabel di blok catch bertipe unknown, jadi periksa instanceof Error sebelum membaca message. allSettled memberi { status, value } atau { status, reason }.",
+            "map dengan async callback menghasilkan array Promise, jadi bisa langsung dioper ke Promise.all: await Promise.all(nama.map(async (n) => ...)).",
         ],
         "solution": """function tunggu(ms: number): Promise<void> {
   return new Promise<void>((selesai) => setTimeout(selesai, ms));
@@ -938,13 +923,9 @@ main().catch((e: unknown) => {
             "kanan 2, harga rata kanan 10, subtotal rata kanan 12.",
         ],
         "hints": [
-            "Barang readonly seluruhnya: perbarui dengan { ...b, stok: baru }.",
-            "#isi dengan tanda pagar adalah private field JavaScript — ia "
-            "bertahan di runtime, berbeda dari `private` TypeScript.",
-            "Map.get mengembalikan Barang | undefined; periksa === undefined.",
-            "Pemanggil TIDAK BISA membaca hasil.nilai sebelum memeriksa "
-            "hasil.ok — compiler yang memaksanya, dan itu seluruh gunanya.",
-            "Number.isInteger sekaligus menolak NaN dan pecahan.",
+            "Pisahkan tiga lapisan: model berisi tipe, layanan berisi aturan tanpa console.log, dan antarmuka yang mencetak. Galat dikembalikan sebagai nilai Hasil, nggak dilempar. Baca ulang materi \"Proyek Utuh: Menggabungkan Semuanya\" dan \"Union, Literal & Narrowing\".",
+            "#isi dengan tanda pagar adalah private field JavaScript yang bertahan saat program jalan, berbeda dari private milik TypeScript. Map.get mengembalikan Barang | undefined, jadi periksa === undefined dulu. Number.isInteger sekaligus menolak NaN dan pecahan. Pemanggil nggak bisa membaca hasil.nilai sebelum memeriksa hasil.ok; compiler yang memaksanya, dan itu seluruh gunanya.",
+            "Barang readonly seluruhnya, jadi perbarui stok dengan objek baru: { ...b, stok: baru }. pesanGalat memakai switch atas g.jenis dengan pemeriksaan never di default.",
         ],
         "solution": """// ---------------------------------------------------------------- MODEL
 interface Barang {

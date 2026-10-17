@@ -8,9 +8,9 @@ GO_EXERCISES = [
             "  Aku sedang belajar Go.",
         ],
         "hints": [
-            "Setiap program eksekutabel dimulai dengan: package main",
-            "Butuh import \"fmt\" untuk mencetak ke layar.",
-            "Gunakan fmt.Println() untuk tiap baris.",
+            "Program Go yang bisa dijalankan selalu punya kerangka yang sama: nama package khusus, import untuk mencetak, lalu fungsi utama. Baca ulang materi \"Pengenalan Go & Instalasi\".",
+            "Urutannya: package main, lalu import \"fmt\", lalu func main(). Di dalam main, cetak tiap baris dengan pemanggilan terpisah.",
+            "fmt.Println otomatis menambahkan pindah baris, jadi dua panggilan Println menghasilkan tepat dua baris.",
         ],
         "solution": """package main
 
@@ -35,9 +35,9 @@ func main() {
             "  15 / 4 = 3.75 (desimal)",
         ],
         "hints": [
-            "Gunakan bentuk singkat: a, b := 15, 4",
-            "Pembagian dua int menghasilkan int, sisanya dibuang.",
-            "Untuk desimal, konversi dulu: float64(a) / float64(b), cetak dengan %.2f",
+            "Ada dua hal yang diuji: aturan pembagian bilangan bulat dan konversi tipe yang wajib ditulis sendiri. Baca ulang materi \"Operator\" dan \"Input & Output dengan fmt\".",
+            "Buat a dan b sebagai int. Pembagian int dengan int membuang sisa pecahannya, jadi 15 / 4 hasilnya 3. Untuk baris desimal, ubah keduanya ke float64 dulu, lalu cetak dengan dua angka di belakang koma.",
+            "Di Printf, tanda persen yang ingin dicetak ditulis %%. Pecahan dua desimal pakai %.2f, misalnya float64(a)/float64(b).",
         ],
         "solution": """package main
 
@@ -73,9 +73,9 @@ func main() {
             "  Status: Lulus",
         ],
         "hints": [
-            "Baca angka dengan fmt.Scan(&nilai), jangan lupa tanda &.",
-            "Gunakan rantai if / else if / else.",
-            "Deklarasikan variabel grade lebih dulu lalu isi di dalam if.",
+            "Programnya membaca satu angka, lalu memilih satu dari beberapa cabang. Baca ulang materi \"Input & Output dengan fmt\" (bagian membaca input) dan \"Percabangan (if & switch)\".",
+            "Siapkan variabel grade bertipe string di luar if, lalu isi lewat rantai if / else if / else dari batas tertinggi ke terendah. Status dihitung terpisah: mulai dari \"Tidak Lulus\", lalu ganti kalau nilainya cukup. Jangan cetak teks apa pun sebelum membaca input.",
+            "fmt.Scan butuh alamat variabel, jadi tulis tanda & di depan namanya. Tanpa &, angkanya nggak pernah masuk ke variabelmu.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -118,9 +118,9 @@ func main() {
             "  Total: 110",
         ],
         "hints": [
-            "Pakai for i := 1; i <= 20; i++",
-            "Bilangan genap berarti i % 2 == 0",
-            "Siapkan variabel total di luar perulangan.",
+            "Kamu butuh satu perulangan dan satu cara mengenali bilangan genap. Baca ulang materi \"Perulangan (for)\" dan bagian sisa bagi di materi \"Operator\".",
+            "Hitung dari 1 sampai 20. Di setiap putaran, cek apakah sisa bagi angkanya dengan 2 sama dengan nol; kalau iya, cetak angkanya dan tambahkan ke total. Variabel total dibuat sebelum perulangan, dan baris Total dicetak sesudahnya.",
+            "Kerangka for tiga bagian: for i := 1; i <= 20; i++ { ... }. Cek genapnya: i%2 == 0.",
         ],
         "solution": """package main
 
@@ -156,9 +156,9 @@ func main() {
             "(tanpa spasi di depan bintang)",
         ],
         "hints": [
-            "Butuh dua perulangan bersarang.",
-            "Perulangan luar mengatur baris, perulangan dalam mencetak bintang.",
-            "Pakai fmt.Print(\"*\") lalu fmt.Println() di akhir tiap baris.",
+            "Bentuk segitiga butuh perulangan di dalam perulangan. Baca ulang materi \"Perulangan (for)\".",
+            "Perulangan luar menghitung baris dari 1 sampai n. Perulangan dalam mencetak bintang sebanyak nomor baris itu tanpa pindah baris. Sesudah perulangan dalam selesai, baru pindah baris.",
+            "fmt.Print(\"*\") mencetak tanpa pindah baris, sedangkan fmt.Println() kosong cuma pindah baris.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -196,9 +196,9 @@ func main() {
             "Pengurutan tidak boleh mengubah slice aslinya.",
         ],
         "hints": [
-            "Buat slice dengan: nilai := []int{80, 65, 90, 45, 75}",
-            "Salin dulu sebelum sort: salinan := make([]int, len(nilai)); copy(salinan, nilai)",
-            "Urutkan dengan sort.Ints dari package sort.",
+            "Latihan ini soal menelusuri slice, lalu mengurutkan salinannya tanpa menyentuh aslinya. Baca ulang materi \"Array & Slice\".",
+            "Telusuri slice sekali dengan range untuk menghitung total, tertinggi, dan terendah (mulai keduanya dari elemen pertama). Rata-rata butuh konversi ke float64. Untuk baris Terurut, buat slice baru seukuran aslinya, salin isinya, baru urutkan salinan itu.",
+            "make([]int, len(nilai)) membuat wadahnya, copy(salinan, nilai) mengisinya, lalu sort.Ints dari package sort mengurutkan. Kalau yang diurutkan slice aslinya, baris Data ikut berubah.",
         ],
         "solution": """package main
 
@@ -254,9 +254,9 @@ func main() {
             "Nama kata dicetak rata kiri selebar 9 karakter.",
         ],
         "hints": [
-            "Pecah kalimat dengan strings.Fields(kalimat).",
-            "Hitung dengan map[string]int, cukup tulis frekuensi[kata]++",
-            "Urutan map acak! Kumpulkan kunci ke slice lalu sort.Strings.",
+            "Menghitung kemunculan adalah pekerjaan map, dan mencetaknya urut abjad butuh langkah tambahan karena urutan map acak. Baca ulang materi \"Map\" dan \"String, Rune & Package strings\".",
+            "Pecah kalimat jadi kata, lalu naikkan hitungan tiap kata di sebuah map[string]int. Sesudah itu kumpulkan semua kunci ke slice, urutkan, dan cetak mengikuti slice itu.",
+            "strings.Fields memecah berdasarkan spasi. frekuensi[kata]++ langsung jalan karena nilai awal int adalah 0. sort.Strings mengurutkan kuncinya, dan %-9s membuat nama rata kiri selebar 9.",
         ],
         "solution": """package main
 
@@ -303,9 +303,9 @@ func main() {
             "  Min: 3 Maks: 9 Total: 17",
         ],
         "hints": [
-            "Buat error dengan errors.New(\"pesan\").",
-            "Named return: func statistik(data []int) (min, maks, total int)",
-            "Dengan named return, cukup tulis 'return' kosong di akhir.",
+            "Dua hal di sini: fungsi yang mengembalikan hasil plus error, dan named return values. Baca ulang materi \"Fungsi\" dan \"Error Handling\".",
+            "bagi memeriksa pembaginya lebih dulu; kalau nol, kembalikan 0 dan sebuah error, kalau aman kembalikan hasil dan nil. statistik memberi nama pada tiga nilai kembaliannya, mengisinya di dalam loop, lalu ditutup return kosong.",
+            "Error dibuat dengan errors.New(\"pesan\"). Dengan named return, return tanpa apa pun di belakangnya otomatis mengembalikan min, maks, dan total.",
         ],
         "solution": """package main
 
@@ -367,9 +367,9 @@ func main() {
             "  Sesudah gandakan: [2 4 6]",
         ],
         "hints": [
-            "Kirim alamat variabel dengan tanda &, misalnya tukar(&a, &b).",
-            "Di dalam fungsi, akses nilainya dengan *a dan *b.",
-            "Slice sudah berperilaku seperti referensi, jadi TIDAK perlu pointer.",
+            "Fungsi di Go menerima salinan argumen, jadi untuk mengubah variabel milik pemanggil kamu perlu alamatnya. Baca ulang materi \"Pointer\".",
+            "tukar dan naikkan menerima pointer, lalu membaca dan menulis isinya lewat tanda bintang. Pemanggil mengirim alamat variabel dengan tanda &. gandakan cukup menerima slice biasa, karena slice sudah menunjuk ke array yang sama dengan milik pemanggil.",
+            "Isi tukar bisa satu baris dengan penugasan ganda: *a, *b = *b, *a.",
         ],
         "solution": """package main
 
@@ -431,9 +431,9 @@ func main() {
             "  Rata-rata: 81.67",
         ],
         "hints": [
-            "Method pengubah butuh pointer receiver: func (s *Siswa) Remedial(...)",
-            "Agar bisa mengubah isi slice, iterasi dengan indeks: for i := range daftar",
-            "Format kolom dengan fmt.Printf(\"%-10s %.1f  %s\\n\", ...)",
+            "Ini soal method dan beda value receiver dengan pointer receiver. Baca ulang materi \"Struct & Method\".",
+            "Lulus cuma membaca, jadi cukup value receiver. Remedial mengubah nilai, jadi wajib pointer receiver, dan hasilnya dibatasi 100. Saat memberi remedial, telusuri slice lewat indeks supaya yang berubah elemen aslinya, bukan salinan dari range.",
+            "Pemanggilan lewat indeks: daftar[i].Remedial(10). Kolomnya pakai %-10s untuk nama dan %.1f untuk nilai, dengan dua spasi sebelum keterangan.",
         ],
         "solution": """package main
 
@@ -510,9 +510,9 @@ func main() {
             "  Total luas: 59.27",
         ],
         "hints": [
-            "Luas lingkaran memakai math.Pi * r * r.",
-            "Urutkan dengan sort.Slice(daftar, func(i, j int) bool { ... }).",
-            "Fungsi pembanding mengembalikan true kalau i harus di depan j.",
+            "Satu slice bisa menampung tipe yang berbeda-beda asal semuanya memenuhi interface yang sama. Baca ulang materi \"Interface\".",
+            "Definisikan Bentuk dengan dua method, lalu beri Persegi, Lingkaran, dan Segitiga masing-masing Luas() dan Nama(). Simpan ketiganya di []Bentuk, urutkan dari luas terbesar, lalu cetak sambil menjumlahkan total.",
+            "sort.Slice(daftar, func(i, j int) bool { ... }) memakai pembanding buatanmu: kembalikan true kalau elemen i harus di depan j. Luas lingkaran pakai math.Pi * r * r.",
         ],
         "solution": """package main
 
@@ -583,9 +583,9 @@ func main() {
             "  Tarik 70000 berhasil, sisa 0",
         ],
         "hints": [
-            "Buat sentinel dengan var ErrX = errors.New(\"...\") di level package.",
-            "Bungkus dengan fmt.Errorf(\"...: %w\", ErrSaldoKurang).",
-            "Periksa dengan errors.Is(err, ErrSaldoKurang), bukan perbandingan ==.",
+            "Latihan ini soal error sentinel, membungkus error dengan konteks, lalu mengenalinya lagi. Baca ulang materi \"Error Handling\".",
+            "Deklarasikan dua sentinel di level package. Tarik memeriksa jumlah dulu, baru saldo; untuk saldo kurang, bungkus sentinel-nya dengan kalimat konteks. Di main, bedakan hasilnya dengan errors.Is, karena error yang sudah dibungkus nggak lagi sama dengan sentinel kalau dibandingkan pakai ==.",
+            "Sentinel: var ErrSaldoKurang = errors.New(\"saldo tidak mencukupi\"). Pembungkus: fmt.Errorf(\"...: %w\", ErrSaldoKurang).",
         ],
         "solution": """package main
 
@@ -651,9 +651,9 @@ func main() {
             "  Total dari channel: 204",
         ],
         "hints": [
-            "Panggil wg.Add(1) SEBELUM menjalankan goroutine, dan defer wg.Done() di dalamnya.",
-            "Kirim variabel loop sebagai argumen goroutine agar nilainya benar.",
-            "Hasil goroutine urutannya acak, jadi wajib sort.Ints sebelum dicetak.",
+            "Ada dua cara menunggu goroutine di sini: WaitGroup (ditambah Mutex untuk melindungi slice bersama) dan channel yang ditutup pengirimnya. Baca ulang materi \"Goroutine & Channel\".",
+            "Bagian 1: untuk tiap angka, tambah hitungan WaitGroup sebelum goroutine dijalankan, kirim angkanya sebagai argumen, dan kunci Mutex saat append. Tunggu semuanya, lalu urutkan karena urutan selesainya acak. Bagian 2: satu goroutine mengirim kuadrat ke channel berpenyangga lalu menutupnya, dan main menjumlahkan dengan range.",
+            "Polanya: wg.Add(1) di luar, lalu go func(n int) { defer wg.Done(); ... }(i). Tanpa close(ch), range di main menunggu selamanya.",
         ],
         "solution": """package main
 
@@ -731,9 +731,9 @@ func main() {
             "  Nilai total: 1554000",
         ],
         "hints": [
-            "Simpan POINTER di map (map[string]*Barang) agar stok bisa diubah.",
-            "Urutan map acak: kumpulkan kunci ke slice lalu sort.Strings sebelum mencetak.",
-            "Format kolom: fmt.Printf(\"%-6s %-14s %8d x %2d = %8d\\n\", ...)",
+            "Ini gabungan struct, method, dan map yang menyimpan pointer. Baca ulang materi \"Studi Kasus: Manajemen Inventaris\" dan \"Map\".",
+            "Inventaris menyimpan map[string]*Barang supaya stok bisa diubah lewat map. Tambah mengecek kodenya dulu: kalau sudah ada, tambah stoknya; kalau belum, simpan alamat salinan barangnya. Laporan mengumpulkan kode ke slice, mengurutkannya, lalu mencetak sambil menjumlah nilai total.",
+            "Format baris laporan: fmt.Printf(\"%-6s %-14s %8d x %2d = %8d\\n\", ...). Urutan map acak, jadi sort.Strings dulu sebelum mencetak.",
         ],
         "solution": """package main
 
@@ -870,11 +870,11 @@ func main() {
         '    - kosong.txt: berkas kosong',
         '    - lain.txt: berkas kosong',
     ],
-        'hints': [
-        'Saluran satu arah di tanda tangan fungsi memperjelas maksudnya: func pekerja(id int, masuk <-chan Tugas, keluar chan<- Hasil, wg *sync.WaitGroup)',
-        'Kalau pengiriman tugas tidak ditaruh di goroutine, program berhenti total: pengirim menunggu pembaca, pembaca belum sempat dimulai.',
-        'sort.Slice(hasil, func(i, j int) bool { return hasil[i].Nama < hasil[j].Nama }) -- ini yang membuat hasilnya bisa diuji.',
-    ],
+        "hints": [
+            "Bentuknya worker pool: beberapa goroutine mengambil tugas dari satu channel dan menaruh hasilnya di channel lain. Baca ulang materi \"Pola Goroutine: Channel Berarah, select & Worker Pool\" dan \"Error Handling\".",
+            "Urutannya: jalankan tiga pekerja yang membaca masuk dengan for-range; kirim tugas dari goroutine tersendiri lalu close(masuk); goroutine lain menunggu wg.Wait() lalu close(keluar); main mengumpulkan hasil dari keluar. Kalau pengiriman tugas nggak ditaruh di goroutine, program macet total: pengirim menunggu pembaca yang belum sempat dimulai.",
+            "Channel satu arah di tanda tangan memperjelas maksudnya: masuk <-chan Tugas, keluar chan<- Hasil. Sebelum mencetak, urutkan hasil berdasarkan Nama dengan sort.Slice; tanpa itu urutannya berbeda tiap kali dijalankan.",
+        ],
         'solution': """// Pemeriksa Berkas Paralel -- beberapa pekerja, satu saluran hasil.
 package main
 

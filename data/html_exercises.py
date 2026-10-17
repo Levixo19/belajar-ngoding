@@ -27,12 +27,9 @@ HTML_EXERCISES = [
             "    p \"Saya sedang belajar HTML.\"",
         ],
         "hints": [
-            "Baris pertama bukan tag biasa: bentuknya <!DOCTYPE html>. "
-            "Di pohon ia dicetak huruf kecil semua, itu normal.",
-            "head dan body sama-sama anak langsung dari html, "
-            "jadi keduanya menjorok satu tingkat di pohon.",
-            "meta termasuk elemen kosong: tidak punya tag penutup. "
-            "Menulis </meta> justru dilaporkan sebagai kesalahan.",
+            "Baca ulang materi Apa Itu HTML & Halaman Pertamamu dan Struktur Dokumen: head dan body. Halaman lengkap selalu punya kerangka yang sama: baris doctype, lalu html yang membungkus head (keterangan tentang halaman) dan body (isi yang tampil).",
+            "Urutannya: doctype, buka html dengan atribut lang, buka head, tulis meta charset lalu title, tutup head, buka body, tulis h1 lalu p, tutup body dan html. head dan body sama-sama anak langsung html, jadi di pohon keduanya menjorok satu tingkat.",
+            "Baris pertama bukan tag biasa: <!DOCTYPE html>. Di pohon ia dicetak huruf kecil semua, itu normal. meta termasuk elemen kosong, jadi cukup <meta charset=\"utf-8\"> tanpa penutup; menulis </meta> justru dilaporkan sebagai kesalahan.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -79,12 +76,9 @@ HTML_EXERCISES = [
             "    p \"Menjadi pembuat aplikasi.\"",
         ],
         "hints": [
-            "Kerangka doctype, html, head, dan body sama persis dengan Latihan 1. "
-            "Yang berubah hanya isi title dan isi body.",
-            "Teks Tentang Saya muncul dua kali: sekali di title (nama tab browser), "
-            "sekali di h1 (judul yang terbaca di halaman). Keduanya memang perlu.",
-            "Semua h1, h2, dan p di sini bersaudara — sama-sama anak langsung body, "
-            "jadi indentasinya di pohon sama rata.",
+            "Materi Teks: Heading, Paragraf, dan Penekanan menjelaskan kenapa h1 dipakai sekali sebagai judul halaman dan h2 untuk sub-bagian. Angkanya menandakan tingkat, bukan ukuran huruf.",
+            "Kerangka doctype, html, head, dan body sama dengan Latihan 1; yang berubah cuma isi title dan isi body. Teks Tentang Saya muncul dua kali: di title (nama tab browser) dan di h1 (judul yang terbaca di halaman). Keduanya memang perlu.",
+            "Semua h1, h2, dan p di sini bersaudara, sama-sama anak langsung body, jadi tulis berderet tanpa pembungkus apa pun: <h2>Hobi</h2>, lalu p-nya, lalu h2 berikutnya. Indentasinya di pohon sama rata.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -139,12 +133,9 @@ HTML_EXERCISES = [
             "      li \"Tambahkan kecap\"",
         ],
         "hints": [
-            "li tidak berdiri sendiri: ia selalu berada di dalam ul atau ol. "
-            "Di pohon itu terlihat dari indentasinya yang lebih dalam.",
-            "Baris ul dan ol di pohon tidak punya teks dalam kutip, "
-            "karena semua tulisannya ada di dalam li masing-masing.",
-            "Kalau salah satu li muncul di tingkat yang salah, "
-            "biasanya ada tag penutup </li> yang terlewat.",
+            "Baca lagi materi Daftar: ul, ol, dan dl. ul untuk hal yang urutannya nggak penting, ol untuk langkah yang berurutan, dan nomor pada ol dibuat browser sendiri, jadi jangan diketik.",
+            "li nggak berdiri sendiri: ia selalu berada di dalam ul atau ol, makanya di pohon indentasinya lebih dalam. Baris ul dan ol nggak punya teks dalam kutip karena semua tulisannya ada di dalam li masing-masing.",
+            "Bentuknya <ul>, lalu tiga <li>...</li>, lalu </ul>; ol sama persis, cuma nama tagnya yang beda. Kalau salah satu li muncul di tingkat yang salah, biasanya ada </li> yang terlewat.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -201,12 +192,9 @@ HTML_EXERCISES = [
             "    a href=\"kontak.html\" \"Kontak\"",
         ],
         "hints": [
-            "img adalah elemen kosong seperti meta: tidak ada </img>. "
-            "Isinya seluruhnya ditentukan atribut.",
-            "alt adalah teks pengganti kalau gambarnya gagal dimuat, dan satu-satunya "
-            "yang dibacakan pembaca layar. Kosongkan alt dan gambarnya jadi tak berarti.",
-            "a punya tag penutup karena ia membungkus teks yang bisa diklik: "
-            "<a href=\"...\">teks</a>. Nilai href di sini nama berkas biasa, bukan alamat penuh.",
+            "Materi Tautan (a) dan Gambar (img) membahas dua elemen ini. img itu elemen kosong yang seluruh isinya ditentukan atribut, sedangkan a membungkus teks yang bisa diklik.",
+            "Tulis h1, lalu img dengan tiga atribut (src, alt, width), lalu p, lalu dua a. Atribut di pohon selalu dicetak urut abjad, jadi urutan menulismu bebas. alt adalah teks pengganti kalau gambar gagal dimuat dan satu-satunya yang dibacakan pembaca layar, jadi jangan dikosongkan.",
+            "img nggak punya </img>: cukup <img src=\"...\" alt=\"...\" width=\"...\">. Tautan ditulis <a href=\"nama-berkas.html\">teks</a>; nilai href di sini nama berkas biasa, bukan alamat penuh.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -258,12 +246,9 @@ HTML_EXERCISES = [
             "      br",
         ],
         "hints": [
-            "Tiga p ini ditulis biasa saja; yang berbeda cuma isinya. "
-            "Jangan menambah div atau span apa pun.",
-            "p yang kedua tidak punya teks sendiri sama sekali — seluruh tulisannya "
-            "milik em. Itu sebabnya baris p-nya di pohon berdiri tanpa kutipan.",
-            "br elemen kosong: cukup <br> di tengah teks, tanpa penutup. "
-            "Jangan menulis <br></br>.",
+            "Baca ulang Teks: Heading, Paragraf, dan Penekanan. strong dan em adalah elemen sebaris: mereka duduk di tengah teks sebuah p, bukan memecah p itu jadi beberapa.",
+            "Tiga p ini ditulis biasa saja, tanpa div atau span tambahan. p pertama berisi teks, lalu strong, lalu teks lagi, semuanya di dalam satu p. p kedua nggak punya teks sendiri sama sekali karena seluruh tulisannya milik em, makanya baris p-nya di pohon berdiri tanpa kutipan.",
+            "br elemen kosong: cukup <br> di tengah teks, misalnya Ruang A<br>Lantai 2, tanpa penutup. Jangan menulis <br></br>.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -320,12 +305,9 @@ HTML_EXERCISES = [
             "      dd \"Mengatur tampilan halaman.\"",
         ],
         "hints": [
-            "Perhatikan indentasi di pohon: ul yang kedua lebih dalam satu tingkat "
-            "daripada li Minuman. Artinya ia anak li itu, bukan saudaranya.",
-            "Tulis teks Minuman dulu, baru ul bersarangnya, baru </li>. "
-            "Menutup </li> terlalu cepat membuat ul-nya keluar dari li.",
-            "dt itu istilah, dd itu penjelasannya. Keduanya anak langsung dl "
-            "dan berdiri sejajar — dd tidak berada di dalam dt.",
+            "Materi Daftar: ul, ol, dan dl membahas daftar bersarang dan daftar istilah. Sub-daftar adalah bagian dari satu item, jadi ia ditulis di dalam li induknya, bukan di antara dua li.",
+            "Perhatikan pohonnya: ul kedua menjorok satu tingkat lebih dalam daripada li Minuman, artinya ia anak li itu. Urutannya: teks Minuman dulu, lalu ul bersarang, baru </li>. Di dl, dt itu istilah dan dd penjelasannya; keduanya anak langsung dl dan berdiri sejajar, dd nggak berada di dalam dt.",
+            "Kerangka item yang bersarang: <li>Minuman <ul> ...dua li... </ul> </li>. Menutup </li> terlalu cepat membuat ul-nya keluar dari li.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -395,12 +377,9 @@ HTML_EXERCISES = [
             "          td \"75\"",
         ],
         "hints": [
-            "Tabel punya empat tingkat sarang: table, lalu thead atau tbody, "
-            "lalu tr, lalu th atau td. Hitung indentasinya di pohon sebelum menulis.",
-            "Satu tr adalah satu baris; sel-sel di dalamnya adalah kolomnya. "
-            "Dua th berarti tabel ini dua kolom, jadi tiap tr isinya dua sel.",
-            "Angka 90 dan 75 tetap ditulis sebagai teks biasa di dalam td. "
-            "Tidak ada tipe data di HTML.",
+            "Baca lagi materi Tabel. Tabel disusun bertingkat: table, lalu bagian kepala dan badan (thead, tbody), lalu baris (tr), lalu sel (th untuk judul, td untuk isi).",
+            "Hitung indentasi pohon sebelum menulis: ada empat tingkat sarang. caption ditulis paling pertama di dalam table. Satu tr adalah satu baris; dua th berarti tabel ini dua kolom, jadi tiap tr di tbody juga berisi dua sel.",
+            "Satu baris isi bentuknya <tr> berisi dua <td>...</td>, lalu </tr>. Angka 90 dan 75 ditulis sebagai teks biasa di dalam td; HTML nggak punya tipe data.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -468,12 +447,9 @@ HTML_EXERCISES = [
             "      button type=\"submit\" \"Kirim\"",
         ],
         "hints": [
-            "Nilai for pada label harus sama persis dengan id pada input-nya. "
-            "Itulah yang membuat mengklik tulisan Nama memindahkan kursor ke kotaknya.",
-            "input elemen kosong (tak ada </input>), tapi textarea punya tag penutup. "
-            "Karena isinya kosong, tulis <textarea ...></textarea> menempel.",
-            "id dipakai label untuk menunjuk, name dipakai server untuk mengenali. "
-            "Keduanya perlu, walaupun nilainya kebetulan sama.",
+            "Materi Formulir: input, label, dan button menjelaskan pasangan label dan isian. label for menunjuk id isiannya, sedangkan name adalah nama yang dipakai server saat data dikirim.",
+            "Di dalam form tulis berurutan: label, input, label, textarea, button. Nilai for harus sama persis dengan id isiannya; itu yang bikin klik tulisan Nama memindahkan kursor ke kotaknya. id dan name sama-sama perlu walau nilainya kebetulan sama. required ditulis tanpa nilai, dan di pohon muncul sebagai kata sendirian.",
+            "input elemen kosong (nggak ada </input>), tapi textarea punya tag penutup. Karena isinya kosong, tulis menempel: <textarea ...atribut...></textarea>.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -538,12 +514,9 @@ HTML_EXERCISES = [
             "      p \"Buka setiap hari pukul 09.00.\"",
         ],
         "hints": [
-            "Baris li di pohon berdiri tanpa kutipan teks. Artinya li tidak punya teks "
-            "sendiri: seluruh tulisannya berada di dalam a yang jadi anaknya.",
-            "nav berada DI DALAM header, sejajar dengan h1 — bukan setelah </header>. "
-            "Bandingkan indentasinya dengan main dan footer.",
-            "Satu halaman hanya punya satu main, dan h1 di dalam header sudah cukup "
-            "jadi judul utamanya. Section di bawahnya mulai dari h2.",
+            "Baca ulang Elemen Semantik: header, nav, main, article, footer. Elemen-elemen ini bekerja seperti div, bedanya namanya memberi tahu peran isinya. Menu navigasi ditulis sebagai daftar karena memang daftar tautan.",
+            "Susun tiga blok besar di body: header, main, footer. nav berada di dalam header, sejajar dengan h1, bukan sesudah </header>; bandingkan indentasinya dengan main dan footer. Satu halaman cuma punya satu main, dan section di dalamnya mulai dari h2 karena h1 sudah dipakai di header.",
+            "Baris li di pohon nggak punya kutipan teks, artinya seluruh tulisannya ada di a yang jadi anaknya. Satu item menu bentuknya <li><a href=\"...\">Beranda</a></li>.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -623,12 +596,9 @@ HTML_EXERCISES = [
             "      p \"Catatan ini disimpan sebagai index.html.\"",
         ],
         "hints": [
-            "meta viewport punya DUA atribut: name dan content. Di pohon content "
-            "dicetak lebih dulu karena c mendahului n, walau kamu menulis name duluan.",
-            "figure membungkus gambar beserta keterangannya jadi satu kesatuan; "
-            "figcaption adalah keterangan itu, dan letaknya di dalam figure.",
-            "Teks kutipan tidak ditaruh langsung di dalam blockquote di sini — "
-            "ada satu p di antaranya. Perhatikan indentasinya di pohon.",
+            "Materi yang dipakai: Metadata: title, meta, dan Kenapa Itu Penting untuk isi head, Tautan (a) dan Gambar (img) untuk figure, dan Kutipan, Waktu, dan Penanda Teks Lainnya untuk blockquote.",
+            "Kerjakan dari luar ke dalam: head dulu (empat baris berurutan), lalu header, main berisi satu article, lalu footer. Di dalam article urutannya h2, p, figure, blockquote. figure membungkus gambar beserta keterangannya, dan figcaption ada di dalam figure.",
+            "meta viewport punya dua atribut, name dan content; di pohon content dicetak lebih dulu karena c mendahului n, walau kamu menulis name duluan. Teks kutipan nggak ditaruh langsung di blockquote: ada satu p di antaranya, <blockquote cite=\"...\"><p>...</p></blockquote>.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -721,12 +691,9 @@ HTML_EXERCISES = [
             "      button type=\"submit\" \"Daftar\"",
         ],
         "hints": [
-            "legend harus jadi anak PERTAMA fieldset. Ditaruh di tempat lain, "
-            "judul kelompoknya tidak lagi menempel di garis kotaknya.",
-            "option punya tag penutup dan berada di dalam select. Yang dikirim ke "
-            "server adalah value-nya, bukan tulisan yang dilihat orang.",
-            "button di pohon menjorok sejajar dengan kedua fieldset, bukan di "
-            "dalamnya. Letakkan sesudah </fieldset> yang kedua, sebelum </form>.",
+            "Baca lagi Formulir Lanjutan: select, textarea, dan Validasi. fieldset mengelompokkan isian yang berhubungan dan legend jadi judul kelompoknya. Radio dengan name yang sama membentuk satu kelompok, jadi cuma satu yang bisa terpilih.",
+            "Buat dua fieldset berurutan di dalam form, lalu button sesudah fieldset kedua, sebelum </form>; di pohon button sejajar dengan kedua fieldset, bukan di dalamnya. legend harus jadi anak pertama fieldset. option punya tag penutup dan berada di dalam select; yang dikirim ke server adalah value-nya, bukan tulisan yang dilihat orang.",
+            "selected, checked, dan required ditulis tanpa nilai, misalnya <option selected value=\"...\">Malam</option>. Kedua radio memakai name yang sama, tapi id dan value-nya berbeda.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -811,12 +778,9 @@ HTML_EXERCISES = [
             "            td colspan=\"3\" \"Total 2 sesi\"",
         ],
         "hints": [
-            "colspan menggabungkan sel ke SAMPING, rowspan ke BAWAH. Sel yang "
-            "tergabung tidak ditulis ulang di baris atau kolom berikutnya.",
-            "Tabel ini tiga kolom. Hitung tiap tr: 1 + 2 (colspan) = 3, "
-            "lalu 1 (rowspan) + 1 + 1 = 3, lalu (sisa rowspan) + 1 + 1 = 3.",
-            "Atribut section dicetak class dulu baru id karena urut abjad, "
-            "padahal soal menyebut id lebih dulu. Urutan penulisanmu bebas.",
+            "Materi Tabel membahas colspan dan rowspan. colspan melebarkan sel ke samping, rowspan memanjangkannya ke bawah, dan sel yang sudah tertutup gabungan nggak ditulis ulang di baris atau kolom berikutnya.",
+            "Tabel ini tiga kolom. Hitung tiap tr: 1 + 2 (colspan) = 3, lalu 1 (rowspan) + 1 + 1 = 3, lalu (sisa rowspan) + 1 + 1 = 3, dan baris tfoot satu sel dengan colspan 3. Seluruh isi body dibungkus satu section, termasuk h1.",
+            "Atribut section dicetak class dulu baru id karena urut abjad, padahal soal menyebut id lebih dulu; urutan menulismu bebas. Sel Senin bentuknya <td rowspan=\"2\">, dan tr berikutnya cuma berisi dua td.",
         ],
         "solution": """<!DOCTYPE html>
 <html lang="id">
@@ -877,14 +841,9 @@ HTML_EXERCISES = [
             "  p \"Browser Anda tidak mendukung Canvas.\"",
         ],
         "hints": [
-            "canvas BUKAN elemen kosong seperti img - ia wajib punya tag penutup "
-            "</canvas>, karena isinya (konten cadangan) diletakkan di ANTARA "
-            "tag buka dan tutup.",
-            "Atribut di keluaran diurutkan ABJAD oleh struktur.py, bukan mengikuti "
-            "urutan kamu menuliskannya - itu sebabnya height muncul sebelum id "
-            "walau kamu menulis id lebih dulu.",
-            "<p> di dalam canvas sama seperti <p> di mana pun - tetap butuh "
-            "tag penutup </p>.",
+            "Baca ulang Canvas: Menggambar Langsung di Halaman. canvas bukan elemen kosong seperti img: ia punya tag penutup, dan isi di antara tag buka dan tutup jadi konten cadangan untuk browser yang nggak mendukung canvas.",
+            "Tulis canvas dengan tiga atribut (id, width, height), lalu satu p di dalamnya, lalu tutup canvas. p di dalam canvas sama seperti p di mana pun, tetap butuh </p>.",
+            "Atribut di keluaran diurutkan abjad oleh struktur.py, jadi height muncul sebelum id walau kamu menulis id lebih dulu. Kerangkanya: <canvas ...> lalu <p>...</p> lalu </canvas>.",
         ],
         "solution": """<canvas id="papan" width="400" height="300">
   <p>Browser Anda tidak mendukung Canvas.</p>
@@ -1002,11 +961,11 @@ HTML_EXERCISES = [
         '        p',
         '          small "© 2026 Warung Kopi Pagi"',
     ],
-        'hints': [
-        "Elemen pemilah halaman (header, nav, main, footer) boleh muncul sekali saja masing-masing, kecuali nav. Itu yang membuat 'Lewati ke isi' bisa menunjuk satu tempat yang pasti.",
-        'th scope="row" dipakai untuk sel yang MENAMAI barisnya -- di tabel menu itu kolom nama minuman. Tanpa scope, pembaca layar harus menebak.',
-        "<dl> bukan 'definition list' lagi sejak HTML5: ia daftar PASANGAN nama-nilai, dan jam buka adalah pasangan hari-jam.",
-    ],
+        "hints": [
+            "Materi Merakit Satu Halaman Utuh menyatukan hampir semua elemen proyek ini. Untuk tautan lewati baca Bisa Dipakai Semua Orang: role, aria-*, dan tabindex; untuk th scope baca Tabel; untuk dl dan time baca Daftar: ul, ol, dan dl serta Kutipan, Waktu, dan Penanda Teks Lainnya.",
+            "Kerjakan per bagian sambil mencocokkan pohon: head (empat baris berurutan), tautan Lewati ke isi sebagai anak pertama body, header, main berisi tiga section (menu, jam, pesan), lalu footer. Satu halaman cuma boleh punya satu main, dan id di main itulah yang dituju tautan lewati. Sel yang menamai barisnya (nama minuman) pakai th dengan scope row, bukan td; tanpa scope pembaca layar harus menebak. Jam buka adalah pasangan nama-nilai (hari dan jam), jadi pakai dl, bukan tabel.",
+            "Dua bagian yang paling sering meleset. Pertama, time ada di tengah kalimat di dalam p: <p>Pesanan terakhir <time datetime=\"16:30\">16.30</time> di hari kerja.</p>. Kedua, button berada di luar fieldset, sebelum </form>. Simbol hak cipta ditulis lewat entitas &copy; di dalam small.",
+        ],
         'solution': """<!doctype html>
 <html lang="id">
 <head>

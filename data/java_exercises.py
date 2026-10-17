@@ -11,9 +11,9 @@ JAVA_EXERCISES = [
             "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
-            "Gunakan System.out.println() untuk setiap baris.",
-            "Teks harus diapit tanda kutip ganda.",
-            "Jangan lupa titik koma (;) di akhir statement.",
+            "Satu baris keluaran butuh satu perintah cetak. Baca ulang materi 'Pengenalan Java & Persiapan' bagian program pertamamu.",
+            "Pakai System.out.println() dua kali, satu untuk tiap baris. Teksnya diapit tanda kutip ganda, dan tiap perintah ditutup titik koma (;).",
+            "Penilaian membandingkan huruf demi huruf, jadi salin teksnya apa adanya, termasuk koma, tanda seru, dan titik di akhir baris kedua.",
         ],
         "solution": """public class Halo {
     public static void main(String[] args) {
@@ -31,9 +31,9 @@ JAVA_EXERCISES = [
             "pembagian (int), dan sisa bagi.",
         ],
         "hints": [
-            "int a = 15; int b = 4;",
-            "Pembagian int / int = int, sisa dibuang.",
-            "Operator: +, -, *, /, %",
+            "Simpan kedua angka di variabel int, lalu hitung dengan operator aritmetika. Materi 'Operator' membahas kelimanya, termasuk sisa bagi.",
+            "Operatornya +, -, *, /, dan %. Ingat, int dibagi int hasilnya int: 15 / 4 jadi 3, pecahannya dibuang, dan sisanya bisa diambil lewat %.",
+            "Format tiap baris seperti 15 + 4 = 19. Rangkai dengan +, misalnya a + \" + \" + b + \" = \" + (a + b); kurung terakhir wajib, kalau nggak angkanya disambung jadi teks \"154\".",
         ],
         "solution": """public class Kalkulator {
     public static void main(String[] args) {
@@ -59,10 +59,9 @@ JAVA_EXERCISES = [
             "satu baris berisi Lulus atau Tidak Lulus.",
         ],
         "hints": [
-            "import java.util.Scanner; lalu Scanner sc = new Scanner(System.in);",
-            "int nilai = sc.nextInt();",
-            "Gunakan if-else atau ternary.",
-            "Ingat: setelah nextInt, jika pakai nextLine tambah sc.nextLine().",
+            "Kamu perlu membaca satu angka lalu memilih satu dari dua keluaran. Baca ulang 'String & Scanner (Input)' untuk membaca input dan 'Percabangan (if / switch)' untuk if-else.",
+            "Import Scanner dari java.util, buat Scanner yang membaca System.in, ambil angkanya dengan nextInt(), lalu bandingkan dengan 75 memakai >=. Jangan cetak teks prompt apa pun.",
+            "Bagian pembacanya: Scanner sc = new Scanner(System.in); lalu int nilai = sc.nextInt(); Ingat: kalau sesudah nextInt() kamu memanggil nextLine(), tambahkan satu sc.nextLine() dulu untuk membuang sisa barisnya.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -93,9 +92,9 @@ public class CekNilai {
             "Contoh output: 2 4 6 8 10 12 14 16 18 20, Total: 110",
         ],
         "hints": [
-            "Gunakan for dan cek n % 2 == 0.",
-            "Kumpulkan dalam StringBuilder atau cetak dengan System.out.print.",
-            "Accumulate total dengan variabel int.",
+            "Ini soal perulangan plus pengecekan genap. Materi 'Perulangan (Loop)' dan operator sisa bagi di materi 'Operator' yang kamu perlukan.",
+            "Loop dari 1 sampai 20. Kalau angkanya habis dibagi 2 (n % 2 == 0), cetak angka itu diikuti spasi lewat System.out.print tanpa ln, lalu tambahkan ke variabel total. Sesudah loop, pindah baris dan cetak totalnya.",
+            "Keluarannya dua baris: deret '2 4 6 ... 20' lalu 'Total: 110'. Contoh di soal menulisnya dalam satu baris, tapi penilai mengikuti dua baris ini; spasi di ujung baris nggak dihitung.",
         ],
         "solution": """public class Genap {
     public static void main(String[] args) {
@@ -123,9 +122,9 @@ public class CekNilai {
             "  *****",
         ],
         "hints": [
-            "Gunakan nested loop (for di dalam for).",
-            "Loop luar untuk baris, loop dalam untuk jumlah bintang per baris.",
-            "System.out.print(\"*\") tanpa ln, lalu System.out.println() ganti baris.",
+            "Pola bertingkat seperti ini dibuat dengan perulangan di dalam perulangan. Baca ulang bagian perulangan bersarang (nested loop) di materi 'Perulangan (Loop)'.",
+            "Loop luar menghitung baris dari 1 sampai 5. Loop dalam mencetak bintang sebanyak nomor baris itu, jadi batasnya bergantung pada variabel loop luar.",
+            "Di loop dalam pakai System.out.print(\"*\") tanpa ln supaya bintangnya berderet. Sesudah loop dalam selesai, panggil System.out.println() untuk ganti baris.",
         ],
         "solution": """public class PolaBintang {
     public static void main(String[] args) {
@@ -147,9 +146,9 @@ public class CekNilai {
             "int[] data = {23, 5, 87, 12, 55, 99, 31};",
         ],
         "hints": [
-            "Asumsikan elemen pertama sebagai nilai terbesar/terkecil.",
-            "Loop semua elemen, bandingkan satu per satu.",
-            "Ganti nilai maks/min jika ditemukan yang lebih besar/kecil.",
+            "Mencari nilai terbesar dan terkecil berarti menelusuri array sambil mengingat juara sementara. Baca ulang materi 'Array' bagian menelusuri isi array dengan loop.",
+            "Anggap elemen pertama sebagai terbesar sekaligus terkecil. Telusuri sisanya satu per satu, dan ganti juaranya tiap kali ketemu yang lebih besar atau lebih kecil.",
+            "Mulai dengan int max = data[0]; dan int min = data[0]; lalu di dalam loop: if (data[i] > max) max = data[i]; Keluaran yang dinilai dua baris: 'Terbesar: 99' dan 'Terkecil: 5'.",
         ],
         "solution": """public class CariMinMax {
     public static void main(String[] args) {
@@ -179,9 +178,9 @@ public class CekNilai {
             "Panggil ketiganya di main dan tampilkan hasilnya.",
         ],
         "hints": [
-            "Math.PI sudah disediakan Java.",
-            "Method persegi/panjang kembalian int, lingkaran double.",
-            "Panggil dengan nama method lalu argumen: luasPersegi(5).",
+            "Latihan ini soal membuat method yang menerima parameter dan mengembalikan nilai. Materi 'Method (Fungsi)' membahas return dan tipe kembalian.",
+            "Buat tiga method static di luar main. Dua yang pertama mengembalikan int; luasLingkaran mengembalikan double dan memakai Math.PI yang sudah disediakan Java.",
+            "Panggil dengan nama method lalu argumennya, misalnya luasPersegi(5). Keluaran yang dinilai: 'Persegi (5): 25', 'Persegi Panjang (4x6): 24', dan 'Lingkaran (r=7): 154'; luas lingkarannya dibulatkan dengan Math.round().",
         ],
         "solution": """public class Luas {
     static int luasPersegi(int sisi) {
@@ -216,9 +215,9 @@ public class CekNilai {
             "  - method info() menampilkan nomor & saldo",
         ],
         "hints": [
-            "Gunakan this.nomor = nomor; untuk membedakan attribute.",
-            "tarik harus mengembalikan boolean atau memeriksa saldo.",
-            "Semua attribute private, akses lewat method.",
+            "Ini latihan encapsulation: data disembunyikan dengan private dan cuma bisa diubah lewat method. Baca ulang materi 'OOP: Encapsulation' dan 'Anggota Class: Constructor, static, dan Konstanta'.",
+            "Di constructor, parameter yang namanya sama dengan field dibedakan dengan this. tarik() memeriksa dulu apakah jumlahnya positif dan saldonya cukup, lalu mengembalikan boolean: true kalau berhasil, false kalau gagal.",
+            "Penilai mengikuti main contoh: rekening \"12345\" bersaldo 100000, info(), setor 50000, tarik 20000, tarik 200000, lalu info() lagi. Barisnya: 'No: 12345 | Saldo: 100000.0', 'Berhasil setor: 50000.0', 'Berhasil tarik: 20000.0', 'Gagal: saldo tidak cukup.', 'No: 12345 | Saldo: 130000.0'.",
         ],
         "solution": """public class Rekening {
     private String nomor;
@@ -273,9 +272,9 @@ public class CekNilai {
             "panggil bersuara() untuk semua (polymorphism).",
         ],
         "hints": [
-            "class Kucing extends Hewan.",
-            "@Override void bersuara() dengan suara masing-masing.",
-            "Hewan[] daftar = {new Kucing(...), new Anjing(...)}; lalu loop.",
+            "Ini latihan inheritance dan polymorphism: satu array bertipe induk berisi objek anak, dan tiap objek menjalankan versinya sendiri. Baca ulang 'OOP: Inheritance (Pewarisan)' dan 'OOP: Polymorphism'.",
+            "Kucing dan Anjing meng-extends Hewan dan memanggil super(nama) di constructor-nya. Masing-masing menimpa bersuara() dengan @Override. Di main, isi array Hewan dengan keduanya lalu telusuri dengan for-each.",
+            "Keluaran yang dinilai: 'Tom: Meow!' lalu 'Bobby: Guk!', jadi kucingnya bernama Tom dan anjingnya Bobby. Array-nya bisa ditulis Hewan[] hewan = {new Kucing(\"Tom\"), new Anjing(\"Bobby\")};",
         ],
         "solution": """class Hewan {
     String nama;
@@ -319,9 +318,9 @@ public class Main {
             "3. Di main, tangani pembagian dengan nol memakai try-catch.",
         ],
         "hints": [
-            "Interface method otomatis public abstract.",
-            "class Tambah implements Hitung { public double hitung(...) {...} }",
-            "try { double x = 10 / 0; } catch (ArithmeticException e) {...}",
+            "Ada dua konsep di sini: interface sebagai kontrak, dan try-catch untuk menangkap error. Baca ulang 'OOP: Abstract & Interface' dan 'Exception Handling'.",
+            "Method di interface otomatis public abstract, jadi di class yang meng-implements-nya method itu wajib ditulis public. Uji Tambah dan Kurang dengan angka 10 dan 3, lalu picu pembagian int 10 / 0 di dalam try dan tangkap ArithmeticException.",
+            "Keluaran yang dinilai: 'Tambah: 13.0', 'Kurang: 7.0', lalu 'Error: pembagian dengan nol!'. Ada .0 karena hitung() mengembalikan double. Jebakan: pembagian double seperti 10.0 / 0 nggak melempar exception (hasilnya Infinity), jadi yang dibagi nol harus int.",
         ],
         "solution": """interface Hitung {
     double hitung(double a, double b);
@@ -364,9 +363,9 @@ public class Main {
             "Lakukan dalam satu rangkaian stream (method chaining).",
         ],
         "hints": [
-            "Gunakan .filter(s -> s.length() > 4).",
-            "Gunakan .map(String::toUpperCase).",
-            "Gunakan .sorted() lalu Collectors.joining(\", \").",
+            "Rangkaian stream bekerja seperti ban berjalan: tiap langkah mengolah hasil langkah sebelumnya. Baca ulang materi 'Stream API', terutama operasi perantara dan Collectors.",
+            "Urutannya: saring yang panjangnya lebih dari 4 (filter), ubah ke huruf besar (map), urutkan (sorted), lalu kumpulkan jadi satu String (collect). Jangan lupa import java.util.stream.Collectors.",
+            "Untuk huruf besar pakai method reference String::toUpperCase, dan untuk langkah terakhir Collectors.joining(\", \"). Hasil yang benar cuma satu baris: CITRA, FARHAN.",
         ],
         "solution": """import java.util.List;
 import java.util.stream.Collectors;
@@ -398,9 +397,9 @@ public class FilterNama {
             "Uji dengan Pasangan<String, Integer> lalu tukar posisinya.",
         ],
         "hints": [
-            "class Pasangan<K, V> { private K key; private V value; ... }",
-            "Method tukar mengembalikan tipe Pasangan<V, K> (kebalikan generic).",
-            "new Pasangan<>(value, key) di dalam method tukar().",
+            "Class generic memakai parameter tipe seperti K dan V, yang baru ditentukan saat objeknya dibuat. Baca ulang materi 'Generics'.",
+            "Simpan key bertipe K dan value bertipe V sebagai field private, isi lewat constructor, lalu buat getter-nya. tukar() mengembalikan Pasangan<V, K>: urutan parameter tipenya dibalik, begitu juga isinya.",
+            "Isi tukar() cukup satu baris yang membuat Pasangan baru dengan value di depan dan key di belakang; diamond <> menyimpulkan tipenya sendiri. Supaya println mencetak (Andi, 20) lalu (20, Andi), timpa toString() supaya mengembalikan \"(\" + key + \", \" + value + \")\".",
         ],
         "solution": """public class Pasangan<K, V> {
     private K key;
@@ -443,9 +442,9 @@ public class FilterNama {
             "tumpang tindih (race condition) dengan synchronized + counter.",
         ],
         "hints": [
-            "Gunakan variabel counter (int) sebagai attribute class, increment di dalam method synchronized.",
-            "Method synchronized void layani() { counter++; ...; Thread.sleep(100); }",
-            "Buat 5 Thread yang semuanya memanggil objek LoketAntrian yang SAMA, lalu start() semua & join() semua.",
+            "Race condition terjadi kalau beberapa thread mengubah data yang sama bersamaan. Baca ulang 'Multithreading & Concurrency Dasar', bagian synchronized, start(), dan join().",
+            "Jadikan counter field LoketAntrian dan naikkan di dalam method synchronized layani(), lalu simpan nomornya di variabel lokal sebelum Thread.sleep(100). Kelima thread harus memanggil objek loket yang sama; start() semuanya dulu, baru join() semuanya.",
+            "Thread.sleep() bisa melempar InterruptedException, jadi bungkus dengan try-catch. Tiap nasabah mencetak 'Nasabah ke-N mulai dilayani...' dan 'Nasabah ke-N selesai dilayani.', lalu di akhir 'Semua nasabah selesai dilayani.'. Thread-nya bisa dibuat dengan new Thread(loket::layani).",
         ],
         "solution": """class LoketAntrian {
     private int counter = 0;
@@ -494,9 +493,9 @@ public class SimulasiAntrian {
             "untuk cariByNim (agar aman jika data tidak ditemukan).",
         ],
         "hints": [
-            "Buat dulu class Mahasiswa (nim, nama, jurusan, ipk) dengan getter.",
-            "Setiap method buka Connection sendiri lewat try-with-resources.",
-            "cariByNim: jika rs.next() true, return Optional.of(...); jika tidak, Optional.empty().",
+            "Tiap method repository membuka koneksi, menjalankan satu query, lalu menutup semuanya. Baca ulang 'JDBC: Menghubungkan Java ke Database' dan 'Optional & Null Safety'.",
+            "Buat dulu class Mahasiswa (nim, nama, jurusan, ipk). Di tiap method, buka Connection dan PreparedStatement di dalam try-with-resources, isi tanda tanyanya dengan setInt/setString/setDouble, lalu pakai executeUpdate() untuk INSERT dan executeQuery() untuk SELECT.",
+            "Di cariByNim: kalau rs.next() bernilai true, kembalikan Optional.of(new Mahasiswa(...)); kalau nggak, Optional.empty(). Di semua(), ulangi while (rs.next()) dan tambahkan tiap baris ke ArrayList.",
         ],
         "auto_check": False,
         "alasan_tidak_dicek": "butuh server database MySQL dan driver JDBC",
@@ -580,9 +579,9 @@ class MahasiswaRepository {
             "     sebelum setiap test agar antar-test tidak saling memengaruhi.",
         ],
         "hints": [
-            "@BeforeEach void setUp() { rekening = new Rekening(...); }",
-            "assertEquals(expected, actual) untuk cek nilai saldo.",
-            "assertFalse(rekening.tarik(jumlahBesar)) untuk kasus gagal.",
+            "Tiap tes harus mulai dari objek yang segar supaya hasil satu tes nggak memengaruhi tes lain. Baca ulang 'Unit Testing dengan JUnit', bagian anotasi dan assertion.",
+            "Jadikan Rekening field di class tes, lalu isi ulang di method bertanda @BeforeEach. Buat satu method @Test untuk tiap kasus: setor, tarik yang berhasil, dan tarik yang gagal.",
+            "Cek saldo dengan assertEquals(harapan, rekening.getSaldo()). Untuk kasus gagal pakai assertFalse(rekening.tarik(999999)), lalu pastikan saldonya masih 100000.",
         ],
         "auto_check": False,
         "alasan_tidak_dicek": "butuh pustaka JUnit 5 dan class Rekening terpisah",
@@ -674,11 +673,11 @@ class RekeningTest {
         '  Lantai yang dilewati    : 11',
         '  Posisi akhir            : lantai 2',
     ],
-        'hints': [
-        'Deque<Permintaan> menunggu = new ArrayDeque<>(); pakai addLast() untuk mengantre dan removeFirst() untuk mengambil yang paling lama menunggu.',
-        'Untuk memeriksa penunggu tanpa kehilangan urutannya: ambil satu per satu sebanyak ukuran antrean, yang tidak cocok dikembalikan ke belakang dengan addLast().',
-        'Menghapus dari List sambil melooping-nya harus dari BELAKANG (for (int i = size()-1; i >= 0; i--)), kalau tidak indeksnya bergeser.',
-    ],
+        "hints": [
+            "Simulasi ini berjalan per detik, dan antrean penunggunya bekerja first-in first-out. Baca ulang 'Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque' dan 'Enum: Himpunan Nilai Tetap'.",
+            "Tiap detak() punya tiga langkah berurutan: turunkan penumpang yang tujuannya lantai ini, naikkan penunggu di lantai ini, lalu tentukan tujuan (penumpang di dalam lebih dulu, kalau kosong penunggu paling lama) dan bergerak satu lantai. Untuk memeriksa penunggu tanpa merusak urutannya, ambil satu per satu sebanyak ukuran antrean, dan kembalikan yang nggak cocok ke belakang dengan addLast().",
+            "Antreannya Deque<Permintaan> menunggu = new ArrayDeque<>(); dengan addLast() untuk mengantre dan removeFirst() untuk mengambil yang paling lama menunggu. Menghapus dari List sambil melooping-nya harus dari belakang, for (int i = didalam.size() - 1; i >= 0; i--), kalau nggak indeksnya bergeser.",
+        ],
         'solution': """import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

@@ -9,9 +9,9 @@ CSHARP_EXERCISES = [
             "  Bahasa ini berjalan di atas .NET.",
         ],
         "hints": [
-            "Program C# klasik dimulai dengan: using System;",
-            "Semua kode tinggal di dalam class; titik masuknya static void Main().",
-            "Pakai Console.WriteLine() untuk tiap baris.",
+            "Program C# terdiri dari sebuah class dengan satu titik masuk, tempat eksekusi dimulai. Baca ulang materi Pengenalan C# & .NET kalau lupa kerangkanya.",
+            "Kerangkanya: using System; di paling atas, lalu class Program yang berisi method static void Main(). Di dalam Main, cetak satu kalimat per baris.",
+            "Console.WriteLine(\"...\") mencetak teksnya lalu pindah baris, jadi cukup tiga panggilan, satu per kalimat.",
         ],
         "solution": """using System;
 
@@ -39,11 +39,9 @@ class Program
             "  17 / 5 = 3.40 (desimal)",
         ],
         "hints": [
-            "Pembagian dua int menghasilkan int; sisanya dibuang.",
-            "Untuk desimal, ubah salah satu sisi: (double)a / b",
-            "Format dua desimal: pakai penentu F2 di dalam interpolasi.",
-            "Supaya pemisah desimalnya titik di komputer mana pun, setel",
-            "CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;",
+            "Pembagian dua int membuang sisanya, sedangkan pembagian yang melibatkan double menyimpan pecahannya. Baca ulang materi Operator & Ekspresi.",
+            "Cetak tiap baris dengan string interpolasi. Untuk baris desimal, ubah salah satu operand jadi double sebelum membagi, lalu format dengan penentu F2 supaya tampil dua angka di belakang titik.",
+            "Supaya pemisah desimalnya titik di komputer mana pun, setel di awal Main: CultureInfo.CurrentCulture = CultureInfo.InvariantCulture; (butuh using System.Globalization;). Bagian desimalnya bisa ditulis {(double)a / b:F2}.",
         ],
         "solution": """using System;
 using System.Globalization;
@@ -84,10 +82,9 @@ class Program
             "Kolom angka rata kiri tepat setelah tanda titik dua dan spasi.",
         ],
         "hints": [
-            "Baca satu baris dengan Console.ReadLine(), lalu ubah ke double.",
-            "double.Parse butuh budaya yang tetap: pakai CultureInfo.InvariantCulture.",
-            "Jangan mencetak apa pun sebelum membaca input.",
-            "Ratakan label dengan {\"Celsius\",-11} atau tulis spasinya langsung.",
+            "Latihan ini soal membaca input, mengubah teks jadi angka, dan memformat keluaran. Baca ulang materi Variabel, Tipe Data & Konversi serta Input, Output & String.",
+            "Baca satu baris dengan Console.ReadLine(), ubah ke double, hitung F dan K pakai rumus di soal, lalu cetak ketiganya dengan dua desimal. Jangan mencetak apa pun sebelum membaca input.",
+            "double.Parse(teks, CultureInfo.InvariantCulture) membaca angka berpemisah titik di komputer mana pun. Label bisa diratakan dengan {\"Celsius\",-11} atau dengan menulis spasinya langsung.",
         ],
         "stdin": "25\n",
         "solution": """using System;
@@ -129,10 +126,9 @@ class Program
             "  Status: Lulus",
         ],
         "hints": [
-            "Pakai switch expression: nilai switch { >= 85 => \"A\", ... }",
-            "Pola relasional (>= 85) hanya boleh di switch expression, bukan if biasa.",
-            "Tanda _ menangkap sisanya, setara default.",
-            "Untuk status, operator ternary sudah cukup.",
+            "Kamu perlu memetakan rentang nilai ke huruf, dan pola relasional di switch expression pas untuk itu. Baca ulang materi Percabangan: if, switch & Pattern Matching.",
+            "Urutkan lengan dari batas tertinggi ke terendah, karena lengan pertama yang cocok yang dipakai. Lengan _ di akhir menangkap sisanya, setara default. Untuk status, operator ternary sudah cukup.",
+            "Bentuknya: string grade = nilai switch { >= 85 => \"A\", >= 75 => \"B\", ..., _ => \"E\" }; lalu nilai >= 75 ? \"Lulus\" : \"Tidak Lulus\".",
         ],
         "stdin_list": ["92\n", "78\n", "65\n", "45\n", "12\n"],
         "solution": """using System;
@@ -173,10 +169,9 @@ class Program
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "Butuh dua perulangan bersarang: baris di luar, kolom di dalam.",
-            "Console.Write mencetak tanpa pindah baris; WriteLine dengan.",
-            "Rata kanan selebar 2: {hasil,2} di dalam interpolasi.",
-            "Pemisah antar sel ditulis di akhir tiap sel, kecuali yang terakhir.",
+            "Tabel berarti dua perulangan bersarang: perulangan luar untuk baris, perulangan dalam untuk kolom. Baca ulang materi Perulangan: for, while, foreach.",
+            "Di awal tiap baris cetak dua spasi. Di perulangan dalam, cetak satu sel dengan Console.Write (tanpa pindah baris), lalu pemisah tiga spasi kecuali untuk sel terakhir. Sesudah perulangan dalam selesai, panggil Console.WriteLine() untuk pindah baris.",
+            "Rata kanan selebar 2 ditulis {b * k,2} di dalam interpolasi, jadi satu sel berbentuk $\"{b} x {k} = {b * k,2}\".",
         ],
         "solution": """using System;
 
@@ -215,10 +210,9 @@ class Program
             "  Di atas rata-rata: 4",
         ],
         "hints": [
-            "string.Join(\", \", array) menggabungkan isi array jadi satu teks.",
-            "Array.Sort mengubah array ASLINYA. Salin dulu kalau yang asli masih dipakai.",
-            "Rata-rata: jangan lupa (double) supaya tidak jadi pembagian bulat.",
-            "Menghitung yang di atas rata-rata cukup satu perulangan lagi.",
+            "Kamu perlu menelusuri array untuk total, nilai tertinggi, dan terendah, lalu menelusurinya lagi untuk menghitung yang di atas rata-rata. Baca ulang materi Array & Indeks.",
+            "Hitung total, tertinggi, dan terendah dalam satu foreach. Rata-rata dibagi sebagai double supaya bukan pembagian bulat. Untuk baris Terurut, urutkan salinan array: Array.Sort mengubah array aslinya, padahal baris Data masih butuh urutan asli.",
+            "Salinan array: (int[])nilai.Clone(). Menggabungkan isi array jadi satu teks: string.Join(\", \", array). Setel CultureInfo.InvariantCulture supaya 78.88 memakai titik.",
         ],
         "solution": """using System;
 using System.Globalization;
@@ -278,10 +272,9 @@ class Program
             "Kalau bukan palindrom, baris terakhir berbunyi 'Palindrom: bukan'.",
         ],
         "hints": [
-            "Membalik: ubah jadi char[], Array.Reverse, lalu new string(...).",
-            "Buang spasi dengan Replace(\" \", \"\") sebelum menghitung huruf.",
-            "Bandingkan versi tanpa spasi huruf kecil dengan versi baliknya.",
-            "Jangan mencetak apa pun sebelum Console.ReadLine() pertama.",
+            "Latihan ini soal mengolah string: membalik, membuang spasi, dan menyamakan besar-kecil huruf. Baca ulang materi Input, Output & String.",
+            "Buat method kecil untuk membalik string. Buang spasi dulu untuk menghitung huruf, lalu bandingkan versi tanpa spasi berhuruf kecil dengan kebalikannya. Jangan mencetak apa pun sebelum Console.ReadLine() pertama.",
+            "Membalik: ubah jadi char[] dengan ToCharArray(), panggil Array.Reverse, lalu bentuk lagi dengan new string(...). Spasi dibuang dengan Replace(\" \", \"\").",
         ],
         "stdin_list": ["Kasur ini rusak\n", "Belajar C sharp\n", "Ini\n"],
         "solution": """using System;
@@ -333,10 +326,9 @@ class Program
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "Pecah kalimat dengan Split(' ').",
-            "Dictionary<string,int> menyimpan hitungannya.",
-            "TryGetValue(k, out int n) mengisi n dengan 0 kalau kunci belum ada.",
-            "Untuk mengurutkan dua tingkat, pakai OrderByDescending lalu ThenBy.",
+            "Menghitung kemunculan paling pas memakai Dictionary, dengan kata sebagai kunci dan jumlahnya sebagai nilai. Baca ulang materi List, Dictionary & Koleksi Generik dan LINQ: Bertanya pada Data.",
+            "Pecah kalimat per spasi, lalu untuk tiap kata naikkan hitungannya satu. Urutkan pasangan kunci-nilai menurut jumlah menurun, lalu menurut kata menaik kalau jumlahnya sama. Total kata adalah panjang hasil pecahan; kata unik adalah jumlah isi Dictionary.",
+            "TryGetValue(k, out int n) mengisi n dengan 0 kalau kunci belum ada, jadi cukup hitung[k] = n + 1. Urutan dua tingkat: OrderByDescending(p => p.Value).ThenBy(p => p.Key). Nama rata kiri: {p.Key,-7}.",
         ],
         "solution": """using System;
 using System.Collections.Generic;
@@ -389,10 +381,9 @@ class Program
             "  Ditolak: nilai di luar 0..100",
         ],
         "hints": [
-            "Property hanya-baca dari luar: public string Nama { get; }",
-            "Setter yang memvalidasi butuh bentuk panjang: get => _n; set { ... }",
-            "Grade cocok ditulis sebagai property terhitung dengan switch expression.",
-            "Bungkus percobaan yang gagal dengan try / catch (ArgumentOutOfRangeException).",
+            "Class ini butuh tiga jenis property: yang cuma bisa dibaca dari luar, yang memvalidasi saat diisi, dan yang dihitung dari property lain. Baca ulang materi Property, Constructor & Inisialisasi.",
+            "Simpan nilai di field privat dan tulis setter bentuk panjang yang melempar ArgumentOutOfRangeException kalau nilainya di luar 0..100. Di constructor, isi lewat property Nilai supaya validasinya ikut jalan. Grade cocok ditulis sebagai property terhitung dengan switch expression.",
+            "Property hanya-baca: public string Nama { get; }. Setter yang memvalidasi: get => _nilai; set { if (...) throw ...; _nilai = value; }. Bungkus percobaan nilai 150 dengan try / catch (ArgumentOutOfRangeException).",
         ],
         "solution": """using System;
 
@@ -480,10 +471,9 @@ class Program
             "dua desimal, dipisah empat spasi.",
         ],
         "hints": [
-            "Luas segitiga = alas * tinggi / 2; kelilingnya jumlah ketiga sisinya.",
-            "Constructor turunan memanggil induknya dengan : base(\"Nama\").",
-            "Satu perulangan foreach cukup — itulah gunanya polimorfisme.",
-            "Setel CultureInfo.InvariantCulture supaya desimalnya memakai titik.",
+            "Satu array bertipe induk yang berisi berbagai turunan, lalu satu perulangan yang memanggil method yang sama: itulah polimorfisme. Baca ulang materi Pewarisan & Polimorfisme.",
+            "Abstract class Bangun menyimpan Nama dan mendeklarasikan Luas() serta Keliling() sebagai abstract. Tiap turunan menyimpan ukurannya sendiri dan meng-override keduanya. Di Main, satu foreach mencetak tiap bangun sambil menjumlahkan total. Luas segitiga = alas * tinggi / 2, kelilingnya jumlah ketiga sisi.",
+            "Constructor turunan memanggil induknya dengan : base(\"Persegi\"). Satu baris tabel: {b.Nama,-16}{b.Luas(),5:F2}, dan setel CultureInfo.InvariantCulture supaya desimalnya memakai titik.",
         ],
         "solution": """using System;
 using System.Globalization;
@@ -586,10 +576,9 @@ class Program
             "(itu sebabnya Teh mendahului Kopi).",
         ],
         "hints": [
-            "Subtotal = Jumlah * Harga. Hitung sekali lewat Select ke tuple.",
-            "OrderByDescending(x => x.Sub).ThenByDescending(x => x.Barang)",
-            "GroupBy(t => t.Kategori) lalu OrderBy(g => g.Key) untuk rekapnya.",
-            "MaxBy ada sejak .NET 6; kalau tidak yakin, pakai OrderByDescending().First().",
+            "Ini latihan menyusun query LINQ: menghitung kolom baru, mengurutkan dua tingkat, mengelompokkan, dan mencari yang terbesar. Baca ulang materi LINQ: Bertanya pada Data dan Struct, Record & Tipe Nilai.",
+            "Hitung subtotal sekali lewat Select ke objek baru, lalu urutkan menurun menurut subtotal dan, kalau sama, menurun menurut nama barang. Untuk rekap, kelompokkan per kategori lalu urutkan kuncinya. Barang tertinggi bisa dicari dengan mengurutkan menurun lalu mengambil yang pertama.",
+            "Urutan dua tingkat: OrderByDescending(x => x.Sub).ThenByDescending(x => x.Barang). Rekap: GroupBy(t => t.Kategori).OrderBy(g => g.Key), lalu g.Sum(...) dan g.Count(). MaxBy ada sejak .NET 6; kalau ragu, pakai OrderByDescending(...).First().",
         ],
         "solution": """using System;
 using System.Collections.Generic;
@@ -658,10 +647,9 @@ class Program
             "  Bayar 55000 -> sisa 5000",
         ],
         "hints": [
-            "Exception sendiri cukup mewarisi Exception dan memanggil : base(pesan).",
-            "Tangkap yang PALING SPESIFIK lebih dulu.",
-            "Saldo sebaiknya { get; private set; } supaya tidak bisa diubah dari luar.",
-            "Cetak decimal tanpa desimal: pakai 0 atau cast ke int saat menampilkan.",
+            "Exception buatan sendiri adalah class biasa yang mewarisi Exception dan boleh membawa data tambahan. Baca ulang materi Exception & Penanganan Galat.",
+            "SaldoKurangException menyimpan property Kurang dan meneruskan pesannya ke constructor induk. Dompet memeriksa jumlah <= 0 lebih dulu, baru kecukupan saldo. Di Main, telusuri daftar langkah dan bungkus tiap langkah dengan try/catch, dengan catch yang paling spesifik ditulis lebih dulu.",
+            "Pesan diteruskan ke induk dengan : base($\"Saldo kurang {kurang}\"). Saldo sebaiknya { get; private set; } supaya nggak bisa diubah dari luar. Decimal seperti 50000m tercetak 50000, tanpa angka di belakang titik.",
         ],
         "solution": """using System;
 
@@ -752,10 +740,9 @@ class Program
             "  [Cici, Euis] 2/3",
         ],
         "hints": [
-            "Antrean berarti FIFO: yang pertama masuk, pertama keluar.",
-            "Simpan isinya di List<T>; ambil dari index 0 lalu RemoveAt(0).",
-            "`default` adalah nilai kosong T apa pun T-nya.",
-            "Kembalian T? menuntut kamu memikirkan kasus antrean kosong.",
+            "Antrean itu FIFO: yang pertama masuk, pertama keluar. Class generic memakai T sebagai pengganti tipe isinya. Baca ulang materi Generic: Tipe sebagai Parameter.",
+            "Simpan isinya di List<T> dan kapasitasnya di field. Masuk mengembalikan false kalau sudah penuh. Keluar mengambil elemen di index 0 lalu menghapusnya, atau mengembalikan default kalau kosong. Jumlah dan Penuh cukup property terhitung dari isi List.",
+            "Untuk kasus kosong: return default; (kembaliannya T?). Ambil lalu buang yang terdepan: T barang = _isi[0]; _isi.RemoveAt(0);. ToString menggabungkan isinya dengan string.Join(\", \", _isi).",
         ],
         "solution": """using System;
 using System.Collections.Generic;
@@ -842,10 +829,9 @@ class Program
             "  tipe lain: Double",
         ],
         "hints": [
-            "URUTAN berarti: pola yang lebih sempit harus ditulis lebih dulu.",
-            "Pola properti: string { Length: 0 } dan int[] { Length: > 3 }.",
-            "`when` menambah syarat: int n when n % 2 == 0",
-            "Nama tipe saat program jalan: o.GetType().Name",
+            "Satu switch expression bisa mencocokkan tipe, nilai, properti, dan syarat tambahan sekaligus. Baca ulang materi Percabangan: if, switch & Pattern Matching.",
+            "Urutan lengan menentukan hasil: pola yang lebih sempit harus ditulis lebih dulu. Untuk int, tulis negatif dulu, lalu 0, lalu genap, baru sisanya. Untuk string, yang kosong dulu. Lengan _ di akhir menangkap tipe lain.",
+            "Pola properti: string { Length: 0 } dan int[] { Length: > 3 }. Syarat tambahan dengan when: int n when n % 2 == 0. Nama tipe saat program jalan: o.GetType().Name.",
         ],
         "solution": """using System;
 
@@ -914,10 +900,9 @@ class Program
             "  Minuman: 40000",
         ],
         "hints": [
-            "ToString bawaan record sudah berbentuk Tipe { A = x, B = y }.",
-            "`lama with { Harga = 27000m }` membuat SALINAN, bukan mengubah.",
-            "== pada record membandingkan NILAI; ReferenceEquals membandingkan objek.",
-            "Deconstruction: var (nama, kategori, harga) = produk;",
+            "record sudah membuatkan ToString, kesetaraan berbasis nilai, with, dan deconstruction untukmu. Baca ulang materi Struct, Record & Tipe Nilai.",
+            "Cetak record apa adanya untuk melihat ToString bawaannya. Buat versi baru dengan with lalu cetak keduanya. Bandingkan dengan == untuk nilai dan ReferenceEquals untuk objek. Pecah dengan deconstruction, lalu rekap harga per kategori dengan GroupBy.",
+            "lama with { Harga = 27000m } membuat salinan, yang lama nggak berubah. Deconstruction berbentuk var (nama, kategori, harga) = produk;.",
         ],
         "solution": """using System;
 using System.Collections.Generic;
@@ -1010,14 +995,9 @@ class Program
             "kanan 4, harga rata kanan 12, subtotal rata kanan 12.",
         ],
         "hints": [
-            "Simpan barang di Dictionary<string, Barang> berkunci kode.",
-            "Karena record itu immutable, perbarui stok dengan `with`:",
-            "  _isi[kode] = b with { Stok = b.Stok + jumlah };",
-            "Urutan pemeriksaan di Catat menentukan pesan mana yang muncul:",
-            "periksa kode dulu, lalu jumlah, baru kecukupan stok.",
-            "Di Main, satu try/catch per langkah membuat outputnya rapi.",
-            "Gudang TIDAK BOLEH memanggil Console sama sekali — itu yang "
-            "membuatnya bisa diuji tanpa membaca layar.",
+            "Kuncinya pemisahan lapisan: Gudang cuma menyimpan aturan dan nggak pernah memanggil Console, Main yang mencetak. Itu yang membuat Gudang bisa diuji tanpa membaca layar. Baca ulang materi Membangun Aplikasi Konsol Utuh dan Exception & Penanganan Galat.",
+            "Simpan barang di Dictionary<string, Barang> berkunci kode. Di Catat, urutan pemeriksaan menentukan pesan yang muncul: periksa kode dulu, lalu jumlah, baru kecukupan stok. Di Main, bungkus tiap langkah dengan try/catch-nya sendiri supaya satu kegagalan nggak menghentikan langkah berikutnya.",
+            "Record itu immutable, jadi stok diperbarui dengan with: _isi[kode] = b with { Stok = stokBaru };. InvalidOperationException dipakai untuk dua hal (kode kembar dan stok kurang), jadi tampilkan e.Message-nya.",
         ],
         "solution": """using System;
 using System.Collections.Generic;

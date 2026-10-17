@@ -12,9 +12,9 @@ KOTLIN_EXERCISES = [
             "  Kotlin memeriksa null saat kompilasi.",
         ],
         "hints": [
-            "Titik masuknya fun main() { ... } — tanpa class pembungkus.",
-            "println() mencetak lalu pindah baris.",
-            "Tidak perlu titik koma di akhir baris.",
+            "Program Kotlin dimulai dari fungsi main, tanpa class pembungkus seperti di Java. Baca ulang materi \"Pengenalan Kotlin & Instalasi\".",
+            "Tulis tiga perintah cetak di dalam main, satu untuk tiap baris keluaran. println() mencetak teksnya lalu pindah baris, dan Kotlin nggak butuh titik koma di akhir baris.",
+            "Kerangkanya: fun main() { ... }, lalu isi kurawalnya dengan tiga println(\"...\") berisi kalimat persis seperti di soal.",
         ],
         "solution": """fun main() {
     println("Halo, namaku Andi!")
@@ -38,10 +38,9 @@ KOTLIN_EXERCISES = [
             "  17 / 5 = 3.40 (desimal)",
         ],
         "hints": [
-            "Interpolasi: println(\"$a + $b = ${a + b}\")",
-            "Dua Int dibagi menghasilkan Int; sisanya dibuang.",
-            "Untuk desimal, panggil .toDouble() pada salah satu sisi.",
-            "Dua desimal: \"%.2f\".format(nilai)",
+            "Ini latihan operator aritmetika dan string template. Baca ulang materi \"val, var & Tipe Data\", terutama bagian pembagian Int.",
+            "Tiap baris berbentuk \"a op b = hasil\": sisipkan nilai dengan $a dan hasil hitungan dengan ${...}. 17 / 5 antara dua Int menghasilkan 3 karena sisanya dibuang; untuk 3.40, ubah salah satu sisi jadi Double dengan .toDouble().",
+            "Contoh satu baris: println(\"$a + $b = ${a + b}\"). Dua angka di belakang koma: \"%.2f\".format(nilai).",
         ],
         "solution": """fun main() {
     val a = 17
@@ -73,10 +72,9 @@ KOTLIN_EXERCISES = [
             "  Kelvin     : 298.15",
         ],
         "hints": [
-            "readLine() mengembalikan String? — pakai !! atau ?: untuk menanganinya.",
-            "toDouble() mengubah teks jadi Double; trim() dulu supaya aman.",
-            "Pakai 9.0 / 5 supaya bukan pembagian Int.",
-            "Jangan mencetak apa pun sebelum membaca input.",
+            "Kamu perlu membaca input, mengubahnya jadi angka, lalu menghitung dengan Double. Baca ulang materi \"Null Safety\" (readLine() mengembalikan String?) dan \"val, var & Tipe Data\".",
+            "Baca baris dengan readLine(), tangani null-nya dengan !! atau ?:, lalu trim() dan toDouble(). Hitung F dengan 9.0 / 5 supaya bukan pembagian Int. Jangan mencetak prompt apa pun sebelum membaca input, karena teks itu ikut dinilai.",
+            "Dua desimal: \"%.2f\".format(f). Perhatikan perataan label di soal: \"Celsius    : \" diikuti beberapa spasi supaya titik duanya sejajar.",
         ],
         "stdin": "25\n",
         "solution": """fun main() {
@@ -110,10 +108,9 @@ KOTLIN_EXERCISES = [
             "  Status: Lulus",
         ],
         "hints": [
-            "when tanpa subjek adalah rantai kondisi: when { n >= 85 -> \"A\" ... }",
-            "when adalah ekspresi, jadi hasilnya bisa langsung ditugaskan.",
-            "if juga ekspresi: val s = if (n >= 75) \"Lulus\" else \"Tidak Lulus\"",
-            "Cabang `else` wajib ada supaya seluruh kemungkinan tertangani.",
+            "Ini soal rantai kondisi. Di Kotlin, when dan if adalah ekspresi yang menghasilkan nilai. Baca ulang materi \"Kendali Alur\".",
+            "Baca nilai sebagai Int. Pakai when tanpa subjek, urutkan cabangnya dari batas tertinggi (85) ke terendah, dan akhiri dengan else. Simpan hasilnya di satu val, lalu tentukan status dengan if yang juga menghasilkan nilai.",
+            "Bentuknya: when { nilai >= 85 -> \"A\" ... else -> \"E\" }. Cabang else wajib ada supaya semua kemungkinan tertangani.",
         ],
         "stdin_list": ["92\n", "78\n", "65\n", "45\n", "12\n"],
         "solution": """fun main() {
@@ -149,10 +146,9 @@ KOTLIN_EXERCISES = [
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "for (b in 1..5) untuk tiap baris.",
-            "Bangun tiap barisnya dengan map lalu joinToString(\"   \").",
-            "padStart(2) meratakan ke kanan selebar 2.",
-            "Atau pakai \"%2d\".format(hasil).",
+            "Butuh perulangan bersarang: satu untuk baris, satu untuk kolom. Baca ulang materi \"Kendali Alur\" (for dengan rentang 1..5) dan \"Teks, Regex & Format\" untuk perataan.",
+            "Untuk tiap baris b, bangun lima sel \"b x k = hasil\", gabungkan dengan tiga spasi, lalu awali barisnya dengan dua spasi. Hasil perkalian harus rata kanan selebar 2.",
+            "Rata kanan: (b * k).toString().padStart(2), atau \"%2d\".format(hasil). Menggabungkan sel: (1..5).map { k -> ... }.joinToString(\"   \").",
         ],
         "solution": """fun main() {
     for (b in 1..5) {
@@ -180,10 +176,9 @@ KOTLIN_EXERCISES = [
             "  Di atas rata-rata: 92, 88, 95, 83",
         ],
         "hints": [
-            "joinToString(\", \") menggabungkan koleksi jadi teks.",
-            "sorted() mengembalikan SALINAN terurut; sort() mengubah di tempat.",
-            "sum(), average(), max(), dan min() sudah tersedia.",
-            "filter { it > rata } mempertahankan urutan aslinya.",
+            "Hampir semua yang diminta sudah ada sebagai fungsi bawaan koleksi. Baca ulang materi \"Koleksi\".",
+            "Simpan daftar dengan listOf, hitung rata-ratanya sekali, lalu cetak tiap baris. Untuk baris Terurut pakai fungsi yang mengembalikan salinan, supaya baris Data tetap dalam urutan asli. sum(), average(), max(), dan min() sudah tersedia.",
+            "sorted() mengembalikan salinan terurut (sort() mengubah di tempat). Menggabungkan jadi teks: joinToString(\", \"). Yang di atas rata-rata: filter { it > rata }, urutan aslinya tetap terjaga.",
         ],
         "solution": """fun main() {
     val nilai = listOf(78, 92, 65, 88, 71, 95, 59, 83)
@@ -217,10 +212,9 @@ KOTLIN_EXERCISES = [
             "  Palindrom: ya",
         ],
         "hints": [
-            "reversed() membalik String.",
-            "filter { !it.isWhitespace() } membuang spasi.",
-            "lowercase() untuk mengabaikan besar-kecil huruf.",
-            "readLine() mengembalikan String? — tangani nullnya.",
+            "Ini soal olah String: membalik, menyaring karakter, dan membandingkan. Baca ulang materi \"Teks, Regex & Format\" dan \"Null Safety\" untuk readLine().",
+            "Baca teks dan tangani null-nya. Buat versi tanpa spasi untuk menghitung huruf, lalu versi huruf kecil dari situ untuk cek palindrom. Baris Dibalik memakai teks asli, lengkap dengan spasi dan huruf besarnya.",
+            "reversed() membalik String, filter { !it.isWhitespace() } membuang spasi, dan lowercase() menyamakan besar-kecil huruf.",
         ],
         "stdin_list": ["Kasur ini rusak\n", "Belajar Kotlin\n", "Ini\n"],
         "solution": """fun main() {
@@ -257,11 +251,9 @@ KOTLIN_EXERCISES = [
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "split(\" \") memecah kalimat jadi List<String>.",
-            "groupingBy { it }.eachCount() menghitung frekuensi sekaligus.",
-            "Dua kunci urutan: sortedWith(compareByDescending<...> { it.value }",
-            ".thenBy { it.key })",
-            "padEnd(7) meratakan ke kiri selebar 7.",
+            "Menghitung kemunculan adalah pekerjaan Map. Baca ulang materi \"Koleksi\", bagian groupingBy dan pengurutan.",
+            "Pecah kalimat jadi List kata, hitung frekuensinya, lalu urutkan entri Map dengan dua kunci: jumlah menurun, lalu kata menaik. Kata unik adalah ukuran Map, total kata adalah ukuran List.",
+            "groupingBy { it }.eachCount() menghitung frekuensi. Dua kunci urutan: sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }.thenBy { it.key }). Rata kiri selebar 7: padEnd(7).",
         ],
         "solution": """fun main() {
     val kalimat = "kucing makan ikan kucing tidur ikan kucing"
@@ -310,10 +302,9 @@ KOTLIN_EXERCISES = [
             "  Cici  tidak diketahui",
         ],
         "hints": [
-            "isNullOrBlank() menangani null, kosong, dan spasi sekaligus.",
-            "Sesudah pemeriksaan itu, smart cast membuat nama pasti non-null.",
-            "Rantai safe call: o.alamat?.kota ?: \"tidak diketahui\"",
-            "padEnd(6) meratakan nama ke kiri.",
+            "Latihan ini menguji safe call, operator Elvis, dan smart cast. Baca ulang materi \"Null Safety\" dan \"Data Class, Object & Sealed\".",
+            "Di sapa, tangani null, string kosong, dan spasi saja dalam satu pengecekan, lalu kembalikan lebih awal. Sesudah itu compiler tahu nama pasti non-null. Di ringkas, rantai safe call dari orang ke kota, lalu beri nilai cadangan.",
+            "isNullOrBlank() menangani null, kosong, dan spasi sekaligus. Rantai: o.alamat?.kota ?: \"tidak diketahui\". Nama rata kiri: padEnd(6).",
         ],
         "solution": """data class Alamat(val kota: String?, val pos: String?)
 data class Orang(val nama: String, val alamat: Alamat?)
@@ -365,10 +356,9 @@ fun main() {
             "  TOTAL              62.27",
         ],
         "hints": [
-            "Interface boleh punya method dengan badan; itu implementasi bawaan.",
-            "super.ringkas() memanggil versi bawaan dari interface.",
-            "PI cocok ditaruh di companion object sebagai const val.",
-            "sumOf { it.luas() } menjumlahkan hasil method.",
+            "Interface di Kotlin boleh punya method dengan badan (implementasi bawaan), dan class turunannya boleh menimpanya. Baca ulang materi \"Pewarisan & Interface\".",
+            "Tulis ringkas() bawaan di interface Bangun. BangunDasar cukup menerima nama lewat override val. Tiap bentuk menimpa luas(); hanya Lingkaran yang juga menimpa ringkas() dan menambahkan \"  (r=...)\" di belakang versi bawaan. Simpan ketiganya di List<Bangun> lalu jumlahkan luasnya.",
+            "Versi bawaan dipanggil dengan super.ringkas(). PI cocok ditaruh di companion object sebagai const val. Total: semua.sumOf { it.luas() }, dicetak dengan format \"%-16s%8.2f\" yang sama.",
         ],
         "solution": """interface Bangun {
     val nama: String
@@ -440,10 +430,9 @@ fun main() {
             "Teks masukan dicetak rata kanan selebar 5.",
         ],
         "hints": [
-            "toIntOrNull() mengembalikan null alih-alih melempar.",
-            "when atas sealed class TIDAK butuh else kalau semua turunan ditulis.",
-            "Di rataRata, pakai for lalu return lebih awal saat menemukan Salah.",
-            "padStart(5) meratakan ke kanan.",
+            "Sealed class cocok untuk hasil yang bisa sukses atau gagal, dan when atasnya diperiksa kelengkapannya oleh compiler. Baca ulang materi \"Data Class, Object & Sealed\" dan \"Exception & Penanganan Galat\".",
+            "Di parseNilai: trim, coba ubah jadi Int tanpa melempar exception, kembalikan Salah kalau gagal, lalu cek rentangnya. Di rataRata: telusuri tiap teks dengan for dan langsung return Salah pertama yang ditemukan; kalau semua Ok, hitung rata-ratanya sebagai Double.",
+            "toIntOrNull() menghasilkan null alih-alih melempar, jadi bisa disambung ?: return Hasil.Salah(...). when atas Hasil nggak butuh else kalau Ok dan Salah sudah ditulis. Teks masukan rata kanan selebar 5: padStart(5).",
         ],
         "solution": """sealed class Hasil<out T> {
     data class Ok<T>(val nilai: T) : Hasil<T>()
@@ -525,11 +514,9 @@ fun main() {
             "kanan 2, harga rata kanan 6, subtotal rata kanan 8.",
         ],
         "hints": [
-            "Properti terhitung: val subtotal: Int get() = jumlah * harga",
-            "Dua kunci urutan: sortedWith(compareByDescending<T> { it.subtotal }",
-            ".thenBy { it.barang })",
-            "groupBy { it.kategori }.toSortedMap() untuk rekap terurut.",
-            "maxBy { it.subtotal } mencari yang terbesar.",
+            "Ini gabungan properti terhitung, pengurutan dua kunci, dan pengelompokan. Baca ulang materi \"Class, Properti & Constructor\" dan \"Koleksi\".",
+            "Beri Transaksi properti subtotal yang dihitung dari jumlah dan harga lewat getter. Urutkan dengan subtotal menurun lalu nama barang menaik. Untuk rekap, kelompokkan per kategori dan urutkan kuncinya; untuk termahal, cari transaksi dengan subtotal terbesar.",
+            "Properti terhitung memakai get() = ... sesudah tipenya. Dua kunci: compareByDescending<Transaksi> { it.subtotal }.thenBy { it.barang }. Rekap terurut: groupBy { it.kategori }.toSortedMap(). Terbesar: maxBy { it.subtotal }.",
         ],
         "solution": """data class Transaksi(
     val barang: String,
@@ -602,10 +589,9 @@ fun main() {
             "  kosong  : ''",
         ],
         "hints": [
-            "apply menjalankan blok dengan `this` lalu mengembalikan objeknya.",
-            "also menjalankan blok dengan `it` lalu mengembalikan objeknya.",
-            "Extension property wajib punya getter: val X.y: T get() = ...",
-            "Extension pada tipe nullable: fun String?.f() — di dalamnya this boleh null.",
+            "Scope function seperti apply, also, let, dan run cuma beda di dua hal: penerimanya this atau it, dan yang dikembalikan objeknya atau hasil lambda. Baca ulang materi \"Lambda & Higher-Order Function\" dan \"Generic & Extension Lanjut\".",
+            "apply cocok untuk menyetel properti lalu tetap memegang objeknya. also menyelipkan println di tengah rantai filter-map tanpa memutusnya. let dipanggil lewat ?. supaya cuma jalan kalau nilainya bukan null. run menghitung sesuatu dari objek dengan this.",
+            "Extension property wajib punya getter: val List<Int>.ringkas: String get() = ... . Extension pada tipe nullable ditulis fun String?.atauKosong(), dan di dalamnya this boleh null, jadi this ?: \"\" sudah cukup.",
         ],
         "solution": """class Setelan {
     var tema: String = "terang"
@@ -684,10 +670,9 @@ fun main() {
             "  hanya String : [dua, empat]",
         ],
         "hints": [
-            "reified HANYA bisa dipakai bersama inline.",
-            "filterIsInstance<T>() menyaring berdasarkan tipe.",
-            "removeFirstOrNull() mengambil dari depan dengan aman.",
-            "maxOrNull() mengembalikan null untuk daftar kosong.",
+            "Parameter tipe T membuat satu class bekerja untuk Int maupun String. Baca ulang materi \"Generic & Extension Lanjut\", bagian batas tipe (T : Comparable<T>) dan reified.",
+            "Simpan isi Kotak di MutableList privat; jumlah dan penuh dihitung dari ukurannya. masuk menolak kalau penuh, keluar mengambil dari depan dan aman untuk list kosong. terbesar cukup memanggil fungsi max yang mengembalikan null untuk daftar kosong.",
+            "reified cuma bisa dipakai bersama inline. Di dalam saringTipe, filterIsInstance<T>() menyaring berdasarkan tipe. removeFirstOrNull() dan maxOrNull() menangani kasus kosong tanpa exception.",
         ],
         "solution": """class Kotak<T>(private val muat: Int) {
     private val isi = mutableListOf<T>()
@@ -766,10 +751,9 @@ fun main() {
             "Keadaan rata kiri 10, aksi rata kiri 11.",
         ],
         "hints": [
-            "when atas PASANGAN: when (k to a) { Keadaan.DRAF to Aksi.KIRIM -> ... }",
-            "Cabang else mengembalikan null untuk transisi yang tidak sah.",
-            "Simpan keadaan di `var` dan hanya perbarui kalau hasilnya bukan null.",
-            "enum punya properti .name yang berisi namanya sebagai String.",
+            "Enum memberi nama untuk tiap keadaan dan aksi, dan when bisa memetakan pasangan keadaan-aksi ke keadaan berikutnya. Baca ulang materi \"Kendali Alur\" dan \"Data Class, Object & Sealed\".",
+            "lanjut mengembalikan Keadaan? : keadaan baru untuk lima transisi yang sah, null untuk sisanya. Di main, simpan keadaan di var, panggil lanjut untuk tiap aksi, dan perbarui var itu cuma kalau hasilnya bukan null. Cetak keadaan sebelum diperbarui di kolom pertama.",
+            "when atas pasangan: when (k to a) { Keadaan.DRAF to Aksi.KIRIM -> Keadaan.DITINJAU ... else -> null }. Nama enum sebagai teks: .name. Kolom rata kiri: \"%-10s+ %-11s-> %s\".",
         ],
         "solution": """enum class Keadaan { DRAF, DITINJAU, DISETUJUI, DITOLAK, TERBIT }
 enum class Aksi { KIRIM, SETUJUI, TOLAK, TERBITKAN, TARIK }
@@ -860,13 +844,9 @@ fun main() {
             "  stok menipis (<10): B02 Adaptor (4)",
         ],
         "hints": [
-            "linkedMapOf mempertahankan urutan penyisipan, tapi semua()",
-            "tetap WAJIB mengurutkan supaya keluarannya bisa diuji.",
-            "data class tidak bisa diubah: perbarui stok dengan copy(stok = baru).",
-            "when atas sealed class TIDAK butuh else, dan compiler memeriksa "
-            "kelengkapannya — itu seluruh gunanya.",
-            "Untuk label aksi: gerak.name.lowercase().replaceFirstChar",
-            "{ it.uppercase() } menghasilkan \"Masuk\" dari MASUK.",
+            "Proyek ini menyatukan data class, enum, sealed class, dan pemisahan lapisan. Baca ulang materi \"Proyek Utuh: Menggabungkan Semuanya\" dan \"Data Class, Object & Sealed\".",
+            "Gudang menyimpan Barang di Map berkunci kode (linkedMapOf mempertahankan urutan penyisipan). Di catat, periksa berurutan: kode dikenal, jumlah lebih dari 0, lalu stok cukup; tiap kegagalan langsung return Salah. semua() tetap wajib mengurutkan menurut kode supaya keluarannya bisa diuji.",
+            "data class nggak bisa diubah, jadi perbarui stok dengan copy(stok = baru). when atas Hasil nggak butuh else, dan compiler mengecek kelengkapannya. Label aksi: gerak.name.lowercase().replaceFirstChar { it.uppercase() } menghasilkan \"Masuk\" dari MASUK.",
         ],
         "solution": """// ---------------------------------------------------------------- MODEL
 data class Barang(

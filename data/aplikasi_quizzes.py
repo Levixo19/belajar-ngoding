@@ -15,9 +15,9 @@ APLIKASI_QUIZZES = [
                 "q": "Aturan 'stok tidak boleh negatif' paling tepat ditaruh di lapisan mana?",
                 "options": ["Controller", "Service", "JSP", "DAO"],
                 "answer": 1,
-                "explanation": "Service adalah tempat aturan bisnis. Ditaruh di sana, "
-                               "aturan itu berlaku untuk SEMUA jalur yang mengurangi stok "
-                               "tanpa perlu ditulis ulang.",
+                "explanation": "Service adalah tempat aturan bisnis. Ditaruh di sana, aturan itu "
+                               "berlaku untuk semua jalur yang mengurangi stok tanpa perlu "
+                               "ditulis ulang.",
             },
             {
                 "q": "Lapisan mana yang boleh berisi perintah SQL?",
@@ -30,27 +30,29 @@ APLIKASI_QUIZZES = [
             {
                 "q": "Ciri controller yang sehat adalah?",
                 "options": [
-                    "Tebal, berisi semua keputusan",
-                    "Tipis, cuma menghubungkan HTTP dengan service",
-                    "Berisi query database langsung",
-                    "Menyimpan data di variabel static",
+                    "Tebal, karena semua keputusan bisnis ditulis di sana",
+                    "Tipis, cuma menerjemahkan HTTP lalu panggil service",
+                    "Langsung memanggil DAO supaya alurnya lebih ringkas",
+                    "Menyimpan data pengguna di field static supaya cepat",
                 ],
                 "answer": 1,
-                "explanation": "Controller cuma menerjemahkan HTTP ke Java dan sebaliknya. "
-                               "Kalau ada 'if' rumit di sana, biasanya salah tempat.",
+                "explanation": "Controller cuma menerjemahkan HTTP ke Java dan sebaliknya, lalu "
+                               "menyerahkan keputusannya ke service. Kalau ada 'if' rumit atau "
+                               "panggilan DAO langsung di sana, biasanya itu salah tempat.",
             },
             {
                 "q": "Kenapa DAO dibuat sebagai interface lebih dulu?",
                 "options": [
-                    "Supaya lebih cepat dijalankan",
-                    "Karena Java mewajibkannya",
-                    "Supaya service tidak terikat pada satu cara penyimpanan",
-                    "Supaya file-nya lebih sedikit",
+                    "Supaya query-nya dijalankan lebih cepat oleh database",
+                    "Karena Spring cuma bisa menyuntikkan sebuah interface",
+                    "Supaya service tak terikat pada satu cara menyimpan",
+                    "Supaya satu DAO bisa melayani semua tabel sekaligus",
                 ],
                 "answer": 2,
-                "explanation": "Service cukup tahu APA yang bisa dilakukan, bukan CARANYA. "
-                               "Implementasinya bisa diganti dari Oracle ke daftar di memori "
-                               "untuk pengujian tanpa mengubah service.",
+                "explanation": "Service cukup tahu apa yang bisa dilakukan DAO, nggak perlu tahu "
+                               "caranya. Implementasinya bisa diganti dari Oracle ke daftar di memori "
+                               "untuk pengujian tanpa mengubah service. Spring sendiri bisa "
+                               "menyuntikkan class biasa; interface di sini dipilih demi desain.",
             },
             {
                 "q": "Method isStokMenipis() yang cuma membandingkan field milik "
@@ -63,15 +65,16 @@ APLIKASI_QUIZZES = [
             {
                 "q": "Apa akibatnya kalau aturan bisnis ditulis di tiga controller berbeda?",
                 "options": [
-                    "Aplikasi jadi lebih cepat",
-                    "Suatu hari satu di antaranya lupa diperbarui dan jadi celah",
-                    "Tidak ada bedanya",
-                    "Java akan menolak mengompilasi",
+                    "Aman, asalkan ketiga salinannya ditulis persis sama",
+                    "Saat aturan berubah, satu salinan bisa terlupa diubah",
+                    "Aplikasi melambat karena aturan diperiksa tiga kali",
+                    "Spring menolak start karena ada bean yang kembar",
                 ],
                 "answer": 1,
-                "explanation": "Duplikasi aturan selalu berakhir dengan salinan yang "
-                               "tertinggal saat aturannya berubah - dan celah itu masuk "
-                               "lewat jalur yang terlupakan.",
+                "explanation": "Duplikasi aturan hampir selalu berakhir dengan salinan yang "
+                               "tertinggal waktu aturannya berubah, dan celahnya masuk lewat jalur "
+                               "yang terlupa. Hari ini ketiganya mungkin sama persis; masalahnya "
+                               "muncul belakangan.",
             },
         ],
     },
@@ -96,19 +99,20 @@ APLIKASI_QUIZZES = [
                 "options": ["Satu ke satu", "Satu ke banyak", "Banyak ke banyak", "Tidak berhubungan"],
                 "answer": 2,
                 "explanation": "Banyak ke banyak, dan penyelesaiannya tabel penghubung di "
-                               "tengah - di B-iFAMS namanya request_item.",
+                               "tengah. Di B-iFAMS namanya request_item.",
             },
             {
                 "q": "Nama item ikut disimpan di tabel mutasi. Apa masalahnya?",
                 "options": [
-                    "Tidak ada masalah",
-                    "Mengganti nama item harus memperbarui ratusan baris mutasi",
-                    "Databasenya jadi lebih cepat",
-                    "Mutasi tidak bisa diurutkan",
+                    "Tidak masalah, karena nama item jarang sekali diganti",
+                    "Ganti nama item berarti mengubah ratusan baris mutasi",
+                    "Mutasi lama ikut terhapus saat nama item diganti",
+                    "Mutasi jadi tidak bisa diurutkan menurut tanggalnya",
                 ],
                 "answer": 1,
-                "explanation": "Data yang sama disimpan di dua tempat selalu berakhir "
-                               "berbeda. Mutasi cukup menyimpan item_id.",
+                "explanation": "Data yang sama disimpan di dua tempat lama-lama pasti berbeda: begitu "
+                               "nama item diganti, ratusan baris mutasi harus ikut diperbarui, dan "
+                               "yang terlewat jadi salah. Mutasi cukup menyimpan item_id.",
             },
             {
                 "q": "Cara paling praktis menemukan tabel apa saja yang dibutuhkan?",
@@ -126,14 +130,16 @@ APLIKASI_QUIZZES = [
             {
                 "q": "Kenapa model data sebaiknya benar sejak awal?",
                 "options": [
-                    "Karena tidak bisa diubah sama sekali",
-                    "Karena mengubahnya setelah ada data asli itu berat dan berisiko",
-                    "Karena Hibernate melarangnya",
-                    "Karena tidak berpengaruh pada kode",
+                    "Karena skema tabel tidak bisa diubah sama sekali",
+                    "Karena mengubahnya setelah ada data asli itu berisiko",
+                    "Karena Hibernate melarang tabel diubah setelah dibuat",
+                    "Karena tabel baru tidak bisa ditambah belakangan",
                 ],
                 "answer": 1,
-                "explanation": "Seperti mengganti pondasi rumah yang sudah ditinggali. "
-                               "Bisa, tapi mahal dan rawan merusak.",
+                "explanation": "Mirip mengganti pondasi rumah yang sudah ditinggali: bisa, tapi mahal "
+                               "dan rawan merusak, karena data lama harus dipindah dan kode yang "
+                               "membacanya ikut berubah. Skemanya tetap bisa diubah, cuma ongkosnya "
+                               "naik begitu ada data asli.",
             },
         ],
     },
@@ -143,28 +149,29 @@ APLIKASI_QUIZZES = [
             {
                 "q": "Kenapa aksi menghapus data tidak boleh dibuat sebagai GET?",
                 "options": [
-                    "Karena GET lebih lambat",
-                    "Karena browser bebas memanggil GET kapan saja, termasuk saat refresh",
-                    "Karena GET tidak bisa mengirim id",
-                    "Karena GET tidak didukung Spring",
+                    "Karena GET lebih lambat daripada POST di Spring",
+                    "Browser bebas mengulang GET, misalnya saat refresh",
+                    "Karena alamat GET tidak bisa membawa id datanya",
+                    "Karena Spring tidak mengizinkan GET mengubah data",
                 ],
                 "answer": 1,
-                "explanation": "GET harus aman: dipanggil berkali-kali tidak mengubah apa "
-                               "pun. Menghapus lewat GET berarti satu refresh bisa "
-                               "menghapus dua kali.",
+                "explanation": "GET harus aman: dipanggil berkali-kali nggak boleh mengubah apa pun. "
+                               "Browser bebas mengulang GET, misalnya saat refresh, jadi menghapus "
+                               "lewat GET bisa menghapus dua kali. Spring sendiri nggak melarangnya; "
+                               "kamu yang harus memilih POST.",
             },
             {
                 "q": "Apa gunanya pola POST-Redirect-GET?",
                 "options": [
-                    "Mempercepat halaman",
-                    "Mencegah formulir terkirim dua kali saat pengguna me-refresh",
-                    "Menghemat memori server",
-                    "Menyembunyikan URL",
+                    "Mempercepat halaman karena hasilnya disimpan di cache",
+                    "Mencegah formulir terkirim ulang saat halaman di-refresh",
+                    "Menyembunyikan isi formulir dari alamat di browser",
+                    "Menghemat memori server karena sesinya langsung dihapus",
                 ],
                 "answer": 1,
-                "explanation": "Tanpa redirect, refresh setelah menyimpan mengirim ulang "
-                               "formulir yang sama - dan stok berkurang dua kali dari satu "
-                               "pencatatan.",
+                "explanation": "Tanpa redirect, refresh sesudah menyimpan mengirim ulang formulir yang "
+                               "sama, dan stok berkurang dua kali dari satu pencatatan. Redirect "
+                               "membuat halaman terakhir jadi GET biasa yang aman di-refresh.",
             },
             {
                 "q": "Mana penulisan yang BENAR di dalam JSP?",
@@ -175,21 +182,22 @@ APLIKASI_QUIZZES = [
                     "Keduanya terlarang",
                 ],
                 "answer": 1,
-                "explanation": "Yang pertama MEMUTUSKAN di tampilan, dan keputusan itu akan "
-                               "berbeda dengan yang di service begitu aturannya berubah. "
-                               "Yang kedua cuma bertanya pada objek.",
+                "explanation": "Yang pertama memutuskan di tampilan, dan keputusan itu bakal "
+                               "berbeda dengan yang di service begitu aturannya berubah. Yang "
+                               "kedua cuma bertanya pada objek.",
             },
             {
                 "q": "Apa masalah utama yang diselesaikan Apache Tiles?",
                 "options": [
-                    "Mempercepat query database",
-                    "Menghindari menyalin header dan menu ke lima belas halaman",
-                    "Mengamankan formulir",
-                    "Mengompilasi Java lebih cepat",
+                    "Mempercepat query database yang dipanggil halaman",
+                    "Menghindari menyalin header dan menu ke tiap halaman",
+                    "Mengamankan formulir dari serangan CSRF otomatis",
+                    "Mengubah JSP jadi JSON supaya bisa dipakai REST",
                 ],
                 "answer": 1,
-                "explanation": "Tiles memisahkan rangka dari isi. Ganti menu sekali di "
-                               "layout, semua halaman ikut berubah.",
+                "explanation": "Tiles memisahkan rangka halaman dari isinya. Header dan menu ditulis "
+                               "sekali di layout, jadi mengganti menu cukup di satu tempat dan semua "
+                               "halaman ikut berubah.",
             },
             {
                 "q": "Dalam pola REST, alamat mana yang paling tepat untuk melihat detail "
@@ -219,40 +227,43 @@ APLIKASI_QUIZZES = [
             {
                 "q": "Menyembunyikan tombol 'Hapus' dari pengguna non-admin termasuk?",
                 "options": [
-                    "Pengamanan yang cukup",
-                    "Kenyamanan tampilan, BUKAN pengamanan",
-                    "Bentuk autentikasi",
-                    "Cara mempercepat halaman",
+                    "Pengamanan yang cukup karena tombolnya tak terlihat",
+                    "Kenyamanan tampilan, belum termasuk pengamanan",
+                    "Bentuk autentikasi karena memeriksa siapa yang login",
+                    "Otorisasi di sisi server yang sudah lengkap",
                 ],
                 "answer": 1,
-                "explanation": "Tombol yang disembunyikan tetap bisa dicapai dengan "
-                               "mengetik alamatnya langsung. Pengamanan harus di server.",
+                "explanation": "Tombol yang disembunyikan tetap bisa dicapai dengan mengetik "
+                               "alamatnya langsung. Menyembunyikan tombol cuma bikin tampilan rapi; "
+                               "pengamanannya harus di server.",
             },
             {
                 "q": "Di B-iFAMS, semua @PreAuthorize sudah ditulis benar tapi tidak pernah "
                      "aktif. Apa penyebabnya?",
                 "options": [
-                    "Salah ketik nama peran",
-                    "Konfigurasi penghidupnya ditaruh di wadah Spring yang berbeda dari controller",
-                    "Versi Java terlalu lama",
-                    "Databasenya tidak mendukung",
+                    "Pengguna di database belum diberi peran apa pun",
+                    "Penghidupnya ada di wadah Spring lain dari controller",
+                    "Versi Java terlalu lama untuk membaca anotasi itu",
+                    "Anotasinya harus ditaruh di JSP, bukan di controller",
                 ],
                 "answer": 1,
-                "explanation": "Mekanisme penghidupnya hanya bekerja pada penghuni wadah "
-                               "yang sama. Controller ada di wadah web, konfigurasinya di "
-                               "wadah utama - jadi anotasinya diam saja.",
+                "explanation": "Mekanisme penghidupnya cuma bekerja pada penghuni wadah yang sama. "
+                               "Controller ada di wadah web, konfigurasinya di wadah utama, jadi "
+                               "anotasinya diam saja tanpa error. Kalau masalahnya peran yang kosong, "
+                               "yang terjadi justru semua orang ditolak.",
             },
             {
                 "q": "Kenapa menguji hak akses sebagai admin tidak membuktikan apa pun?",
                 "options": [
-                    "Karena admin lebih lambat",
-                    "Karena admin memang boleh segalanya, jadi semua uji akan lolos",
-                    "Karena admin tidak punya sesi",
-                    "Karena admin tidak tercatat di log",
+                    "Karena admin memang boleh segalanya, jadi uji pasti lolos",
+                    "Karena sesi admin tidak diperiksa oleh Spring Security",
+                    "Karena akun admin tidak tercatat di log akses",
+                    "Karena peran admin dibuat ulang setiap kali login",
                 ],
                 "answer": 1,
-                "explanation": "Bug hak akses hanya terlihat kalau diuji dari akun berperan "
-                               "rendah yang mencoba menembus endpoint admin.",
+                "explanation": "Admin memang boleh segalanya, jadi uji dari akun admin selalu lolos "
+                               "dan nggak menemukan apa pun. Bug hak akses cuma terlihat kalau kamu "
+                               "mencoba menembus endpoint admin dari akun berperan rendah.",
             },
             {
                 "q": "hibernate.hbm2ddl.auto bernilai apa yang aman untuk produksi?",
@@ -266,28 +277,28 @@ APLIKASI_QUIZZES = [
                 "q": "Sebelum menyentuh data, cara memastikan kamu terhubung ke database "
                      "yang benar adalah?",
                 "options": [
-                    "Melihat nama kontainer atau nama servernya",
-                    "Membaca konfigurasi aplikasi yang sedang berjalan, lalu mencari satu "
-                    "baris yang kamu tahu pasti ada",
-                    "Mempercayai dokumentasi",
-                    "Menebak dari nama tabel",
+                    "Melihat nama kontainer atau server tempat database itu jalan",
+                    "Baca konfigurasi aplikasi yang jalan, lalu cari baris yang pasti ada",
+                    "Mencocokkan nama tabelnya dengan yang tertulis di dokumentasi",
+                    "Memastikan jumlah tabelnya sama dengan database di laptopmu",
                 ],
                 "answer": 1,
-                "explanation": "Di B-iFAMS ada database sisa dengan nama tabel yang sama "
-                               "persis tapi kosong. Nama menipu; isi tidak.",
+                "explanation": "Di B-iFAMS ada database sisa dengan nama tabel yang sama persis tapi "
+                               "kosong. Nama kontainer, nama tabel, dan dokumentasi bisa menipu; satu "
+                               "baris data yang kamu tahu pasti ada nggak bisa.",
             },
             {
                 "q": "Langkah mana yang paling sering dilewatkan padahal paling menyelamatkan "
                      "saat deploy?",
                 "options": [
-                    "Menulis catatan rilis",
-                    "Mencadangkan versi yang sedang berjalan sebelum ditimpa",
-                    "Mengganti nomor versi",
-                    "Menghapus log lama",
+                    "Menulis catatan rilis untuk tim dan pengguna",
+                    "Mencadangkan versi yang jalan sebelum ditimpa",
+                    "Menaikkan nomor versi di berkas konfigurasi build",
+                    "Menghapus log lama supaya disk server tetap lega",
                 ],
                 "answer": 1,
-                "explanation": "Dengan cadangan, kamu bisa mundur dalam hitungan detik "
-                               "alih-alih memperbaiki dalam panik sementara pengguna menunggu.",
+                "explanation": "Dengan cadangan, kamu bisa mundur dalam hitungan detik, bukan "
+                               "memperbaiki sambil panik sementara pengguna menunggu.",
             },
         ],
     },
@@ -303,7 +314,13 @@ APLIKASI_QUIZZES = [
                     "@Service membuat seluruh field kelasnya terisi sendiri",
                 ],
                 "answer": 1,
-                "explanation": "Spring membuat bean-nya dan mencocokkan TIPE: ia mencari bean bertipe ItemDao di wadah, menemukan ItemDaoImpl, lalu menyerahkannya lewat constructor. Karena itu memanggil 'new RequestService()' sendiri di luar Spring memang menghasilkan NullPointerException -- tidak ada yang mengisinya di situ. Refleksi dipakai pada bentuk lama @Autowired di field, bukan pada injeksi lewat constructor.",
+                "explanation": "Spring membuat bean-nya dan mencocokkan tipe: ia mencari bean "
+                               "bertipe ItemDao di wadah, menemukan ItemDaoImpl, lalu "
+                               "menyerahkannya lewat constructor. Karena itu memanggil 'new "
+                               "RequestService()' sendiri di luar Spring memang menghasilkan "
+                               "NullPointerException, sebab nggak ada yang mengisinya di situ. "
+                               "Refleksi dipakai pada bentuk lama @Autowired di field, bukan "
+                               "pada injeksi lewat constructor.",
             },
             {
                 "q": "Apa bedanya @Service dan @Component di mata Spring?",
@@ -314,7 +331,12 @@ APLIKASI_QUIZZES = [
                     "@Service cuma boleh dipakai pada kelas yang punya interface",
                 ],
                 "answer": 1,
-                "explanation": "@Service, @Repository, dan @Controller sebenarnya @Component juga, cuma diberi nama sesuai lapisannya. Buat Spring keduanya nyaris identik; bedanya buat pembaca -- sekali lihat baris pertama sebuah kelas, kamu tahu ia duduk di lapisan mana. Yang sering dikira: bahwa @Service menyalakan transaksi. Itu pekerjaan @Transactional.",
+                "explanation": "@Service, @Repository, dan @Controller sebenarnya @Component "
+                               "juga, cuma diberi nama sesuai lapisannya. Buat Spring keduanya "
+                               "nyaris identik; bedanya buat pembaca: sekali lihat baris pertama "
+                               "sebuah kelas, kamu tahu ia duduk di lapisan mana. Yang sering "
+                               "dikira: @Service menyalakan transaksi. Itu pekerjaan "
+                               "@Transactional.",
             },
             {
                 "q": "Kenapa injeksi lewat constructor lebih disukai daripada @Autowired di field?",
@@ -325,7 +347,12 @@ APLIKASI_QUIZZES = [
                     "Karena injeksi constructor tidak membutuhkan wadah Spring",
                 ],
                 "answer": 2,
-                "explanation": "Dengan constructor, compiler MEMAKSA field terisi sebelum objeknya selesai dibuat -- jadi ia boleh final dan secara struktur mustahil null. @Autowired di field mengisi SESUDAH objeknya ada, sehingga final tidak mungkin dipakai. Sejak Spring 4.3 constructor tunggal memang tidak perlu ditandai apa pun, tapi @Autowired sendiri tidak dihapus.",
+                "explanation": "Dengan constructor, compiler memaksa field terisi sebelum "
+                               "objeknya selesai dibuat, jadi ia boleh final dan secara struktur "
+                               "mustahil null. @Autowired di field mengisinya sesudah objeknya "
+                               "ada, sehingga final nggak mungkin dipakai. Sejak Spring 4.3 "
+                               "constructor tunggal memang nggak perlu ditandai apa pun, tapi "
+                               "@Autowired sendiri nggak dihapus.",
             },
             {
                 "q": "Di Spring MVC gaya lama ada dua wadah: web (anak) dan root (induk). Mana yang TIDAK bisa terjadi?",
@@ -336,7 +363,12 @@ APLIKASI_QUIZZES = [
                     "Wadah root berisi DataSource dan PasswordEncoder",
                 ],
                 "answer": 0,
-                "explanation": "Panahnya SEARAH: anak boleh melihat isi induknya, tidak sebaliknya. Penghuni wadah root -- @Service, @Repository, DataSource -- tidak tahu-menahu soal isi wadah web. Tiga pilihan lain justru hal yang memang terjadi. Inilah juga sebabnya konfigurasi keamanan yang ditaruh di wadah yang salah membuat anotasi hak akses diam saja tanpa error.",
+                "explanation": "Panahnya searah: anak boleh melihat isi induknya, induk nggak "
+                               "bisa melihat isi anaknya. Penghuni wadah root (@Service, "
+                               "@Repository, DataSource) nggak tahu-menahu soal isi wadah web. "
+                               "Tiga pilihan lain justru hal yang memang terjadi. Ini juga "
+                               "sebabnya konfigurasi keamanan yang ditaruh di wadah yang salah "
+                               "membuat anotasi hak akses diam saja tanpa error.",
             },
             {
                 "q": "'Stok tidak boleh negatif' termasuk validasi bentuk atau aturan bisnis?",
@@ -358,7 +390,12 @@ APLIKASI_QUIZZES = [
                     "Apakah kesalahannya terjadi sebelum atau sesudah login",
                 ],
                 "answer": 1,
-                "explanation": "4xx berarti kesalahan ada di sisi PENGIRIM: mengulang permintaan yang sama persis akan gagal lagi, datanya dulu yang harus dibetulkan. 5xx berarti permintaannya wajar tapi server yang gagal memenuhinya. Pembagian ini bukan filosofi -- alat pemantau menghitung 5xx dan membangunkan orang tengah malam, sedangkan 4xx tidak membangunkan siapa-siapa.",
+                "explanation": "4xx berarti kesalahannya di sisi pengirim: mengulang permintaan "
+                               "yang sama persis akan gagal lagi, datanya dulu yang harus "
+                               "dibetulkan. 5xx berarti permintaannya wajar tapi server yang "
+                               "gagal memenuhinya. Pembagian ini punya akibat nyata: alat "
+                               "pemantau menghitung 5xx dan membangunkan orang tengah malam, "
+                               "sedangkan 4xx nggak membangunkan siapa-siapa.",
             },
             {
                 "q": "Controller menangkap exception lalu 'return \"error\";' untuk menampilkan halaman kesalahan. Apa masalahnya?",
@@ -369,7 +406,12 @@ APLIKASI_QUIZZES = [
                     "Spring akan mencari controller lain bernama 'error' dulu",
                 ],
                 "answer": 2,
-                "explanation": "Halamannya memang memberi tahu manusia, tapi ANGKA statusnya tetap 200 OK -- dan yang dibaca program adalah angkanya. Alat pemantau, aplikasi lain yang memanggilmu, dan access log semuanya menyimpulkan permintaan itu berhasil. Kerusakan yang dibalas 200 tidak pernah muncul di grafik mana pun. Log-nya sendiri masih bisa terisi; yang hilang statusnya.",
+                "explanation": "Halamannya memang memberi tahu manusia, tapi angka statusnya "
+                               "tetap 200 OK, dan yang dibaca program adalah angkanya. Alat "
+                               "pemantau, aplikasi lain yang memanggilmu, dan access log "
+                               "semuanya menyimpulkan permintaan itu berhasil. Kerusakan yang "
+                               "dibalas 200 nggak pernah muncul di grafik mana pun. Log-nya "
+                               "sendiri masih bisa terisi; yang hilang statusnya.",
             },
             {
                 "q": "Pengguna sudah login, tapi perannya tidak berhak membuka halaman itu. Kode status yang tepat?",
@@ -380,7 +422,12 @@ APLIKASI_QUIZZES = [
                     "405 Method Not Allowed",
                 ],
                 "answer": 1,
-                "explanation": "401 berarti kamu BELUM dikenali -- belum login, atau sesimu kedaluwarsa. 403 berarti kamu sudah dikenali tapi perannya tidak berhak. Namanya memang menyesatkan: 'Unauthorized' terdengar seperti soal hak akses, padahal ia soal identitas. 404 dipakai kalau datanya memang tidak ada, 405 kalau alamatnya benar tapi methodnya salah.",
+                "explanation": "401 berarti kamu belum dikenali: belum login, atau sesimu "
+                               "kedaluwarsa. 403 berarti kamu sudah dikenali tapi perannya nggak "
+                               "berhak. Namanya memang menyesatkan: 'Unauthorized' terdengar "
+                               "seperti soal hak akses, padahal ia soal identitas. 404 dipakai "
+                               "kalau datanya memang nggak ada, 405 kalau alamatnya benar tapi "
+                               "methodnya salah.",
             },
         ],
     },

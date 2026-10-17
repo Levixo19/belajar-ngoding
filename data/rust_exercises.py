@@ -9,9 +9,8 @@ RUST_EXERCISES = [
             "  Rust menjamin keamanan memori saat kompilasi.",
         ],
         "hints": [
-            "Titik masuk program Rust adalah fn main() { ... }",
-            "println! adalah MAKRO, jadi ada tanda seru sesudah namanya.",
-            "Setiap pernyataan diakhiri titik koma.",
+            "Program Rust dimulai dari satu fungsi utama, dan teks dicetak lewat makro. Baca ulang materi \"Pengenalan Rust & Instalasi\".",
+            "Tulis fn main() dengan tiga pemanggilan println!, satu untuk tiap baris. Tanda seru menandakan makro, dan setiap pernyataan diakhiri titik koma.",
         ],
         "solution": """fn main() {
     println!("Halo, namaku Andi!");
@@ -33,10 +32,9 @@ RUST_EXERCISES = [
             "  17 / 5 = 3.40 (desimal)",
         ],
         "hints": [
-            "Pembagian dua bilangan bulat memotong sisanya.",
-            "Rust tidak mengonversi tipe otomatis: tulis a as f64.",
-            "Dua desimal: {:.2} di dalam println!.",
-            "Menyisipkan variabel langsung: println!(\"{a} + {b}\").",
+            "Yang diuji: pembagian bilangan bulat dan konversi tipe yang harus ditulis sendiri. Baca ulang materi \"Variabel, Mutabilitas & Tipe Data\".",
+            "a / b dengan dua bilangan bulat memotong sisanya, jadi 17 / 5 hasilnya 3. Untuk baris desimal, ubah keduanya ke f64 dengan as, lalu cetak dua angka di belakang koma.",
+            "Nama variabel boleh langsung di dalam kurung kurawal, misalnya \"{a} + {b} = {}\". Format dua desimal: {:.2}.",
         ],
         "solution": """fn main() {
     let a = 17;
@@ -67,10 +65,9 @@ RUST_EXERCISES = [
             "  Kelvin     : 298.15",
         ],
         "hints": [
-            "use std::io; lalu io::stdin().read_line(&mut baris)",
-            "read_line menyertakan karakter baris baru: pakai .trim() sebelum parse.",
-            "parse() perlu tahu tipenya: let c: f64 = baris.trim().parse().unwrap();",
-            "Jangan mencetak apa pun sebelum membaca input.",
+            "Kamu perlu membaca satu baris dari input, membersihkannya, lalu mengubahnya jadi angka pecahan. Baca ulang materi \"Membaca Masukan & Berkas\".",
+            "Siapkan String kosong yang mutable, isi lewat read_line, buang karakter pindah baris dengan trim, lalu parse ke f64. Tulis rumusnya dengan literal pecahan (9.0, 5.0, 32.0), karena f64 nggak bisa dicampur bilangan bulat. Jangan cetak apa pun sebelum membaca input.",
+            "parse perlu tahu tipe tujuannya, dan anotasi di variabel sudah cukup: let c: f64 = baris.trim().parse().unwrap();",
         ],
         "stdin": "25\n",
         "solution": """use std::io;
@@ -108,10 +105,9 @@ fn main() {
             "  Status: Lulus",
         ],
         "hints": [
-            "match dengan pola rentang: 85..=100 => 'A'",
-            "Rentang inklusif memakai ..= sedangkan .. mengecualikan batas atas.",
-            "match adalah ekspresi, jadi hasilnya bisa langsung ditugaskan.",
-            "Untuk status, if juga ekspresi: let s = if n >= 75 { .. } else { .. };",
+            "match di Rust bisa mencocokkan rentang angka dan menghasilkan nilai. Baca ulang materi \"Pattern Matching: match & if let\" dan \"Percabangan & Perulangan\".",
+            "Baca nilai sebagai u32, lalu isi grade dari sebuah match dengan satu cabang per rentang dan _ untuk sisanya. Status cukup if-else yang juga menghasilkan nilai.",
+            "Rentang inklusif ditulis 85..=100 => 'A'. Versi .. tanpa = nggak memasukkan batas atasnya.",
         ],
         "stdin_list": ["92\n", "78\n", "65\n", "45\n", "12\n"],
         "solution": """use std::io;
@@ -151,10 +147,9 @@ fn main() {
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "Dua perulangan bersarang: for b in 1..=5 { for k in 1..=5 { ... } }",
-            "print! mencetak tanpa pindah baris; println!() kosong hanya pindah baris.",
-            "Rata kanan selebar 2: {:2} di dalam format.",
-            "Pemisah ditulis sesudah tiap sel kecuali yang terakhir.",
+            "Tabel butuh perulangan bersarang dan format lebar tetap. Baca ulang materi \"Percabangan & Perulangan\".",
+            "Perulangan luar untuk baris, dalam untuk kolom. Awali tiap baris dengan dua spasi, cetak sel tanpa pindah baris, beri tiga spasi sesudah setiap sel kecuali yang kelima, lalu pindah baris.",
+            "print! nggak pindah baris, println!() kosong cuma pindah baris. Rata kanan selebar 2: {:2}, misalnya untuk hasil b * k.",
         ],
         "solution": """fn main() {
     for b in 1..=5 {
@@ -187,10 +182,9 @@ fn main() {
             "  Di atas rata-rata: 4",
         ],
         "hints": [
-            "{:?} mencetak Vec dalam bentuk [a, b, c].",
-            "Salin dulu sebelum mengurutkan kalau yang asli masih dipakai: .to_vec()",
-            "iter().sum::<i32>(), iter().max(), iter().min() mengembalikan Option.",
-            "Rata-rata: jangan lupa `as f64` supaya bukan pembagian bulat.",
+            "Latihan ini soal metode iterator sederhana dan mengurutkan salinan. Baca ulang materi \"Vec & HashMap\" dan \"Closure & Iterator\".",
+            "Jumlahkan dengan iter().sum(), hitung rata-rata dengan konversi as f64, lalu ambil max dan min (keduanya Option). Urutkan salinannya, bukan Vec aslinya, karena baris Data masih butuh urutan awal. Untuk yang di atas rata-rata: filter lalu count.",
+            "Salinan dibuat dengan .to_vec() lalu .sort(). {:?} mencetak Vec dalam bentuk [a, b, c].",
         ],
         "solution": """fn main() {
     let nilai = vec![78, 92, 65, 88, 71, 95, 59, 83];
@@ -231,10 +225,9 @@ fn main() {
             "  Palindrom: ya",
         ],
         "hints": [
-            "Membalik: s.chars().rev().collect::<String>()",
-            "Buang spasi: s.replace(' ', \"\") atau filter pada chars().",
-            "Bandingkan versi huruf kecil tanpa spasi dengan baliknya.",
-            "Jangan mencetak apa pun sebelum read_line pertama.",
+            "String di Rust diproses per karakter lewat chars(). Baca ulang materi \"Slice & String\".",
+            "Simpan baris tanpa karakter pindah baris di ujungnya. Untuk palindrom, buang spasi, jadikan huruf kecil, lalu bandingkan dengan kebalikannya. Jumlah huruf dihitung dari versi tanpa spasi. Jangan cetak apa pun sebelum read_line.",
+            "Membalik teks: s.chars().rev().collect::<String>(). Membuang spasi: filter pada chars() dengan !c.is_whitespace().",
         ],
         "stdin_list": ["Kasur ini rusak\n", "Belajar Rust\n", "Ini\n"],
         "solution": """use std::io;
@@ -281,10 +274,9 @@ fn main() {
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "use std::collections::HashMap;",
-            "Idiomnya: *hitung.entry(kata).or_insert(0) += 1;",
-            "HashMap tidak punya urutan: kumpulkan ke Vec lalu sort_by.",
-            "Dua kunci urutan: b.1.cmp(a.1).then(a.0.cmp(b.0))",
+            "Menghitung kemunculan adalah pekerjaan HashMap, dan mengurutkan hasilnya butuh Vec. Baca ulang materi \"Vec & HashMap\".",
+            "Pecah kalimat dengan split_whitespace, lalu naikkan hitungan tiap kata lewat entry API. HashMap nggak punya urutan, jadi kumpulkan pasangannya ke Vec dan urutkan: jumlah menurun dulu, kalau sama baru abjad naik.",
+            "Menaikkan hitungan: *hitung.entry(kata).or_insert(0) += 1; dua kunci urutan: b.1.cmp(a.1).then(a.0.cmp(b.0)). Rata kiri 7: {kata:<7}.",
         ],
         "solution": """use std::collections::HashMap;
 
@@ -334,10 +326,9 @@ fn main() {
             "  Rata-rata : 78.00",
         ],
         "hints": [
-            "Method pembaca memakai &self sebagai parameter pertama.",
-            "fn baru tidak punya self — itu fungsi terkait, dipanggil Murid::baru.",
-            "format! bekerja persis seperti println! tapi mengembalikan String.",
-            "Menghitung yang lulus: .iter().filter(|m| m.lulus()).count()",
+            "Struct plus blok impl: fungsi terkait untuk membuat objek, method &self untuk membaca. Baca ulang materi \"Struct\".",
+            "baru nggak punya self, jadi dipanggil lewat Murid::baru. grade memakai match atas rentang nilai. ringkas memakai format!, yang bekerja seperti println! tapi mengembalikan String. Di main, hitung yang lulus dengan filter lalu count.",
+            "Format ringkas: nama rata kiri 8 dan nilai rata kanan 3, yaitu {:<8}{:>3} lalu spasi dan grade.",
         ],
         "solution": """struct Murid {
     nama: String,
@@ -413,10 +404,9 @@ fn main() {
             "Garis pemisah 24 tanda minus.",
         ],
         "hints": [
-            "Vec<Box<dyn Bangun>> perlu Box karena ukuran tiap tipe berbeda.",
-            "Membuat isinya: Box::new(Persegi { sisi: 4.0 })",
-            "Total: semua.iter().map(|b| b.luas()).sum::<f64>()",
-            "Garis pemisah: \"-\".repeat(24)",
+            "Satu Vec bisa berisi tipe yang berbeda kalau isinya trait object. Baca ulang materi \"Trait\" dan \"Smart Pointer: Box, Rc & RefCell\".",
+            "Definisikan trait Bangun, lalu impl untuk tiap struct. Vec-nya bertipe Vec<Box<dyn Bangun>>; Box perlu karena ukuran tiap struct berbeda. Telusuri sekali: cetak tiap baris dan tambahkan luasnya ke total.",
+            "Isi Vec: Box::new(Persegi { sisi: 4.0 }). Format baris: {:<16}{:>8.2}. Garis pemisah: \"-\".repeat(24).",
         ],
         "solution": """trait Bangun {
     fn luas(&self) -> f64;
@@ -514,10 +504,9 @@ fn main() {
             "Teks masukan dicetak rata kanan selebar 5.",
         ],
         "hints": [
-            "#[derive(Debug)] pada enum supaya bisa dicetak dengan {:?}.",
-            "map_err mengubah tipe galat: .map_err(|_| GalatNilai::BukanAngka(..))?",
-            "(0..=100).contains(&n) memeriksa rentang.",
-            "Operator ? hanya boleh di fungsi yang mengembalikan Result.",
+            "Galat buatan sendiri berupa enum, dan operator ? meneruskannya ke pemanggil. Baca ulang materi \"Penanganan Galat: panic! & Result\".",
+            "parse_nilai: trim, parse ke i32, ubah galat parse jadi BukanAngka, lalu cek rentang 0..=100. rata_rata menjumlahkan hasil parse_nilai dengan ?, jadi kegagalan pertama langsung dikembalikan. Pasang derive(Debug) pada enum supaya bisa dicetak dengan {:?}.",
+            "map_err mengganti tipe galatnya sebelum ?: .map_err(|_| GalatNilai::BukanAngka(...))?. Cek rentang: (0..=100).contains(&n). Teks masukan rata kanan 5: {t:>5}.",
         ],
         "solution": """#[derive(Debug)]
 enum GalatNilai {
@@ -594,10 +583,9 @@ fn main() {
             "rata kanan 2, harga rata kanan 6, subtotal rata kanan 8.",
         ],
         "hints": [
-            "Hitung subtotal sekali lalu simpan: .map(|t| (t, t.jumlah * t.harga))",
-            "Dua kunci urutan: b.1.cmp(&a.1).then(a.0.barang.cmp(&b.0.barang))",
-            "sum::<i64>() perlu turbofish karena tipenya tidak bisa disimpulkan.",
-            "max_by_key mengembalikan Option; unwrap() aman di data yang tidak kosong.",
+            "Ini latihan rantai iterator: map, sort_by, filter, sum, dan max_by_key. Baca ulang materi \"Closure & Iterator\".",
+            "Hitung subtotal sekali dengan map ke pasangan (transaksi, subtotal), kumpulkan ke Vec, lalu urutkan: subtotal menurun, kalau sama nama barang naik. Total, hitungan di atas 50000, dan barang termahal masing-masing cukup satu rantai pendek.",
+            "Dua kunci urutan: b.1.cmp(&a.1).then(a.0.barang.cmp(&b.0.barang)). sum::<i64>() butuh turbofish kalau tipenya nggak bisa disimpulkan, dan max_by_key mengembalikan Option.",
         ],
         "solution": """struct Transaksi {
     barang: String,
@@ -675,10 +663,9 @@ fn main() {
             "  [apel, jeruk] 2/2",
         ],
         "hints": [
-            "Batasan Display diperlukan supaya isinya bisa diubah jadi teks.",
-            "Ambil dari depan: kalau kosong kembalikan None, selain itu remove(0).",
-            "Untuk ringkas: kumpulkan ke Vec<String> lalu join(\", \").",
-            "Kotak<i32> dan Kotak<String> jadi dua tipe berbeda saat kompilasi.",
+            "Struct generic dengan batasan trait: satu kode untuk banyak tipe. Baca ulang materi \"Generic\" dan \"Trait\".",
+            "masuk menolak kalau panjang isi sudah sama dengan muat. keluar mengambil dari depan: None kalau kosong, selain itu buang elemen indeks 0. ringkas mengubah tiap isi jadi String, menggabungkannya dengan koma, lalu menambahkan hitungan isi/muat.",
+            "Batasan Display membuat x.to_string() bisa dipanggil. Gabungkan dengan join(\", \"), dan ambil dari depan dengan remove(0).",
         ],
         "solution": """use std::fmt::Display;
 
@@ -763,10 +750,9 @@ fn main() {
             "  selesai",
         ],
         "hints": [
-            "Sesudah `ambil(s)`, variabel s TIDAK BISA dipakai lagi — jangan coba.",
-            "pinjam(&s4) dengan tipe parameter &str juga menerima &String.",
-            "ubah butuh `let mut` dan dipanggil dengan &mut.",
-            "Lifetime 'a wajib karena ada DUA referensi masuk dan satu keluar.",
+            "Latihan ini memperagakan Copy, clone, move, pinjaman, dan lifetime. Baca ulang materi \"Ownership: Aturan Inti Rust\", \"Reference & Borrowing\", dan \"Lifetime\".",
+            "Angka bersifat Copy, jadi b = a membuat keduanya tetap sah; String butuh clone. Sesudah ambil(s), s nggak boleh dipakai lagi. pinjam bertipe &str tapi tetap menerima &String. ubah butuh variabel let mut dan dipanggil dengan &mut. Blok dalam memperlihatkan nilai dilepas di kurung kurawal penutupnya.",
+            "lebih_panjang butuh 'a karena ada dua referensi masuk dan satu keluar, jadi compiler perlu tahu kembaliannya hidup selama keduanya.",
         ],
         "solution": """fn ambil(s: String) -> usize {
     s.len()
@@ -852,10 +838,9 @@ fn main() {
             "Keadaan rata kiri 10, aksi rata kiri 11.",
         ],
         "hints": [
-            "#[derive(Debug, Clone, Copy, PartialEq)] pada kedua enum.",
-            "match atas TUPLE: match (k, a) { (Keadaan::Draf, Aksi::Kirim) => ... }",
-            "{:?} mencetak nama variannya, jadi tidak perlu fungsi nama sendiri.",
-            "Simpan keadaan di variabel mut dan hanya perbarui saat Ok.",
+            "Mesin keadaan paling rapi ditulis dengan match atas pasangan nilai enum. Baca ulang materi \"Enum & Option\" dan \"Pattern Matching: match & if let\".",
+            "Pasang derive Debug, Clone, Copy, PartialEq pada kedua enum. lanjut mencocokkan (k, a) dengan satu cabang per transisi yang sah, dan _ untuk sisanya yang mengembalikan Err. Di main, simpan keadaan di variabel mut dan perbarui cuma kalau hasilnya Ok.",
+            "{:?} mencetak nama varian. Supaya bisa diratakan, ubah dulu jadi String, misalnya format!(\"{sebelum:?}\"), lalu cetak dengan {:<10}.",
         ],
         "solution": """#[derive(Debug, Clone, Copy, PartialEq)]
 enum Keadaan {
@@ -969,12 +954,9 @@ fn main() {
             "kanan 2, harga rata kanan 10, subtotal rata kanan 12.",
         ],
         "hints": [
-            "get_mut pada HashMap memberi &mut ke nilainya: pas untuk mengubah stok.",
-            "ok_or_else mengubah Option jadi Result: .ok_or_else(|| Galat::...)?",
-            "HashMap tidak punya urutan, dan di Rust urutannya BERUBAH tiap kali "
-            "program dijalankan — semua() dan stok_menipis() WAJIB mengurutkan.",
-            "impl Display memisahkan bentuk galat dari kalimatnya; main cukup "
-            "mencetak {e} tanpa tahu varian apa yang terjadi.",
+            "Kuncinya memisahkan lapisan: Gudang cuma mengembalikan Result, main yang mencetak. Baca ulang materi \"Proyek Utuh: Menggabungkan Semuanya\" dan \"Trait Standar & Konversi\" (bagian Display).",
+            "catat memeriksa berurutan: cari barangnya dulu (galat kode), lalu jumlah harus positif, baru hitung stok baru dan tolak kalau hasilnya negatif. HashMap di Rust urutannya berubah tiap kali program jalan, jadi semua() dan stok_menipis() wajib mengurutkan sebelum mengembalikan.",
+            "get_mut pada HashMap memberi &mut ke nilainya, dan ok_or_else mengubah Option jadi Result: .get_mut(kode).ok_or_else(|| GalatGudang::KodeTidakDikenal(...))?. Dengan impl Display, main cukup mencetak {e}.",
         ],
         "solution": """use std::collections::HashMap;
 use std::fmt;

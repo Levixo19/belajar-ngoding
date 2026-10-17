@@ -9,10 +9,9 @@ PHP_EXERCISES = [
             "  PHP 8 jauh berbeda dari PHP 5.",
         ],
         "hints": [
-            "Berkas PHP dibuka dengan tag <?php",
-            "Pakai echo untuk mencetak.",
-            "Karakter baris baru \\n hanya berlaku di dalam kutip GANDA.",
-            "Jangan tulis tag penutup ?> di berkas yang isinya hanya PHP.",
+            "Latihan ini cuma butuh perintah cetak, tiga kali. Baca ulang materi \"Pengenalan PHP & Instalasi\" kalau lupa bentuk berkas PHP.",
+            "Buka berkas dengan tag <?php, lalu cetak tiap baris dengan echo. Karakter baris baru \\n cuma berlaku di dalam kutip ganda, jadi tulis teksnya dengan kutip ganda.",
+            "Jangan tulis tag penutup ?> di akhir berkas yang isinya cuma PHP. Satu barisnya berbentuk: echo \"Halo, namaku Andi!\\n\";",
         ],
         "solution": """<?php
 
@@ -36,10 +35,9 @@ echo "PHP 8 jauh berbeda dari PHP 5.\\n";""",
             "  17 ** 2 = 289",
         ],
         "hints": [
-            "Di PHP, pembagian selalu menghasilkan float kalau tidak habis dibagi.",
-            "Untuk pembagian bulat pakai intdiv($a, $b).",
-            "Operator pangkat adalah **",
-            "Variabel di dalam kutip ganda langsung diganti nilainya.",
+            "Ini latihan operator aritmetika dan menyusun teks keluaran. Baca ulang materi \"Operator & Perbandingan\" dan \"String & Interpolasi\".",
+            "Di PHP, pembagian menghasilkan float kalau nggak habis dibagi, jadi 17 / 5 memberi 3.4. Pembagian bulat memakai intdiv(), sisa bagi memakai %, dan operator pangkat adalah **.",
+            "Variabel di dalam kutip ganda langsung diganti nilainya, tapi operasinya ditulis di luar kutip lalu disambung dengan titik: \"$a + $b = \" . ($a + $b) . \"\\n\"",
         ],
         "solution": """<?php
 
@@ -72,10 +70,9 @@ echo "$a ** 2 = " . ($a ** 2) . "\\n";""",
             "  Kelvin     : 298.15",
         ],
         "hints": [
-            "Baca satu baris dari stdin: trim(fgets(STDIN))",
-            "Ubah ke float dengan (float) atau floatval().",
-            "printf(\"%.2f\", $x) mencetak dua desimal.",
-            "Jangan mencetak apa pun sebelum membaca input.",
+            "Alurnya tiga langkah: baca masukan, hitung dengan rumus, cetak dua desimal. Baca ulang materi \"Variabel & Tipe Data\" dan \"String & Interpolasi\".",
+            "Baca satu baris dengan fgets(STDIN), buang baris barunya dengan trim(), lalu ubah ke float dengan (float) atau floatval(). Jangan mencetak apa pun sebelum membaca masukan.",
+            "printf(\"%.2f\", $x) mencetak dua desimal. Label kolomnya ikut ditulis di dalam format, misalnya \"Kelvin     : %.2f\\n\".",
         ],
         "stdin": "25\n",
         "solution": """<?php
@@ -110,10 +107,9 @@ printf("Kelvin     : %.2f\\n", $k);""",
             "  Status: Lulus",
         ],
         "hints": [
-            "Pakai match(true) { $n >= 85 => 'A', ... default => 'E' };",
-            "match adalah ekspresi, jadi hasilnya langsung bisa ditugaskan.",
-            "Jangan pakai switch: perbandingannya longgar dan butuh break.",
-            "Untuk status, operator ternary sudah cukup.",
+            "Ada dua keputusan di sini: grade dari beberapa ambang, dan status dari satu ambang. Baca ulang materi \"Percabangan & Perulangan\" bagian match.",
+            "match(true) mencocokkan lengan pertama yang kondisinya bernilai true, jadi tulis ambangnya dari yang terbesar. match adalah ekspresi, jadi hasilnya langsung bisa ditugaskan ke variabel. Untuk status, operator ternary sudah cukup.",
+            "Jangan pakai switch: perbandingannya longgar dan butuh break. Bentuk lengannya: $nilai >= 85 => 'A', ... lalu default => 'E'.",
         ],
         "stdin_list": ["92\n", "78\n", "65\n", "45\n", "12\n"],
         "solution": """<?php
@@ -149,10 +145,9 @@ echo 'Status: ' . ($nilai >= 75 ? 'Lulus' : 'Tidak Lulus') . "\\n";""",
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "Dua perulangan for bersarang.",
-            "printf(\"%2d\", $n) mencetak rata kanan selebar 2.",
-            "Pemisah ditulis sesudah tiap sel kecuali yang terakhir.",
-            "echo \"\\n\" di akhir tiap baris luar.",
+            "Tabel dua dimensi berarti dua perulangan bersarang: luar untuk baris, dalam untuk kolom. Baca ulang materi \"Percabangan & Perulangan\".",
+            "Di awal tiap baris cetak dua spasi. Di perulangan dalam cetak satu sel, lalu pemisah tiga spasi kecuali sesudah sel terakhir. Tutup tiap baris dengan echo \"\\n\".",
+            "printf('%d x %d = %2d', ...) mencetak hasilnya rata kanan selebar 2.",
         ],
         "solution": """<?php
 
@@ -186,10 +181,9 @@ for ($b = 1; $b <= 5; $b++) {
             "  Di atas rata-rata: 92, 88, 95, 83",
         ],
         "hints": [
-            "implode(', ', $arr) menggabungkan array jadi teks.",
-            "sort() MENGUBAH array aslinya: salin dulu ke variabel lain.",
-            "array_sum, count, max, dan min sudah tersedia.",
-            "array_filter mempertahankan kunci — bungkus dengan array_values.",
+            "Hampir semua yang diminta sudah ada sebagai fungsi array bawaan. Baca ulang materi \"Array: Daftar dan Kamus Sekaligus\".",
+            "sort() mengubah array aslinya, jadi salin dulu ke variabel lain sebelum mengurutkan. array_sum, count, max, dan min menghitung sisanya; implode(', ', $arr) menggabungkan array jadi teks.",
+            "Untuk \"di atas rata-rata\", saring dengan array_filter dan fn($n) => $n > $rata. array_filter mempertahankan kunci aslinya, jadi bungkus dengan array_values kalau perlu daftar yang rapi.",
         ],
         "solution": """<?php
 
@@ -229,10 +223,9 @@ echo 'Di atas rata-rata: ' . implode(', ', $diAtas) . "\\n";""",
             "  Palindrom: ya",
         ],
         "hints": [
-            "strrev() membalik string.",
-            "str_replace(' ', '', $s) membuang spasi.",
-            "strtolower() untuk mengabaikan besar-kecil huruf.",
-            "Jangan mencetak apa pun sebelum fgets(STDIN) pertama.",
+            "Latihan ini soal fungsi string: membalik, membuang spasi, dan menyamakan huruf. Baca ulang materi \"String & Interpolasi\".",
+            "Siapkan dua versi teks: satu tanpa spasi untuk menghitung huruf, satu lagi tanpa spasi dan huruf kecil semua untuk mengecek palindrom. strrev() membalik string, str_replace(' ', '', $s) membuang spasi, strtolower() mengecilkan huruf.",
+            "Teks bersih adalah palindrom kalau sama persis dengan versi terbaliknya (pakai ===). Jangan mencetak apa pun sebelum fgets(STDIN) pertama.",
         ],
         "stdin_list": ["Kasur ini rusak\n", "Belajar PHP\n", "Ini\n"],
         "solution": """<?php
@@ -272,10 +265,9 @@ echo 'Palindrom: ' . ($palindrom ? 'ya' : 'bukan') . "\\n";""",
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "explode(' ', $kalimat) memecah jadi array.",
-            "array_count_values() menghitung frekuensi dalam satu panggilan.",
-            "uksort/uasort bisa mengurutkan sambil mempertahankan kunci.",
-            "Untuk dua kunci urutan: bandingkan jumlah dulu, lalu nama.",
+            "Pecah kalimat jadi kata, hitung kemunculannya, lalu urutkan dengan dua kunci. Baca ulang materi \"Array: Daftar dan Kamus Sekaligus\".",
+            "explode(' ', $kalimat) memecah jadi array, dan array_count_values() menghitung frekuensi dalam satu panggilan. Untuk mengurutkan sambil mempertahankan kunci (katanya), pakai uksort atau uasort.",
+            "Pembanding dua kunci: jumlah menurun dulu, kalau seri nama menaik. Dengan operator <=> bentuknya ($hitung[$b] <=> $hitung[$a]) ?: ($a <=> $b). Cetak nama dengan %-7s.",
         ],
         "solution": """<?php
 
@@ -322,10 +314,9 @@ echo 'Total kata : ' . count($kata) . "\\n";""",
             "  Ditolak: nilai di luar 0..100",
         ],
         "hints": [
-            "Constructor property promotion: __construct(public readonly string $nama, ...)",
-            "__toString() membuat objek bisa langsung di-echo.",
-            "printf/sprintf dengan %-8s dan %3d untuk perataannya.",
-            "declare(strict_types=1); di baris pertama sesudah <?php.",
+            "Validasi tinggal di satu tempat, yaitu method setter, dan constructor ikut memakainya. Baca ulang materi \"Class & Objek\" (readonly, constructor property promotion, __toString) dan \"Exception & Penanganan Galat\".",
+            "Constructor memakai promotion untuk $nama yang readonly, lalu memanggil $this->setNilai($nilai) supaya nilai awal juga diperiksa. setNilai melempar InvalidArgumentException kalau di luar 0..100. Tulis declare(strict_types=1); di baris pertama sesudah <?php.",
+            "__toString() membuat objek bisa langsung di-echo. Isinya cukup sprintf('%-8s%3d %s', $this->nama, $this->nilai, $this->grade()).",
         ],
         "solution": """<?php
 
@@ -411,11 +402,9 @@ try {
             "  TOTAL              62.27",
         ],
         "hints": [
-            "Trait disisipkan dengan `use NamaTrait;` di dalam badan class.",
-            "parent::__construct('Persegi') memanggil constructor induk —",
-            "PHP tidak memanggilnya otomatis.",
-            "Constructor turunan boleh memakai property promotion sekaligus.",
-            "Konstanta class diakses dengan self::PI.",
+            "Interface menentukan tipe, trait membawa isi method, abstract class menyatukan keduanya. Baca ulang materi \"Pewarisan, Interface & Trait\".",
+            "BangunDasar mengimplementasi Bangun, menyisipkan trait dengan `use BisaDiringkas;` di dalam badan class, dan menyimpan nama lewat constructor. Tiap turunan cuma perlu constructor dan luas(). Telusuri array bangun sekali sambil menjumlahkan luasnya.",
+            "PHP nggak memanggil constructor induk otomatis, jadi tiap turunan menulis parent::__construct('Persegi'). Constructor turunan boleh memakai property promotion sekaligus. Konstanta class diakses dengan self::PI.",
         ],
         "solution": """<?php
 
@@ -539,11 +528,9 @@ printf("%-16s%8.2f\\n", 'TOTAL', $total);""",
             "sunting rata kiri 7, lalu daftar berikutnya.",
         ],
         "hints": [
-            "Backed enum ditulis: enum Status: string { case Draf = 'draf'; ... }",
-            "Method di dalam enum memakai match($this) TANPA default supaya "
-            "varian baru yang belum ditangani langsung ketahuan.",
-            "$s->name memberi nama kasusnya, $s->value memberi nilainya.",
-            "tryFrom mengembalikan null, bukan melempar — cetak dengan ?? 'null'.",
+            "Backed enum menyimpan nilai string untuk tiap kasus, dan boleh punya method sendiri. Baca ulang materi \"Enum & Objek Nilai\".",
+            "Tiap method memakai match($this) dengan satu lengan per kasus. Untuk label dan berikutnya, tulis tanpa default supaya kasus baru yang belum ditangani langsung ketahuan. $s->name memberi nama kasus, $s->value memberi nilainya, dan Status::cases() memberi semua kasus.",
+            "tryFrom mengembalikan null, bukan melempar, jadi cetak dengan ?->name ?? 'null'. Daftar berikutnya diubah ke nama dengan array_map lalu implode, dan '-' kalau kosong.",
         ],
         "solution": """<?php
 
@@ -638,10 +625,9 @@ printf("%-21s: %s\\n", "tryFrom('tidak-ada')", Status::tryFrom('tidak-ada')?->na
             "Angka tagihan dicetak rata kanan selebar 7.",
         ],
         "hints": [
-            "json_decode dengan flag JSON_THROW_ON_ERROR melempar JsonException.",
-            "Argumen KETIGA new Exception(...) adalah exception sebelumnya.",
-            "getPrevious() membacanya kembali; pakai ?-> supaya aman kalau null.",
-            "Tangkap yang PALING SPESIFIK lebih dulu.",
+            "Latihan ini soal exception buatan sendiri, urutan catch, dan merantai exception. Baca ulang materi \"Exception & Penanganan Galat\".",
+            "Exception sendiri memanggil parent::__construct(\"saldo kurang $kurang\"). Di perulangan pembayaran, tangkap yang paling spesifik lebih dulu, karena SaldoKurangException turunan RuntimeException. json_decode dengan flag JSON_THROW_ON_ERROR melempar JsonException.",
+            "Argumen ketiga constructor exception adalah exception sebelumnya: new RuntimeException('konfigurasi tidak bisa dibaca', 0, $e). getPrevious() membacanya kembali; pakai ?-> supaya aman kalau null.",
         ],
         "solution": """<?php
 
@@ -739,10 +725,9 @@ try {
             "kanan 2, harga rata kanan 6, subtotal rata kanan 8.",
         ],
         "hints": [
-            "Hitung subtotal sekali lalu simpan ke tiap baris dengan array_map.",
-            "usort dengan operator spaceship: ($b['sub'] <=> $a['sub']) ?: ...",
-            "Untuk rekap, kumpulkan ke array berkunci kategori lalu ksort.",
-            "array_column + array_search bisa mencari yang subtotalnya tertinggi.",
+            "Hitung subtotal sekali, lalu pakai untuk mengurutkan, menjumlah, dan merekap. Baca ulang materi \"Array: Daftar dan Kamus Sekaligus\" bagian usort, array_column, dan ksort.",
+            "Tambahkan kunci 'sub' ke tiap baris dengan array_map. Urutkan salinannya dengan usort dua kunci. Untuk rekap, kumpulkan total dan jumlah transaksi ke array berkunci kategori, lalu ksort. Termahal dicari dari array_column(..., 'sub') dengan max dan array_search.",
+            "Pembanding usort: ($b['sub'] <=> $a['sub']) ?: ($a['barang'] <=> $b['barang']). Format barisnya \"%-11s%-11s%2d x %6d = %8d\\n\".",
         ],
         "solution": """<?php
 
@@ -824,12 +809,9 @@ printf("%-10s: %s\\n", 'Termahal', $termahal['barang']);""",
             "  &lt;script&gt;alert(1)&lt;/script&gt;",
         ],
         "hints": [
-            "filter_var($x, FILTER_VALIDATE_INT, ['options' => ['min_range'=>1,",
-            "'max_range'=>120]]) mengembalikan false kalau di luar rentang.",
-            "filter_var($x, FILTER_VALIDATE_EMAIL) untuk email.",
-            "mb_strlen menghitung KARAKTER, bukan byte — yang benar untuk "
-            "membatasi panjang masukan pengguna.",
-            "Gabungkan galat dengan implode(' | ', ...).",
+            "Validasi dan escape adalah dua pekerjaan berbeda: validasi memeriksa masukan, escape mengamankan keluaran HTML. Baca ulang materi \"PHP untuk Web: Request, Form & Sesi\" dan \"Praktik Baik & Keamanan\".",
+            "Periksa tiap field berurutan dan simpan galatnya ke array berkunci nama field. Untuk nama, mb_strlen menghitung karakter, bukan byte, jadi itu yang benar untuk membatasi panjang. Email cukup diperiksa dengan filter_var($x, FILTER_VALIDATE_EMAIL).",
+            "Untuk umur, filter_var($x, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 120]]) mengembalikan false kalau bukan bilangan bulat atau di luar rentang. Gabungkan galat dengan implode(' | ', ...).",
         ],
         "solution": """<?php
 
@@ -932,11 +914,9 @@ echo e($semua[2]['nama']) . "\\n";""",
             "  Cari nama \" OR \"1\"=\"1 -> 0 baris",
         ],
         "hints": [
-            "PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION wajib: tanpa itu "
-            "query yang gagal cuma mengembalikan false.",
-            "$pdo->prepare(...)->execute([...]) lalu fetchAll().",
-            "fetchColumn() mengambil satu nilai saja.",
-            "Nilai yang dikirim lewat execute() TIDAK PERNAH bisa jadi perintah.",
+            "PDO dengan SQLite di memori, query berparameter, dan satu bukti bahwa injeksi tertahan. Baca ulang materi \"Database dengan PDO\".",
+            "Setel PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION supaya query yang gagal nggak cuma mengembalikan false. Siapkan INSERT sekali dengan prepare, lalu panggil execute([...]) untuk tiap murid. Rekap per kelas cukup satu query dengan GROUP BY dan AVG.",
+            "fetchColumn() mengambil satu nilai saja, cocok untuk COUNT(*). Nilai yang dikirim lewat execute() selalu diperlakukan sebagai data, jadi mencari nama \"' OR '1'='1\" memberi 0 baris.",
         ],
         "solution": """<?php
 
@@ -1047,12 +1027,9 @@ printf("Cari nama %s -> %d baris\\n", str_replace("'", '"', $jahat), $uji->fetch
             "kanan 2, harga rata kanan 10, subtotal rata kanan 12.",
         ],
         "hints": [
-            "Simpan barang di array berkunci kode; isset() memeriksa kode kembar.",
-            "usort pada array_values untuk mengurutkan hasil semua().",
-            "Satu try/catch per langkah di antarmuka membuat outputnya rapi;",
-            "tangkap RuntimeException lalu cetak getMessage().",
-            "Gudang yang tidak pernah mencetak bisa diuji tanpa membaca layar — "
-            "itu seluruh gunanya pemisahan ini.",
+            "Pisahkan tiga lapisan: model menyimpan data, layanan menegakkan aturan dan melempar exception, antarmuka mencetak. Bahan lengkapnya ada di materi \"Class & Objek\", \"Enum & Objek Nilai\", dan \"Exception & Penanganan Galat\".",
+            "Simpan barang di array berkunci kode, sehingga isset() langsung memeriksa kode kembar dan kode yang nggak dikenal. Di catat(), periksa kode dulu, lalu jumlah, baru kecukupan stok. semua() dan stokMenipis() mengurutkan hasil array_values dengan usort.",
+            "Di antarmuka, satu try/catch per langkah membuat keluarannya rapi: tangkap RuntimeException lalu cetak getMessage(). Gudang yang nggak pernah mencetak bisa diuji tanpa membaca layar, dan itu gunanya pemisahan ini.",
         ],
         "solution": """<?php
 

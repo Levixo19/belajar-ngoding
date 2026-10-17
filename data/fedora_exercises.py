@@ -14,10 +14,9 @@ FEDORA_EXERCISES = [
             "  Basis   : RPM",
         ],
         "hints": [
-            "Mulai dengan shebang #!/usr/bin/env bash",
-            "printf '%-8s: %s\\n' \"Distro\" \"$distro\"",
-            "%-8s artinya teks rata kiri dalam lebar 8 karakter.",
-            "Jangan pakai echo untuk format berkolom; printf lebih terkendali.",
+            "Format berkolom dibahas di materi \"Skrip Otomasi: Menyatukan Semuanya\". Pakai printf, bukan echo, karena printf yang bisa mengatur lebar kolom.",
+            "Mulai dengan shebang #!/usr/bin/env bash, simpan ketiga variabel, lalu panggil printf tiga kali dengan format yang sama: label rata kiri selebar 8 karakter, titik dua, satu spasi, lalu nilainya.",
+            "Di format printf, %-8s berarti teks rata kiri dalam lebar 8 karakter. Contoh satu baris: printf '%-8s: %s\\n' \"Distro\" \"$distro\".",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -49,10 +48,9 @@ printf '%-8s: %s\\n' "Basis" "$basis"
             "  berkas   : 1",
         ],
         "hints": [
-            "kerja=\"$(mktemp -d)\" lalu cd \"$kerja\"",
-            "mkdir -p proyek/{src,doc,uji} membuat ketiganya sekaligus.",
-            "find proyek -type d | wc -l menghitung direktori, termasuk proyek sendiri.",
-            "Pakai trap 'rm -rf \"$kerja\"' EXIT agar bersih walau skrip berhenti di tengah.",
+            "Baca ulang bagian brace expansion di \"Membuat, Menyalin, Memindah & Menghapus\", lalu mktemp dan trap di \"Skrip Otomasi: Menyatukan Semuanya\".",
+            "Buat direktori sementara dengan mktemp -d dan simpan namanya di variabel. Pasang trap EXIT yang menghapusnya, supaya tetap bersih walau skrip berhenti di tengah, lalu cd ke sana. Satu mkdir -p dengan kurung kurawal membuat ketiga subdirektori sekaligus, dan touch membuat berkasnya.",
+            "find proyek -type d | wc -l menghitung direktori, termasuk proyek sendiri (makanya hasilnya 4). Ganti -type d jadi -type f untuk menghitung berkas.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -87,10 +85,9 @@ printf 'berkas   : %s\\n' "$(find proyek -type f | wc -l)"
             "  755 skrip.sh",
         ],
         "hints": [
-            "stat -c '%a %n' berkas menampilkan izin oktal lalu nama.",
-            "Kumpulkan hasilnya lalu lewatkan ke sort -k2 agar urut menurut nama.",
-            "Ingat: 6=rw-, 7=rwx, 5=r-x, 4=r--",
-            "Jangan andalkan urutan dari shell glob; urutkan secara eksplisit.",
+            "Baca ulang notasi oktal di \"Izin Berkas & Kepemilikan\". Ingat: 6 = rw-, 7 = rwx, 5 = r-x, 4 = r--.",
+            "Buat ketiga berkas dengan touch, setel izinnya dengan chmod, lalu tampilkan dengan stat memakai format '%a %n' (izin oktal, lalu nama). Jangan andalkan urutan dari shell glob; urutkan hasilnya secara eksplisit.",
+            "Lewatkan keluaran stat ke sort -k2 supaya urut menurut kolom kedua, yaitu namanya.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -124,10 +121,9 @@ stat -c '%a %n' rahasia.txt skrip.sh catatan.txt | sort -k2
             "  stderr: 1 baris",
         ],
         "hints": [
-            "Di dalam fungsi galat, tambahkan >&2 pada printf-nya.",
-            "Bungkus pemanggilannya dalam { ... } lalu redirect blok itu sekaligus.",
-            "{ lapor a; galat b; } > keluar.txt 2> galat.txt",
-            "wc -l < berkas memberi angkanya saja tanpa nama berkas.",
+            "Baca ulang \"Pipa, Redirect & Aliran Data\": stdout dan stderr adalah dua aliran terpisah yang bisa diarahkan ke tempat berbeda.",
+            "Fungsi galat menulis lewat printf seperti lapor, tapi keluarannya dibelokkan ke stderr dengan >&2. Bungkus ketiga pemanggilan dalam { ... } supaya bisa di-redirect sekaligus: > untuk stdout dan 2> untuk stderr.",
+            "Bentuknya { lapor a; galat b; } > keluar.txt 2> galat.txt. Sesudah itu wc -l < berkas memberi angkanya saja, tanpa nama berkas.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -179,11 +175,9 @@ printf 'stderr: %s baris\\n' "$(wc -l < galat.txt)"
             "  baris error : 2,4,5",
         ],
         "hints": [
-            "Tulis berkasnya dengan here-document: cat > layanan.log <<'EOF'",
-            "grep -c ERROR menghitung baris yang cocok.",
-            "grep sshd berkas | grep -v ERROR | wc -l untuk yang kedua.",
-            "grep -n ERROR memberi 'nomor:isi'; ambil nomornya dengan cut -d: -f1.",
-            "Gabungkan baris jadi satu dengan paste -sd, atau tr '\\n' ','.",
+            "Baca ulang opsi grep di \"Mencari Berkas & Isi Berkas\", dan bagian here-document di \"Membaca Isi Berkas\".",
+            "Tulis log-nya dengan here-document (cat > berkas dengan penanda <<'EOF'). grep -c menghitung baris yang cocok. Untuk sshd yang bukan ERROR, saring sshd dulu lalu buang ERROR dengan grep -v. Untuk nomor baris, grep -n memberi 'nomor:isi'.",
+            "Ambil nomornya dengan cut -d: -f1, lalu gabungkan jadi satu baris berpemisah koma dengan paste -sd, (tr '\\n' ',' juga bisa, tapi meninggalkan koma di ujung dan membuang baris barunya).",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -234,11 +228,9 @@ printf 'baris error : %s\\n' "$(grep -n 'ERROR' layanan.log | cut -d: -f1 | past
             "    1 /usr/bin/zsh",
         ],
         "hints": [
-            "awk -F: '$3 >= 1000 {print $1}' menyaring berdasarkan kolom ketiga.",
-            "Gabungkan beberapa baris jadi satu baris dengan paste -sd' '",
-            "cut -d: -f7 mengambil kolom shell.",
-            "sort | uniq -c | sort -rn adalah idiom menghitung frekuensi.",
-            "Rapikan spasi keluaran uniq -c dengan awk '{print $1, $2}'.",
+            "Berkas berpembatas titik dua dibahas di \"sed & awk\" dan \"Mengolah Teks: cut, sort, uniq, tr\".",
+            "Untuk UID, minta awk memakai : sebagai pemisah dan mencetak kolom 1 kalau kolom 3 >= 1000, lalu gabungkan barisnya dengan paste -sd' '. nologin cukup dihitung dengan grep -c. Untuk shell, ambil kolom 7 dengan cut -d: -f7, lalu pakai idiom penghitung frekuensi.",
+            "Idiomnya sort | uniq -c | sort -rn. Keluaran uniq -c punya spasi di depan angkanya; rapikan dengan awk yang mencetak $1 dan $2, dan perhatikan dua spasi di depan tiap baris pada keluaran yang diharapkan.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -285,11 +277,9 @@ cut -d: -f7 pengguna.txt | sort | uniq -c | sort -rn |
             "  2 rpm",
         ],
         "hints": [
-            "tr -s ' ' '\\n' mengubah teks jadi satu kata per baris.",
-            "tr 'A-Z' 'a-z' menyeragamkan huruf.",
-            "Lalu sort | uniq -c | sort -rn seperti biasa.",
-            "Untuk hasil yang stabil saat jumlahnya seri, tambahkan kunci kedua: sort -k1,1nr -k2,2",
-            "head -3 mengambil tiga teratas.",
+            "Ini idiom penghitung frekuensi dari \"Mengolah Teks: cut, sort, uniq, tr\".",
+            "Pecah teks jadi satu kata per baris dengan tr -s ' ' '\\n', seragamkan hurufnya dengan tr 'A-Z' 'a-z', buang baris kosong, lalu sort | uniq -c. Urutkan menurut jumlah dan ambil tiga teratas dengan head -3.",
+            "dnf dan rpm sama-sama muncul 2 kali. Supaya urutannya stabil saat seri, beri kunci kedua: sort -k1,1nr -k2,2. Rapikan spasi depan dari uniq -c dengan awk.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -341,11 +331,9 @@ tr -s ' ' '\\n' < catatan.txt |
             "  MaxAuthTries 6",
         ],
         "hints": [
-            "Pola '^\\\\s*#' cocok dengan komentar walau menjorok.",
-            "Pola '^\\\\s*$' cocok dengan baris kosong atau berisi spasi saja.",
-            "Beberapa perintah sed dipisah titik koma: sed '/a/d; /b/d'",
-            "Perintah c mengganti seluruh baris: sed '/^Port/c Port 2222'",
-            "Rantaikan beberapa sed dengan pipa kalau lebih mudah dibaca.",
+            "Baca ulang \"sed & awk\": perintah d untuk menghapus baris, dan perintah c untuk mengganti seluruh baris.",
+            "Hapus dua jenis baris: komentar (boleh diawali spasi) dan baris yang kosong atau cuma berisi spasi. Sesudah itu ganti baris Port dan PermitRootLogin. Beberapa perintah sed bisa dipisah titik koma atau beberapa -e, atau rantaikan dua sed dengan pipa kalau lebih mudah dibaca.",
+            "Pola '^[[:space:]]*#' cocok dengan komentar walau menjorok, dan '^[[:space:]]*$' dengan baris kosong. Perintah c mengganti seluruh baris: sed '/^Port/c Port 2222'.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -391,11 +379,9 @@ sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' layanan.conf |
             "  total penuh: 2",
         ],
         "hints": [
-            "NR > 1 melewati baris judul.",
-            "gsub(/%/,\"\",$5) membuang tanda persen dari kolom kelima.",
-            "Tambahkan 0 agar teks diperlakukan sebagai angka: $5+0 > 80",
-            "Cetak angka polos dulu agar bisa diurutkan sort -rn, baru tambahkan %.",
-            "wc -l menghitung temuan; simpan hasilnya di variabel lebih dulu.",
+            "Baca ulang \"sed & awk\": NR untuk nomor baris, dan gsub untuk mengganti teks di dalam kolom.",
+            "Lewati judul dengan NR > 1, buang tanda persen dari kolom 5 dengan gsub, lalu cetak kolom 5 dan 6 kalau nilainya di atas 80. Cetak angka polos dulu supaya bisa diurutkan sort -rn, baru tempelkan % saat mencetak akhir. Simpan hasilnya di variabel supaya bisa dicetak sekaligus dihitung.",
+            "Tambahkan 0 supaya teks diperlakukan sebagai angka: $5 + 0 > 80. Jumlah temuannya: printf '%s\\n' \"$penuh\" | wc -l.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -439,10 +425,9 @@ printf 'total penuh: %s\\n' "$(printf '%s\\n' "$penuh" | wc -l)"
             "  berspasi  : gambar besar.png",
         ],
         "hints": [
-            "Kutip polanya: find . -name \"*.log\", kalau tidak shell yang mengembangkannya.",
-            "-maxdepth 1 membatasi pencarian ke tingkat atas saja.",
-            "Nama berkas berspasi: find . -name \"* *\" -type f",
-            "Pakai -printf '%f\\\\n' untuk mencetak nama tanpa jalur direktorinya.",
+            "Baca ulang \"Mencari Berkas & Isi Berkas\", terutama opsi -name dan -maxdepth.",
+            "Kutip polanya, find . -name '*.log', kalau nggak shell yang mengembangkannya duluan. -maxdepth 1 membatasi pencarian ke tingkat atas, dan pola '* *' menangkap nama yang mengandung spasi. Tambahkan -type f supaya cuma berkas yang dihitung.",
+            "-printf '%f\\n' mencetak nama berkas tanpa jalur direktorinya.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -482,11 +467,9 @@ printf 'berspasi  : %s\\n' "$(find . -type f -name '* *' -printf '%f\\n')"
             "  melewati ambang: 2",
         ],
         "hints": [
-            "Gunakan return 0 dan return 1 di dalam fungsi, bukan exit.",
-            "Uji angka dengan [[ \"$nilai\" -lt 80 ]], bukan dengan tanda <.",
-            "if periksa_ambang \"$n\" \"$v\"; then ... else ... fi",
-            "printf '%-5s %-6s %s%%\\n' menjaga kolom tetap sejajar.",
-            "set -e akan menghentikan skrip pada perintah gagal, tapi TIDAK pada kondisi if.",
+            "Fungsi, [[ ]], dan status keluar dibahas di \"Skrip Otomasi: Menyatukan Semuanya\". Status 0 berarti berhasil, selain 0 berarti gagal, dan if membaca status itu.",
+            "Di dalam fungsi pakai return (atau biarkan status perintah terakhirnya jadi statusnya), jangan exit karena exit menghentikan seluruh skrip. Bandingkan angka dengan -lt di dalam [[ ]], bukan dengan tanda <. Panggil fungsinya langsung sebagai kondisi if; set -e menghentikan skrip pada perintah gagal, tapi nggak pada kondisi if.",
+            "Kerangkanya if periksa_ambang \"$nama\" \"$nilai\"; then ... else ... fi, dan printf '%-5s %-6s %s%%\\n' menjaga kolomnya sejajar.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -538,11 +521,9 @@ printf 'melewati ambang: %s\\n' "$lewat"
             "  belum terpasang: 2",
         ],
         "hints": [
-            "while IFS='|' read -r nama ket status; do ... done < paket.txt",
-            "Menyetel IFS='|' membuat read memecah berdasarkan tanda itu.",
-            "Opsi -r mencegah backslash diterjemahkan.",
-            "Redirect dari berkas (< paket.txt) menjaga perulangan di shell utama.",
-            "Kalau memakai pipa, perulangan jalan di subshell dan penghitungnya hilang.",
+            "Baca ulang bagian while read dan IFS di \"Skrip Otomasi: Menyatukan Semuanya\".",
+            "Menyetel IFS='|' khusus untuk read membuatnya memecah baris berdasarkan tanda |, jadi tiap kolom masuk ke variabelnya sendiri. Opsi -r mencegah backslash diterjemahkan. Arahkan berkasnya ke perulangan dengan redirect, bukan pipa: dengan pipa, perulangan jalan di subshell dan penghitungnya hilang.",
+            "Redirect-nya ditulis sesudah done: done < paket.txt. Untuk mencetak baris yang diawali tanda hubung, pakai printf -- supaya - nggak dibaca sebagai opsi printf.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -597,11 +578,9 @@ printf 'belum terpasang: %s\\n' "$belum"
             "  ditolak: 1",
         ],
         "hints": [
-            "declare -a uji=(\"install\" \"up\" \"rm\" \"bongkar\" \"upgrade\")",
-            "Iterasi dengan for x in \"${uji[@]}\"; do",
-            "Di case, beberapa pola digabung dengan |: install|in)",
-            "Tangkap keluaran fungsi dengan hasil=\"$(jalankan \"$x\")\" di dalam if.",
-            "Karena ada set -e, bungkus pemanggilan yang boleh gagal di dalam if.",
+            "Array dan case dibahas di \"Skrip Otomasi: Menyatukan Semuanya\".",
+            "Di case, beberapa pola untuk satu cabang digabung dengan |, misalnya bentuk panjang dan pendeknya. Cabang *) menangkap sisanya: tulis pesannya ke stderr dan return 2. Simpan daftar uji di array, ulangi dengan for x in \"${uji[@]}\", dan tangkap keluaran fungsinya dengan $( ).",
+            "Karena ada set -e, pemanggilan yang boleh gagal dibungkus if, misalnya if hasil=\"$(jalankan \"$x\" 2>/dev/null)\"; then ... else ... fi. Status if mengikuti status fungsinya, dan 2>/dev/null menyembunyikan pesan stderr-nya dari keluaran.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -658,11 +637,9 @@ printf 'ditolak: %s\\n' "$ditolak"
             "  setelah trap  : sudah terhapus",
         ],
         "hints": [
-            "mktemp -d membuat direktori dengan izin 700 secara bawaan.",
-            "Jalankan bagian yang memakai trap di dalam ( ... ) agar EXIT-nya memicu di sana.",
-            "Bagikan nama direktorinya lewat variabel yang dibuat SEBELUM subshell.",
-            "Periksa keberadaannya dengan [[ -d \"$dir\" ]] setelah subshell selesai.",
-            "stat -c '%a' direktori memberi izin oktalnya.",
+            "Baca ulang bagian mktemp dan trap di \"Skrip Otomasi: Menyatukan Semuanya\". Trap EXIT jalan saat shell yang memasangnya selesai.",
+            "Simpan nama direktori di variabel yang dibuat sebelum subshell. Jalankan bagian yang memasang trap di dalam ( ... ), supaya EXIT-nya terpicu saat subshell itu selesai. Sesudahnya, periksa dengan [[ -d \"$dir\" ]] apakah direktorinya sudah hilang.",
+            "mktemp -d membuat direktori dengan izin 700 secara bawaan, dan stat -c '%a' direktori memberi izin oktalnya. Ukur izin direktori hasil mktemp, bukan subdirektori yang kamu buat sendiri dengan mkdir.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -714,11 +691,9 @@ rm -rf "$induk"
             "  hanya lokal: 3",
         ],
         "hints": [
-            "Lewati baris judul dengan NR > 1 atau tail -n +2.",
-            "Kolom ketiga berisi alamat:port; pisahkan dengan ${x##*:} untuk portnya.",
-            "Alamat terbuka diawali 0.0.0.0 atau [::]. Pakai case atau [[ == pola ]].",
-            "sort -u -k2,2n menghilangkan duplikat port sekaligus mengurutkannya.",
-            "Hitung yang lokal sebagai sisanya, bukan dengan menghitung ulang.",
+            "Baca ulang \"Diagnosis Jaringan: ip, ss, DNS\" soal 0.0.0.0 dan [::] (terbuka ke jaringan) dibanding 127.0.0.1 (cuma lokal), lalu while read dan case di \"Skrip Otomasi: Menyatukan Semuanya\".",
+            "Lewati baris judul dengan tail -n +2 (atau NR > 1), baca tiap baris ke beberapa variabel, lalu putuskan dengan case apakah alamatnya diawali 0.0.0.0 atau [::]. Yang terbuka dikumpulkan sebagai 'port nama', sisanya cukup dihitung sebagai lokal. Port sshd muncul dua kali (IPv4 dan IPv6), jadi duplikatnya perlu dibuang.",
+            "${alamat##*:} membuang semua sampai titik dua terakhir, jadi tinggal port-nya. sort -u -k1,1n menghilangkan duplikat port sekaligus mengurutkannya. Di pola case, kurung siku perlu di-escape: \\[::\\]:*.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -806,12 +781,9 @@ printf 'hanya lokal: %s\\n' "$lokal"
             "  total temuan: 4",
         ],
         "hints": [
-            "Pisahkan tiap bagian ke fungsinya sendiri agar mudah dibaca.",
-            "Gunakan variabel penghitung global yang dinaikkan tiap temuan.",
-            "Hindari pipa ke while agar penghitungnya tidak hilang; pakai < <(...).",
-            "Disk: awk '$2 > 80 {print $2, $3}' lalu sort -rn.",
-            "Jurnal: awk '{print $1}' lalu sort | uniq -c | sort -k1,1nr -k2,2.",
-            "Temuan dihitung dari disk penuh dan layanan gagal saja, bukan dari jurnal.",
+            "Proyek ini merangkum \"sed & awk\", \"Mengolah Teks: cut, sort, uniq, tr\", dan \"Skrip Otomasi: Menyatukan Semuanya\". Pisahkan tiap bagian laporan ke fungsinya sendiri supaya mudah dibaca.",
+            "Pakai satu variabel penghitung global yang dinaikkan tiap temuan. Temuan cuma dihitung dari disk penuh dan layanan gagal, bukan dari jurnal (makanya totalnya 4). Hindari pipa ke while supaya penghitungnya nggak hilang; pakai done < <(...).",
+            "Disk: awk '$2 > 80 {print $2, $3}' lalu sort -rn. Layanan: awk '$2 == \"failed\" {print $1}' lalu sort. Jurnal: awk '{print $1}' | sort | uniq -c | sort -k1,1nr -k2,2.",
         ],
         "solution": """#!/usr/bin/env bash
 #

@@ -11,9 +11,8 @@ C_EXERCISES = [
             "membandingkan outputmu huruf demi huruf.",
         ],
         "hints": [
-            "Gunakan printf() untuk tiap baris.",
-            "Jangan lupa #include <stdio.h> dan return 0; di akhir main.",
-            "Karakter \\n untuk baris baru.",
+            "Baca ulang materi \"Input & Output (printf & scanf)\": tiap baris keluaran cukup dicetak dengan satu printf().",
+            "Kerangkanya: #include <stdio.h>, fungsi int main(void), dua printf, lalu return 0; di akhir main. Akhiri tiap teks dengan \\n supaya pindah baris.",
         ],
         "solution": """#include <stdio.h>
 
@@ -32,9 +31,9 @@ int main(void) {
             "pembagian (int), dan sisa bagi.",
         ],
         "hints": [
-            "int a = 15, b = 4;",
-            "Pembagian int/int = int, sisa dibuang.",
-            "Gunakan %d untuk mencetak int.",
+            "Lihat materi \"Operator\": ada lima operator aritmetika (+ - * / %), dan pembagian int dengan int membuang sisa di belakang koma.",
+            "Pakai a = 15 dan b = 4 supaya keluaranmu cocok dengan penilai. Cetak satu baris per operasi dengan %d, formatnya seperti 15 + 4 = 19.",
+            "Untuk mencetak tanda % lewat printf, tulis %% di format string. Baris sisa bagi jadinya berbentuk \"%d %% %d = %d\\n\".",
         ],
         "solution": """#include <stdio.h>
 
@@ -60,9 +59,9 @@ int main(void) {
             "satu baris berisi Lulus atau Tidak Lulus.",
         ],
         "hints": [
-            "int nilai; scanf(\"%d\", &nilai);",
-            "Jangan ada printf sebelum scanf -- penilaian membandingkan output.",
-            "Gunakan if-else biasa.",
+            "Bekalnya materi \"Input & Output (printf & scanf)\" untuk membaca angka dan \"Percabangan (if / else / switch)\" untuk memilih satu dari dua kalimat.",
+            "Baca nilai dengan scanf dan %d, jangan lupa & di depan nama variabel. Jangan ada printf sebelum scanf: penilai membandingkan seluruh keluaran, jadi teks ajakan seperti \"Masukkan nilai:\" bikin jawabanmu dianggap salah.",
+            "Satu if-else cukup: kalau nilai >= 75 cetak Lulus, selain itu cetak Tidak Lulus, masing-masing diakhiri \\n.",
         ],
         # Dua input supaya KEDUA cabang benar-benar diuji. Dengan satu input
         # saja, program yang cuma menulis printf("Lulus") ikut dinyatakan benar.
@@ -90,8 +89,9 @@ int main(void) {
             "beserta total jumlahnya.",
         ],
         "hints": [
-            "Gunakan for dan cek i % 2 == 0.",
-            "Accumulate total dengan variabel int, mulai dari 0.",
+            "Baca materi \"Perulangan (for, while, do-while)\" dan operator sisa bagi di \"Operator\". Angka genap adalah angka yang sisa baginya dengan 2 sama dengan 0.",
+            "Siapkan variabel total yang mulai dari 0. Ulangi dari 1 sampai 20; kalau angkanya genap, cetak angka itu diikuti satu spasi lalu tambahkan ke total. Sesudah loop, pindah baris dan cetak Total: diikuti jumlahnya.",
+            "Pengecekan genapnya: if (i % 2 == 0) di dalam for.",
         ],
         "solution": """#include <stdio.h>
 
@@ -119,8 +119,9 @@ int main(void) {
             "  *****",
         ],
         "hints": [
-            "Gunakan nested loop (for di dalam for).",
-            "printf(\"*\") tanpa \\n di loop dalam, printf(\"\\\\n\") setelah loop dalam selesai.",
+            "Ini soal nested loop (loop di dalam loop) dari materi \"Perulangan (for, while, do-while)\". Loop luar mengatur baris, loop dalam mengatur banyak bintang di baris itu.",
+            "Baris ke-i berisi i bintang. Di loop dalam cetak satu * tanpa \\n; begitu loop dalam selesai, cetak \\n untuk pindah baris.",
+            "Batas loop dalam ikut loop luar: for (int j = 1; j <= i; j++).",
         ],
         "solution": """#include <stdio.h>
 
@@ -143,9 +144,9 @@ int main(void) {
             "int data[] = {23, 5, 87, 12, 55, 99, 31};",
         ],
         "hints": [
-            "Asumsikan elemen pertama sebagai max/min awal.",
-            "Loop dari indeks 1, bandingkan dengan max/min saat ini.",
-            "Gunakan sizeof(data)/sizeof(data[0]) untuk jumlah elemen.",
+            "Materi \"Array\" membahas cara menelusuri array dengan for dan menghitung jumlah elemennya.",
+            "Anggap elemen pertama sebagai nilai terbesar sekaligus terkecil sementara. Telusuri mulai indeks 1, dan perbarui keduanya tiap ketemu nilai yang lebih besar atau lebih kecil. Cetak Terbesar: lalu Terkecil:, masing-masing satu baris.",
+            "Jumlah elemen bisa dihitung dengan sizeof(data) / sizeof(data[0]), jadi kamu nggak perlu menulis angka 7 sendiri.",
         ],
         "solution": """#include <stdio.h>
 
@@ -177,8 +178,9 @@ int main(void) {
             "Panggil ketiganya di main dan tampilkan hasilnya.",
         ],
         "hints": [
-            "Buat function prototype di atas main(), definisi di bawah.",
-            "luasLingkaran bertipe kembali double.",
+            "Baca materi \"Function (Fungsi)\", terutama bagian prototype: deklarasi fungsi di atas main(), definisi lengkapnya di bawah.",
+            "Dua fungsi pertama mengembalikan int, luasLingkaran mengembalikan double. Panggil dengan sisi 5, persegi panjang 4 x 6, dan jari-jari 7. Luas lingkaran dicetak dengan dua angka di belakang koma (%.2f).",
+            "Format keluaran yang dinilai: Persegi (5): 25, lalu Persegi Panjang (4x6): 24, lalu Lingkaran (r=7): 153.94, masing-masing satu baris.",
         ],
         "solution": """#include <stdio.h>
 
@@ -215,8 +217,9 @@ double luasLingkaran(double r) {
             "string tersebut secara in-place (mengubah array aslinya).",
         ],
         "hints": [
-            "int i = 0; while (s[i] != '\\0') { i++; }",
-            "Untuk balik: tukar s[i] dengan s[n-1-i] untuk i dari 0 sampai n/2.",
+            "Materi \"String (Array of Char)\" menjelaskan bahwa string C diakhiri karakter '\\0'. Panjang string adalah banyaknya karakter sebelum tanda itu.",
+            "panjangString: mulai dari indeks 0 dan maju terus selama karakternya belum '\\0'. balikString: tukar karakter pertama dengan terakhir, kedua dengan kedua dari belakang, dan berhenti di tengah (n / 2).",
+            "Pasangan indeks i adalah n - 1 - i; simpan s[i] di variabel sementara sebelum menimpanya. Solusi contoh memakai kata \"Belajar\" dan mencetak Panjang: 7 lalu Dibalik: rajaleB.",
         ],
         "solution": """#include <stdio.h>
 
@@ -255,9 +258,9 @@ int main(void) {
             "Tampilkan semua data, lalu hitung & tampilkan rata-rata IPK.",
         ],
         "hints": [
-            "typedef struct { char nama[50]; int umur; double ipk; } Mahasiswa;",
-            "Mahasiswa daftar[3] = { {...}, {...}, {...} };",
-            "Loop untuk menampilkan & menjumlahkan ipk.",
+            "Baca materi \"Struct\": typedef struct membuat tipe baru, dan field diakses dengan tanda titik.",
+            "Isi array tiga elemen langsung saat deklarasi dengan kurung kurawal bersarang, satu pasang kurung per mahasiswa. Lalu pakai satu loop untuk mencetak tiap mahasiswa sekaligus menjumlahkan IPK-nya; rata-ratanya total dibagi 3.",
+            "Data yang dipakai penilai: Andi 20 tahun IPK 3.5, Budi 22 tahun IPK 3.2, Citra 21 tahun IPK 3.8. Formatnya Andi, 20 tahun, IPK 3.50 (IPK pakai %.2f), dan baris terakhir Rata-rata IPK: 3.50.",
         ],
         "solution": """#include <stdio.h>
 
@@ -295,8 +298,9 @@ int main(void) {
             "variabel dari kecil ke besar (memakai tukar() di dalamnya).",
         ],
         "hints": [
-            "void tukar(int *a, int *b) { int temp = *a; *a = *b; *b = temp; }",
-            "Bandingkan pasangan (a,b), (b,c), (a,b) lagi - mirip bubble sort 3 elemen.",
+            "Baca materi \"Pointer Dasar\": fungsi yang menerima alamat variabel (parameter pointer) bisa mengubah variabel milik pemanggil lewat dereference.",
+            "tukar butuh satu variabel sementara. urutkanTiga cukup tiga perbandingan: a dengan b, b dengan c, lalu a dengan b lagi, dan tukar kalau urutannya terbalik. Ini bubble sort untuk tiga elemen.",
+            "Di dalam urutkanTiga, a dan b sudah berupa pointer, jadi panggil tukar(a, b) tanpa &. Solusi contoh memakai x = 30, y = 10, z = 20 dan mencetak Sebelum: 30 10 20 lalu Sesudah: 10 20 30.",
         ],
         "solution": """#include <stdio.h>
 
@@ -334,9 +338,9 @@ int main(void) {
             "  Isi array: 5 10 15 20 25",
         ],
         "hints": [
-            "int *arr = malloc(n * sizeof(int)); SELALU cek arr == NULL.",
-            "arr[i] = (i + 1) * 5;",
-            "Jangan lupa free(arr); di akhir program.",
+            "Baca materi \"Dynamic Memory Allocation (malloc, calloc, free)\": ukuran yang diminta adalah n kali ukuran satu int, dan hasil malloc selalu dicek sebelum dipakai.",
+            "Langkahnya: baca n tanpa teks ajakan, alokasikan, cek apakah hasilnya NULL, isi elemen ke-i dengan (i + 1) * 5, cetak Isi array: diikuti angka-angkanya (tiap angka diikuti spasi), lalu free.",
+            "Alokasinya: int *arr = malloc(n * sizeof(int)); Kalau arr == NULL, cetak pesan lalu return 1. Sesudah free(arr), isi arr = NULL supaya nggak jadi dangling pointer.",
         ],
         # Tanpa stdin, scanf gagal dan n tetap tak terinisialisasi: kunci
         # jawabannya jadi "Isi array:" kosong dan seluruh materi malloc,
@@ -381,8 +385,9 @@ int main(void) {
             "Semua fungsi harus MENGUBAH struct asli lewat pointer.",
         ],
         "hints": [
-            "void setor(Rekening *r, double jumlah) { r->saldo += jumlah; }",
-            "int tarik(Rekening *r, double jumlah) { if (jumlah <= r->saldo) {...return 1;} return 0; }",
+            "Baca materi \"Struct\", bagian pointer ke struct: lewat pointer, field diubah dengan operator panah (->), dan perubahannya mengenai struct aslinya.",
+            "setor menambah saldo kalau jumlahnya positif. tarik cuma mengurangi saldo kalau jumlahnya positif dan nggak melebihi saldo; kembalikan 1 kalau berhasil, 0 kalau nggak. Panggil keduanya dengan &r.",
+            "Skenario solusi contoh: nomor 12345 (isi dengan strcpy), saldo awal 100000, setor 50000, tarik 20000, lalu tarik 999999. Saldo dicetak dengan %.2f: Saldo setelah setor: 150000.00, lalu Tarik 20000 berhasil? 1, saldo: 130000.00, dan seterusnya.",
         ],
         "solution": """#include <stdio.h>
 #include <string.h>
@@ -433,8 +438,9 @@ int main(void) {
             "Uji dengan array {1,2,3,4,5} untuk ketiga operasi.",
         ],
         "hints": [
-            "int hasil = arr[0]; for (i=1;i<n;i++) hasil = operasi(hasil, arr[i]);",
-            "Panggil prosesArray(data, 5, tambah); dst.",
+            "Baca materi \"Function Pointer\": parameter bertipe pointer ke fungsi bisa diisi nama fungsi apa pun yang bentuknya sama, di sini int(int, int).",
+            "Mulai hasil dari elemen pertama, lalu untuk tiap elemen berikutnya hitung hasil = operasi(hasil, elemen). Panggil prosesArray tiga kali dengan tambah, kurang, dan kali, ditulis tanpa tanda kurung.",
+            "Keluaran solusi contoh: Total (tambah): 15, Hasil kurang berurutan: -13, dan Hasil kali (faktorial 5): 120, masing-masing satu baris.",
         ],
         "solution": """#include <stdio.h>
 
@@ -470,9 +476,9 @@ int main(void) {
             "dan tampilkan ke layar.",
         ],
         "hints": [
-            "FILE *fp = fopen(\"nilai.txt\", \"w\"); SELALU cek NULL.",
-            "fprintf(fp, \"%s %d\\\\n\", nama, nilai);",
-            "Baca ulang dengan mode \"r\" dan fgets() dalam loop while.",
+            "Baca materi \"File I/O\": fopen dengan mode \"w\" untuk menulis dan \"r\" untuk membaca, dan hasilnya selalu dicek terhadap NULL.",
+            "Tulis tiga baris dengan fprintf, tutup berkasnya dengan fclose, lalu buka lagi untuk dibaca. Baca dengan fgets di dalam while sampai fgets mengembalikan NULL, dan cetak tiap baris apa adanya; baris dari fgets sudah membawa \\n sendiri.",
+            "Data solusi contoh: Andi 85, Budi 70, Citra 92. Sebelum isinya dicetak, ada satu baris judul: Isi file nilai.txt:",
         ],
         "solution": """#include <stdio.h>
 
@@ -515,9 +521,9 @@ int main(void) {
             "Gunakan variabel global 'top' untuk melacak posisi puncak.",
         ],
         "hints": [
-            "int stack[100]; int top = -1;  // -1 berarti kosong",
-            "push: stack[++top] = nilai;",
-            "pop: return stack[top--]; (cek isEmpty dulu sebelum pop!)",
+            "Stack itu LIFO: yang terakhir masuk, pertama keluar. Bekalnya materi \"Array\" dan \"Lingkup, Masa Hidup & Kelas Penyimpanan Variabel\" (untuk variabel global).",
+            "Pakai array global dan variabel top yang mulai dari -1, artinya kosong. push menaikkan top dulu baru menyimpan; pop mengambil elemen di top baru menurunkannya. Cek kosong sebelum pop dan cek penuh sebelum push.",
+            "isEmpty cukup mengembalikan top == -1. Solusi contoh push 10, 20, 30, lalu pop tiga kali (Pop: 30, Pop: 20, Pop: 10) dan terakhir mencetak Stack kosong? 1.",
         ],
         "solution": """#include <stdio.h>
 
@@ -571,9 +577,9 @@ int main(void) {
             "Pastikan memori node yang dihapus di-free().",
         ],
         "hints": [
-            "cariNode: loop dari head, bandingkan current->data dengan nilai.",
-            "hapusNode: perlu tracking 'previous' node untuk menyambung ulang pointer.",
-            "Kasus khusus: menghapus HEAD (previous == NULL).",
+            "Baca materi \"Linked List: Struktur Data Dinamis\". Mencari cukup menelusuri dari head; menghapus butuh node sebelumnya supaya sambungannya bisa dipindah.",
+            "hapusNode: jalan dengan dua pointer, current dan previous, sampai ketemu nilainya. Kalau nggak ketemu, kembalikan head apa adanya. Kalau yang dihapus head (previous masih NULL), head baru adalah node sesudahnya; selain itu sambungkan previous->next ke current->next. Terakhir free(current).",
+            "Solusi contoh membangun 10 -> 20 -> 30 -> NULL dengan tambahDiAwal, mencetak Cari 20? 1 dan Cari 99? 0, lalu menghapus 20 jadi 10 -> 30 -> NULL. Bebaskan sisa node di akhir main.",
         ],
         "solution": """#include <stdio.h>
 #include <stdlib.h>
@@ -659,9 +665,9 @@ int main(void) {
             "menggunakan algoritma binary search (bukan linear search).",
         ],
         "hints": [
-            "Bubble sort: nested loop, tukar jika arr[j] > arr[j+1].",
-            "Binary search: butuh array TERURUT, bandingkan dengan elemen tengah, "
-            "lalu persempit ke kiri/kanan berdasarkan hasil perbandingan.",
+            "Bekalnya materi \"Array\" dan \"Function (Fungsi)\"; cara kerja binary search juga disinggung di \"C Generik: void *, qsort & Fungsi Variadic\". Binary search cuma jalan di array yang sudah terurut.",
+            "Bubble sort: dua loop bersarang, tukar dua elemen bertetangga kalau yang kiri lebih besar. Binary search: simpan batas kiri dan kanan, cek elemen tengah; kalau target lebih besar geser kiri ke tengah + 1, kalau lebih kecil geser kanan ke tengah - 1, dan berhenti saat kiri melewati kanan.",
+            "Hitung tengah dengan kiri + (kanan - kiri) / 2 supaya nggak overflow. Data solusi contoh {64, 25, 12, 22, 11, 90, 45}; sesudah diurutkan, 22 ada di indeks 2 dan 99 menghasilkan -1.",
         ],
         "solution": """#include <stdio.h>
 
@@ -724,10 +730,9 @@ int main(void) {
             "  5. Membebaskan (free) memori array di akhir program.",
         ],
         "hints": [
-            "typedef struct { char nama[50]; int nim; double ipk; } Mahasiswa;",
-            "Mahasiswa *data = malloc(n * sizeof(Mahasiswa));",
-            "Loop untuk cari IPK max (mirip Latihan 6, tapi field struct).",
-            "fprintf(fp, \"%s %d %.2f\\\\n\", data[i].nama, data[i].nim, data[i].ipk);",
+            "Ini gabungan materi \"Struct\", \"Dynamic Memory Allocation (malloc, calloc, free)\", dan \"File I/O\". Kerjakan satu bagian sampai jalan, baru tambah bagian berikutnya.",
+            "Urutannya: malloc array of struct untuk n = 3 dan cek NULL, isi datanya (nama pakai strcpy), tulis semuanya ke mahasiswa.txt dengan fprintf, cari indeks IPK tertinggi seperti di Latihan 6, cetak, lalu free. Kalau fopen gagal, free dulu sebelum return.",
+            "Data contoh: Andi 101 3.5, Budi 102 3.9, Citra 103 3.2. Satu-satunya keluaran di layar: Mahasiswa dengan IPK tertinggi: Budi (IPK 3.90).",
         ],
         "solution": """#include <stdio.h>
 #include <stdlib.h>
@@ -824,10 +829,10 @@ int main(void) {
         '  Petak kosong tak terjangkau : 0',
     ],
         'hints': [
-        'typedef struct { int b, k; } Titik; lalu antrean cukup Titik *antre = malloc(sizeof(Titik) * BARIS * KOLOM);',
-        'Empat arah ditulis sebagai dua array sejajar: DB[4] = {-1,0,1,0} dan DK[4] = {0,1,0,-1}.',
-        'Menelusuri balik: mulai dari K, isi jalur[i] dari belakang ke depan (for (int i = panjang; i >= 0; i--)), lalu jalurnya sudah urut.',
-    ],
+            "BFS (breadth-first search) menjelajah petak selapis demi selapis dari S, jadi saat K pertama kali tercapai, jalurnya pasti terpendek. Bekalnya ada di materi \"Array\", \"Struct\", dan \"Dynamic Memory Allocation (malloc, calloc, free)\".",
+            "Antrean cukup array Titik plus dua indeks: depan untuk mengambil, belakang untuk menambah. Isi jarak[][] dengan -1 sebagai tanda belum dikunjungi. Tiap kali mengambil satu petak, coba empat tetangganya dengan urutan atas, kanan, bawah, kiri; lewati yang di luar peta, tembok, atau sudah punya jarak, lalu catat jarak dan asalnya sebelum dimasukkan ke antrean.",
+            "typedef struct { int b, k; } Titik; antreannya malloc(sizeof(Titik) * BARIS * KOLOM), dan arah ditulis sebagai dua array sejajar DB[4] = {-1,0,1,0} dan DK[4] = {0,1,0,-1}. Untuk jalur, mulai dari K dan ikuti asal[][] mundur sambil mengisi jalur[i] dari indeks panjang turun ke 0, jadi hasilnya sudah urut dari S ke K.",
+        ],
         'solution': """/* Pencari Jalan Keluar Labirin -- BFS di atas array dua dimensi. */
 #include <stdio.h>
 #include <stdlib.h>

@@ -54,10 +54,9 @@ GIT_EXERCISES = [
             "  Pesan  : Tambah catatan pertama",
         ],
         "hints": [
-            "git init -q -b main membuat repositori dengan cabang awal main tanpa pesan apa pun.",
-            "git branch --show-current mencetak nama cabang yang sedang dipijak.",
-            "git rev-list --count HEAD menghitung commit yang bisa dicapai dari HEAD.",
-            "git log -1 --format=%s mencetak subjek commit terakhir saja.",
+            "Repositori baru, identitas lokal, lalu satu commit. Baca ulang materi \"Memasang Git & Memperkenalkan Diri\" dan \"Tiga Area Kerja & Commit Pertama\".",
+            "Urutannya: init dengan cabang awal main, git config tanpa --global untuk nama dan email, tulis catatan.txt, add, lalu commit. Ambil nama cabang, jumlah commit, dan subjek commit terakhir dari perintah Git, jangan diketik manual. Pakai -q supaya init dan commit nggak mencetak apa pun.",
+            "git init -q -b main membuat cabang awal main. git branch --show-current mencetak nama cabang, git rev-list --count HEAD menghitung commit, dan git log -1 --format=%s mencetak subjek commit terakhir.",
         ],
         "solution": _KEPALA.format(judul="Latihan 1: Repositori dan Commit Pertama") + """
 echo "Hari 1: belajar git" > catatan.txt
@@ -90,10 +89,9 @@ printf 'Pesan  : %s\\n' "$(git log -1 --format=%s)"
             "  ?? b.txt",
         ],
         "hints": [
-            "git status --short mencetak dua kolom: kiri keadaan staging, kanan keadaan folder kerja.",
-            "Hanya add berkas yang disebut soal; git add . akan ikut memasukkan b.txt.",
-            "Sesudah commit, menulis ulang isi a.txt dengan echo sudah cukup untuk membuatnya berubah.",
-            "Status untuk berkas yang berubah tapi belum di-add berawal dengan satu spasi lalu M.",
+            "Git punya tiga area: folder kerja, staging, dan repositori. Status versi ringkas (flag --short) menampilkan dua kolom untuk dua area pertama. Baca ulang materi \"Tiga Area Kerja & Commit Pertama\" dan \"Membaca Status, Diff, dan Riwayat\".",
+            "Add cuma a.txt (git add . akan ikut memasukkan b.txt), cetak status, commit, lalu tulis ulang isi a.txt dengan echo dan cetak status lagi. Kolom kiri adalah staging, kolom kanan folder kerja.",
+            "Berkas baru yang di-stage tampil sebagai A di kolom kiri. Berkas terlacak yang berubah tapi belum di-add tampil sebagai spasi lalu M. Berkas yang belum dilacak tampil sebagai ??.",
         ],
         "solution": _KEPALA.format(judul="Latihan 2: Tiga Area Kerja") + """
 echo "satu" > a.txt
@@ -127,10 +125,9 @@ git status --short
             "  diabaikan: build/keluaran.txt",
         ],
         "hints": [
-            "Pola *.log menangkap semua berkas berakhiran .log di folder mana pun.",
-            "Pola build/ dengan garis miring di akhir hanya cocok dengan folder bernama build.",
-            "mkdir -p build sebelum menulis berkas di dalamnya.",
-            "git check-ignore mencetak nama berkas yang cocok dengan sebuah pola, satu per baris.",
+            "Pola di .gitignore menentukan berkas mana yang nggak pernah muncul sebagai untracked. Baca ulang materi \".gitignore: Berkas yang Tidak Boleh Masuk Riwayat\".",
+            "Tulis dua pola ke .gitignore: satu untuk semua berkas berakhiran .log, satu untuk folder build (garis miring di akhir berarti folder). Buat foldernya dulu dengan mkdir -p sebelum menulis berkas di dalamnya, lalu cetak status ringkas.",
+            "git check-ignore app.log build/keluaran.txt mencetak nama berkas yang cocok dengan pola, satu per baris. Telusuri hasilnya dengan for lalu cetak \"diabaikan: $berkas\".",
         ],
         "solution": _KEPALA.format(judul="Latihan 3: .gitignore yang Bekerja") + """
 printf '*.log\\nbuild/\\n' > .gitignore
@@ -165,10 +162,9 @@ done
             "  Perbarui menu",
         ],
         "hints": [
-            "git diff --numstat mencetak tiga kolom dipisah tab: baris ditambah, baris dihapus, nama berkas.",
-            "Bagi Git, mengubah satu baris berarti satu baris hilang dan satu baris muncul.",
-            "awk membaca kolom pertama sebagai $1, kedua $2, ketiga $3.",
-            "git log --format=%s --reverse mencetak subjek commit dari yang tertua.",
+            "git diff memperlihatkan perubahan yang belum di-add, dan flag --numstat meringkasnya jadi angka. Baca ulang materi \"Membaca Status, Diff, dan Riwayat\".",
+            "Commit versi pertama, tulis ulang menu.txt dengan versi baru, lalu cetak ringkasan diff sebelum commit kedua. Bagi Git, mengubah satu baris berarti satu baris hilang dan satu baris muncul, jadi Teh yang jadi Teh Tarik dihitung tambah 1 dan hapus 1.",
+            "--numstat mencetak tiga kolom dipisah tab (tambah, hapus, nama berkas); awk membacanya sebagai $1, $2, dan $3. Riwayat dari yang tertua: git log --format=%s --reverse.",
         ],
         "solution": _KEPALA.format(judul="Latihan 4: Membaca Diff dan Riwayat") + """
 printf 'Kopi\\nTeh\\nSusu\\n' > menu.txt
@@ -206,10 +202,9 @@ git log --format=%s --reverse
             "  docs: 1",
         ],
         "hints": [
-            "Satu commit butuh satu perubahan; menulis ulang berkas yang sama tiga kali sudah cukup.",
-            "git commit -q -a -m hanya bekerja untuk berkas yang sudah dilacak; berkas baru tetap perlu add.",
-            "Jenis commit adalah teks sebelum tanda kurung atau titik dua pertama di subjek.",
-            "grep -c menghitung baris yang cocok; pola ^feat menangkap subjek yang diawali feat.",
+            "Subjek Conventional Commits berbentuk jenis(cakupan): ringkasan, dan jenisnya adalah teks sebelum tanda kurung atau titik dua pertama. Baca ulang materi \"Pesan Commit yang Baik & Conventional Commits\".",
+            "Tiap commit butuh perubahan, jadi tulis ulang atau tambah berkas sebelum tiap commit. git commit -a cuma mengikutkan berkas yang sudah dilacak; berkas baru tetap perlu add. Sesudah itu cetak subjek dari yang tertua, lalu hitung tiap jenis dengan membaca awalannya.",
+            "Hitung satu jenis: git log --format=%s | grep -c \"^feat\". Bungkus dalam for jenis in feat fix docs supaya cukup ditulis sekali.",
         ],
         "solution": _KEPALA.format(judul="Latihan 5: Pesan Commit Konvensional") + """
 echo "menu" > menu.txt
@@ -251,10 +246,9 @@ done
             "  Revert \"Ubah sapaan\"",
         ],
         "hints": [
-            "git restore halo.txt mengembalikan berkas ke versi di HEAD selama perubahannya belum di-add.",
-            "git revert --no-edit HEAD membuat commit pembalik dengan pesan bawaan tanpa membuka editor.",
-            "Pesan bawaan revert berbentuk Revert diikuti subjek commit yang dibatalkan dalam tanda kutip.",
-            "Alihkan keluaran revert ke /dev/null supaya baris ringkasannya yang memuat hash tidak ikut tercetak.",
+            "Ada dua cara membatalkan: restore untuk perubahan yang belum di-add, revert untuk commit yang sudah ada. Baca ulang materi \"Membatalkan dengan Aman: restore, amend, revert\".",
+            "Langkah 1: ubah isi berkas, kembalikan ke versi HEAD dengan restore, lalu cetak isinya. Langkah 2: ubah, commit, lalu revert commit terakhir tanpa membuka editor. revert nggak menghapus commit; ia menambah commit pembalik, jadi riwayatnya berisi tiga commit.",
+            "git revert --no-edit HEAD memakai pesan bawaan Revert \"subjek\". Alihkan keluarannya ke /dev/null supaya baris ringkasan yang memuat hash nggak ikut tercetak.",
         ],
         "solution": _KEPALA.format(judul="Latihan 6: Membatalkan dengan Aman") + """
 echo "Halo" > halo.txt
@@ -295,10 +289,9 @@ git log --format=%s --reverse
             "  Merge commit: 0",
         ],
         "hints": [
-            "git switch -c fitur membuat cabang sekaligus pindah ke sana.",
-            "git branch --format='%(refname:short)' mencetak nama cabang saja, tanpa tanda bintang.",
-            "git merge -q fitur dari main menggabungkan tanpa mencetak ringkasan.",
-            "git log --merges mencetak hanya merge commit; hitung barisnya dengan wc -l.",
+            "Merge jadi fast-forward kalau cabang tujuan belum bergerak sejak cabang sumber dibuat. Baca ulang materi \"Membuat, Berpindah, dan Menghapus Branch\" dan \"Merge: Fast-forward vs Merge Commit\".",
+            "Commit Awal di main, buat cabang fitur dan pindah ke sana, buat dua commit, kembali ke main, lalu merge fitur. Jangan membuat commit di main sebelum merge, supaya hasilnya fast-forward.",
+            "git switch -q -c fitur membuat cabang sekaligus pindah. Nama cabang tanpa tanda bintang: git branch --format='%(refname:short)', lalu satukan barisnya dengan tr. Hitung merge commit: git log --merges --format=%s | wc -l.",
         ],
         "solution": _KEPALA.format(judul="Latihan 7: Branch dan Fast-forward") + """
 echo "awal" > awal.txt
@@ -346,10 +339,9 @@ printf 'Merge commit: %s\\n' "$(git log --merges --format=%s | wc -l)"
             "  Orang tua HEAD: 2",
         ],
         "hints": [
-            "Commit di main sesudah cabang dibuat memaksa Git membuat merge commit, bukan fast-forward.",
-            "git merge --no-edit fitur memakai pesan bawaan Merge branch 'fitur' tanpa membuka editor.",
-            "git log --graph --format=%s menggambar garis percabangan di kiri subjek.",
-            "git rev-list --parents -n 1 HEAD mencetak hash HEAD diikuti hash orang tuanya; jumlah kata dikurangi satu adalah jumlah orang tuanya.",
+            "Kalau main juga punya commit baru sesudah cabang dibuat, Git nggak bisa fast-forward dan membuat merge commit dengan dua orang tua. Baca ulang materi \"Merge: Fast-forward vs Merge Commit\".",
+            "Buat dua commit di fitur, kembali ke main dan buat satu commit, lalu merge dengan pesan bawaan tanpa membuka editor. Cetak graf dengan format subjek saja, dan buang spasi di ujung tiap baris dengan sed.",
+            "git merge -q --no-edit fitur memakai pesan Merge branch 'fitur'. git rev-list --parents -n 1 HEAD mencetak hash HEAD diikuti hash orang tuanya; hitung katanya dengan wc -w lalu kurangi satu.",
         ],
         "solution": _KEPALA.format(judul="Latihan 8: Merge Commit dan Graf Riwayat") + """
 echo "awal" > awal.txt
@@ -398,11 +390,9 @@ printf 'Orang tua HEAD: %s\\n' "$((jumlah - 1))"
             "  Gabungkan diskon dengan harga baru",
         ],
         "hints": [
-            "Dua cabang yang mengubah baris yang sama dengan isi berbeda memaksa Git menyerahkan keputusannya kepadamu.",
-            "Merge yang berkonflik keluar dengan kode 1; letakkan di dalam if supaya set -e tidak menghentikan skrip, dan alihkan keluarannya ke /dev/null.",
-            "git diff --name-only --diff-filter=U mencetak berkas yang masih berstatus unmerged.",
-            "Menulis ulang berkas dengan isi akhir lalu git add menandai konfliknya selesai; commit sesudahnya menjadi merge commit.",
-            "git log --first-parent hanya mengikuti orang tua pertama tiap commit, jadi commit di cabang diskon tidak ikut tercetak.",
+            "Dua cabang yang mengubah baris yang sama dengan isi berbeda memaksa Git menyerahkan keputusannya kepadamu. Baca ulang materi \"Konflik Merge dan Cara Menyelesaikannya\".",
+            "Merge yang berkonflik keluar dengan kode 1, dan set -e akan menghentikan skrip. Taruh merge di dalam if dan alihkan keluarannya ke /dev/null. Selesaikan dengan menulis ulang berkas, add, lalu commit; commit itu otomatis jadi merge commit.",
+            "Berkas yang masih konflik: git diff --name-only --diff-filter=U. Garis utama tanpa commit cabang diskon: git log --first-parent --format=%s --reverse.",
         ],
         "solution": _KEPALA.format(judul="Latihan 9: Menyelesaikan Konflik") + """
 echo "harga: 10000" > menu.txt
@@ -454,11 +444,9 @@ git log --first-parent --format=%s --reverse
             "  origin/main",
         ],
         "hints": [
-            "git init -q --bare -b main pusat.git membuat repositori tanpa folder kerja, persis seperti yang disimpan GitHub.",
-            "git clone -q pusat.git laptop memakai jalur folder sebagai alamat remote; origin-nya terpasang otomatis.",
-            "Identitas harus diatur di tiap clone yang membuat commit, karena git config tanpa --global hanya berlaku untuk satu repositori.",
-            "git push -q -u origin main mengirim cabang sekaligus mengingat pasangannya.",
-            "git branch -r mencetak cabang remote dengan dua spasi di depan; buang baris origin/HEAD dengan grep -v dan spasinya dengan sed.",
+            "Remote cuma alamat repositori lain, dan alamat itu boleh berupa folder di disk yang sama. Baca ulang materi \"Remote: clone, fetch, dan pull\" dan \"Push, Pull, dan Alur Harian\".",
+            "Buat repositori bare (tanpa folder kerja) dengan cabang awal main, clone ke laptop, atur identitas di clone itu, commit, lalu push sambil memasang upstream. Buat cabang fitur dan push juga. Terakhir clone sekali lagi ke kantor dan baca semuanya dari sana.",
+            "git init -q --bare -b main pusat.git membuat remote-nya. Identitas wajib diatur di tiap clone yang membuat commit, karena git config tanpa --global cuma berlaku untuk satu repositori. git branch -r mencetak cabang remote dengan dua spasi di depan; buang baris origin/HEAD dengan grep -v dan spasinya dengan sed.",
         ],
         "solution": _KEPALA_KOSONG.format(judul="Latihan 10: Remote Lokal: clone, push, fetch") + """
 git init -q --bare -b main pusat.git
@@ -507,10 +495,9 @@ git branch -r | grep -v HEAD | sed 's/^ *//'
             "   M kerja.txt",
         ],
         "hints": [
-            "git stash -q menyimpan perubahan folder kerja dan staging, lalu mengembalikan berkas ke versi HEAD.",
-            "git stash list mencetak satu baris per simpanan; wc -l menghitungnya.",
-            "git stash pop -q menerapkan simpanan teratas sekaligus menghapusnya dari daftar.",
-            "Sesudah pop, kerja.txt kembali berubah tapi belum di-stage, jadi statusnya spasi lalu M.",
+            "Stash menyimpan perubahan yang belum di-commit ke tempat sementara, lalu mengembalikan folder kerja ke versi HEAD. Baca ulang materi \"Stash, Cherry-pick, dan Tag\".",
+            "Commit versi awal, ubah isinya, stash, lalu cetak isi berkas dan jumlah stash. Kerjakan commit darurat, ambil lagi perubahanmu dengan pop (pop menerapkan sekaligus menghapus simpanan teratas), cetak lagi, dan tutup dengan status ringkas.",
+            "Jumlah stash: git stash list | wc -l. Pakai -q pada stash dan stash pop supaya keduanya diam. Sesudah pop, kerja.txt berubah tapi belum di-stage, jadi statusnya spasi lalu M.",
         ],
         "solution": _KEPALA.format(judul="Latihan 11: Stash untuk Pekerjaan Setengah Jadi") + """
 echo "v1" > kerja.txt
@@ -559,11 +546,9 @@ git status --short
             "  Pesan v1.0.1: Versi 1.0.1",
         ],
         "hints": [
-            "git tag -a v1.0 -m \"Versi 1.0\" membuat tag beranotasi yang menyimpan pesan dan pembuatnya.",
-            "Nama cabang menunjuk commit ujungnya, jadi git cherry-pick eksperimen menyalin commit terakhir cabang itu saja.",
-            "cherry-pick mencetak ringkasan berisi hash ke stdout; alihkan ke /dev/null supaya keluarannya bersih.",
-            "git ls-files mencetak berkas terlacak, satu per baris; tr dan sed merapikannya jadi satu baris.",
-            "git tag -l --format='%(contents:subject)' v1.0.1 mencetak baris pertama pesan tag.",
+            "Tag memberi nama tetap pada sebuah commit, sedangkan cherry-pick menyalin satu commit dari cabang lain. Baca ulang materi \"Stash, Cherry-pick, dan Tag\".",
+            "Buat tag beranotasi (flag -a dan -m) sesudah commit pertama. Di cabang eksperimen buat dua commit, kembali ke main, lalu cherry-pick ujung eksperimen saja. Nama cabang menunjuk commit ujungnya, jadi nama cabang bisa dipakai langsung sebagai argumen.",
+            "Alihkan keluaran cherry-pick ke /dev/null karena memuat hash. Berkas terlacak: git ls-files, dirapikan jadi satu baris dengan tr dan sed. Pesan tag: git tag -l --format='%(contents:subject)' v1.0.1.",
         ],
         "solution": _KEPALA.format(judul="Latihan 12: Tag dan Cherry-pick") + """
 echo "1.0" > versi.txt
@@ -613,11 +598,9 @@ printf 'Pesan v1.0.1: %s\\n' "$(git tag -l --format='%(contents:subject)' v1.0.1
             "  Berkas tersisa: a.txt b.txt",
         ],
         "hints": [
-            "git tag puncak tanpa -a membuat tag ringan: sekadar nama untuk commit saat ini.",
-            "--soft memundurkan HEAD saja, jadi c.txt tetap di staging dan statusnya A.",
-            "--mixed (bawaan) juga mengosongkan staging; c.txt masih ada di folder kerja tapi tidak dilacak.",
-            "--hard ikut menghapus perubahan di folder kerja, sehingga c.txt lenyap dan statusnya kosong.",
-            "Pakai git reset -q supaya ringkasan berisi hash tidak tercetak, dan ls untuk daftar berkasnya.",
+            "reset memindahkan cabang ke commit lain, dan --soft, --mixed, --hard menentukan seberapa banyak staging dan folder kerja ikut diubah. Baca ulang materi \"reset: Memundurkan HEAD dengan Tiga Tingkat Kekuatan\".",
+            "Tandai commit ketiga dengan tag ringan supaya bisa kembali ke sana. Untuk tiap jenis: reset ke HEAD~1, laporkan, lalu kembali dengan reset --hard ke tag itu. --soft membiarkan c.txt di staging (A), --mixed mengosongkan staging sehingga c.txt jadi untracked (??), dan --hard ikut menghapusnya dari folder kerja.",
+            "Tag ringan dibuat tanpa -a. Pakai git reset -q supaya ringkasan berisi hash nggak tercetak. Satukan status jadi satu baris dengan git status --short | tr -d '\\n', dan pakai ls untuk daftar berkasnya.",
         ],
         "solution": _KEPALA.format(judul="Latihan 13: Tiga Wajah reset") + """
 for nama in a b c; do
@@ -669,10 +652,9 @@ printf 'Berkas tersisa: %s\\n' "$(ls | tr '\\n' ' ' | sed 's/ $//')"
             "  Merge commit: 0",
         ],
         "hints": [
-            "git merge-base --is-ancestor main fitur keluar dengan kode 0 kalau main leluhur fitur; pakai di dalam if.",
-            "git rebase -q main dijalankan DARI cabang fitur: commit fitur disalin ulang di atas ujung main.",
-            "Sesudah rebase, main tinggal dimajukan, jadi git merge fitur menjadi fast-forward tanpa merge commit.",
-            "git log --graph --format=%s menggambar riwayat; sesudah rebase garisnya lurus.",
+            "Rebase menyalin ulang commit cabangmu di atas ujung cabang lain, sehingga riwayatnya jadi satu garis lurus. Baca ulang materi \"Rebase: Riwayat Lurus dan rebase -i\".",
+            "Buat commit di fitur dan di main supaya bercabang. Cek hubungan leluhur, pindah ke fitur, rebase ke main, cek lagi, lalu kembali ke main dan merge; sekarang merge-nya fast-forward. Tutup dengan graf subjek saja dan jumlah merge commit.",
+            "git merge-base --is-ancestor main fitur keluar dengan kode 0 kalau main leluhur fitur, jadi pakai di dalam if. Rebase dijalankan dari cabang fitur: git rebase -q main.",
         ],
         "solution": _KEPALA.format(judul="Latihan 14: Rebase untuk Riwayat Lurus") + """
 echo "awal" > awal.txt
@@ -726,10 +708,9 @@ printf 'Merge commit: %s\\n' "$(git log --merges --format=%s | wc -l)"
             "  Tiga",
         ],
         "hints": [
-            "reset --hard memindahkan cabang, tapi commit yang ditinggalkannya masih ada di basis data objek selama belum dibersihkan.",
-            "git reflog -1 --format=%gs mencetak subjek entri reflog teratas, yaitu tindakan yang paling baru.",
-            "HEAD@{1} berarti \"posisi HEAD satu langkah sebelum sekarang\" menurut reflog.",
-            "git reset -q --hard HEAD@{1} mengembalikan cabang ke posisi itu; pakai tanda kutip supaya shell tidak mengolah kurung kurawalnya.",
+            "reset --hard memindahkan cabang, tapi commit yang ditinggalkan masih ada di basis data, dan reflog mencatat posisi HEAD sebelumnya. Baca ulang materi \"Reflog dan Bisect: Jaring Pengaman dan Detektif\".",
+            "Buat tiga commit, reset --hard dua langkah ke belakang, lalu cetak jumlah commit dan subjek entri reflog teratas. Sesudah itu reset --hard ke posisi HEAD satu langkah sebelum sekarang menurut reflog, dan cetak hasilnya.",
+            "Subjek reflog teratas: git reflog -1 --format=%gs. Posisi sebelumnya ditulis HEAD@{1}; beri tanda kutip, 'HEAD@{1}', supaya shell nggak mengolah kurung kurawalnya.",
         ],
         "solution": _KEPALA.format(judul="Latihan 15: Reflog: Menyelamatkan Commit yang Hilang") + """
 for pesan in Satu Dua Tiga; do
@@ -797,11 +778,9 @@ git log --format=%s --reverse
             "  Commit Budi: 2",
         ],
         "hints": [
-            "Susun skripnya mengikuti nomor langkah di soal, dan pindah folder dengan cd ke clone yang sedang bekerja.",
-            "Push yang ditolak keluar dengan kode bukan nol; bungkus dalam if dan alihkan pesannya ke /dev/null.",
-            "git pull --no-rebase -q harus disebut eksplisit: tanpa pilihan itu Git menolak menggabungkan cabang yang bercabang.",
-            "Pull yang berkonflik juga keluar dengan kode bukan nol, jadi tangkap dengan if dan baca berkasnya lewat git diff --name-only --diff-filter=U.",
-            "git log --graph --format='%s (%an)' menggambar riwayat dengan nama penulis; git log --author=Ani --format=%s | wc -l menghitung commit Ani.",
+            "Ini simulasi pull request dan konflik antara dua orang, dengan repositori bare sebagai pengganti GitHub. Baca ulang materi \"Pull Request: Alur Kerja Tim di GitHub\" dan \"Konflik Merge dan Cara Menyelesaikannya\".",
+            "Susun skripnya mengikuti nomor langkah di soal, dan cd ke clone yang sedang bekerja. Push Budi yang ditolak dan pull yang berkonflik sama-sama keluar dengan kode bukan nol, jadi bungkus keduanya dalam if dan alihkan pesannya ke /dev/null. Fungsi kecil untuk mengatur nama dan email menghemat baris.",
+            "Tulis git pull --no-rebase -q secara eksplisit; tanpa pilihan itu Git menolak menggabungkan cabang yang bercabang. Berkas konflik: git diff --name-only --diff-filter=U. Graf dengan penulis: git log --graph --format='%s (%an)'; hitung commit Ani dengan git log --author=Ani --format=%s | wc -l.",
         ],
         "solution": _KEPALA_KOSONG.format(judul="Latihan 16: Proyek Akhir: Simulasi Tim dengan Remote") + """
 kenalkan() {

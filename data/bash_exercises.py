@@ -8,9 +8,9 @@ BASH_EXERCISES = [
             "  Aku sedang belajar Bash.",
         ],
         "hints": [
-            "Mulai file dengan shebang: #!/usr/bin/env bash",
-            "Gunakan echo untuk tiap baris.",
-            "Bungkus teks dengan petik ganda.",
+            "Script bash itu kumpulan perintah yang dijalankan berurutan dari atas ke bawah. Baca ulang materi \"Pengenalan Shell & Bash\".",
+            "Baris pertama adalah shebang, yang memberi tahu sistem bahwa ini script bash. Sesudah itu cukup satu perintah echo untuk tiap baris keluaran.",
+            "Bungkus teksnya dengan petik ganda, dan salin tanda bacanya persis, termasuk koma, tanda seru, dan titik di akhir.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -31,9 +31,9 @@ echo "Aku sedang belajar Bash." """,
             "  15 % 4 = 3",
         ],
         "hints": [
-            "Ingat: tidak boleh ada spasi di sekitar tanda = saat membuat variabel.",
-            "Aritmatika memakai $(( ... )).",
-            "Di dalam $(( )) kamu boleh menulis a saja tanpa tanda dolar.",
+            "Soal ini tentang variabel dan aritmatika bilangan bulat. Baca ulang materi \"Variabel & Quoting\" dan \"Aritmatika & Angka\".",
+            "Buat dua variabel tanpa spasi di sekitar tanda =. Tiap baris keluaran berisi teks biasa plus hasil hitung yang ditaruh di dalam $(( ... )).",
+            "Di dalam $(( )) kamu boleh menulis a tanpa tanda dolar, misalnya $((a + b)). Pembagian / di bash membuang sisanya, jadi 15 / 4 memang 3.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -57,9 +57,9 @@ echo "$a % $b = $((a % b))" """,
             "Contoh: input 80 menghasilkan output Lulus",
         ],
         "hints": [
-            "Gunakan read untuk membaca input ke variabel.",
-            "Bandingkan angka dengan -ge di dalam [[ ]].",
-            "Blok if ditutup dengan fi.",
+            "Kamu perlu membaca input lalu memilih satu dari dua jalan. Baca ulang materi \"Input & Output\" dan \"Percabangan (if, case)\".",
+            "Baca angkanya dengan read ke sebuah variabel, lalu bandingkan dengan 75 di dalam if. Jangan cetak teks pembuka apa pun sebelum read, karena seluruh keluaran dinilai persis.",
+            "Untuk angka, \"lebih besar atau sama dengan\" ditulis -ge di dalam [[ ]]. Blok if ditutup dengan fi.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -84,9 +84,9 @@ fi""",
             "  Total: 110",
         ],
         "hints": [
-            "Pakai for i in {1..20} lalu cek sisa baginya.",
-            "Bilangan genap berarti $((i % 2)) sama dengan 0.",
-            "Atau langsung pakai rentang berloncatan: {2..20..2}",
+            "Ini soal perulangan dengan syarat di dalamnya, plus satu variabel penampung total. Baca ulang materi \"Perulangan (for, while, until)\" dan \"Aritmatika & Angka\".",
+            "Siapkan total bernilai 0 sebelum loop. Ulangi angka 1 sampai 20, cetak yang genap, dan tambahkan ke total. Baris Total dicetak sesudah loop selesai.",
+            "Genap artinya sisa bagi 2 sama dengan 0, yaitu (( i % 2 == 0 )). Atau langsung pakai rentang berloncatan {2..20..2} supaya nggak perlu if.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -113,9 +113,9 @@ echo "Total: $total" """,
             "Gunakan pembagian bulat biasa, tidak perlu desimal.",
         ],
         "hints": [
-            "Kalikan dulu baru bagi, supaya hasilnya tidak terlanjur dibulatkan.",
-            "C * 9 / 5 lebih tepat daripada C * (9 / 5) karena 9/5 jadi 1.",
-            "Semua operasi di dalam satu $(( )).",
+            "Ini soal aritmatika bilangan bulat dengan input. Baca ulang materi \"Aritmatika & Angka\".",
+            "Baca suhu dengan read, hitung F di dalam satu $(( )), lalu cetak dengan format persis seperti contoh.",
+            "Kalikan dulu baru bagi: C * 9 / 5 + 32. Kalau ditulis C * (9 / 5), bagian 9 / 5 langsung jadi 1 dan hasilnya salah.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -139,9 +139,9 @@ echo "$c C = $f F" """,
             "  7 x 10 = 70",
         ],
         "hints": [
-            "Gunakan for dengan rentang {1..10}.",
-            "Hitung hasilnya dengan $(( n * i )).",
-            "Perhatikan spasi di sekitar huruf x pada format output.",
+            "Ini gabungan input dan perulangan dengan rentang tetap. Baca ulang materi \"Perulangan (for, while, until)\".",
+            "Baca n dengan read, lalu ulangi i dari 1 sampai 10. Di tiap putaran cetak satu baris berisi n, huruf x, i, tanda =, dan hasil kalinya.",
+            "Hasil kali bisa ditulis $(( n * i )) langsung di dalam teks echo. Perhatikan spasi di kiri dan kanan huruf x serta tanda = pada format keluaran.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -170,9 +170,9 @@ done""",
             "Huruf kecil harus tetap dikenali (a sama dengan A).",
         ],
         "hints": [
-            "Struktur: case \"$g\" in ... esac",
-            "Satu cabang bisa punya beberapa pola: A|a)",
-            "Tiap cabang ditutup dengan ;; dan default-nya adalah *)",
+            "case cocok untuk memilih satu dari banyak kemungkinan nilai. Baca ulang materi \"Percabangan (if, case)\".",
+            "Baca hurufnya, lalu buat satu cabang per grade. Satu cabang boleh menerima lebih dari satu pola, jadi huruf besar dan kecil bisa digabung. Tambahkan cabang default paling akhir untuk huruf lain.",
+            "Pola ganda ditulis A|a), tiap cabang ditutup ;;, cabang default memakai *), dan seluruh blok ditutup esac.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -207,9 +207,9 @@ esac""",
             "  6! = 720",
         ],
         "hints": [
-            "Definisikan fungsi dengan: faktorial() { ... }",
-            "Argumen pertama fungsi ada di $1.",
-            "Pakai local untuk variabel di dalam fungsi, lalu echo hasilnya.",
+            "Kamu menulis fungsi yang dipanggil berulang kali dari dalam loop. Baca ulang materi \"Fungsi\".",
+            "Di dalam fungsi, ambil argumen pertama, kalikan angka 2 sampai angka itu ke sebuah variabel hasil yang mulai dari 1, lalu cetak hasilnya dengan echo. Di luar fungsi, ulangi 1 sampai 6 dan tangkap keluaran fungsi dengan $(...).",
+            "Argumen pertama ada di $1. Variabel di dalam fungsi sebaiknya local supaya nggak menimpa variabel loop di luar. Pemanggilannya di dalam teks: $(faktorial \"$n\").",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -244,9 +244,9 @@ done""",
             "Rata-rata memakai pembagian bulat.",
         ],
         "hints": [
-            "Buat array dengan: nilai=(80 65 90 45 75)",
-            "Jumlah elemen ada di ${#nilai[@]}, semua isi di ${nilai[@]}.",
-            "Cari tertinggi/terendah dengan membandingkan tiap elemen di dalam loop.",
+            "Ini soal array: menyimpan banyak nilai di satu variabel lalu menelusurinya. Baca ulang materi \"Array\".",
+            "Telusuri semua elemen dengan for. Di tiap putaran tambahkan ke total, lalu bandingkan dengan nilai tertinggi dan terendah sementara. Mulai tertinggi dan terendah dari elemen pertama, bukan dari 0.",
+            "Semua isi array ada di \"${nilai[@]}\" dan jumlah elemennya di ${#nilai[@]}. Rata-rata adalah total dibagi jumlah, dengan pembagian bulat di $(( )).",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -285,9 +285,9 @@ echo "Terendah: $terendah" """,
             "Kalau bukan palindrom, baris terakhir jadi 'Palindrom: bukan'.",
         ],
         "hints": [
-            "Ambil satu karakter dengan ${kata:i:1}.",
-            "Panjang string ada di ${#kata}.",
-            "Bangun string terbalik dengan menempel karakter dari belakang ke depan.",
+            "Soal ini tentang operasi string: mengambil karakter satu per satu. Baca ulang materi \"Operasi String\".",
+            "Telusuri kata dari indeks terakhir mundur ke 0 dan tempelkan tiap karakter ke string baru. Sesudah itu bandingkan kata asli dengan hasil baliknya untuk menentukan palindrom.",
+            "Panjang string ada di ${#kata}, satu karakter di posisi i diambil dengan ${kata:i:1}, dan += menempel teks di ujung variabel. Perhatikan spasi di label Asli supaya titik duanya sejajar dengan Terbalik.",
         ],
         # Beberapa input supaya SEMUA cabang benar-benar diuji; dengan
         # satu input saja, jawaban yang di-hardcode ikut dinyatakan benar.
@@ -329,9 +329,9 @@ fi""",
             "  Total kata: 12",
         ],
         "hints": [
-            "Buat file dengan heredoc: cat > data.txt << 'EOF' ... EOF",
-            "Baca dengan pola: while IFS= read -r baris; do ... done < data.txt",
-            "Hitung kata dengan mengubah baris jadi array: read -ra kata <<< \"$baris\"",
+            "Kamu membuat berkas, lalu membacanya baris demi baris. Baca ulang materi \"Aliran Data & Deskriptor\" (bagian heredoc) dan \"Perulangan (for, while, until)\".",
+            "Tulis keempat baris ke data.txt dengan heredoc. Lalu baca berkasnya dengan while read: naikkan nomor baris tiap putaran, hitung kata di baris itu, dan jumlahkan ke total. Dua baris Total dicetak sesudah loop.",
+            "Pola baca yang aman: while IFS= read -r baris; do ... done < data.txt. Kata dihitung dengan memecah baris jadi array lewat read -ra kata <<< \"$baris\", lalu ambil ${#kata[@]}.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -377,10 +377,9 @@ rm -f data.txt""",
             "Gunakan printf dengan lebar 7 untuk nama barang.",
         ],
         "hints": [
-            "Deklarasikan dulu: declare -A stok",
-            "Urutan iterasi associative array acak, jadi urutkan kuncinya "
-            "dengan: for k in $(printf '%s\\n' \"${!stok[@]}\" | sort); do",
-            "Format kolom dengan: printf '%-7s: %s\\n' \"$k\" \"${stok[$k]}\"",
+            "Associative array menyimpan pasangan nama dan nilai. Baca ulang materi \"Array\", bagian associative array.",
+            "Deklarasikan array-nya dengan declare -A, isi keempat barang, lalu telusuri kuncinya dalam urutan abjad. Di tiap putaran cetak barisnya, tambahkan ke total, dan catat barang yang stoknya di bawah 10.",
+            "Urutan kunci associative array nggak bisa ditebak, jadi urutkan dulu: for k in $(printf '%s\\n' \"${!stok[@]}\" | sort). Kolom nama selebar 7 ditulis dengan printf '%-7s: %s\\n'.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -420,9 +419,9 @@ echo "Stok menipis: ${menipis[*]}" """,
             "  0 -> valid",
         ],
         "hints": [
-            "Cek angka dengan regex: [[ \"$1\" =~ ^[0-9]+$ ]]",
-            "return mengirim exit code, tangkap dengan $? setelah memanggil fungsi.",
-            "Gunakan case pada $? untuk memetakan kode ke pesan.",
+            "Fungsi bash mengirim status lewat exit code, bukan lewat nilai kembalian seperti di bahasa lain. Baca ulang materi \"Argumen & Exit Code\" dan \"Pola: Glob dan Regex\".",
+            "Di dalam fungsi, periksa dulu apakah argumennya cuma berisi digit; kalau bukan, kembalikan 1. Kalau angka tapi lebih dari 150, kembalikan 2. Selain itu 0. Di luar fungsi, panggil fungsinya untuk tiap nilai uji, simpan $? saat itu juga, lalu ubah kodenya jadi pesan.",
+            "Cek digit dengan [[ \"$1\" =~ ^[0-9]+$ ]], lalu petakan kode ke pesan dengan case. Simpan $? ke variabel sebelum menjalankan perintah lain, karena $? langsung tertimpa oleh perintah berikutnya.",
         ],
         "solution": """#!/usr/bin/env bash
 
@@ -477,10 +476,9 @@ done""",
             "  Total: 3, Selesai: 1",
         ],
         "hints": [
-            "Simpan tiap tugas satu baris dengan awalan '[ ] ' di file.",
-            "Untuk menandai selesai, pakai sed pada baris ke-n:",
-            "  sed -i \"${n}s/^\\[ \\]/[x]/\" \"$BERKAS\"",
-            "Hitung yang selesai dengan grep -c '^\\[x\\]' \"$BERKAS\"",
+            "Ini proyek kecil yang menggabungkan fungsi, berkas, dan perulangan. Baca ulang materi \"Fungsi\" dan \"grep, sed, dan awk\".",
+            "Simpan tiap tugas sebagai satu baris berawalan '[ ] ' di sebuah berkas, dan kosongkan berkasnya di awal script. tambah menulis baris baru ke ujung berkas, daftar membaca berkas sambil memberi nomor, selesai mengganti awalan di baris ke-n, dan hitung menghitung semua baris serta baris berawalan [x].",
+            "Ganti awalan di baris ke-n: sed -i \"${n}s/^\\[ \\]/[x]/\" \"$BERKAS\". Hitung yang selesai: grep -c '^\\[x\\]' \"$BERKAS\". Jumlah baris: wc -l < \"$BERKAS\".",
         ],
         "solution": """#!/usr/bin/env bash
 set -uo pipefail
@@ -574,10 +572,10 @@ rm -f "$BERKAS" """,
         '  Golongan terbentuk       : 3',
     ],
         'hints': [
-        'Akhiran berkas: ${nama##*.} membuang segalanya sampai titik terakhir.',
-        'trap \'rm -rf "$KERJA"\' EXIT memastikan folder sementaranya hilang walaupun skripnya berhenti di tengah.',
-        "find rapi -name '*.csv' | sort | while read -r f; do ... done -- sort-nya wajib, bukan hiasan.",
-    ],
+            "Proyek ini menggabungkan case, fungsi, find, dan trap. Ulangi materi \"Bekerja dengan File & Folder\", \"find, xargs, dan Pemrosesan Massal\", dan \"Proses Latar Belakang, Sinyal, dan trap\".",
+            "Urutannya: buat folder kerja dengan mktemp -d dan pasang trap untuk menghapusnya saat keluar, isi berkas contoh, pilah tiap berkas menurut akhirannya ke rapi/<golongan>/, lalu cetak laporan. Tiap daftar dari find atau ls wajib lewat sort sebelum dicetak, karena urutannya bisa beda di tiap mesin.",
+            "Akhiran berkas: ${nama##*.} membuang segalanya sampai titik terakhir. trap 'rm -rf \"$KERJA\"' EXIT memastikan folder sementaranya hilang walaupun skripnya berhenti di tengah. Berkas kosong dicari dengan find rapi -type f -size 0.",
+        ],
         'solution': """#!/usr/bin/env bash
 # Perapi Folder Unduhan -- memilah berkas, membuat laporan, mengarsipkan.
 set -u

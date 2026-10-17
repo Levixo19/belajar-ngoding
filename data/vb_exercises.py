@@ -12,9 +12,9 @@ VB_EXERCISES = [
             "  VB.NET dan C# berjalan di runtime yang sama.",
         ],
         "hints": [
-            "Kerangkanya: Module Program / Sub Main() / End Sub / End Module",
-            "Console.WriteLine mencetak lalu pindah baris.",
-            "Tulis Option Strict On di baris pertama sebagai kebiasaan.",
+            "Program VB.NET hidup di dalam sebuah Module, dengan Sub Main sebagai titik masuk. Baca ulang materi Pengenalan Visual Basic .NET.",
+            "Kerangkanya: Module Program, di dalamnya Sub Main() ... End Sub, lalu ditutup End Module. Di dalam Main, cetak satu kalimat per baris.",
+            "Console.WriteLine(\"...\") mencetak lalu pindah baris. Biasakan menulis Option Strict On di baris pertama berkas.",
         ],
         "solution": """Option Strict On
 
@@ -47,10 +47,9 @@ End Module""",
             "  17 ^ 2 = 289",
         ],
         "hints": [
-            "VB punya DUA pembagian: / menghasilkan pecahan, \\ bilangan bulat.",
-            "Mod memberi sisa bagi, ^ memberi pangkat.",
-            "Interpolasi: Console.WriteLine($\"{a} + {b} = {a + b}\")",
-            "Backslash di dalam string interpolasi tidak perlu diapa-apakan.",
+            "VB punya dua operator pembagian: satu menghasilkan pecahan, satu lagi membuang sisanya. Ada juga operator khusus untuk sisa bagi dan pangkat. Baca ulang materi Operator & Perbandingan.",
+            "Cetak tiap baris dengan string interpolasi, satu baris per operator: +, -, *, /, \\, Mod, dan ^. Teks operatornya ditulis apa adanya di string, nilainya dihitung di dalam kurung kurawal.",
+            "Contoh satu baris: Console.WriteLine($\"{a} + {b} = {a + b}\"). Backslash di dalam string interpolasi nggak perlu di-escape.",
         ],
         "solution": """Option Strict On
 
@@ -91,11 +90,9 @@ End Module""",
             "  Kelvin     : 298.15",
         ],
         "hints": [
-            "Console.ReadLine() membaca satu baris sebagai String.",
-            "Ubah ke Double dengan CDbl atau Double.Parse.",
-            "Karena Option Strict On, konversinya WAJIB ditulis.",
-            "Dua desimal: {c:F2} di dalam interpolasi.",
-            "Jangan mencetak apa pun sebelum membaca input.",
+            "Input selalu datang sebagai String, dan selama Option Strict menyala, konversinya ke angka wajib ditulis sendiri. Baca ulang materi Option Strict & Tipe Data dan Teks & Format.",
+            "Baca satu baris dengan Console.ReadLine(), ubah ke Double, hitung F dan K dengan rumus di soal, lalu cetak ketiganya dengan dua desimal. Jangan mencetak apa pun sebelum membaca input.",
+            "Double.Parse(baris.Trim(), CultureInfo.InvariantCulture) membaca angka berpemisah titik di komputer mana pun (butuh Imports System.Globalization). Dua desimal: {c:F2} di dalam interpolasi.",
         ],
         "stdin": "25\n",
         "solution": """Option Strict On
@@ -135,10 +132,9 @@ End Module""",
             "  Status: Lulus",
         ],
         "hints": [
-            "Select Case menerima rentang: Case 75 To 84",
-            "Juga menerima perbandingan: Case Is >= 85",
-            "Case Else menangkap sisanya.",
-            "If(syarat, a, b) adalah operator ternary di VB.",
+            "Select Case di VB bisa mencocokkan rentang dan perbandingan, nggak cuma satu nilai. Baca ulang materi Percabangan: If & Select Case.",
+            "Tulis sebuah Function Grade berisi Select Case atas nilai, dari batas tertinggi ke terendah, dengan Case Else untuk sisanya. Status dihitung dengan operator If tiga argumen.",
+            "Bentuk Case-nya: Case Is >= 85 untuk perbandingan, Case 75 To 84 untuk rentang. Ternary VB: If(syarat, \"Lulus\", \"Tidak Lulus\").",
         ],
         "stdin_list": ["92\n", "78\n", "65\n", "45\n", "12\n"],
         "solution": """Option Strict On
@@ -189,10 +185,9 @@ End Module""",
             "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
         ],
         "hints": [
-            "Dua For bersarang; batas For di VB INKLUSIF.",
-            "Console.Write mencetak tanpa pindah baris.",
+            "Tabel butuh dua For bersarang, dan batas For di VB inklusif. Baca ulang materi Perulangan.",
+            "Di awal tiap baris cetak dua spasi. Perulangan dalam mencetak satu sel dengan Console.Write, lalu tiga spasi pemisah kecuali di sel terakhir. Sesudah perulangan dalam, panggil Console.WriteLine() untuk pindah baris.",
             "Rata kanan selebar 2: {b * k,2} di dalam interpolasi.",
-            "Pemisah ditulis sesudah tiap sel kecuali yang terakhir.",
         ],
         "solution": """Option Strict On
 
@@ -232,10 +227,9 @@ End Module""",
             "  Di atas rata-rata: 4",
         ],
         "hints": [
-            "String.Join(\", \", arr) menggabungkan array jadi teks.",
-            "Array.Sort MENGUBAH array aslinya: salin dulu dengan Clone.",
-            "CType(nilai.Clone(), Integer()) karena Clone mengembalikan Object.",
-            "Rata-rata: CDbl(total) / nilai.Length supaya bukan pembagian bulat.",
+            "Kamu perlu menelusuri array untuk total, tertinggi, dan terendah, lalu sekali lagi untuk yang di atas rata-rata. Baca ulang materi Array & Koleksi.",
+            "Hitung total, tertinggi, dan terendah dalam satu For Each. Rata-rata harus dibagi sebagai Double. Untuk baris Terurut, urutkan salinan array, karena Array.Sort mengubah array aslinya.",
+            "Clone mengembalikan Object, jadi salinannya ditulis CType(nilai.Clone(), Integer()). Rata-rata: CDbl(total) / nilai.Length. Gabung isi array: String.Join(\", \", arr).",
         ],
         "solution": """Option Strict On
 
@@ -296,10 +290,9 @@ End Module""",
             "  Palindrom: ya",
         ],
         "hints": [
-            "Membalik: ubah ke Char(), Array.Reverse, lalu New String(...)",
-            "Replace(\" \", \"\") membuang spasi.",
-            "ToLowerInvariant() untuk mengabaikan besar-kecil huruf.",
-            "Jangan mencetak apa pun sebelum Console.ReadLine() pertama.",
+            "Latihan ini soal mengolah teks: membalik, membuang spasi, dan menyamakan besar-kecil huruf. Baca ulang materi Teks & Format.",
+            "Buat Function kecil untuk membalik teks. Buang spasi untuk menghitung huruf, lalu bandingkan versi tanpa spasi berhuruf kecil dengan kebalikannya. Jangan mencetak apa pun sebelum Console.ReadLine() pertama.",
+            "Membalik: ToCharArray(), Array.Reverse, lalu New String(huruf). Buang spasi: Replace(\" \", \"\"). Huruf kecil: ToLowerInvariant().",
         ],
         "stdin_list": ["Kasur ini rusak\n", "Belajar Visual Basic\n", "Ini\n"],
         "solution": """Option Strict On
@@ -352,10 +345,9 @@ End Module""",
             "Nama kata rata kiri selebar 7 karakter.",
         ],
         "hints": [
-            "Split(\" \"c) memecah kalimat; akhiran c membuatnya literal Char.",
-            "TryGetValue mengisi 0 untuk kunci yang belum ada.",
-            "OrderByDescending lalu ThenBy untuk dua kunci urutan.",
-            "Rata kiri: {kata,-7} di dalam interpolasi.",
+            "Menghitung kemunculan paling pas memakai Dictionary dengan kata sebagai kunci. Baca ulang materi Array & Koleksi dan LINQ & Lambda.",
+            "Pecah kalimat per spasi, naikkan hitungan tiap kata, lalu urutkan menurut jumlah menurun dan, kalau sama, menurut kata menaik. Total kata adalah panjang hasil pecahan; kata unik adalah jumlah isi Dictionary.",
+            "Split(\" \"c) memecah kalimat; akhiran c membuatnya literal Char. TryGetValue(k, n) mengisi n dengan 0 kalau kunci belum ada. Urutan: OrderByDescending(...) lalu ThenBy(...). Rata kiri: {p.Key,-7}.",
         ],
         "solution": """Option Strict On
 
@@ -411,10 +403,9 @@ End Module""",
             "  Ditolak: nilai di luar 0..100",
         ],
         "hints": [
-            "Property dengan validasi butuh bentuk panjang: Get / Set(value).",
-            "Di constructor, isi lewat PROPERTY supaya validasinya ikut jalan.",
-            "Select Case atau If berantai untuk Grade.",
-            "ex.Message.Split(vbLf)(0) mengambil baris pertama pesannya.",
+            "Class ini butuh property yang cuma bisa dibaca, property yang memvalidasi saat diisi, dan property yang dihitung. Baca ulang materi Class, Property & Constructor.",
+            "Simpan nilai di field privat dan tulis property Nilai bentuk panjang (Get / Set) yang melempar ArgumentOutOfRangeException di luar 0..100. Di constructor, isi lewat property supaya validasinya ikut jalan. Grade bisa ditulis dengan Select Case atau If berantai.",
+            "Pesan ArgumentOutOfRangeException ikut membawa nama parameter di baris kedua, jadi ambil baris pertamanya saja: ex.Message.Split(vbLf)(0).",
         ],
         "solution": """Option Strict On
 
@@ -509,10 +500,9 @@ End Module""",
             "  TOTAL              62.27",
         ],
         "hints": [
-            "Tiap anggota WAJIB menyebut Implements IBangun.NamaAnggota.",
-            "MyBase.New(...) memanggil constructor induk.",
-            "MyBase.Ringkas() memanggil versi induk dari method yang ditimpa.",
-            "CType(b, BangunDasar).Ringkas() untuk memanggil method turunannya.",
+            "Interface menjawab 'bisa apa', class induk MustInherit menyimpan kode bersama, dan turunannya mengisi bagian yang beda. Baca ulang materi Pewarisan, Interface & MustInherit.",
+            "BangunDasar mengimplementasi IBangun, menyimpan Nama, menjadikan Luas MustOverride, dan menyediakan Ringkas yang Overridable. Tiap turunan memanggil constructor induk dan meng-override Luas. Lingkaran juga meng-override Ringkas dengan menambahkan teks jari-jari ke versi induknya.",
+            "Tiap anggota interface wajib menyebut klausanya, misalnya Implements IBangun.Luas. Versi induk dipanggil dengan MyBase.Ringkas(), dan karena List-nya bertipe IBangun, pakai CType(b, BangunDasar).Ringkas() di perulangan.",
         ],
         "solution": """Option Strict On
 
@@ -645,11 +635,9 @@ End Module""",
             "  penuh     : Penuh = 15",
         ],
         "hints": [
-            "Structure tidak bisa punya constructor tanpa parameter.",
-            "[Enum].IsDefined(GetType(Status), 9) — kurung siku karena Enum "
-            "adalah kata kunci VB.",
-            "Gabung izin dengan Or; buang dengan And Not.",
-            "Jarak: Math.Sqrt(X * X + Y * Y), cetak dengan format F3.",
+            "Ada tiga hal di latihan ini: Structure sebagai tipe nilai, Enum biasa, dan Enum ber-<Flags> yang nilainya digabung bit per bit. Baca ulang materi Structure, Enum & Module.",
+            "Tunjukkan beda penyalinan dengan menugaskan Structure ke variabel lain dan Class ke variabel lain, lalu ubah salinan Class-nya. Untuk Enum, cetak nama dan angkanya, ubah angka jadi Enum dengan CType, dan periksa IsDefined. Untuk Flags, gabung dengan Or, periksa dengan HasFlag, buang dengan And Not.",
+            "[Enum].IsDefined(GetType(Status), 9) memakai kurung siku karena Enum adalah kata kunci VB. Jarak: Math.Sqrt(X * X + Y * Y), cetak dengan format F3. Ingat, Structure nggak bisa punya constructor tanpa parameter.",
         ],
         "solution": """Option Strict On
 
@@ -754,10 +742,9 @@ End Module""",
             "Angka tagihan dicetak rata kanan selebar 7.",
         ],
         "hints": [
-            "Exception sendiri: Inherits Exception lalu MyBase.New(pesan).",
-            "Tangkap yang PALING SPESIFIK lebih dulu.",
-            "Property saldo sebaiknya ReadOnly dari luar.",
-            "Rata kanan: {tagihan,7} di dalam interpolasi.",
+            "Exception buatan sendiri adalah class yang mewarisi Exception dan boleh membawa data tambahan. Baca ulang materi Exception & Penanganan Galat.",
+            "SaldoKurangException menyimpan property Kurang dan meneruskan pesannya ke constructor induk. Bayar memeriksa jumlah <= 0 dulu, baru kecukupan saldo. Di Main, bungkus tiap pembayaran dengan Try, dan tulis Catch yang paling spesifik lebih dulu.",
+            "Kerangkanya: baris Inherits Exception di dalam class, lalu MyBase.New($\"saldo kurang {kurang}\") di constructor. Saldo sebaiknya ReadOnly dari luar. Rata kanan selebar 7: {tagihan,7}.",
         ],
         "solution": """Option Strict On
 
@@ -852,10 +839,9 @@ End Module""",
             "kanan 2, harga rata kanan 6, subtotal rata kanan 8.",
         ],
         "hints": [
-            "OrderByDescending lalu ThenBy untuk dua kunci urutan.",
-            "GroupBy(Function(t) t.Kategori) lalu OrderBy kuncinya.",
-            "Ingat jebakan: pakai Grup.Count TANPA kurung, bukan Count().",
-            "First() sesudah OrderByDescending untuk mencari yang termahal.",
+            "Ini latihan query LINQ: mengurutkan dua tingkat, mengelompokkan, dan mencari yang terbesar. Ada satu jebakan khas VB soal Count. Baca ulang materi LINQ & Lambda.",
+            "Urutkan transaksi menurun menurut Subtotal, lalu menaik menurut nama barang. Rekap per kategori pakai GroupBy lalu urutkan kuncinya. Yang termahal bisa dicari dengan mengurutkan menurun lalu mengambil yang pertama dengan First().",
+            "VB boleh memanggil method tanpa kurung, jadi g.Count pada hasil GroupBy memanggil Count() milik LINQ. Hati-hati dengan Count(Function ...) pada List: property Count-nya menutupi method LINQ. Urutan: OrderByDescending(Function(x) x.Subtotal).ThenBy(Function(x) x.Barang).",
         ],
         "solution": """Option Strict On
 
@@ -950,11 +936,9 @@ End Module""",
             "  bernama       : **** BERNAMA ****",
         ],
         "hints": [
-            "ByVal adalah BAWAAN di VB.NET; ByRef harus ditulis eksplisit.",
-            "Argumen bernama memakai := bukan =",
-            "Tuple bernama: As (hasil As Integer, sisa As Integer)",
-            "New String(pengisi, n) membuat teks berulang.",
-            "Untuk baris terakhir, panggil Garis dengan lebar 17 dan pengisi *.",
+            "Latihan ini memamerkan semua cara mengoper parameter di VB: salinan, referensi, opsional, jumlah bebas, overload, dan tuple. Baca ulang materi Sub, Function & Parameter.",
+            "Tulis tiap prosedur sesuai daftar di soal, lalu panggil satu per satu di Main. ByVal itu bawaan; ByRef harus ditulis sendiri. Untuk baris terakhir, panggil Garis dengan argumen bernama: lebar 17, pengisi bintang, dan isinya \" BERNAMA \".",
+            "Argumen bernama memakai := (bukan =). Tuple bernama: As (hasil As Integer, sisa As Integer). New String(pengisi, n) membuat teks berulang.",
         ],
         "solution": """Option Strict On
 
@@ -1068,11 +1052,9 @@ End Module""",
             "  FileNotFoundException tertangkap",
         ],
         "hints": [
-            "Path.Combine(Path.GetTempPath(), \"nama.csv\") menyusun path.",
-            "Using penulis As New StreamWriter(berkas, append:=False)",
-            "Skip(1) melewati baris judul.",
-            "New With { .Nama = ..., .Nilai = ... } membuat tipe anonim.",
-            "Tangkap FileNotFoundException SEBELUM IOException.",
+            "Blok Using menjamin berkas ditutup apa pun yang terjadi. Sisanya membaca baris, mengurai CSV, dan menangkap exception yang tepat. Baca ulang materi Berkas, Data & Using.",
+            "Susun path di folder sementara, tulis empat baris dengan StreamWriter di dalam Using, lalu baca kembali, lewati baris judul, dan urai tiap baris jadi objek anonim. Urutkan menurun menurut nilai, hitung rata-rata, cetak isi berkas bernomor, hapus berkasnya, lalu tangkap FileNotFoundException dari berkas yang memang nggak ada.",
+            "Path.Combine(Path.GetTempPath(), \"nama.csv\") menyusun path. Skip(1) melewati judul. New With { .Nama = ..., .Nilai = ... } membuat tipe anonim. Tangkap FileNotFoundException sebelum IOException.",
         ],
         "solution": """Option Strict On
 
@@ -1182,12 +1164,9 @@ End Module""",
             "  stok menipis (<10): B02 Adaptor (4)",
         ],
         "hints": [
-            "Satu Catch As GudangException di antarmuka cukup menangani "
-            "keempat galat, sementara bug sungguhan tetap naik dan terlihat.",
-            "TryGetValue menggabungkan pencarian dan pemeriksaan sekaligus.",
-            "Dictionary tidak menjamin urutan: Semua() WAJIB mengurutkan.",
-            "Tuple.Create menyimpan tiga nilai langkah dalam satu array.",
-            "Gudang yang tidak pernah mencetak bisa diuji tanpa membaca layar.",
+            "Kuncinya pemisahan lapisan: Gudang menyimpan aturan dan nggak pernah memanggil Console, antarmuka yang mencetak. Exception-nya disusun berinduk supaya satu Catch cukup. Baca ulang materi Proyek Utuh: Menggabungkan Semuanya dan Exception & Penanganan Galat.",
+            "Buat GudangException sebagai induk, lalu empat turunan yang menyusun pesannya sendiri. Di Catat, periksa kode dulu, lalu jumlah, baru kecukupan stok. Semua() wajib mengurutkan karena Dictionary nggak menjamin urutan. Di Main, satu Catch ex As GudangException menangani keempat galat, sementara bug sungguhan tetap naik dan terlihat.",
+            "TryGetValue(kode, b) menggabungkan pencarian dan pemeriksaan sekaligus. Langkah-langkahnya bisa disimpan sebagai array Tuple.Create(\"B01\", Gerak.Masuk, 15), lalu dibaca lewat Item1, Item2, dan Item3.",
         ],
         "solution": """Option Strict On
 

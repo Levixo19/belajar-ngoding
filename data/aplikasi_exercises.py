@@ -35,12 +35,17 @@ APLIKASI_EXERCISES = [
             "Item kedua stoknya 8 dengan minimum 10.",
         ],
         "hints": [
+            "Entitas adalah kelas yang mewakili satu benda nyata: field-nya "
+            "privat, dan method-nya menjawab pertanyaan tentang dirinya "
+            "sendiri. Baca ulang materi 'Entitas: Benda Menjadi Kelas'.",
             "Kelas bantu di dalam kelas utama harus 'static class' supaya bisa "
-            "dipakai dari main tanpa membuat objek kelas luarnya.",
-            "toString() dipanggil OTOMATIS oleh System.out.println(objek). "
-            "Kamu tidak perlu menulis println(item.toString()).",
-            "stokMenipis() memakai <= bukan <. Stok yang PERSIS sama dengan "
-            "minimum sudah terhitung menipis.",
+            "dipakai dari main tanpa membuat objek kelas luarnya. Constructor "
+            "mengisi empat field dan memulai stok dari 0. stokMenipis() memakai "
+            "<=, bukan <, karena stok yang sama dengan minimum sudah terhitung "
+            "menipis.",
+            "toString() dipanggil otomatis oleh System.out.println(objek), jadi "
+            "kamu nggak perlu menulis println(item.toString()). Isinya cukup "
+            "merangkai kode + \" - \" + nama + \" (\" + stok + \" \" + satuan + \")\".",
         ],
         "solution": """public class LatihanItem {
 
@@ -115,10 +120,17 @@ APLIKASI_EXERCISES = [
             "FS-2712-007",
         ],
         "hints": [
-            "String.format(\"%02d\", 8) menghasilkan \"08\" - angka 0 di depan "
-            "berarti 'isi dengan nol', angka 2 berarti 'lebar dua karakter'.",
-            "Dua digit terakhir tahun didapat dengan sisa bagi: 2026 % 100 = 26.",
-            "Pola lengkapnya: \"FS-%02d%02d-%03d\" dengan tiga nilai berurutan.",
+            "Kodenya dirakit dari tiga angka yang masing-masing punya lebar "
+            "tetap, dengan nol di depan kalau kurang. Tahun dan bulan dikirim "
+            "dari luar dengan alasan yang sama seperti di materi 'Menulis Uji "
+            "Otomatis: Mock, MockMvc, dan Uji Integrasi': uji harus bisa "
+            "memilih sendiri nilai yang dipakai kode.",
+            "Dua digit terakhir tahun didapat dengan sisa bagi: 2026 % 100 = "
+            "26. Untuk nol di depan pakai String.format: \"%02d\" mengubah 8 jadi "
+            "\"08\"; angka 0 berarti 'isi dengan nol', angka 2 berarti 'lebar dua "
+            "karakter'.",
+            "Pola lengkapnya \"FS-%02d%02d-%03d\" dengan tiga nilai berurutan: "
+            "tahun % 100, bulan, lalu urut.",
         ],
         "solution": """public class LatihanKode {
 
@@ -171,13 +183,16 @@ APLIKASI_EXERCISES = [
             "stok tetap 0",
         ],
         "hints": [
-            "Urutan pemeriksaan menentukan pesan mana yang muncul. Periksa "
-            "jumlah <= 0 LEBIH DULU, baru bandingkan dengan stok.",
-            "Pakai jumlah > stok, bukan jumlah >= stok. Dengan >= , permintaan "
+            "Ini aturan bisnis paling dasar, dan tempatnya di service. Baca "
+            "ulang materi 'Service: Tempat Aturan Bisnis Hidup', terutama soal "
+            "memeriksa sebelum mengubah.",
+            "Urutan pemeriksaan menentukan pesan mana yang muncul: periksa "
+            "jumlah <= 0 lebih dulu, baru bandingkan dengan stok. Pesan "
+            "penolakan dicetak di dalam keluar(), sedangkan baris 'keluar N -> "
+            "sisa M' dan 'stok tetap M' dicetak di main dengan membandingkan "
+            "stok sebelum dan sesudah pemanggilan.",
+            "Pakai jumlah > stok, bukan jumlah >= stok. Dengan >=, permintaan "
             "15 dari stok 15 ikut ditolak padahal seharusnya boleh.",
-            "Pesan penolakan dicetak DI DALAM method keluar(). Baris "
-            "'keluar N -> sisa M' dan 'stok tetap M' dicetak di main, dengan "
-            "membandingkan stok sebelum dan sesudah pemanggilan.",
         ],
         "solution": """public class LatihanStokNegatif {
 
@@ -242,12 +257,18 @@ APLIKASI_EXERCISES = [
             "ADJUSTMENT 0 -> stok jadi 30",
         ],
         "hints": [
-            "Selisih = hasilHitung - stokSistem. Kalau hasilnya negatif, "
-            "tandanya sudah ikut menempel saat diubah jadi teks.",
-            "Untuk selisih positif kamu harus MENAMBAHKAN '+' sendiri, karena "
-            "Java tidak pernah mencetak tanda plus.",
-            "Selisih nol cukup dicetak sebagai '0'. String.valueOf(0) sudah "
-            "menghasilkan itu, jadi cabang negatif dan nol bisa digabung.",
+            "Opname artinya menghitung fisik barang di rak, lalu sistem yang "
+            "mencari selisihnya dengan angka di database. Contoh kenapa opname "
+            "dibutuhkan ada di materi 'Dua Pengguna Bersamaan: Race Condition "
+            "dan Penguncian'.",
+            "Selisih = hasilHitung - stokSistem. Kalau hasilnya negatif, tanda "
+            "minusnya sudah ikut saat angka diubah jadi teks. Untuk selisih "
+            "positif kamu harus menambahkan '+' sendiri, karena Java nggak "
+            "pernah mencetak tanda plus.",
+            "Selisih nol cukup dicetak '0', dan String.valueOf(0) sudah "
+            "menghasilkan itu, jadi cabang negatif dan nol bisa digabung: kalau "
+            "selisih > 0 pakai \"+\" + selisih, selain itu "
+            "String.valueOf(selisih).",
         ],
         "solution": """public class LatihanOpname {
 
@@ -306,13 +327,16 @@ APLIKASI_EXERCISES = [
             "RETURN +2 sisa=14 | Pengembalian",
         ],
         "hints": [
-            "Simpan stok sebagai field static supaya bisa diubah dari method "
-            "catat() dan tetap terbawa antar pemanggilan.",
+            "Buku besar adalah daftar jejak: tiap perubahan stok jadi satu "
+            "baris mutasi yang nggak diubah lagi. Baca ulang materi 'Model "
+            "Data: dari Benda Nyata ke Tabel' bagian mutasi.",
+            "Simpan stok sebagai field static supaya bisa diubah dari catat() "
+            "dan terbawa antar pemanggilan. Jangan menyimpan qty sebagai angka "
+            "negatif: buku besar sungguhan menyimpan jumlah positif, dan "
+            "arahnya ditentukan kolom jenis.",
             "Buat satu method bantu menambah(jenis) yang mengembalikan true "
-            "untuk IN dan RETURN. Method itu dipakai dua kali: saat menghitung "
-            "stok, dan saat menentukan tanda + atau - waktu mencetak.",
-            "Jangan menyimpan qty sebagai angka negatif. Buku besar sungguhan "
-            "menyimpan jumlah positif, dan arahnya ditentukan oleh kolom jenis.",
+            "untuk IN dan RETURN. Pakai dua kali: saat menghitung stok, dan "
+            "saat memilih tanda + atau - waktu mencetak.",
         ],
         "solution": """import java.util.ArrayList;
 import java.util.List;
@@ -397,13 +421,18 @@ public class LatihanBukuBesar {
             "PENDING --tolak--> REJECTED",
         ],
         "hints": [
+            "Status peminjaman berpindah lewat aturan yang tetap. Baca ulang "
+            "materi 'Enum dan Exception Buatan Sendiri' untuk keempat "
+            "statusnya, dan 'Service: Tempat Aturan Bisnis Hidup' untuk cara "
+            "menolak perpindahan yang nggak sah.",
             "Perpindahan yang sah cuma tiga: PENDING+setujui, PENDING+tolak, "
-            "APPROVED+kembalikan. Selain itu semuanya ditolak.",
-            "Pakai satu variabel 'baru' yang mula-mula null. Isi kalau cocok "
-            "salah satu dari tiga aturan; kalau setelah semua pemeriksaan masih "
-            "null, berarti perpindahannya tidak sah.",
-            "Format pesan sukses memakai dua tanda minus dan panah: "
-            "status + \" --\" + aksi + \"--> \" + baru",
+            "dan APPROVED+kembalikan; selain itu semuanya ditolak. Pakai satu "
+            "variabel 'baru' yang mula-mula null, isi kalau cocok salah satu "
+            "aturan, dan kalau sesudah semua pemeriksaan masih null, berarti "
+            "perpindahannya nggak sah.",
+            "Format pesan suksesnya memakai dua tanda minus dan panah: status + "
+            "\" --\" + aksi + \"--> \" + baru. Pesan penolakannya: \"DITOLAK: dari \" "
+            "+ status + \" tidak bisa \" + aksi.",
         ],
         "solution": """public class LatihanStatus {
 
@@ -479,13 +508,19 @@ public class LatihanBukuBesar {
             "  Selang = 0",
         ],
         "hints": [
-            "Perulangan pertama: begitu ketemu satu saja yang gagal, cetak "
-            "penolakan lalu 'return false' SEBELUM menyentuh stok mana pun.",
-            "Perulangan kedua baru boleh berjalan setelah perulangan pertama "
-            "selesai tanpa return. Di situlah stok dikurangi.",
-            "Bukti kamu benar ada di baris 'APAR = 20' setelah percobaan 1. "
-            "Kalau punyamu jadi 15, berarti kamu mengubah di perulangan yang "
-            "sama dengan pemeriksaan - persis kesalahan yang dilatih di sini.",
+            "Kebiasaan yang dilatih: periksa semuanya dulu, baru ubah. Data "
+            "yang rusak separuh jalan lebih buruk daripada permintaan yang "
+            "ditolak utuh. Baca ulang materi 'Service: Tempat Aturan Bisnis "
+            "Hidup'.",
+            "Perulangan pertama cuma memeriksa: begitu ketemu satu baris yang "
+            "stoknya kurang, cetak penolakan lalu keluar dari method sebelum "
+            "menyentuh stok mana pun. Perulangan kedua baru berjalan kalau yang "
+            "pertama selesai tanpa keluar, dan di situlah stok dikurangi.",
+            "Perulangan pertama bentuknya for (Baris b : baris) { if "
+            "(b.item.stok < b.jumlah) { cetak penolakan; return false; } }. "
+            "Bukti kamu benar ada di baris 'APAR = 20' sesudah percobaan 1; "
+            "kalau punyamu jadi 15, berarti stoknya diubah di perulangan yang "
+            "sama dengan pemeriksaan.",
         ],
         "solution": """import java.util.ArrayList;
 import java.util.List;
@@ -606,14 +641,18 @@ public class LatihanAtomik {
             "REQUESTER aksiAsing -> DITOLAK",
         ],
         "hints": [
+            "Ini soal otorisasi: orangnya sudah login, pertanyaannya tinggal "
+            "dia boleh apa. Baca ulang materi 'Keamanan: Autentikasi vs "
+            "Otorisasi'.",
             "Simpan dua kumpulan aksi sebagai array String, lalu buat method "
-            "bantu adaDi(daftar, aksi) yang menelusuri isinya.",
-            "Urutan logikanya: kalau aksi ada di daftar semua-peran, izinkan. "
-            "Kalau ada di daftar admin, izinkan hanya bila peran ADMIN. "
-            "Kalau tidak ada di kedua daftar, TOLAK.",
-            "Perhatikan ADMIN aksiAsing juga DITOLAK. Admin pun tidak boleh "
-            "diizinkan melakukan hal yang tidak pernah didaftarkan - inilah "
-            "yang disebut 'tolak secara bawaan'.",
+            "bantu adaDi(daftar, aksi) yang menelusuri isinya. Urutan "
+            "logikanya: kalau aksi ada di daftar semua peran, izinkan; kalau "
+            "ada di daftar admin, izinkan cuma bila perannya ADMIN; kalau nggak "
+            "ada di kedua daftar, tolak.",
+            "Perhatikan ADMIN aksiAsing juga DITOLAK. Admin pun nggak boleh "
+            "diizinkan melakukan hal yang nggak pernah didaftarkan; inilah yang "
+            "disebut 'tolak secara bawaan'. Jadi baris terakhir boleh() adalah "
+            "return false.",
         ],
         "solution": """public class LatihanHakAkses {
 
@@ -720,11 +759,23 @@ public class LatihanAtomik {
         '    [aturan] Cici - alat tidak ada: XXX',
         '    [aturan] Andi - tidak ada pinjaman BOR atas nama Andi',
     ],
-        'hints': [
-        'Urutan blok catch menentukan siapa yang kena: tangkap yang lebih khusus lebih dulu. TidakBerhak dan AturanDilanggar bersaudara, jadi urutannya bebas -- tapi keduanya harus SEBELUM catch RuntimeException.',
-        'Memeriksa dulu baru mengubah bukan gaya penulisan melainkan aturan: sekali stok dikurangi lalu exception dilempar, datanya sudah rusak dan tidak ada yang mengembalikannya.',
-        'hitung.merge(p.peminjam, p.jumlah, Integer::sum) menjumlahkan tanpa perlu memeriksa apakah kuncinya sudah ada.',
-    ],
+        "hints": [
+            "Proyek ini menguji batas antar lapisan: domain, repo, service, dan "
+            "antarmuka masing-masing punya satu tanggung jawab. Baca ulang "
+            "materi 'Lapisan-lapisan Aplikasi Web' dan 'Enum dan Exception "
+            "Buatan Sendiri'.",
+            "Service memeriksa seluruh syarat dengan urutan ini: alat ada, "
+            "jumlah positif, stok cukup, lalu lebih dari 3 butuh PENYELIA. Baru "
+            "sesudah itu ia mengubah data dan menulis jurnal. Ini aturan, bukan "
+            "gaya: sekali stok dikurangi lalu exception dilempar, datanya sudah "
+            "rusak dan nggak ada yang mengembalikannya.",
+            "Urutan blok catch menentukan siapa yang kena: yang lebih khusus "
+            "lebih dulu. TidakBerhak dan AturanDilanggar bersaudara, jadi "
+            "urutan keduanya bebas, tapi keduanya harus sebelum catch "
+            "RuntimeException. Untuk menjumlahkan pinjaman per orang, "
+            "hitung.merge(p.peminjam, p.jumlah, Integer::sum) nggak perlu "
+            "memeriksa apakah kuncinya sudah ada.",
+        ],
         'solution': """import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
