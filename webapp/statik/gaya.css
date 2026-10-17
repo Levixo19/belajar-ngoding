@@ -6143,3 +6143,16 @@ html.lingkar-tema::view-transition-new(root) {
 @media (min-width: 861px) {
   .tbl-latihan-berikut { align-self: flex-start; }
 }
+
+/* ---------------------------------------------- bab tuntas yang terlipat
+   Audit visual 2026-10-17: di halaman bahasa, bab yang sedang dikerjakan
+   mulai di y=1793 karena setiap bab yang SUDAH tuntas tetap setinggi 119 px
+   plus sampul 156 px. Selama terlipat, bab tuntas cukup satu baris: nomor,
+   judul, dan capnya. Dibuka, ia kembali utuh. Bab terkunci tidak disentuh:
+   aturannya "bab terkunci tetap DITAMPILKAN" beserta alasannya. */
+@media (min-width: 861px) {
+  .bab-tuntas:not([open]) .bab-sampul,
+  .bab-tuntas:not([open]) .bab-ket,
+  .bab-tuntas:not([open]) .bab-maju { display: none; }
+  .bab-tuntas:not([open]) > .bab-kepala { align-items: center; padding-block: var(--s1); }
+}
