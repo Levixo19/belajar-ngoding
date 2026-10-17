@@ -42,6 +42,7 @@ XP_LATIHAN_MANUAL = 8
 XP_PER_JAWABAN_BENAR = 2
 XP_BONUS_KUIS_SEMPURNA = 20
 RIWAYAT_KUIS_MAKS = 12
+XP_TEBAK_BENAR = 3
 
 
 def _default():
@@ -61,6 +62,9 @@ def _default():
         # terakhir yang disimpan, jadi "4/10 -> 9/10" (bukti ulangan berjadwal
         # bekerja) tidak bisa ditunjukkan ke pelajar.
         "kuis_riwayat": {},
+        # Tebak keluaran per blok contoh (pelajar/tebak.py):
+        # {"<key>_materi::<judul>#<bagian>": {benar, coba, terakhir, salah_terakhir}}
+        "tebakan": {},
         "riwayat_harian": {},
         "terakhir": {},
         "xp": 0,
@@ -101,6 +105,7 @@ def _migrasi(data):
         info.setdefault("total_soal", 0)
 
     data["jadwal_kuis"] = {k: v for k, v in data["jadwal_kuis"].items() if isinstance(v, dict)}
+    data["tebakan"] = {k: v for k, v in data["tebakan"].items() if isinstance(v, dict)}
     data["kuis_riwayat"] = {
         k: [e for e in v if isinstance(e, list) and len(e) == 3
             and isinstance(e[0], str) and isinstance(e[1], int) and isinstance(e[2], int)]
@@ -618,6 +623,25 @@ def record_quiz_score(kategori, judul, benar, total, salah_index=None,
     del riwayat_skor[:-RIWAYAT_KUIS_MAKS]
     _jadwalkan_ulang(data, k, benar, total, jatuh_tempo)
     _tandai_terakhir(data, "kuis", kategori, judul)
+    return _selesaikan(data)
+
+
+def record_tebakan(kunci_blok, benar):
+    """Catat satu tebakan keluaran (pelajar/tebak.py). Bukan latihan, bukan lulus.
+
+    XP cuma untuk tebakan BENAR PERTAMA tiap blok: menebak ulang contoh yang
+    keluarannya baru saja dilihat bukan membaca kode, dan tidak boleh jadi
+    tambang XP (pelajaran dari jadwal kuis yang dulu bisa digeber).
+    """
+    data = load_progress()
+    info = data["tebakan"].setdefault(kunci_blok, {"benar": 0, "coba": 0})
+    pertama_benar = benar and not info.get("benar")
+    info["coba"] = info.get("coba", 0) + 1
+    info["benar"] = info.get("benar", 0) + (1 if benar else 0)
+    info["salah_terakhir"] = not benar
+    info["terakhir"] = date.today().isoformat()
+    if pertama_benar:
+        tambah_xp(data, XP_TEBAK_BENAR)
     return _selesaikan(data)
 
 

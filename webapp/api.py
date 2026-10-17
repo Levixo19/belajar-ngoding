@@ -42,6 +42,7 @@ from pelajar import konfigurasi
 from pelajar import kuis_materi
 from pelajar import simpanan
 from pelajar import waktu
+from pelajar import tebak as modul_tebak
 from pelajar import karier as modul_karier
 import main as aplikasi
 from pelajar import progress
@@ -446,6 +447,9 @@ def bahasa(params):
         "key": lang["key"], "label": lang["label"], "runner": lang["runner"],
         "sorot": isi.bahasa_sorot(lang),
         "siap": runner.tersedia(lang["runner"]),
+        # Berapa contoh materi yang bisa dipakai "Tebak keluarannya"
+        # (pelajar/tebak.py); 0 = tautannya tidak ditampilkan.
+        "tebak": len(modul_tebak.blok_layak(lang)),
         "hilang": runner.program_hilang(lang["runner"]),
         "pasang": runner.perintah_instalasi(lang["runner"]),
         "cara_jalan": list(lang["run_info"]),
@@ -955,6 +959,52 @@ def coba(body):
     return {**_jalan_json(hasil, nama_berkas=nama),
             "detik": round(time.time() - mulai, 2),
             "bahasa": bhs, "berkas": nama}
+
+
+def tebak_kartu(params):
+    """Sampai lima contoh dari materi yang sudah dibaca, untuk ditebak keluarannya."""
+    lang = _bahasa(params.get("key"))
+    data = progress.load_progress()
+    bhs_sorot = isi.bahasa_sorot(lang)
+    return {"kartu": [{
+        "indeks": i, "bagian": j, "judul": lang["materials"][i]["title"],
+        "kode": kode, "token": isi.token_kode(kode, bhs_sorot),
+    } for i, j, kode in modul_tebak.pilih_kartu(lang, data)],
+        "layak": len(modul_tebak.blok_layak(lang)),
+        "siap": runner.tersedia(lang["runner"])}
+
+
+def tebak(body):
+    """Periksa tebakan keluaran sebuah contoh materi dengan MENJALANKANNYA.
+
+    Kuncinya keluaran nyata, bukan teks yang ditulis tangan. Kodenya harus
+    persis salah satu contoh layak di materi itu (pelajar/tebak.py), jadi
+    endpoint ini tidak menjalankan kode bebas dan pagar SESI Fedora/Git
+    tetap berlaku. Materi di bab terkunci ditolak lewat bab.py.
+    """
+    lang = _bahasa(body.get("key"))
+    idx, _m = _ambil(lang["materials"], body.get("indeks"), "materi")
+    bab_ini = modul_bab.bab_materi(lang, idx)
+    if bab_ini and bab_ini["status"] == modul_bab.TERKUNCI:
+        raise Galat(bab_ini["alasan"] or "Materi ini masih terkunci.", 403)
+    kode = body.get("kode") or ""
+    bagian = modul_tebak.cari_blok(lang, idx, kode)
+    if bagian is None:
+        raise Galat("Contoh ini tidak bisa dipakai untuk menebak keluaran.", 409)
+    if not runner.tersedia(lang["runner"]):
+        raise Galat("Bahasa ini belum terpasang di komputermu.", 409)
+    hasil = runner.jalankan(lang["runner"], kode)
+    if not hasil.sukses or not hasil.keluaran.strip():
+        raise Galat("Contoh ini tidak menghasilkan keluaran yang bisa ditebak.", 409)
+    tebakan = str(body.get("tebakan") or "")
+    benar = runner.normalisasi(tebakan) == runner.normalisasi(hasil.keluaran)
+    with _KUNCI_PROGRES:
+        sebelum = progress.load_progress()
+        badge = progress.record_tebakan(modul_tebak.kunci_blok(lang, idx, bagian), benar)
+        hadiah = _xp_dan_badge(sebelum, badge)
+    return {"benar": benar, "keluaran": hasil.keluaran,
+            "beda": None if benar else _beda_json(beda.bandingkan(hasil.keluaran, tebakan)),
+            **hadiah}
 
 
 def contoh_kode(params):

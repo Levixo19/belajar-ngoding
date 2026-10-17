@@ -6115,3 +6115,23 @@ html.lingkar-tema::view-transition-new(root) {
   .kuis-lemah-angka { font-family: var(--f-ui); font-size: var(--t-ui); color: var(--teks-2); white-space: nowrap; }
   .kuis-lemah-bilah { width: 96px; flex: none; }
 }
+
+/* --------------------------------------------------------- tebak keluaran
+   Latihan membaca kode (layar-tebak.js, pelajar/tebak.py). */
+@media (min-width: 861px) {
+  .tebak-isi { display: grid; gap: var(--s5); max-width: 880px; margin-inline: auto; padding-block: var(--s5) var(--s8); }
+  .tebak-kartu { display: grid; gap: var(--s4); }
+  .tebak-kepala { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); }
+  .tebak-label { font-family: var(--f-ui); font-weight: 600; }
+  .tebak-tebakan { font-family: var(--f-kode); min-height: 120px; resize: vertical; }
+  .tebak-hasil { display: grid; gap: var(--s3); }
+  .tebak-vonis { margin: 0; font-family: var(--f-ui); font-weight: 600; }
+  .tebak-benar { color: var(--tumbuh); }
+  .tebak-belum { color: var(--teks-2); }
+  .tebak-asli { display: grid; gap: var(--s2); }
+  .tebak-beda p { margin: 0 0 var(--s2); color: var(--teks-2); font-size: var(--t-ui); }
+  .tebak-tabel { width: 100%; border-collapse: collapse; font-size: var(--t-ui); }
+  .tebak-tabel th { text-align: left; color: var(--redup); font-weight: 600; padding: var(--s1) var(--s2); }
+  .tebak-tabel td { padding: var(--s1) var(--s2); vertical-align: top; white-space: pre-wrap; }
+  .tebak-beda-baris td { background: color-mix(in srgb, var(--salah) 10%, transparent); }
+}

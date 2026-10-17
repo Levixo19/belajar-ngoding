@@ -33,7 +33,7 @@ import {
 } from "./layar-belajar.js";
 import { layarKuis, layarLatihan, layarCoba } from "./layar-kerja.js";
 import { layarPustaka } from "./layar-pustaka.js";
-import { layarKarier } from "./layar-karier.js";
+import { layarKarier } from "./layar-karier.js"; import { layarTebak } from "./layar-tebak.js";
 import {
   layarStatistik, layarAtur, terapkanTampilan, temaBerikutnya, tampilkanBantuan,
 } from "./layar-lain.js";
@@ -51,7 +51,7 @@ const LAYAR = {
   statistik: layarStatistik,
   atur: layarAtur,
   pustaka: layarPustaka,
-  karier: layarKarier,
+  karier: layarKarier, tebak: layarTebak,
 };
 
 // Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
@@ -86,7 +86,7 @@ const LAYAR_PINTU = new Set(["dasbor", "bahasa", "statistik", "bookmark",
 // berhenti terbaca sebagai satu baris.
 const LAYAR_KOLOM = new Set([
   "bahasa", "kuis", "bookmark", "catatan", "cari", "statistik", "atur",
-  "pustaka", "karier",
+  "pustaka", "karier", "tebak",
 ]);
 
 // Ambang layar sempit. ANGKA INI DIPAKAI JUGA DI gaya.css (blok @media 860px)

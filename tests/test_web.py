@@ -538,7 +538,7 @@ class TestSesiKuis(BasisWeb):
         0/10" -- kalimat yang terbaca sebagai penghukuman.
 
         Dijalankan lewat `api`, bukan dibaca dari teks: yang diuji di sini
-        bahwa potret `sebelum` (`api.py:669`, di dalam `_KUNCI_PROGRES`)
+        bahwa potret `sebelum` (`api.py:673`, di dalam `_KUNCI_PROGRES`)
         benar-benar diambil SEBELUM `record_quiz_score` menimpa
         `terakhir_skor` (`pelajar/progress.py:595`). Mengikuti preseden
         `TestFieldPembandingDasbor` (`tests/test_web.py:369`), yang
@@ -593,7 +593,7 @@ class TestSesiKuis(BasisWeb):
           2. SIMPANAN -- `record_quiz_score(salah_index=...)` menaruhnya di
              bawah kunci `kategori`/`judul` yang sama, dan
              `progress.soal_salah_terakhir(kategori, judul)` membacanya balik.
-          3. PENYUSUN ULANG -- `kuis_mulai` mode `salah` (`webapp/api.py:619`)
+          3. PENYUSUN ULANG -- `kuis_mulai` mode `salah` (`webapp/api.py:623`)
              memanggil `progress.soal_salah_terakhir(kat, q["title"])`
              (`:620`) dan menyerahkan hasilnya sebagai `hanya=` ke
              `sesi.buat`; kalau kosong ia menolak dengan 409 (`:622`).
@@ -627,7 +627,7 @@ class TestSesiKuis(BasisWeb):
         pola yang sudah dipakai kelas-kelas lain di berkas ini. Semua tulisan
         progres jatuh ke sandbox `BasisWeb`, jadi berkas pelajar sungguhan
         tidak tersentuh -- dan sesi penuh MENIMPA daftar soal salah
-        (`_simpan_salah`, `pelajar/progress.py:566`), jadi varian kedua tidak
+        (`_simpan_salah`, `pelajar/progress.py:571`), jadi varian kedua tidak
         mewarisi sisa varian pertama.
         """
         for acak in (False, True):
@@ -5013,7 +5013,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
     tiap kuis di `main.LANGUAGES` (ruang: seluruh kurikulum, pembaca: impor
     modul, satuan: cacah kuis) memberi NOL dari 116 kuis pada 2026-09-30 —
     tidak satu pun kuis membawa durasi. `sesi.durasi` baru bernyawa kalau badan
-    permintaan mengirim `timer` (`api.py:637-639`, `per_soal` dari
+    permintaan mengirim `timer` (`api.py:641-639`, `per_soal` dari
     `konfigurasi.detik_per_soal`, bawaan 30 detik, setelannya di
     `layar-lain.js:490`), dan `if (sesi.durasi)` (`layar-kerja.js:196`) adalah
     SATU-SATUNYA jalan masuk ke `jalankanJam()` dan pendengar
@@ -5673,10 +5673,10 @@ class TestKuisUmpanBalik(unittest.TestCase):
         """Angka pembandingnya datang dari `sebelum`, dan hanya dirender penuh.
 
         `kuis_selesai` memuat DUA potret progres: `sebelum` di dalam
-        `_KUNCI_PROGRES` (`api.py:669`, sebelum `record_quiz_score`
+        `_KUNCI_PROGRES` (`api.py:673`, sebelum `record_quiz_score`
         `:556-558`) dan `sesudah` di `:570`. `terakhir_skor` ditimpa di sisi
         penyimpan (`pelajar/progress.py:595`, di dalam `riwayat` yang diambil
-        `:590`), jadi tepat saat `api.py:669` dijalankan nilainya masih
+        `:590`), jadi tepat saat `api.py:673` dijalankan nilainya masih
         milik
         percobaan SEBELUMNYA. Membacanya dari `sesudah` memulangkan skor
         percobaan yang baru saja selesai -- dan pembandingnya berubah jadi
@@ -5898,7 +5898,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
         bukan lewat `document.activeElement`.
 
         YANG TIDAK DIPASANG, dan itu keputusan: `Backspace` sebagai jalan
-        keluar. `kuis_batal` ada (`api.py:675`), tapi memanggilnya dari sebuah
+        keluar. `kuis_batal` ada (`api.py:679`), tapi memanggilnya dari sebuah
         tombol yang sering ditekan tanpa sengaja adalah cara tercepat membuat
         orang kehilangan lima belas jawaban tanpa satu pun jejak visual.
         """

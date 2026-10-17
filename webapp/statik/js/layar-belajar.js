@@ -1048,7 +1048,7 @@ export async function layarBahasa({ key }, ctx) {
       // Dipisahkan dari tiga tab di sebelahnya, dan sengaja BUKAN .tbl-hantu:
       // dengan bentuk yang sama persis, ia terbaca sebagai "tab keempat yang
       // sedang tidak aktif" — padahal menekannya meninggalkan halaman ini.
-      h("a.tbl.tbl-pergi.deret-kanan", { href: "#/coba?bahasa=" + b.runner },
+      b.tebak && b.siap ? h("a.tbl.tbl-pergi.deret-kanan", { href: "#/tebak/" + key, title: "Latih membaca kode: tebak keluaran contoh materi yang sudah kamu baca" }, ikon("kuis", { ukuran: 17 }), "Tebak keluaran") : null, h("a.tbl.tbl-pergi" + (b.tebak && b.siap ? "" : ".deret-kanan"), { href: "#/coba?bahasa=" + b.runner },
         ikon("jalankan", { ukuran: 17 }), "Ruang coba " + b.label,
         belumSiap ? capBelumSiap() : null,
         ikon("lanjut", { ukuran: 15 }))),
