@@ -241,6 +241,40 @@ _LINGKUNGAN_GIT = {
 }
 
 
+# PHP dijalankan dengan -n (abaikan php.ini) supaya hasilnya sama di mesin mana
+# pun. Tapi PHP distro (Fedora, Debian) memasang mbstring dan PDO sebagai MODUL
+# TERPISAH yang justru dimuat lewat php.ini, jadi -n membuat mb_strlen() dan
+# new PDO lenyap walau paketnya terpasang: Latihan PHP 14/15 dan materi PDO
+# gagal dengan "Call to undefined function" (ditemukan 2026-10-17 saat PHP
+# distro pertama kali dipakai menjalankan suite). Modul yang dipakai kurikulum
+# dimuat eksplisit, hanya kalau berkasnya ada dan belum tertanam statis
+# (memuat ulang modul bawaan memicu peringatan yang mengotori keluaran).
+_EKSTENSI_PHP = ("ctype", "mbstring", "pdo", "pdo_sqlite", "sqlite3")
+_php_ekstensi_singgah = None
+
+
+def _php_ekstensi():
+    """Argumen `-d extension=...` untuk modul PHP bersama yang dibutuhkan."""
+    global _php_ekstensi_singgah
+    if _php_ekstensi_singgah is not None:
+        return _php_ekstensi_singgah
+    hasil = []
+    try:
+        keluar = subprocess.run(
+            ["php", "-n", "-r", 'echo ini_get("extension_dir"), "\\n", '
+             'implode(",", get_loaded_extensions());'],
+            capture_output=True, text=True, timeout=10).stdout.split("\n", 1)
+        folder = keluar[0].strip()
+        termuat = {e.lower() for e in (keluar[1] if len(keluar) > 1 else "").split(",")}
+        for nama in _EKSTENSI_PHP:
+            if nama not in termuat and os.path.isfile(os.path.join(folder, nama + ".so")):
+                hasil += ["-d", f"extension={nama}"]
+    except (OSError, subprocess.SubprocessError):
+        hasil = []
+    _php_ekstensi_singgah = hasil
+    return hasil
+
+
 TOOLCHAINS = {
     "python": Toolchain(
         key="python", label="Python", ekstensi=".py", butuh=["python3"],
@@ -468,11 +502,12 @@ TOOLCHAINS = {
         key="php", label="PHP", ekstensi=".php", butuh=["php"],
         # -n mengabaikan php.ini sistem supaya hasilnya sama di mesin mana pun:
         # satu ekstensi yang kebetulan aktif bisa mengubah keluaran latihan.
-        jalankan=lambda d, p: ["php", "-n", "-d", "error_reporting=E_ALL", p],
+        jalankan=lambda d, p: ["php", "-n", "-d", "error_reporting=E_ALL",
+                               *_php_ekstensi(), p],
         cek_sintaks=lambda d, p: ["php", "-n", "-l", p],
         instalasi={
-            "fedora": "sudo dnf install php-cli",
-            "debian": "sudo apt install php-cli",
+            "fedora": "sudo dnf install php-cli php-mbstring php-pdo",
+            "debian": "sudo apt install php-cli php-mbstring php-sqlite3",
             "arch": "sudo pacman -S php",
             "mac": "brew install php",
             "windows": "Unduh dari https://windows.php.net/download",

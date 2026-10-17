@@ -798,5 +798,24 @@ class TestTidakAdaProsesYatim(unittest.TestCase):
             self.fail(f"proses anak {pid} masih hidup sesudah program selesai")
 
 
+class TestEkstensiPhp(unittest.TestCase):
+    """PHP distro memasang mbstring/PDO sebagai modul bersama yang dimuat lewat
+    php.ini, padahal runner memakai -n. _php_ekstensi memuatnya eksplisit."""
+
+    def test_hanya_modul_yang_ada_dan_belum_termuat(self):
+        if not runner.tersedia("php"):
+            self.skipTest("php tidak terpasang")
+        runner._php_ekstensi_singgah = None
+        argumen = runner._php_ekstensi()
+        nama = [a.split("=", 1)[1] for a in argumen if a.startswith("extension=")]
+        termuat = subprocess.run(["php", "-n", "-m"], capture_output=True,
+                                 text=True).stdout.lower().split()
+        for n in nama:
+            self.assertIn(n, runner._EKSTENSI_PHP)
+            self.assertNotIn(n, termuat, f"{n} sudah tertanam; memuatnya lagi memicu peringatan")
+        hasil = runner.jalankan("php", "<?php echo 'ok';")
+        self.assertEqual(hasil.keluaran.strip(), "ok", hasil.galat)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
