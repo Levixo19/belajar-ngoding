@@ -23,7 +23,7 @@ import { ikon, ikonTipe } from "./ikon.js";
 import { praKode } from "./sorot.js";
 import { Editor } from "./editor.js";
 import { barisTautan } from "./layar-pustaka.js";
-import { kalimatGulir, akordeonBahasa, marqueeBahasa, gerakBeranda } from "./beranda.js";
+import { gerakBeranda } from "./beranda.js";  // kalimatGulir/akordeon/marquee: tak dipakai meja kerja
 import { sampul, kepalaBersampul } from "./sampul.js";
 import {
   pratinjauHtml, bisaDipratinjau, dokumenPratinjau, halamanDikarang,
@@ -363,40 +363,40 @@ function dasborBerjalan(d, ctx) {
   const bento = h("div.bento", {},
     h("div.bento-level", {}, kartuBara(d)),
     h("div.bento-pekan", {}, pekanIni(d)),
-    sisaLangkah.length || d.tantangan
-      ? h("div.bento-antrean", {}, blokAntrean(sisaLangkah, d.tantangan, ctx)) : null,
+    // Antrean pindah ke kolom kanan meja kerja (dasborMeja), di atas lipatan.
+    null,
     h("div.bento-karier", {}, ubinKarier()),
     h("div.bento-pustaka", {},
       ubinPustaka(utama ? utama.bahasa : null, utama ? utama.label_bahasa : null)));
 
-  const el = h("div.beranda", {},
-    h("section.beranda-hero", {},
-      h("div.beranda-hero-teks", {},
-        h("span.mata", {}, new Date().toLocaleDateString("id-ID",
-          { weekday: "long", day: "numeric", month: "long", year: "numeric" })),
-        judulSapa(sapa, d.nama, utama ? utama.bahasa : null),
-        h("p.sambut-sub", {}, kalimatPembuka(d)),
-        h("div.beranda-aksi", {},
-          utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
-            "Lanjutkan belajar", ikon("lanjut", { ukuran: 18 })) : null,
-          h("a.tbl.tbl-hantu.tbl-besar", { href: "#/karier" }, "Peta karier"))),
-      utama ? kartuLanjutkan(utama) : null),
-    bento,
-    kalimatGulir(d),
-    akordeonBahasa(dijalani),
-    h("section.meja-ritme", {}, blokBara(d),
-      h("div.ritme-sampul", {}, sampul("ritme", { ragam: "gelombang", lebar: 480, tinggi: 360 }))),
-    marqueeBahasa(ctx.awal.bahasa || []),
-    h("section.beranda-tutup", {},
-      h("div.beranda-tutup-teks", {},
-        h("h2", {}, "Sepuluh menit hari ini lebih baik daripada dua jam minggu depan."),
-        utama ? h("a.tbl.tbl-utama.tbl-besar", { href: tautanLangkah(utama) },
-          "Lanjutkan: " + tanpaNomor(utama.judul), ikon("lanjut", { ukuran: 18 })) : null),
-      h("div.beranda-tutup-sampul", {},
-        sampul(utama ? `${utama.bahasa}/tutup` : "tutup",
-               { bahasa: utama ? utama.bahasa : null, ragam: "orbit", lebar: 560, tinggi: 360 }))),
-  );
-
+  const el = dasborMeja(d, ctx, { utama, sisaLangkah, dijalani, bento, sapa });
+  // MEJA KERJA (rombak 2026-10-17, dipilih pemilik). Susunan beranda lama
+  // (hero editorial, kalimat gulir, akordeon, marquee, ajakan penutup) adalah
+  // landing page: tinggi 3709 px di 1440x900, antrean "habis ini apa" baru
+  // mulai di y=1168, dan tiga tombol beraksen menuju materi yang sama.
+  // Yang dibawa pelajar ke dasbor cuma satu pertanyaan, dan jawabannya
+  // sekarang di atas lipatan. Susunannya, dari atas:
+  //
+  //   1. Meja kini (kiri): tanggal, sapaan, POSISI ("Python · Bab 4 dari 11
+  //      · 14/44 materi", dari /api/dasbor -> posisi, dihitung bab.py), lalu
+  //      kartu Lanjutkan: satu-satunya permukaan beraksen di layar ini.
+  //   2. Antrean (kanan, sejajar): langkah berikutnya dari saran.py, dan
+  //      jumlah kuis yang menunggu diulang. Kolom kanan, bukan di bawah:
+  //      yang harus dikerjakan tidak boleh didorong ke bawah lipatan.
+  //   3. Ringkasan: level, minggu ini, Peta Karier, Pustaka (bento lama).
+  //   4. Bahasa yang sedang dijalani sebagai baris: sampul kecil, persen
+  //      yang SELALU terlihat (akordeon lama menyembunyikannya sampai
+  //      di-hover), dan bilah. Tanpa nomor 01-04: nomor di aplikasi ini
+  //      berarti urutan, dan bahasa-bahasa ini bukan urutan.
+  //   5. Ritme enam bulan (blokBara) dengan sampulnya.
+  //
+  // Yang dibuang: kalimat yang menyala saat digulir, marquee seluruh
+  // kurikulum, dan ajakan penutup berpepatah. Ketiganya hiasan; sampul SVG
+  // tetap dipakai di kartu, baris bahasa, dan ritme. gerakBeranda() tetap
+  // dipanggil di bawah; tanpa .beranda-hero dan .beranda-kalimat-isi ia
+  // tidak menemukan apa pun untuk digerakkan, dan itu yang diinginkan:
+  // meja kerja diam. Kalimatnya pendek-pendek: dasbor dibaca sekilas,
+  // bukan ditelaah.
   ungkap(bento, { per: 60, maks: 360, geser: 18, pegas: "halus" });
   let lepasGerak = () => {};
   saatSiap(el, () => { lepasGerak = gerakBeranda(el); });
@@ -949,9 +949,9 @@ function blokBara(d) {
  *  tidak bisa dibaca dari ratusan kotak kecil justru yang paling ingin
  *  diketahui — di mana putusnya, dan apakah putusnya sudah selesai. */
 function jedaBara(heatmap) {
-  let jalan = 0, panjang = 0, akhir = -1;
+  let jalan = 0, panjang = 0, akhir = -1; const mulai = heatmap.findIndex((s) => s.xp > 0);  // sebelum hari pertama ber-XP: belum mulai, bukan jeda
   heatmap.forEach((s, i) => {
-    if (s.xp > 0) { jalan = 0; return; }
+    if (mulai < 0 || i < mulai) return; if (s.xp > 0) { jalan = 0; return; }
     jalan += 1;
     if (jalan > panjang) { panjang = jalan; akhir = i; }
   });
@@ -3336,4 +3336,57 @@ function tawarkanKuisSiap(kaki, key, hasil) {
     `${potong(q.judul, 30)} siap: semua materinya sudah kamu baca`);
   kaki.appendChild(tbl);
   masuk(tbl, { geser: 7, pegas: "jawab" });
+}
+
+/** Dasbor sebagai meja kerja: yang harus dikerjakan di atas lipatan.
+ *  Alasan susunannya ditulis di dasborBerjalan(), di tempat ia dipanggil. */
+function dasborMeja(d, ctx, { utama, sisaLangkah, dijalani, bento, sapa }) {
+  const p = d.posisi;
+  const posisi = p ? h("p.meja-posisi", {},
+    h("a", { href: "#/bahasa/" + p.key }, h("b", {}, p.label)),
+    p.bab ? ` · Bab ${p.bab} dari ${p.bab_total}: ${p.bab_judul}` : "",
+    ` · ${p.materi}/${p.total_materi} materi`) : null;
+  const ulang = d.kuis_jatuh_tempo > 2
+    ? h("p.meja-catatan", {}, `${d.kuis_jatuh_tempo} kuis menunggu diulang. `
+        + "Dua yang paling mendesak sudah ada di antrean; sisanya bisa besok.")
+    : null;
+
+  return h("div.meja", {},
+    h("section.meja-atas", {},
+      h("div.meja-kini", {},
+        h("span.mata", {}, new Date().toLocaleDateString("id-ID",
+          { weekday: "long", day: "numeric", month: "long", year: "numeric" })),
+        judulSapa(sapa, d.nama, utama ? utama.bahasa : null),
+        posisi,
+        utama ? kartuLanjutkan(utama) : h("p.sambut-sub", {}, kalimatPembuka(d))),
+      h("div.meja-antrean", {},
+        sisaLangkah.length || d.tantangan
+          ? blokAntrean(sisaLangkah, d.tantangan, ctx)
+          : h("p.sambut-sub", {}, kalimatPembuka(d)),
+        ulang,
+        // Di kolom kanan, bukan di bawah: kolom kiri (sapaan + kartu) lebih
+        // tinggi daripada antrean, dan ruang di bawah antrean itulah tempat
+        // persen tiap bahasa terlihat tanpa menggulir.
+        barisBahasaMeja(dijalani.slice(0, 4)))),
+    bento,
+    h("section.meja-ritme", {}, blokBara(d),
+      h("div.ritme-sampul", {}, sampul("ritme", { ragam: "gelombang", lebar: 480, tinggi: 360 }))));
+}
+
+/** Bahasa yang sedang dijalani: satu baris per bahasa, persennya selalu
+ *  terlihat. Persen dan jumlah materi dari server (statistik_bahasa); persen
+ *  itu ikut menghitung kuis dan latihan, jadi labelnya menyebut "selesai",
+ *  bukan "materi". */
+function barisBahasaMeja(daftar) {
+  if (!daftar.length) return null;
+  return h("section.meja-bahasa", { "aria-label": "Bahasa yang sedang kamu jalani" },
+    h("h2.meja-judul", {}, "Yang sedang kamu jalani"),
+    h("div.meja-bahasa-daftar", {}, daftar.map((b) => h("a.meja-bahasa-baris", {
+      href: "#/bahasa/" + b.key,
+    },
+      h("span.meja-bahasa-sampul", {}, sampul(b.key, { bahasa: b.key, lebar: 160, tinggi: 100 })),
+      h("span.meja-bahasa-nama", {}, b.label),
+      h("span.meja-bahasa-ket", {}, `${b.materi}/${b.total_materi} materi`),
+      h("span.meja-bahasa-bilah", {}, bilah(Math.min(100, b.persen), b.persen >= 100 ? "tumbuh" : "")),
+      h("b.meja-bahasa-persen", {}, `${Math.round(b.persen)}% selesai`)))));
 }

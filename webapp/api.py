@@ -338,7 +338,27 @@ def dasbor(_=None):
 
     tantangan = modul_saran.tantangan_harian(LANGUAGES, data)
 
+    # "Aku sudah sejauh mana?" dijawab di atas lipatan dasbor: bahasa yang
+    # terakhir disentuh dan bab yang sedang berjalan. Babnya dibaca dari
+    # bab.status, satu-satunya yang berhak memutuskan penguncian.
+    posisi = None
+    aktif = modul_saran.bahasa_terakhir(LANGUAGES, data)
+    if aktif:
+        semua_bab = modul_bab.status(aktif, data)
+        kini = next((b for b in semua_bab if b["status"] != modul_bab.TERKUNCI
+                     and b["selesai"] < b["jumlah"]), semua_bab[-1] if semua_bab else None)
+        s = _stat(aktif, data)
+        posisi = {"key": aktif["key"], "label": aktif["label"],
+                  "bab": kini["nomor"] if kini else 0, "bab_total": len(semua_bab),
+                  "bab_judul": kini["judul"] if kini else "",
+                  "materi": s["materi"], "total_materi": s["total_materi"],
+                  "persen": s["persen"]}
+
     return {
+        "posisi": posisi,
+        "kuis_jatuh_tempo": sum(
+            progress.kuis_jatuh_tempo(data, f"{l['key']}_kuis", q["title"])
+            for l in LANGUAGES for q in l["quizzes"]),
         "nama": konfigurasi.ambil("nama", ""),
         "xp": xp,
         "level": level,

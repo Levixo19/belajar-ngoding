@@ -1961,7 +1961,7 @@ class TestHamparanBara(unittest.TestCase):
 
         # Pemisahan dua layar, dibaca dari pemanggilnya.
         mulai = self._telanjang(self._fungsi(js, "layarMulai"))
-        berjalan = self._telanjang(self._fungsi(js, "dasborBerjalan"))
+        berjalan = self._telanjang(self._fungsi(js, "dasborBerjalan") + self._fungsi(js, "dasborMeja"))  # meja kerja 2026-10-17
         self.assertIn("kisiUbin(", mulai)
         self.assertNotIn("blokBara(", mulai,
                          "`layarMulai` sekarang memuat hamparan bara juga; "

@@ -5688,7 +5688,7 @@ html.lingkar-tema::view-transition-new(root) {
    ritme enam bulan, marquee kurikulum, ajakan penutup. */
 @media (min-width: 861px) {
   .beranda { display: grid; gap: var(--s8); padding-block: var(--s6) var(--s8); }
-  .beranda-hero-teks, .beranda-akordeon-bagian { min-width: 0; }
+  .beranda-akordeon-bagian { min-width: 0; }
 
   /* -- hero ------------------------------------------------------------ */
   .beranda-hero {
@@ -5706,7 +5706,7 @@ html.lingkar-tema::view-transition-new(root) {
     margin: var(--s3) 0 var(--s4);
   }
   .beranda-hero .sambut-sub { font-size: 1.15rem; color: var(--teks-2); max-width: 44ch; }
-  .beranda-aksi { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s6); }
+  /* (tombol ganda hero dibuang 2026-10-17: satu tindakan utama = kartu Lanjutkan di meja kerja) */
   .tbl-besar { min-height: 52px; padding: 0 var(--s5); border-radius: var(--r-penuh);
                font-family: var(--f-ui); font-size: 1rem; font-weight: 600; }
   .beranda-hero .lanjutkan {
@@ -5742,9 +5742,9 @@ html.lingkar-tema::view-transition-new(root) {
   .bento > * { min-width: 0; }
   .bento-level { grid-column: span 2; }
   .bento-pekan { grid-column: span 4; }
-  .bento-antrean { grid-column: span 4; grid-row: span 2; }
-  .bento-karier, .bento-pustaka { grid-column: span 2; }
-  .bento:not(:has(.bento-antrean)) :is(.bento-karier, .bento-pustaka) { grid-column: span 3; }
+  /* Antrean pindah ke kolom kanan meja kerja (2026-10-17), jadi bento tinggal dua baris: */
+  .bento-karier, .bento-pustaka { grid-column: span 3; }
+  /* level 2 + pekan 4, lalu karier 3 + pustaka 3. */
   .bento-level > *, .bento-pekan > *, .bento-karier > *, .bento-pustaka > * { height: 100%; }
   .bento .pekan { display: grid; grid-template-rows: auto 1fr; height: 100%; }
 
@@ -5842,10 +5842,10 @@ html.lingkar-tema::view-transition-new(root) {
   .marquee-butir:hover { color: var(--teks); text-decoration: none; }
 
   /* -- penutup ---------------------------------------------------------- */
-  .beranda-tutup { display: grid; justify-items: start; gap: var(--s5);
-                   padding-block: var(--s7) var(--s6); }
-  .beranda-tutup h2 { font-size: clamp(2rem, 1.2rem + 2vw, 3.2rem); max-width: 22ch;
-                      line-height: 1.05; letter-spacing: -.035em; }
+  /* Ajakan penutup berpepatah dibuang bersama susunan landing page
+     (2026-10-17). Dasbor sekarang meja kerja: lihat blok "meja kerja" di
+     kaki berkas ini dan dasborBerjalan() di layar-belajar.js. Catatan ini
+     menggantikan aturannya supaya alamat baris di bawahnya tetap. */
 }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
@@ -6002,21 +6002,21 @@ html.lingkar-tema::view-transition-new(root) {
     border: var(--tebal-garis) solid var(--garis);
   }
 
-  /* Penutup: ajakan di kiri, sampul di kanan. */
-  .beranda-tutup {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    align-items: center; justify-items: stretch;
-  }
-  .beranda-tutup-teks { display: grid; justify-items: start; gap: var(--s5); min-width: 0; }
-  .beranda-tutup-sampul {
-    aspect-ratio: 14 / 9; border-radius: 28px; overflow: hidden;
-    border: var(--tebal-garis) solid var(--garis);
-  }
+  /* (Penutup lama, ajakan di kiri dan sampul di kanan, dibuang 2026-10-17
+     bersama susunan landing page. Sampul tetap hidup di kartu Lanjutkan,
+     baris bahasa, dan ritme meja kerja. Baris-baris ini sengaja jadi
+     catatan, bukan dihapus: banyak tes memegang alamat baris gaya.css,
+     dan menghapusnya menggeser semua alamat sesudahnya.) */
+
+
+
+
+
 }
 @media (max-width: 860px) {
   .kepala-sampul, .ubin-sampul, .lanjutkan-sampul, .akordeon-sampul, .kr-sampul,
   .bab-sampul, .judul-pil, .meja-ubin-sampul, .marquee-sampul, .ritme-sampul,
-  .beranda-tutup-sampul { display: none; }
+  .meja-bahasa-sampul { display: none; }
 }
 
 /* ------------------------------------------------------------ kuis & materi
@@ -6029,4 +6029,76 @@ html.lingkar-tema::view-transition-new(root) {
     margin-top: var(--s3); font-size: var(--t-ui); color: var(--redup);
   }
   .baca-lagi a { color: var(--nyala); }
+}
+
+/* ------------------------------------------------------------- meja kerja
+   Dasbor 2026-10-17 (dipilih pemilik): yang harus dikerjakan di atas
+   lipatan. Kiri: tanggal, sapaan, posisi, kartu Lanjutkan (satu-satunya
+   permukaan beraksen). Kanan: antrean. Lalu ringkasan (bento tanpa
+   antrean), baris bahasa, ritme. Susunannya diterangkan di dasborBerjalan(). */
+@media (min-width: 861px) {
+  .meja { display: grid; gap: var(--s7); padding-block: var(--s5) var(--s8); }
+  .meja-atas {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: var(--s6);
+    align-items: start;
+  }
+  .meja-kini, .meja-antrean { min-width: 0; display: grid; gap: var(--s4); align-content: start; }
+  .meja-kini h1 {
+    font-size: clamp(2.1rem, 1.3rem + 1.8vw, 3.2rem);
+    line-height: 1.02; letter-spacing: -.03em; font-weight: 700; margin: 0;
+  }
+  .meja-posisi { margin: 0; font-size: var(--t-ui); color: var(--teks-2); }
+  .meja-posisi a { color: var(--teks); }
+  .meja-catatan { margin: 0; font-size: var(--t-ui); color: var(--redup); }
+
+  .meja-kini .lanjutkan {
+    flex-direction: column; align-items: flex-start; gap: var(--s4);
+    padding: var(--s6); border-radius: 28px; overflow: hidden;
+    border-color: color-mix(in srgb, var(--nyala) 40%, var(--garis));
+    background:
+      radial-gradient(420px 260px at 100% 0%,
+        color-mix(in srgb, var(--nyala) 16%, transparent), transparent 70%),
+      var(--kartu);
+    box-shadow: var(--kilau-tepi),
+      0 30px 70px -36px color-mix(in srgb, var(--nyala) 60%, transparent);
+  }
+  .meja-kini .lanjutkan:hover { border-color: var(--nyala); }
+  .meja-kini .lanjutkan-isi { flex: 0 0 auto; }
+  .meja-kini .lanjutkan-sampul { flex: 0 0 120px; min-height: 120px; }
+  .meja-kini .lanjutkan-nomor { font-size: clamp(3rem, 2rem + 2vw, 4.5rem); line-height: .9; }
+  .meja-kini .lanjutkan-isi h2 { font-size: clamp(1.3rem, 1rem + .8vw, 1.7rem); }
+  .meja-kini .lanjutkan-tbl { align-self: stretch; justify-content: space-between;
+                              border-radius: var(--r-penuh); }
+
+  .meja-judul { font-family: var(--f-ui); font-size: var(--t-ui); font-weight: 600; color: var(--teks-2); margin: var(--s3) 0 var(--s3); }
+  .meja-bahasa-daftar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
+    gap: var(--s3);
+  }
+  .meja-bahasa-baris {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    grid-template-areas: "sampul nama persen" "sampul bilah ket";
+    align-items: center;
+    column-gap: var(--s4); row-gap: var(--s2);
+    padding: var(--s3) var(--s4) var(--s3) var(--s3);
+    border-radius: 18px;
+    border: var(--tebal-garis) solid var(--garis);
+    background: var(--kartu);
+    color: var(--teks);
+    min-width: 0;
+    transition: border-color var(--cepat);
+  }
+  .meja-bahasa-baris:hover { text-decoration: none; border-color: var(--garis-kuat); }
+  .meja-bahasa-sampul {
+    grid-area: sampul; display: block; height: 52px; border-radius: 12px; overflow: hidden;
+  }
+  .meja-bahasa-nama { grid-area: nama; font-family: var(--f-ui); font-weight: 600; min-width: 0; }
+  .meja-bahasa { min-width: 0; }
+  .meja-bahasa-persen { grid-area: persen; font-family: var(--f-ui); }
+  .meja-bahasa-bilah { grid-area: bilah; min-width: 0; }
+  .meja-bahasa-ket { grid-area: ket; font-size: var(--t-ui); color: var(--redup); white-space: nowrap; }
 }

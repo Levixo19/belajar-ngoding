@@ -65,6 +65,10 @@ def _bahasa_terakhir(languages, data):
     return next((l for l in languages if l["key"] == key), None)
 
 
+# Nama publik untuk pemakai di luar modul ini (dasbor web).
+bahasa_terakhir = _bahasa_terakhir
+
+
 def _urut_bahasa(languages, data):
     """Bahasa aktif lebih dulu, sisanya mengikuti urutan aslinya."""
     aktif = _bahasa_terakhir(languages, data)
