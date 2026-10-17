@@ -31,6 +31,7 @@ Importir: webapp/api.py.
 import re
 
 from pelajar import bab
+from pelajar import kuis_materi
 from inti import berkas
 from inti import runner
 from inti import sorot
@@ -583,6 +584,9 @@ def daftar_kuis(lang, data):
             "jadwal": (data["jadwal_kuis"].get(k) or {}).get("jatuh_tempo", ""),
             "salah_tersisa": len(data["salah_kuis"].get(k, [])),
             "bookmark": k in data["bookmark"],
+            # Penanda, bukan kunci: kuis tetap bisa dibuka kapan saja.
+            "siap": kuis_materi.kuis_siap(lang, q, data),
+            "sisa_materi": len(kuis_materi.sisa_materi(lang, q, data)),
         })
     return keluar
 

@@ -39,6 +39,7 @@ from layar import exercises
 from inti import galat as modul_galat
 from inti import pustaka as modul_pustaka
 from pelajar import konfigurasi
+from pelajar import kuis_materi
 from pelajar import simpanan
 from pelajar import karier as modul_karier
 import main as aplikasi
@@ -587,7 +588,12 @@ def materi_selesai(body):
         sebelum = progress.load_progress()
         badge = progress.record_material_read(f"{lang['key']}_materi",
                                               m["title"], tuntas=tuntas)
+        sesudah = progress.load_progress()
         return {"status": "selesai" if tuntas else "sebagian",
+                # Kuis yang baru saja siap karena materi ini: ditawarkan di
+                # kaki materi selagi bacaannya masih segar.
+                "kuis_siap": [{"indeks": i, "judul": q["title"]}
+                              for i, q in kuis_materi.kuis_baru_siap(lang, sebelum, sesudah)],
                 **_xp_dan_badge(sebelum, badge)}
 
 
@@ -648,6 +654,15 @@ def kuis_selesai(body):
             badge = progress.perbarui_soal_salah(r["kategori"], r["judul"], tersisa)
         hadiah = _xp_dan_badge(sebelum, badge)
 
+    # Soal yang salah menunjuk materi sumbernya ("Baca lagi: ...").
+    # Statusnya dibaca dari bab.py: tautan ke materi terkunci ditandai LEBIH
+    # DULU, bukan berujung penolakan.
+    lang_kuis = _bahasa(r["kategori"].rsplit("_", 1)[0])
+    terbuka = modul_bab.indeks_terbuka(lang_kuis, progress.load_progress())
+    for d in r["rincian"]:
+        sumber = kuis_materi.materi_soal(lang_kuis, r["judul"], d["asli"])
+        d["baca_lagi"] = ({"indeks": sumber[0], "judul": sumber[1],
+                           "terkunci": sumber[0] not in terbuka} if sumber else None)
     sesudah = progress.load_progress()
     k = kunci_progres(r["kategori"], r["judul"])
     jadwal = sesudah["jadwal_kuis"].get(k, {})

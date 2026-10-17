@@ -35,6 +35,7 @@ from datetime import date
 
 from inti import runner
 from pelajar import bab
+from pelajar import kuis_materi
 from pelajar.progress import judul_kunci, kunci, kuis_jatuh_tempo, xp_hari_ini
 
 
@@ -180,12 +181,17 @@ def langkah_berikutnya(languages, data, maks=6):
         saran.append(Langkah("latihan", bahasa_aktif, belum[0],
                              "ubah yang sudah dibaca jadi kode beneran", 4))
 
-    # 5. Kuis yang belum pernah dikerjakan.
+    # 5. Kuis yang belum pernah dikerjakan DAN semua materi yang diujinya
+    # sudah dibaca. Alasan lama ("uji pemahamanmu atas materi tadi") dulu
+    # ditempel ke kuis pertama yang belum dikerjakan, termasuk sesudah
+    # membaca satu materi saja: kalimat yang mengaku tahu sesuatu padahal
+    # tidak. Kuis yang belum siap tetap bisa dibuka dari daftarnya.
     kuis = next((q for q in bahasa_aktif["quizzes"]
-                 if kunci(kat_k, q["title"]) not in data.get("kuis_skor", {})), None)
+                 if kunci(kat_k, q["title"]) not in data.get("kuis_skor", {})
+                 and kuis_materi.kuis_siap(bahasa_aktif, q, data)), None)
     if kuis:
         saran.append(Langkah("kuis", bahasa_aktif, kuis,
-                             "uji pemahamanmu atas materi tadi", 5))
+                             "semua materi yang diujinya sudah kamu baca", 5))
 
     # 6. Bahasa yang belum pernah disentuh sama sekali.
     for lang in languages:

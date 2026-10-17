@@ -6018,3 +6018,15 @@ html.lingkar-tema::view-transition-new(root) {
   .bab-sampul, .judul-pil, .meja-ubin-sampul, .marquee-sampul, .ritme-sampul,
   .beranda-tutup-sampul { display: none; }
 }
+
+/* ------------------------------------------------------------ kuis & materi
+   Kuis yang baru siap di kaki materi (tombol biasa, BUKAN tbl-utama: kaki
+   materi sudah punya tindakan utamanya), dan "Baca lagi" di tinjauan kuis.
+   Keduanya dari pelajar/kuis_materi.py lewat API. */
+@media (min-width: 861px) {
+  .tbl-kuis-siap { border-color: var(--nyala); color: var(--nyala); }
+  .baca-lagi {
+    margin-top: var(--s3); font-size: var(--t-ui); color: var(--redup);
+  }
+  .baca-lagi a { color: var(--nyala); }
+}

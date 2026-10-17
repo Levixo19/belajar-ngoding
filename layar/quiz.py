@@ -18,6 +18,7 @@ Importir: main.py, layar/navigasi.py.
 import random
 
 from inti import tema
+from pelajar import kuis_materi
 from layar.utils import (
     C, paint, clear, press_enter, ask, ask_atau_eof, ask_choice, header, rule,
     bar, wrap, lebar, angka_pilihan, ask_timed,
@@ -102,8 +103,8 @@ def _siapkan_soal(questions, indeks, acak_soal, acak_opsi, rng):
     return paket
 
 
-def _tampilkan_review(salah):
-    """Tampilkan ulang semua soal yang dijawab keliru."""
+def _tampilkan_review(salah, kategori="", judul=""):
+    """Tampilkan ulang semua soal yang dijawab keliru, plus materi sumbernya."""
     if not salah:
         return
     clear()
@@ -118,6 +119,10 @@ def _tampilkan_review(salah):
         print(tema.cat(f"     Yang benar   : {item['options'][item['answer']]}", "sukses"))
         if item["explanation"]:
             print(tema.cat(wrap(item["explanation"], lebar() - 2, "     "), "redup"))
+        sumber = kuis_materi.materi_soal_key(kategori.rsplit("_", 1)[0], judul,
+                                             item["asli"]) if kategori else None
+        if sumber:
+            print(tema.cat(f"     Baca lagi    : {sumber[1]}", "aksen"))
     print()
     press_enter("Tekan ENTER untuk kembali...")
 
@@ -275,7 +280,7 @@ def run_quiz(quiz, kategori="kuis", indeks=None, acak_soal=True, acak_opsi=True,
         print(tema.cat(f"\n  Ada {len(salah)} soal yang salah.", "peringatan"))
         pilihan = ask("  [r] review jawaban salah | [ENTER] lanjut > ", "").lower()
         if pilihan == "r":
-            _tampilkan_review(salah)
+            _tampilkan_review(salah, kategori, quiz["title"])
             return
     press_enter()
 

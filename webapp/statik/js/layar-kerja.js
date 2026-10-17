@@ -500,7 +500,7 @@ export async function layarKuis({ key, indeks }, ctx) {
           h("div", { gaya: { color: "var(--tumbuh)" } },
             "Seharusnya: " + d.options[d.jawaban_benar])),
         d.penjelasan ? h("div.arti", {},
-          h("b", {}, "Kenapa"), h("div", {}, d.penjelasan)) : null) : null);
+          h("b", {}, "Kenapa"), h("div", {}, d.penjelasan)) : null, bacaLagi(d, key)) : null);
   }
 
   gambarPersiapan();
@@ -2141,4 +2141,20 @@ function contohAwal(bahasa) {
        + '  margin: 0;\n}\n\nh1 {\n  color: #333;\n'
        + '  text-align: center;\n}\n',
   }[bahasa] || "";
+}
+
+/** "Baca lagi: <materi>" untuk soal yang dijawab salah.
+ *
+ *  Materinya ditentukan server (data/kuis_materi.py, ditinjau soal demi soal).
+ *  Materi di bab yang masih terkunci ditandai LEBIH DULU dan tidak dijadikan
+ *  tautan: tombol yang berujung penolakan dilarang (AGENTS.md). */
+function bacaLagi(d, key) {
+  const m = d.baca_lagi;
+  if (!m) return null;
+  if (m.terkunci) {
+    return h("div.baca-lagi", {}, "Dibahas di ", h("b", {}, m.judul),
+      " (babnya belum terbuka)");
+  }
+  return h("div.baca-lagi", {}, "Baca lagi: ",
+    h("a", { href: `#/materi/${key}/${m.indeks}` }, m.judul));
 }

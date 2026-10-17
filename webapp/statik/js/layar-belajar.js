@@ -1120,12 +1120,12 @@ function barisFakta(b, s) {
  *  penolakan". Statusnya tetap dibaca dari server, tidak dihitung ulang. */
 function kartuLanjutBahasa(b, key) {
   const materi = b.materi.find((m) => m.status !== "selesai" && !m.terkunci);
-  const kuis = b.kuis.find((q) => !q.pernah || q.jatuh_tempo);
+  const kuis = b.kuis.find((q) => q.jatuh_tempo || (!q.pernah && q.siap)) || b.kuis.find((q) => !q.pernah);
   const latihan = b.latihan.find(
     (e) => e.status !== "lulus" && e.status !== "manual");
 
   let s = null;
-  if (materi) {
+  if (materi && !(kuis && !kuis.pernah && kuis.siap && materi.status !== "sebagian")) {
     s = { tipe: "materi", indeks: materi.indeks, judul: materi.judul,
           mata: materi.status === "sebagian" ? "Lanjutkan bacaan"
                                              : "Mulai dari sini",
@@ -1136,7 +1136,7 @@ function kartuLanjutBahasa(b, key) {
     s = { tipe: "kuis", indeks: kuis.indeks, judul: kuis.judul,
           mata: "Uji pemahaman",
           ket: kuis.pernah ? "Sudah waktunya kuis ini diulang."
-                           : "Semua materi terbaca. Sekarang ujinya." };
+                           : "Semua materi yang diuji kuis ini sudah kamu baca." };
   } else if (latihan) {
     s = { tipe: "latihan", indeks: latihan.indeks, judul: latihan.judul,
           mata: "Tulis kodenya",
@@ -1723,7 +1723,7 @@ function daftarKuis(b, ctx) {
         h("div.ket", {}, q.pernah
           ? `Terbaik ${q.terbaik}/${q.total_soal} · ${q.percobaan}× dikerjakan`
             + (q.terakhir_waktu ? ` · terakhir ${jamRamah(q.terakhir_waktu)}` : "")
-          : `${q.soal} soal · belum pernah dikerjakan`)),
+          : `${q.soal} soal · ` + (q.siap ? "semua materi yang diujinya sudah kamu baca" : `${q.sisa_materi} materi yang diujinya belum dibaca`))),
       q.jatuh_tempo ? h("span.pil.pil-ungu", {}, "saatnya diulang")
         : (q.pernah && hari !== null && hari > 0
             ? h("span.pil.sembunyi-hp", {}, `ulang ${hari} hari lagi`) : null),
@@ -1885,8 +1885,8 @@ export async function layarMateri({ key, indeks }, ctx) {
       capSelesai.textContent = "sudah dibaca tuntas";
       capSelesai.classList.add("pil-tumbuh");
       tblSelesai.textContent = "Sudah selesai ✓";
-      rayakan(await api.kirim("/api/materi/selesai",
-                              { key, indeks, tuntas: true }));
+      const hasil = await api.kirim("/api/materi/selesai",
+                                    { key, indeks, tuntas: true }); rayakan(hasil); tawarkanKuisSiap(kaki, key, hasil);
     }
     if (pindah && m.sesudah) location.hash = `#/materi/${key}/${m.indeks + 1}`;
     else await tawarkanPintuBaru();
@@ -3319,4 +3319,21 @@ export async function layarCari({ q, tipe }, ctx) {
     medan.setSelectionRange(medan.value.length, medan.value.length);
   }, 40);
   return { el, judul: "Cari" };
+}
+
+/** Tawarkan kuis yang BARU SAJA siap karena materi ini tuntas.
+ *
+ *  Server yang memutuskan kesiapannya (pelajar/kuis_materi.py: semua materi
+ *  yang diuji kuis itu sudah dibaca); di sini cuma dibacakan. Tombolnya
+ *  sengaja bukan tbl-utama: kaki materi sudah punya tindakan utamanya
+ *  (materi berikutnya), dan dua permukaan beraksen berarti nol. */
+function tawarkanKuisSiap(kaki, key, hasil) {
+  const kuis = (hasil && hasil.kuis_siap) || [];
+  if (!kuis.length || kaki.querySelector(".tbl-kuis-siap")) return;
+  const q = kuis[0];
+  const tbl = h("a.tbl.tbl-kuis-siap", { href: `#/kuis/${key}/${q.indeks}` },
+    ikon("kuis", { ukuran: 17 }),
+    `${potong(q.judul, 30)} siap: semua materinya sudah kamu baca`);
+  kaki.appendChild(tbl);
+  masuk(tbl, { geser: 7, pegas: "jawab" });
 }

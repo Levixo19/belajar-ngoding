@@ -26,6 +26,7 @@ Importir: main.py, layar/navigasi.py, tests/test_data.py (memakai `teks_polos`).
 """
 
 from pelajar import bab
+from pelajar import kuis_materi
 from inti import berkas
 from inti import sorot
 from inti import tema
@@ -275,7 +276,12 @@ def render_material(topic, kategori="materi", kata_sorot="", daftar=None, lang=N
         _layar_terkunci(bab_ini, topic["title"])
         return
 
+    data_awal = load_progress()
     tuntas, baru_terbuka = _baca(topic, kategori, bahasa, kata_sorot, entri)
+    # Kuis yang baru saja siap karena materi ini (pelajar/kuis_materi.py):
+    # kalimatnya sama dengan tombol di kaki materi versi web.
+    kuis_baru = (kuis_materi.kuis_baru_siap(lang, data_awal, load_progress())
+                 if lang and lang.get("quizzes") else [])
 
     while True:
         # Dihitung ulang tiap putaran, bukan sekali di awal: membaca materi ini
@@ -301,6 +307,9 @@ def render_material(topic, kategori="materi", kata_sorot="", daftar=None, lang=N
             print(tema.cat(f"  Bab {b['nomor']} · {b['judul']} baru terbuka: "
                            f"{b['jumlah']} materi tingkat {b['label_tingkat']}.",
                            "sukses", tema.TEBAL))
+        for _, q in kuis_baru:
+            print(tema.cat(f"  {q['title']} siap: semua materinya sudah kamu baca.",
+                           "sukses"))
         print()
         print(tema.cat("  [b] " + ("Hapus bookmark" if ditandai else "Simpan ke bookmark"),
                        "aksen"))
