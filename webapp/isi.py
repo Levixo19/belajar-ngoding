@@ -32,6 +32,7 @@ import re
 
 from pelajar import bab
 from pelajar import kuis_materi
+from pelajar import waktu
 from inti import berkas
 from inti import runner
 from inti import sorot
@@ -555,6 +556,7 @@ def daftar_materi(lang, data, daftar_bab=None):
         keluar.append({
             "indeks": i,
             "judul": m["title"],
+            "menit": waktu.menit_materi(m),
             "status": status_materi(data, kat, m["title"]),
             "bagian": len(m["sections"]),
             "bookmark": kunci(kat, m["title"]) in data["bookmark"],
@@ -574,6 +576,7 @@ def daftar_kuis(lang, data):
         keluar.append({
             "indeks": i,
             "judul": q["title"],
+            "menit": waktu.menit_kuis(q),
             "soal": len(q["questions"]),
             "terbaik": skor.get("terbaik", 0),
             "percobaan": skor.get("percobaan", 0),
@@ -599,6 +602,7 @@ def daftar_latihan(lang, data):
         keluar.append({
             "indeks": i,
             "judul": e["title"],
+            "menit": waktu.menit_latihan(e),
             "tingkat": e.get("difficulty", "Menengah"),
             "status": status_latihan(data, kat, e["title"]),
             "dinilai": siap and e.get("auto_check") is not False,

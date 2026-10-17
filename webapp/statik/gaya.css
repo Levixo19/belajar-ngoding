@@ -6102,3 +6102,12 @@ html.lingkar-tema::view-transition-new(root) {
   .meja-bahasa-bilah { grid-area: bilah; min-width: 0; }
   .meja-bahasa-ket { grid-area: ket; font-size: var(--t-ui); color: var(--redup); white-space: nowrap; }
 }
+@media (min-width: 861px) {
+  .kr-tujuan[aria-pressed="true"] { border-color: var(--nyala); color: var(--nyala); }
+}
+@media (min-width: 861px) {
+  .meja-paket {
+    display: flex; align-items: center; gap: var(--s2);
+    margin: 0; font-size: var(--t-ui); color: var(--teks-2);
+  }
+}

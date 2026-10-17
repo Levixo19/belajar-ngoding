@@ -632,6 +632,8 @@ export async function layarAtur(_params, ctx) {
         medanTeks(konfig.nama, "Nama panggilan",
           "Dipakai untuk menyapamu di dasbor. Boleh dikosongkan.",
           (v) => simpanKonfig("nama", v)),
+        medanPilihan(konfig.tujuan_karier, "Profesi tujuan",
+          (v) => simpanKonfig("tujuan_karier", v)),
         medanAngka(konfig.target_xp_harian, "Target XP harian",
           (v) => simpanKonfig("target_xp_harian", v)),
         medanAngka(konfig.detik_per_soal, "Detik per soal saat mode timer",
@@ -829,4 +831,12 @@ export function tampilkanBantuan() {
           h("span", {}, arti)))),
     aksi: [{ label: "Tutup", nilai: null, kelas: "tbl-utama" }],
   });
+}
+
+/** Pilihan satu-dari-banyak (select) untuk opsi berjenis "pilihan" di SKEMA. */
+function medanPilihan(opsi, label, saatSimpan) {
+  const pilih = h("select", { "aria-label": label },
+    opsi.pilihan.map((x) => h("option", { value: x.nilai, selected: x.nilai === opsi.nilai }, x.label)));
+  pilih.addEventListener("change", () => saatSimpan(pilih.value));
+  return medan(label, pilih, opsi.keterangan);
 }

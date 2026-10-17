@@ -41,6 +41,7 @@ from inti import pustaka as modul_pustaka
 from pelajar import konfigurasi
 from pelajar import kuis_materi
 from pelajar import simpanan
+from pelajar import waktu
 from pelajar import karier as modul_karier
 import main as aplikasi
 from pelajar import progress
@@ -312,6 +313,7 @@ def _langkah_json(s):
         "judul": s.judul,
         "alasan": s.alasan,
         "indeks": _indeks_langkah(s),
+        "menit": waktu.menit(s.tipe, s.obj),
     }
 
 
@@ -511,7 +513,8 @@ def karier(_=None):
     Kesiapan dihitung server dari progres -- browser tidak pernah menghitung
     ulang persen dari daftar materi yang dibaca.
     """
-    return modul_karier.ringkasan(LANGUAGES, progress.load_progress())
+    return {**modul_karier.ringkasan(LANGUAGES, progress.load_progress()),
+            "tujuan": konfigurasi.ambil("tujuan_karier", "")}
 
 
 def karier_kuis(params):

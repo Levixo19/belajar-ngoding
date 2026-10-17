@@ -376,6 +376,7 @@ export async function layarKarier({ key: id }) {
   pilihDari.value = (palingSiap.kesiapan > 0 ? palingSiap : perId.get("qa-engineer")).id;
   const pilihKe = h("select", { "aria-label": "Profesi tujuan" },
     data.profesi.map((p) => h("option", { value: p.id }, p.nama)));
+  if (data.tujuan && perId.get(data.tujuan)) pilihKe.value = data.tujuan;
   const hasilJalur = h("div.kr-jalur", { "aria-live": "polite" });
   let nomorJalur = 0;
 
@@ -517,7 +518,8 @@ function panelDetail(p, data, pilih) {
       h("div", {},
         h("span.mata", {}, rumpun.label),
         h("h2", {}, p.nama),
-        h("span.pil", {}, data.jenjang[p.jenjang])),
+        h("span.pil", {}, data.jenjang[p.jenjang]),
+        tombolTujuan(p, data)),
       h("div.kr-siap", {}, cincin(p.kesiapan, 68),
         h("span.kr-siap-angka", {}, persenTeks(p.kesiapan)),
         h("span.kr-siap-ket", {}, "siap"))),
@@ -577,4 +579,23 @@ function panelDetail(p, data, pilih) {
           href: "#/pustaka?kurikulum=" + p.kelompok[0].wakil,
         }, `Pustaka: bacaan ${kur[p.kelompok[0].wakil].label}`)))),
   );
+}
+
+/** "Jadikan tujuanku": menyimpan profesi tujuan ke konfigurasi (tujuan_karier).
+ *  Dasbor dan perencana perpindahan membacanya; tanpa ini keduanya menebak
+ *  dari kesiapan tertinggi. Setelan yang sama ada di Pengaturan. */
+function tombolTujuan(p, data) {
+  const label = () => (data.tujuan === p.id ? "Tujuanmu" : "Jadikan tujuanku");
+  const tbl = h("button.tbl.tbl-kecil.kr-tujuan", { type: "button", "aria-pressed": String(data.tujuan === p.id) },
+    ikon("bintang", { ukuran: 15 }), h("span", {}, label()));
+  tbl.addEventListener("click", async () => {
+    const baru = data.tujuan === p.id ? "" : p.id;
+    try {
+      await api.kirim("/api/konfigurasi", { tujuan_karier: baru });
+      data.tujuan = baru;
+      tbl.setAttribute("aria-pressed", String(data.tujuan === p.id));
+      isikan(tbl, ikon("bintang", { ukuran: 15 }), h("span", {}, label()));
+    } catch (e) { /* tombolnya tetap; setelan ada juga di Pengaturan */ }
+  });
+  return tbl;
 }

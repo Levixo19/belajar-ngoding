@@ -20,6 +20,7 @@ import os
 
 from inti import tema
 from pelajar import simpanan
+from data.karier import PROFESI as _PROFESI
 
 VERSI_KONFIG = 1
 
@@ -112,6 +113,12 @@ SKEMA = [
     Opsi("buka_semua_bab", "Buka semua bab tanpa syarat", "sakelar", False,
          keterangan="Matikan penguncian bertahap. Untuk yang sudah pernah "
                     "belajar bahasanya dan cuma ingin melompat."),
+    # Profesi yang sedang dituju. Tanpa ini dasbor dan perencana karier
+    # menebak dari kesiapan tertinggi, dan orang yang mengincar backend
+    # terus-menerus disebut "Data Analyst" (audit persona 2026-10-17).
+    Opsi("tujuan_karier", "Profesi tujuan", "pilihan", "",
+         pilihan=[("", "belum dipilih")] + [(p["id"], p["nama"]) for p in _PROFESI],
+         keterangan="Dipakai dasbor dan Peta Karier sebagai arah belajarmu."),
     Opsi("nama", "Nama panggilan", "teks", "",
          keterangan="Dipakai di sapaan dan laporan kemajuan."),
 ]

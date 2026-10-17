@@ -431,7 +431,7 @@ function kartuLanjutkan(s) {
       sampul(`${s.bahasa}/${s.tipe}/${s.indeks}`, { bahasa: s.bahasa, lebar: 640, tinggi: 260 })),
     h("span.lanjutkan-nomor", {}, String(s.indeks + 1)),
     h("div.lanjutkan-isi", {},
-      h("span.mata", {}, `${jenis} · ${s.label_bahasa}`),
+      h("span.mata", {}, `${jenis} · ${s.label_bahasa}` + (s.menit ? ` · ≈${s.menit} menit` : "")),
       h("h2", {}, tanpaNomor(s.judul)),
       h("p", {}, s.alasan)),
     h("span.lanjutkan-tbl", {},
@@ -452,10 +452,10 @@ function ubinKarier() {
     h("span.meja-ubin-kepala", {}, ikon("karier", { ukuran: 18 }), "Peta karier"),
     isi);
   api.ambil("/api/karier").then((k) => {
-    const p = [...k.profesi].sort((a, b) => b.kesiapan - a.kesiapan)[0];
-    if (!p || p.kesiapan <= 0) return;
+    const p = k.profesi.find((x) => x.id === k.tujuan) || [...k.profesi].sort((a, b) => b.kesiapan - a.kesiapan)[0];  // tujuan pilihan pelajar dulu (Pengaturan / Peta Karier)
+    if (!p || (p.kesiapan <= 0 && p.id !== k.tujuan)) return;
     el.setAttribute("href", "#/karier/" + p.id);
-    isikan(isi, h("b", {}, p.nama),
+    isikan(isi, h("b", {}, (p.id === k.tujuan ? "Tujuanmu: " : "") + p.nama),
       h("span.meja-ubin-angka", {}, `${bulat(p.kesiapan)}% siap`),
       h("span.bilah.meja-ubin-bilah", {},
         h("i", { gaya: { width: `${Math.min(100, p.kesiapan)}%` } })));
@@ -699,7 +699,7 @@ function blokAntrean(langkah, tantangan, ctx) {
     pilJenis(s.tipe),
     h("div.isi", {},
       h("div.judul", {}, tanpaNomor(s.judul)),
-      h("div.ket", {}, `${s.label_bahasa} · ${s.alasan}`)),
+      h("div.ket", {}, `${s.label_bahasa} · ${s.alasan}` + (s.menit ? ` · ≈${s.menit} menit` : ""))),
     cap ? h("span.pil.pil-ungu.sembunyi-hp", {}, cap) : null,
     // Ditandai SEBELUM diklik, bukan sesudah. Latihan di bahasa yang
     // toolchain-nya belum terpasang tetap bisa dikerjakan dan ditandai
@@ -1642,7 +1642,7 @@ function barisMateri(b, m) {
       m.status === "sebagian"
         ? h("div.ket", {}, "berhenti di tengah, belum dihitung selesai") : null),
     m.bookmark ? h("span.pil.pil-nyala", {}, "ditandai") : null,
-    h("span.baris-sisi.sembunyi-hp", {}, `${m.bagian} bagian`),
+    h("span.baris-sisi.sembunyi-hp", {}, m.menit ? `≈${m.menit} menit` : `${m.bagian} bagian`),
   ];
   if (m.terkunci) return h("div.baris.baris-terkunci", {}, isi);
   return h("a.baris", {
@@ -3346,6 +3346,17 @@ function dasborMeja(d, ctx, { utama, sisaLangkah, dijalani, bento, sapa }) {
     h("a", { href: "#/bahasa/" + p.key }, h("b", {}, p.label)),
     p.bab ? ` · Bab ${p.bab} dari ${p.bab_total}: ${p.bab_judul}` : "",
     ` · ${p.materi}/${p.total_materi} materi`) : null;
+  // "Punya 30 menit?": langkah teratas, berurutan, selama muat dalam 30 menit.
+  // Menitnya perkiraan server (pelajar/waktu.py), dijumlahkan saja di sini.
+  let total = 0;
+  const muat = [utama, ...sisaLangkah].filter(Boolean).filter((x) => {
+    if (!x.menit || total + x.menit > 30) return false;
+    total += x.menit; return true;
+  });
+  const paket = muat.length > 1
+    ? h("p.meja-paket", {}, ikon("waktu", { ukuran: 16 }),
+        `Punya 30 menit? ${muat.length} langkah teratas kira-kira ${total} menit.`)
+    : null;
   const ulang = d.kuis_jatuh_tempo > 2
     ? h("p.meja-catatan", {}, `${d.kuis_jatuh_tempo} kuis menunggu diulang. `
         + "Dua yang paling mendesak sudah ada di antrean; sisanya bisa besok.")
@@ -3357,7 +3368,7 @@ function dasborMeja(d, ctx, { utama, sisaLangkah, dijalani, bento, sapa }) {
         h("span.mata", {}, new Date().toLocaleDateString("id-ID",
           { weekday: "long", day: "numeric", month: "long", year: "numeric" })),
         judulSapa(sapa, d.nama, utama ? utama.bahasa : null),
-        posisi,
+        posisi, paket,
         utama ? kartuLanjutkan(utama) : h("p.sambut-sub", {}, kalimatPembuka(d))),
       h("div.meja-antrean", {},
         sisaLangkah.length || d.tantangan

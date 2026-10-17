@@ -5013,7 +5013,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
     tiap kuis di `main.LANGUAGES` (ruang: seluruh kurikulum, pembaca: impor
     modul, satuan: cacah kuis) memberi NOL dari 116 kuis pada 2026-09-30 —
     tidak satu pun kuis membawa durasi. `sesi.durasi` baru bernyawa kalau badan
-    permintaan mengirim `timer` (`api.py:597-600`, `per_soal` dari
+    permintaan mengirim `timer` (`api.py:637-639`, `per_soal` dari
     `konfigurasi.detik_per_soal`, bawaan 30 detik, setelannya di
     `layar-lain.js:490`), dan `if (sesi.durasi)` (`layar-kerja.js:196`) adalah
     SATU-SATUNYA jalan masuk ke `jalankanJam()` dan pendengar
@@ -12087,8 +12087,8 @@ class TestKomposisiPerBahasa(unittest.TestCase):
     # hitungan yang ditulis sebagai kata, sebab persis di situ versi
     # sebelumnya berbohong: ia menyebut jumlahnya sebagai kata, kata itu
     # salah, dan tidak ada yang menghitungnya ulang.
-    #   [komposisi-layar-lain] polos=16 export=4 async=4 export_async=2
-    #   [komposisi-layar-lain] indentasi=4 total=30 ditangkap=26
+    #   [komposisi-layar-lain] polos=17 export=4 async=4 export_async=2
+    #   [komposisi-layar-lain] indentasi=4 total=31 ditangkap=27
     #   [komposisi-layar-lain] konstanta=4 konstanta_fungsi=0
     # `polos` berarti kolom nol tanpa prelude, `total` seluruh deklarasi
     # `function` BERNAMA pada indentasi apa pun, dan `ditangkap` yang dilihat

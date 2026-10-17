@@ -27,6 +27,7 @@ Importir: main.py, layar/navigasi.py, tests/test_data.py (memakai `teks_polos`).
 
 from pelajar import bab
 from pelajar import kuis_materi
+from pelajar import waktu
 from inti import berkas
 from inti import sorot
 from inti import tema
@@ -353,7 +354,9 @@ def _label(topic, kategori, data):
     else:
         tanda = tema.cat("[ ]", "redup")
     bintang = tema.cat(" *", "judul", tema.TEBAL) if k in data["bookmark"] else ""
-    return f"{tanda} {topic['title']}{bintang}"
+    # Perkiraan menit yang sama dengan daftar materi versi web (pelajar/waktu.py).
+    menit = tema.cat(f"  ≈{waktu.menit_materi(topic)} mnt", "redup")
+    return f"{tanda} {topic['title']}{bintang}{menit}"
 
 
 def _cari_lokal(title, materials, kategori, entri=None):
