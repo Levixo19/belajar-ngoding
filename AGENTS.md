@@ -22,7 +22,7 @@ Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
 Status: 20 kurikulum, 537 materi dalam 142 bab bertingkat, 121 kuis / 968 soal,
-319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1096 tes.
+319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1193 tes.
 Ditambah Pustaka (9.809 tautan belajar beratribusi) dan Peta Karier (21 profesi).
 
 144 materi ditambahkan sekaligus setelah audit cakupan tiga sudut (kode nyata,
@@ -40,7 +40,7 @@ python3 main.py          # antarmuka terminal
 python3 belajar-web.py   # antarmuka web (membuka browser sendiri)
 
 python3 -m unittest discover -s tests -t .                        # semua (~3,5 menit)
-BELAJAR_SKIP_LAMBAT=1 python3 -m unittest discover -s tests -t .  # ~20 detik
+BELAJAR_SKIP_LAMBAT=1 python3 -m unittest discover -s tests -t .  # ~40 detik
 BELAJAR_BAHASA=go python3 -m unittest tests.test_solutions        # satu bahasa
 ```
 
@@ -70,7 +70,11 @@ namanya berhenti memberi tahu apa pun.
 | `pelajar/progress.py` | Progres, XP, level, streak, badge, penjadwalan ulang |
 | `pelajar/bab.py` | Bab mana yang terbuka. SATU-SATUNYA yang memutuskan penguncian |
 | `pelajar/konfigurasi.py` | Preferensi tampilan, sengaja TERPISAH dari progres |
-| `pelajar/saran.py` | Antrean "habis ini ngapain" |
+| `pelajar/saran.py` | Antrean "habis ini ngapain", tantangan harian, kuis yang paling perlu diulang |
+| `pelajar/simpanan.py` | Baca/tulis JSON pelajar: berkas rusak DIKARANTINA, `.bak` bergulir, gagal simpan dilaporkan |
+| `pelajar/kuis_materi.py` | Kuis -> materi yang diujinya (kesiapan kuis, "Baca lagi"); datanya `data/kuis_materi.py` |
+| `pelajar/waktu.py` | Perkiraan menit materi/kuis/latihan, satu rumus untuk terminal dan web |
+| `pelajar/tebak.py` | "Tebak keluarannya": contoh materi yang layak ditebak dan pemilihan kartunya |
 | **`layar/`** | **Antarmuka terminal. Satu-satunya lapisan yang mencetak** |
 | `layar/utils.py` | Primitif tampilan: paginasi, menu, input, pembungkus baris |
 | `layar/materials.py` `layar/quiz.py` `layar/exercises.py` `layar/navigasi.py` | Layar-layar terminal |
@@ -118,7 +122,8 @@ belajar sendiri — semuanya dipinjam.
 | `statik/js/beranda.js` | Beranda: kalimat yang menyala saat digulir, akordeon bahasa, marquee kurikulum, gerak gulir (ScrollTrigger, hanya tingkat gerak penuh) |
 | `statik/js/sampul.js` | Gambar sampul SVG generatif (bahasa, bab, profesi), deterministik dari namanya; hiasan, aria-hidden |
 | `statik/js/layar-pustaka.js` | Layar Pustaka: cari dan saring 9.809 tautan dari `/api/pustaka` |
-| `statik/js/layar-karier.js` | Layar Peta Karier: tangga karier SVG, panel rincian, kuis, perencana jalur |
+| `statik/js/layar-karier.js` | Layar Peta Karier: tangga karier SVG, panel rincian, kuis, perencana jalur, "Jadikan tujuanku" |
+| `statik/js/layar-tebak.js` | Layar "Tebak keluarannya" (`#/tebak/<key>`): lima kartu contoh materi, kunci dari server |
 | `statik/vendor/gsap/` | GSAP 3.15.0 + SplitText + ScrollTrigger, disimpan lokal, header lisensi utuh |
 | `statik/huruf/` | Atkinson Hyperlegible Next + Mono (prosa, kode) dan Outfit (judul, antarmuka); semua OFL, lokal |
 | `statik/js/sorot.js` | Port `inti/sorot.py` ke JS untuk penyorotan langsung di editor |
@@ -996,6 +1001,67 @@ tombolnya, dan KEDUANYA jawaban server, bukan tebakan: `bisa_dijalankan` dari
 tetap cuma satu dan tempatnya `runner.periksa`. Editor sisipannya WAJIB dilepas
 di `saatKeluar` — kalau tidak, pendengar papan ketik dan pengamat ukurannya
 hidup terus di belakang layar berikutnya.
+
+## Ronde pengembangan 2026-10-17 (audit 12 agen)
+
+Dua belas agen mengaudit aplikasi dari sudut berbeda (pemula, persona pindah
+karier, visual, aksesibilitas, pedagogi, ilmu belajar, arsitektur, keamanan,
+performa, visualisasi data, terminal, umpan balik). Yang dibangun dan sekarang
+mengikat:
+
+* **Data pelajar tidak pernah ditimpa diam-diam.** Progres, konfigurasi, dan
+  catatan dibaca/ditulis lewat `pelajar/simpanan.py`. Berkas yang tidak bisa
+  diurai dipindah ke `<nama>.rusak-<waktu>` sebelum data bawaan dipakai (dulu
+  satu koma salah menghapus seluruh progres), tiap penyimpanan meninggalkan
+  satu `.bak`, dan gagal menulis muncul di layar (`simpan_gagal`,
+  `/api/awal -> karantina`). Jangan menulis kode tulis-atomik keempat.
+* **Kuis "selesai" = skor terbaik >= 70%** (`progress.AMBANG_KUIS_LULUS`,
+  keputusan pemilik). Satu-satunya definisinya `statistik_bahasa`/`kuis_lulus`;
+  ia juga melapor `kuis_dikerjakan`. Jadwal ulang monoton dan hanya tumbuh
+  kalau kuisnya memang jatuh tempo; XP ulangan dini cuma untuk peningkatan.
+* **Isi kuis dijaga `tests/test_mutu_soal.py`** (ukur dengan
+  `python3 alat/periksa_kuis.py`): jawaban benar = opsi terpanjang <= 40%
+  per kurikulum, kapital penekanan tidak menandai jawaban, petunjuk pertama
+  tidak memuat baris solusi, minimal dua petunjuk (tangga konsep -> strategi
+  -> kode). JANGAN mengubah urutan/jumlah soal atau indeks `answer` saat
+  menyunting opsi: `salah_kuis` menyimpan NOMOR soal. Sesudah opsi ditulis
+  ulang, periksa bahwa opsi di indeks `answer` masih jawaban yang benar; dua
+  kunci pernah tergeser diam-diam karena itu.
+* **Kuis ditawarkan begitu materi yang diujinya terbaca.** Peta per SOAL ke
+  materi (judul tanpa nomor) ada di `data/kuis_materi.py`, ditinjau soal demi
+  soal; `test_kuis_materi` menjaga tiap kuis punya entri per soal dan tiap
+  judul ada. Kesiapan itu PENANDA, bukan kunci: penguncian tetap hanya
+  bacaan (bab.py). Soal yang salah menautkan "Baca lagi: <materi>"; materi di
+  bab terkunci ditandai, tidak dijadikan tautan.
+* **Soal latihan yang dinilai persis wajib menulis keluarannya.** Blok
+  `Keluaran yang diharapkan:` / `Untuk input X, keluarannya:` diturunkan dari
+  menjalankan solusi dan dijaga `test_janji_keluaran_di_soal_sesuai_kenyataan`.
+  Pengurai web menganggap baris sesudah kepala keluaran (prosa, tidak menjorok)
+  sampai baris kosong sebagai satu contoh apa adanya. Go/C#/Rust/PHP belum
+  diberi blok ini karena toolchain-nya tidak terpasang di mesin ini.
+* **Kerangka editor HTML/CSS memakai komentar bahasanya** (`<!-- -->`, `/* */`),
+  dijaga `TestKerangkaTidakMenggagalkan` (kerangka + solusi harus lulus).
+* **Runner membunuh grup proses sesudah tiap eksekusi**, bukan cuma saat
+  timeout (`_bunuh_sisa`). `RLIMIT_NPROC` belum dipasang: perlu diukur per
+  toolchain (JVM/.NET membuat banyak thread) sebelum dipatok.
+* **Dasbor = meja kerja** (pengganti beranda landing page): posisi, satu
+  kartu Lanjutkan beraksen, antrean, dan persen bahasa di atas lipatan.
+  Kalimat gulir, marquee, dan ajakan penutup sengaja dibuang; aturan CSS-nya
+  jadi catatan (alamat baris tes). Saran: kalau kegiatan terakhir membaca,
+  bacaan itu dulu; kuis jatuh tempo paling banyak dua; tantangan harian hanya
+  dari bahasa yang disentuh, toolchain siap, tingkat +1.
+* **Tebak keluarannya** (`/api/tebak`): kode wajib PERSIS salah satu contoh
+  layak di materi (bukan kode bebas), pagar SESI Fedora/Git ikut dari
+  berkas.py, kuncinya keluaran nyata. Bukan latihan: tidak menyentuh
+  `latihan_lulus`. XP cuma untuk tebakan benar pertama per blok.
+* **CSP** dipasang di halaman, tapi `script-src` masih `'unsafe-inline'`:
+  iframe `srcdoc` pratinjau mewarisi CSP induk. Mode nonce ada di balik
+  `CSP_KETAT` di server.py dan baru aman setelah pratinjau dilayani dari
+  rutenya sendiri.
+* **Rujukan `berkas:NNN` di tests/test_web.py tetap pajak.** Tiap baris yang
+  disisipkan di api.py, progress.py, atau layar-*.js menggeser rujukan.
+  Suntingan di berkas yang dipatok dibuat net-zero baris atau di kaki berkas;
+  rujukan yang bergeser dipetakan ulang dari isi barisnya di HEAD.
 
 ## Gaya bahasa materi
 
