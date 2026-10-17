@@ -15,8 +15,9 @@ import json
 import os
 import re
 import shutil
-import tempfile
 from datetime import date, datetime, timedelta
+
+from pelajar import simpanan
 
 VERSI_DATA = 4
 
@@ -174,38 +175,26 @@ def load_progress():
 
     if not os.path.exists(path):
         return _default()
+    # Berkas yang tidak bisa diurai dikarantina oleh `simpanan`, jadi data
+    # bawaan di bawah tidak akan pernah menimpa progres yang cuma rusak satu
+    # koma. Bentuk yang salah (bukan objek, atau migrasi gagal) diperlakukan
+    # sama: pindahkan ke samping dulu, baru mulai dari kosong.
+    data = simpanan.baca_json(path)
+    if data is None:
+        return _default()
+    if not isinstance(data, dict):
+        simpanan.karantina(path)
+        return _default()
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        if not isinstance(data, dict):
-            return _default()
         return _migrasi(data)
-    except (json.JSONDecodeError, OSError, ValueError, TypeError, AttributeError):
+    except (ValueError, TypeError, AttributeError, KeyError):
+        simpanan.karantina(path)
         return _default()
 
 
 def save_progress(data):
-    """Tulis atomik supaya file tidak korup kalau aplikasi mati di tengah proses."""
-    sementara = None
-    try:
-        folder = os.path.dirname(PROGRESS_FILE) or "."
-        os.makedirs(folder, exist_ok=True)
-        fd, sementara = tempfile.mkstemp(dir=folder, prefix=".progress-", suffix=".tmp")
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(sementara, PROGRESS_FILE)
-        return True
-    except Exception:
-        # Disk penuh atau filesystem read-only tidak boleh menghentikan sesi
-        # belajar -- tapi file sementaranya juga tidak boleh menumpuk di home.
-        if sementara:
-            try:
-                os.unlink(sementara)
-            except OSError:
-                pass
-        return False
+    """Tulis atomik dengan cadangan `.bak`; lihat pelajar/simpanan.py."""
+    return simpanan.tulis_json(PROGRESS_FILE, data, awalan=".progress-")
 
 
 # Judul materi membawa nomornya sendiri ("2. Variabel & Tipe Data"), dan nomor

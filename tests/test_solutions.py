@@ -374,5 +374,43 @@ class TestLatihanTanpaToolchain(unittest.TestCase):
                 self.assertIn("Toolchain", galat)
 
 
+class TestKerangkaTidakMenggagalkan(unittest.TestCase):
+    """Kerangka editor + jawaban yang benar harus tetap lulus.
+
+    Pelajar menulis jawabannya DI BAWAH baris "tulis kodemu di sini", jadi
+    kerangka itu ikut dinilai. Kerangka HTML dan CSS dulu memakai `#`: di
+    HTML baris itu jadi teks halaman, di CSS ia menelan pemilih pertama, dan
+    latihan pertama pintu masuk pemula gagal padahal kodenya benar.
+
+    Hanya bahasa yang kerangkanya komentar belaka. Untuk Java, C, Go, dst.
+    jawabannya ditulis DI DALAM main, bukan ditempel sesudahnya. HTML dan CSS
+    selalu diperiksa (cepat, tanpa compiler); sisanya ikut mode lambat.
+    """
+
+    SELALU = ("html", "css")
+    LAMBAT = ("python", "javascript", "sql", "ruby", "bash")
+
+    def test_kerangka_ditambah_solusi_tetap_lulus(self):
+        from layar.exercises import _kerangka
+        bahasa = self.SELALU + (() if LEWATI_LAMBAT else self.LAMBAT)
+        for lang in LANGUAGES:
+            if lang["key"] not in bahasa or not runner.tersedia(lang["runner"]):
+                continue
+            daftar = latihan_bahasa(lang)
+            if lang["key"] not in self.SELALU:
+                daftar = daftar[:3]
+            for ex in daftar:
+                with self.subTest(bahasa=lang["key"], latihan=ex["title"]):
+                    tests, galat = bangun_tests(ex, lang["runner"])
+                    self.assertFalse(galat, galat)
+                    kode = _kerangka(lang["runner"], ex) + ex["solution"]
+                    semua, hasil, _ = runner.periksa(
+                        lang["runner"], gabung_setup(ex, kode), tests,
+                        timeout=TIMEOUT)
+                    self.assertTrue(semua, "; ".join(
+                        f"dapat={runner.normalisasi(h.aktual)[:120]!r}"
+                        for h in hasil if not h.lulus))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

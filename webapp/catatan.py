@@ -33,12 +33,11 @@ progres selalu menunjuk hal yang sama tanpa perlu tabel penerjemah.
 Importir: webapp/api.py.
 """
 
-import json
 import os
-import tempfile
 import threading
 from datetime import datetime
 
+from pelajar import simpanan
 from pelajar.progress import judul_kunci
 
 VERSI_CATATAN = 1
@@ -61,17 +60,16 @@ def _kosong():
 
 def muat():
     """Baca semua catatan. Berkas rusak diperlakukan kosong, tidak fatal."""
-    try:
-        with open(BERKAS, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (OSError, json.JSONDecodeError, ValueError):
+    # Berkas rusak dikarantina `simpanan` sebelum kita mulai dari kosong:
+    # penyimpanan berikutnya tidak boleh menimpa tulisan tangan yang cuma
+    # tersandung satu koma.
+    data = simpanan.baca_json(BERKAS)
+    if data is None:
         return _kosong()
-
-    if not isinstance(data, dict):
+    if not isinstance(data, dict) or not isinstance(data.get("catatan"), dict):
+        simpanan.karantina(BERKAS)
         return _kosong()
-    isi = data.get("catatan")
-    if not isinstance(isi, dict):
-        return _kosong()
+    isi = data["catatan"]
 
     bersih = {}
     for k, v in isi.items():
@@ -103,26 +101,8 @@ def _kunci_baru(k):
 
 
 def _simpan(data):
-    """Tulis atomik, sama pola dengan progress.save_progress."""
-    sementara = None
-    try:
-        folder = os.path.dirname(BERKAS) or "."
-        os.makedirs(folder, exist_ok=True)
-        fd, sementara = tempfile.mkstemp(dir=folder, prefix=".catatan-",
-                                         suffix=".tmp")
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(sementara, BERKAS)
-        return True
-    except Exception:
-        if sementara:
-            try:
-                os.unlink(sementara)
-            except OSError:
-                pass
-        return False
+    """Tulis atomik dengan cadangan `.bak`; lihat pelajar/simpanan.py."""
+    return simpanan.tulis_json(BERKAS, data, awalan=".catatan-")
 
 
 def ambil(kunci_catatan):

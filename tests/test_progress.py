@@ -682,5 +682,86 @@ class TestKunciTanpaNomor(BasisProgres):
                     f"dibuang: {sorted(kembar)}")
 
 
+class TestBerkasRusakTidakDitimpa(BasisProgres):
+    """Satu koma salah tidak boleh menghapus seluruh progres (pelajar/simpanan.py).
+
+    Audit 2026-10-17: berkas `{"xp": 500, ...,}` dibaca sebagai kosong, lalu
+    `record_material_read` menimpanya. XP jadi 10, tanpa cadangan apa pun.
+    """
+
+    def setUp(self):
+        super().setUp()
+        from pelajar import simpanan
+        self.simpanan = simpanan
+        simpanan.KARANTINA.clear()
+        simpanan.GAGAL.clear()
+
+    def _berkas_rusak(self):
+        return [n for n in os.listdir(self.dir.name) if ".rusak-" in n]
+
+    def test_berkas_tak_terurai_dikarantina_bukan_ditimpa(self):
+        rusak = '{"xp": 500, "materi_dibaca": ["java_materi::Variabel"],}'
+        with open(self.path, "w", encoding="utf-8") as f:
+            f.write(rusak)
+        progress.record_material_read("java_materi", "1. Halo")
+        nama = self._berkas_rusak()
+        self.assertEqual(len(nama), 1, "berkas rusak harus dipindah ke samping")
+        with open(os.path.join(self.dir.name, nama[0]), encoding="utf-8") as f:
+            self.assertEqual(f.read(), rusak, "isi berkas rusak harus utuh")
+        self.assertEqual(self.simpanan.KARANTINA, [os.path.join(self.dir.name, nama[0])])
+        self.assertEqual(progress.load_progress()["xp"], 10)
+
+    def test_bentuk_salah_juga_dikarantina(self):
+        with open(self.path, "w", encoding="utf-8") as f:
+            f.write("[1, 2, 3]")
+        progress.load_progress()
+        self.assertEqual(len(self._berkas_rusak()), 1)
+
+    def test_berkas_sehat_tidak_dikarantina(self):
+        progress.record_material_read("java_materi", "1. Halo")
+        progress.load_progress()
+        self.assertEqual(self._berkas_rusak(), [])
+        self.assertEqual(self.simpanan.KARANTINA, [])
+
+    def test_penyimpanan_meninggalkan_satu_cadangan(self):
+        progress.record_material_read("java_materi", "1. Halo")
+        progress.record_material_read("java_materi", "2. Variabel")
+        with open(self.path + ".bak", encoding="utf-8") as f:
+            cadangan = json.load(f)
+        self.assertEqual(cadangan["xp"], 10, ".bak = isi SEBELUM penyimpanan terakhir")
+        self.assertEqual(progress.load_progress()["xp"], 20)
+
+    def test_gagal_simpan_dicatat_bukan_dilempar(self):
+        os.mkdir(self.path)  # jalur berkas berupa folder: os.replace pasti gagal
+        self.assertFalse(progress.save_progress(progress._default()))
+        self.assertIn(self.path, self.simpanan.GAGAL)
+
+    def test_catatan_rusak_dikarantina(self):
+        from webapp import catatan
+        asli = catatan.BERKAS
+        catatan.BERKAS = os.path.join(self.dir.name, "catatan.json")
+        try:
+            with open(catatan.BERKAS, "w", encoding="utf-8") as f:
+                f.write('{"catatan": {"java_materi::Halo": "tulisan tangan"},}')
+            self.assertEqual(catatan.muat()["catatan"], {})
+            self.assertEqual(len(self._berkas_rusak()), 1)
+        finally:
+            catatan.BERKAS = asli
+
+    def test_konfigurasi_rusak_dikarantina(self):
+        from pelajar import konfigurasi
+        asli = konfigurasi.BERKAS
+        konfigurasi.BERKAS = os.path.join(self.dir.name, "k.json")
+        konfigurasi.lupakan_cache()
+        try:
+            with open(konfigurasi.BERKAS, "w", encoding="utf-8") as f:
+                f.write("{tema: gelap")
+            konfigurasi.muat(paksa=True)
+            self.assertEqual(len(self._berkas_rusak()), 1)
+        finally:
+            konfigurasi.BERKAS = asli
+            konfigurasi.lupakan_cache()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

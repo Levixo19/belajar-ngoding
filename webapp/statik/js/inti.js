@@ -520,7 +520,7 @@ export function tingkatRayakan(hadiah, { diam = false } = {}) {
  *  yang penting (badge baru) tenggelam di antara yang biasa (+25 XP).
  */
 export function rayakan(hadiah, { diam = false, dari = null } = {}) {
-  if (!hadiah) return;
+  if (!hadiah) return; if (hadiah.simpan_gagal) sorak("Progres gagal disimpan ke disk. Cek ruang disk, lalu coba lagi.", "salah", 8);
 
   const tingkat = tingkatRayakan(hadiah, { diam });
 

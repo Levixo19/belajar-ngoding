@@ -16,11 +16,10 @@ bab.py (saklar buka semua bab).
 Berkas data: ~/.belajar_ngoding_config.json, override lewat BELAJAR_CONFIG_FILE.
 """
 
-import json
 import os
-import tempfile
 
 from inti import tema
+from pelajar import simpanan
 
 VERSI_KONFIG = 1
 
@@ -134,15 +133,14 @@ def muat(paksa=False):
         return _data
 
     nilai = _bawaan()
-    try:
-        with open(BERKAS, "r", encoding="utf-8") as f:
-            mentah = json.load(f)
-        if isinstance(mentah, dict):
-            for kunci, opsi_ in _PETA.items():
-                if kunci in mentah:
-                    nilai[kunci] = opsi_.bersihkan(mentah[kunci])
-    except (OSError, json.JSONDecodeError, ValueError):
-        pass  # berkas belum ada atau rusak -> pakai bawaan
+    # Berkas rusak dikarantina `simpanan`, lalu bawaan dipakai.
+    mentah = simpanan.baca_json(BERKAS)
+    if isinstance(mentah, dict):
+        for kunci, opsi_ in _PETA.items():
+            if kunci in mentah:
+                nilai[kunci] = opsi_.bersihkan(mentah[kunci])
+    elif mentah is not None:
+        simpanan.karantina(BERKAS)
 
     nilai["versi"] = VERSI_KONFIG
     _data = nilai
@@ -156,16 +154,7 @@ def simpan(nilai=None):
         _data = nilai
     if _data is None:
         return False
-    try:
-        folder = os.path.dirname(BERKAS) or "."
-        os.makedirs(folder, exist_ok=True)
-        fd, sementara = tempfile.mkstemp(dir=folder, prefix=".konfig-", suffix=".tmp")
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(_data, f, indent=2, ensure_ascii=False, sort_keys=True)
-        os.replace(sementara, BERKAS)
-        return True
-    except OSError:
-        return False
+    return simpanan.tulis_json(BERKAS, _data, awalan=".konfig-", urut_kunci=True)
 
 
 def ambil(kunci, cadangan=None):

@@ -144,6 +144,14 @@ def _kerangka(bahasa, ex):
                 f"    // tulis kodemu di sini\n}}\n")
     if bahasa == "typescript":
         return f"// {judul}\n// tulis kodemu di sini\n"
+    if bahasa == "html":
+        # Komentar HTML, bukan `#`: baris `# ...` di HTML adalah TEKS
+        # halaman, jadi kerangka itu sendiri ikut jadi simpul di pohon yang
+        # dinilai dan jawaban yang benar pun dinyatakan gagal.
+        return f"<!-- {judul} -->\n<!-- tulis kodemu di sini -->\n"
+    if bahasa == "css":
+        # Sama: `# ...` di CSS menelan pemilih pertama sesudahnya.
+        return f"/* {judul} */\n/* tulis kodemu di sini */\n"
     if bahasa == "fedora":
         return (f"#!/usr/bin/env bash\n#\n# {judul}\n\n"
                 f"set -euo pipefail\n\n# tulis kodemu di sini\n")

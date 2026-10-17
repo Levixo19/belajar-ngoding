@@ -19,6 +19,7 @@ from datetime import date
 
 from pelajar import bab
 from pelajar import konfigurasi
+from pelajar import simpanan
 from inti import runner
 from inti import tema
 from layar import utils
@@ -810,6 +811,12 @@ def main_menu():
                " | ".join(l["label"] for l in LANGUAGES))
         for line in baris_dashboard(data):
             print(line)
+        # Berkas yang tidak bisa diurai sudah dipindah ke samping oleh
+        # pelajar/simpanan.py; kalimatnya sama dengan yang dilihat di web.
+        for jalur in simpanan.KARANTINA:
+            print(tema.cat(f"  Berkas data rusak dan sudah dipindah ke {jalur} "
+                           "supaya tidak tertimpa. Isinya masih bisa diselamatkan.",
+                           "galat"))
         print(rule("-", C.DIM, bold=False))
         for line in baris_progres(LANGUAGES, data):
             print(line)

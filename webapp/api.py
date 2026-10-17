@@ -39,6 +39,7 @@ from layar import exercises
 from inti import galat as modul_galat
 from inti import pustaka as modul_pustaka
 from pelajar import konfigurasi
+from pelajar import simpanan
 from pelajar import karier as modul_karier
 import main as aplikasi
 from pelajar import progress
@@ -117,6 +118,8 @@ def _xp_dan_badge(sebelum, badge_baru):
         "streak": progress.streak_aktif(sesudah),
         "xp_hari_ini": progress.xp_hari_ini(sesudah),
         "target_harian": konfigurasi.ambil("target_xp_harian", 60),
+        # Layar jangan merayakan XP yang tidak pernah sampai ke disk.
+        "simpan_gagal": progress.PROGRESS_FILE in simpanan.GAGAL,
     }
 
 
@@ -233,6 +236,9 @@ def awal(_=None):
     """Semua yang dibutuhkan halaman untuk hidup, dalam satu permintaan."""
     data = progress.load_progress()
     return {
+        # Berkas pelajar yang tidak bisa diurai dan sudah dipindah ke samping
+        # (pelajar/simpanan.py). Web memberi tahu sekali per jalur.
+        "karantina": list(simpanan.KARANTINA),
         "versi": aplikasi.VERSI,
         "versi_web": VERSI_WEB,
         "bahasa": [{

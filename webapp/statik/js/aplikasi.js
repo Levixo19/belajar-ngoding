@@ -17,7 +17,7 @@
 
 import {
   api, h, isikan, $, kosongkan, sorak, memuat, tunda, jendela, jendelaTerbuka,
-  tutupJendelaKini, bilah, keadaan, GalatApi,
+  tutupJendelaKini, bilah, keadaan, GalatApi, sudahPernah,
 } from "./inti.js";
 import {
   masuk, keluar, masukBerurut, tata, angkaKe, denyut, saatGulir, pasangIsyarat,
@@ -1490,7 +1490,7 @@ async function mulai() {
     return;
   }
 
-  pasangAturan(ctx.awal.aturan_sorot);
+  pasangAturan(ctx.awal.aturan_sorot); (ctx.awal.karantina || []).forEach((j) => { if (!sudahPernah("karantina." + j)) sorak("Berkas data rusak dan sudah dipindah ke " + j + " supaya tidak tertimpa. Isinya masih bisa diselamatkan.", "salah", 12); });
   bangunRel();
   pasangPintasan();
 
