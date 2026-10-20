@@ -21,6 +21,7 @@ import { createRoot } from "react-dom/client";
 import { ambil } from "./api.ts";
 import { Keadaan } from "./komponen/Keadaan.tsx";
 import { Atur } from "./layar/Atur.tsx";
+import { Karier } from "./layar/Karier.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
 import { Statistik } from "./layar/Statistik.tsx";
@@ -116,6 +117,10 @@ function Aplikasi() {
     return <Atur />;
   }
 
+  if (nama === "karier") {
+    return <Karier id={arg} />;
+  }
+
   if (nama === "tebak" && arg) {
     const bhs = awal.bahasa.find((b) => b.key === arg);
     if (!bhs) {
@@ -145,9 +150,10 @@ function Aplikasi() {
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Baru lima layar yang diport: Langit, Pustaka, Statistik,
-          Pengaturan, dan Tebak keluarannya. Sisanya masih di antarmuka
-          lama, dan kedua-duanya memakai API serta berkas gaya yang sama.
+          Baru enam layar yang diport: Langit, Peta Karier, Pustaka,
+          Statistik, Pengaturan, dan Tebak keluarannya. Sisanya masih di
+          antarmuka lama, dan kedua-duanya memakai API serta berkas gaya
+          yang sama.
         </p>
         <div className="deret">
           <a className="tbl tbl-utama" href="#/langit">
@@ -158,6 +164,9 @@ function Aplikasi() {
           </a>
           <a className="tbl" href="#/statistik">
             Statistik
+          </a>
+          <a className="tbl" href="#/karier">
+            Peta Karier
           </a>
           <a className="tbl" href="#/atur">
             Pengaturan
