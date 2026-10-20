@@ -330,3 +330,54 @@ export function pasangkanUbahan(baris: ButirBeda[]): ButirBeda[] {
   }
   return keluar;
 }
+
+/* Isi awal Ruang Coba per bahasa.
+ *
+ * Diadu BYTE-PER-BYTE dengan `contohAwal` di `layar-kerja.js`, dan itu bukan
+ * ketelitian berlebihan: satu salah ketik di salah satu dari sembilan belas
+ * string ini berarti Ruang Coba terbuka dengan program yang tidak bisa
+ * dikompilasi, pada bahasa yang mungkin tidak ada yang mencobanya selama
+ * berbulan-bulan -- dan yang pertama menemukannya pelajar, yang akan menyangka
+ * dirinya salah. */
+const CONTOH: Record<string, string> = {
+  python: 'nama = "dunia"\nprint(f"Halo, {nama}!")\n',
+  javascript: 'const nama = "dunia";\nconsole.log(`Halo, ${nama}!`);\n',
+  java: 'public class Coba {\n    public static void main(String[] args) {\n'
+      + '        System.out.println("Halo, dunia!");\n    }\n}\n',
+  c: '#include <stdio.h>\n\nint main(void) {\n'
+   + '    printf("Halo, dunia!\\n");\n    return 0;\n}\n',
+  cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n'
+     + '    cout << "Halo, dunia!" << endl;\n    return 0;\n}\n',
+  go: 'package main\n\nimport "fmt"\n\nfunc main() {\n'
+    + '\tfmt.Println("Halo, dunia!")\n}\n',
+  bash: '#!/usr/bin/env bash\nnama="dunia"\necho "Halo, $nama!"\n',
+  sql: 'CREATE TABLE murid (nama TEXT, nilai INTEGER);\n'
+     + "INSERT INTO murid VALUES ('Andi', 90), ('Budi', 75);\n"
+     + 'SELECT nama, nilai FROM murid ORDER BY nilai DESC;\n',
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n'
+      + '  <meta charset="utf-8">\n  <title>Halaman Pertamaku</title>\n'
+      + '</head>\n<body>\n  <h1>Halo, dunia!</h1>\n'
+      + '  <p>Ini paragraf pertamaku.</p>\n</body>\n</html>\n',
+  csharp: 'using System;\n\nclass Program\n{\n'
+        + '    static void Main()\n    {\n'
+        + '        Console.WriteLine("Halo, dunia!");\n    }\n}\n',
+  vb: 'Imports System\n\nModule Program\n    Sub Main()\n'
+    + '        Console.WriteLine("Halo, dunia!")\n    End Sub\nEnd Module\n',
+  rust: 'fn main() {\n    let nama = "dunia";\n'
+      + '    println!("Halo, {nama}!");\n}\n',
+  php: '<?php\n$nama = "dunia";\necho "Halo, $nama!\\n";\n',
+  ruby: 'nama = "dunia"\nputs "Halo, #{nama}!"\n',
+  kotlin: 'fun main() {\n    val nama = "dunia"\n'
+        + '    println("Halo, $nama!")\n}\n',
+  typescript: 'const nama: string = "dunia";\nconsole.log(`Halo, ${nama}!`);\n',
+  fedora: '#!/usr/bin/env bash\n\nset -euo pipefail\n\n'
+        + 'nama="dunia"\nprintf \'Halo, %s!\\n\' "$nama"\n',
+  css: '/* Coba ubah warnanya, lalu Jalankan lagi. */\nbody {\n'
+     + '  background-color: #f5f5f5;\n  font-family: sans-serif;\n'
+     + '  margin: 0;\n}\n\nh1 {\n  color: #333;\n'
+     + '  text-align: center;\n}\n',
+};
+
+export function contohAwal(bahasa: string): string {
+  return CONTOH[bahasa] || "";
+}

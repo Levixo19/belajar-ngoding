@@ -29,7 +29,8 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
-  bedaBaris, bedaKata, nomorDiBaris, pasangkanUbahan, pecahToken, pisahRekor,
+  bedaBaris, bedaKata, contohAwal, nomorDiBaris, pasangkanUbahan, pecahToken,
+  pisahRekor,
 } from "../src/layar/kerja-beda.ts";
 import { tanggalLokal } from "../src/waktu.ts";
 
@@ -67,6 +68,7 @@ const bagian = [
   potong(kerja, /function pecahToken\(s\) \{[\s\S]*?\n\}/, "pecahToken"),
   potong(kerja, /function bedaKata\(a, b\) \{[\s\S]*?\n\}/, "bedaKata"),
   potong(kerja, /function pasangkanUbahan\(baris\) \{[\s\S]*?\n\}/, "pasangkanUbahan"),
+  potong(kerja, /function contohAwal\(bahasa\) \{[\s\S]*?\n\}/, "contohAwal"),
   potong(inti, /export function tanggalLokal\(iso\) \{[\s\S]*?\n\}/, "tanggalLokal"),
 ];
 
@@ -78,7 +80,7 @@ const jalurTemp = path.join(
 writeFileSync(
   jalurTemp,
   kode + "\nexport {pisahRekor, nomorDiBaris, bedaBaris, pecahToken, bedaKata,"
-    + " pasangkanUbahan, tanggalLokal};\n",
+    + " pasangkanUbahan, contohAwal, tanggalLokal};\n",
 );
 const acuan = await import(pathToFileURL(jalurTemp).href);
 
@@ -259,6 +261,44 @@ GALAT.forEach((g, i) => {
   adu(`nomorDiBaris #${i}`, acuan.nomorDiBaris(g), nomorDiBaris(g));
 });
 
+/* ------------------------------------------------------------- contohAwal
+ *
+ * Diadu BYTE-PER-BYTE. Satu salah ketik di salah satu dari sembilan belas
+ * string itu berarti Ruang Coba terbuka dengan program yang tidak bisa
+ * dikompilasi, pada bahasa yang mungkin tidak ada yang mencobanya selama
+ * berbulan-bulan. Daftar bahasanya dibaca dari registry kurikulum, bukan
+ * diketik di sini: bahasa baru yang contohnya lupa ditambahkan akan terlihat
+ * sebagai dua string kosong yang cocok -- jadi yang menagihnya pagar di
+ * bawahnya, bukan perbandingan ini. */
+
+const bahasaRunner = new Set();
+for (const nama of readdirSync(path.join(KONTEN, "kurikulum")).sort()) {
+  const lang = JSON.parse(
+    readFileSync(path.join(KONTEN, "kurikulum", nama), "utf-8"),
+  );
+  bahasaRunner.add(lang.runner);
+}
+const RUNNER = [...bahasaRunner].sort();
+for (const b of [...RUNNER, "bahasa-yang-tidak-ada", ""]) {
+  adu(`contohAwal ${b || "(kosong)"}`, acuan.contohAwal(b), contohAwal(b));
+}
+/* Celah yang SUDAH ADA di aplikasi lama, dan sengaja dibawa apa adanya: port
+ * ini menuntut identitas byte dengan `contohAwal` di `layar-kerja.js`, jadi
+ * menambal daftarnya di satu sisi saja akan memerahkan perbandingan di atas.
+ *
+ * `git` lolos `runner.tersedia()` -- git terpasang di mesin ini -- jadi ia
+ * MUNCUL di pemilih Ruang Coba dan editornya terbuka KOSONG. Kurikulum
+ * sejenisnya, `fedora`, punya skrip awal. Ini layak ditambal, tapi di UI baru
+ * dan di kedua sisi sekaligus, bukan di sini.
+ *
+ * Yang dijaga daftar ini tetap bergigi: runner BARU yang contohnya lupa
+ * ditambahkan tidak ada di sini, jadi ia tetap memerahkan pagarnya. */
+const CELAH_DIKETAHUI = new Set(["git"]);
+const tanpaContoh = RUNNER.filter(
+  (b) => !contohAwal(b) && !CELAH_DIKETAHUI.has(b),
+);
+const celahDibawa = RUNNER.filter((b) => !contohAwal(b) && CELAH_DIKETAHUI.has(b));
+
 /* ----------------------------------------------------------- tanggalLokal */
 
 const ISO = ["2026-10-20", "2026-01-01", "2026-12-31", "1999-02-28",
@@ -271,6 +311,17 @@ ISO.forEach((iso, i) => {
       a === null ? null : a.getTime(), b === null ? null : b.getTime());
 });
 
+if (tanpaContoh.length) {
+  console.error(
+    `RUNNER TANPA CONTOH AWAL: ${tanpaContoh.join(", ")}. Ruang Coba akan ` +
+      `terbuka dengan editor KOSONG untuk bahasa itu, dan perbandingan di ` +
+      `atas tetap hijau karena kedua sisi sama-sama kosong.`,
+  );
+}
+if (celahDibawa.length) {
+  console.log(`celah dibawa dari aplikasi lama: contoh awal kosong untuk ` +
+              `${celahDibawa.join(", ")}`);
+}
 console.log(`${solusi.length} solusi, ${pasanganBeda} pasangan beda, ` +
             `${barisKata.length} pasangan baris, ${PINGGIR.length} pinggiran, ` +
             `${GALAT.length} baris galat, ${ISO.length} tanggal`);
@@ -288,7 +339,7 @@ if (cemar) {
       `terasa di pemanggil berikutnya yang masih memegang daftar lama.`,
   );
 }
-if (gagal || takUtuh || cemar) {
+if (gagal || takUtuh || cemar || tanpaContoh.length) {
   if (gagal) {
     console.error(`BERGESER: ${gagal} perbandingan berbeda.`);
     console.error(`FUNGSI BERGESER: ${[...fungsiBergeser].sort().join(", ")}`);

@@ -450,6 +450,29 @@ BATERAI = {
                 "  const keluar: ButirBeda[] = baris.slice();",
                 "MENCEMARI MASUKAN",
             ),
+            (
+                # Satu karakter di contoh awal Java. Ruang Coba terbuka dengan
+                # program yang tidak bisa dikompilasi, pada bahasa yang
+                # mungkin tidak ada yang mencobanya selama berbulan-bulan --
+                # dan yang pertama menemukannya pelajar, yang akan menyangka
+                # dirinya salah.
+                "satu karakter di contoh awal Java",
+                "        System.out.println(\"Halo, dunia!\");\\n    }\\n}\\n'",
+                "        System.out.printl(\"Halo, dunia!\");\\n    }\\n}\\n'",
+                "contohAwal",
+            ),
+            (
+                # Satu bahasa dicabut dari tabel contoh. Perbandingan byte-nya
+                # ikut merah, TAPI kategori yang ditagih sel ini pagar yang
+                # lain: daftar runner yang contohnya kosong. Tanpa pagar itu,
+                # bahasa baru yang contohnya lupa ditambahkan akan tampil
+                # sebagai dua string kosong yang cocok -- hijau, dan Ruang
+                # Coba-nya terbuka kosong.
+                "python dicabut dari tabel contoh",
+                "  python: 'nama = \"dunia\"\\nprint(f\"Halo, {nama}!\")\\n',",
+                "  pythonx: 'nama = \"dunia\"\\nprint(f\"Halo, {nama}!\")\\n',",
+                "RUNNER TANPA CONTOH AWAL",
+            ),
         ]),
 }
 
