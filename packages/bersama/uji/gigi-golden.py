@@ -522,6 +522,54 @@ BATERAI = {
                 "PENYAMBUNGAN RUSAK",
             ),
         ]),
+    "banding-belajar.mjs": (
+        "banding-belajar.mjs", PAKET_WEB,
+        sumber_web("layar/belajar-teks.ts"), [
+            (
+                # Elipsis memakan satu huruf lebih sedikit, jadi judul yang
+                # dipotong jadi 27 karakter di kotak yang menampung 26. Tidak
+                # ada yang rusak; yang terjadi satu huruf terdorong keluar
+                # kotaknya di SETIAP judul panjang di kaki pembaca.
+                "elipsis meleset satu huruf",
+                '  return t && t.length > n ? t.slice(0, n - 1) + "…" : t;',
+                '  return t && t.length > n ? t.slice(0, n) + "…" : t;',
+                "potong",
+            ),
+            (
+                # Batas "kalimat pertama cukup pendek" DITURUNKAN dari 52 ke
+                # 30: 22.564 baris pindah dari jalur "potong di kalimat" ke
+                # jalur "potong di kata", jadi labelnya berhenti di tengah
+                # kalimat padahal kalimatnya pendek.
+                #
+                # Sel ini MENGGANTIKAN sel yang MENAIKKAN ambangnya ke 62. Sel
+                # itu tetap hijau atas 8.475 baris yang titiknya jatuh di
+                # rentang itu -- bukan karena korpusnya kurang, melainkan
+                # karena setiap nilai >= 45 berperilaku sama. Alasannya ditulis
+                # di komentar `labelPeta`.
+                "ambang kalimat pendek diturunkan",
+                "  let awal = titik > 8 && titik < 52 ? teks.slice(0, titik) : teks;",
+                "  let awal = titik > 8 && titik < 30 ? teks.slice(0, titik) : teks;",
+                "labelPeta",
+            ),
+            (
+                # Potongnya di spasi PERTAMA, bukan spasi terakhir sebelum 44.
+                # Label peta jadi satu kata untuk hampir setiap bagian, dan
+                # peta yang seluruh butirnya "Di" tidak menandai apa pun.
+                "batas kata dicari dari depan",
+                '    const batas = awal.lastIndexOf(" ", 44);',
+                '    const batas = awal.indexOf(" ");',
+                "labelPeta",
+            ),
+            (
+                # Deret spasi tidak lagi diruntuhkan jadi satu. Label yang
+                # datang dari baris berkolom membawa perataan tabelnya ke
+                # dalam peta, tempat perataan itu tidak berarti apa-apa.
+                "deret spasi tidak diruntuhkan",
+                '    .replace(/\\s+/g, " ").trim();',
+                '    .replace(/\\s/g, " ").trim();',
+                "labelPeta",
+            ),
+        ]),
 }
 
 
