@@ -369,6 +369,88 @@ BATERAI = {
                 "kalimat baris",
             ),
         ]),
+    "banding-kerja.mjs": (
+        "banding-kerja.mjs", PAKET_WEB,
+        sumber_web("layar/kerja-beda.ts"), [
+            (
+                # Tangga "lihat jawaban" membuka dari KEPALA, bukan dari ekor.
+                # Yang disajikan jadi import dan deklarasi -- bagian yang sudah
+                # ada di editor pelajar sendiri -- sementara baris terakhir,
+                # tempat hasilnya dicetak, baru keluar di langkah terakhir.
+                "potongan solusi diambil dari kepala",
+                "    potongan.push(baris.slice(n - panjang));",
+                "    potongan.push(baris.slice(0, panjang));",
+                "pisahRekor",
+            ),
+            (
+                # Solusi pendek dapat tiga langkah, bukan dua: tiga klik untuk
+                # empat baris, tangga yang anak-anaknya lebih banyak daripada
+                # yang dinaiki. 79 dari 558 solusi berpanjang <= 12 baris.
+                #
+                # Sel ini MENGGANTIKAN sel yang mencabut pin langkah terakhir
+                # (`i === langkah ? n : ...`). Sel itu tetap HIJAU, dan itu
+                # temuan, bukan kegagalan baterai: pin tersebut tidak pernah
+                # mengubah hasil untuk rumus yang sekarang. Alasannya ditulis
+                # di komentar `pisahRekor`, beserta kenapa ia dipertahankan.
+                "solusi pendek dapat tiga langkah",
+                "  const alami = n <= AMBANG_REKOR ? 2 : LANGKAH_REKOR;",
+                "  const alami = LANGKAH_REKOR;",
+                "pisahRekor",
+            ),
+            (
+                # Pemutus seri LCS dibalik. Diff-nya tetap benar sebagai diff;
+                # yang berubah sisi mana yang dianggap "hilang" dan mana yang
+                # "bertambah" saat keduanya sama panjang -- dan itu menentukan
+                # baris mana yang dipasangkan ke baris mana sesudahnya.
+                "pemutus seri diff baris dibalik",
+                "    } else if ((tabel[i + 1] as Uint16Array)[j]! >= "
+                "(tabel[i] as Uint16Array)[j + 1]!) {\n"
+                "      keluar.push({ tanda: \"-\", teks: a[i] as string, nomor });",
+                "    } else if ((tabel[i + 1] as Uint16Array)[j]! > "
+                "(tabel[i] as Uint16Array)[j + 1]!) {\n"
+                "      keluar.push({ tanda: \"-\", teks: a[i] as string, nomor });",
+                "bedaBaris",
+            ),
+            (
+                # Token bersebelahan yang bertanda sama berhenti dilebur. "Dua
+                # kata berurutan berubah" tampil sebagai dua kotak dengan jeda
+                # di antaranya, dan yang terbaca jadi dua ubahan terpisah
+                # padahal cuma satu.
+                "segmen bersebelahan tidak dilebur",
+                "    if (akhir && akhir.tanda === tanda) akhir.teks += teks;",
+                "    if (akhir && akhir.tanda === tanda && false) akhir.teks += teks;",
+                "bedaKata",
+            ),
+            (
+                # Alternatif "satu karakter apa pun" dicabut dari pemecah
+                # token, jadi tanda baca HILANG. Selnya menagih kontrak
+                # lossless, yang TERPISAH dari perbandingan: kedua sisi bisa
+                # konsisten salah.
+                "pemecah token kehilangan tanda baca",
+                "const POLA_TOKEN_KATA = /\\s+|[\\p{L}\\p{N}_]+|[^\\s]/gu;",
+                "const POLA_TOKEN_KATA = /\\s+|[\\p{L}\\p{N}_]+/gu;",
+                "PECAH TOKEN RUSAK",
+            ),
+            (
+                # Kelompok tangkap diganti seluruh kecocokan: `parseInt` atas
+                # "jawab.py:12" memberi NaN, jadi tombol "ke baris" lahir
+                # untuk baris NaN -- dan tidak ada error di mana pun.
+                "nomor baris dibaca dari seluruh kecocokan",
+                "  return m ? parseInt(m[1] as string, 10) : 0;",
+                "  return m ? parseInt(m[0] as string, 10) : 0;",
+                "nomorDiBaris",
+            ),
+            (
+                # Salinan dangkal diganti salinan larik: butir masukannya
+                # dimutasi di tempat. Hasilnya SAMA PERSIS, jadi perbandingan
+                # hasil tidak bisa melihatnya -- yang menagihnya pagar
+                # kemurnian yang terpisah.
+                "pasangkanUbahan memutasi masukannya",
+                "  const keluar: ButirBeda[] = baris.map((d) => ({ ...d }));",
+                "  const keluar: ButirBeda[] = baris.slice();",
+                "MENCEMARI MASUKAN",
+            ),
+        ]),
 }
 
 

@@ -43,6 +43,25 @@ export function hariIniISO(): string {
   return `${t.getFullYear()}-${dua(t.getMonth() + 1)}-${dua(t.getDate())}`;
 }
 
+/**
+ * Selisih HARI dari hari ini; negatif berarti sudah lewat. `null` kalau
+ * ISO-nya tidak terbaca.
+ *
+ * Kedua cap waktu dibulatkan ke tengah malam lebih dulu, dan itu seluruh
+ * gunanya: yang ditanyakan "berapa hari lagi", bukan "berapa jam lagi". Tanpa
+ * pembulatan, kuis yang jatuh tempo besok pagi akan disebut "hari ini" kalau
+ * dilihat malam ini dan "besok" kalau dilihat pagi ini -- satu fakta, dua
+ * jawaban, tergantung jam berapa orangnya membuka aplikasi.
+ */
+export function selisihHari(iso: string | null | undefined): number | null {
+  const t = tanggalLokal(iso);
+  if (!t) return null;
+  t.setHours(0, 0, 0, 0);
+  const kini = new Date();
+  kini.setHours(0, 0, 0, 0);
+  return Math.round((t.getTime() - kini.getTime()) / 86400000);
+}
+
 /** "28 Sep 2026". Kosong kalau ISO-nya tidak terbaca. */
 export function tanggalRamah(iso: string | null | undefined): string {
   const t = tanggalLokal(iso);

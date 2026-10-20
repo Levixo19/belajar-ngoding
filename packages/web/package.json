@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "tipe": "tsc --noEmit",
-    "banding": "node uji/banding-rasi.mjs && node uji/banding-editor.mjs && node uji/banding-pratinjau.mjs && node uji/banding-visual.mjs && node uji/banding-jejak.mjs"
+    "banding": "node uji/banding-rasi.mjs && node uji/banding-editor.mjs && node uji/banding-pratinjau.mjs && node uji/banding-visual.mjs && node uji/banding-jejak.mjs && node uji/banding-kerja.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",
