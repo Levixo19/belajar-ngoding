@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "tipe": "tsc --noEmit"
+    "tipe": "tsc --noEmit",
+    "banding": "node uji/banding-rasi.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

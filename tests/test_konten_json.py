@@ -189,19 +189,31 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
         ("golden-galat.ts", r"rekaman: (\d+) pesan", 50),
     )
 
+    # Pembanding di `packages/web`: geometri peta rasi diadu dengan `rasi.js`,
+    # bukan dengan rekaman. Bisa begitu karena keduanya JavaScript dan
+    # fungsinya murni -- tidak ada sisi Python yang perlu direkam.
+    SKRIP_WEB = (("banding-rasi.mjs", r"(\d+) perbandingan", 100),)
+
     def test_keluaran_identik_dengan_python(self):
         import re
         import subprocess
-        for skrip, pola, lantai in self.SKRIP:
+        WEB = os.path.join(AKAR, "packages", "web")
+        tugas = [(BERSAMA, s, p, l) for s, p, l in self.SKRIP]
+        if os.path.isdir(os.path.join(WEB, "uji")):
+            tugas += [(WEB, s, p, l) for s, p, l in self.SKRIP_WEB]
+        for paket, skrip, pola, lantai in tugas:
             with self.subTest(skrip=skrip):
                 hasil = subprocess.run(
-                    ["node", os.path.join(BERSAMA, "uji", skrip)],
-                    cwd=BERSAMA, capture_output=True, text=True, timeout=300)
+                    ["node", os.path.join(paket, "uji", skrip)],
+                    cwd=paket, capture_output=True, text=True, timeout=300)
                 keluaran = (hasil.stdout + hasil.stderr).strip()
+                # Pesannya tidak menyebut "rekaman Python": dua dari pembanding
+                # ini mengadu dengan rekaman dari Python, tapi `banding-rasi`
+                # mengadu dengan `rasi.js`. Pesan gagal yang menyebut sumber
+                # yang salah mengirim orang mencari di berkas yang salah.
                 self.assertEqual(
                     hasil.returncode, 0,
-                    f"{skrip} tidak cocok dengan rekaman Python.\n"
-                    + keluaran[:4000])
+                    f"{skrip} melaporkan ketidakcocokan.\n" + keluaran[:4000])
                 # Populasi ditagih di sini juga: skrip itu memang menolak
                 # populasi yang tidak sama, tapi tes yang cuma memeriksa kode
                 # keluar akan lulus kalau suatu hari penolakan itu dilepas.

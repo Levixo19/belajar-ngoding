@@ -62,10 +62,18 @@ berubah tanpa ada yang tahu apa yang bergeser.
 ## Cara memastikan portnya masih benar
 
 ```bash
-npm run golden                              # tiga pembanding, dari akar
-npm run tipe                                # tsc --noEmit
-npm run gigi --workspace @belajar/bersama   # baterai mutasi
+npm run golden                                # tiga pembanding, dari akar
+npm run tipe                                  # tsc --noEmit
+npm run gigi --workspace @belajar/bersama     # baterai mutasi
+npm run banding --workspace @belajar/web      # geometri rasi vs rasi.js
 ```
+
+`banding` berbeda jenis dari `golden`. Ia tidak mengadu dengan rekaman
+melainkan dengan implementasi JS yang masih hidup (`webapp/statik/js/rasi.js`),
+karena keduanya JavaScript dan fungsinya murni — jadi tidak ada sisi Python
+yang perlu direkam. Yang dijaganya: bentuk tiap rasi deterministik dari benih
+(nama kurikulum), jadi satu bit yang meleset di `hash` atau `prng` mengubah
+SETIAP rasi tanpa satu pun error.
 
 Yang terakhir yang paling mudah dilewatkan dan paling penting. `npm run golden`
 menjawab "apakah portnya cocok hari ini"; baterai mutasi menjawab pertanyaan
