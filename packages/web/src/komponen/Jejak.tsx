@@ -100,7 +100,7 @@ export function Jejak({
     let dibatalkan = false;
     (async () => {
       try {
-        const r = await kirim<Rekaman>("/api/jejak", { bahasa: "python", kode });
+        const r = await kirim<Rekaman>("jejak", { bahasa: "python", kode });
         if (dibatalkan) return;
         if (!r.langkah.length) {
           setGalat(r.galat || "Tidak ada langkah yang tercatat.");

@@ -743,7 +743,7 @@ export function Latihan({
     setHintTerbuka(0);
     (async () => {
       try {
-        const d = await ambil<DataLatihan>("/api/latihan",
+        const d = await ambil<DataLatihan>("latihan",
                                            { key: kunciBahasa, indeks });
         if (dibatalkan) return;
         setX(d);
@@ -770,7 +770,7 @@ export function Latihan({
 
   const simpan = useCallback(async (kode: string, diam: boolean) => {
     try {
-      await kirim("/api/latihan/simpan", { key: kunciBahasa, indeks, kode });
+      await kirim("latihan/simpan", { key: kunciBahasa, indeks, kode });
       pegangan.current?.catat("tersimpan");
       if (!diam && x) sorak("Tersimpan di " + x.berkas.nama, "tumbuh", 2);
     } catch (e) {
@@ -782,7 +782,7 @@ export function Latihan({
     setHasil({ jenis: "sibuk", pesan: "Menjalankan kodemu…" });
     const kode = pegangan.current?.nilai() ?? "";
     try {
-      const r = await kirim<HasilJalan>("/api/latihan/jalankan",
+      const r = await kirim<HasilJalan>("latihan/jalankan",
                                         { key: kunciBahasa, indeks, kode });
       setHasil({ jenis: "jalan", r, kode });
     } catch (e) {
@@ -798,7 +798,7 @@ export function Latihan({
     });
     try {
       const r = await kirim<HasilPeriksa>(
-        "/api/latihan/periksa",
+        "latihan/periksa",
         { key: kunciBahasa, indeks, kode: pegangan.current?.nilai() ?? "" },
       );
       const lulus = r.uji.filter((u) => u.lulus).length;
@@ -831,7 +831,7 @@ export function Latihan({
       + "mesin tidak memeriksanya.")) return;
     try {
       const r = await kirim<{ status: string } & Hadiah>(
-        "/api/latihan/manual", { key: kunciBahasa, indeks, nyalakan });
+        "latihan/manual", { key: kunciBahasa, indeks, nyalakan });
       setStatus(r.status);
       rayakan(r);
       sorak(nyalakan ? "Ditandai selesai." : "Tanda selesai dibatalkan.",
@@ -1042,7 +1042,7 @@ export function Latihan({
                       "Kembalikan editor ke kerangka kosong? Kodemu yang "
                       + "sekarang hilang.")) return;
                     const r = await ambil<{ kode: string }>(
-                      "/api/latihan/kerangka", { key: kunciBahasa, indeks });
+                      "latihan/kerangka", { key: kunciBahasa, indeks });
                     pegangan.current?.setNilai(r.kode);
                     void simpan(r.kode, true);
                   }}
@@ -1368,7 +1368,7 @@ export function Coba({
     (async () => {
       try {
         const c = await ambil<{ bahasa: string; kode: string; judul: string }>(
-          "/api/materi/contoh",
+          "materi/contoh",
           { key: params.key, indeks: params.materi, bagian: params.bagian || 0 },
         );
         if (dibatalkan) return;
@@ -1392,7 +1392,7 @@ export function Coba({
     setHasil({ jenis: "sibuk", pesan: "Menjalankan kodemu…" });
     const kode = pegangan.current?.nilai() ?? "";
     try {
-      const r = await kirim<HasilJalan>("/api/coba", { bahasa, kode, stdin });
+      const r = await kirim<HasilJalan>("coba", { bahasa, kode, stdin });
       setHasil({ jenis: "jalan", r, kode });
     } catch (e) {
       setHasil({ jenis: "galat", pesan: (e as Error).message });
@@ -1411,32 +1411,70 @@ export function Coba({
 
   return (
     <div className="masuk kerja">
-      <header className="kepala-besar">
+      <header className="kepala-besar kepala-latihan">
         <div className="kepala-judul">
-          <span className="mata">Ruang Coba</span>
-          <h1>{judulContoh || "Coba kode apa pun"}</h1>
-          <p className="kepala-sub">
-            Tidak ada yang dinilai di sini dan tidak ada yang dicatat ke
-            progresmu. Tulis apa saja, tekan Jalankan, lihat hasilnya.
-          </p>
+          <span className="mata">Tanpa nilai, tanpa catatan</span>
+          <h1>Ruang Coba</h1>
         </div>
         <div className="kepala-aksi">
-          <label className="deret deret-rapat">
-            <span className="mata">Bahasa</span>
-            <select
-              value={bahasa}
-              aria-label="Bahasa yang dipakai"
-              onChange={(e) => gantiBahasa(e.target.value)}
-            >
-              {daftar.map((b) => (
-                <option key={b.runner} value={b.runner}>{b.label}</option>
-              ))}
-            </select>
-          </label>
+          <div className="deret deret-rapat">
+            <label className="deret deret-rapat">
+              <span className="mata">Bahasa</span>
+              <select
+                value={bahasa}
+                aria-label="Bahasa yang dipakai"
+                onChange={(e) => gantiBahasa(e.target.value)}
+              >
+                {daftar.map((b) => (
+                  <option key={b.runner} value={b.runner}>{b.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
       </header>
 
-      <div className="kerja-tata kerja-tata-coba">
+      {/* Bentuk yang sama persis dengan ruang kerja latihan: yang DIBACA di
+          kiri, yang DIKERJAKAN di kanan, dan keduanya mengisi tinggi jendela.
+          Dua layar yang gunanya sama -- menulis kode lalu menjalankannya --
+          tidak punya alasan untuk punya dua tata letak berbeda yang harus
+          dipelajari terpisah.
+
+          Ia WAJIB `.kerja-tata` dengan DUA anak. Versi pertama port ini
+          memakai satu kolom dengan kelas karangan (`kerja-tata-coba`), yang
+          tidak ada di gaya.css: templat dua kolomnya tetap berlaku, barisnya
+          kehilangan tingginya, dan `.kerja-hasil` terukur 30 px untuk kartu
+          240 px. Yang terlihat bukan tata letak yang salah melainkan keluaran
+          yang terpotong di baris pertama. */}
+      <div className="kerja-tata">
+        <div className="kerja-soal">
+          <section>
+            <span className="mata">Apa ini</span>
+            <div className="kartu">
+              <p style={{ margin: 0 }}>
+                {judulContoh
+                  ? `Contoh dari materi: ${judulContoh}. Ubah sesukamu; yang di `
+                    + "materi tidak ikut berubah."
+                  : "Tempat mencoba apa pun. Tidak dinilai dan tidak menyentuh "
+                    + "progres, dan justru karena itu ia berguna."}
+              </p>
+            </div>
+          </section>
+          <section>
+            <span className="mata">Masukan program (stdin)</span>
+            <textarea
+              value={stdin}
+              placeholder="Masukan untuk program (stdin). Kosongkan kalau tidak dipakai."
+              style={{ minHeight: "62px", fontFamily: "var(--f-kode)",
+                       fontSize: "var(--t-kecil)" }}
+              onChange={(e) => {
+                setStdin(e.target.value);
+                ingat("coba.stdin", e.target.value);
+              }}
+            />
+          </section>
+        </div>
+
         <div className="kerja-kode">
           <Editor
             pegangan={pegangan}
@@ -1475,26 +1513,21 @@ export function Coba({
                 </button>
               </div>
             </div>
-
-            <div>
-              <span className="mata">Masukan (stdin)</span>
-              <textarea
-                value={stdin}
-                placeholder="Masukan untuk program (stdin). Kosongkan kalau tidak dipakai."
-                style={{ minHeight: "62px", fontFamily: "var(--f-kode)",
-                         fontSize: "var(--t-kecil)" }}
-                onChange={(e) => {
-                  setStdin(e.target.value);
-                  ingat("coba.stdin", e.target.value);
-                }}
-              />
-            </div>
           </div>
 
+          {/* Kartunya `KartuJalan`, BUKAN `kartuKeluaran` yang dipakai versi
+              JS di sini. Yang terakhir itu kartu dua-tab (Tampilan |
+              Struktur) milik pembaca materi, dan pembaca materi belum diport.
+              Selisihnya bukan informasi yang hilang -- `KartuJalan` justru
+              membawa pratinjaunya BESERTA pil lebar perangkat, yang tidak ada
+              di kartu dua-tab itu. Yang berbeda cuma bentuknya: di sini
+              pratinjau dan pohon strukturnya bertumpuk, di sana bertab. Begitu
+              pembaca materi diport, keduanya pakai satu kartu lagi. */}
           <div ref={panelRef} className="kerja-hasil">
             {hasil.jenis === "kosong" ? (
               <Keadaan jenis="kosong" judul="Keluaran muncul di sini"
-                       ket="Tekan Jalankan untuk melihat keluaran kodemu." />
+                       ket="Tekan Jalankan (atau Ctrl+Enter) untuk menjalankan
+                            kodenya di komputermu sendiri." />
             ) : hasil.jenis === "sibuk" ? (
               <div className="kartu deret">
                 <div className="pusaran" />
