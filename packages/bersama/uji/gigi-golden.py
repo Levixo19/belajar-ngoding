@@ -474,6 +474,54 @@ BATERAI = {
                 "RUNNER TANPA CONTOH AWAL",
             ),
         ]),
+    "banding-prosa.mjs": (
+        "banding-prosa.mjs", PAKET_WEB,
+        sumber_web("komponen/prosa-teks.ts"), [
+            (
+                # Backtick tidak dibuang dari isi chip. Terminal memakai
+                # backtick sebagai penanda, web memakai kotak -- jadi yang
+                # terbaca pelajar kotak yang MEMUAT penandanya sendiri.
+                "backtick tidak dibuang dari chip",
+                """      teks: cocok.charAt(0) === "`" ? cocok.slice(1, -1) : cocok,""",
+                """      teks: cocok,""",
+                "segmenKode",
+            ),
+            (
+                # Kursor maju satu karakter kurang, jadi karakter terakhir
+                # setiap chip muncul DUA KALI -- sekali di dalam kotaknya,
+                # sekali di teks sesudahnya.
+                #
+                # Sel ini MENGGANTIKAN sel yang mencabut `POLA_KODE.lastIndex
+                # = 0`. Sel itu tetap HIJAU, dan itu temuan: loopnya selalu
+                # jalan sampai `exec` mengembalikan null, dan di situ mesin
+                # regex sudah menyetel `lastIndex` kembali ke nol sendiri.
+                # Alasannya ditulis di komentar `segmenKode`, beserta kenapa
+                # reset itu dipertahankan.
+                "kursor maju satu karakter kurang",
+                "    akhir = m.index + cocok.length;",
+                "    akhir = m.index + cocok.length - 1;",
+                "segmenKode",
+            ),
+            (
+                # Potongan kosong ikut didorong setiap kali chip menempel di
+                # chip sebelumnya atau berdiri di awal baris. Teksnya tetap
+                # tersambung benar; yang berubah cacah simpul per paragraf.
+                "potongan kosong ikut didorong",
+                "    if (m.index > akhir) keluar.push(teks.slice(akhir, m.index));",
+                "    if (m.index >= akhir) keluar.push(teks.slice(akhir, m.index));",
+                "segmenKode",
+            ),
+            (
+                # Jalur "tidak ada chip sama sekali" mengembalikan NOL
+                # potongan, bukan teksnya. 87% blok prosa lewat jalur itu --
+                # artinya hampir seluruh materi tampil kosong. Selnya menagih
+                # kontrak penyambungan ulang, yang TERPISAH dari perbandingan.
+                "jalur tanpa chip mengembalikan kosong",
+                "  if (!keluar.length) return [teks];",
+                "  if (!keluar.length) return [];",
+                "PENYAMBUNGAN RUSAK",
+            ),
+        ]),
 }
 
 
