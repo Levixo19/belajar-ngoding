@@ -48,8 +48,13 @@ BATERAI = {
             "sidik token bergeser",
         ),
         (
+            # Jangkar ini pernah usang sekali: ia menyebut `kode[k]` sementara
+            # sumbernya sudah diubah ke `charAt` saat `noUncheckedIndexedAccess`
+            # dinyalakan. Baterainya melapor JANGKAR TIDAK UNIK, bukan lolos
+            # diam-diam -- dan itu memang bedanya antara pagar yang berguna dan
+            # pagar yang menenangkan.
             "pengenal sebelum '(' tidak jadi fungsi",
-            '        jenis = k < n && kode[k] === "(" ? "fungsi" : "teks";',
+            '        jenis = k < n && kode.charAt(k) === "(" ? "fungsi" : "teks";',
             '        jenis = "teks";',
             "sidik token bergeser",
         ),

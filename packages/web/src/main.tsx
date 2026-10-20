@@ -20,6 +20,7 @@ import { createRoot } from "react-dom/client";
 
 import { ambil } from "./api.ts";
 import { Keadaan } from "./komponen/Keadaan.tsx";
+import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 
@@ -99,6 +100,10 @@ function Aplikasi() {
     return <Pustaka params={alamat.params} />;
   }
 
+  if (nama === "langit") {
+    return <Langit />;
+  }
+
   if (nama === "tebak" && arg) {
     const bhs = awal.bahasa.find((b) => b.key === arg);
     if (!bhs) {
@@ -128,12 +133,15 @@ function Aplikasi() {
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Baru dua layar yang diport: Pustaka dan Tebak keluarannya. Sisanya
-          masih di antarmuka lama, dan kedua-duanya memakai API serta berkas
-          gaya yang sama.
+          Baru tiga layar yang diport: Langit, Pustaka, dan Tebak keluarannya.
+          Sisanya masih di antarmuka lama, dan kedua-duanya memakai API serta
+          berkas gaya yang sama.
         </p>
         <div className="deret">
-          <a className="tbl tbl-utama" href="#/pustaka">
+          <a className="tbl tbl-utama" href="#/langit">
+            Langit
+          </a>
+          <a className="tbl" href="#/pustaka">
             Pustaka
           </a>
         </div>
