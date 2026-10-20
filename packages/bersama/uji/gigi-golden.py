@@ -265,6 +265,67 @@ BATERAI = {
                 "PELAPOR BERBEDA",
             ),
         ]),
+    # Kategorinya nama JENIS gambar, diambil dari baris `JENIS BERGESER`.
+    # Tiga temuan pertama yang dicetak pembanding tidak cukup: satu perubahan
+    # di `s()` menyentuh ketiga belas jenis, dan jenis mana yang kebetulan
+    # muncul lebih dulu tergantung urutan berkas di direktori.
+    "banding-visual.mjs": (
+        "banding-visual.mjs", PAKET_WEB,
+        sumber_web("komponen/visual-bentuk.ts"), [
+            (
+                # Pemetaan `kelas` -> `class` dilepas: atributnya jadi `kelas`,
+                # yang tidak berarti apa pun bagi CSS. Gambarnya tetap utuh
+                # bentuknya dan tetap tergambar -- cuma kehilangan SELURUH
+                # warnanya, di keempat tema, tanpa satu pun error.
+                "atribut kelas tidak dipetakan ke class",
+                'keluar[k === "kelas" ? "class" : k] = String(v);',
+                "keluar[k] = String(v);",
+                "tabel",
+            ),
+            (
+                # `pathLength` dipasang juga pada garis putus-putus. Dasharray
+                # ikut diukur dalam satuan pathLength, jadi "4 4" berubah jadi
+                # satu garis utuh: garis hidup pelaku di diagram urutan
+                # berhenti terlihat sebagai garis bayangan.
+                "pathLength dipasang pada garis putus",
+                'const putus = (kelas: string) => (/putus/.test(kelas) ? null : 1);',
+                "const putus = (kelas: string) => (kelas ? 1 : 1);",
+                "urutan",
+            ),
+            (
+                # Lebar simpul pohon bergeser 2 piksel. Tidak ada yang rusak
+                # dan tidak ada yang terlihat salah -- sampai dua simpul
+                # bertabrakan di pohon yang paling padat.
+                "lebar simpul pohon bergeser",
+                "  const lebarSimpul = (n: SimpulPohon) => Math.max(46, lebarTeks(n.teks) + 22);",
+                "  const lebarSimpul = (n: SimpulPohon) => Math.max(46, lebarTeks(n.teks) + 20);",
+                "pohon",
+            ),
+            (
+                # Bit dipadati spasi, bukan nol. Angka 5 pada lebar 8 jadi
+                # "     101" dan lima kotak pertamanya kosong -- yang persis
+                # kebalikan dari hal yang gambar ini ada untuk mengajarkan.
+                "bit dipadati spasi",
+                'const bit = sp.angka.toString(2).padStart(lebar, "0");',
+                'const bit = sp.angka.toString(2).padStart(lebar, " ");',
+                "bit",
+            ),
+            (
+                "ketelitian titik kurva berubah",
+                "p.map((v) => v.toFixed(1)).join(\",\")",
+                "p.map((v) => v.toFixed(2)).join(\",\")",
+                "kurva",
+            ),
+            (
+                # Seluruh isi wadah flex bergeser 6 piksel ke atas sementara
+                # wadahnya tidak. Labelnya tetap di tempatnya, jadi yang
+                # terlihat kotak yang menempel ke tepi atas wadah.
+                "asal wadah tata bergeser",
+                "  const x0 = PAD, y0 = PAD + 36;",
+                "  const x0 = PAD, y0 = PAD + 30;",
+                "tata",
+            ),
+        ]),
 }
 
 
