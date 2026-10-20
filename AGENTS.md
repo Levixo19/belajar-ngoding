@@ -1382,30 +1382,53 @@ butuh `rasi.js` plus satu fungsi dari `gerak.js`.
 | `layar-tebak` | 114 | `sorot`, `sampul`, `gerak` | **SUDAH** -> `layar/Tebak.tsx` |
 | `layar-pustaka` | 204 | `sampul`, `ikon` | **SUDAH** -> `layar/Pustaka.tsx` |
 | `layar-langit` | 219 | `rasi.js`, `gerak` | **SUDAH** -> `layar/Langit.tsx` |
-| `layar-lain` | 867 | `ikon`, `sampul`, `istirahat`, `gerak` | belum |
-| `layar-karier` | 601 | **`layar-belajar.js`**, `sampul`, `ikon`, `gerak` | belum |
-| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, **`layar-belajar`** | belum |
+| `layar-karier` | 601 | `saatSiap` saja dari `layar-belajar` | **SUDAH** -> `layar/Karier.tsx` |
+| `layar-lain` | 867 | `ikon`, `sampul`, `istirahat`, `gerak` | **SUDAH** -> `Statistik.tsx` + `Atur.tsx` |
+| `aplikasi.js` cangkang | ~300 dari 1.570 | — | **SUDAH** -> `Cangkang.tsx` |
+| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, `layar-belajar` | belum |
 | `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` | belum |
 
-Yang sudah berdiri di `packages/web/src/`: `api.ts` (klien bertipe, satu-satunya
-yang tahu soal token), `gerak.ts` (`tingkatGerak()`, SATU-SATUNYA yang boleh
-membaca `data-gerak`), `util.tsx` (`angka`, `urlAman`, `tandai`, `tanpaNomor`),
-`komponen/Kode.tsx`, `komponen/Keadaan.tsx`, `komponen/Rasi.tsx` +
+Yang sudah berdiri di `packages/web/src/`: `api.ts` (klien bertipe,
+satu-satunya yang tahu soal token), `gerak.ts` (`tingkatGerak()`,
+SATU-SATUNYA yang boleh membaca `data-gerak`), `lokal.ts` (preferensi
+tampilan; kuncinya DIBAGI dengan antarmuka lama), `waktu.ts` (`tanggalLokal()`
+satu-satunya pintu untuk ISO server), `sorak.tsx` (toast + `salin`),
+`util.tsx`, `Cangkang.tsx`, `komponen/{Kode,Keadaan,Bilah,Rasi}.tsx`,
 `komponen/rasi-geometri.ts`.
 
-Yang BELUM: keempat layar di atas, router penuh beserta strip konteks dan kelas
-ukuran layar (`aplikasi.js` 1.570 + `inti.js` 803), tes kontrak 41 endpoint
-(sengaja ditunda: ia menjaga pergantian backend di Tahap 2, yang juga ditunda),
-lalu Express + MongoDB sebagai fitur baru berdampingan (Tahap 1,5). Sisanya
-sekitar 9.100 baris. Rencana lengkap beserta angkanya ada di riwayat sesi.
+**Yang BELUM, dan ini pekerjaan terbesar yang tersisa:** `layar-kerja` (ruang
+kerja latihan) dan `layar-belajar` (pembaca materi), plus modul yang keduanya
+butuh -- `editor.js` 864, `pratinjau.js` 512, `visual.js` 651, `jejak.js`.
+Sekitar **5.600 baris**, dan justru yang paling tidak nyaman di React: keempat
+modul itu mengukur DOM sendiri. AGENTS.md ini sendiri sudah menyebutnya
+sejak awal: bungkus dengan `useRef` + `useEffect`, JANGAN dipaksa deklaratif.
+Sesudahnya: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian backend di
+Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).
 
-**Satu catatan tentang bentuk komponen, dari tiga layar yang sudah diport:**
-apa pun yang di versi JS di-toggle lewat `classList` jadi TURUNAN state di
-React, bukan efek. Versi imperatif harus ingat membersihkan kelas yang
-dipasang sebelumnya; di `layar-langit` ada empat kelas semacam itu
-(`rasi-konsep`, `langit-terpilih`, `ada-profesi`, `ada-konsep`), dan satu
-cabang yang lupa membersihkannya meninggalkan bintang menyala untuk konsep
-yang sudah tidak dipilih -- tanpa satu pun error. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
+**Empat catatan bentuk dari enam layar yang sudah diport.** Keempatnya berlaku
+untuk sisanya:
+
+* **Apa pun yang di versi JS di-toggle lewat `classList` jadi TURUNAN state**,
+  bukan efek. Versi imperatif harus ingat membersihkan kelas yang dipasang
+  sebelumnya; di `layar-langit` ada empat kelas semacam itu, dan satu cabang
+  yang lupa membersihkannya meninggalkan bintang menyala untuk konsep yang
+  sudah tidak dipilih -- tanpa satu pun error.
+* **Pengukuran DOM dua-lintasan memang bentuk alami React.** `layar-karier`
+  mengukur lebar label dengan `getComputedTextLength` lalu merutekan garis dari
+  ujungnya; versi JS menggambar dengan perkiraan, menandainya, lalu menggambar
+  ulang lewat `saatSiap`. Di React: render pertama perkiraan, `useEffect`
+  mengukur, render kedua memakainya. Tidak ada penanda yang perlu diingat.
+* **Yang BELUM diport dikatakan di layar**, lewat komponen `Keadaan`, bukan
+  dihilangkan diam-diam. Blok data di Statistik dan Pengaturan, plus suara,
+  getar, dan istirahat mata. Tombol yang hilang tanpa penjelasan membuat orang
+  mengira fiturnya dibuang. **Reset progres tidak akan dipasang tanpa dialog
+  konfirmasinya**: ia menghapus catatan belajar sungguhan.
+* **Setiap `useEffect` yang memanggil API punya penanda `dibatalkan`.**
+  Berpindah layar sebelum permintaan pertama selesai akan membuat jawaban LAMA
+  tiba belakangan dan menimpa yang baru; yang terlihat isi dari layar yang
+  sudah ditinggalkan. `layar-karier` perlu lebih dari itu -- perencana jalurnya
+  menomori permintaan, karena mengubah asal dua kali cepat bisa menampilkan
+  jalur permintaan PERTAMA. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
 `inti/runner.py` + `struktur.py` + `jejak.py` adalah satu sidecar Python.
 Diuji di mesin ini: `ulimit -v` merusak JVM ("Could not reserve enough space
 for object heap"), dan `bash -c` memakai string shell sementara
