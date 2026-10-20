@@ -1,0 +1,1988 @@
+"""Gambar konsep kurikulum AI & Machine Learning. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Apa Itu Machine Learning": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Jenis machine learning dan contohnya",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Kelompok",
+                        "Tugas",
+                        "Datanya",
+                        "Contoh",
+                    ],
+                    "baris": [
+                        [
+                            "Supervised",
+                            "Klasifikasi",
+                            "label kategori",
+                            "spam / bukan",
+                        ],
+                        [
+                            "Supervised",
+                            "Regresi",
+                            "label angka",
+                            "harga rumah",
+                        ],
+                        [
+                            "Unsupervised",
+                            "Clustering",
+                            "tanpa label",
+                            "segmen pembeli",
+                        ],
+                        [
+                            "Reinforcement",
+                            "Kendali",
+                            "hadiah/hukuman",
+                            "robot, game",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Train, Test, dan Overfitting": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Membagi data sebelum melatih",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Dataset lengkap",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Acak urutannya, seed tetap",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Sisihkan 20% jadi data uji",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Sisanya: data latih + validasi",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Latih model di data latih",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Skor validasi sudah cukup?",
+                    "ya": 6,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Ukur sekali di data uji",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Laporkan skor uji",
+                },
+            ],
+            "ket": "Kalau skor validasi belum cukup, ubah setelan lalu latih lagi. Data uji baru dibuka di akhir.",
+        },
+    ],
+    "Mengukur Model: Akurasi, Presisi, Recall": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Confusion matrix model kedua",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Aktual",
+                        "Ditebak penipuan",
+                        "Ditebak aman",
+                    ],
+                    "baris": [
+                        [
+                            "Penipuan",
+                            "TP = 8",
+                            "FN = 2",
+                        ],
+                        [
+                            "Aman",
+                            "FP = 30",
+                            "TN = 960",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Baris = kenyataan, kolom = tebakan model. Recall dibaca di baris Penipuan, presisi di kolom Ditebak penipuan.",
+        },
+    ],
+    "scikit-learn: fit, predict, dan Pipeline": [
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "Isi Pipeline saat fit dan saat predict",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "X_latih, y_latih",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "StandardScaler: fit + transform",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "LogisticRegression: fit",
+                },
+                {
+                    "jenis": "masukan",
+                    "teks": "X_uji",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "StandardScaler: transform saja",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "LogisticRegression: predict",
+                },
+            ],
+            "ket": "Tiga langkah atas terjadi saat pipa.fit, tiga langkah bawah saat pipa.predict. Penskala nggak pernah di-fit dengan data uji.",
+        },
+    ],
+    "Regresi, Pohon Keputusan, dan k-means": [
+        {
+            "setelah": 6,
+            "jenis": "pohon",
+            "judul": "Pohon keputusan lengkap untuk data umur",
+            "akar": {
+                "teks": "umur < 27.5?",
+                "anak": [
+                    {
+                        "teks": "nggak beli (3)",
+                    },
+                    {
+                        "teks": "umur < 42.5?",
+                        "anak": [
+                            {
+                                "teks": "beli (3)",
+                            },
+                            {
+                                "teks": "umur < 48.5?",
+                                "anak": [
+                                    {
+                                        "teks": "nggak beli (1)",
+                                    },
+                                    {
+                                        "teks": "beli (1)",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+            "ket": "Anak pertama tiap simpul = jawaban ya. Tingkat ketiga cuma menghafal dua orang terakhir; max_depth=2 memangkasnya.",
+        },
+    ],
+    "Validasi Silang dan Tuning Hyperparameter": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Validasi silang 5 lipatan",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Putaran",
+                        "L1",
+                        "L2",
+                        "L3",
+                        "L4",
+                        "L5",
+                    ],
+                    "baris": [
+                        [
+                            "1",
+                            "validasi",
+                            "latih",
+                            "latih",
+                            "latih",
+                            "latih",
+                        ],
+                        [
+                            "2",
+                            "latih",
+                            "validasi",
+                            "latih",
+                            "latih",
+                            "latih",
+                        ],
+                        [
+                            "3",
+                            "latih",
+                            "latih",
+                            "validasi",
+                            "latih",
+                            "latih",
+                        ],
+                        [
+                            "4",
+                            "latih",
+                            "latih",
+                            "latih",
+                            "validasi",
+                            "latih",
+                        ],
+                        [
+                            "5",
+                            "latih",
+                            "latih",
+                            "latih",
+                            "latih",
+                            "validasi",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "L1 sampai L5 adalah lima lipatan, masing-masing dua baris dari contoh di atas. Skor akhir = rata-rata lima putaran.",
+        },
+    ],
+    "Gradient Boosting: XGBoost, LightGBM, CatBoost": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Boosting: pohon demi pohon memperbaiki sisa",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Tebakan awal = rata-rata y",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Residu = y - tebakan",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Latih pohon kecil ke residu",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tebakan += laju x hasil pohon",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Sudah cukup pohon?",
+                    "ya": 5,
+                    "tidak": 1,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Model = jumlah semua pohon",
+                },
+            ],
+            "ket": "Di contoh, laju 0.5 dan empat pohon menurunkan galat dari 32.44 ke 1.06.",
+        },
+    ],
+    "Neuron, Fungsi Aktivasi, dan Loss": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Perjalanan angka di satu neuron",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "Masukan x: 0.5, 0.8, 0.2",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Kali bobot: 0.4, 0.9, -0.3",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Jumlahkan, + bias -0.5 = 0.36",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Aktivasi: sigmoid(0.36)",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Keluaran 0.589",
+                },
+            ],
+        },
+    ],
+    "Backpropagation dan Autograd Mini": [
+        {
+            "setelah": 4,
+            "jenis": "pohon",
+            "judul": "Graf komputasi L = (a * b + c) * f",
+            "akar": {
+                "teks": "L = d*f = -8",
+                "anak": [
+                    {
+                        "teks": "d = e+c = 4",
+                        "anak": [
+                            {
+                                "teks": "e = a*b = -6",
+                                "anak": [
+                                    {
+                                        "teks": "a = 2 (grad 6)",
+                                    },
+                                    {
+                                        "teks": "b = -3 (grad -4)",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "c = 10 (grad -2)",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "f = -2 (grad 4)",
+                    },
+                ],
+            },
+            "ket": "Forward pass naik dari daun ke puncak. Backpropagation turun dari L (gradien 1) ke daun, mengalikan turunan lokal di tiap simpul.",
+        },
+    ],
+    "CNN, RNN, dan Transformer dalam Gambaran Besar": [
+        {
+            "setelah": 8,
+            "jenis": "tabel",
+            "judul": "Tiga arsitektur dan cara mereka melihat data",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Arsitektur",
+                        "Cocok untuk",
+                        "Cara melihat",
+                        "Kelemahan",
+                    ],
+                    "baris": [
+                        [
+                            "CNN",
+                            "gambar",
+                            "tetangga dekat",
+                            "konteks jauh",
+                        ],
+                        [
+                            "RNN / LSTM",
+                            "urutan",
+                            "satu per satu",
+                            "lambat, lupa",
+                        ],
+                        [
+                            "Transformer",
+                            "teks dan lainnya",
+                            "semua sekaligus",
+                            "biaya kuadrat",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "PyTorch: Tensor, Device, dan Autograd": [
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Operasi tensor dan hasilnya",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Operasi",
+                        "Hasil",
+                    ],
+                    "baris": [
+                        [
+                            "x.shape",
+                            "Size([2, 2])",
+                        ],
+                        [
+                            "x * 2",
+                            "[[2,4],[6,8]]",
+                        ],
+                        [
+                            "x @ x",
+                            "[[7,10],[15,22]]",
+                        ],
+                        [
+                            "x.mean(dim=0)",
+                            "[2., 3.]",
+                        ],
+                        [
+                            "x.T",
+                            "[[1,3],[2,4]]",
+                        ],
+                        [
+                            "x.reshape(4)",
+                            "[1,2,3,4]",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Contoh memakai x = [[1, 2], [3, 4]]. Hasil ditulis ringkas; PyTorch mencetaknya sebagai tensor(...) dengan angka float32.",
+        },
+    ],
+    "PyTorch: Loop Pelatihan Model": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Satu langkah pelatihan di PyTorch",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "Ambil batch dari DataLoader",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "pred = model(xb)",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "loss = loss_fn(pred, yb)",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "optimizer.zero_grad()",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "loss.backward()",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "optimizer.step()",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Masih ada batch?",
+                    "ya": 0,
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Satu epoch selesai",
+                },
+            ],
+        },
+    ],
+    "Peta Framework: TensorFlow, Keras, JAX, Lightning": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Framework deep learning dan posisinya",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Framework",
+                        "Dari",
+                        "Kekuatan",
+                        "Status",
+                    ],
+                    "baris": [
+                        [
+                            "PyTorch",
+                            "Meta, kini LF",
+                            "riset, LLM",
+                            "dominan",
+                        ],
+                        [
+                            "TensorFlow",
+                            "Google",
+                            "produksi, ponsel",
+                            "menurun",
+                        ],
+                        [
+                            "Keras 3",
+                            "Google",
+                            "API ramah",
+                            "multi-backend",
+                        ],
+                        [
+                            "JAX",
+                            "Google",
+                            "TPU, riset besar",
+                            "aktif, 0.x",
+                        ],
+                        [
+                            "Lightning",
+                            "Lightning AI",
+                            "rapikan PyTorch",
+                            "aktif",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "LF = Linux Foundation, lewat PyTorch Foundation. Angka versi ada di tabel teks di atas.",
+        },
+    ],
+    "Computer Vision dan NLP Klasik": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Citra 5 x 5 sebagai matriks angka",
+            "tabel": [
+                {
+                    "kolom": [
+                        "baris",
+                        "k0",
+                        "k1",
+                        "k2",
+                        "k3",
+                        "k4",
+                    ],
+                    "baris": [
+                        [
+                            "0",
+                            "10",
+                            "12",
+                            "200",
+                            "210",
+                            "15",
+                        ],
+                        [
+                            "1",
+                            "11",
+                            "205",
+                            "220",
+                            "215",
+                            "14",
+                        ],
+                        [
+                            "2",
+                            "13",
+                            "210",
+                            "30",
+                            "212",
+                            "12",
+                        ],
+                        [
+                            "3",
+                            "12",
+                            "208",
+                            "215",
+                            "209",
+                            "10",
+                        ],
+                        [
+                            "4",
+                            "10",
+                            "11",
+                            "207",
+                            "13",
+                            "11",
+                        ],
+                    ],
+                    "sorot_baris": [2],
+                },
+            ],
+            "ket": "0 = hitam, 255 = putih. Angka di atas 128 jadi # di keluaran program.",
+        },
+    ],
+    "Dari Token ke Teks: Cara Kerja LLM": [
+        {
+            "setelah": 3,
+            "jenis": "larik",
+            "judul": "Tiga kata jadi empat ID token",
+            "ket": "Hasil tokenizer mainan untuk \"saya suka belajar\": saya, \" suka\", \" bel\", ajar. Spasi ikut menempel di depan potongan.",
+            "nama": "ID token",
+            "isi": [
+                "1012",
+                "2245",
+                "873",
+                "3301",
+            ],
+            "sorot": [2, 3],
+        },
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "LLM menulis jawaban satu token demi satu token",
+            "ket": "Tiap putaran memasukkan lagi seluruh teks, termasuk token yang baru dipilih. Makanya jawaban muncul sedikit demi sedikit.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Teks masukan",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Potong jadi token",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Model hitung peluang tiap token",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Pilih satu token",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Token penanda selesai?",
+                    "ya": 6,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tempel ke ujung teks",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Jawaban utuh",
+                },
+            ],
+        },
+    ],
+    "Model Bigram: LLM Mini dari Nol": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Tabel bigram dari korpus contoh",
+            "ket": "Peluang dihitung per kata kiri: jumlah pasangan dibagi total pasangan yang diawali kata itu.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "kata kiri",
+                        "kata kanan",
+                        "jumlah",
+                        "peluang",
+                    ],
+                    "baris": [
+                        [
+                            "saya",
+                            "suka",
+                            "2",
+                            "0.67",
+                        ],
+                        [
+                            "saya",
+                            "minum",
+                            "1",
+                            "0.33",
+                        ],
+                        [
+                            "suka",
+                            "kopi",
+                            "2",
+                            "0.67",
+                        ],
+                        [
+                            "suka",
+                            "teh",
+                            "1",
+                            "0.33",
+                        ],
+                        [
+                            "minum",
+                            "kopi",
+                            "1",
+                            "0.50",
+                        ],
+                        [
+                            "minum",
+                            "teh",
+                            "1",
+                            "0.50",
+                        ],
+                    ],
+                    "sorot_baris": [2, 3],
+                },
+            ],
+        },
+    ],
+    "Prompt Engineering yang Bisa Diuji": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Prompt kabur lawan prompt jelas",
+            "ket": "Bagian yang nggak disebut akan ditebak model, dan tebakannya bisa berubah dari satu panggilan ke panggilan berikutnya.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "bagian",
+                        "kabur",
+                        "jelas",
+                    ],
+                    "baris": [
+                        [
+                            "tugas",
+                            "Rangkum ini",
+                            "Rangkum 3 poin",
+                        ],
+                        [
+                            "pembaca",
+                            "(nggak disebut)",
+                            "Admin toko baru",
+                        ],
+                        [
+                            "format",
+                            "(nggak disebut)",
+                            "JSON: poin[]",
+                        ],
+                        [
+                            "batasan",
+                            "(nggak disebut)",
+                            "Tanpa nama orang",
+                        ],
+                        [
+                            "kalau ragu",
+                            "(nggak disebut)",
+                            "Isi \"tidak ada\"",
+                        ],
+                    ],
+                    "sorot_kolom": [
+                        "jelas",
+                    ],
+                },
+            ],
+        },
+    ],
+    "API LLM: Pesan, Token, Biaya, dan Streaming": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "Satu permintaan API, dari aplikasi sampai tagihan",
+            "ket": "Server penyedia nggak menyimpan obrolan. Riwayat dikirim ulang di setiap permintaan, dan setiap token di dalamnya ditagih.",
+            "pelaku": [
+                "aplikasi",
+                "API penyedia",
+                "model",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST /v1/messages",
+                ],
+                [
+                    1,
+                    2,
+                    "token masukan",
+                ],
+                [
+                    2,
+                    1,
+                    "token jawaban",
+                ],
+                [
+                    1,
+                    0,
+                    "JSON: content + usage",
+                ],
+            ],
+        },
+    ],
+    "Claude, OpenAI, dan Gemini dalam Praktik": [
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "Tiga API untuk tugas yang sama",
+            "ket": "Polanya sama, nama-namanya beda. Harga dan nama model saat materi ini ditulis (Oktober 2026).",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "Claude",
+                        "OpenAI",
+                        "Gemini",
+                    ],
+                    "baris": [
+                        [
+                            "endpoint",
+                            "Messages API",
+                            "Responses API",
+                            "Interactions API",
+                        ],
+                        [
+                            "paket Python",
+                            "anthropic",
+                            "openai",
+                            "google-genai",
+                        ],
+                        [
+                            "ambil teks",
+                            "blok type text",
+                            "output_text",
+                            "output_text",
+                        ],
+                        [
+                            "unggulan",
+                            "Fable 5.1",
+                            "GPT-6 Astra",
+                            "Gemini 4 Argon",
+                        ],
+                        [
+                            "API usang",
+                            "budget_tokens",
+                            "Assistants API",
+                            "generativeai",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Tool Use dan Keluaran Terstruktur": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Satu putaran tool use",
+            "ket": "Model cuma menulis permintaan. Alat dijalankan aplikasi, dan hasilnya dikirim balik sebagai tool_result dengan id yang sama.",
+            "pelaku": [
+                "aplikasi",
+                "model",
+                "alat",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "pesan + daftar alat",
+                ],
+                [
+                    1,
+                    0,
+                    "tool_use cek_stok",
+                ],
+                [
+                    0,
+                    2,
+                    "cek_stok(\"KS-M\")",
+                ],
+                [
+                    2,
+                    0,
+                    "stok: 12",
+                ],
+                [
+                    0,
+                    1,
+                    "tool_result toolu_01",
+                ],
+                [
+                    1,
+                    0,
+                    "jawaban akhir",
+                ],
+            ],
+        },
+    ],
+    "Peta Penyedia Model dan LLM di Cloud": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Penyedia model di luar tiga besar",
+            "ket": "Ringkasan saat materi ini ditulis. Lisensi dan model tiap penyedia berubah cepat, jadi cek kartu modelnya.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "penyedia",
+                        "keluarga model",
+                        "asal",
+                    ],
+                    "baris": [
+                        [
+                            "Mistral AI",
+                            "Large, Small",
+                            "Prancis",
+                        ],
+                        [
+                            "xAI",
+                            "Grok",
+                            "Amerika Serikat",
+                        ],
+                        [
+                            "Moonshot AI",
+                            "Kimi",
+                            "Tiongkok",
+                        ],
+                        [
+                            "Zhipu (Z.ai)",
+                            "GLM",
+                            "Tiongkok",
+                        ],
+                        [
+                            "Cohere",
+                            "Command",
+                            "Kanada",
+                        ],
+                        [
+                            "IBM",
+                            "Granite",
+                            "Amerika Serikat",
+                        ],
+                        [
+                            "Microsoft",
+                            "Phi",
+                            "Amerika Serikat",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Ollama: Menjalankan Model di Laptop": [
+        {
+            "setelah": 5,
+            "jenis": "urutan",
+            "judul": "Model lokal: semua langkah terjadi di laptopmu",
+            "ket": "Server Ollama mendengarkan di localhost:11434. Bobot model dimuat ke RAM sekali, lalu dipakai untuk permintaan berikutnya.",
+            "pelaku": [
+                "aplikasi",
+                "server Ollama",
+                "model",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST /api/chat",
+                ],
+                [
+                    1,
+                    2,
+                    "muat bobot ke RAM",
+                ],
+                [
+                    2,
+                    1,
+                    "token demi token",
+                ],
+                [
+                    1,
+                    0,
+                    "JSON atau stream",
+                ],
+            ],
+        },
+    ],
+    "Peta Model Terbuka: Llama, Qwen, DeepSeek, Gemma": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Keluarga model terbuka dan lisensinya",
+            "ket": "Saat materi ini ditulis (Oktober 2026). Lisensi bisa beda per ukuran dan per versi, jadi cek kartu model tiap repo.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "keluarga",
+                        "pembuat",
+                        "lisensi",
+                    ],
+                    "baris": [
+                        [
+                            "Gemma 4",
+                            "Google DeepMind",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Qwen3.8",
+                            "Alibaba",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "DeepSeek V4",
+                            "DeepSeek",
+                            "MIT",
+                        ],
+                        [
+                            "Muse Spark Open",
+                            "Meta",
+                            "Muse License",
+                        ],
+                        [
+                            "Llama 4",
+                            "Meta",
+                            "Llama License",
+                        ],
+                        [
+                            "Mistral Small 4",
+                            "Mistral AI",
+                            "Apache-2.0",
+                        ],
+                    ],
+                    "sorot_baris": [0, 3],
+                },
+            ],
+        },
+    ],
+    "LM Studio, llama.cpp, dan Kuantisasi": [
+        {
+            "setelah": 3,
+            "jenis": "bit",
+            "judul": "Bobot 0.95 disimpan sebagai int4 bernilai 5",
+            "ket": "Dengan skala 0.1857, 0.95 / 0.1857 dibulatkan jadi 5. Saat dipakai, 5 x 0.1857 = 0.929. Empat bit, bukan 32.",
+            "angka": 5,
+            "lebar": 4,
+            "label": "0.95 / skala -> 5",
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Ukuran bobot model 8 miliar parameter",
+            "ket": "Hitungan polos tanpa skala blok dan tanpa KV cache. Berkas GGUF nyata sedikit lebih besar.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "presisi",
+                        "byte/bobot",
+                        "ukuran",
+                        "laptop 8 GB",
+                    ],
+                    "baris": [
+                        [
+                            "float32",
+                            "4",
+                            "32 GB",
+                            "nggak muat",
+                        ],
+                        [
+                            "float16",
+                            "2",
+                            "16 GB",
+                            "nggak muat",
+                        ],
+                        [
+                            "8 bit",
+                            "1",
+                            "8 GB",
+                            "pas-pasan",
+                        ],
+                        [
+                            "4 bit",
+                            "0,5",
+                            "4 GB",
+                            "muat",
+                        ],
+                    ],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+    ],
+    "Hugging Face Hub, Model Card, dan Lisensi": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Isi repo model di Hugging Face Hub",
+            "ket": "Contoh dari repo all-MiniLM-L6-v2, diringkas. Satu model bisa disimpan dalam beberapa format sekaligus.",
+            "akar": {
+                "teks": "all-MiniLM-L6-v2",
+                "anak": [
+                    {
+                        "teks": "README.md",
+                    },
+                    {
+                        "teks": "config.json",
+                    },
+                    {
+                        "teks": "model.safetensors",
+                    },
+                    {
+                        "teks": "tokenizer.json",
+                    },
+                    {
+                        "teks": "vocab.txt",
+                    },
+                    {
+                        "teks": "onnx/",
+                        "anak": [
+                            {
+                                "teks": "model.onnx",
+                            },
+                            {
+                                "teks": "model_qint8_*.onnx",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "Transformers: Pipeline, Tokenizer, dan Multimodal": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Yang terjadi di dalam satu panggilan pipeline",
+            "ket": "Tokenizer dan model harus pasangan yang sama. Pascaproses mengubah logit jadi label yang bisa dibaca.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "Teks: \"This course is clear\"",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tokenizer: teks jadi ID token",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Model: ID jadi logit tiap label",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Pascaproses: softmax, pilih label",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "POSITIVE, skor 0.99",
+                },
+            ],
+        },
+    ],
+    "Fine-tuning dan LoRA: Kapan Perlu": [
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Parameter yang dilatih untuk satu matriks 4096 x 4096",
+            "ket": "LoRA melatih B (d x r) dan A (r x k), jadi jumlahnya r x (d + k). Bobot asli W tetap beku.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "cara",
+                        "dilatih",
+                        "persen",
+                    ],
+                    "baris": [
+                        [
+                            "penuh",
+                            "16.777.216",
+                            "100%",
+                        ],
+                        [
+                            "LoRA r=4",
+                            "32.768",
+                            "0,20%",
+                        ],
+                        [
+                            "LoRA r=8",
+                            "65.536",
+                            "0,39%",
+                        ],
+                        [
+                            "LoRA r=16",
+                            "131.072",
+                            "0,78%",
+                        ],
+                    ],
+                    "sorot_baris": [2],
+                },
+            ],
+        },
+    ],
+    "Menyajikan Model: ONNX, ONNX Runtime, vLLM": [
+        {
+            "setelah": 7,
+            "jenis": "urutan",
+            "judul": "vLLM melayani banyak klien dengan satu GPU",
+            "ket": "Permintaan dari klien yang berbeda digabung ke batch yang sedang berjalan (continuous batching).",
+            "pelaku": [
+                "klien A",
+                "klien B",
+                "server vLLM",
+                "GPU",
+            ],
+            "pesan": [
+                [
+                    0,
+                    2,
+                    "POST /v1/chat/completions",
+                ],
+                [
+                    1,
+                    2,
+                    "POST /v1/chat/completions",
+                ],
+                [
+                    2,
+                    3,
+                    "satu batch, dua permintaan",
+                ],
+                [
+                    3,
+                    2,
+                    "token untuk A dan B",
+                ],
+                [
+                    2,
+                    0,
+                    "jawaban A (stream)",
+                ],
+                [
+                    2,
+                    1,
+                    "jawaban B (stream)",
+                ],
+            ],
+        },
+    ],
+    "Embeddings dan Pencarian Semantik": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Skor cosine tiap kalimat terhadap kueri",
+            "ket": "Angka dari contoh di atas. Kalimat soal paket nggak memuat kata yang sama dengan kueri, tapi vektornya searah.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "teks",
+                        "vektor",
+                        "cosine",
+                    ],
+                    "baris": [
+                        [
+                            "kueri",
+                            "[0.8, 0.3, 0.0]",
+                            "-",
+                        ],
+                        [
+                            "ongkir ke Medan",
+                            "[0.9, 0.2, 0.0]",
+                            "0.990",
+                        ],
+                        [
+                            "paket belum tiba",
+                            "[0.7, 0.0, 0.2]",
+                            "0.900",
+                        ],
+                        [
+                            "bayar pakai QRIS",
+                            "[0.1, 0.9, 0.0]",
+                            "0.452",
+                        ],
+                        [
+                            "lupa kata sandi",
+                            "[0.0, 0.1, 0.9]",
+                            "0.039",
+                        ],
+                    ],
+                    "sorot_baris": [1],
+                },
+            ],
+        },
+    ],
+    "RAG dari Nol: Potong, Cari, Rakit": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Jalur RAG: dari dokumen ke jawaban berkutip",
+            "ket": "Langkah potong dan indeks dikerjakan sekali di depan. Langkah cari dan rakit diulang untuk tiap pertanyaan.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "dokumen sumber",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "potong per paragraf + label",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "bangun indeks (BM25/vektor)",
+                },
+                {
+                    "jenis": "masukan",
+                    "teks": "pertanyaan pengguna",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "cari potongan teratas",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "rakit prompt + label sumber",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "LLM menjawab dengan kutipan",
+                },
+            ],
+        },
+    ],
+    "RAG yang Lebih Baik: Hibrida, Rerank, Konteks": [
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "Pencarian hibrida lalu rerank",
+            "ket": "Dua pencarian cepat mengumpulkan calon, RRF menggabungkan posisinya, lalu reranker yang lebih lambat memilih lima potongan untuk prompt.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "pertanyaan pengguna",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "BM25: 50 calon teratas",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "vektor: 50 calon teratas",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "gabung posisi dengan RRF",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "reranker menilai ulang",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "5 potongan masuk prompt",
+                },
+            ],
+        },
+    ],
+    "pgvector dan Peta Vector Database": [
+        {
+            "setelah": 8,
+            "jenis": "tabel",
+            "judul": "Delapan pilihan penyimpanan vektor",
+            "ket": "Bentuk dan lisensi per Oktober 2026. Pinecone cuma tersedia sebagai layanan; sisanya bisa dipasang sendiri.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "nama",
+                        "bentuk",
+                        "lisensi",
+                    ],
+                    "baris": [
+                        [
+                            "pgvector",
+                            "di PostgreSQL",
+                            "PostgreSQL",
+                        ],
+                        [
+                            "Chroma",
+                            "tertanam/server",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Pinecone",
+                            "layanan cloud",
+                            "proprietary",
+                        ],
+                        [
+                            "Qdrant",
+                            "server",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Weaviate",
+                            "server",
+                            "BSD-3-Clause",
+                        ],
+                        [
+                            "Milvus",
+                            "server besar",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "FAISS",
+                            "pustaka",
+                            "MIT",
+                        ],
+                        [
+                            "LanceDB",
+                            "tertanam",
+                            "Apache-2.0",
+                        ],
+                    ],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+    ],
+    "Loop Agen: Amati, Pikir, Bertindak": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Loop agen dengan batas langkah",
+            "ket": "Model memutuskan di langkah 2. Program yang menjalankan alat, menghitung langkah, dan memaksa berhenti kalau batasnya habis.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "tugas dari pengguna",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "LLM memilih langkah berikutnya",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "sudah ada jawaban akhir?",
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "kirim jawaban ke pengguna",
+                    "ke": 7,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "langkah masih di bawah batas?",
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "jalankan alat yang diminta",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "hasil alat jadi pengamatan",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "selesai (jawab atau berhenti)",
+                },
+            ],
+        },
+    ],
+    "Memori, Perencanaan, dan Multi-Agen": [
+        {
+            "setelah": 3,
+            "jenis": "tumpukan",
+            "mode": "antrean",
+            "judul": "Jendela geser empat pesan terakhir",
+            "ket": "Isi deque dari contoh di atas. Pesan baru masuk dari belakang, pesan paling tua (perkenalan Sari) sudah keluar.",
+            "isi": [
+                "u: lomba",
+                "a: variabel",
+                "u: tgl 12",
+                "a: 3 minggu",
+            ],
+            "label": "u = user, a = asisten",
+            "operasi": "pesan baru masuk",
+        },
+    ],
+    "MCP: Host, Client, dan Server": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Satu pertanyaan melewati host, client, dan server",
+            "ket": "Host memegang model dan percakapan. Server cuma menerima permintaan alatnya, lengkap dengan _meta versi protokol.",
+            "pelaku": [
+                "pengguna",
+                "host",
+                "client",
+                "server",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "stok BK-07 berapa?",
+                ],
+                [
+                    1,
+                    2,
+                    "model minta cek_stok",
+                ],
+                [
+                    2,
+                    3,
+                    "tools/call + _meta",
+                ],
+                [
+                    3,
+                    2,
+                    "content: Stok BK-07: 12",
+                ],
+                [
+                    2,
+                    1,
+                    "hasil masuk ke model",
+                ],
+                [
+                    1,
+                    0,
+                    "Stoknya tinggal 12.",
+                ],
+            ],
+        },
+    ],
+    "Membangun Server MCP Mini": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Urutan pesan client dan server MCP",
+            "ket": "Revisi 2026-07-28 tanpa jabat tangan initialize. server/discover boleh dilewati; tiap permintaan tetap membawa _meta sendiri.",
+            "pelaku": [
+                "client",
+                "server",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "server/discover",
+                ],
+                [
+                    1,
+                    0,
+                    "versi + capabilities",
+                ],
+                [
+                    0,
+                    1,
+                    "tools/list",
+                ],
+                [
+                    1,
+                    0,
+                    "daftar alat + inputSchema",
+                ],
+                [
+                    0,
+                    1,
+                    "tools/call cek_stok",
+                ],
+                [
+                    1,
+                    0,
+                    "content + isError",
+                ],
+            ],
+        },
+    ],
+    "Keamanan Agen: Prompt Injection dan Izin": [
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "Konten luar dan permintaan alat melewati pagar",
+            "ket": "Pendeteksi pola cuma lapisan pertama. Yang menahan kerusakan adalah daftar izin, konfirmasi, dan sandbox.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "konten dari luar masuk",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "ada instruksi untuk model?",
+                    "tidak": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "karantina, beri tahu pengguna",
+                    "ke": 9,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "agen minta memakai alat",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "alat ada di daftar izin?",
+                    "tidak": 8,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "aksinya berdampak keluar?",
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "pengguna setuju?",
+                    "tidak": 8,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "jalankan di sandbox",
+                    "ke": 9,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "tolak dan catat di log",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "lanjut ke langkah berikutnya",
+                },
+            ],
+        },
+    ],
+    "LangChain dan LangGraph": [
+        {
+            "setelah": 6,
+            "jenis": "alur",
+            "judul": "Graf keadaan penulis dan pemeriksa",
+            "ket": "Graf dari contoh tanpa pustaka. Putaran perbaiki-periksa berhenti kalau draf lolos atau revisi sudah 3 kali.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "tulis_draf (LLM penulis)",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "periksa: hitung jumlah kata",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "lolos atau revisi >= 3?",
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "selesai: kirim draf akhir",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "perbaiki (LLM penyunting)",
+                    "ke": 1,
+                },
+            ],
+        },
+    ],
+    "SDK Agen Resmi: Claude, OpenAI, Google, Microsoft": [
+        {
+            "setelah": 12,
+            "jenis": "tabel",
+            "judul": "SDK agen per penyedia dan statusnya",
+            "ket": "Status per Oktober 2026. AutoGen dan Semantic Kernel tetap disebut karena tutorialnya masih banyak beredar.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "SDK",
+                        "bahasa",
+                        "lisensi",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Claude Agent SDK",
+                            "Python, TS",
+                            "MIT",
+                            "aktif",
+                        ],
+                        [
+                            "OpenAI Agents",
+                            "Python, TS",
+                            "MIT",
+                            "aktif (0.x)",
+                        ],
+                        [
+                            "Google ADK",
+                            "Py, Java, Go, TS",
+                            "Apache-2.0",
+                            "aktif",
+                        ],
+                        [
+                            "Agent Framework",
+                            "Python, .NET",
+                            "MIT",
+                            "aktif (1.x)",
+                        ],
+                        [
+                            "Semantic Kernel",
+                            "C#, Py, Java",
+                            "MIT",
+                            "menurun",
+                        ],
+                        [
+                            "AutoGen",
+                            "Python, .NET",
+                            "MIT",
+                            "usang",
+                        ],
+                    ],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+    ],
+    "Peta Framework RAG, Agen, dan Otomasi": [
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Framework di luar LangChain dan kekuatannya",
+            "ket": "n8n memakai Sustainable Use License, model fair-code yang bukan lisensi open source versi OSI.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "nama",
+                        "fokus",
+                        "lisensi",
+                    ],
+                    "baris": [
+                        [
+                            "LlamaIndex",
+                            "RAG dan data",
+                            "MIT",
+                        ],
+                        [
+                            "Haystack",
+                            "pipeline RAG",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "CrewAI",
+                            "kru multi-agen",
+                            "MIT",
+                        ],
+                        [
+                            "smolagents",
+                            "agen kode",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Pydantic AI",
+                            "keluaran bertipe",
+                            "MIT",
+                        ],
+                        [
+                            "DSPy",
+                            "optimasi prompt",
+                            "MIT",
+                        ],
+                        [
+                            "n8n",
+                            "otomasi visual",
+                            "Sustainable Use",
+                        ],
+                        [
+                            "Zapier",
+                            "otomasi SaaS",
+                            "proprietary",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Evaluasi LLM: Dataset Uji dan Penilai": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Siklus evaluasi setiap kali ada perubahan",
+            "ket": "Dataset tetap disimpan di Git. Yang dibandingkan per kasus, bukan cuma rata-rata skornya.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "dataset uji (disimpan di Git)",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "jalankan sistem versi baru",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "nilai tiap kasus",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "bandingkan dengan versi lama",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "ada kasus yang memburuk?",
+                    "tidak": 6,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "tahan rilis, periksa kasusnya",
+                    "ke": 7,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "rilis versi baru",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "simpan skor untuk riwayat",
+                },
+            ],
+        },
+    ],
+    "Peta Alat Eval dan Observability LLM": [
+        {
+            "setelah": 9,
+            "jenis": "tabel",
+            "judul": "Alat eval dan observability LLM",
+            "ket": "Lisensi per Oktober 2026. Phoenix memakai Elastic License 2.0, yang bukan lisensi open source versi OSI.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "alat",
+                        "fungsi",
+                        "lisensi",
+                    ],
+                    "baris": [
+                        [
+                            "LangSmith",
+                            "tracing + eval",
+                            "proprietary",
+                        ],
+                        [
+                            "Langfuse",
+                            "tracing terbuka",
+                            "MIT (inti)",
+                        ],
+                        [
+                            "Arize Phoenix",
+                            "tracing OTel",
+                            "Elastic-2.0",
+                        ],
+                        [
+                            "Ragas",
+                            "metrik RAG",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "DeepEval",
+                            "uji gaya pytest",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "promptfoo",
+                            "uji + red team",
+                            "MIT",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Siklus MLOps dan MLflow": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Siklus MLOps dari eksperimen ke produksi",
+            "ket": "Siklusnya berputar: pemantauan memicu latih ulang, dan setiap putaran dicatat supaya bisa diulang.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "data dan kode berversi",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "eksperimen: latih dan catat",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "evaluasi di data uji tetap",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "daftarkan ke model registry",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "sajikan sebagai API",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "pantau data dan prediksi",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "drift atau skor turun?",
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "latih ulang dengan data baru",
+                    "ke": 1,
+                },
+            ],
+        },
+    ],
+    "Versi Data, Serving, dan Pemantauan Drift": [
+        {
+            "setelah": 13,
+            "jenis": "tabel",
+            "judul": "Sebaran umur pembeli: data lama dan data baru",
+            "ket": "Angka dari contoh PSI. Kelompok 40+ dan di bawah 20 menyumbang hampir seluruh nilai 0.259.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "umur",
+                        "lama",
+                        "baru",
+                        "sumbangan PSI",
+                    ],
+                    "baris": [
+                        [
+                            "<20",
+                            "0.30",
+                            "0.15",
+                            "0.104",
+                        ],
+                        [
+                            "20-29",
+                            "0.40",
+                            "0.35",
+                            "0.007",
+                        ],
+                        [
+                            "30-39",
+                            "0.20",
+                            "0.25",
+                            "0.011",
+                        ],
+                        [
+                            "40+",
+                            "0.10",
+                            "0.25",
+                            "0.137",
+                        ],
+                    ],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+    ],
+    "Peta Platform MLOps": [
+        {
+            "setelah": 11,
+            "jenis": "tabel",
+            "judul": "Platform MLOps dan perannya",
+            "ket": "Status per Oktober 2026. MLflow ikut disebut sebagai pembanding karena perannya bertumpang tindih dengan W&B.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "platform",
+                        "peran",
+                        "lisensi",
+                    ],
+                    "baris": [
+                        [
+                            "MLflow",
+                            "pelacakan lokal",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "W&B",
+                            "pelacakan cloud",
+                            "proprietary",
+                        ],
+                        [
+                            "Kubeflow",
+                            "ML di Kubernetes",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Ray",
+                            "distribusi kerja",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Feast",
+                            "feature store",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "SageMaker AI",
+                            "layanan AWS",
+                            "proprietary",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+}

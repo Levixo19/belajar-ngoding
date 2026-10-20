@@ -38,6 +38,8 @@ def blok_layak(lang):
     for i, m in enumerate(lang["materials"]):
         for j, s in enumerate(m["sections"]):
             kode = s.get("code")
+            if s.get("bahasa") not in (None, bhs):
+                continue   # contoh berbahasa lain: runner kurikulum ini salah alat
             if not kode or _BACA_MASUKAN.search(kode):
                 continue
             jenis = berkas.jenis_kode(bhs, kode)

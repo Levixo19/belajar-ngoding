@@ -319,7 +319,7 @@ HINT_HITAM = {}
 
 # 1112 -> 953 pada penulisan ulang yang sama: tiap latihan kini 2-3 petunjuk
 # bertangga (tests/test_mutu_soal.py), bukan 1-6 potongan kode.
-HINT_TOTAL = 953
+HINT_TOTAL = 1707
 
 
 def _hint_lanjut(a, b):

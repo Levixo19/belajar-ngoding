@@ -104,6 +104,17 @@ PETA_KURIKULUM = {
     "full-stack": ["html", "css", "javascript", "aplikasi"],
 }
 
+# Kurikulum tech stack membawa pemetaan topiknya sendiri dan baru ikut
+# dipetakan begitu datanya lengkap (data/kurikulum_tech.py). Daftar lama
+# DIPERLUAS, tidak ditimpa: buku React tetap milik kurikulum JavaScript.
+from data import kurikulum_tech as _tech  # noqa: E402
+
+for _k in _tech.terdaftar():
+    for _ruas in _k["topik"]:
+        TOPIK_KURIKULUM[_ruas] = TOPIK_KURIKULUM.get(_ruas, []) + [_k["key"]]
+    for _slug in _k["peta"]:
+        PETA_KURIKULUM[_slug] = PETA_KURIKULUM.get(_slug, []) + [_k["key"]]
+
 _CACHE = None
 _KUNCI = threading.Lock()
 

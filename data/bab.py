@@ -1219,3 +1219,8 @@ BAB = {
         },
     ],
 }
+
+# Bab kurikulum tech stack dihitung dari spesifikasi <KEY>_BAB di berkas
+# materinya masing-masing (data/kurikulum_tech.py), bukan diketik di sini.
+from data import kurikulum_tech as _tech  # noqa: E402
+BAB.update(_tech.bab())

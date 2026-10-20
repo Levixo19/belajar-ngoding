@@ -1032,7 +1032,7 @@ def contoh_kode(params):
     bagian = m["sections"][nomor]
     if "code" not in bagian:
         raise Galat("Bagian ini bukan blok kode.", 409)
-    return {"bahasa": lang["runner"], "kode": bagian["code"],
+    return {"bahasa": bagian.get("bahasa") or lang["runner"], "kode": bagian["code"],
             "judul": bagian.get("heading") or m["title"]}
 
 

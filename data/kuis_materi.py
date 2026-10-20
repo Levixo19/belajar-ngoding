@@ -1271,3 +1271,8 @@ KUIS_MATERI = {
         ],
     },
 }
+
+# Peta soal kurikulum tech stack tinggal di berkas kuisnya masing-masing
+# (<KEY>_KUIS_MATERI), dikumpulkan lewat data/kurikulum_tech.py.
+from data import kurikulum_tech as _tech  # noqa: E402
+KUIS_MATERI.update(_tech.kuis_materi())

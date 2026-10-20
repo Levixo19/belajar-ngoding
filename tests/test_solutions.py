@@ -260,11 +260,14 @@ class BasisSolusi:
                 kode = s.get("code")
                 if not kode or i + 1 >= len(bagian):
                     continue
-                if jenis_kode(self.lang["runner"], kode) != PROGRAM:
+                bhs = s.get("bahasa") or self.lang["runner"]
+                if jenis_kode(bhs, kode) != PROGRAM:
+                    continue
+                if bhs != self.lang["runner"] and not runner.tersedia(bhs):
                     continue
                 for janji in _blok_keluaran(bagian[i + 1].get("body") or []):
                     with self.subTest(materi=m["title"]):
-                        hasil = runner.jalankan(self.lang["runner"], kode,
+                        hasil = runner.jalankan(bhs, kode,
                                                 timeout=TIMEOUT)
                         if not hasil.sukses:
                             self.fail(f"contoh kode tidak bisa dijalankan: "

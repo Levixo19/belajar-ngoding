@@ -1,0 +1,1144 @@
+"""Gambar konsep kurikulum Embedded & IoT. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Apa Itu Sistem Embedded": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Mikrokontroler dan komputer papan tunggal",
+            "ket": "Angka RAM mikrokontroler dari ATmega328P (2 KB) sampai ESP32 klasik (520 KB). Raspberry Pi memakai RAM ukuran gigabyte.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Ciri",
+                        "Mikrokontroler",
+                        "Komputer papan",
+                    ],
+                    "baris": [
+                        [
+                            "Contoh",
+                            "ATmega328P",
+                            "Raspberry Pi",
+                        ],
+                        [
+                            "RAM",
+                            "2 KB s.d. 520 KB",
+                            "hitungan GB",
+                        ],
+                        [
+                            "Sistem operasi",
+                            "tanpa OS",
+                            "Linux",
+                        ],
+                        [
+                            "Siap setelah",
+                            "nyala sekejap",
+                            "belasan detik",
+                        ],
+                        [
+                            "Saat tidur",
+                            "arus mikroampere",
+                            "jarang dipakai",
+                        ],
+                        [
+                            "Tugas khas",
+                            "satu tugas tetap",
+                            "banyak program",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Listrik Dasar untuk Programmer": [
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Resistor LED: hasil hitung dan nilai baku E12",
+            "ket": "Hasil hitung dari program di atas, lalu dibulatkan ke nilai E12 tepat di atasnya supaya arusnya nggak lewat batas.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Sumber",
+                        "LED",
+                        "Arus",
+                        "R hitung",
+                        "R baku",
+                    ],
+                    "baris": [
+                        [
+                            "5 V",
+                            "merah 2,0 V",
+                            "15 mA",
+                            "200 ohm",
+                            "220 ohm",
+                        ],
+                        [
+                            "3,3 V",
+                            "merah 2,0 V",
+                            "10 mA",
+                            "130 ohm",
+                            "150 ohm",
+                        ],
+                        [
+                            "3,3 V",
+                            "biru 3,0 V",
+                            "10 mA",
+                            "30 ohm",
+                            "33 ohm",
+                        ],
+                    ],
+                    "sorot_kolom": [
+                        "R baku",
+                    ],
+                },
+            ],
+        },
+    ],
+    "GPIO: Pin Digital Masuk dan Keluar": [
+        {
+            "setelah": 1,
+            "jenis": "bit",
+            "judul": "Bit 5 di PORTB menyala: pin 13 Arduino UNO jadi tinggi",
+            "ket": "Tiap bit di register mewakili satu pin. 0010 0000 sama dengan 0x20, cuma bit 5 (PB5) yang bernilai 1.",
+            "angka": 32,
+            "lebar": 8,
+            "label": "PORTB = 0x20",
+        },
+    ],
+    "Arduino: Papan, IDE, setup, dan loop": [
+        {
+            "setelah": 5,
+            "jenis": "alur",
+            "judul": "Hidup sebuah sketsa: setup sekali, loop selamanya",
+            "ket": "init() datang dari core Arduino. Kamu cuma menulis setup() dan loop().",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Listrik nyala atau reset",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "init(): siapkan timer",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "setup(): sekali saja",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "loop(): satu putaran",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Listrik masih nyala?",
+                    "ya": 3,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Chip berhenti",
+                },
+            ],
+        },
+    ],
+    "millis(), delay(), dan Kerja Tanpa Memblokir": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Lini waktu dua LED: periode 300 ms dan 500 ms",
+            "ket": "Keadaan sesudah tiap perubahan, dengan anggapan loop berputar jauh lebih cepat dari 1 ms. Di 1500 ms keduanya berganti bersamaan.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "millis()",
+                        "LED A (300)",
+                        "LED B (500)",
+                    ],
+                    "baris": [
+                        [
+                            "0",
+                            "mati",
+                            "mati",
+                        ],
+                        [
+                            "300",
+                            "nyala",
+                            "mati",
+                        ],
+                        [
+                            "500",
+                            "nyala",
+                            "nyala",
+                        ],
+                        [
+                            "600",
+                            "mati",
+                            "nyala",
+                        ],
+                        [
+                            "900",
+                            "nyala",
+                            "nyala",
+                        ],
+                        [
+                            "1000",
+                            "nyala",
+                            "mati",
+                        ],
+                        [
+                            "1200",
+                            "mati",
+                            "mati",
+                        ],
+                        [
+                            "1500",
+                            "nyala",
+                            "nyala",
+                        ],
+                    ],
+                    "sorot_baris": [7],
+                },
+            ],
+        },
+    ],
+    "Membaca Tombol dan Debounce": [
+        {
+            "setelah": 6,
+            "jenis": "alur",
+            "judul": "Empat keadaan debounce tombol active-low",
+            "ket": "Waktu stabil 20 ms. Keadaan mungkin_tekan dan mungkin_lepas menyaring pantulan; kejadian cuma dicetak saat masuk tekan atau lepas.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "lepas (pin 1)",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "pin terbaca 0?",
+                    "ya": 2,
+                    "tidak": 0,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "mungkin_tekan: 0 selama 20 ms?",
+                    "ya": 3,
+                    "tidak": 0,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "tekan: cetak kejadian",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "mungkin_lepas: 1 selama 20 ms?",
+                    "ya": 5,
+                    "tidak": 3,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "lepas: cetak kejadian",
+                    "ke": 0,
+                },
+            ],
+        },
+    ],
+    "Bitmask: Set, Clear, Toggle, dan Baca Bit": [
+        {
+            "setelah": 2,
+            "jenis": "bit",
+            "judul": "Register awal 0x91: bit 7, 4, dan 0 menyala",
+            "ket": "Ini nilai awal reg di program. Empat operasi berikutnya masing-masing cuma mengubah satu bit dari sini.",
+            "angka": 145,
+            "lebar": 8,
+            "label": "reg = 0x91",
+        },
+        {
+            "setelah": 3,
+            "jenis": "bit",
+            "judul": "Sesudah set 2, clear 7, toggle 0: hasilnya 0x14",
+            "ket": "Bit 4 dari nilai awal tetap menyala karena nggak pernah disentuh. Bit 2 menyala karena set 2.",
+            "angka": 20,
+            "lebar": 8,
+            "label": "reg = 0x14",
+        },
+    ],
+    "Register Perangkat Keras dan volatile": [
+        {
+            "setelah": 1,
+            "jenis": "memori",
+            "judul": "GPIOA_ODR menunjuk register di alamat 0x40020014",
+            "ket": "Isi register sesudah GPIOA_ODR |= (1u << 5), dengan anggapan isinya 0 sebelumnya: cuma bit 5 (PA5) yang menyala.",
+            "tumpukan": [
+                [
+                    "GPIOA_ODR",
+                    "@R",
+                ],
+            ],
+            "heap": [
+                {
+                    "id": "R",
+                    "isi": "0x40020014: 0x00000020",
+                },
+            ],
+            "label_tumpukan": "pointer volatile",
+            "label_heap": "register di chip",
+        },
+    ],
+    "Tipe Berukuran Pasti, Endianness, dan Pengepakan": [
+        {
+            "setelah": 5,
+            "jenis": "memori",
+            "judul": "0x12345678 di memori little-endian",
+            "ket": "Byte paling rendah (78) ada di alamat terkecil. Ini urutan yang dipakai PC, ESP32, dan hampir semua Cortex-M.",
+            "tumpukan": [
+                [
+                    "alamat +0",
+                    "0x78",
+                ],
+                [
+                    "alamat +1",
+                    "0x56",
+                ],
+                [
+                    "alamat +2",
+                    "0x34",
+                ],
+                [
+                    "alamat +3",
+                    "0x12",
+                ],
+            ],
+            "label_tumpukan": "little-endian",
+        },
+        {
+            "setelah": 5,
+            "jenis": "memori",
+            "judul": "0x12345678 di memori big-endian",
+            "ket": "Byte paling tinggi (12) ada di alamat terkecil, sama dengan urutan kita menulis angka. Dipakai TCP/IP dan Modbus.",
+            "tumpukan": [
+                [
+                    "alamat +0",
+                    "0x12",
+                ],
+                [
+                    "alamat +1",
+                    "0x34",
+                ],
+                [
+                    "alamat +2",
+                    "0x56",
+                ],
+                [
+                    "alamat +3",
+                    "0x78",
+                ],
+            ],
+            "label_tumpukan": "big-endian",
+        },
+    ],
+    "ADC, PWM, dan Sinyal Analog": [
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Sampel ADC, milivolt, dan rata-rata 4 sampel",
+            "ket": "Nilai dari keluaran program di atas. Lonjakan 4095 di sampel 4 menarik rata-rata naik selama empat baris.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "sampel",
+                        "adc",
+                        "mV",
+                        "rata",
+                    ],
+                    "baris": [
+                        [
+                            "1",
+                            "1240",
+                            "999",
+                            "-",
+                        ],
+                        [
+                            "2",
+                            "1251",
+                            "1008",
+                            "-",
+                        ],
+                        [
+                            "3",
+                            "1236",
+                            "996",
+                            "-",
+                        ],
+                        [
+                            "4",
+                            "4095",
+                            "3300",
+                            "1575",
+                        ],
+                        [
+                            "5",
+                            "1244",
+                            "1002",
+                            "1576",
+                        ],
+                        [
+                            "6",
+                            "1238",
+                            "997",
+                            "1573",
+                        ],
+                        [
+                            "7",
+                            "1249",
+                            "1006",
+                            "1576",
+                        ],
+                    ],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+    ],
+    "UART, I2C, dan SPI": [
+        {
+            "setelah": 1,
+            "jenis": "bit",
+            "judul": "Bit data huruf A (0x41) di frame UART",
+            "ket": "Di kabel, bit 0 dikirim pertama, sesudah bit start. Bit stop menutup frame.",
+            "angka": 65,
+            "lebar": 8,
+            "label": "byte 'A' = 0x41",
+        },
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Membaca register ID BME280 lewat I2C",
+            "ket": "Sama dengan enam langkah di atas. ACK dikirim oleh pihak yang menerima byte.",
+            "pelaku": [
+                "mikrokontroler",
+                "BME280",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "START, 0x76 + tulis",
+                ],
+                [
+                    1,
+                    0,
+                    "ACK",
+                ],
+                [
+                    0,
+                    1,
+                    "register 0xD0",
+                ],
+                [
+                    1,
+                    0,
+                    "ACK",
+                ],
+                [
+                    0,
+                    1,
+                    "START ulang, 0x76 + baca",
+                ],
+                [
+                    1,
+                    0,
+                    "ACK, lalu data 0x60",
+                ],
+                [
+                    0,
+                    1,
+                    "NACK, STOP",
+                ],
+            ],
+        },
+    ],
+    "Ring Buffer untuk Data Serial": [
+        {
+            "setelah": 4,
+            "jenis": "larik",
+            "judul": "Isi buffer sesudah terima(\"OK\\n\")",
+            "ket": "Slot yang disorot belum dibaca. Slot 3 dan 4 masih berisi data lama yang sudah diambil, jadi dianggap kosong.",
+            "nama": "data[8]",
+            "isi": [
+                "O",
+                "K",
+                "\\n",
+                "U",
+                "=",
+                "2",
+                "9",
+                ".",
+            ],
+            "sorot": [5, 6, 7, 0, 1, 2],
+            "penunjuk": {
+                "kepala": 3,
+                "ekor": 5,
+            },
+        },
+    ],
+    "ESP32 dan ESP-IDF": [
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "Core Arduino dibanding ESP-IDF",
+            "ket": "Core Arduino untuk ESP32 berjalan di atas ESP-IDF, jadi keduanya bisa dicampur.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "core Arduino",
+                        "ESP-IDF",
+                    ],
+                    "baris": [
+                        [
+                            "bahasa",
+                            "C++ (sketsa)",
+                            "C dan C++",
+                        ],
+                        [
+                            "alat",
+                            "Arduino IDE",
+                            "idf.py, VS Code",
+                        ],
+                        [
+                            "titik masuk",
+                            "setup(), loop()",
+                            "app_main()",
+                        ],
+                        [
+                            "FreeRTOS",
+                            "tersembunyi",
+                            "dipakai langsung",
+                        ],
+                        [
+                            "fitur chip",
+                            "sebagian",
+                            "lengkap",
+                        ],
+                        [
+                            "cocok untuk",
+                            "prototipe cepat",
+                            "produk jadi",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Raspberry Pi Pico dan Pico SDK": [
+        {
+            "setelah": 8,
+            "jenis": "tabel",
+            "judul": "Pico, Pico 2, dan ESP32 klasik",
+            "ket": "Versi W dari Pico dan Pico 2 menambah chip CYW43439 untuk Wi-Fi dan Bluetooth.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "Pico",
+                        "Pico 2",
+                        "ESP32",
+                    ],
+                    "baris": [
+                        [
+                            "chip",
+                            "RP2040",
+                            "RP2350",
+                            "ESP32 klasik",
+                        ],
+                        [
+                            "inti",
+                            "2x Cortex-M0+",
+                            "2x M33/RISC-V",
+                            "2x Xtensa LX6",
+                        ],
+                        [
+                            "clock",
+                            "133 MHz",
+                            "150 MHz",
+                            "240 MHz",
+                        ],
+                        [
+                            "SRAM",
+                            "264 KB",
+                            "520 KB",
+                            "520 KB",
+                        ],
+                        [
+                            "nirkabel",
+                            "versi W",
+                            "versi W",
+                            "Wi-Fi + BT",
+                        ],
+                        [
+                            "PIO",
+                            "8 state machine",
+                            "12 state machine",
+                            "tidak ada",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "MicroPython dan CircuitPython": [
+        {
+            "setelah": 8,
+            "jenis": "tabel",
+            "judul": "C dibanding MicroPython di mikrokontroler",
+            "ket": "Gambaran umum. Angka pastinya tergantung chip dan jenis kode.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "C / C++",
+                        "MicroPython",
+                    ],
+                    "baris": [
+                        [
+                            "mulai mencoba",
+                            "compile + upload",
+                            "langsung di REPL",
+                        ],
+                        [
+                            "kecepatan",
+                            "paling cepat",
+                            "lebih lambat",
+                        ],
+                        [
+                            "RAM terpakai",
+                            "kecil",
+                            "lebih besar",
+                        ],
+                        [
+                            "pewaktuan",
+                            "presisi",
+                            "kurang presisi",
+                        ],
+                        [
+                            "cocok untuk",
+                            "produk, motor",
+                            "belajar, sensor",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "PlatformIO: Satu Alat untuk Banyak Papan": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Struktur proyek PlatformIO",
+            "ket": "Folder .pio berisi hasil build dan pustaka unduhan, jadi nggak perlu masuk Git.",
+            "akar": {
+                "teks": "stasiun-cuaca/",
+                "anak": [
+                    {
+                        "teks": "platformio.ini",
+                    },
+                    {
+                        "teks": "src/",
+                        "anak": [
+                            {
+                                "teks": "main.cpp",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "include/",
+                    },
+                    {
+                        "teks": "lib/",
+                        "anak": [
+                            {
+                                "teks": "sensor_cuaca/",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "test/",
+                        "anak": [
+                            {
+                                "teks": "test_konversi/",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "Kenapa RTOS: Task, Tick, dan Penjadwal": [
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Lini waktu tick 0 sampai 7",
+            "ket": "Potongan dari keluaran program di atas. Di kolom rtos, tombol merebut CPU di tick 3.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "tick",
+                        "super loop",
+                        "rtos",
+                    ],
+                    "baris": [
+                        [
+                            "0",
+                            "sd",
+                            "sd",
+                        ],
+                        [
+                            "1",
+                            "sd",
+                            "sd",
+                        ],
+                        [
+                            "2",
+                            "sd",
+                            "sd",
+                        ],
+                        [
+                            "3",
+                            "sd",
+                            "tombol",
+                        ],
+                        [
+                            "4",
+                            "sd",
+                            "sd",
+                        ],
+                        [
+                            "5",
+                            "tombol",
+                            "sd",
+                        ],
+                        [
+                            "6",
+                            "sd",
+                            "sd",
+                        ],
+                        [
+                            "7",
+                            "sd",
+                            "sd",
+                        ],
+                    ],
+                    "sorot_baris": [3, 5],
+                },
+            ],
+        },
+    ],
+    "FreeRTOS: Task, Queue, dan Semaphore": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Data sensor lewat queue",
+            "ket": "task_kirim tidur di xQueueReceive sampai ada data. Yang masuk antrean adalah salinan struct b.",
+            "pelaku": [
+                "task_sensor",
+                "antrean",
+                "task_kirim",
+            ],
+            "pesan": [
+                [
+                    2,
+                    1,
+                    "xQueueReceive: tidur",
+                ],
+                [
+                    0,
+                    1,
+                    "xQueueSend(&b)",
+                ],
+                [
+                    1,
+                    2,
+                    "salinan b, task bangun",
+                ],
+                [
+                    0,
+                    1,
+                    "xQueueSend(&b) 2 s kemudian",
+                ],
+                [
+                    1,
+                    2,
+                    "salinan b berikutnya",
+                ],
+            ],
+        },
+    ],
+    "Zephyr: Devicetree, Kconfig, dan west": [
+        {
+            "setelah": 2,
+            "jenis": "pohon",
+            "judul": "Devicetree: dari akar sampai pin LED",
+            "ket": "gpio0 didefinisikan berkas chip, simpul leds oleh berkas papan, dan alias led0 menunjuk simpul LED.",
+            "akar": {
+                "teks": "/",
+                "anak": [
+                    {
+                        "teks": "aliases",
+                        "anak": [
+                            {
+                                "teks": "led0 = &led_hijau",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "soc",
+                        "anak": [
+                            {
+                                "teks": "gpio0",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "leds",
+                        "anak": [
+                            {
+                                "teks": "led_hijau: led_0",
+                                "anak": [
+                                    {
+                                        "teks": "gpios: gpio0 25",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "Frame Protokol: Header, Panjang, Payload, Checksum": [
+        {
+            "setelah": 1,
+            "jenis": "larik",
+            "judul": "Satu frame suhu 29,5 derajat",
+            "nama": "frame",
+            "isi": [
+                "AA",
+                "02",
+                "01",
+                "01",
+                "27",
+                "2B",
+            ],
+            "penunjuk": {
+                "awal": 0,
+                "panjang": 1,
+                "tipe": 2,
+                "cek": 5,
+            },
+            "rentang": [3, 5],
+            "ket": "Payload 01 27 berarti 295. Checksum 2B = 02 + 01 + 01 + 27.",
+        },
+    ],
+    "CRC dan Checksum": [
+        {
+            "setelah": 1,
+            "jenis": "bit",
+            "judul": "Polinom CRC-8 0x07 dalam biner",
+            "angka": 7,
+            "lebar": 8,
+            "label": "x^8 + x^2 + x + 1",
+            "ket": "Bit x^8 nggak ditulis karena selalu 1. Tiga bit terbawah 111 = x^2 + x + 1.",
+        },
+    ],
+    "MQTT: Publish, Subscribe, dan Topik": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Sensor dan dasbor cuma kenal broker",
+            "pelaku": [
+                "sensor dapur",
+                "broker",
+                "dasbor",
+            ],
+            "pesan": [
+                [
+                    2,
+                    1,
+                    "SUBSCRIBE rumah/+/suhu",
+                ],
+                [
+                    0,
+                    1,
+                    "PUBLISH rumah/dapur/suhu",
+                ],
+                [
+                    1,
+                    2,
+                    "teruskan: 29.5",
+                ],
+                [
+                    0,
+                    1,
+                    "PUBLISH rumah/dapur/suhu",
+                ],
+                [
+                    1,
+                    2,
+                    "teruskan: 29.7",
+                ],
+            ],
+            "ket": "Sensor nggak tahu ada berapa dasbor. Broker yang mencocokkan topik.",
+        },
+    ],
+    "Raspberry Pi sebagai Gateway IoT": [
+        {
+            "setelah": 0,
+            "jenis": "urutan",
+            "judul": "Gateway di tengah rumah pintar",
+            "pelaku": [
+                "ESP32",
+                "Mosquitto",
+                "skrip gateway",
+                "basis data",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "rumah/dapur/suhu 29.5",
+                ],
+                [
+                    1,
+                    2,
+                    "teruskan pesan",
+                ],
+                [
+                    2,
+                    2,
+                    "cek rentang dan format",
+                ],
+                [
+                    2,
+                    3,
+                    "simpan baris baru",
+                ],
+            ],
+            "ket": "Mosquitto, skrip gateway, dan basis data jalan di satu Raspberry Pi.",
+        },
+    ],
+    "Node-RED: Pemrograman Berbasis Alur": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Alur notifikasi dapur panas",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "mqtt in: rumah/+/suhu",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "function: ubah payload ke angka",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "msg.payload >= 30?",
+                    "ya": 3,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "kirim notifikasi",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "return null, pesan berhenti",
+                },
+            ],
+            "ket": "Tiap kotak satu node. Panah adalah kabel yang membawa msg.",
+        },
+    ],
+    "Home Assistant, ESPHome, dan Matter": [
+        {
+            "setelah": 6,
+            "jenis": "pohon",
+            "judul": "Model data Matter sebuah lampu",
+            "akar": {
+                "teks": "node: lampu teras",
+                "anak": [
+                    {
+                        "teks": "endpoint 0",
+                        "anak": [
+                            {
+                                "teks": "Basic Information",
+                                "anak": [
+                                    {
+                                        "teks": "VendorName",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "endpoint 1",
+                        "anak": [
+                            {
+                                "teks": "cluster On/Off",
+                                "anak": [
+                                    {
+                                        "teks": "atribut OnOff",
+                                    },
+                                    {
+                                        "teks": "perintah Toggle",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "Level Control",
+                                "anak": [
+                                    {
+                                        "teks": "CurrentLevel",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+            "ket": "Endpoint 0 menjelaskan alatnya. Endpoint 1 berisi fitur lampu yang bisa dikendalikan.",
+        },
+    ],
+    "STM32 dan HAL: Embedded di Industri": [
+        {
+            "setelah": 4,
+            "jenis": "tumpukan",
+            "judul": "Lapisan kode di STM32",
+            "mode": "tumpukan",
+            "isi": [
+                "perangkat keras",
+                "register (CMSIS)",
+                "LL",
+                "HAL",
+                "aplikasimu",
+            ],
+            "label": "makin atas makin mudah",
+            "ket": "Makin ke bawah kodenya makin kecil dan cepat, tapi makin terikat ke satu seri chip.",
+        },
+    ],
+    "Embedded Rust dan Keamanan Memori": [
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "C lawan Rust untuk firmware",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "C",
+                        "Rust",
+                    ],
+                    "baris": [
+                        [
+                            "indeks lewat",
+                            "tak ketahuan",
+                            "None atau panic",
+                        ],
+                        [
+                            "pointer gantung",
+                            "bisa terjadi",
+                            "ditolak compiler",
+                        ],
+                        [
+                            "data race ISR",
+                            "disiplin manual",
+                            "wajib pengaman",
+                        ],
+                        [
+                            "pustaka vendor",
+                            "lengkap",
+                            "sebagian",
+                        ],
+                        [
+                            "umur ekosistem",
+                            "puluhan tahun",
+                            "masih muda",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Rust menutup kelas kesalahan memori, tapi C masih unggul di dukungan vendor.",
+        },
+    ],
+    "Linux Tertanam dengan Yocto": [
+        {
+            "setelah": 1,
+            "jenis": "tumpukan",
+            "judul": "Layer di sebuah build Yocto",
+            "mode": "tumpukan",
+            "isi": [
+                "BitBake",
+                "openembedded-core",
+                "meta-poky",
+                "meta-raspberrypi",
+                "meta-gateway",
+            ],
+            "label": "layer atas menimpa layer bawah",
+            "ket": "meta-raspberrypi adalah BSP papan. meta-gateway berisi resep aplikasi milikmu.",
+        },
+    ],
+    "Watchdog, Hemat Daya, dan Update Firmware OTA": [
+        {
+            "setelah": 5,
+            "jenis": "alur",
+            "judul": "Update OTA dengan rollback",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "firmware jalan dari slot A",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "unduh firmware baru ke slot B",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "utuh dan tanda tangan sah?",
+                    "ya": 3,
+                    "tidak": 0,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "boot dari slot B",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "B menandai diri sehat?",
+                    "ya": 5,
+                    "tidak": 6,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "B jadi slot aktif",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "watchdog reset, kembali ke A",
+                    "ke": 0,
+                },
+            ],
+            "ket": "Selama firmware baru belum terbukti sehat, slot lama nggak pernah disentuh.",
+        },
+    ],
+}

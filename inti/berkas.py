@@ -20,6 +20,7 @@ kembalikan POTONGAN.
 
 import json
 import re
+import sys
 
 PROGRAM = "program"      # berkas mandiri, bisa langsung dijalankan
 POTONGAN = "potongan"    # penggalan penjelas, tidak berdiri sendiri
@@ -433,12 +434,243 @@ def _bash_lengkap(kode):
     return True
 
 
-def jenis_kode(bahasa, kode):
-    """Klasifikasikan blok kode: PROGRAM, MULTI, POTONGAN, atau SESI."""
+# Modul bawaan Node: mengimpornya tidak butuh `npm install`.
+_NODE_BAWAAN = frozenset({
+    "assert", "async_hooks", "buffer", "child_process", "cluster", "console",
+    "constants", "crypto", "dgram", "diagnostics_channel", "dns", "domain",
+    "events", "fs", "http", "http2", "https", "inspector", "module", "net",
+    "os", "path", "perf_hooks", "process", "punycode", "querystring",
+    "readline", "repl", "stream", "string_decoder", "sys", "test", "timers",
+    "tls", "trace_events", "tty", "url", "util", "v8", "vm", "wasi",
+    "worker_threads", "zlib", "sqlite", "sea",
+})
+
+
+def paket_luar(bahasa, kode):
+    """Paket pihak ketiga yang diimpor di TINGKAT ATAS sebuah blok kode.
+
+    Kurikulum tech stack penuh contoh React, Flask, Express, dan kawan-kawan.
+    Contoh seperti itu memang program utuh, tapi aplikasi ini wajib jalan
+    offline dan tidak memasang paket apa pun, jadi menawarkan tombol
+    Jalankan untuknya berarti tombol yang selalu berakhir "module not found".
+    Yang dihitung hanya import di kolom 0: import di dalam `try` (contoh yang
+    sengaja menangkap ModuleNotFoundError) tetap bisa dijalankan.
+    """
+    if not kode:
+        return []
+    hasil = set()
+    if bahasa == "python":
+        bawaan = getattr(sys, "stdlib_module_names", frozenset())
+        for m in re.finditer(r"^(?:from\s+([\w.]+)\s+import\b|import\s+([\w.]+(?:\s*,\s*[\w.]+)*))",
+                             kode, re.MULTILINE):
+            nama = [m.group(1)] if m.group(1) else [x.strip() for x in m.group(2).split(",")]
+            for x in nama:
+                atas = x.split(".")[0]
+                # `# file kalkulator.py` di blok yang sama: modul lokal, bukan pip.
+                if (atas and not x.startswith(".") and atas not in bawaan
+                        and atas != "__future__"
+                        and not re.search(rf"\b{re.escape(atas)}\.py\b", kode)):
+                    hasil.add(atas)
+    elif bahasa in ("javascript", "typescript"):
+        for m in re.finditer(r"""^(?:import\s+(?:[^'"\n]*?\s+from\s+)?|(?:const|let|var)\s+[^=\n]+=\s*require\(\s*)['"]([^'"]+)['"]""",
+                             kode, re.MULTILINE):
+            spek = m.group(1)
+            if spek.startswith((".", "/")):
+                continue
+            if spek.startswith("node:"):
+                continue
+            atas = "/".join(spek.split("/")[:2]) if spek.startswith("@") else spek.split("/")[0]
+            if atas not in _NODE_BAWAAN:
+                hasil.add(atas)
+    elif bahasa in ("c", "cpp"):
+        # Contoh Qt, SDL, Arduino, ESP-IDF: header di luar pustaka standar C,
+        # POSIX, dan C++ (yang terakhir dikenali dari namanya: huruf kecil
+        # tanpa titik, seperti <vector> dan <cstdio>).
+        for m in re.finditer(r"^\s*#\s*include\s*<([^>]+)>", kode, re.MULTILINE):
+            h = m.group(1).strip()
+            if h in _C_BAWAAN or h.startswith(_C_FOLDER_BAWAAN) or re.fullmatch(r"[a-z_0-9]+", h):
+                continue
+            hasil.add(re.split(r"[/.]", h)[0])
+    elif bahasa in ("java", "kotlin"):
+        bawaan = ("java.", "javax.", "jdk.", "sun.", "com.sun.") + (
+            ("kotlin.",) if bahasa == "kotlin" else ())
+        # Paket milik proyek itu sendiri (`package com.toko.x;`) bukan paket luar.
+        sendiri = tuple(".".join(p.split(".")[:2]) + "."
+                        for p in re.findall(r"^package\s+([\w.]+)", kode, re.MULTILINE))
+        for m in re.finditer(r"^import\s+(?:static\s+)?([\w.]+)", kode, re.MULTILINE):
+            nama = m.group(1)
+            if not nama.startswith(bawaan + sendiri):
+                bag = nama.split(".")
+                hasil.add(".".join(bag[:2]) if bag[0] in ("org", "com", "io", "net", "dev")
+                          else bag[0])
+    elif bahasa == "rust":
+        # Nama crate selalu huruf kecil; `use Daftar::{Kons, Kosong}` itu enum
+        # lokal, dan `use utils::x` menunjuk `mod utils` di berkas yang sama.
+        lokal = set(re.findall(r"^\s*(?:pub\s+)?mod\s+(\w+)", kode, re.MULTILINE))
+        for m in re.finditer(r"^(?:pub\s+)?(?:use\s+([a-z]\w*)::|extern\s+crate\s+([a-z]\w*))",
+                             kode, re.MULTILINE):
+            nama = m.group(1) or m.group(2)
+            if nama not in ("std", "core", "alloc", "self", "super", "crate") and nama not in lokal:
+                hasil.add(nama)
+    elif bahasa == "go":
+        # Pustaka standar Go tidak pernah memuat titik di ruas pertamanya;
+        # github.com/..., golang.org/x/... selalu.
+        blok = re.findall(r"^import\s*\((.*?)^\)", kode, re.MULTILINE | re.DOTALL)
+        jalur = re.findall(r'^import\s+(?:[\w.]+\s+)?"([^"]+)"', kode, re.MULTILINE)
+        jalur += [x for b in blok for x in re.findall(r'"([^"]+)"', b)]
+        hasil.update(j for j in jalur if "." in j.split("/")[0])
+    elif bahasa == "csharp":
+        for m in re.finditer(r"^(?:global\s+)?using\s+(?:static\s+)?([\w.]+)\s*;", kode,
+                             re.MULTILINE):
+            nama = m.group(1)
+            if nama.split(".")[0] != "System" and nama not in _CS_BAWAAN:
+                hasil.add(nama)
+    return sorted(hasil)
+
+
+_C_BAWAAN = frozenset("""
+assert.h complex.h ctype.h errno.h fenv.h float.h inttypes.h iso646.h limits.h locale.h
+math.h setjmp.h signal.h stdalign.h stdarg.h stdatomic.h stdbit.h stdbool.h stdckdint.h
+stddef.h stdint.h stdio.h stdlib.h stdnoreturn.h string.h tgmath.h threads.h time.h
+uchar.h wchar.h wctype.h unistd.h fcntl.h pthread.h dirent.h netdb.h poll.h regex.h
+semaphore.h spawn.h strings.h termios.h dlfcn.h glob.h libgen.h pwd.h grp.h sched.h
+syslog.h utime.h aio.h fnmatch.h getopt.h mqueue.h err.h malloc.h alloca.h endian.h
+byteswap.h execinfo.h ftw.h iconv.h langinfo.h monetary.h nl_types.h search.h tar.h
+ulimit.h utmpx.h wordexp.h ifaddrs.h
+""".split())
+_C_FOLDER_BAWAAN = ("sys/", "netinet/", "arpa/", "linux/", "bits/", "net/", "asm/")
+_CS_BAWAAN = frozenset({"Microsoft.Win32", "Microsoft.VisualBasic", "Microsoft.CSharp"})
+
+
+def perintah_pasang_paket(bahasa, paket):
+    """Perintah pasang yang diketik pelajar di proyeknya sendiri."""
+    if bahasa == "python":
+        return "pip install " + " ".join(paket)
+    return "npm install " + " ".join(paket)
+
+
+def cara_pasang(bahasa, paket):
+    """Kalimat "pasang dulu ..." untuk keterangan blok yang butuh paket luar."""
+    if bahasa in ("python", "javascript", "typescript"):
+        return "Pasang dulu dengan: " + perintah_pasang_paket(bahasa, paket)
+    if bahasa == "rust":
+        return "Pasang dulu dengan: cargo add " + " ".join(paket)
+    if bahasa == "go":
+        return "Pasang dulu dengan: go get " + " ".join(paket)
+    if bahasa in ("java", "kotlin"):
+        return "Tambahkan dulu dependensinya lewat Maven atau Gradle"
+    if bahasa == "csharp":
+        return "Tambahkan dulu paket NuGet-nya (dotnet add package) atau SDK engine-nya"
+    return "Pasang dulu pustakanya (atau SDK papannya) lalu tautkan saat kompilasi"
+
+
+# Bahasa yang muncul di kurikulum tech stack tapi tidak punya runner di
+# aplikasi ini: konfigurasi (YAML, Dockerfile, HCL), template framework
+# (JSX, Vue), dialek SQL selain SQLite, dan bahasa yang belum punya
+# kurikulum sendiri (Swift, Dart, Elixir, ...). Bagian materi menyebutnya
+# lewat `"bahasa"`. Nilainya (nama tampilan, aturan penyorot terdekat atau
+# None untuk polos). Blok seperti ini tidak pernah PROGRAM: menyebutnya
+# "potongan dari kode yang lebih besar" juga salah untuk Dockerfile yang
+# utuh, jadi petunjuknya sendiri (lihat petunjuk_kode).
+BAHASA_LUAR = {
+    "jsx": ("JSX", "javascript"), "tsx": ("TSX", "typescript"),
+    "vue": ("komponen Vue", "html"), "svelte": ("komponen Svelte", "html"),
+    "astro": ("komponen Astro", "html"), "angular": ("template Angular", "html"),
+    "jinja": ("template Jinja", "html"), "blade": ("template Blade", "html"),
+    "erb": ("template ERB", "html"), "scss": ("SCSS", "css"), "less": ("Less", "css"),
+    "json": ("JSON", "javascript"), "yaml": ("YAML", None), "toml": ("TOML", None),
+    "xml": ("XML", "html"), "ini": ("INI", None), "env": ("berkas .env", "bash"),
+    "markdown": ("Markdown", None), "http": ("permintaan HTTP", None),
+    "dockerfile": ("Dockerfile", "bash"), "makefile": ("Makefile", "bash"),
+    "hcl": ("HCL Terraform", None), "nginx": ("konfigurasi nginx", None),
+    "nix": ("Nix", None), "bicep": ("Bicep", None), "rego": ("Rego", None),
+    "powershell": ("PowerShell", "bash"), "cmake": ("CMake", None),
+    "gradle": ("Gradle", "kotlin"), "graphql": ("GraphQL", None),
+    "protobuf": ("Protocol Buffers", None), "prisma": ("skema Prisma", None),
+    "postgresql": ("SQL PostgreSQL", "sql"), "mysql": ("SQL MySQL", "sql"),
+    "tsql": ("T-SQL", "sql"), "plsql": ("PL/SQL", "sql"), "cql": ("CQL Cassandra", "sql"),
+    "cypher": ("Cypher", None), "mongosh": ("shell MongoDB", "javascript"),
+    "redis": ("perintah Redis", None), "promql": ("PromQL", None),
+    "swift": ("Swift", None), "objectivec": ("Objective-C", "c"), "dart": ("Dart", None),
+    "scala": ("Scala", None), "groovy": ("Groovy", None), "clojure": ("Clojure", None),
+    "elixir": ("Elixir", None), "erlang": ("Erlang", None), "haskell": ("Haskell", None),
+    "ocaml": ("OCaml", None), "fsharp": ("F#", None), "lua": ("Lua", None),
+    "r": ("R", None), "julia": ("Julia", None), "perl": ("Perl", None),
+    "zig": ("Zig", None), "nim": ("Nim", None), "crystal": ("Crystal", "ruby"),
+    "gleam": ("Gleam", None), "v": ("V", None), "mojo": ("Mojo", "python"),
+    "solidity": ("Solidity", None), "matlab": ("MATLAB", None), "fortran": ("Fortran", None),
+    "cobol": ("COBOL", None), "ada": ("Ada", None), "pascal": ("Pascal/Delphi", None),
+    "prolog": ("Prolog", None), "lisp": ("Lisp", None), "racket": ("Racket", None),
+    "assembly": ("Assembly", None), "wat": ("WebAssembly teks", None),
+    "gdscript": ("GDScript", "python"), "glsl": ("GLSL", "c"), "hlsl": ("HLSL", "c"),
+    "cuda": ("CUDA C++", "cpp"), "arduino": ("Arduino C++", "cpp"),
+    "micropython": ("MicroPython", "python"), "apex": ("Apex", "java"),
+    "abap": ("ABAP", None), "vba": ("VBA", "vb"),
+    "awk": ("Awk", "bash"), "tcl": ("Tcl", None), "raku": ("Raku", None), "d": ("D", "c"),
+    "verilog": ("Verilog", None), "vhdl": ("VHDL", None), "rpg": ("RPG", None),
+    "pli": ("PL/I", None), "apl": ("APL", None), "q": ("q/kdb+", None), "j": ("J", None),
+    "xpp": ("X++", "csharp"), "cfml": ("CFML", "html"), "vyper": ("Vyper", "python"),
+    "haxe": ("Haxe", None), "odin": ("Odin", None), "carbon": ("Carbon", "cpp"),
+    "roc": ("Roc", None), "lean": ("Lean", None), "moonbit": ("MoonBit", None),
+    "luau": ("Luau", None), "smalltalk": ("Smalltalk", None), "sas": ("SAS", None),
+    "wolfram": ("Wolfram", None), "coffeescript": ("CoffeeScript", None),
+    "elm": ("Elm", None), "purescript": ("PureScript", None), "rescript": ("ReScript", None),
+    "idris": ("Idris", None), "agda": ("Agda", None), "rocq": ("Rocq (Coq)", None),
+    "scheme": ("Scheme", None), "sml": ("Standard ML", None), "basic": ("BASIC", "vb"),
+    "ballerina": ("Ballerina", None), "cairo": ("Cairo", None), "move": ("Move", None),
+    "st": ("Structured Text", None), "hack": ("Hack", "php"), "rexx": ("REXX", None),
+    "jcl": ("JCL", None), "terraform": ("HCL Terraform", None),
+    # JavaScript yang memakai document/window: utuh, tapi cuma hidup di browser.
+    "browser": ("JavaScript untuk browser", "javascript"),
+    "forth": ("Forth", None), "gml": ("GML GameMaker", "javascript"),
+    "batch": ("Batch Windows", None), "actionscript": ("ActionScript", "javascript"),
+    "foxpro": ("Visual FoxPro", None),
+    "razor": ("komponen Razor", "html"), "templ": ("templ Go", "html"),
+    "heex": ("template HEEx", "html"), "jdl": ("JDL JHipster", None),
+    "gherkin": ("Gherkin", None), "diff": ("diff", None),
+    "firestore": ("aturan Firestore", "javascript"), "fastfile": ("Fastfile fastlane", "ruby"),
+    "caddyfile": ("Caddyfile", None),
+}
+
+
+def sorot_untuk(bahasa):
+    """Aturan penyorot untuk `"bahasa"` sebuah bagian materi."""
+    if bahasa in ("terminal", "teks"):
+        return "bash" if bahasa == "terminal" else "teks"
+    if bahasa in BAHASA_LUAR:
+        return BAHASA_LUAR[bahasa][1] or bahasa
+    return bahasa
+
+
+def jenis_kode(bahasa, kode, abaikan_paket=False):
+    """Klasifikasikan blok kode: PROGRAM, MULTI, POTONGAN, atau SESI.
+
+    `abaikan_paket=True` menjawab "seandainya paketnya terpasang": dipakai
+    `butuh_paket` supaya petunjuk "butuh paket X" cuma muncul pada program
+    utuh, bukan pada potongan yang kebetulan memuat import.
+    """
     if not kode or not kode.strip():
         return POTONGAN
+    if bahasa == "teks":
+        # Diagram atau tabel yang ditandai eksplisit oleh penulisnya, jadi
+        # tidak bergantung pada tebakan _ilustrasi().
+        return ILUSTRASI
+    if bahasa == "terminal":
+        # Blok perintah di kurikulum tech stack (docker, kubectl, npm,
+        # terraform, ...) memakai `"bahasa": "terminal"`. Semuanya diketik
+        # pelajar di mesinnya sendiri dan bisa mengubah sistemnya, jadi tidak
+        # ada satu pun yang boleh dijalankan aplikasi -- pagar yang sama
+        # dengan materi Fedora, tanpa pengecualian shebang.
+        #
+        # Diperiksa SEBELUM _ilustrasi(): perintah berkolom seperti
+        # `npm init -y   # bikin package.json` lolos tebakan diagram, dan
+        # yang terbaca pelajar jadi "bukan kode, tidak perlu diketik" untuk
+        # perintah yang justru harus ia ketik sendiri.
+        return SESI
     if berkas_ganda(kode):
         return MULTI
+    if bahasa in BAHASA_LUAR:
+        return POTONGAN
     if _ilustrasi(kode):
         return ILUSTRASI
     if _ada_elipsis(kode) or _diawali_indentasi(kode):
@@ -491,12 +723,28 @@ def jenis_kode(bahasa, kode):
 
     if pemeriksa is None:
         return POTONGAN
-    return PROGRAM if pemeriksa(kode) else POTONGAN
+    if not pemeriksa(kode):
+        return POTONGAN
+    # Program utuh, tapi butuh paket yang tidak terpasang di aplikasi ini.
+    if abaikan_paket:
+        return PROGRAM
+    return POTONGAN if paket_luar(bahasa, kode) else PROGRAM
+
+
+def butuh_paket(bahasa, kode):
+    """Paket luar sebuah blok yang sebenarnya program utuh; [] untuk lainnya."""
+    paket = paket_luar(bahasa, kode)
+    if paket and jenis_kode(bahasa, kode, abaikan_paket=True) == PROGRAM:
+        return paket
+    return []
 
 
 # ------------------------------------------------------------------ petunjuk
 
 LABEL_SESI = {
+    "terminal": ("Ketik di terminalmu sendiri",
+                 "Perintah ini dijalankan di mesinmu dan bisa memasang atau "
+                 "mengubah sesuatu, jadi baca dulu. Aplikasi tidak menjalankannya."),
     "sql": ("Ketik langsung di sesi database (mysql atau sqlite3)",
             "Perlu tabel dari materi sebelumnya, jadi bukan berkas terpisah."),
     "fedora": ("Ketik langsung di terminal",
@@ -566,6 +814,24 @@ def petunjuk_kode(bahasa, kode, konteks=""):
         instruksi, keterangan = LABEL_SESI.get(
             bahasa, ("Ketik langsung di sesi interaktif", ""))
         return Petunjuk(SESI, instruksi=instruksi, keterangan=keterangan)
+
+    if bahasa in BAHASA_LUAR:
+        nama = BAHASA_LUAR[bahasa][0]
+        return Petunjuk(
+            POTONGAN,
+            instruksi=f"Contoh {nama}: dibaca di sini, dicoba di proyekmu",
+            keterangan=f"Aplikasi ini tidak menjalankan {nama}. "
+                       "Salin ke proyekmu sendiri kalau mau mencobanya.",
+        )
+
+    paket = butuh_paket(bahasa, kode) if jenis == POTONGAN else []
+    if paket:
+        return Petunjuk(
+            POTONGAN,
+            instruksi="Butuh paket " + ", ".join(paket) + ": coba di proyekmu sendiri",
+            keterangan=cara_pasang(bahasa, paket)
+                       + ". Aplikasi ini tidak memasang paket, jadi tidak menjalankannya.",
+        )
 
     if jenis == POTONGAN:
         return Petunjuk(

@@ -1,0 +1,3197 @@
+"""Gambar konsep kurikulum Database & Penyimpanan Data. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Memilih Jenis Database dari Pola Aksesnya": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Jenis database, pola aksesnya, dan contohnya",
+            "tabel": [
+                {
+                    "nama": "untuk aplikasi",
+                    "kolom": [
+                        "jenis",
+                        "pola akses",
+                        "contoh",
+                    ],
+                    "baris": [
+                        [
+                            "relasional",
+                            "tabel + JOIN",
+                            "PostgreSQL",
+                        ],
+                        [
+                            "dokumen",
+                            "objek utuh",
+                            "MongoDB",
+                        ],
+                        [
+                            "kunci-nilai",
+                            "ambil per kunci",
+                            "Redis",
+                        ],
+                        [
+                            "kolom lebar",
+                            "tulis deras",
+                            "Cassandra",
+                        ],
+                        [
+                            "graf",
+                            "relasi berantai",
+                            "Neo4j",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "untuk mencari",
+                    "kolom": [
+                        "jenis",
+                        "pola akses",
+                        "contoh",
+                    ],
+                    "baris": [
+                        [
+                            "pencarian",
+                            "teks bebas",
+                            "Elasticsearch",
+                        ],
+                        [
+                            "deret waktu",
+                            "data bercap jam",
+                            "InfluxDB",
+                        ],
+                        [
+                            "vektor",
+                            "cari yang mirip",
+                            "pgvector",
+                        ],
+                        [
+                            "analitik",
+                            "ringkas jutaan",
+                            "DuckDB",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 4,
+            "jenis": "alur",
+            "judul": "Memilih jenis database dari pertanyaannya",
+            "ket": "Urutan pertanyaannya bisa berbeda di tiap proyek. Yang tetap: mulai dari pertanyaan yang paling sering ditanyakan.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Tulis pertanyaan tersering",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Uang, stok, atau JOIN?",
+                    "ya": 8,
+                    "tidak": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Cari teks bebas atau mirip?",
+                    "ya": 6,
+                    "tidak": 3,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Data sensor bercap waktu?",
+                    "ya": 7,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Hubungan berantai (graf)?",
+                    "ya": 5,
+                    "tidak": 8,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Graf: Neo4j",
+                    "ke": 9,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Pencarian atau vektor",
+                    "ke": 9,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Deret waktu: InfluxDB",
+                    "ke": 9,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Relasional: PostgreSQL",
+                    "ke": 9,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Uji dengan data contoh",
+                },
+            ],
+        },
+    ],
+    "Database Tertanam: di Aplikasi, di Ponsel, dan di Browser": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Tertanam lawan klien-server",
+            "ket": "SQLite dipanggil sebagai fungsi di dalam proses yang sama. PostgreSQL menerima kueri lewat jaringan.",
+            "pelaku": [
+                "aplikasi",
+                "pustaka SQLite",
+                "server PG",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "panggil fungsi (satu proses)",
+                ],
+                [
+                    1,
+                    0,
+                    "baris data",
+                ],
+                [
+                    0,
+                    2,
+                    "kirim kueri lewat jaringan",
+                ],
+                [
+                    2,
+                    0,
+                    "baris data lewat jaringan",
+                ],
+            ],
+        },
+        {
+            "setelah": 9,
+            "jenis": "tabel",
+            "judul": "Penyimpanan bawaan tiap platform",
+            "tabel": [
+                {
+                    "kolom": [
+                        "platform",
+                        "pustaka",
+                        "di baliknya",
+                    ],
+                    "baris": [
+                        [
+                            "Android",
+                            "Room",
+                            "SQLite",
+                        ],
+                        [
+                            "iOS baru",
+                            "SwiftData",
+                            "SQLite",
+                        ],
+                        [
+                            "iOS lama",
+                            "Core Data",
+                            "SQLite",
+                        ],
+                        [
+                            "browser",
+                            "IndexedDB",
+                            "mesin browser",
+                        ],
+                        [
+                            "Python",
+                            "sqlite3",
+                            "SQLite",
+                        ],
+                        [
+                            "tes Java",
+                            "H2",
+                            "memori/berkas",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "SQLite: Satu Berkas, Tanpa Server": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Jalannya kueri dari Python ke berkas",
+            "ket": "Modul sqlite3 adalah pustaka di dalam proses Python. Nggak ada server di antara program dan berkasnya.",
+            "pelaku": [
+                "program",
+                "modul sqlite3",
+                "berkas toko.db",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "execute(INSERT ...)",
+                ],
+                [
+                    1,
+                    2,
+                    "tulis halaman data",
+                ],
+                [
+                    0,
+                    1,
+                    "commit()",
+                ],
+                [
+                    1,
+                    2,
+                    "pastikan tersimpan di disk",
+                ],
+                [
+                    0,
+                    1,
+                    "execute(SELECT ...)",
+                ],
+                [
+                    1,
+                    2,
+                    "baca halaman data",
+                ],
+                [
+                    1,
+                    0,
+                    "baris hasil",
+                ],
+            ],
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Nilai yang sama di kolom biasa dan kolom strict",
+            "tabel": [
+                {
+                    "kolom": [
+                        "nilai masuk",
+                        "kolom biasa",
+                        "kolom strict",
+                    ],
+                    "baris": [
+                        [
+                            "17",
+                            "integer 17",
+                            "integer 17",
+                        ],
+                        [
+                            "'18'",
+                            "integer 18",
+                            "integer 18",
+                        ],
+                        [
+                            "'tujuh belas'",
+                            "text",
+                            "ditolak",
+                        ],
+                    ],
+                    "sorot_baris": [2],
+                },
+            ],
+        },
+    ],
+    "Fitur SQLite yang Jarang Diketahui: JSON, FTS5, dan R*Tree": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Dokumen pesanan pertama dan jalur JSON-nya",
+            "ket": "Jalur $.alamat.kota turun dari akar ke alamat lalu ke kota. Jalur $.item[0].nama mengambil isi pertama array item.",
+            "akar": {
+                "teks": "$ (dokumen)",
+                "anak": [
+                    {
+                        "teks": "alamat",
+                        "anak": [
+                            {
+                                "teks": "kota: Bandung",
+                            },
+                            {
+                                "teks": "kodepos: 40115",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "item",
+                        "anak": [
+                            {
+                                "teks": "[0] kopi, 25000",
+                            },
+                            {
+                                "teks": "[1] gula, 14000",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "Mode WAL, Satu Penulis, dan Kapan SQLite Sudah Cukup": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Penulis, pembaca, dan berkas -wal",
+            "ket": "Pembaca lama tetap membaca halaman lama. Pembaca baru ikut membaca berkas -wal. Checkpoint menyalin halaman ke berkas utama.",
+            "pelaku": [
+                "penulis",
+                "berkas -wal",
+                "berkas .db",
+                "pembaca",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "tulis halaman yang berubah",
+                ],
+                [
+                    3,
+                    2,
+                    "baca halaman lama",
+                ],
+                [
+                    0,
+                    1,
+                    "COMMIT: tandai sah",
+                ],
+                [
+                    3,
+                    1,
+                    "transaksi baru: baca terbaru",
+                ],
+                [
+                    1,
+                    2,
+                    "checkpoint: salin balik",
+                ],
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "SQLite cukup atau pindah ke server?",
+            "tabel": [
+                {
+                    "kolom": [
+                        "kebutuhan",
+                        "SQLite?",
+                    ],
+                    "baris": [
+                        [
+                            "aplikasi ponsel",
+                            "cukup",
+                        ],
+                        [
+                            "web banyak baca",
+                            "cukup",
+                        ],
+                        [
+                            "alat internal",
+                            "cukup",
+                        ],
+                        [
+                            "tes otomatis",
+                            "cukup",
+                        ],
+                        [
+                            "multi server app",
+                            "pindah server",
+                        ],
+                        [
+                            "tulis serentak",
+                            "pindah server",
+                        ],
+                        [
+                            "hak akses/orang",
+                            "pindah server",
+                        ],
+                        [
+                            "berkas di NFS",
+                            "jangan",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Dari Cerita Bisnis ke Skema: Kunci, Relasi, dan Pola": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Tabel datar dipecah jadi tabel yang ternormalisasi",
+            "ket": "Nama dan nomor HP Rina ditulis dua kali di tabel datar. Sesudah dipecah, keduanya cuma ada satu kali.",
+            "tabel": [
+                {
+                    "nama": "pesanan_datar",
+                    "kolom": [
+                        "no",
+                        "pelanggan",
+                        "hp",
+                        "kue",
+                        "jumlah",
+                    ],
+                    "baris": [
+                        [
+                            "1",
+                            "Rina",
+                            "0812-1111",
+                            "Lapis legit",
+                            "1",
+                        ],
+                        [
+                            "1",
+                            "Rina",
+                            "0812-1111",
+                            "Nastar",
+                            "2",
+                        ],
+                        [
+                            "2",
+                            "Bayu",
+                            "0813-2222",
+                            "Nastar",
+                            "1",
+                        ],
+                    ],
+                    "sorot_kolom": [
+                        "pelanggan",
+                        "hp",
+                    ],
+                },
+                {
+                    "nama": "pelanggan",
+                    "kolom": [
+                        "id",
+                        "nama",
+                        "no_hp",
+                    ],
+                    "baris": [
+                        [
+                            "1",
+                            "Rina",
+                            "0812-1111",
+                        ],
+                        [
+                            "2",
+                            "Bayu",
+                            "0813-2222",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "detail_pesanan",
+                    "kolom": [
+                        "pesanan_id",
+                        "kue_id",
+                        "jumlah",
+                    ],
+                    "baris": [
+                        [
+                            "1",
+                            "1",
+                            "1",
+                        ],
+                        [
+                            "1",
+                            "2",
+                            "2",
+                        ],
+                        [
+                            "2",
+                            "2",
+                            "1",
+                        ],
+                    ],
+                },
+            ],
+            "panah": "dipecah jadi",
+        },
+        {
+            "setelah": 7,
+            "jenis": "pohon",
+            "judul": "Kategori bertingkat dari tabel adjacency list",
+            "akar": {
+                "teks": "Semua kue",
+                "anak": [
+                    {
+                        "teks": "Kue basah",
+                        "anak": [
+                            {
+                                "teks": "Klepon",
+                            },
+                            {
+                                "teks": "Lapis legit",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "Kue kering",
+                        "anak": [
+                            {
+                                "teks": "Kastengel",
+                            },
+                            {
+                                "teks": "Nastar",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "Cara Kerja Indeks: B-Tree, Hash, dan Kawan-Kawannya": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "B-tree kecil: akar, halaman tengah, dan daun",
+            "ket": "Mencari 30: di akar 30 < 40 jadi ke kiri, di [10 | 25] 30 > 25 jadi ke kanan, lalu ketemu di daun.",
+            "akar": {
+                "teks": "[ 40 | 80 ]",
+                "anak": [
+                    {
+                        "teks": "[ 10 | 25 ]",
+                        "anak": [
+                            {
+                                "teks": "3 7",
+                            },
+                            {
+                                "teks": "12 18",
+                            },
+                            {
+                                "teks": "30 36",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "[ 55 | 70 ]",
+                        "anak": [
+                            {
+                                "teks": "44 51",
+                            },
+                            {
+                                "teks": "60 66",
+                            },
+                            {
+                                "teks": "72 77",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "[ 90 | 120 ]",
+                        "anak": [
+                            {
+                                "teks": "84 88",
+                            },
+                            {
+                                "teks": "95 110",
+                            },
+                            {
+                                "teks": "130 150",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 3,
+            "jenis": "kurva",
+            "judul": "Scan tumbuh seperti n, pencarian lewat indeks seperti log n",
+            "kurva": [
+                "n",
+                "log n",
+            ],
+            "sorot": "log n",
+        },
+    ],
+    "Membaca Rencana Kueri dan Memburu Kueri Lambat": [
+        {
+            "setelah": 4,
+            "jenis": "pohon",
+            "judul": "Rencana kueri ketiga sebagai pohon",
+            "ket": "Daun dijalankan lebih dulu. Hash membangun tabel hash dari pelanggan, lalu Hash Join mencocokkan tiap pesanan ke situ.",
+            "akar": {
+                "teks": "Hash Join",
+                "anak": [
+                    {
+                        "teks": "Seq Scan pesanan",
+                    },
+                    {
+                        "teks": "Hash",
+                        "anak": [
+                            {
+                                "teks": "Seq Scan pelanggan",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 8,
+            "jenis": "alur",
+            "judul": "Memburu kueri lambat",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Kueri terasa lambat",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Ukur: daftar kueri termahal",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "EXPLAIN ANALYZE kueri itu",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Perkiraan rows meleset jauh?",
+                    "ya": 4,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Jalankan ANALYZE",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Seq Scan buang banyak baris?",
+                    "ya": 6,
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tambah atau ubah indeks",
+                    "ke": 8,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tulis ulang kuerinya",
+                    "ke": 8,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Ukur lagi dengan cara sama",
+                },
+            ],
+        },
+    ],
+    "Tingkat Isolasi dan Anomali yang Dicegahnya": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Lost update: setoran kasir A tertimpa",
+            "ket": "Keduanya membaca 100000. Kasir B menulis 100000 + 20000, jadi setoran 50000 dari kasir A hilang.",
+            "pelaku": [
+                "kasir A",
+                "database",
+                "kasir B",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "baca saldo: 100000",
+                ],
+                [
+                    2,
+                    1,
+                    "baca saldo: 100000",
+                ],
+                [
+                    0,
+                    1,
+                    "tulis 150000",
+                ],
+                [
+                    2,
+                    1,
+                    "tulis 120000",
+                ],
+                [
+                    1,
+                    0,
+                    "saldo akhir 120000",
+                ],
+            ],
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Tingkat isolasi menurut standar SQL",
+            "ket": "Di PostgreSQL, Repeatable Read juga mencegah phantom.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "tingkat",
+                        "dirty read",
+                        "non-repeatable",
+                        "phantom",
+                    ],
+                    "baris": [
+                        [
+                            "Read Uncommitted",
+                            "bisa",
+                            "bisa",
+                            "bisa",
+                        ],
+                        [
+                            "Read Committed",
+                            "dicegah",
+                            "bisa",
+                            "bisa",
+                        ],
+                        [
+                            "Repeatable Read",
+                            "dicegah",
+                            "dicegah",
+                            "bisa",
+                        ],
+                        [
+                            "Serializable",
+                            "dicegah",
+                            "dicegah",
+                            "dicegah",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "MVCC, Kunci, dan Deadlock": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Dua versi satu baris sesudah transaksi 502 commit",
+            "ket": "Transaksi 503 mulai sebelum 502 commit, jadi masih melihat versi lama. Transaksi 504 melihat versi baru.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "versi",
+                        "xmin",
+                        "xmax",
+                        "saldo",
+                    ],
+                    "baris": [
+                        [
+                            "lama",
+                            "501",
+                            "502",
+                            "100000",
+                        ],
+                        [
+                            "baru",
+                            "502",
+                            "-",
+                            "150000",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 5,
+            "jenis": "urutan",
+            "judul": "Deadlock: dua transaksi saling menunggu",
+            "pelaku": [
+                "transaksi 1",
+                "database",
+                "transaksi 2",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "kunci baris A",
+                ],
+                [
+                    2,
+                    1,
+                    "kunci baris B",
+                ],
+                [
+                    0,
+                    1,
+                    "minta B (tunggu transaksi 2)",
+                ],
+                [
+                    2,
+                    1,
+                    "minta A (tunggu transaksi 1)",
+                ],
+                [
+                    1,
+                    2,
+                    "deadlock: kamu dibatalkan",
+                ],
+                [
+                    1,
+                    0,
+                    "dapat B, lanjut",
+                ],
+            ],
+        },
+    ],
+    "ORM, Pool Koneksi, dan Masalah N+1": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Cara naif mengirim 1 + 3 kueri, JOIN cuma 1",
+            "pelaku": [
+                "aplikasi",
+                "database",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "SELECT pelanggan",
+                ],
+                [
+                    1,
+                    0,
+                    "3 pelanggan",
+                ],
+                [
+                    0,
+                    1,
+                    "COUNT pesanan pelanggan 1",
+                ],
+                [
+                    0,
+                    1,
+                    "COUNT pesanan pelanggan 2",
+                ],
+                [
+                    0,
+                    1,
+                    "COUNT pesanan pelanggan 3",
+                ],
+                [
+                    0,
+                    1,
+                    "versi JOIN: satu kueri",
+                ],
+                [
+                    1,
+                    0,
+                    "semua hasil sekaligus",
+                ],
+            ],
+        },
+    ],
+    "Migrasi Skema Tanpa Downtime": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Isi tabel schema_version sesudah tiga migrasi",
+            "tabel": [
+                {
+                    "nama": "schema_version",
+                    "kolom": [
+                        "versi",
+                        "sidik",
+                    ],
+                    "baris": [
+                        [
+                            "1",
+                            "0e144d58457f",
+                        ],
+                        [
+                            "2",
+                            "3eb8e2963b60",
+                        ],
+                        [
+                            "3",
+                            "166f3e141ebd",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 6,
+            "jenis": "alur",
+            "judul": "Mengganti nama kolom dengan expand-contract",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Kolom nama mau diganti",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Expand: tambah nama_lengkap",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Kode menulis dua kolom",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Isi ulang 1.000 baris per batch",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Kode membaca kolom baru",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Versi lama masih jalan?",
+                    "ya": 6,
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tunggu semua rilis selesai",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Contract: hapus kolom nama",
+                    "ke": 8,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Selesai tanpa downtime",
+                },
+            ],
+        },
+    ],
+    "PostgreSQL di Fedora: Pasang, psql, dan Database Pertama": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "psql, server, dan berkas data",
+            "ket": "psql cuma klien. Server postgres yang memeriksa login, menjalankan kueri, dan membaca berkas di /var/lib/pgsql/data.",
+            "pelaku": [
+                "psql",
+                "server",
+                "berkas data",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "sambung (socket atau TCP)",
+                ],
+                [
+                    1,
+                    0,
+                    "cek pg_hba.conf, minta login",
+                ],
+                [
+                    0,
+                    1,
+                    "SELECT * FROM produk",
+                ],
+                [
+                    1,
+                    2,
+                    "baca halaman tabel",
+                ],
+                [
+                    1,
+                    0,
+                    "baris hasil",
+                ],
+            ],
+        },
+    ],
+    "Tipe Data Kaya PostgreSQL: JSONB, Array, UUID, dan Range": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Dokumen jsonb pesanan Rina",
+            "ket": "data -> 'alamat' ->> 'kota' turun ke alamat lalu kota. data #>> '{item,0,nama}' mengambil nama item pertama.",
+            "akar": {
+                "teks": "data",
+                "anak": [
+                    {
+                        "teks": "pelanggan: Rina",
+                    },
+                    {
+                        "teks": "alamat",
+                        "anak": [
+                            {
+                                "teks": "kota: Bandung",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "item",
+                        "anak": [
+                            {
+                                "teks": "[0]",
+                                "anak": [
+                                    {
+                                        "teks": "nama: kopi",
+                                    },
+                                    {
+                                        "teks": "jumlah: 2",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "promo: true",
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Tipe yang tepat untuk tiap jenis nilai",
+            "tabel": [
+                {
+                    "kolom": [
+                        "tipe",
+                        "contoh nilai",
+                        "operator khas",
+                    ],
+                    "baris": [
+                        [
+                            "jsonb",
+                            "{\"kota\":\"Bogor\"}",
+                            "->> @> ?",
+                        ],
+                        [
+                            "text[]",
+                            "{kopi,promo}",
+                            "ANY, @>",
+                        ],
+                        [
+                            "uuid",
+                            "0199f3a2-...",
+                            "=",
+                        ],
+                        [
+                            "tstzrange",
+                            "[09:00, 10:00)",
+                            "&& @>",
+                        ],
+                        [
+                            "enum",
+                            "'dibayar'",
+                            "= < >",
+                        ],
+                        [
+                            "timestamptz",
+                            "2026-10-20 16:00",
+                            "+ interval",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Role, Hak Akses, dan Row Level Security di PostgreSQL": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Kueri yang melewati Row Level Security",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "SELECT * FROM catatan",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Role superuser atau pemilik?",
+                    "ya": 4,
+                    "tidak": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Tempel policy: pemilik = user",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Baris milik sendiri saja",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Semua baris (RLS dilewati)",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Hasil dikirim ke klien",
+                },
+            ],
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Tabel catatan dilihat dua role berbeda",
+            "tabel": [
+                {
+                    "nama": "dilihat ani",
+                    "kolom": [
+                        "pemilik",
+                        "isi",
+                    ],
+                    "baris": [
+                        [
+                            "ani",
+                            "beli kuota",
+                        ],
+                        [
+                            "ani",
+                            "setor laporan",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "dilihat budi",
+                    "kolom": [
+                        "pemilik",
+                        "isi",
+                    ],
+                    "baris": [
+                        [
+                            "budi",
+                            "servis motor",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Ekstensi PostgreSQL dan Data Peta dengan PostGIS": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Ekstensi populer dan gunanya",
+            "tabel": [
+                {
+                    "kolom": [
+                        "ekstensi",
+                        "gunanya",
+                        "dibahas di",
+                    ],
+                    "baris": [
+                        [
+                            "pg_stat_stmts",
+                            "kueri termahal",
+                            "bab 03",
+                        ],
+                        [
+                            "PostGIS",
+                            "data peta",
+                            "materi ini",
+                        ],
+                        [
+                            "pgvector",
+                            "pencarian vektor",
+                            "bab 13",
+                        ],
+                        [
+                            "TimescaleDB",
+                            "deret waktu",
+                            "bab 13",
+                        ],
+                        [
+                            "Citus",
+                            "sharding",
+                            "bab 11",
+                        ],
+                        [
+                            "pg_trgm",
+                            "teks mirip",
+                            "bab 12",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "MySQL dan InnoDB: Logat, Charset, dan Versi LTS": [
+        {
+            "setelah": 3,
+            "jenis": "pohon",
+            "judul": "Clustered index InnoDB pada tabel pelanggan",
+            "ket": "Daun indeks PRIMARY menyimpan baris utuh. Daun indeks kota cuma menyimpan id, jadi mencari lewat kota butuh lompatan kedua ke indeks PRIMARY.",
+            "akar": {
+                "teks": "tabel pelanggan",
+                "anak": [
+                    {
+                        "teks": "indeks PRIMARY",
+                        "anak": [
+                            {
+                                "teks": "halaman id 1-2",
+                                "anak": [
+                                    {
+                                        "teks": "1 Sari, Bandung",
+                                    },
+                                    {
+                                        "teks": "2 Budi, Medan",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "halaman id 3-4",
+                                "anak": [
+                                    {
+                                        "teks": "3 Dewi, Solo",
+                                    },
+                                    {
+                                        "teks": "4 Eko, Bandung",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "indeks idx_kota",
+                        "anak": [
+                            {
+                                "teks": "Bandung -> id 1",
+                            },
+                            {
+                                "teks": "Bandung -> id 4",
+                            },
+                            {
+                                "teks": "Medan -> id 2",
+                            },
+                            {
+                                "teks": "Solo -> id 3",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 10,
+            "jenis": "tabel",
+            "judul": "utf8 lama (utf8mb3) lawan utf8mb4",
+            "ket": "Panjang byte sama dengan keluaran program di atas. Cuma baris emoji yang ditolak utf8mb3.",
+            "tabel": [
+                {
+                    "nama": "muat atau tidak",
+                    "kolom": [
+                        "huruf",
+                        "byte UTF-8",
+                        "utf8mb3",
+                        "utf8mb4",
+                    ],
+                    "baris": [
+                        [
+                            "A",
+                            "1",
+                            "muat",
+                            "muat",
+                        ],
+                        [
+                            "é",
+                            "2",
+                            "muat",
+                            "muat",
+                        ],
+                        [
+                            "huruf Jepang",
+                            "3",
+                            "muat",
+                            "muat",
+                        ],
+                        [
+                            "emoji",
+                            "4",
+                            "ditolak",
+                            "muat",
+                        ],
+                    ],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+    ],
+    "MariaDB: Cabang MySQL yang Tumbuh Sendiri": [
+        {
+            "setelah": 1,
+            "jenis": "git",
+            "judul": "MySQL dan MariaDB berpisah dari kode yang sama",
+            "ket": "Tahunnya tahun rilis. Sesudah berpisah, perubahan di satu cabang nggak otomatis masuk ke cabang lain.",
+            "commit": [
+                {
+                    "id": "a",
+                    "cabang": "mysql",
+                    "pesan": "MySQL 5.1 (2008)",
+                },
+                {
+                    "id": "b",
+                    "cabang": "mysql",
+                    "pesan": "MySQL 5.5 (2010)",
+                    "induk": [
+                        "a",
+                    ],
+                },
+                {
+                    "id": "c",
+                    "cabang": "mariadb",
+                    "pesan": "MariaDB 5.1 (2009)",
+                    "induk": [
+                        "a",
+                    ],
+                },
+                {
+                    "id": "d",
+                    "cabang": "mariadb",
+                    "pesan": "MariaDB 10.0 (2014)",
+                    "induk": [
+                        "c",
+                    ],
+                },
+                {
+                    "id": "e",
+                    "cabang": "mysql",
+                    "pesan": "MySQL 8.0 (2018)",
+                    "induk": [
+                        "b",
+                    ],
+                },
+                {
+                    "id": "f",
+                    "cabang": "mariadb",
+                    "pesan": "MariaDB 12.3 LTS",
+                    "induk": [
+                        "d",
+                    ],
+                },
+                {
+                    "id": "g",
+                    "cabang": "mysql",
+                    "pesan": "MySQL 9.7 LTS",
+                    "induk": [
+                        "e",
+                    ],
+                },
+            ],
+            "label": {
+                "mysql": "g",
+                "mariadb": "f",
+            },
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Fitur yang mulai berbeda",
+            "tabel": [
+                {
+                    "nama": "MySQL lawan MariaDB",
+                    "kolom": [
+                        "hal",
+                        "MySQL",
+                        "MariaDB",
+                    ],
+                    "baris": [
+                        [
+                            "JSON",
+                            "format biner",
+                            "LONGTEXT + cek",
+                        ],
+                        [
+                            "alias baris",
+                            "AS baru",
+                            "VALUES(kolom)",
+                        ],
+                        [
+                            "riwayat baris",
+                            "tidak ada",
+                            "system version",
+                        ],
+                        [
+                            "RETURNING",
+                            "tidak ada",
+                            "ada",
+                        ],
+                        [
+                            "klaster",
+                            "InnoDB Cluster",
+                            "Galera",
+                        ],
+                        [
+                            "lisensi",
+                            "GPL + komersial",
+                            "GPL-2.0",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Relasional Korporat: SQL Server, Oracle, Db2, dan Lainnya": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Database korporat dan tempat biasa bertemu",
+            "tabel": [
+                {
+                    "nama": "peta relasional korporat",
+                    "kolom": [
+                        "database",
+                        "logat",
+                        "lisensi",
+                        "biasa di",
+                    ],
+                    "baris": [
+                        [
+                            "SQL Server",
+                            "T-SQL",
+                            "proprietary",
+                            "aplikasi .NET",
+                        ],
+                        [
+                            "Oracle",
+                            "PL/SQL",
+                            "proprietary",
+                            "bank, telko",
+                        ],
+                        [
+                            "IBM Db2",
+                            "SQL PL",
+                            "proprietary",
+                            "mainframe",
+                        ],
+                        [
+                            "MS Access",
+                            "Access SQL",
+                            "Microsoft 365",
+                            "kantor kecil",
+                        ],
+                        [
+                            "H2",
+                            "SQL standar",
+                            "MPL-2.0/EPL-1.0",
+                            "tes Java",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Redis dan Valkey: Struktur Data di Dalam Memori": [
+        {
+            "setelah": 5,
+            "jenis": "variabel",
+            "judul": "Kunci, nilai, dan tipenya di contoh tadi",
+            "ket": "Tiap kunci menyimpan satu nilai, dan tipe nilai menentukan perintah apa yang bisa dipakai.",
+            "isi": [
+                [
+                    "sesi:9f2c",
+                    "pengguna:42",
+                    "string",
+                ],
+                [
+                    "pengguna:42",
+                    "{nama, kota}",
+                    "hash",
+                ],
+                [
+                    "antrean:email",
+                    "[pesanan:1001]",
+                    "list",
+                ],
+                [
+                    "tag:artikel:7",
+                    "{redis, cache}",
+                    "set",
+                ],
+                [
+                    "papan_skor",
+                    "sari 1500, budi 1720",
+                    "sorted set",
+                ],
+            ],
+            "sorot": [
+                "papan_skor",
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "bit",
+            "judul": "Bitmap hadir:2026-10-19 untuk pengguna 0 sampai 7",
+            "ket": "Bit paling kiri milik pengguna 0. Pengguna 0, 2, 3, 5, dan 6 hadir, jadi BITCOUNT menghasilkan 5.",
+            "angka": 182,
+            "lebar": 8,
+            "label": "kiri ke kanan: pengguna 0-7",
+        },
+    ],
+    "Pola Caching: Cache-Aside, TTL, dan Invalidasi": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Cache-aside saat miss lalu hit",
+            "ket": "Permintaan pertama miss dan mengisi cache. Permintaan kedua berhenti di cache tanpa menyentuh database.",
+            "pelaku": [
+                "aplikasi",
+                "Redis",
+                "database",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET produk:7",
+                ],
+                [
+                    1,
+                    0,
+                    "kosong (miss)",
+                ],
+                [
+                    0,
+                    2,
+                    "SELECT ... WHERE id = 7",
+                ],
+                [
+                    2,
+                    0,
+                    "Kopi Gayo, 85000",
+                ],
+                [
+                    0,
+                    1,
+                    "SET produk:7 ... EX 60",
+                ],
+                [
+                    0,
+                    1,
+                    "GET produk:7",
+                ],
+                [
+                    1,
+                    0,
+                    "Kopi Gayo (hit)",
+                ],
+            ],
+        },
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Empat pola cache dibandingkan",
+            "tabel": [
+                {
+                    "nama": "pola cache",
+                    "kolom": [
+                        "pola",
+                        "saat menulis",
+                        "risiko",
+                    ],
+                    "baris": [
+                        [
+                            "cache-aside",
+                            "DB, lalu hapus",
+                            "basi satu TTL",
+                        ],
+                        [
+                            "write-through",
+                            "cache + DB",
+                            "tulis melambat",
+                        ],
+                        [
+                            "write-behind",
+                            "cache dulu",
+                            "data bisa hilang",
+                        ],
+                        [
+                            "refresh-ahead",
+                            "cache isi ulang",
+                            "kerja sia-sia",
+                        ],
+                    ],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+    ],
+    "Redis untuk Antrean, Pub/Sub, dan Pembatas Laju": [
+        {
+            "setelah": 2,
+            "jenis": "tumpukan",
+            "mode": "antrean",
+            "judul": "Antrean email: masuk dari kiri, diambil dari kanan",
+            "ket": "Server web menambah pekerjaan dengan LPUSH, worker mengambil yang paling lama dengan BLMOVE.",
+            "isi": [
+                "pesanan:1001",
+                "pesanan:1002",
+                "pesanan:1003",
+            ],
+            "label": "antrean:email",
+            "operasi": "BLMOVE",
+        },
+        {
+            "setelah": 5,
+            "jenis": "urutan",
+            "judul": "Pub/sub: satu pesan ke dua pelanggan",
+            "ket": "Pelanggan yang tersambung sesudah pesan dikirim nggak akan menerimanya.",
+            "pelaku": [
+                "penerbit",
+                "Redis",
+                "pelanggan A",
+                "pelanggan B",
+            ],
+            "pesan": [
+                [
+                    2,
+                    1,
+                    "SUBSCRIBE chat:7",
+                ],
+                [
+                    3,
+                    1,
+                    "SUBSCRIBE chat:7",
+                ],
+                [
+                    0,
+                    1,
+                    "PUBLISH chat:7 \"halo\"",
+                ],
+                [
+                    1,
+                    2,
+                    "halo",
+                ],
+                [
+                    1,
+                    3,
+                    "halo",
+                ],
+            ],
+        },
+    ],
+    "MongoDB: Dokumen, Koleksi, dan CRUD": [
+        {
+            "setelah": 6,
+            "jenis": "pohon",
+            "judul": "Dokumen produk dari contoh insertOne",
+            "ket": "Field toko adalah dokumen bersarang dan tag adalah array. Jalur \"toko.kota\" menunjuk ke Medan.",
+            "akar": {
+                "teks": "produk",
+                "anak": [
+                    {
+                        "teks": "_id: ObjectId",
+                    },
+                    {
+                        "teks": "nama: Kopi Gayo",
+                    },
+                    {
+                        "teks": "harga: 85000",
+                    },
+                    {
+                        "teks": "stok: 12",
+                    },
+                    {
+                        "teks": "tag: [ ]",
+                        "anak": [
+                            {
+                                "teks": "kopi",
+                            },
+                            {
+                                "teks": "arabika",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "toko: { }",
+                        "anak": [
+                            {
+                                "teks": "kota: Medan",
+                            },
+                            {
+                                "teks": "rating: 4.8",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "Istilah SQL dan padanannya di MongoDB",
+            "tabel": [
+                {
+                    "nama": "istilah",
+                    "kolom": [
+                        "SQL",
+                        "MongoDB",
+                    ],
+                    "baris": [
+                        [
+                            "database",
+                            "database",
+                        ],
+                        [
+                            "tabel",
+                            "koleksi",
+                        ],
+                        [
+                            "baris",
+                            "dokumen",
+                        ],
+                        [
+                            "kolom",
+                            "field",
+                        ],
+                        [
+                            "primary key",
+                            "_id",
+                        ],
+                        [
+                            "JOIN",
+                            "sematkan/$lookup",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Kueri, Indeks, dan Aggregation Pipeline MongoDB": [
+        {
+            "setelah": 6,
+            "jenis": "alur",
+            "judul": "Dokumen mengalir melewati tahap pipeline",
+            "ket": "Angka dalam kurung adalah jumlah dokumen di contoh omzet per produk.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "koleksi pesanan (4)",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "$match status lunas (3)",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "$unwind item (5)",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "$group per produk (3)",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "$sort total menurun",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "kopi, gula, teh",
+                },
+            ],
+        },
+    ],
+    "Merancang Skema Dokumen: Sematkan atau Rujuk": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Pesanan 1001 dengan barang dan alamat tersemat",
+            "ket": "pelanggan_id cuma rujukan. Nama dan harga produk disalin ke item supaya pesanan lama nggak berubah saat harga berubah.",
+            "akar": {
+                "teks": "pesanan 1001",
+                "anak": [
+                    {
+                        "teks": "pelanggan_id: 42",
+                    },
+                    {
+                        "teks": "alamat_kirim",
+                        "anak": [
+                            {
+                                "teks": "kota: Bandung",
+                            },
+                            {
+                                "teks": "jalan: Jl. Riau 12",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "item [ ]",
+                        "anak": [
+                            {
+                                "teks": "Kopi Gayo x2",
+                                "anak": [
+                                    {
+                                        "teks": "harga: 85000",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "Gula Aren x1",
+                                "anak": [
+                                    {
+                                        "teks": "harga: 30000",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "total: 200000",
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Kapan menyematkan, kapan merujuk",
+            "tabel": [
+                {
+                    "nama": "pegangan desain",
+                    "kolom": [
+                        "data",
+                        "pilihan",
+                        "alasan",
+                    ],
+                    "baris": [
+                        [
+                            "item pesanan",
+                            "sematkan",
+                            "dibaca bersama",
+                        ],
+                        [
+                            "alamat kirim",
+                            "sematkan",
+                            "dibekukan",
+                        ],
+                        [
+                            "pelanggan",
+                            "rujuk",
+                            "sering berubah",
+                        ],
+                        [
+                            "komentar viral",
+                            "rujuk",
+                            "tumbuh terus",
+                        ],
+                        [
+                            "5 komentar baru",
+                            "sematkan",
+                            "pola subset",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Database Dokumen: Couchbase sampai RethinkDB": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Database dokumen selain MongoDB",
+            "tabel": [
+                {
+                    "nama": "peta database dokumen",
+                    "kolom": [
+                        "database",
+                        "kueri",
+                        "lisensi",
+                        "ciri khas",
+                    ],
+                    "baris": [
+                        [
+                            "Couchbase",
+                            "SQL++",
+                            "BSL 1.1",
+                            "cache bawaan",
+                        ],
+                        [
+                            "CouchDB",
+                            "HTTP, Mango",
+                            "Apache-2.0",
+                            "offline-first",
+                        ],
+                        [
+                            "Cosmos DB",
+                            "multi-API",
+                            "proprietary",
+                            "Request Unit",
+                        ],
+                        [
+                            "RethinkDB",
+                            "ReQL",
+                            "Apache-2.0",
+                            "menurun",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Firebase dan Firestore: Backend Tanpa Server Sendiri": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Koleksi, dokumen, dan subkoleksi di Firestore",
+            "ket": "Koleksi dan dokumen berselang-seling. Membaca dokumen sari nggak ikut membaca subkoleksi catatan.",
+            "akar": {
+                "teks": "pengguna",
+                "anak": [
+                    {
+                        "teks": "sari",
+                        "anak": [
+                            {
+                                "teks": "nama: Sari",
+                            },
+                            {
+                                "teks": "catatan",
+                                "anak": [
+                                    {
+                                        "teks": "belanja",
+                                    },
+                                    {
+                                        "teks": "tugas-pkl",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "budi",
+                        "anak": [
+                            {
+                                "teks": "nama: Budi",
+                            },
+                            {
+                                "teks": "catatan",
+                                "anak": [
+                                    {
+                                        "teks": "resep",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Listener: klien B menerima tulisan klien A",
+            "ket": "Klien B memasang onSnapshot lebih dulu, jadi pesanan baru langsung didorong tanpa B bertanya ulang.",
+            "pelaku": [
+                "klien A",
+                "Firestore",
+                "klien B",
+            ],
+            "pesan": [
+                [
+                    2,
+                    1,
+                    "onSnapshot(status == baru)",
+                ],
+                [
+                    1,
+                    2,
+                    "snapshot awal: 0 dokumen",
+                ],
+                [
+                    0,
+                    1,
+                    "addDoc pesanan",
+                ],
+                [
+                    1,
+                    0,
+                    "tersimpan",
+                ],
+                [
+                    1,
+                    2,
+                    "perubahan: added",
+                ],
+            ],
+        },
+    ],
+    "Supabase, Appwrite, dan PocketBase": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "API otomatis Supabase dengan RLS",
+            "ket": "Browser nggak menyaring pemilik. Policy RLS di PostgreSQL menyaring berdasarkan id dari token.",
+            "pelaku": [
+                "browser",
+                "API Supabase",
+                "PostgreSQL",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET /catatan + token",
+                ],
+                [
+                    1,
+                    2,
+                    "SELECT sebagai sari",
+                ],
+                [
+                    2,
+                    1,
+                    "baris lolos policy saja",
+                ],
+                [
+                    1,
+                    0,
+                    "JSON catatan milik sari",
+                ],
+            ],
+        },
+        {
+            "setelah": 9,
+            "jenis": "tabel",
+            "judul": "Tiga BaaS open source dibandingkan",
+            "ket": "PG/MariaDB/Mongo artinya Appwrite bisa memakai PostgreSQL, MariaDB, atau MongoDB, dipilih saat instalasi.",
+            "tabel": [
+                {
+                    "nama": "BaaS open source",
+                    "kolom": [
+                        "BaaS",
+                        "database",
+                        "lisensi",
+                        "self-host",
+                    ],
+                    "baris": [
+                        [
+                            "Supabase",
+                            "PostgreSQL",
+                            "Apache-2.0",
+                            "Docker",
+                        ],
+                        [
+                            "Appwrite",
+                            "PG/MariaDB/Mongo",
+                            "BSD-3-Clause",
+                            "Docker",
+                        ],
+                        [
+                            "PocketBase",
+                            "SQLite",
+                            "MIT",
+                            "satu berkas",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Database Cloud: Terkelola dan Serverless": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Satu tabel DynamoDB untuk dua jenis entitas",
+            "ket": "Profil dan pesanan berbagi pk, jadi satu Query dengan begins_with PESANAN# mengambil semua pesanan pelanggan 42 terurut tanggal. Nilai sk pesanan disingkat dari bentuk PESANAN#2026-09-28#0998.",
+            "tabel": [
+                {
+                    "nama": "tabel toko",
+                    "kolom": [
+                        "pk",
+                        "sk",
+                        "atribut",
+                    ],
+                    "baris": [
+                        [
+                            "PELANGGAN#42",
+                            "PROFIL",
+                            "nama=Sari",
+                        ],
+                        [
+                            "PELANGGAN#42",
+                            "PESANAN#09-28",
+                            "30000",
+                        ],
+                        [
+                            "PELANGGAN#42",
+                            "PESANAN#10-03",
+                            "85000",
+                        ],
+                        [
+                            "PELANGGAN#42",
+                            "PESANAN#10-15",
+                            "120000",
+                        ],
+                        [
+                            "PELANGGAN#7",
+                            "PROFIL",
+                            "nama=Budi",
+                        ],
+                    ],
+                    "sorot_baris": [1, 2, 3],
+                },
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "git",
+            "judul": "Cabang database per pull request di Neon",
+            "ket": "Cabang pr-42 dibuat dari main dan cuma menyimpan perubahan sendiri, seperti program Cabang di atas.",
+            "commit": [
+                {
+                    "id": "a",
+                    "cabang": "main",
+                    "pesan": "data produksi",
+                },
+                {
+                    "id": "b",
+                    "cabang": "main",
+                    "pesan": "pesanan baru",
+                    "induk": [
+                        "a",
+                    ],
+                },
+                {
+                    "id": "c",
+                    "cabang": "pr-42",
+                    "pesan": "tambah kolom",
+                    "induk": [
+                        "b",
+                    ],
+                },
+                {
+                    "id": "d",
+                    "cabang": "main",
+                    "pesan": "pesanan baru",
+                    "induk": [
+                        "b",
+                    ],
+                },
+                {
+                    "id": "e",
+                    "cabang": "pr-42",
+                    "pesan": "uji migrasi",
+                    "induk": [
+                        "c",
+                    ],
+                },
+            ],
+            "label": {
+                "main": "d",
+                "pr-42": "e",
+            },
+        },
+    ],
+    "WAL, B-Tree, dan LSM-Tree: Jalan Data Menuju Disk": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Satu tulisan di LSM-tree: log dulu, memtable, lalu flush",
+            "ket": "Disederhanakan: compaction berjalan terpisah di latar.",
+            "pelaku": [
+                "klien",
+                "log",
+                "memtable",
+                "SSTable",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "catat: put a=10",
+                ],
+                [
+                    0,
+                    2,
+                    "simpan a=10 di memori",
+                ],
+                [
+                    2,
+                    0,
+                    "OK",
+                ],
+                [
+                    2,
+                    3,
+                    "penuh: flush terurut",
+                ],
+                [
+                    3,
+                    1,
+                    "log lama boleh dibuang",
+                ],
+            ],
+        },
+        {
+            "setelah": 6,
+            "jenis": "pohon",
+            "judul": "B-tree menimpa halaman, LSM-tree menumpuk berkas",
+            "ket": "Isi SSTable sama dengan contoh LSM-tree mini di atas, sebelum compaction. b ditutup tombstone di SSTable 2.",
+            "akar": {
+                "teks": "penyimpanan",
+                "anak": [
+                    {
+                        "teks": "B-tree",
+                        "anak": [
+                            {
+                                "teks": "akar [40]",
+                                "anak": [
+                                    {
+                                        "teks": "daun 10 20 30",
+                                    },
+                                    {
+                                        "teks": "daun 40 50 60",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "LSM-tree",
+                        "anak": [
+                            {
+                                "teks": "memtable (kosong)",
+                            },
+                            {
+                                "teks": "SSTable 2: a b d",
+                            },
+                            {
+                                "teks": "SSTable 1: a b c",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "Backup, Restore, dan Pemulihan ke Titik Waktu": [
+        {
+            "setelah": 5,
+            "jenis": "urutan",
+            "judul": "Pemulihan ke titik waktu: backup dasar plus putar ulang log",
+            "ket": "Jam di contoh ini sama dengan kasus di bagian Di dunia nyata.",
+            "pelaku": [
+                "server utama",
+                "arsip",
+                "server baru",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "02.00 backup dasar",
+                ],
+                [
+                    0,
+                    1,
+                    "segmen log terus disalin",
+                ],
+                [
+                    0,
+                    0,
+                    "14.30 DELETE tanpa WHERE",
+                ],
+                [
+                    1,
+                    2,
+                    "salin backup dasar",
+                ],
+                [
+                    1,
+                    2,
+                    "putar log s.d. 14.29.59",
+                ],
+                [
+                    2,
+                    2,
+                    "berhenti, data utuh",
+                ],
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "Backup logis lawan backup fisik",
+            "tabel": [
+                {
+                    "kolom": [
+                        "aspek",
+                        "Logis",
+                        "Fisik",
+                    ],
+                    "baris": [
+                        [
+                            "isi",
+                            "perintah/dokumen",
+                            "berkas data",
+                        ],
+                        [
+                            "alat",
+                            "pg_dump",
+                            "pg_basebackup",
+                        ],
+                        [
+                            "lintas versi",
+                            "bisa",
+                            "nggak bisa",
+                        ],
+                        [
+                            "pilih per tabel",
+                            "bisa",
+                            "nggak bisa",
+                        ],
+                        [
+                            "kecepatan pulih",
+                            "lambat",
+                            "cepat",
+                        ],
+                        [
+                            "ke titik waktu",
+                            "nggak",
+                            "bisa (+ log)",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Replikasi, Failover, dan Ketersediaan Tinggi": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "Replikasi asinkron: primary menjawab dulu, mengirim kemudian",
+            "pelaku": [
+                "aplikasi",
+                "primary",
+                "replika a",
+                "replika b",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "UPDATE stok = 9",
+                ],
+                [
+                    1,
+                    0,
+                    "COMMIT berhasil",
+                ],
+                [
+                    1,
+                    2,
+                    "kirim log (tiba +1 detik)",
+                ],
+                [
+                    1,
+                    3,
+                    "kirim log (tiba +4 detik)",
+                ],
+                [
+                    0,
+                    3,
+                    "baca stok di t=6",
+                ],
+                [
+                    3,
+                    0,
+                    "10 (basi)",
+                ],
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "alur",
+            "judul": "Keputusan failover otomatis",
+            "ket": "Disederhanakan dari cara kerja Patroni: kunci pemimpin disimpan di etcd dan kedaluwarsa kalau nggak diperpanjang.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "primary berhenti memperpanjang",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "kunci pemimpin kedaluwarsa?",
+                    "tidak": 0,
+                    "ya": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "replika berebut kunci di etcd",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "dapat persetujuan mayoritas?",
+                    "ya": 4,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "promosikan replika itu",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "tetap replika, ikuti pemenang",
+                },
+            ],
+        },
+    ],
+    "Sharding, Partisi, dan Vitess": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Cara memetakan kunci ke shard",
+            "tabel": [
+                {
+                    "kolom": [
+                        "strategi",
+                        "kelebihan",
+                        "kekurangan",
+                    ],
+                    "baris": [
+                        [
+                            "rentang",
+                            "kueri rentang",
+                            "titik panas",
+                        ],
+                        [
+                            "hash",
+                            "data rata",
+                            "rentang ke semua",
+                        ],
+                        [
+                            "direktori",
+                            "fleksibel",
+                            "peta wajib hidup",
+                        ],
+                        [
+                            "consistent hash",
+                            "sedikit pindah",
+                            "lebih rumit",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 6,
+            "jenis": "larik",
+            "judul": "12 slot hash dibagi ke empat shard",
+            "ket": "Disederhanakan dari Redis Cluster yang memakai 16.384 slot. Kunci yang hash-nya jatuh di slot 7 dilayani shard C. Saat shard kelima masuk, cukup beberapa slot yang dipindah.",
+            "nama": "slot -> shard",
+            "isi": [
+                "A",
+                "A",
+                "A",
+                "B",
+                "B",
+                "B",
+                "C",
+                "C",
+                "C",
+                "D",
+                "D",
+                "D",
+            ],
+            "sorot": [7],
+            "penunjuk": {
+                "kunci": 7,
+            },
+        },
+    ],
+    "Teorema CAP, Konsistensi, dan Konsensus Raft": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Saat jaringan putus: pilih konsisten atau tetap melayani",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "jaringan antar server putus",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "utamakan konsistensi (CP)?",
+                    "ya": 2,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "sisi minoritas tolak tulisan",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pulih: data tetap satu versi",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "kedua sisi terima tulisan",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pulih: damaikan perbedaannya",
+                },
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "urutan",
+            "judul": "Pemilihan leader Raft dengan tiga server",
+            "ket": "S1 lebih dulu habis waktu tunggunya, jadi ia yang mencalonkan diri. Dua suara dari tiga sudah mayoritas.",
+            "pelaku": [
+                "S1 (candidate)",
+                "S2",
+                "S3",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "minta suara, term 5",
+                ],
+                [
+                    0,
+                    2,
+                    "minta suara, term 5",
+                ],
+                [
+                    1,
+                    0,
+                    "setuju",
+                ],
+                [
+                    2,
+                    0,
+                    "setuju",
+                ],
+                [
+                    0,
+                    0,
+                    "jadi leader term 5",
+                ],
+                [
+                    0,
+                    1,
+                    "heartbeat + entri log",
+                ],
+                [
+                    0,
+                    2,
+                    "heartbeat + entri log",
+                ],
+            ],
+        },
+    ],
+    "Peta Database Terdistribusi: NewSQL dan Kolom Lebar": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Dua keluarga database terdistribusi",
+            "ket": "Lisensi per Oktober 2026. Spanner dan Bigtable berupa layanan Google Cloud.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "database",
+                        "keluarga",
+                        "kompatibel",
+                        "lisensi",
+                    ],
+                    "baris": [
+                        [
+                            "CockroachDB",
+                            "NewSQL",
+                            "PostgreSQL",
+                            "source-avail.",
+                        ],
+                        [
+                            "YugabyteDB",
+                            "NewSQL",
+                            "PostgreSQL, CQL",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "TiDB",
+                            "NewSQL",
+                            "MySQL",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Spanner",
+                            "NewSQL",
+                            "GoogleSQL, PG",
+                            "layanan",
+                        ],
+                        [
+                            "Cassandra",
+                            "kolom lebar",
+                            "CQL",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "ScyllaDB",
+                            "kolom lebar",
+                            "CQL, DynamoDB",
+                            "source-avail.",
+                        ],
+                        [
+                            "HBase",
+                            "kolom lebar",
+                            "API HBase",
+                            "Apache-2.0",
+                        ],
+                        [
+                            "Bigtable",
+                            "kolom lebar",
+                            "API HBase",
+                            "layanan",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Indeks Terbalik dan Skor Relevansi BM25": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Jalan sebuah teks menuju indeks terbalik",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "\"Kucing makan ikan di dapur\"",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "tokenisasi: pecah jadi kata",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "kecilkan huruf: kucing makan ...",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "buang stop word: di",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "kucing, makan, ikan, dapur",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "tambahkan dokumen 1 ke daftar",
+                },
+            ],
+        },
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Sebagian isi indeks dari contoh di atas",
+            "ket": "Kueri \"Kucing ikan\" mengambil daftar kucing [1, 2] dan ikan [1, 3], lalu irisannya: dokumen 1.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "kata",
+                        "dokumen",
+                    ],
+                    "baris": [
+                        [
+                            "anjing",
+                            "2",
+                        ],
+                        [
+                            "dapur",
+                            "1",
+                        ],
+                        [
+                            "hias",
+                            "3",
+                        ],
+                        [
+                            "ikan",
+                            "1, 3",
+                        ],
+                        [
+                            "kucing",
+                            "1, 2",
+                        ],
+                        [
+                            "makan",
+                            "1",
+                        ],
+                    ],
+                    "sorot_baris": [3, 4],
+                },
+            ],
+        },
+    ],
+    "Peta Mesin Pencari: Elasticsearch, OpenSearch, dan Lainnya": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Peta mesin pencari, Oktober 2026",
+            "tabel": [
+                {
+                    "kolom": [
+                        "mesin",
+                        "ditulis dengan",
+                        "lisensi",
+                        "cocok untuk",
+                    ],
+                    "baris": [
+                        [
+                            "Elasticsearch",
+                            "Java",
+                            "ELv2/SSPL/AGPL",
+                            "log, toko besar",
+                        ],
+                        [
+                            "OpenSearch",
+                            "Java",
+                            "Apache-2.0",
+                            "log, AWS",
+                        ],
+                        [
+                            "Solr",
+                            "Java",
+                            "Apache-2.0",
+                            "facet, portal",
+                        ],
+                        [
+                            "Lucene",
+                            "Java (pustaka)",
+                            "Apache-2.0",
+                            "fondasi",
+                        ],
+                        [
+                            "Meilisearch",
+                            "Rust",
+                            "MIT + BUSL",
+                            "kotak cari situs",
+                        ],
+                        [
+                            "Typesense",
+                            "C++",
+                            "GPL-3.0",
+                            "kotak cari, RAM",
+                        ],
+                        [
+                            "Algolia",
+                            "layanan",
+                            "proprietary",
+                            "dokumentasi, web",
+                        ],
+                        [
+                            "Azure AI Search",
+                            "layanan",
+                            "proprietary",
+                            "RAG di Azure",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "OLTP, OLAP, dan Skema Bintang": [
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Tabel fakta di tengah, dua dimensi di sampingnya",
+            "ket": "Isinya sama dengan contoh kode. Baris yang disorot adalah penjualan Oktober untuk kategori minuman: 12 + 5 + 8 = 25 porsi.",
+            "tabel": [
+                {
+                    "nama": "fakta_penjualan",
+                    "kolom": [
+                        "produk_id",
+                        "waktu_id",
+                        "jumlah",
+                        "omzet",
+                    ],
+                    "baris": [
+                        [1, 1, 10, 180000],
+                        [3, 1, 4, 60000],
+                        [1, 2, 12, 216000],
+                        [2, 2, 5, 75000],
+                        [3, 3, 6, 90000],
+                        [2, 3, 8, 120000],
+                    ],
+                    "sorot_baris": [2, 3, 5],
+                },
+                {
+                    "nama": "dim_produk",
+                    "kolom": [
+                        "id",
+                        "nama",
+                        "kategori",
+                    ],
+                    "baris": [
+                        [
+                            1,
+                            "Kopi susu",
+                            "minuman",
+                        ],
+                        [
+                            2,
+                            "Teh tarik",
+                            "minuman",
+                        ],
+                        [
+                            3,
+                            "Roti bakar",
+                            "makanan",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "dim_waktu",
+                    "kolom": [
+                        "id",
+                        "tanggal",
+                        "bulan",
+                    ],
+                    "baris": [
+                        [
+                            1,
+                            "2026-09-30",
+                            "2026-09",
+                        ],
+                        [
+                            2,
+                            "2026-10-01",
+                            "2026-10",
+                        ],
+                        [
+                            3,
+                            "2026-10-02",
+                            "2026-10",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 6,
+            "jenis": "larik",
+            "judul": "Kolom kategori yang terurut, siap dikompres run-length",
+            "ket": "Run-length cukup menyimpan dua pasangan: (makanan, 2) dan (minuman, 4).",
+            "nama": "kategori",
+            "isi": [
+                "makanan",
+                "makanan",
+                "minuman",
+                "minuman",
+                "minuman",
+                "minuman",
+            ],
+            "rentang": [2, 6],
+        },
+    ],
+    "Peta Analitik: DuckDB, ClickHouse, dan Gudang Data Cloud": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Pilihan database analitik dan cara bayarnya",
+            "tabel": [
+                {
+                    "kolom": [
+                        "pilihan",
+                        "cara jalan",
+                        "cara bayar",
+                    ],
+                    "baris": [
+                        [
+                            "DuckDB",
+                            "tertanam",
+                            "gratis (MIT)",
+                        ],
+                        [
+                            "ClickHouse",
+                            "server / Cloud",
+                            "gratis / langgan",
+                        ],
+                        [
+                            "BigQuery",
+                            "serverless",
+                            "per TB dipindai",
+                        ],
+                        [
+                            "Snowflake",
+                            "cloud, 3 vendor",
+                            "kredit komputasi",
+                        ],
+                        [
+                            "Redshift",
+                            "cloud AWS",
+                            "per node / RPU",
+                        ],
+                        [
+                            "Databricks SQL",
+                            "lakehouse",
+                            "per DBU",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Database Graf: Neo4j, Cypher, dan Pesaingnya": [
+        {
+            "setelah": 5,
+            "jenis": "pohon",
+            "judul": "BFS dari Ani sampai dua langkah",
+            "ket": "Dodi juga dikenal Citra, tapi BFS mencatatnya sekali, lewat Budi yang diperiksa lebih dulu. Fajar di langkah ketiga nggak ikut.",
+            "akar": {
+                "teks": "Ani (0)",
+                "anak": [
+                    {
+                        "teks": "Budi (1)",
+                        "anak": [
+                            {
+                                "teks": "Dodi (2)",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "Citra (1)",
+                        "anak": [
+                            {
+                                "teks": "Eka (2)",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "Pertanyaan yang sama: SQL rekursif lawan Cypher",
+            "tabel": [
+                {
+                    "kolom": [
+                        "aspek",
+                        "SQL rekursif",
+                        "Cypher",
+                    ],
+                    "baris": [
+                        [
+                            "satu langkah",
+                            "1 JOIN",
+                            "-[:KENAL]->",
+                        ],
+                        [
+                            "n langkah",
+                            "WITH RECURSIVE",
+                            "-[:KENAL*1..n]->",
+                        ],
+                        [
+                            "jalur terpendek",
+                            "ditulis manual",
+                            "shortestPath()",
+                        ],
+                        [
+                            "cara jalan",
+                            "cari di indeks",
+                            "ikuti rujukan",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Deret Waktu: InfluxDB, TimescaleDB, dan Prometheus": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Lima sampel pertama, lalu hasil per ember lima menit",
+            "ket": "Sama dengan contoh kode: sepuluh sampel jadi dua baris.",
+            "tabel": [
+                {
+                    "nama": "sampel 08:00-08:04",
+                    "kolom": [
+                        "detik",
+                        "suhu",
+                    ],
+                    "baris": [
+                        [0, 70.1],
+                        [60, 70.4],
+                        [120, 71.0],
+                        [180, 72.2],
+                        [240, 73.0],
+                    ],
+                },
+                {
+                    "nama": "per 5 menit",
+                    "kolom": [
+                        "ember",
+                        "n",
+                        "min",
+                        "maks",
+                        "rata",
+                    ],
+                    "baris": [
+                        [
+                            "08:00",
+                            5,
+                            70.1,
+                            73.0,
+                            71.34,
+                        ],
+                        [
+                            "08:05",
+                            5,
+                            73.2,
+                            75.3,
+                            74.26,
+                        ],
+                    ],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+    ],
+    "Embedding dan Pencarian Vektor dengan pgvector": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Vektor buatan tangan dan kemiripannya dengan kueri",
+            "ket": "Kueri [0.9, 0.15, 0.0], sama dengan contoh kode. Kosinus makin besar makin mirip, L2 makin kecil makin dekat.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "kata",
+                        "vektor",
+                        "kosinus",
+                        "L2",
+                    ],
+                    "baris": [
+                        [
+                            "kucing",
+                            "0.9 0.1 0.1",
+                            "0.992",
+                            "0.112",
+                        ],
+                        [
+                            "anjing",
+                            "0.8 0.3 0.1",
+                            "0.975",
+                            "0.206",
+                        ],
+                        [
+                            "apel",
+                            "0.1 0.9 0.2",
+                            "0.266",
+                            "1.115",
+                        ],
+                        [
+                            "mobil",
+                            "0.1 0.1 0.9",
+                            "0.126",
+                            "1.205",
+                        ],
+                    ],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+        {
+            "setelah": 4,
+            "jenis": "kurva",
+            "judul": "Brute force tumbuh linear, indeks perkiraan mendekati log n",
+            "ket": "Disederhanakan: kerja pencarian HNSW kira-kira tumbuh seperti log n, dengan imbalan hasil yang sesekali meleset.",
+            "kurva": [
+                "log n",
+                "n",
+            ],
+            "sorot": "log n",
+        },
+    ],
+    "Peta Database Vektor: Pinecone sampai LanceDB": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Peta penyimpan vektor, Oktober 2026",
+            "tabel": [
+                {
+                    "kolom": [
+                        "pilihan",
+                        "ditulis dengan",
+                        "lisensi",
+                        "cara jalan",
+                    ],
+                    "baris": [
+                        [
+                            "pgvector",
+                            "C",
+                            "PostgreSQL Lic.",
+                            "ekstensi PG",
+                        ],
+                        [
+                            "Pinecone",
+                            "layanan",
+                            "proprietary",
+                            "serverless",
+                        ],
+                        [
+                            "Weaviate",
+                            "Go",
+                            "BSD-3-Clause",
+                            "server / cloud",
+                        ],
+                        [
+                            "Qdrant",
+                            "Rust",
+                            "Apache-2.0",
+                            "server / cloud",
+                        ],
+                        [
+                            "Milvus",
+                            "Go, C++",
+                            "Apache-2.0",
+                            "klaster besar",
+                        ],
+                        [
+                            "Chroma",
+                            "Rust, Python",
+                            "Apache-2.0",
+                            "tertanam/server",
+                        ],
+                        [
+                            "LanceDB",
+                            "Rust",
+                            "Apache-2.0",
+                            "tertanam",
+                        ],
+                        [
+                            "FAISS",
+                            "C++",
+                            "MIT",
+                            "pustaka",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+}

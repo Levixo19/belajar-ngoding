@@ -90,7 +90,7 @@ PROFESI = [
         "naik": ["fullstack-developer", "tech-lead"],
         "dekat": ["backend-developer", "android-developer", "qa-engineer"],
         "bekal": [["html"], ["css"], ["javascript"], ["git"]],
-        "pelengkap": ["typescript"],
+        "pelengkap": ["frontend", "techstack", "typescript"],
         "proyek": [
             "Halaman portofolio pribadi yang lolos audit Lighthouse di atas 90",
             "Dasbor cuaca yang memanggil API publik tanpa kunci, lengkap dengan keadaan galat",
@@ -129,7 +129,7 @@ PROFESI = [
         "dekat": ["data-engineer", "devops-engineer", "frontend-developer",
                   "dotnet-developer"],
         "bekal": [["python", "java", "go", "php"], ["sql"], ["git"], ["aplikasi"]],
-        "pelengkap": ["bash", "javascript"],
+        "pelengkap": ["backend", "database", "techstack", "bash", "javascript"],
         "proyek": [
             "API daftar tugas dengan autentikasi, paginasi, dan tes otomatis",
             "Layanan pemendek URL yang mencatat jumlah klik per hari",
@@ -164,7 +164,7 @@ PROFESI = [
         "dekat": ["frontend-developer", "backend-developer", "devops-engineer"],
         "bekal": [["html"], ["css"], ["javascript"], ["sql"], ["git"],
                   ["python", "java", "go", "php", "typescript"]],
-        "pelengkap": ["aplikasi", "bash"],
+        "pelengkap": ["frontend", "backend", "database", "techstack", "aplikasi", "bash"],
         "proyek": [
             "Aplikasi catatan dengan login, berbagi, dan pencarian, dari nol sampai online",
             "Toko daring mini: katalog, keranjang, dan halaman admin",
@@ -199,7 +199,7 @@ PROFESI = [
         "naik": ["tech-lead", "software-architect"],
         "dekat": ["frontend-developer", "backend-developer", "qa-engineer"],
         "bekal": [["kotlin"], ["java"], ["git"]],
-        "pelengkap": ["sql", "aplikasi"],
+        "pelengkap": ["mobile", "sql", "aplikasi"],
         "proyek": [
             "Aplikasi pencatat keuangan harian yang tetap jalan tanpa internet",
             "Klien berita yang memuat data dari API publik dengan cache lokal",
@@ -234,7 +234,7 @@ PROFESI = [
         "naik": ["data-engineer", "machine-learning-engineer"],
         "dekat": ["database-administrator", "data-engineer"],
         "bekal": [["sql"], ["python"]],
-        "pelengkap": ["git"],
+        "pelengkap": ["data", "git"],
         "proyek": [
             "Analisis data terbuka pemerintah (mis. Satu Data Indonesia) lengkap dengan kesimpulan",
             "Dasbor penjualan dari CSV tiruan dengan metrik mingguan",
@@ -270,7 +270,7 @@ PROFESI = [
         "dekat": ["data-analyst", "backend-developer", "database-administrator",
                   "machine-learning-engineer"],
         "bekal": [["python"], ["sql"], ["bash"], ["git"]],
-        "pelengkap": ["fedora", "go", "java"],
+        "pelengkap": ["data", "database", "fedora", "go", "java"],
         "proyek": [
             "Pipeline harian yang menarik API publik, membersihkannya, dan memuat ke SQLite",
             "Pemeriksa mutu data yang menolak muatan bila kolom wajib kosong",
@@ -305,7 +305,7 @@ PROFESI = [
         "naik": ["software-architect"],
         "dekat": ["data-engineer", "linux-sysadmin", "backend-developer"],
         "bekal": [["sql"], ["fedora"], ["bash"]],
-        "pelengkap": ["python"],
+        "pelengkap": ["database", "python"],
         "proyek": [
             "Skrip cadangan dan uji pemulihan otomatis untuk PostgreSQL",
             "Laporan query paling lambat dari log, dengan usulan indeks",
@@ -340,7 +340,7 @@ PROFESI = [
         "naik": ["software-architect", "tech-lead"],
         "dekat": ["data-engineer", "data-analyst", "backend-developer"],
         "bekal": [["python"], ["sql"], ["git"]],
-        "pelengkap": ["bash", "aplikasi"],
+        "pelengkap": ["ai", "data", "bash", "aplikasi"],
         "proyek": [
             "Model klasifikasi sederhana yang disajikan lewat API dan diuji",
             "Perbandingan tiga model pada data publik dengan metrik yang jujur",
@@ -376,7 +376,7 @@ PROFESI = [
         "naik": ["devops-engineer", "site-reliability-engineer", "cloud-engineer"],
         "dekat": ["database-administrator", "devops-engineer"],
         "bekal": [["fedora"], ["bash"], ["git"]],
-        "pelengkap": ["python"],
+        "pelengkap": ["devops", "python"],
         "proyek": [
             "Server rumah dengan layanan systemd buatan sendiri dan pemantauannya",
             "Skrip pengerasan server yang bisa dijalankan ulang tanpa merusak",
@@ -413,7 +413,7 @@ PROFESI = [
         "naik": ["site-reliability-engineer", "software-architect", "tech-lead"],
         "dekat": ["linux-sysadmin", "cloud-engineer", "backend-developer"],
         "bekal": [["git"], ["bash"], ["fedora"], ["python", "go"]],
-        "pelengkap": ["aplikasi"],
+        "pelengkap": ["devops", "keamanan", "aplikasi"],
         "proyek": [
             "Pipeline CI yang menjalankan tes, membangun image, dan deploy ke server uji",
             "Lingkungan pengembangan lengkap dengan satu perintah docker compose",
@@ -448,7 +448,7 @@ PROFESI = [
         "naik": ["software-architect", "tech-lead"],
         "dekat": ["devops-engineer", "cloud-engineer", "backend-developer"],
         "bekal": [["go", "python"], ["bash"], ["fedora"], ["git"]],
-        "pelengkap": ["aplikasi"],
+        "pelengkap": ["devops", "aplikasi"],
         "proyek": [
             "Dasbor SLO untuk layanan kecil lengkap dengan peringatan anggaran galat",
             "Uji beban dan laporan kapasitas satu API",
@@ -484,7 +484,7 @@ PROFESI = [
         "naik": ["software-architect", "site-reliability-engineer"],
         "dekat": ["devops-engineer", "linux-sysadmin"],
         "bekal": [["fedora"], ["bash"], ["git"], ["python", "go"]],
-        "pelengkap": ["sql"],
+        "pelengkap": ["devops", "keamanan", "sql"],
         "proyek": [
             "Situs statis dengan CDN dan HTTPS di cloud, seluruhnya dengan Terraform",
             "Laporan biaya bulanan otomatis dari tagihan cloud",
@@ -516,7 +516,7 @@ PROFESI = [
         "naik": ["software-architect", "tech-lead"],
         "dekat": ["systems-programmer", "game-programmer"],
         "bekal": [["c"], ["cpp"], ["git"]],
-        "pelengkap": ["rust", "bash"],
+        "pelengkap": ["iot", "rust", "bash"],
         "proyek": [
             "Stasiun cuaca ESP32 yang mengirim data ke server kecil",
             "Driver sensor I2C yang ditulis dari membaca datasheet-nya langsung",
@@ -545,7 +545,7 @@ PROFESI = [
         "naik": ["software-architect", "tech-lead"],
         "dekat": ["embedded-engineer", "backend-developer", "site-reliability-engineer"],
         "bekal": [["c", "cpp", "rust"], ["go", "rust", "cpp"], ["fedora"], ["git"]],
-        "pelengkap": ["bash"],
+        "pelengkap": ["bahasalain", "bash"],
         "proyek": [
             "Basis data key-value sederhana dengan log tulis-depan",
             "Shell mini dengan pipa dan pengalihan",
@@ -579,7 +579,7 @@ PROFESI = [
         "naik": ["tech-lead"],
         "dekat": ["systems-programmer", "dotnet-developer", "embedded-engineer"],
         "bekal": [["csharp", "cpp"], ["git"]],
-        "pelengkap": ["c"],
+        "pelengkap": ["game", "c"],
         "proyek": [
             "Game 2D kecil yang selesai dan bisa diunduh",
             "Prototipe fisika sederhana tanpa mesin game",
@@ -613,7 +613,7 @@ PROFESI = [
         "naik": ["software-architect", "tech-lead"],
         "dekat": ["backend-developer", "game-programmer"],
         "bekal": [["csharp"], ["sql"], ["git"]],
-        "pelengkap": ["vb", "aplikasi"],
+        "pelengkap": ["backend", "vb", "aplikasi"],
         "proyek": [
             "Web API inventaris dengan ASP.NET Core dan Entity Framework",
             "Aplikasi desktop kecil untuk mengelola data pelanggan",
@@ -648,7 +648,7 @@ PROFESI = [
         "naik": ["tech-lead", "application-security-engineer"],
         "dekat": ["frontend-developer", "backend-developer", "android-developer"],
         "bekal": [["javascript", "python", "java"], ["git"], ["html"]],
-        "pelengkap": ["sql", "aplikasi"],
+        "pelengkap": ["frontend", "devops", "sql", "aplikasi"],
         "proyek": [
             "Rangkaian tes end-to-end untuk aplikasi web contoh dengan Playwright",
             "Koleksi tes API yang berjalan otomatis di CI",
@@ -686,7 +686,7 @@ PROFESI = [
         "dekat": ["backend-developer", "qa-engineer", "devops-engineer"],
         "bekal": [["php", "python", "java", "javascript"], ["sql"], ["fedora"],
                   ["bash"]],
-        "pelengkap": ["html", "git"],
+        "pelengkap": ["keamanan", "html", "git"],
         "proyek": [
             "Laporan uji keamanan untuk aplikasi latihan yang sengaja rentan",
             "Aturan Semgrep untuk satu pola celah yang sering muncul",
@@ -725,7 +725,7 @@ PROFESI = [
         "naik": ["tech-lead"],
         "dekat": ["tech-lead", "backend-developer", "cloud-engineer"],
         "bekal": [["aplikasi"], ["java", "python", "go", "csharp"], ["sql"], ["git"]],
-        "pelengkap": ["bash", "fedora"],
+        "pelengkap": ["techstack", "bash", "fedora"],
         "proyek": [
             "Dokumen desain sistem pemesanan tiket, lengkap dengan alternatif yang ditolak",
             "Tiga ADR untuk keputusan nyata di proyekmu sendiri",
@@ -757,7 +757,7 @@ PROFESI = [
         "naik": [],
         "dekat": ["software-architect", "fullstack-developer", "backend-developer"],
         "bekal": [["git"], ["aplikasi"], ["java", "python", "go", "javascript"]],
-        "pelengkap": ["sql"],
+        "pelengkap": ["techstack", "sql"],
         "proyek": [
             "Panduan kontribusi dan template pull request untuk proyek tim",
             "Rencana onboarding dua minggu untuk anggota baru",
@@ -787,7 +787,7 @@ PROFESI = [
         "naik": ["tech-lead"],
         "dekat": ["qa-engineer", "frontend-developer"],
         "bekal": [["git"], ["html"], ["python", "javascript"]],
-        "pelengkap": ["bash"],
+        "pelengkap": ["techstack", "bash"],
         "proyek": [
             "Tutorial pemula untuk alat open source favoritmu",
             "Rujukan API yang dibuat dari spesifikasi OpenAPI",

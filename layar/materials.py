@@ -123,7 +123,7 @@ def _kotak_kode(kode, bahasa, konteks, lbr, sorot_nyala):
     baris = [_garis_label(p.instruksi, lbr, peran_atas)]
 
     if sorot_nyala and bahasa:
-        baris.extend(sorot.sorot_baris(kode, bahasa, awalan="  "))
+        baris.extend(sorot.sorot_baris(kode, berkas.sorot_untuk(bahasa), awalan="  "))
     else:
         for cl in kode.splitlines():
             baris.append(tema.cat("  " + cl, "kode_string"))
@@ -161,7 +161,7 @@ def baris_materi(topic, bahasa="", kata_sorot="", kunci_bahasa=""):
 
         if section.get("code"):
             konteks = section.get("heading") or topic["title"]
-            lines.extend(_kotak_kode(section["code"], bahasa, konteks,
+            lines.extend(_kotak_kode(section["code"], section.get("bahasa") or bahasa, konteks,
                                      lbr, sorot_nyala))
 
         # Gambar konsep yang sama dengan SVG di web (inti/visual.py).

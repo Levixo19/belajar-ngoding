@@ -21,10 +21,12 @@ mengejar.
 Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
-Status: 20 kurikulum, 537 materi dalam 142 bab bertingkat, 121 kuis / 968 soal,
-319 latihan (309 dinilai otomatis) termasuk 20 proyek akhir, 1210 tes.
+Status: 32 kurikulum, 1.062 materi dalam 287 bab bertingkat, 266 kuis / 2.159
+soal, 558 latihan termasuk 32 proyek akhir, 1308 tes. Dua puluh kurikulum
+pertama mengajarkan BAHASA; dua belas sisanya ranah tech stack (lihat
+"Kurikulum tech stack" di bawah).
 Tiap materi ditutup bagian "Di dunia nyata" (kasus nyata + cara memecahkannya),
-dan 745 gambar konsep tersebar di 528 materi (lihat "Observatorium" di bawah).
+dan 1.356 gambar konsep tersebar di 1.049 materi (lihat "Observatorium").
 Ditambah Pustaka (9.809 tautan belajar beratribusi) dan Peta Karier (21 profesi).
 
 144 materi ditambahkan sekaligus setelah audit cakupan tiga sudut (kode nyata,
@@ -1117,6 +1119,62 @@ sebuah OBSERVATORIUM. Yang dibangun dan sekarang mengikat:
   menghitung kesiapan kedua.
 * **Pemilih yang menunjuk `<html>` dilarang di lapisan baru** (pagar POPULASI
   menghitungnya, termasuk di dalam `@media`). Token baru dipasang di `body`.
+
+## Kurikulum tech stack (2026-10-19)
+
+Pemilik minta materi "semua tech stack yang ada sekarang tanpa terkecuali".
+Hasilnya 12 kurikulum ranah: `techstack` (Tech Stack & Arsitektur),
+`frontend`, `backend`, `database`, `mobile` (Mobile & Desktop), `game`
+(Game & Grafis), `iot` (Embedded & IoT, runner C), `devops` (DevOps &
+Cloud), `keamanan` (Keamanan Siber, sudut pandang bertahan), `data` (Data &
+Analitik), `ai` (AI & Machine Learning), dan `bahasalain` (bahasa yang belum
+punya kurikulum sendiri). Cakupannya diturunkan dari inventaris riset
+(Survei Stack Overflow 2024-2026, State of JS/CSS/HTML, roadmap.sh,
+JetBrains): tiap teknologi di inventaris dipetakan ke satu judul materi,
+yang dominan dapat materi sendiri, pemain kecil masuk materi "peta". Yang
+mengikat:
+
+* **Satu registry: `data/kurikulum_tech.py`.** Kurikulum ranah TIDAK
+  didaftarkan di `data/__init__.py` atau ditulis tangan di `main.py`.
+  Registry memuat `data/<key>_materials/_quizzes/_exercises.py` dan
+  `data/visual/<key>.py` kalau ada, lalu memperluas `LANGUAGES`, `BAB`,
+  `KUIS_MATERI`, dan peta Pustaka (`topik`/`peta` per entri, hanya untuk
+  kurikulum yang datanya lengkap, karena tes Pustaka menolak peta yang
+  menunjuk kurikulum tak terdaftar). Kurikulum yang datanya belum lengkap
+  tidak terdaftar sama sekali, bukan tampil setengah jadi.
+* **`<KEY>_BAB` adalah spesifikasi JUMLAH, bukan rentang.** Rentangnya
+  dihitung registry; jumlah yang tidak cocok dengan banyaknya materi atau
+  tingkat yang turun = `ValueError`, persis aturan generator `data/bab.py`.
+  `<KEY>_KUIS_MATERI` tinggal di berkas kuisnya sendiri.
+* **Isinya dirakit `alat/rakit_kurikulum.py`** dari draf per bab
+  (`bab_NN.py` berisi BAB/MATERI/KUIS/LATIHAN tanpa nomor). Alat itu
+  memberi nomor, menjalankan ulang tes kurikulum lain atas draf
+  (`test_data`, `test_mutu_soal`, `test_solutions` dengan LANGUAGES
+  diganti), menjalankan tiap contoh PROGRAM, dan menolak menulis kalau satu
+  pemeriksaan gagal. Sesudah dirakit, berkas data disunting seperti
+  kurikulum lain (`ganti_badan.py`, `tambah_bagian.py`); drafnya tidak ikut
+  di repo.
+* **Medan `"bahasa"` per bagian materi.** Kurikulum ranah memuat contoh
+  dalam banyak bahasa. Tanpa medan itu, blok berbahasa runner kurikulum.
+  `"terminal"` = SESI selamanya (docker, kubectl, terraform, npm: pagar
+  yang sama dengan Fedora/Git, tanpa pengecualian shebang). `"teks"` =
+  ILUSTRASI. Nilai di `berkas.BAHASA_LUAR` (YAML, Dockerfile, JSX, Swift,
+  dialek SQL selain SQLite, ...) tidak pernah dijalankan dan diberi petunjuk
+  "dibaca di sini, dicoba di proyekmu". `"browser"` untuk JS yang memakai
+  `document`. Web (`isi.bahasa_blok`), terminal (`layar/materials.py`),
+  `tebak.py`, dan `test_solutions` semuanya membaca medan ini.
+* **Program utuh yang mengimpor paket pihak ketiga = POTONGAN**
+  (`berkas.paket_luar`, `butuh_paket`): Python, JS/TS, Java/Kotlin, Rust,
+  Go, C#, C/C++. Aplikasi wajib offline dan tidak memasang paket, jadi
+  tombol Jalankan untuk contoh Flask/React/Spring/Bevy akan selalu gagal.
+  Petunjuk "Butuh paket X" hanya untuk blok yang memang utuh, modul lokal
+  (`# file hitung.py` di blok yang sama, `package` milik sendiri, `mod`
+  Rust) tidak dihitung.
+* **Penanda daftar bernomor paling banyak dua digit** (`isi._POLA_NOMOR`).
+  Baris prosa yang terbungkus tepat sebelum "2026." atau "18000." dulu
+  tampil sebagai `<ol start="2026">`; tujuh materi lama ikut kena.
+* **Peta Karier**: kurikulum ranah masuk `pelengkap`, bukan `bekal`.
+  Menambah bekal menurunkan persen kesiapan pelajar yang sudah tercatat.
 
 ## Gaya bahasa materi
 

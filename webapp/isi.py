@@ -49,6 +49,22 @@ def bahasa_sorot(lang):
     return lang["key"] if lang["key"] in _BAHASA_SOROT else lang["runner"]
 
 
+def bahasa_blok(bagian, lang):
+    """(runner, penyorot) untuk satu bagian materi.
+
+    Kurikulum tech stack memuat contoh dalam banyak bahasa sekaligus (Spring
+    di kurikulum Backend, YAML dan perintah docker di DevOps), jadi bagian
+    boleh menyebut `"bahasa"`-nya sendiri. Tanpa medan itu, bahasanya bahasa
+    kurikulum seperti sebelumnya. "terminal" disorot sebagai bash tapi
+    diklasifikasikan sebagai sesi, dan bahasa di `berkas.BAHASA_LUAR`
+    (YAML, Swift, ...) cuma dibaca; keduanya tidak pernah jalan.
+    """
+    sendiri = bagian.get("bahasa")
+    if not sendiri:
+        return lang["runner"], bahasa_sorot(lang)
+    return sendiri, berkas.sorot_untuk(sendiri)
+
+
 def token_kode(kode, bahasa):
     """[(jenis, teks)] -> [[jenis, teks]] siap JSON.
 
@@ -67,7 +83,9 @@ def token_kode(kode, bahasa):
 # di Bash Pola). Menerima `\s+` berarti mengubah tabel operator jadi daftar
 # berbulatan dan membuang perataan kolom yang justru isi informasinya.
 _POLA_BUTIR = re.compile(r"^(\s*)[-*•] (?=\S)")
-_POLA_NOMOR = re.compile(r"^(\s*)(\d+)[.)] (?=\S)")
+# Paling banyak dua digit: "18000. Kolom nama ..." dan "2026. gRPC ..." itu
+# baris prosa yang kebetulan diawali bilangan, bukan butir ke-18000.
+_POLA_NOMOR = re.compile(r"^(\s*)(\d{1,2})[.)] (?=\S)")
 
 # Butir YAML ("- uses: actions/checkout@v4", "- run: ...") di dalam contoh
 # berkas konfigurasi. Tanda hubungnya bagian dari sintaks YAML, bukan penanda
@@ -486,15 +504,21 @@ def bagian_materi(materi, lang):
                 "blok": blok_badan(badan),
             })
         if kode is not None:
+            bhs_run, bhs_tok = bahasa_blok(bagian, lang)
             keluar.append({
                 "jenis": "kode",
+                # Bahasa blok ini sendiri (bisa berbeda dari kurikulumnya) dan
+                # apakah toolchain-nya terpasang: dua syarat tombol Jalankan.
+                "bahasa": bhs_run,
+                "sorot": bhs_tok,
+                "siap": bool(bhs_run in runner.TOOLCHAINS and runner.tersedia(bhs_run)),
                 # Judulnya menempel pada blok PERTAMA saja. Mengulangnya di
                 # blok kode membuat satu heading tercetak dua kali berturut
                 # turut di layar.
                 "judul": "" if badan else bagian.get("heading", ""),
                 "kode": kode,
-                "token": token_kode(kode, bhs_sorot),
-                "petunjuk": _petunjuk(bhs_berkas, kode,
+                "token": token_kode(kode, bhs_tok),
+                "petunjuk": _petunjuk(bhs_run, kode,
                                       bagian.get("heading") or materi["title"]),
             })
         if not badan and kode is None:

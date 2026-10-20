@@ -21,7 +21,7 @@ import {
 } from "./rasi.js";
 import { tingkatGerak } from "./gerak.js";
 
-const W = 1400, H = 860;
+const W = 1400, H = 1420;
 
 /* Letak tiap kurikulum (pusat rasi) dan keluarganya. Kurikulum baru yang
    belum terdaftar di sini tetap muncul, di baris cadangan paling bawah. */
@@ -33,10 +33,15 @@ const TATA = {
   csharp: [1270, 420, "jvm"], vb: [1120, 540, "jvm"],
   python: [430, 560, "skrip"], ruby: [250, 640, "skrip"], bash: [570, 700, "skrip"],
   git: [790, 600, "perkakas"], fedora: [980, 680, "perkakas"], sql: [1290, 680, "perkakas"],
+  techstack: [150, 980, "tech"], frontend: [390, 1055, "tech"], backend: [630, 975, "tech"],
+  database: [870, 1050, "tech"], devops: [1110, 975, "tech"], keamanan: [1310, 1065, "tech"],
+  mobile: [150, 1235, "tech"], game: [390, 1300, "tech"], iot: [630, 1230, "tech"],
+  data: [870, 1300, "tech"], ai: [1110, 1230, "tech"], bahasalain: [1310, 1310, "tech"],
 };
 const KELUARGA = {
   web: ["Web", 60, 60], sistem: ["Sistem", 640, 50], jvm: ["JVM & .NET", 1080, 50],
   skrip: ["Skrip", 60, 835], perkakas: ["Perkakas & data", 1110, 835],
+  tech: ["Tech stack", 60, 1405],
 };
 
 const KONSEP = [

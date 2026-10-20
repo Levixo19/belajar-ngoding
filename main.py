@@ -240,6 +240,11 @@ LANGUAGES = [
     },
 ]
 
+# Kurikulum tech stack (frontend, backend, DevOps, ...) tinggal di satu
+# registry; tiap kurikulum baru muncul begitu ketiga berkas datanya lengkap.
+from data import kurikulum_tech  # noqa: E402
+LANGUAGES.extend(kurikulum_tech.entri())
+
 
 def _soal_per_kuis(lang):
     # Berkunci judul_kunci, sama seperti kunci progres yang tersimpan. Judul

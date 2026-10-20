@@ -1,0 +1,1388 @@
+"""Gambar konsep kurikulum Game & Grafis. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Game Loop, Frame, dan Delta Time": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Game loop: tiga langkah yang diulang tiap frame",
+            "ket": "Di 60 FPS putaran ini terjadi 60 kali per detik, jadi satu putaran punya waktu sekitar 16,7 milidetik.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "game dinyalakan",
+                },
+                {
+                    "jenis": "masukan",
+                    "teks": "input: baca tombol dan mouse",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "update: hitung keadaan baru",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "render: gambar satu frame",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "game masih jalan?",
+                    "ya": 1,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "game ditutup",
+                },
+            ],
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "Kecepatan 180 piksel per detik di tiga FPS",
+            "ket": "Makin pendek frame-nya, makin kecil langkahnya. Totalnya per detik tetap 180 piksel.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "FPS",
+                        "lama 1 frame",
+                        "maju per frame",
+                    ],
+                    "baris": [
+                        [
+                            "30",
+                            "33,3 ms",
+                            "6 piksel",
+                        ],
+                        [
+                            "60",
+                            "16,7 ms",
+                            "3 piksel",
+                        ],
+                        [
+                            "144",
+                            "6,9 ms",
+                            "1,25 piksel",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Fixed Timestep dan Jam Palsu": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Isi akumulator di contoh: langkah 10 ms, 2 piksel per langkah",
+            "ket": "Kolom akumulator adalah isi celengan sesudah frame itu dimasukkan, sebelum langkah fisika dijalankan.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "frame",
+                        "akumulator",
+                        "langkah",
+                        "sisa",
+                        "x",
+                    ],
+                    "baris": [
+                        [
+                            "25 ms",
+                            "25",
+                            "2",
+                            "5",
+                            "4",
+                        ],
+                        [
+                            "7 ms",
+                            "12",
+                            "1",
+                            "2",
+                            "6",
+                        ],
+                        [
+                            "18 ms",
+                            "20",
+                            "2",
+                            "0",
+                            "10",
+                        ],
+                        [
+                            "40 ms",
+                            "40",
+                            "4",
+                            "0",
+                            "18",
+                        ],
+                    ],
+                    "sorot_baris": [1],
+                },
+            ],
+        },
+    ],
+    "Input, Event, dan State Game": [
+        {
+            "setelah": 6,
+            "jenis": "alur",
+            "judul": "Perpindahan layar di game: menu, main, jeda, kalah",
+            "ket": "Di layar jeda cuma render yang jalan. Escape yang ditekan lagi mengembalikan pemain ke layar main.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "layar menu",
+                },
+                {
+                    "jenis": "masukan",
+                    "teks": "Enter ditekan",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "main: update dan render",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Escape baru ditekan?",
+                    "ya": 4,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "jeda, Escape lagi: lanjut",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "nyawa habis?",
+                    "ya": 6,
+                    "tidak": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "kalah: Enter ke menu",
+                    "ke": 0,
+                },
+            ],
+        },
+    ],
+    "Vektor 2D: Posisi, Kecepatan, dan Arah": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Operasi vektor untuk a = (3, 4) dan b = (1, 2)",
+            "ket": "Tambah, kurang, dan skala menghasilkan vektor. Panjang dan dot menghasilkan satu angka.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "operasi",
+                        "hasil",
+                        "jenis hasil",
+                    ],
+                    "baris": [
+                        [
+                            "a + b",
+                            "(4, 6)",
+                            "vektor",
+                        ],
+                        [
+                            "a - b",
+                            "(2, 2)",
+                            "vektor",
+                        ],
+                        [
+                            "a × 2",
+                            "(6, 8)",
+                            "vektor",
+                        ],
+                        [
+                            "panjang a",
+                            "5",
+                            "angka",
+                        ],
+                        [
+                            "normal a",
+                            "(0.6, 0.8)",
+                            "vektor",
+                        ],
+                        [
+                            "dot(a, b)",
+                            "3 + 8 = 11",
+                            "angka",
+                        ],
+                    ],
+                    "sorot_baris": [4],
+                },
+            ],
+        },
+    ],
+    "Tabrakan AABB, Lingkaran, dan Respons": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Pemain masuk ke dinding: tumpang tindih di dua sumbu",
+            "ket": "Tumpang tindih x lebih kecil (9) daripada y (32), jadi pemain didorong 9 piksel ke kiri.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "kotak",
+                        "kiri",
+                        "kanan",
+                        "atas",
+                        "bawah",
+                    ],
+                    "baris": [
+                        [
+                            "pemain",
+                            "85",
+                            "109",
+                            "50",
+                            "82",
+                        ],
+                        [
+                            "dinding",
+                            "100",
+                            "120",
+                            "0",
+                            "200",
+                        ],
+                        [
+                            "tumpang",
+                            "109 - 100 = 9",
+                            "",
+                            "82 - 50 = 32",
+                            "",
+                        ],
+                    ],
+                    "sorot_baris": [2],
+                },
+            ],
+        },
+    ],
+    "Transformasi: Translasi, Rotasi, dan Skala": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Titik (10, 0), putar 90 derajat, geser (100, 50)",
+            "ket": "Urutan yang sama dengan contoh kode. Putar dulu memberi titik di bawah tank, geser dulu melemparnya ke luar layar.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "urutan",
+                        "sesudah tahap 1",
+                        "sesudah tahap 2",
+                    ],
+                    "baris": [
+                        [
+                            "putar, geser",
+                            "(0, 10)",
+                            "(100, 60)",
+                        ],
+                        [
+                            "geser, putar",
+                            "(110, 50)",
+                            "(-50, 110)",
+                        ],
+                    ],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+    ],
+    "Phaser: Scene, Sprite, dan Fisika Arcade": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Urutan fungsi di satu scene Phaser",
+            "ket": "update dipanggil di setiap frame sampai scene dihentikan atau diganti scene lain.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "scene dimulai",
+                },
+                {
+                    "jenis": "masukan",
+                    "teks": "preload(): muat aset",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "create(): buat sprite, sekali",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "update(time, delta)",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "scene masih aktif?",
+                    "ya": 3,
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pindah ke scene lain",
+                },
+            ],
+        },
+    ],
+    "Tilemap, Kamera, dan Animasi Sprite": [
+        {
+            "setelah": 2,
+            "jenis": "larik",
+            "nama": "baris 2",
+            "judul": "Titik (70, 80) jatuh di kolom 2 baris 2: lubang di tanah",
+            "ket": "70 / 32 dibulatkan ke bawah jadi 2. Petak 0 kosong, petak 1 padat, jadi pemain di sini jatuh ke lubang.",
+            "isi": [
+                "1",
+                "1",
+                "0",
+                "0",
+                "1",
+                "1",
+            ],
+            "sorot": [2],
+            "penunjuk": {
+                "x=70": 2,
+            },
+        },
+    ],
+    "State Machine untuk Karakter dan Menu": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Satu frame di state diam: syarat diperiksa berurutan",
+            "ket": "Urutan ini sama dengan update() milik diam di contoh kode. Syarat yang lebih atas menang.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "state sekarang: diam",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "masih di tanah?",
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "tombol lompat ditekan?",
+                    "ya": 6,
+                    "tidak": 3,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "ada input kiri/kanan?",
+                    "ya": 7,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "tetap diam",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pindah ke jatuh",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pindah ke lompat",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pindah ke lari",
+                },
+            ],
+        },
+    ],
+    "Godot: Scene Tree, Node, dan Sinyal": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Scene utama: Main punya dua anak, Player dan PanelNyawa",
+            "ket": "Urutan _ready: Sprite2D, CollisionShape2D, Camera2D, Player, Label, PanelNyawa, lalu Main paling akhir.",
+            "akar": {
+                "teks": "Main",
+                "anak": [
+                    {
+                        "teks": "Player",
+                        "anak": [
+                            {
+                                "teks": "Sprite2D",
+                            },
+                            {
+                                "teks": "CollisionShape2D",
+                            },
+                            {
+                                "teks": "Camera2D",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "PanelNyawa",
+                        "anak": [
+                            {
+                                "teks": "Label",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "GDScript untuk Pelajar JavaScript dan Python": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Hal yang sama di tiga bahasa",
+            "ket": "Tiga baris terakhir yang paling sering bikin pindahan dari JS dan Python tersandung.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Hal",
+                        "JavaScript",
+                        "Python",
+                        "GDScript",
+                    ],
+                    "baris": [
+                        [
+                            "variabel",
+                            "let x = 1",
+                            "x = 1",
+                            "var x = 1",
+                        ],
+                        [
+                            "benar",
+                            "true",
+                            "True",
+                            "true",
+                        ],
+                        [
+                            "kosong",
+                            "null",
+                            "None",
+                            "null",
+                        ],
+                        [
+                            "tambah satu",
+                            "x++",
+                            "x += 1",
+                            "x += 1",
+                        ],
+                        [
+                            "5 / 2",
+                            "2.5",
+                            "2.5",
+                            "2",
+                        ],
+                        [
+                            "\"a\" + 1",
+                            "\"a1\"",
+                            "TypeError",
+                            "galat",
+                        ],
+                        [
+                            "cetak a dan 1",
+                            "a 1",
+                            "a 1",
+                            "a1",
+                        ],
+                    ],
+                    "sorot_baris": [4, 5, 6],
+                },
+            ],
+        },
+    ],
+    "Unity: GameObject, Component, dan Siklus Update": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Isi Hierarchy: Senter ikut bergerak bersama Pemain",
+            "ket": "Tiap simpul adalah GameObject. Komponennya ada di kurung siku pada contoh di atas.",
+            "akar": {
+                "teks": "Scene",
+                "anak": [
+                    {
+                        "teks": "Main Camera",
+                    },
+                    {
+                        "teks": "Pemain",
+                        "anak": [
+                            {
+                                "teks": "Senter",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "Musuh",
+                    },
+                    {
+                        "teks": "Lantai",
+                    },
+                    {
+                        "teks": "Awan",
+                    },
+                ],
+            },
+        },
+    ],
+    "Fisika Unity: Rigidbody, Collider, dan FixedUpdate": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Satu langkah fisika di dalam satu frame",
+            "ket": "FixedUpdate bisa jalan nol, satu, atau beberapa kali sebelum Update. Kejadian tabrakan datang sesudah fisika maju.",
+            "pelaku": [
+                "Unity",
+                "Skripmu",
+                "Mesin fisika",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "FixedUpdate()",
+                ],
+                [
+                    0,
+                    2,
+                    "maju 0,02 detik",
+                ],
+                [
+                    2,
+                    1,
+                    "OnCollisionEnter2D()",
+                ],
+                [
+                    0,
+                    1,
+                    "Update()",
+                ],
+                [
+                    0,
+                    1,
+                    "LateUpdate()",
+                ],
+            ],
+        },
+    ],
+    "Membangun Game Unity untuk Android dan Web": [
+        {
+            "setelah": 2,
+            "jenis": "alur",
+            "judul": "Satu proyek, beberapa hasil build",
+            "ket": "Profil Android menghasilkan APK untuk dicoba atau AAB untuk Google Play. Profil Web menghasilkan folder berisi index.html dan .wasm.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "proyek Unity (URP)",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "pilih di Build Profiles",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "target Android?",
+                    "tidak": 6,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "IL2CPP + ARM64",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "untuk Google Play?",
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "AAB",
+                    "ke": 8,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "folder Web (index.html, .wasm)",
+                    "ke": 8,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "APK untuk dicoba",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "siap dibagikan",
+                },
+            ],
+        },
+    ],
+    "Pathfinding Grid: BFS, Dijkstra, dan A*": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Rute Dijkstra memutar lewat bawah",
+            "ket": "Tanda * adalah rute. Dua kotak lumpur (9) dihindari: 9 langkah dengan biaya total 9.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                    ],
+                    "baris": [
+                        [
+                            "S",
+                            ".",
+                            "9",
+                            "9",
+                            ".",
+                            "G",
+                        ],
+                        [
+                            "*",
+                            "#",
+                            ".",
+                            ".",
+                            "#",
+                            "*",
+                        ],
+                        [
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 5,
+            "jenis": "tabel",
+            "judul": "BFS, Dijkstra, dan A* berdampingan",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Algoritma",
+                        "Ambil berikutnya",
+                        "Biaya medan",
+                        "Dijamin",
+                    ],
+                    "baris": [
+                        [
+                            "BFS",
+                            "yang dulu masuk",
+                            "diabaikan",
+                            "langkah sedikit",
+                        ],
+                        [
+                            "Dijkstra",
+                            "g terkecil",
+                            "dihitung",
+                            "termurah",
+                        ],
+                        [
+                            "A*",
+                            "g + h terkecil",
+                            "dihitung",
+                            "termurah",
+                        ],
+                    ],
+                    "sorot_baris": [2],
+                },
+            ],
+        },
+    ],
+    "Perilaku Musuh: State Machine dan Behavior Tree": [
+        {
+            "setelah": 3,
+            "jenis": "pohon",
+            "judul": "Behavior tree musuh: cabang paling kiri paling mendesak",
+            "ket": "Selector mencoba cabang dari kiri. Tiap sequence baru menjalankan aksinya kalau kondisinya berhasil.",
+            "akar": {
+                "teks": "selector",
+                "anak": [
+                    {
+                        "teks": "kabur (sequence)",
+                        "anak": [
+                            {
+                                "teks": "sekarat?",
+                            },
+                            {
+                                "teks": "lari",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "serang (sequence)",
+                        "anak": [
+                            {
+                                "teks": "dekat?",
+                            },
+                            {
+                                "teks": "pukul",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "kejar (sequence)",
+                        "anak": [
+                            {
+                                "teks": "terlihat?",
+                            },
+                            {
+                                "teks": "kejar",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "patroli",
+                    },
+                ],
+            },
+        },
+    ],
+    "Unreal Engine: Blueprints, C++, dan Royalti": [
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "Tiga engine besar berdampingan",
+            "ket": "Batas biaya ditulis per tahun untuk Unity dan per produk untuk Unreal.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "Hal",
+                        "Unity",
+                        "Unreal",
+                        "Godot",
+                    ],
+                    "baris": [
+                        [
+                            "bahasa",
+                            "C#",
+                            "C++, Blueprints",
+                            "GDScript, C#",
+                        ],
+                        [
+                            "biaya",
+                            "gratis s/d 200rb",
+                            "5% di atas 1 jt",
+                            "gratis (MIT)",
+                        ],
+                        [
+                            "kuat di",
+                            "ponsel, indie",
+                            "3D kelas atas",
+                            "2D, indie",
+                        ],
+                        [
+                            "komputer",
+                            "sedang",
+                            "kuat",
+                            "ringan",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Engine dan Framework Game": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Engine dengan editor dan framework kode-sentris",
+            "ket": "Lisensi GameMaker gratis untuk nonkomersial. Bevy dibahas di bab 09.",
+            "tabel": [
+                {
+                    "nama": "Engine dengan editor",
+                    "kolom": [
+                        "Nama",
+                        "Bahasa",
+                        "Lisensi",
+                        "Cocok untuk",
+                    ],
+                    "baris": [
+                        [
+                            "GameMaker",
+                            "GML",
+                            "berbayar",
+                            "2D indie",
+                        ],
+                        [
+                            "Defold",
+                            "Lua",
+                            "Defold License",
+                            "ponsel, web",
+                        ],
+                        [
+                            "Cocos Creator",
+                            "TypeScript",
+                            "milik Cocos",
+                            "game kasual",
+                        ],
+                        [
+                            "Roblox Studio",
+                            "Luau",
+                            "milik Roblox",
+                            "game di Roblox",
+                        ],
+                        [
+                            "O3DE",
+                            "C++, Lua",
+                            "Apache, MIT",
+                            "simulasi 3D",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "Framework",
+                    "kolom": [
+                        "Nama",
+                        "Bahasa",
+                        "Lisensi",
+                        "Cocok untuk",
+                    ],
+                    "baris": [
+                        [
+                            "MonoGame",
+                            "C#",
+                            "Ms-PL",
+                            "2D kode-sentris",
+                        ],
+                        [
+                            "libGDX",
+                            "Java, Kotlin",
+                            "Apache 2.0",
+                            "lanjutan Java",
+                        ],
+                        [
+                            "LÖVE",
+                            "Lua",
+                            "zlib",
+                            "game jam 2D",
+                        ],
+                        [
+                            "pygame-ce",
+                            "Python",
+                            "LGPL 2.1",
+                            "prototipe 2D",
+                        ],
+                        [
+                            "raylib",
+                            "C",
+                            "zlib",
+                            "belajar di C",
+                        ],
+                        [
+                            "SDL",
+                            "C",
+                            "zlib",
+                            "engine sendiri",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Menerbitkan Game: itch.io dan Steam": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Dari game selesai sampai pembaruan",
+            "ket": "Jalur Steam punya masa tunggu 30 hari dan halaman Coming Soon minimal dua minggu. Jalur itch.io bisa hari itu juga.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "game selesai",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "uji di komputer lain",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "rilis di Steam?",
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "bayar Steam Direct (100 dolar)",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Coming Soon minimal 2 minggu",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Valve memeriksa toko dan build",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "rilis di Steam",
+                    "ke": 8,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "unggah ke itch.io (butler)",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pembaruan dan patch notes",
+                },
+            ],
+        },
+    ],
+    "Pipeline Grafis: dari Segitiga ke Piksel": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Satu segitiga melewati pipeline grafis",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "Data vertex (posisi, warna)",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Vertex shader: ke clip space",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Rakit segitiga, clipping",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Rasterisasi: cari piksel",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Fragment shader: hitung warna",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Lolos depth test?",
+                    "ya": 6,
+                    "tidak": 7,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Tulis ke framebuffer",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "Fragmen dibuang",
+                },
+            ],
+            "ket": "Vertex shader dan fragment shader bisa diprogram; tahap lain fixed function.",
+        },
+    ],
+    "Rasterizer Perangkat Lunak": [
+        {
+            "setelah": 3,
+            "jenis": "larik",
+            "judul": "Baris piksel y = 6 dari rasterizer ASCII",
+            "nama": "y=6, x=3..14",
+            "isi": [
+                ".",
+                ".",
+                "#",
+                "#",
+                "#",
+                "#",
+                "#",
+                "#",
+                "#",
+                ".",
+                ".",
+                ".",
+            ],
+            "rentang": [2, 9],
+            "penunjuk": {
+                "x=5": 2,
+                "x=11": 8,
+            },
+            "ket": "Pusat piksel x=5 sampai x=11 di baris 6 lolos ketiga edge function.",
+        },
+    ],
+    "Shader, GLSL, dan HLSL": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Data mengalir dari atribut sampai warna",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "Atribut vertex + uniform",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Vertex shader",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Rasterizer: interpolasi varying",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "Fragment shader",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "Warna piksel",
+                },
+            ],
+            "ket": "Uniform terbaca di kedua shader; varying hanya mengalir dari vertex ke fragment.",
+        },
+    ],
+    "OpenGL, OpenGL ES, dan WebGL": [
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "Keluarga API grafis klasik Khronos",
+            "tabel": [
+                {
+                    "kolom": [
+                        "API",
+                        "Dasar",
+                        "Platform",
+                        "Status",
+                    ],
+                    "baris": [
+                        [
+                            "OpenGL 4.6",
+                            "spesifikasi",
+                            "Windows, Linux",
+                            "tanpa versi baru",
+                        ],
+                        [
+                            "OpenGL ES 3.2",
+                            "subset OpenGL",
+                            "Android, embed",
+                            "dipertahankan",
+                        ],
+                        [
+                            "WebGL 2.0",
+                            "OpenGL ES 3.0",
+                            "browser",
+                            "stabil",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Di macOS OpenGL berhenti di 4.1 dan berstatus usang sejak 2018.",
+        },
+    ],
+    "Vulkan, Metal, DirectX 12, dan WebGPU": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Empat API GPU modern",
+            "tabel": [
+                {
+                    "kolom": [
+                        "API",
+                        "Pemilik",
+                        "Platform",
+                        "Shader",
+                    ],
+                    "baris": [
+                        [
+                            "Vulkan",
+                            "Khronos",
+                            "PC, Android",
+                            "GLSL/HLSL",
+                        ],
+                        [
+                            "DirectX 12",
+                            "Microsoft",
+                            "Windows, Xbox",
+                            "HLSL",
+                        ],
+                        [
+                            "Metal",
+                            "Apple",
+                            "iOS, macOS, dll.",
+                            "MSL",
+                        ],
+                        [
+                            "WebGPU",
+                            "W3C",
+                            "browser",
+                            "WGSL",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Shader Vulkan ditulis dalam GLSL atau HLSL lalu dikompilasi ke SPIR-V.",
+        },
+    ],
+    "Entity Component System": [
+        {
+            "setelah": 2,
+            "jenis": "tabel",
+            "judul": "Entitas sebagai baris, komponen sebagai kolom",
+            "tabel": [
+                {
+                    "nama": "keadaan awal",
+                    "kolom": [
+                        "entitas",
+                        "Posisi",
+                        "Kecepatan",
+                        "Nyawa",
+                    ],
+                    "baris": [
+                        [
+                            "1 pemain",
+                            "(0,0)",
+                            "(2,1)",
+                            "3",
+                        ],
+                        [
+                            "2 batu",
+                            "(5,5)",
+                            "",
+                            "",
+                        ],
+                        [
+                            "3 peluru",
+                            "(1,4)",
+                            "(4,0)",
+                            "",
+                        ],
+                    ],
+                },
+            ],
+            "panah": "sistem gerak: baris 1 dan 3",
+            "ket": "Sel kosong berarti entitas itu nggak punya komponen tersebut.",
+        },
+    ],
+    "Determinisme, Replay, dan Netcode Dasar": [
+        {
+            "setelah": 6,
+            "jenis": "urutan",
+            "judul": "Lockstep lewat server relay: tukar input per tick",
+            "pelaku": [
+                "klien A",
+                "server",
+                "klien B",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "input A untuk tick 7",
+                ],
+                [
+                    2,
+                    1,
+                    "input B untuk tick 7",
+                ],
+                [
+                    1,
+                    0,
+                    "input B untuk tick 7",
+                ],
+                [
+                    1,
+                    2,
+                    "input A untuk tick 7",
+                ],
+                [
+                    0,
+                    1,
+                    "checksum tick 7",
+                ],
+                [
+                    2,
+                    1,
+                    "checksum tick 7",
+                ],
+            ],
+            "ket": "Tick 7 baru dijalankan sesudah input kedua pemain tiba; checksum yang beda berarti desync.",
+        },
+    ],
+    "Matematika AR: Raycast, Anchor, dan Matriks 4x4": [
+        {
+            "setelah": 4,
+            "jenis": "tabel",
+            "judul": "Langkah raycast dari ketukan sampai lantai",
+            "tabel": [
+                {
+                    "kolom": [
+                        "langkah",
+                        "hasil",
+                    ],
+                    "baris": [
+                        [
+                            "ketukan (px)",
+                            "(200, 600)",
+                        ],
+                        [
+                            "NDC",
+                            "(0.00, -0.50)",
+                        ],
+                        [
+                            "arah kamera",
+                            "(0,-0.29,-1)",
+                        ],
+                        [
+                            "arah dunia",
+                            "(0,-0.75,-0.72)",
+                        ],
+                        [
+                            "s",
+                            "2.00",
+                        ],
+                        [
+                            "titik lantai",
+                            "(0,0,-1.44)",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Kamera 1,5 m di atas lantai, menunduk 30 derajat, FOV 60, layar 400 x 800.",
+        },
+    ],
+    "ARCore, ARKit, dan RealityKit": [
+        {
+            "setelah": 9,
+            "jenis": "tabel",
+            "judul": "ARCore dan ARKit berdampingan",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "ARCore",
+                        "ARKit",
+                    ],
+                    "baris": [
+                        [
+                            "pemilik",
+                            "Google",
+                            "Apple",
+                        ],
+                        [
+                            "platform",
+                            "Android",
+                            "iPhone, iPad",
+                        ],
+                        [
+                            "bahasa",
+                            "Kotlin, Java, C",
+                            "Swift",
+                        ],
+                        [
+                            "fitur khas",
+                            "Geospatial API",
+                            "LiDAR, RoomPlan",
+                        ],
+                        [
+                            "lintas platform",
+                            "AR Foundation",
+                            "AR Foundation",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "AR Foundation di Unity membungkus keduanya dengan satu API C#.",
+        },
+    ],
+    "OpenXR, Meta Quest, dan Android XR": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Status sesi OpenXR",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "Sesi dibuat: IDLE",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "READY: panggil xrBeginSession",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "SYNCHRONIZED: frame loop jalan",
+                    "ke": 3,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "VISIBLE: gambar tampil",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "FOCUSED: input diterima",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "Pengguna keluar aplikasi?",
+                    "ya": 6,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "STOPPING: xrEndSession",
+                    "ke": 7,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "IDLE lalu EXITING",
+                },
+            ],
+            "ket": "Saat menu sistem dibuka, status turun dari FOCUSED ke VISIBLE dan kembali sesudahnya.",
+        },
+    ],
+    "visionOS dan WebXR": [
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "visionOS dan WebXR berdampingan",
+            "tabel": [
+                {
+                    "kolom": [
+                        "hal",
+                        "visionOS",
+                        "WebXR",
+                    ],
+                    "baris": [
+                        [
+                            "bahasa",
+                            "Swift",
+                            "JavaScript",
+                        ],
+                        [
+                            "distribusi",
+                            "App Store",
+                            "tautan web",
+                        ],
+                        [
+                            "butuh Mac",
+                            "ya",
+                            "tidak",
+                        ],
+                        [
+                            "mode imersif",
+                            "immersive space",
+                            "immersive-vr/ar",
+                        ],
+                    ],
+                },
+            ],
+            "ket": "Safari di visionOS juga menjalankan WebXR immersive-vr.",
+        },
+    ],
+}

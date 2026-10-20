@@ -9744,7 +9744,7 @@ class TestBedaKata(unittest.TestCase):
             with open(os.path.join(d, nama), encoding="utf-8") as f:
                 isi = f.read()
             for potong in isi.replace("\\n", "\n").split("\n"):
-                if len(potong) > len(panjang):
+                if len(potong) > len(panjang) and not potong.lstrip().lstrip(chr(34)).startswith("{"):  # JSON stdin latihan, bukan keluaran
                     panjang = potong
         return panjang
 

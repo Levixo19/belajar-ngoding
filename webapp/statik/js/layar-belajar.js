@@ -2938,7 +2938,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
   // tombolnya tanpa syarat kedua berarti menawarkan sesuatu yang selalu
   // berakhir dengan "belum terpasang" -- tombol yang berujung penolakan,
   // persis yang dihindari daftar materi untuk bab yang masih terkunci.
-  const bisaJalan = p.bisa_dijalankan && bhs && bhs.siap;
+  const bisaJalan = p.bisa_dijalankan && (b.siap ?? (bhs && bhs.siap));
 
   const keluaran = h("div.blok-keluaran");
   // Pendengar `message` milik pratinjau harus dicabut saat keluarannya
@@ -2988,7 +2988,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
     masuk(menunggu, { geser: 5, pegas: "jawab" });
     try {
       const r = await api.kirim("/api/coba", {
-        bahasa: bhs.runner,
+        bahasa: b.bahasa || bhs.runner,
         kode: editor ? editor.nilai : b.kode,
       });
       lepasPratinjauKini();
@@ -3017,7 +3017,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
   function utakAtik() {
     if (editor) { editor.fokus(); return; }
     editor = new Editor({
-      bahasa: m.sorot,
+      bahasa: b.sorot || m.sorot,
       kode: b.kode,
       label: "Utak-atik kode: " + (p.nama || b.judul || m.judul),
       pintasan: { "ctrl+enter": () => jalankan() },
@@ -3064,7 +3064,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
         }, "Salin"),
         // "Lihat jalannya" (jejak.js): rekaman langkah demi langkah dari
         // /api/jejak. Hanya Python, dan hanya contoh yang tidak menunggu input.
-        bisaJalan && bhs.runner === "python" && !/\binput\s*\(/.test(b.kode)
+        bisaJalan && (b.bahasa || bhs.runner) === "python" && !/\binput\s*\(/.test(b.kode)
           ? tombolJejak(b.kode, b.token, () => (editor ? editor.nilai : b.kode)) : null,
         // Ruang Coba tetap ada, tapi tidak lagi jadi satu-satunya jalan: untuk
         // kerja yang lebih panjang (stdin, ganti bahasa, draf tersimpan) ia

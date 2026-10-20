@@ -1,0 +1,2652 @@
+"""Gambar konsep kurikulum Backend & API. Skema: inti/visual.py."""
+
+VISUAL = {
+    "Apa Itu Backend dan Kenapa API Ada": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "Satu permintaan melewati tiga lapisan",
+            "ket": "Klien cuma bicara dengan backend. Backend yang bicara dengan database, lalu menyusun balasannya.",
+            "pelaku": [
+                "browser",
+                "backend",
+                "database",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET /stok/pensil",
+                ],
+                [
+                    1,
+                    2,
+                    "ambil stok pensil",
+                ],
+                [
+                    2,
+                    1,
+                    "sisa: 12",
+                ],
+                [
+                    1,
+                    0,
+                    "200 {sisa: 12}",
+                ],
+            ],
+        },
+    ],
+    "HTTP dari Dekat: Metode, Status, Header, dan HTTPS": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "Angka pertama kode status menyebut kelompoknya",
+            "ket": "Klien yang belum kenal sebuah kode tetap bisa bersikap benar dari angka pertamanya saja.",
+            "tabel": [
+                {
+                    "nama": "kode status",
+                    "kolom": [
+                        "kelompok",
+                        "arti",
+                        "contoh",
+                    ],
+                    "baris": [
+                        [
+                            "1xx",
+                            "informasi",
+                            "101",
+                        ],
+                        [
+                            "2xx",
+                            "berhasil",
+                            "200, 201, 204",
+                        ],
+                        [
+                            "3xx",
+                            "pindah/salinan",
+                            "301, 304",
+                        ],
+                        [
+                            "4xx",
+                            "salah klien",
+                            "400, 401, 404",
+                        ],
+                        [
+                            "5xx",
+                            "salah server",
+                            "500, 503",
+                        ],
+                    ],
+                    "sorot_baris": [3],
+                },
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "urutan",
+            "judul": "Jabat tangan TLS 1.3, disederhanakan",
+            "ket": "Satu kali bolak-balik untuk sepakat kunci dan memeriksa sertifikat. Sesudah itu permintaan HTTP biasa lewat dalam keadaan terenkripsi.",
+            "pelaku": [
+                "klien",
+                "server",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "ClientHello + kunci klien",
+                ],
+                [
+                    1,
+                    0,
+                    "ServerHello + kunci server",
+                ],
+                [
+                    1,
+                    0,
+                    "sertifikat + Finished",
+                ],
+                [
+                    0,
+                    1,
+                    "Finished",
+                ],
+                [
+                    0,
+                    1,
+                    "GET / (terenkripsi)",
+                ],
+                [
+                    1,
+                    0,
+                    "200 OK (terenkripsi)",
+                ],
+            ],
+        },
+    ],
+    "Aplikasi Sebagai Fungsi: WSGI, ASGI, dan Rack": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Server yang menghadapi jaringan, aplikasi cuma fungsi",
+            "ket": "Server mengubah teks HTTP jadi environ, memanggil aplikasi, lalu mengubah status dan body kembali jadi teks HTTP.",
+            "pelaku": [
+                "klien",
+                "server",
+                "aplikasi",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET / HTTP/1.1",
+                ],
+                [
+                    1,
+                    2,
+                    "aplikasi(environ, ...)",
+                ],
+                [
+                    2,
+                    1,
+                    "start_response('200 OK')",
+                ],
+                [
+                    2,
+                    1,
+                    "return [b'Halo dari WSGI']",
+                ],
+                [
+                    1,
+                    0,
+                    "HTTP/1.1 200 OK + body",
+                ],
+            ],
+        },
+    ],
+    "Router dan Middleware dari Nol": [
+        {
+            "setelah": 5,
+            "jenis": "alur",
+            "judul": "Permintaan masuk lewat lapisan, jawaban keluar lewat lapisan yang sama",
+            "ket": "Ini rantai di contoh: pencatat membungkus wajib_login, wajib_login membungkus profil. Tamu tanpa token berbelok ke 401 tanpa menyentuh handler.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "permintaan GET /profil",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "pencatat: masuk",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "token == 'rahasia'?",
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "profil(): status 200",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "wajib_login: status 401",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "pencatat: keluar + status",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "respons ke klien",
+                },
+            ],
+        },
+    ],
+    "Merancang Sumber Daya REST yang Rapi": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Dua alamat, enam operasi",
+            "ket": "Kolom terakhir menyebut apakah aman dikirim ulang. PATCH bergantung isinya: \"tambah stok 5\" nggak idempoten.",
+            "tabel": [
+                {
+                    "nama": "sumber daya buku",
+                    "kolom": [
+                        "permintaan",
+                        "aksi",
+                        "sukses",
+                        "idempoten",
+                    ],
+                    "baris": [
+                        [
+                            "GET /buku",
+                            "daftar",
+                            "200",
+                            "ya",
+                        ],
+                        [
+                            "POST /buku",
+                            "tambah",
+                            "201",
+                            "tidak",
+                        ],
+                        [
+                            "GET /buku/2",
+                            "detail",
+                            "200",
+                            "ya",
+                        ],
+                        [
+                            "PUT /buku/2",
+                            "ganti seluruh",
+                            "200 atau 201",
+                            "ya",
+                        ],
+                        [
+                            "PATCH /buku/2",
+                            "ubah sebagian",
+                            "200",
+                            "belum tentu",
+                        ],
+                        [
+                            "DELETE /buku/2",
+                            "hapus",
+                            "204",
+                            "ya",
+                        ],
+                    ],
+                    "sorot_baris": [1],
+                },
+            ],
+        },
+    ],
+    "Validasi Input dan Pesan Error yang Jelas": [
+        {
+            "setelah": 5,
+            "jenis": "alur",
+            "judul": "Data masuk diperiksa dua kali sebelum disimpan",
+            "ket": "Body yang nggak bisa diurai berhenti di 400. Yang bisa diurai tapi melanggar aturan berhenti di 422, lengkap dengan semua field yang salah.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "body JSON masuk",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "JSON bisa diurai?",
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "semua field sah?",
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "simpan, balas 201",
+                    "ke": 6,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "400 + problem+json",
+                    "ke": 6,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "422 + daftar errors",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "respons dikirim",
+                },
+            ],
+        },
+    ],
+    "Dokumentasi dan Pengujian API dengan OpenAPI": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Kerangka dokumen OpenAPI di atas",
+            "ket": "Skema Buku ditulis sekali di components, lalu dirujuk lewat $ref dari body POST /buku.",
+            "akar": {
+                "teks": "dokumen OpenAPI",
+                "anak": [
+                    {
+                        "teks": "openapi: 3.1.1",
+                    },
+                    {
+                        "teks": "info",
+                        "anak": [
+                            {
+                                "teks": "title",
+                            },
+                            {
+                                "teks": "version: 1.0.0",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "paths",
+                        "anak": [
+                            {
+                                "teks": "/buku",
+                                "anak": [
+                                    {
+                                        "teks": "get",
+                                    },
+                                    {
+                                        "teks": "post",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "/buku/{id}",
+                                "anak": [
+                                    {
+                                        "teks": "get",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "components",
+                        "anak": [
+                            {
+                                "teks": "schemas",
+                                "anak": [
+                                    {
+                                        "teks": "Buku",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "CORS: Saat Browser Menolak Respons API": [
+        {
+            "setelah": 3,
+            "jenis": "urutan",
+            "judul": "Preflight: browser bertanya dulu sebelum DELETE",
+            "ket": "Kode halaman cuma memanggil fetch sekali. OPTIONS dikirim browser sendiri, dan DELETE baru menyusul kalau jawabannya mengizinkan.",
+            "pelaku": [
+                "JS di halaman",
+                "browser",
+                "API",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "fetch DELETE /pesanan/9",
+                ],
+                [
+                    1,
+                    2,
+                    "OPTIONS /pesanan/9",
+                ],
+                [
+                    2,
+                    1,
+                    "204 + Allow-Methods",
+                ],
+                [
+                    1,
+                    2,
+                    "DELETE /pesanan/9",
+                ],
+                [
+                    2,
+                    1,
+                    "204 + Allow-Origin",
+                ],
+                [
+                    1,
+                    0,
+                    "respons boleh dibaca",
+                ],
+            ],
+        },
+    ],
+    "Node.js dan Express: Server JavaScript Pertama": [
+        {
+            "setelah": 9,
+            "jenis": "urutan",
+            "judul": "POST /produk melewati middleware sebelum handler",
+            "ket": "express.json() membaca body dan mengisi req.body, lalu next() menyerahkan permintaan ke handler app.post.",
+            "pelaku": [
+                "klien",
+                "express.json()",
+                "handler",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST /produk {nama, harga}",
+                ],
+                [
+                    1,
+                    1,
+                    "isi req.body",
+                ],
+                [
+                    1,
+                    2,
+                    "next()",
+                ],
+                [
+                    2,
+                    0,
+                    "201 {id: 2, nama, harga}",
+                ],
+            ],
+        },
+    ],
+    "API Express Lengkap dengan Validasi dan Prisma": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Proyek Express yang sudah dipecah",
+            "ket": "app.js merakit, server.js menyalakan. Pemisahan ini yang membuat app bisa diuji tanpa port.",
+            "akar": {
+                "teks": "toko-api/",
+                "anak": [
+                    {
+                        "teks": "package.json",
+                    },
+                    {
+                        "teks": "prisma.config.ts",
+                    },
+                    {
+                        "teks": "prisma/",
+                        "anak": [
+                            {
+                                "teks": "schema.prisma",
+                            },
+                            {
+                                "teks": "migrations/",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "src/",
+                        "anak": [
+                            {
+                                "teks": "app.js",
+                            },
+                            {
+                                "teks": "server.js",
+                            },
+                            {
+                                "teks": "routes/buku.js",
+                            },
+                            {
+                                "teks": "middleware/",
+                            },
+                            {
+                                "teks": "db.js",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "NestJS: Modul, Controller, dan Provider": [
+        {
+            "setelah": 6,
+            "jenis": "pohon",
+            "judul": "Modul akar mengimpor modul fitur",
+            "ket": "Tiap modul membawa controller dan provider-nya sendiri. LaporanModule bisa memakai BukuService karena BukuModule mengekspornya.",
+            "akar": {
+                "teks": "AppModule",
+                "anak": [
+                    {
+                        "teks": "BukuModule",
+                        "anak": [
+                            {
+                                "teks": "BukuController",
+                            },
+                            {
+                                "teks": "BukuService",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "LaporanModule",
+                        "anak": [
+                            {
+                                "teks": "LaporanController",
+                            },
+                            {
+                                "teks": "LaporanService",
+                            },
+                            {
+                                "teks": "imports BukuModule",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "NestJS dengan TypeORM, Pipe Validasi, dan Swagger": [
+        {
+            "setelah": 10,
+            "jenis": "urutan",
+            "judul": "POST /buku melewati pipe sebelum sampai ke database",
+            "ket": "Body yang melanggar DTO berhenti di ValidationPipe dengan 400. Yang lolos diteruskan ke service lalu disimpan lewat repository TypeORM.",
+            "pelaku": [
+                "controller",
+                "pipe",
+                "service",
+                "repository",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "body POST /buku",
+                ],
+                [
+                    1,
+                    0,
+                    "BuatBukuDto yang sah",
+                ],
+                [
+                    0,
+                    2,
+                    "tambah(dto)",
+                ],
+                [
+                    2,
+                    3,
+                    "save(create(dto))",
+                ],
+                [
+                    3,
+                    2,
+                    "Buku {id: 1, ...}",
+                ],
+                [
+                    2,
+                    0,
+                    "Buku, dikirim 201",
+                ],
+            ],
+        },
+    ],
+    "Peta Framework dan Runtime JavaScript": [
+        {
+            "setelah": 7,
+            "jenis": "tabel",
+            "judul": "Framework JavaScript di server, Oktober 2026",
+            "ket": "Persentase dari Survei Stack Overflow 2026. Kolom status merangkum apakah layak dipilih untuk proyek baru.",
+            "tabel": [
+                {
+                    "nama": "framework",
+                    "kolom": [
+                        "nama",
+                        "gaya",
+                        "runtime",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Express",
+                            "minimalis",
+                            "Node",
+                            "aktif, 15,6%",
+                        ],
+                        [
+                            "NestJS",
+                            "terstruktur, DI",
+                            "Node",
+                            "aktif, 5,8%",
+                        ],
+                        [
+                            "Fastify",
+                            "cepat, skema",
+                            "Node",
+                            "aktif, 3,5%",
+                        ],
+                        [
+                            "Hono",
+                            "standar web",
+                            "banyak",
+                            "aktif, 2,8%",
+                        ],
+                        [
+                            "Koa",
+                            "bawang",
+                            "Node",
+                            "stabil, 0,9%",
+                        ],
+                        [
+                            "AdonisJS",
+                            "lengkap",
+                            "Node",
+                            "aktif",
+                        ],
+                        [
+                            "ElysiaJS",
+                            "tipe end-to-end",
+                            "Bun",
+                            "1.x keamanan",
+                        ],
+                        [
+                            "Meteor/Sails",
+                            "full-stack lama",
+                            "Node",
+                            "menurun",
+                        ],
+                    ],
+                    "sorot_baris": [0],
+                },
+            ],
+        },
+    ],
+    "Flask: Microframework yang Mudah Dibaca": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "GET / di Flask: route, lalu Jinja, lalu HTML",
+            "ket": "Fungsi beranda cuma menyiapkan data. Jinja yang mengisi template, dan Flask yang membungkusnya jadi respons HTTP.",
+            "pelaku": [
+                "browser",
+                "Flask",
+                "beranda()",
+                "Jinja",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET /",
+                ],
+                [
+                    1,
+                    2,
+                    "cocokkan rute, panggil",
+                ],
+                [
+                    2,
+                    3,
+                    "render beranda.html",
+                ],
+                [
+                    3,
+                    2,
+                    "HTML jadi",
+                ],
+                [
+                    2,
+                    1,
+                    "return HTML",
+                ],
+                [
+                    1,
+                    0,
+                    "200 text/html",
+                ],
+            ],
+        },
+    ],
+    "Flask dengan SQLAlchemy dan Blueprint": [
+        {
+            "setelah": 1,
+            "jenis": "pohon",
+            "judul": "Aplikasi Flask yang dipecah per fitur",
+            "ket": "create_app di __init__.py merakit semuanya: memasang db dan mendaftarkan tiap blueprint dengan awalan alamatnya.",
+            "akar": {
+                "teks": "perpus/",
+                "anak": [
+                    {
+                        "teks": "toko/",
+                        "anak": [
+                            {
+                                "teks": "__init__.py",
+                            },
+                            {
+                                "teks": "model.py",
+                            },
+                            {
+                                "teks": "buku.py",
+                            },
+                            {
+                                "teks": "anggota.py",
+                            },
+                            {
+                                "teks": "templates/",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "migrations/",
+                    },
+                    {
+                        "teks": "tests/",
+                    },
+                    {
+                        "teks": "pyproject.toml",
+                    },
+                ],
+            },
+        },
+    ],
+    "FastAPI: Type Hints Jadi Validasi dan Dokumen": [
+        {
+            "setelah": 3,
+            "jenis": "alur",
+            "judul": "Body JSON lewat model Pydantic sebelum sampai ke fungsi",
+            "ket": "Fungsi tambah_buku cuma dipanggil dengan data yang sudah sah dan sudah berbentuk objek BukuBaru. Sisanya dijawab 422 oleh FastAPI.",
+            "langkah": [
+                {
+                    "jenis": "masukan",
+                    "teks": "JSON {judul, tahun}",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "ubah tipe: \"1980\" -> 1980",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "aturan Field terpenuhi?",
+                    "tidak": 5,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "tambah_buku(data: BukuBaru)",
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "201 + Buku",
+                    "ke": 6,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "422 + daftar detail",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "respons dikirim",
+                },
+            ],
+        },
+    ],
+    "FastAPI Async, Dependency, dan SQLModel": [
+        {
+            "setelah": 8,
+            "jenis": "urutan",
+            "judul": "POST /buku: dependency jalan sebelum handler",
+            "ket": "Uvicorn menyerahkan permintaan ke FastAPI. wajib_token dan ambil_sesi diselesaikan dulu; sesi ditutup sesudah respons dikirim.",
+            "pelaku": [
+                "Uvicorn",
+                "FastAPI",
+                "dependency",
+                "tambah_buku",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST /buku (ASGI)",
+                ],
+                [
+                    1,
+                    2,
+                    "wajib_token(authorization)",
+                ],
+                [
+                    1,
+                    2,
+                    "ambil_sesi() sampai yield",
+                ],
+                [
+                    1,
+                    3,
+                    "tambah_buku(data, sesi)",
+                ],
+                [
+                    3,
+                    1,
+                    "Buku {id, judul, tahun}",
+                ],
+                [
+                    1,
+                    2,
+                    "lanjutkan sesudah yield",
+                ],
+                [
+                    1,
+                    0,
+                    "201 + JSON",
+                ],
+            ],
+        },
+    ],
+    "Django: Model, View, Template, dan Admin": [
+        {
+            "setelah": 2,
+            "jenis": "pohon",
+            "judul": "Satu proyek Django berisi pengaturan dan beberapa app",
+            "ket": "Folder toko memegang pengaturan dan peta URL utama. App gudang memegang model, view, admin, dan template miliknya sendiri.",
+            "akar": {
+                "teks": "toko/ (proyek)",
+                "anak": [
+                    {
+                        "teks": "manage.py",
+                    },
+                    {
+                        "teks": "db.sqlite3",
+                    },
+                    {
+                        "teks": "toko/",
+                        "anak": [
+                            {
+                                "teks": "settings.py",
+                            },
+                            {
+                                "teks": "urls.py",
+                            },
+                            {
+                                "teks": "asgi.py, wsgi.py",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "gudang/ (app)",
+                        "anak": [
+                            {
+                                "teks": "models.py",
+                            },
+                            {
+                                "teks": "views.py",
+                            },
+                            {
+                                "teks": "urls.py",
+                            },
+                            {
+                                "teks": "admin.py",
+                            },
+                            {
+                                "teks": "migrations/",
+                            },
+                            {
+                                "teks": "templates/",
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+    "API Django dengan DRF dan Django Ninja": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "POST /api/produk/ melewati router, viewset, dan serializer",
+            "ket": "Serializer memvalidasi lalu memanggil model untuk menyimpan. Kalau validasi gagal, viewset langsung membalas 400 tanpa menyentuh database.",
+            "pelaku": [
+                "klien",
+                "router",
+                "viewset",
+                "serializer",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST /api/produk/",
+                ],
+                [
+                    1,
+                    2,
+                    "create()",
+                ],
+                [
+                    2,
+                    3,
+                    "is_valid()?",
+                ],
+                [
+                    3,
+                    2,
+                    "valid, lalu save()",
+                ],
+                [
+                    2,
+                    0,
+                    "201 + JSON produk",
+                ],
+            ],
+        },
+    ],
+    "Peta Framework Python": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Delapan framework Python di luar Flask, FastAPI, dan Django",
+            "ket": "Versi per Oktober 2026. Status diambil dari aktivitas rilis dan komunitasnya.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "framework",
+                        "kontrak",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Litestar",
+                            "ASGI",
+                            "aktif",
+                        ],
+                        [
+                            "Quart",
+                            "ASGI",
+                            "aktif",
+                        ],
+                        [
+                            "Sanic",
+                            "ASGI/server",
+                            "stabil",
+                        ],
+                        [
+                            "Falcon",
+                            "WSGI dan ASGI",
+                            "stabil",
+                        ],
+                        [
+                            "aiohttp",
+                            "asyncio",
+                            "aktif",
+                        ],
+                        [
+                            "Tornado",
+                            "asyncio",
+                            "dirawat",
+                        ],
+                        [
+                            "Pyramid",
+                            "WSGI",
+                            "menurun",
+                        ],
+                        [
+                            "Bottle",
+                            "WSGI",
+                            "rilis jarang",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Spring Boot: Proyek Pertama dan Dependency Injection": [
+        {
+            "setelah": 5,
+            "jenis": "pohon",
+            "judul": "Kerangka proyek Spring Boot dari Spring Initializr",
+            "ket": "Kode Java di src/main/java, pengaturan dan template di src/main/resources. Disederhanakan: paket com/contoh/toko diringkas.",
+            "akar": {
+                "teks": "toko/",
+                "anak": [
+                    {
+                        "teks": "pom.xml",
+                    },
+                    {
+                        "teks": "mvnw",
+                    },
+                    {
+                        "teks": "src/main/java",
+                        "anak": [
+                            {
+                                "teks": "TokoApplication",
+                            },
+                            {
+                                "teks": "produk/",
+                                "anak": [
+                                    {
+                                        "teks": "ProdukController",
+                                    },
+                                    {
+                                        "teks": "ProdukService",
+                                    },
+                                    {
+                                        "teks": "ProdukRepository",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "src/main/resources",
+                        "anak": [
+                            {
+                                "teks": "application.prop",
+                            },
+                            {
+                                "teks": "templates/",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "src/test/java",
+                    },
+                ],
+            },
+        },
+        {
+            "setelah": 7,
+            "jenis": "urutan",
+            "judul": "GET /api/produk/7 melewati DispatcherServlet ke service",
+            "ket": "Dispatcher memilih method dari anotasi, controller meneruskan ke service, dan nilai kembaliannya diubah jadi JSON oleh Jackson.",
+            "pelaku": [
+                "klien",
+                "Dispatcher",
+                "Controller",
+                "Service",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET /api/produk/7",
+                ],
+                [
+                    1,
+                    2,
+                    "satu(id=7)",
+                ],
+                [
+                    2,
+                    3,
+                    "cari(7)",
+                ],
+                [
+                    3,
+                    2,
+                    "objek Produk",
+                ],
+                [
+                    2,
+                    1,
+                    "Produk",
+                ],
+                [
+                    1,
+                    0,
+                    "200 + JSON",
+                ],
+            ],
+        },
+    ],
+    "Spring Data JPA dan Hibernate di Spring Boot": [
+        {
+            "setelah": 0,
+            "jenis": "tumpukan",
+            "judul": "Lapisan antara repository-mu dan database",
+            "ket": "Kode kamu cuma menyentuh lapisan teratas. Tiap lapisan menerjemahkan permintaan ke lapisan di bawahnya, sampai jadi SQL yang dikirim driver JDBC.",
+            "mode": "tumpukan",
+            "isi": [
+                "database",
+                "JDBC + driver",
+                "Hibernate ORM",
+                "JPA (spesifikasi)",
+                "Spring Data JPA",
+                "ProdukRepository",
+            ],
+            "label": "lapisan akses data",
+        },
+    ],
+    "Peta Framework Java, Kotlin, dan JVM": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Framework JVM selain Spring Boot dan statusnya",
+            "ket": "Versi per Oktober 2026. Spring Cloud, Jakarta EE, dan Helidon tidak dimasukkan supaya muat; lihat tabel teks di atasnya.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "nama",
+                        "bahasa",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Quarkus",
+                            "Java/Kotlin",
+                            "aktif",
+                        ],
+                        [
+                            "Micronaut",
+                            "Java/Kotlin",
+                            "aktif",
+                        ],
+                        [
+                            "Vert.x",
+                            "Java/Kotlin",
+                            "aktif",
+                        ],
+                        [
+                            "Javalin",
+                            "Java/Kotlin",
+                            "aktif",
+                        ],
+                        [
+                            "Ktor",
+                            "Kotlin",
+                            "aktif",
+                        ],
+                        [
+                            "Play",
+                            "Scala/Java",
+                            "menurun",
+                        ],
+                        [
+                            "Dropwizard",
+                            "Java",
+                            "menurun",
+                        ],
+                        [
+                            "Apache Struts",
+                            "Java",
+                            "usang",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "ASP.NET Core Minimal API: Endpoint Pertama": [
+        {
+            "setelah": 5,
+            "jenis": "alur",
+            "judul": "Permintaan melewati middleware sesuai urutan baris di Program.cs",
+            "ket": "Disederhanakan. Kalau autentikasi atau otorisasi menolak, endpoint nggak pernah dipanggil dan respons langsung berbalik arah.",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "permintaan HTTP masuk",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "UseExceptionHandler",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "UseHttpsRedirection",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "UseAuthentication: siapa?",
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "UseAuthorization: boleh?",
+                    "ya": 5,
+                    "tidak": 6,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "endpoint MapGet/MapPost",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "respons kembali lewat rantai",
+                },
+            ],
+        },
+    ],
+    "ASP.NET Core dengan Controller dan EF Core": [
+        {
+            "setelah": 5,
+            "jenis": "urutan",
+            "judul": "PATCH harga: controller, change tracker, lalu satu UPDATE",
+            "ket": "Nilai asli dipotret saat FindAsync. SaveChangesAsync cuma mengirim kolom yang berbeda dari potretnya.",
+            "pelaku": [
+                "klien",
+                "Controller",
+                "DbContext",
+                "database",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "PATCH /api/barang/1/harga",
+                ],
+                [
+                    1,
+                    2,
+                    "FindAsync(1)",
+                ],
+                [
+                    2,
+                    3,
+                    "SELECT ... WHERE Id = 1",
+                ],
+                [
+                    1,
+                    2,
+                    "Harga = 6000, SaveChanges",
+                ],
+                [
+                    2,
+                    3,
+                    "UPDATE SET Harga = @p0",
+                ],
+                [
+                    1,
+                    0,
+                    "204 No Content",
+                ],
+            ],
+        },
+    ],
+    "Peta Ekosistem .NET di Luar ASP.NET Core": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Komponen .NET di sekitar ASP.NET Core",
+            "ket": "ASP.NET di .NET Framework 4.x hanya pemeliharaan. Sisanya aktif per Oktober 2026.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "nama",
+                        "gunanya",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "ASP.NET 4.x",
+                            "web lama Windows",
+                            "pemeliharaan",
+                        ],
+                        [
+                            "Blazor",
+                            "UI web C#",
+                            "aktif",
+                        ],
+                        [
+                            "Aspire",
+                            "susun layanan",
+                            "aktif, tumbuh",
+                        ],
+                        [
+                            "Orleans",
+                            "virtual actor",
+                            "aktif",
+                        ],
+                        [
+                            "YARP",
+                            "reverse proxy",
+                            "aktif",
+                        ],
+                        [
+                            "Ocelot",
+                            "API gateway",
+                            "aktif",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Laravel: Rute, Controller, dan Blade": [
+        {
+            "setelah": 2,
+            "jenis": "pohon",
+            "judul": "Folder proyek Laravel yang paling sering dibuka",
+            "ket": "Disederhanakan. Folder lain seperti config, public, storage, dan tests juga ada di proyek sungguhan.",
+            "akar": {
+                "teks": "toko/",
+                "anak": [
+                    {
+                        "teks": "app/",
+                        "anak": [
+                            {
+                                "teks": "Http/Controllers",
+                            },
+                            {
+                                "teks": "Models/",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "bootstrap/app.php",
+                    },
+                    {
+                        "teks": "database/",
+                        "anak": [
+                            {
+                                "teks": "migrations/",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "resources/views/",
+                    },
+                    {
+                        "teks": "routes/",
+                        "anak": [
+                            {
+                                "teks": "web.php",
+                            },
+                            {
+                                "teks": "api.php",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "artisan, composer",
+                    },
+                ],
+            },
+        },
+    ],
+    "Laravel dengan Eloquent, Validasi, dan Sanctum": [
+        {
+            "setelah": 9,
+            "jenis": "urutan",
+            "judul": "POST /api/produk melewati auth:sanctum dan Form Request",
+            "ket": "Token yang salah berhenti di middleware (401). Data yang salah berhenti di Form Request (422). Eloquent cuma dipanggil untuk data yang lolos.",
+            "pelaku": [
+                "klien",
+                "auth:sanctum",
+                "controller",
+                "Eloquent",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST + Bearer token",
+                ],
+                [
+                    1,
+                    2,
+                    "token sah, lanjut",
+                ],
+                [
+                    2,
+                    2,
+                    "SimpanProdukRequest valid",
+                ],
+                [
+                    2,
+                    3,
+                    "Produk::create(...)",
+                ],
+                [
+                    3,
+                    2,
+                    "INSERT, id baru",
+                ],
+                [
+                    2,
+                    0,
+                    "201 + JSON produk",
+                ],
+            ],
+        },
+    ],
+    "Ruby on Rails: Konvensi, Generator, dan MVC": [
+        {
+            "setelah": 4,
+            "jenis": "pohon",
+            "judul": "Isi folder app/ di aplikasi Rails",
+            "ket": "Disederhanakan. Nama berkas mengikuti konvensi: model Produk di produk.rb, controller di produk_controller.rb, view di folder produk/.",
+            "akar": {
+                "teks": "toko/",
+                "anak": [
+                    {
+                        "teks": "app/",
+                        "anak": [
+                            {
+                                "teks": "models/",
+                                "anak": [
+                                    {
+                                        "teks": "produk.rb",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "controllers/",
+                                "anak": [
+                                    {
+                                        "teks": "produk_controller",
+                                    },
+                                ],
+                            },
+                            {
+                                "teks": "views/produk/",
+                                "anak": [
+                                    {
+                                        "teks": "index.html.erb",
+                                    },
+                                    {
+                                        "teks": "show.html.erb",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "config/",
+                        "anak": [
+                            {
+                                "teks": "routes.rb",
+                            },
+                        ],
+                    },
+                    {
+                        "teks": "db/migrate/",
+                    },
+                    {
+                        "teks": "Gemfile",
+                    },
+                ],
+            },
+        },
+    ],
+    "Active Record dan Resource di Rails": [
+        {
+            "setelah": 3,
+            "jenis": "tabel",
+            "judul": "resources :produk menghasilkan tujuh aksi",
+            "ket": "update muncul dua kali karena Rails menerima PATCH dan PUT. new dan edit cuma menampilkan form HTML.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "metode",
+                        "path",
+                        "aksi",
+                    ],
+                    "baris": [
+                        [
+                            "GET",
+                            "/produk",
+                            "index",
+                        ],
+                        [
+                            "POST",
+                            "/produk",
+                            "create",
+                        ],
+                        [
+                            "GET",
+                            "/produk/new",
+                            "new",
+                        ],
+                        [
+                            "GET",
+                            "/produk/:id/edit",
+                            "edit",
+                        ],
+                        [
+                            "GET",
+                            "/produk/:id",
+                            "show",
+                        ],
+                        [
+                            "PATCH/PUT",
+                            "/produk/:id",
+                            "update",
+                        ],
+                        [
+                            "DELETE",
+                            "/produk/:id",
+                            "destroy",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Framework PHP dan Ruby": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Framework PHP dan Ruby di luar Laravel dan Rails",
+            "ket": "Dua tabel: PHP di kiri, Ruby di kanan. Status per Oktober 2026.",
+            "tabel": [
+                {
+                    "nama": "PHP",
+                    "kolom": [
+                        "nama",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Symfony",
+                            "aktif",
+                        ],
+                        [
+                            "CodeIgniter 4",
+                            "aktif",
+                        ],
+                        [
+                            "CodeIgniter 3",
+                            "usang",
+                        ],
+                        [
+                            "Yii 2",
+                            "menurun",
+                        ],
+                        [
+                            "CakePHP",
+                            "stabil",
+                        ],
+                        [
+                            "Slim",
+                            "stabil",
+                        ],
+                        [
+                            "Laminas MVC",
+                            "pensiun",
+                        ],
+                        [
+                            "Phalcon",
+                            "stabil",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "Ruby",
+                    "kolom": [
+                        "nama",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Sinatra",
+                            "stabil",
+                        ],
+                        [
+                            "Hanami",
+                            "aktif, kecil",
+                        ],
+                        [
+                            "Roda",
+                            "aktif",
+                        ],
+                        [
+                            "Grape",
+                            "stabil",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Go net/http: Server API Tanpa Framework": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "GET /produk/1: ServeMux memilih pola, handler membaca map",
+            "ket": "Di contoh ini \"database\"-nya map di memori yang dijaga mutex. Dengan database/sql, handler mengirim kueri lewat pool koneksi.",
+            "pelaku": [
+                "klien",
+                "ServeMux",
+                "handler ambil",
+                "map produk",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET /produk/1",
+                ],
+                [
+                    1,
+                    2,
+                    "pola GET /produk/{id}",
+                ],
+                [
+                    2,
+                    3,
+                    "Lock, baca produk[1]",
+                ],
+                [
+                    3,
+                    2,
+                    "Teh Botol",
+                ],
+                [
+                    2,
+                    0,
+                    "200 + JSON",
+                ],
+            ],
+        },
+    ],
+    "Gin dan GORM untuk API Go": [
+        {
+            "setelah": 6,
+            "jenis": "tabel",
+            "judul": "Empat cara mengakses database di Go",
+            "ket": "pgx adalah driver, jadi bisa dipakai di bawah sqlx atau sqlc. GORM dan ent sama-sama membangun SQL untukmu.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "alat",
+                        "kamu menulis",
+                        "cocok untuk",
+                    ],
+                    "baris": [
+                        [
+                            "GORM",
+                            "struct + method",
+                            "CRUD cepat",
+                        ],
+                        [
+                            "sqlc",
+                            "SQL biasa",
+                            "kueri bertipe",
+                        ],
+                        [
+                            "sqlx",
+                            "SQL + struct",
+                            "SQL ringan",
+                        ],
+                        [
+                            "ent",
+                            "skema dalam Go",
+                            "relasi rumit",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Framework Go, Rust, dan Bahasa Lain": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Framework Go dan Rust yang paling sering ditemui",
+            "ket": "Status per Oktober 2026. Daftar lengkap termasuk Elixir, Swift, C++, dan Dart ada di tabel teks.",
+            "tabel": [
+                {
+                    "nama": "Go",
+                    "kolom": [
+                        "nama",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Gin",
+                            "aktif",
+                        ],
+                        [
+                            "Echo",
+                            "aktif (v5)",
+                        ],
+                        [
+                            "chi",
+                            "aktif",
+                        ],
+                        [
+                            "Fiber",
+                            "aktif (v3)",
+                        ],
+                        [
+                            "Gorilla mux",
+                            "menurun",
+                        ],
+                        [
+                            "Beego",
+                            "menurun",
+                        ],
+                    ],
+                },
+                {
+                    "nama": "Rust",
+                    "kolom": [
+                        "nama",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Axum",
+                            "aktif",
+                        ],
+                        [
+                            "Actix Web",
+                            "aktif",
+                        ],
+                        [
+                            "Rocket",
+                            "menurun",
+                        ],
+                        [
+                            "Warp",
+                            "stabil",
+                        ],
+                        [
+                            "Poem",
+                            "rilis jarang",
+                        ],
+                        [
+                            "Loco",
+                            "aktif",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta ORM dan Query Builder Lintas Bahasa": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Empat pola akses database dan contohnya",
+            "ket": "Satu alat bisa memakai lebih dari satu pola. Diesel misalnya ORM sekaligus query builder.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "pola",
+                        "kamu menulis",
+                        "contoh",
+                    ],
+                    "baris": [
+                        [
+                            "Active Record",
+                            "model + save()",
+                            "Eloquent",
+                        ],
+                        [
+                            "Data Mapper",
+                            "entity + manager",
+                            "Hibernate",
+                        ],
+                        [
+                            "query builder",
+                            "method berantai",
+                            "Knex, Kysely",
+                        ],
+                        [
+                            "SQL + pemeta",
+                            "SQL biasa",
+                            "MyBatis, sqlc",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Session, Cookie, dan Menyimpan Kata Sandi": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Login berbasis sesi: tiket di cookie, catatan di server",
+            "ket": "Browser cuma memegang id sesi. Data siapa pemiliknya dan kapan habis disimpan di server, jadi bisa dicabut kapan saja.",
+            "pelaku": [
+                "browser",
+                "server",
+                "penyimpan sesi",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "POST /login nama+sandi",
+                ],
+                [
+                    1,
+                    2,
+                    "simpan s1 = budi",
+                ],
+                [
+                    1,
+                    0,
+                    "Set-Cookie: sid=s1",
+                ],
+                [
+                    0,
+                    1,
+                    "GET /profil, Cookie: sid=s1",
+                ],
+                [
+                    1,
+                    2,
+                    "cari s1",
+                ],
+                [
+                    2,
+                    1,
+                    "budi, belum habis",
+                ],
+                [
+                    1,
+                    0,
+                    "200 halaman profil",
+                ],
+            ],
+        },
+    ],
+    "Basic Auth, API Key, Token Bearer, dan JWT": [
+        {
+            "setelah": 8,
+            "jenis": "tabel",
+            "judul": "Empat skema autentikasi API dan risikonya",
+            "ket": "Semuanya wajib lewat HTTPS. Token bearer bisa berupa string acak atau JWT.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "skema",
+                        "mengenali",
+                        "risiko utama",
+                    ],
+                    "baris": [
+                        [
+                            "Basic",
+                            "orang",
+                            "sandi tiap kirim",
+                        ],
+                        [
+                            "API key",
+                            "aplikasi",
+                            "bocor di kode",
+                        ],
+                        [
+                            "Bearer opaque",
+                            "sesi di server",
+                            "dicuri, dipakai",
+                        ],
+                        [
+                            "JWT",
+                            "isi bertanda",
+                            "susah dicabut",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Peta Pustaka Autentikasi per Framework": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Pustaka autentikasi per framework dan statusnya",
+            "ket": "Status per Oktober 2026. Auth.js masih menerima tambalan keamanan, tapi tanpa fitur baru.",
+            "tabel": [
+                {
+                    "kolom": [
+                        "pustaka",
+                        "framework",
+                        "status",
+                    ],
+                    "baris": [
+                        [
+                            "Spring Security",
+                            "Spring",
+                            "aktif",
+                        ],
+                        [
+                            "Core Identity",
+                            "ASP.NET Core",
+                            "aktif",
+                        ],
+                        [
+                            "Devise",
+                            "Rails",
+                            "aktif",
+                        ],
+                        [
+                            "django-allauth",
+                            "Django",
+                            "aktif",
+                        ],
+                        [
+                            "Passport.js",
+                            "Express",
+                            "stabil",
+                        ],
+                        [
+                            "Better Auth",
+                            "TypeScript",
+                            "aktif",
+                        ],
+                        [
+                            "Auth.js",
+                            "Next.js",
+                            "pemeliharaan",
+                        ],
+                        [
+                            "Lucia",
+                            "TypeScript",
+                            "usang",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "OAuth 2.0 dan PKCE: Izin Tanpa Kata Sandi": [
+        {
+            "setelah": 2,
+            "jenis": "urutan",
+            "judul": "Authorization code flow dengan PKCE",
+            "pelaku": [
+                "pengguna",
+                "aplikasi",
+                "auth server",
+                "API",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "klik Hubungkan",
+                ],
+                [
+                    1,
+                    2,
+                    "/authorize + code_challenge",
+                ],
+                [
+                    0,
+                    2,
+                    "login dan setujui scope",
+                ],
+                [
+                    2,
+                    1,
+                    "redirect membawa code",
+                ],
+                [
+                    1,
+                    2,
+                    "/token: code + code_verifier",
+                ],
+                [
+                    2,
+                    1,
+                    "access token",
+                ],
+                [
+                    1,
+                    3,
+                    "Authorization: Bearer token",
+                ],
+                [
+                    3,
+                    1,
+                    "data kalender",
+                ],
+            ],
+            "ket": "Kata sandi cuma diketik di halaman auth server. Aplikasi menerima code, lalu menukarnya dengan token sambil membuktikan dirinya lewat code_verifier.",
+        },
+    ],
+    "OpenID Connect, SSO, dan Keycloak": [
+        {
+            "setelah": 4,
+            "jenis": "urutan",
+            "judul": "Login OIDC lewat Keycloak",
+            "pelaku": [
+                "browser",
+                "aplikasi",
+                "Keycloak",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "buka /cuti",
+                ],
+                [
+                    1,
+                    0,
+                    "redirect ke /authorize",
+                ],
+                [
+                    0,
+                    2,
+                    "login (atau sesi SSO)",
+                ],
+                [
+                    2,
+                    0,
+                    "redirect + code",
+                ],
+                [
+                    0,
+                    1,
+                    "/callback?code=...",
+                ],
+                [
+                    1,
+                    2,
+                    "tukar code",
+                ],
+                [
+                    2,
+                    1,
+                    "ID token + access token",
+                ],
+                [
+                    1,
+                    0,
+                    "cookie sesi aplikasi",
+                ],
+            ],
+            "ket": "Kalau pengguna sudah login di aplikasi lain dalam realm yang sama, langkah login di Keycloak terlewati: itulah SSO.",
+        },
+    ],
+    "Otorisasi, Rate Limiting, dan Celah API Umum": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Tiga model otorisasi",
+            "tabel": [
+                {
+                    "kolom": [
+                        "model",
+                        "dasar izin",
+                        "contoh aturan",
+                    ],
+                    "baris": [
+                        [
+                            "RBAC",
+                            "peran",
+                            "editor ubah",
+                        ],
+                        [
+                            "ABAC",
+                            "atribut",
+                            "dept sama",
+                        ],
+                        [
+                            "ReBAC",
+                            "hubungan",
+                            "anggota tim",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 7,
+            "jenis": "alur",
+            "judul": "Satu permintaan di token bucket",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "permintaan masuk",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "isi ulang token sesuai jeda",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "token >= 1?",
+                    "ya": 3,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "kurangi 1, balas 200",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "balas 429 + Retry-After",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "selesai",
+                },
+            ],
+        },
+    ],
+    "Peta Layanan Identitas Terkelola": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "SaaS atau self-hosted",
+            "tabel": [
+                {
+                    "kolom": [
+                        "aspek",
+                        "SaaS",
+                        "self-hosted",
+                    ],
+                    "baris": [
+                        [
+                            "contoh",
+                            "Auth0, Okta",
+                            "Keycloak",
+                        ],
+                        [
+                            "biaya",
+                            "per pengguna",
+                            "server + orang",
+                        ],
+                        [
+                            "pembaruan",
+                            "vendor",
+                            "tim sendiri",
+                        ],
+                        [
+                            "lokasi data",
+                            "vendor",
+                            "server sendiri",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Cache dengan Redis dan Valkey": [
+        {
+            "setelah": 1,
+            "jenis": "urutan",
+            "judul": "Cache-aside: miss lalu hit",
+            "pelaku": [
+                "aplikasi",
+                "Redis",
+                "database",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET produk:42",
+                ],
+                [
+                    1,
+                    0,
+                    "kosong (miss)",
+                ],
+                [
+                    0,
+                    2,
+                    "SELECT produk 42",
+                ],
+                [
+                    2,
+                    0,
+                    "baris produk",
+                ],
+                [
+                    0,
+                    1,
+                    "SET produk:42 EX 60",
+                ],
+                [
+                    0,
+                    1,
+                    "GET produk:42 (berikutnya)",
+                ],
+                [
+                    1,
+                    0,
+                    "data (hit)",
+                ],
+            ],
+        },
+    ],
+    "Redis untuk Sesi, Pub/Sub, dan Antrean Tugas": [
+        {
+            "setelah": 4,
+            "jenis": "tumpukan",
+            "mode": "antrean",
+            "judul": "Produser menaruh tugas, worker mengambil dari depan",
+            "isi": [
+                "email budi",
+                "email sari",
+                "resize foto",
+            ],
+            "label": "antrean tugas di Redis",
+            "operasi": "worker ambil depan",
+        },
+    ],
+    "RabbitMQ: Exchange, Antrean, dan Acknowledgement": [
+        {
+            "setelah": 1,
+            "jenis": "alur",
+            "judul": "Perjalanan satu pesan di RabbitMQ",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "produser kirim pesan",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "exchange baca routing key",
+                    "ke": 2,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "ada binding yang cocok?",
+                    "ya": 3,
+                    "tidak": 6,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "salin ke antrean tujuan",
+                    "ke": 4,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "konsumen proses pesan",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "ack, pesan dihapus",
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "pesan dibuang",
+                },
+            ],
+        },
+    ],
+    "Kafka: Log, Partisi, dan Consumer Group": [
+        {
+            "setelah": 2,
+            "jenis": "larik",
+            "judul": "Partisi 0 dan posisi tiap consumer group",
+            "nama": "pesanan-p0",
+            "isi": [
+                "o0",
+                "o1",
+                "o2",
+                "o3",
+                "o4",
+                "o5",
+                "o6",
+            ],
+            "sorot": [6],
+            "penunjuk": {
+                "gudang": 5,
+                "analitik": 2,
+            },
+            "ket": "Pesan baru selalu ditambahkan di ujung. Tiap grup punya offset sendiri: gudang hampir selesai, analitik masih di offset 2.",
+        },
+    ],
+    "Peta Cache dan Penyimpanan Memori Lainnya": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Tiga letak cache",
+            "tabel": [
+                {
+                    "kolom": [
+                        "letak",
+                        "contoh",
+                        "dibagi bersama",
+                    ],
+                    "baris": [
+                        [
+                            "lokal",
+                            "Caffeine",
+                            "tidak",
+                        ],
+                        [
+                            "terdistribusi",
+                            "Redis, Valkey",
+                            "ya",
+                        ],
+                        [
+                            "HTTP",
+                            "CDN, Varnish",
+                            "ya, respons",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "WebSocket, SSE, dan Long Polling": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Empat cara mendorong data dari server",
+            "tabel": [
+                {
+                    "kolom": [
+                        "teknik",
+                        "arah",
+                        "koneksi",
+                        "cocok untuk",
+                    ],
+                    "baris": [
+                        [
+                            "short polling",
+                            "klien tanya",
+                            "baru tiap kali",
+                            "data jarang",
+                        ],
+                        [
+                            "long polling",
+                            "klien tanya",
+                            "ditahan server",
+                            "cadangan",
+                        ],
+                        [
+                            "SSE",
+                            "server ke klien",
+                            "satu respons",
+                            "notif, AI",
+                        ],
+                        [
+                            "WebSocket",
+                            "dua arah",
+                            "terus terbuka",
+                            "chat, game",
+                        ],
+                    ],
+                },
+            ],
+        },
+        {
+            "setelah": 6,
+            "jenis": "urutan",
+            "judul": "Jabat tangan WebSocket lalu pesan dua arah",
+            "pelaku": [
+                "browser",
+                "server",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET + Upgrade: websocket",
+                ],
+                [
+                    1,
+                    0,
+                    "101 + Sec-WebSocket-Accept",
+                ],
+                [
+                    0,
+                    1,
+                    "frame: halo",
+                ],
+                [
+                    1,
+                    0,
+                    "frame: pesan baru dari B",
+                ],
+                [
+                    1,
+                    0,
+                    "frame: ping",
+                ],
+                [
+                    0,
+                    1,
+                    "frame: pong",
+                ],
+            ],
+        },
+    ],
+    "GraphQL: Skema, Resolver, dan Server": [
+        {
+            "setelah": 3,
+            "jenis": "pohon",
+            "judul": "Kueri bersarang dan bentuk jawabannya",
+            "akar": {
+                "teks": "query Profil",
+                "anak": [
+                    {
+                        "teks": "me",
+                        "anak": [
+                            {
+                                "teks": "name",
+                            },
+                            {
+                                "teks": "posts [ ]",
+                                "anak": [
+                                    {
+                                        "teks": "title",
+                                    },
+                                    {
+                                        "teks": "likes",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+            "ket": "Jawaban JSON mengikuti pohon yang sama: data.me.name dan data.me.posts berisi daftar objek title dan likes.",
+        },
+    ],
+    "gRPC, Protobuf, dan Gaya RPC Lain": [
+        {
+            "setelah": 7,
+            "jenis": "urutan",
+            "judul": "Panggilan gRPC unary",
+            "pelaku": [
+                "kode klien",
+                "stub",
+                "server",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "Hitung(asal, tujuan, berat)",
+                ],
+                [
+                    1,
+                    2,
+                    "HTTP/2 POST /ongkir.v1.Ongkir/",
+                ],
+                [
+                    2,
+                    2,
+                    "decode protobuf, jalankan",
+                ],
+                [
+                    2,
+                    1,
+                    "HasilOngkir (biner)",
+                ],
+                [
+                    1,
+                    0,
+                    "objek HasilOngkir",
+                ],
+            ],
+            "ket": "Stub hasil protoc mengurus serialisasi dan HTTP/2, jadi kode klien terlihat seperti memanggil fungsi biasa.",
+        },
+    ],
+    "Nginx Sebagai Reverse Proxy untuk API": [
+        {
+            "setelah": 0,
+            "jenis": "urutan",
+            "judul": "Nginx berdiri di antara internet dan aplikasi",
+            "pelaku": [
+                "browser",
+                "Nginx",
+                "aplikasi",
+            ],
+            "pesan": [
+                [
+                    0,
+                    1,
+                    "GET /static/logo.png",
+                ],
+                [
+                    1,
+                    0,
+                    "berkas dari disk",
+                ],
+                [
+                    0,
+                    1,
+                    "GET /api/produk (HTTPS)",
+                ],
+                [
+                    1,
+                    2,
+                    "GET /api/produk + X-Forwarded",
+                ],
+                [
+                    2,
+                    1,
+                    "200 JSON",
+                ],
+                [
+                    1,
+                    0,
+                    "200 JSON (dikompres)",
+                ],
+            ],
+            "ket": "Berkas statis dijawab Nginx sendiri. Hanya permintaan /api/ yang diteruskan ke aplikasi di port lokal.",
+        },
+    ],
+    "Server Aplikasi di Belakang Nginx": [
+        {
+            "setelah": 1,
+            "jenis": "tabel",
+            "judul": "Siapa menjalankan kodemu",
+            "tabel": [
+                {
+                    "kolom": [
+                        "bahasa",
+                        "server aplikasi",
+                        "kontrak",
+                    ],
+                    "baris": [
+                        [
+                            "Python",
+                            "Gunicorn",
+                            "WSGI",
+                        ],
+                        [
+                            "Python",
+                            "Uvicorn",
+                            "ASGI",
+                        ],
+                        [
+                            "PHP",
+                            "PHP-FPM",
+                            "FastCGI",
+                        ],
+                        [
+                            "Ruby",
+                            "Puma",
+                            "Rack",
+                        ],
+                        [
+                            "C#",
+                            "Kestrel",
+                            "ASP.NET Core",
+                        ],
+                        [
+                            "Java",
+                            "Tomcat",
+                            "Servlet",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+    "Arsitektur Backend: Monolit, Event, dan Ketahanan": [
+        {
+            "setelah": 10,
+            "jenis": "alur",
+            "judul": "Keputusan circuit breaker untuk satu panggilan",
+            "langkah": [
+                {
+                    "jenis": "mulai",
+                    "teks": "panggilan masuk",
+                    "ke": 1,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "breaker open?",
+                    "ya": 2,
+                    "tidak": 4,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "waktu tunggu habis?",
+                    "ya": 4,
+                    "tidak": 3,
+                },
+                {
+                    "jenis": "keluaran",
+                    "teks": "tolak cepat tanpa memanggil",
+                    "ke": 7,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "panggil layanan",
+                    "ke": 5,
+                },
+                {
+                    "jenis": "keputusan",
+                    "teks": "berhasil?",
+                    "ya": 6,
+                    "tidak": 8,
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "closed, hitungan gagal = 0",
+                    "ke": 7,
+                },
+                {
+                    "jenis": "selesai",
+                    "teks": "selesai",
+                },
+                {
+                    "jenis": "proses",
+                    "teks": "gagal +1; lewat ambang: open",
+                    "ke": 7,
+                },
+            ],
+            "ket": "Panggilan pertama sesudah waktu tunggu adalah uji coba half-open: gagal sekali saja langsung membuat breaker open lagi.",
+        },
+    ],
+    "Peta CMS Headless dan Backend-as-a-Service": [
+        {
+            "setelah": 0,
+            "jenis": "tabel",
+            "judul": "Tiga cara punya backend",
+            "tabel": [
+                {
+                    "kolom": [
+                        "pilihan",
+                        "contoh",
+                        "kamu menulis",
+                    ],
+                    "baris": [
+                        [
+                            "CMS",
+                            "WordPress",
+                            "tema/plugin",
+                        ],
+                        [
+                            "BaaS",
+                            "Supabase",
+                            "frontend, aturan",
+                        ],
+                        [
+                            "backend sendiri",
+                            "FastAPI",
+                            "semuanya",
+                        ],
+                    ],
+                },
+            ],
+        },
+    ],
+}

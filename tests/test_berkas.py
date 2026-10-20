@@ -285,14 +285,19 @@ class TestLabelProgramTerbukti(unittest.TestCase):
     """Invarian utama: yang disebut program utuh harus benar-benar bisa dikompilasi."""
 
     def test_blok_berlabel_program_bisa_dikompilasi(self):
+        # Bahasa diambil PER BAGIAN, bukan per kurikulum. Kurikulum tech stack
+        # memuat contoh banyak bahasa sekaligus lewat `"bahasa"`, dan memakai
+        # runner kurikulum untuk semuanya berarti blok Swift diperiksa dengan
+        # node -- 220 blok kena, 177 di antaranya "gagal" karena dikompilasi
+        # dengan compiler yang salah, bukan karena kodenya keliru.
         for lang in LANGUAGES:
-            bahasa = lang["runner"]
-            if not runner.tersedia(bahasa):
-                continue
             for m in lang["materials"]:
                 for s in m["sections"]:
                     kode = s.get("code")
-                    if not kode or berkas.jenis_kode(bahasa, kode) != berkas.PROGRAM:
+                    bahasa = s.get("bahasa") or lang["runner"]
+                    if not kode or not runner.tersedia(bahasa):
+                        continue
+                    if berkas.jenis_kode(bahasa, kode) != berkas.PROGRAM:
                         continue
                     with self.subTest(bahasa=lang["label"], materi=m["title"],
                                       bagian=s.get("heading", "")):
@@ -439,6 +444,157 @@ class TestRubyMethodSatuBaris(unittest.TestCase):
     def test_setter_biasa_tetap_butuh_end(self):
         kode = "class A\n  def warna=(w)\n    @warna = w\nend\n"
         self.assertEqual(berkas.jenis_kode("ruby", kode), berkas.POTONGAN)
+
+
+
+class TestPaketLuarTidakDijalankan(unittest.TestCase):
+    """Contoh yang butuh paket pihak ketiga tidak boleh dapat tombol Jalankan.
+
+    Aplikasi ini offline dan tidak memasang apa pun; kurikulum tech stack
+    penuh contoh Flask, React, dan Express yang PASTI gagal "module not
+    found" kalau dijalankan di sini.
+    """
+
+    def test_python_paket_luar_jadi_potongan_dengan_perintah_pasang(self):
+        kode = "from flask import Flask\napp = Flask(__name__)\nprint('ok')\n"
+        self.assertEqual(berkas.jenis_kode("python", kode), berkas.POTONGAN)
+        p = berkas.petunjuk_kode("python", kode)
+        self.assertIn("pip install flask", p.keterangan)
+
+    def test_js_paket_luar_dan_bawaan_node(self):
+        self.assertEqual(berkas.paket_luar("javascript",
+            'import express from "express";\nimport fs from "node:fs";\n'
+            'const path = require("path");\nimport x from "./x.js";\n'), ["express"])
+        p = berkas.petunjuk_kode("javascript", 'import React from "react";\nconsole.log(1);\n')
+        self.assertIn("npm install react", p.keterangan)
+
+    def test_import_di_dalam_try_dan_stdlib_tetap_program(self):
+        kode = ("import json\ntry:\n    import yaml\nexcept ImportError:\n"
+                "    yaml = None\nprint(json.dumps(1))\n")
+        self.assertEqual(berkas.jenis_kode("python", kode), berkas.PROGRAM)
+
+
+
+class TestBahasaPerBlok(unittest.TestCase):
+    """Bagian materi boleh menyebut bahasanya sendiri (kurikulum tech stack)."""
+
+    def test_terminal_selalu_sesi_bahkan_dengan_shebang(self):
+        for kode in ("docker run -it ubuntu bash\n", "#!/bin/bash\nkubectl apply -f a.yaml\n"):
+            self.assertEqual(berkas.jenis_kode("terminal", kode), berkas.SESI)
+        p = berkas.petunjuk_kode("terminal", "npm install react\n")
+        self.assertIn("terminalmu sendiri", p.instruksi)
+
+    def test_blok_berbahasa_lain_disorot_dan_dinilai_dengan_bahasanya(self):
+        from webapp import isi
+        lang = next(l for l in LANGUAGES if l["key"] == "python")
+        materi = {"title": "Uji", "sections": [
+            {"heading": "Java", "bahasa": "java",
+             "code": "public class Halo {\n    public static void main(String[] a) {\n"
+                     "        System.out.println(1);\n    }\n}\n"},
+            {"heading": "Perintah", "bahasa": "terminal", "code": "pip install flask\n"},
+        ]}
+        blok = [b for b in isi.bagian_materi(materi, lang) if b["jenis"] == "kode"]
+        self.assertEqual([b["bahasa"] for b in blok], ["java", "terminal"])
+        self.assertEqual(blok[0]["petunjuk"]["jenis"], berkas.PROGRAM)
+        self.assertEqual(blok[1]["petunjuk"]["jenis"], berkas.SESI)
+        self.assertEqual(blok[1]["sorot"], "bash")
+
+    def test_tebak_melewati_blok_berbahasa_lain(self):
+        from pelajar import tebak
+        lang = {"key": "uji", "runner": "python", "materials": [{"title": "1. A", "sections": [
+            {"bahasa": "javascript", "code": "console.log(1)\n"},
+            {"code": "print(1)\n"}]}]}
+        self.assertEqual([j for _i, j, _k in tebak.blok_layak(lang)], [1])
+
+
+
+class TestBahasaLuar(unittest.TestCase):
+    """Contoh YAML, Swift, JSX di kurikulum tech stack: dibaca, tidak dijalankan."""
+
+    def test_bahasa_luar_tidak_pernah_program_dan_petunjuknya_jujur(self):
+        from inti import berkas as b
+        dockerfile = "FROM python:3.13-slim\nCOPY . /app\nCMD [\"python\", \"app.py\"]"
+        self.assertEqual(b.jenis_kode("dockerfile", dockerfile), b.POTONGAN)
+        p = b.petunjuk_kode("dockerfile", dockerfile)
+        self.assertIn("Contoh Dockerfile", p.instruksi)
+        self.assertIn("tidak menjalankan", p.keterangan)
+        self.assertFalse(b.boleh_dijalankan_aplikasi("dockerfile", p.jenis))
+
+    def test_terminal_sesi_walau_mirip_diagram(self):
+        """Perintah berkolom lolos tebakan _ilustrasi; terminal diperiksa duluan."""
+        from inti import berkas as b
+        kode = "npm init -y              # bikin package.json baru\nnpm install              # pasang semua"
+        self.assertEqual(b.jenis_kode("terminal", kode), b.SESI)
+        self.assertFalse(b.boleh_dijalankan_aplikasi("terminal", b.SESI))
+
+    def test_teks_selalu_ilustrasi(self):
+        from inti import berkas as b
+        self.assertEqual(b.jenis_kode("teks", "print('bukan program')"), b.ILUSTRASI)
+
+    def test_penyorot_luar_menunjuk_aturan_yang_ada(self):
+        from inti import berkas as b
+        from inti import sorot
+        for kunci, (nama, alias) in b.BAHASA_LUAR.items():
+            with self.subTest(kunci=kunci):
+                self.assertTrue(nama)
+                if alias is not None:
+                    self.assertIn(alias, sorot.ATURAN)
+        self.assertEqual(b.sorot_untuk("jsx"), "javascript")
+        self.assertEqual(b.sorot_untuk("terminal"), "bash")
+        self.assertEqual(b.sorot_untuk("python"), "python")
+
+
+class TestPaketLuarBahasaKompilasi(unittest.TestCase):
+    """Contoh Qt, Bevy, Gin, JavaFX, Unity, Arduino: utuh, tapi butuh pustaka luar."""
+
+    def test_pustaka_luar_dikenali_pustaka_standar_tidak(self):
+        from inti import berkas as b
+        kasus = {
+            "cpp": ("#include <QApplication>\n#include <vector>\nint main(){return 0;}", ["QApplication"]),
+            "c": ("#include <Arduino.h>\n#include <stdio.h>\n#include <sys/types.h>\nint main(){}", ["Arduino"]),
+            "rust": ("use bevy::prelude::*;\nuse std::io;\nfn main(){}", ["bevy"]),
+            "go": ('package main\nimport (\n\t"fmt"\n\t"github.com/gin-gonic/gin"\n)\nfunc main(){}',
+                   ["github.com/gin-gonic/gin"]),
+            "java": ("import javafx.application.Application;\nimport java.util.List;\n"
+                     "public class A{public static void main(String[] a){}}", ["javafx"]),
+            "kotlin": ("import kotlinx.coroutines.runBlocking\nimport kotlin.math.max\nfun main(){}",
+                       ["kotlinx"]),
+            "csharp": ("using UnityEngine;\nusing System.Linq;\nclass A{}", ["UnityEngine"]),
+        }
+        for bahasa, (kode, harap) in kasus.items():
+            with self.subTest(bahasa=bahasa):
+                self.assertEqual(b.paket_luar(bahasa, kode), harap)
+
+    def test_modul_lokal_python_dikenali_per_kata(self):
+        from inti import berkas as b
+        self.assertEqual(b.paket_luar("python", "import matplotlib.pyplot as plt\nplt.plot([1])"),
+                         ["matplotlib"])
+        self.assertEqual(b.paket_luar("python", "# file hitung.py\nimport hitung\nprint(1)"), [])
+
+    def test_enum_dan_modul_lokal_rust_bukan_crate(self):
+        from inti import berkas as b
+        kode = "mod util { pub fn f(){} }\nuse util::f;\nenum Daftar { Kosong }\nuse Daftar::Kosong;\nfn main(){}"
+        self.assertEqual(b.paket_luar("rust", kode), [])
+
+    def test_blok_go_dengan_gin_jadi_potongan_berpetunjuk(self):
+        from inti import berkas as b
+        kode = ('package main\n\nimport "github.com/gin-gonic/gin"\n\n'
+                'func main() {\n\tr := gin.Default()\n\tr.Run()\n}')
+        self.assertEqual(b.jenis_kode("go", kode), b.POTONGAN)
+        self.assertIn("go get github.com/gin-gonic/gin", b.petunjuk_kode("go", kode).keterangan)
+
+
+
+class TestTahunBukanNomorDaftar(unittest.TestCase):
+    """Baris prosa yang terbungkus tepat sebelum sebuah tahun bukan butir daftar."""
+
+    def test_bilangan_tiga_digit_tetap_paragraf(self):
+        from webapp import isi
+        blok = isi.blok_badan(["Domain-Driven Design dipopulerkan Eric Evans pada",
+                               "2003. Idenya: struktur kode mengikuti bahasa bisnis."])
+        self.assertEqual([b["jenis"] for b in blok], ["teks"])
+        blok = isi.blok_badan(["  1. Langkah pertama.", "  2. Langkah kedua."])
+        self.assertNotEqual(blok[0]["jenis"], "teks")
 
 
 if __name__ == "__main__":
