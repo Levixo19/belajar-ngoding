@@ -34,7 +34,7 @@ def sumber_web(nama):
     return os.path.join(PAKET_WEB, "src", nama)
 
 
-# {pembanding: (paket, berkas sumber, [(nama, dari, ke, kategori keluhan)])}
+# {label: (pembanding, paket, berkas sumber, [(nama, dari, ke, kategori)])}
 #
 # `paket` ada karena baterai ini tidak lagi hanya menguji `packages/bersama`:
 # pembanding editor tinggal di `packages/web/uji`, dan sumber yang dimutasinya
@@ -44,11 +44,16 @@ def sumber_web(nama):
 # ekstensi "salah" akan dijalankan dari direktori yang salah dengan pesan
 # "Cannot find module" yang menyalahkan impornya.
 #
+# Dan `label` terpisah dari `pembanding` karena satu pembanding bisa punya DUA
+# berkas sumber: `banding-pratinjau` mengadu logika di `pratinjau-css.ts` DAN
+# identitas byte pelapor tinggi di `Pratinjau.tsx`. Satu mutasi cuma bisa
+# menyentuh satu berkas, jadi keduanya butuh entri sendiri.
+#
 # Mutan dipilih supaya masing-masing merusak LAPISAN yang berbeda, dan supaya
 # hampir semuanya TIDAK menimbulkan error di mana pun -- persis jenis kerusakan
 # yang cuma rekaman ini bisa menangkap.
 BATERAI = {
-    "golden-sorot.ts": (PAKET, sumber("sorot.ts"), [
+    "golden-sorot.ts": ("golden-sorot.ts", PAKET, sumber("sorot.ts"), [
         (
             "gabung dilepas (token tidak dipadatkan)",
             "  return gabung(hasil);",
@@ -80,7 +85,7 @@ BATERAI = {
             "bahasa penyorot berbeda",
         ),
     ]),
-    "golden-beda.ts": (PAKET, sumber("beda.ts"), [
+    "golden-beda.ts": ("golden-beda.ts", PAKET, sumber("beda.ts"), [
         (
             # Jantung penyejajarnya: tanpa akumulasi DP, setiap baris cocok
             # jadi blok sepanjang satu, dan blok "terpanjang" berhenti berarti.
@@ -108,7 +113,7 @@ BATERAI = {
             "nyaris()",
         ),
     ]),
-    "golden-galat.ts": (PAKET, sumber("galat.ts"), [
+    "golden-galat.ts": ("golden-galat.ts", PAKET, sumber("galat.ts"), [
         (
             # `re.IGNORECASE | re.DOTALL` di Python dipasang sekali untuk
             # SELURUH tabel. Melupakannya di TS membuat pola yang melintasi
@@ -153,7 +158,8 @@ BATERAI = {
     # Mutan terakhirnya menagih asersi yang TERPISAH dari perbandingan itu --
     # identitas byte, satu-satunya sifat yang dua sisi bisa langgar bersamaan
     # tanpa pernah berbeda satu sama lain.
-    "banding-editor.mjs": (PAKET_WEB, sumber_web("komponen/editor-teks.ts"), [
+    "banding-editor.mjs": ("banding-editor.mjs", PAKET_WEB,
+                           sumber_web("komponen/editor-teks.ts"), [
         (
             # Pembuka membaca tinggi tumpukan SEBELUM push. Menukarnya menggeser
             # seluruh warna satu tingkat, dan pasangan pembuka-penutup berhenti
@@ -203,6 +209,62 @@ BATERAI = {
             "IDENTITAS BYTE RUSAK",
         ),
     ]),
+    "banding-pratinjau.mjs (logika)": (
+        "banding-pratinjau.mjs", PAKET_WEB,
+        sumber_web("komponen/pratinjau-css.ts"), [
+            (
+                # Pemilih di dalam @media hilang seluruhnya: cabang at-rule
+                # yang tidak dikenali MELEWATI badannya. Halaman contohnya
+                # tetap terbentuk dan tetap masuk akal -- cuma kehilangan
+                # justru elemen yang aturan responsifnya mau ditunjukkan.
+                "@media berhenti dianggap memuat pemilih",
+                "        if (/^@(media|supports|layer|container|scope)\\b/.test(kepala)) {",
+                "        if (/^@(supports|layer|container|scope)\\b/.test(kepala)) {",
+                "halamanDariCss",
+            ),
+            (
+                # `.menu > li` jadi <div class="menu"><li> tanpa <ul>. Browser
+                # menampilkan butirnya sebagai teks polos tanpa bulatan, dan
+                # pelajar menyimpulkan aturannya tidak berlaku.
+                "induk wajib tidak pernah disisipkan",
+                '    butuh = INDUK_WAJIB[nama] || "";',
+                '    butuh = "";',
+                "halamanDariCss",
+            ),
+            (
+                # Batas jumlah contoh dipotong. Aturan ke-5 dan sesudahnya
+                # tidak punya elemen untuk dikenai, jadi pelajar melihat
+                # separuh lembar gayanya seolah tidak berpengaruh apa pun.
+                "batas contoh dipangkas",
+                "const MAKS_CONTOH = 14;",
+                "const MAKS_CONTOH = 4;",
+                "halamanDariCss",
+            ),
+            (
+                # Blok yang SUDAH memuat markup berhenti dikenali, jadi ia
+                # dikarang ulang -- dan 11 dari 40 blok CSS di kurikulum
+                # berbentuk halaman utuh. Label "dibuatkan" ikut berbohong.
+                "markup yang sudah ada tidak dikenali",
+                "    .test(kode);",
+                "    .test(kode) && false;",
+                "adaMarkup",
+            ),
+        ]),
+    "banding-pratinjau.mjs (pelapor)": (
+        "banding-pratinjau.mjs", PAKET_WEB,
+        sumber_web("komponen/Pratinjau.tsx"), [
+            (
+                # Satu-satunya pagar untuk skrip yang jalan di dalam bingkai
+                # ber-asal buram. Mutasi ini justru yang paling mungkin terjadi
+                # sungguhan: seseorang "merapikan" satu sisi dan lupa sisi
+                # lainnya, dan tinggi bingkai mulai berbeda antara dua
+                # antarmuka tanpa satu pun error.
+                "pelapor tinggi memakai scrollHeight",
+                "      bawah = b.getBoundingClientRect().bottom;",
+                "      bawah = document.documentElement.scrollHeight;",
+                "PELAPOR BERBEDA",
+            ),
+        ]),
 }
 
 
@@ -237,8 +299,8 @@ def sel(pembanding, akar, jalur, nama, dari, ke, kategori, asli):
 
 def main():
     semua = []
-    for pembanding, (akar, jalur, mutan) in BATERAI.items():
-        print(f"{pembanding}  (mutasi di {os.path.basename(jalur)})")
+    for label, (pembanding, akar, jalur, mutan) in BATERAI.items():
+        print(f"{label}  (mutasi di {os.path.basename(jalur)})")
         with open(jalur, encoding="utf-8") as f:
             asli = f.read()
 
