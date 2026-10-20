@@ -1396,16 +1396,67 @@ satu-satunya pintu untuk ISO server), `sorak.tsx` (toast + `salin`),
 `util.tsx`, `Cangkang.tsx`, `komponen/{Kode,Keadaan,Bilah,Rasi}.tsx`,
 `komponen/rasi-geometri.ts`.
 
-**Yang BELUM, dan ini pekerjaan terbesar yang tersisa:** `layar-kerja` (ruang
-kerja latihan) dan `layar-belajar` (pembaca materi), plus modul yang keduanya
-butuh -- `editor.js` 864, `pratinjau.js` 512, `visual.js` 651, `jejak.js`.
-Sekitar **5.600 baris**, dan justru yang paling tidak nyaman di React: keempat
-modul itu mengukur DOM sendiri. AGENTS.md ini sendiri sudah menyebutnya
-sejak awal: bungkus dengan `useRef` + `useEffect`, JANGAN dipaksa deklaratif.
-Sesudahnya: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian backend di
-Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).
+**Keempat modul peng-ukur DOM SUDAH diport** (2026-10-20), beserta ruang kerja
+latihan, Ruang Coba, dan pembaca materi. Polanya satu dan dipakai keenam
+kalinya tanpa kecuali: **bagian murni di `.ts`, komponennya di `.tsx`, lalu
+satu pembanding yang mengadu bagian murni itu dengan JS yang masih melayani
+aplikasi lama.** Pembagian berkasnya punya sebab teknis, bukan selera: Node
+melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
+`.ts` yang bisa diimpor pembandingnya.
 
-**Empat catatan bentuk dari enam layar yang sudah diport.** Keempatnya berlaku
+| Modul | Murni | Komponen | Pembanding |
+|---|---|---|---|
+| `editor.js` | `komponen/editor-teks.ts` | `Editor.tsx` | 3.315 blok kode |
+| `pratinjau.js` | `komponen/pratinjau-css.ts` | `Pratinjau.tsx` | 3.315 x 8 + byte `PELAPOR` |
+| `visual.js` | `komponen/visual-bentuk.ts` | `Visual.tsx` | 1.356 gambar, simpul demi simpul |
+| `jejak.js` | `komponen/jejak-teks.ts` | `Jejak.tsx` | 2.757 blok + 22 kalimat |
+| `layar-kerja` | `layar/kerja-beda.ts` | `layar/Kerja.tsx` | 2.790 pasangan diff hasilan |
+| `layar-belajar` | `layar/belajar-teks.ts` | `layar/Belajar.tsx` | 135.620 baris prosa |
+| prosa bersama | `komponen/prosa-teks.ts` | `komponen/Prosa.tsx` | 153.959 baris prosa |
+
+Ketujuh pembanding ikut suite lewat `SKRIP_WEB` di
+`test_konten_json.TestAlgoritmaTypeScript`, dan **49 sel mutasi** di
+`packages/bersama/uji/gigi-golden.py` membuktikan semuanya bisa MERAH.
+
+**Baterai itu menemukan empat hal yang tidak kelihatan saat dibaca**, dan
+keempatnya sekarang tertulis di komentar fungsinya masing-masing beserta
+angkanya: pin langkah terakhir `pisahRekor` tidak pernah mengubah hasil
+(`ceil(n*k/k) === n`), `POLA_KODE.lastIndex = 0` tidak pernah berpengaruh
+(`exec` menyetelnya sendiri saat loop habis), ambang 52 di `labelPeta` cuma
+menanggung beban dari BAWAH (8.475 baris di [52,62) tidak berubah), dan
+`.textContent` di `gTata` adalah satu-satunya pembacaan DOM di lapisan geometri
+visual. Yang tiga pertama DIPERTAHANKAN -- yang dijaganya rumus berikutnya,
+bukan rumus sekarang -- dan sekarang itu tertulis, bukan tersirat.
+
+**Satu celah nyata ikut ketemu dan sengaja DIBAWA apa adanya:** runner `git`
+lolos `runner.tersedia()` jadi ia muncul di pemilih Ruang Coba, tapi
+`contohAwal` tidak punya entri untuknya -- editornya terbuka KOSONG, sementara
+kurikulum sejenisnya (`fedora`) punya skrip awal. Port ini menuntut identitas
+byte dengan `layar-kerja.js`, jadi menambalnya di satu sisi akan memerahkan
+pembandingnya. Ia dicatat sebagai `CELAH_DIKETAHUI` di `banding-kerja.mjs`,
+dan runner BARU yang contohnya terlewat tetap memerahkan pagarnya. Layak
+ditambal di UI baru, di kedua sisi sekaligus.
+
+**Yang BELUM, dan ini sisa Tahap 1:** empat layar dari `layar-belajar.js` dan
+satu dari `layar-kerja.js` -- `layarKuis` (~460 baris), `layarBahasa` (~860),
+`layarDasbor` + `layarMulai` (~860), dan `layarCari`/`layarBookmark`/
+`layarCatatan` (~230), plus `tombolBookmark`/`tombolCatatan`/`bukaCatatan`
+(~75) yang dipakai empat layar sekaligus. Dua persiapan untuk kuis SUDAH ada:
+`komponen/Sakelar.tsx` (diangkat dari `Atur.tsx` begitu pemakai kedua muncul)
+dan `jamMundur()` di `waktu.ts`.
+
+Untuk kuis, tiga hal yang mengikat sudah ditelusuri dan jangan ditelusuri
+ulang: muatan soal dari `sesi.bersih()` TIDAK membawa kunci jawaban dan
+`penjelasan` datang dari respons `/api/kuis/jawab` (memindahkannya ke muatan
+soal membocorkan jawaban ke tab Network sebelum dijawab); index jawaban SUDAH
+dipetakan ulang di `sesi._acak_soal`, jadi layarnya tidak menerjemahkan index
+apa pun; dan jam mode timer wajib BERHENTI saat tabnya di latar lalu
+melanjutkan dari sisa detik yang sama (WCAG 2.2.2).
+
+Sesudah kelimanya: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian
+backend di Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).
+
+**Empat catatan bentuk dari layar yang sudah diport.** Keempatnya berlaku
 untuk sisanya:
 
 * **Apa pun yang di versi JS di-toggle lewat `classList` jadi TURUNAN state**,
