@@ -1,0 +1,2813 @@
+{
+ "fungsi": "beda.bandingkan(harap, aktual), nyaris, kolom_pertama_beda",
+ "kasus": [
+  {
+   "harap": "Halo, Dunia!",
+   "aktual": "Halo, dunia!",
+   "harap_sha256": "3e8f2f16f566c580cc5cdea831503ab189c8aeaf1d1ae32f4beb074ad27839ac",
+   "aktual_sha256": "2b6284e509f60be1c4c35ff2d404cba1998c70b3a00bd9e451ca24d11efd2bd5",
+   "bandingkan_sha256": "2c2630386a62f47150f55f46eb6966bdb782875b2182114e3f9816a8a2b8c565",
+   "nyaris": true,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "12\n7\n",
+   "aktual": "12\n8\n",
+   "harap_sha256": "996ed8c6b7c66d89b69cd2e0af56425b413377a8db00bdb4125e6aefd8a49130",
+   "aktual_sha256": "52f7339ef0690b3f676f27c650f908e6148e678b3353b7dd2f333c48454e02b5",
+   "bandingkan_sha256": "e975837db2539fbdbd30e6991e92727b985b4fdb61e00377752139786909d7b5",
+   "nyaris": false,
+   "kolom_pertama_beda": 4
+  },
+  {
+   "harap": "a\nb\nc\n",
+   "aktual": "a\nc\n",
+   "harap_sha256": "50701892096b849b9fa3e45b8b10c6c4edcfb1436f2455485b03fa0b87e67ef6",
+   "aktual_sha256": "cf11533d9ae9a079492ed85852b3f46976f7e86c331b675a637a67488111fcbb",
+   "bandingkan_sha256": "18a8d9d52f4ef1f64d6ed0b91fc9f8ba33703870e3a6735b594e1261c015f4fc",
+   "nyaris": false,
+   "kolom_pertama_beda": 3
+  },
+  {
+   "harap": "a\nb\nc\n",
+   "aktual": "a\nc\nb\n",
+   "harap_sha256": "50701892096b849b9fa3e45b8b10c6c4edcfb1436f2455485b03fa0b87e67ef6",
+   "aktual_sha256": "609eb0a61c358986a1d151cf11848f651c5557c3c7aede1039533a4cddd562c9",
+   "bandingkan_sha256": "70dce17281217adc5713d2c2e178f1dd680f9de3b034ac040a6e1f0dc6ceaec7",
+   "nyaris": true,
+   "kolom_pertama_beda": 3
+  },
+  {
+   "harap": "total: 1.500",
+   "aktual": "total: 1500",
+   "harap_sha256": "4779e9bd356cdeb533ad67c29c0da4bc16a4c90dfb8753d88831c250b2f0cfc6",
+   "aktual_sha256": "f873e522bb66181b7ef9263eb154298e2457398048a21782f360f2971277a028",
+   "bandingkan_sha256": "942602042c0c7a23107b12f491249186dbdc08bc1aa73c194b06a537fd2fe632",
+   "nyaris": false,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "baris  berkolom   rapi",
+   "aktual": "baris berkolom rapi",
+   "harap_sha256": "25db2ab22f26758bcacbd2ac7aa53ebfb01c5bdb01deedd51bbdd90f22c0d375",
+   "aktual_sha256": "43a815de37939deb90b36542a045638061ff3e0aadd9b877356c519568cd61b5",
+   "bandingkan_sha256": "f9672f640be1165e53f8c77fe5e2430180167ff739cee9d7ca3f88748364bf3a",
+   "nyaris": true,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "selesai",
+   "aktual": "selesai ",
+   "harap_sha256": "f1ecf09587027ac21dcc332afabede93303ca182fb9b6e1a813b17c7d5a3c716",
+   "aktual_sha256": "59d6853dfcf13e770d2528069f56541aa74f2c1687f9bf51bf7f297b0a64eabe",
+   "bandingkan_sha256": "1f979e6aa05b306f8e5ae8703bd86d7c964cba0f547851ee6f459ab8eca04adf",
+   "nyaris": false,
+   "kolom_pertama_beda": 8
+  },
+  {
+   "harap": "",
+   "aktual": "ada isinya",
+   "harap_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "aktual_sha256": "59a534e1b301125d21688f42d5774becbe655571c1b536ee4235c8138cb0a8ca",
+   "bandingkan_sha256": "5445def41a645446c6afbc303acc5bbd159a2aeb33ae1daeb8ae8abe184c9aa6",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "ada isinya",
+   "aktual": "",
+   "harap_sha256": "59a534e1b301125d21688f42d5774becbe655571c1b536ee4235c8138cb0a8ca",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "fa8b6a31f8d282385547cb0b73c674d609d7e345189fbc16811a347ea19bdc6f",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Halo.",
+   "aktual": "Halo",
+   "harap_sha256": "723a6f2f8e418f73de0ba4b73e9f54b0aa467e379f0bc8839a2127c674e71d02",
+   "aktual_sha256": "28ae625ce612155326715095566717a2fbbf82859e408e1ea1d68fff63565125",
+   "bandingkan_sha256": "d2a818ea329a859f01efdf8e06aa2cfc121212b3214513dd17e169d06baba458",
+   "nyaris": true,
+   "kolom_pertama_beda": 5
+  },
+  {
+   "harap": "Selesai.",
+   "aktual": "selesai",
+   "harap_sha256": "f40d1f683bdcf01034aed81d32f024d4b0ebd3c4bf86bef107d9d9b5ff932ec0",
+   "aktual_sha256": "f1ecf09587027ac21dcc332afabede93303ca182fb9b6e1a813b17c7d5a3c716",
+   "bandingkan_sha256": "7d7cc0d5f27df04ef55165474ac3fbf3460859e7cdd9765ca6eed563355c7d7e",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "nilai  akhir",
+   "aktual": "Nilai Akhir",
+   "harap_sha256": "910a047a2a0f3ed74592719a9f0c44beb4d78be528e727de01468d310e08c6de",
+   "aktual_sha256": "926c869b30b7cacf8e8398748ce908ccf75167cf90ad8c499585bbdbd0b7f221",
+   "bandingkan_sha256": "5a2b09ab4ba6052e4ad045d02ed036f8abc4e6d8e64f016151ccbb6b29911dbb",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "gagal  nama\nskor Ani nama 3.0\nskor 0\nskor 0 gagal Ani\nnama\nBudi 1\nOK 1 gagal selesai\n3.0",
+   "aktual": "selesai gagal\ngagal  nama\nskor Ani nama 3.0\nskor 0\nskor 0 gagal Ani\nnama\nBudi 1\nOK 1 gagal selesai\n3.0",
+   "harap_sha256": "28a519334d51375ed7635c4e45e089c37a9b808f396f5250b509dbb1052aee9d",
+   "aktual_sha256": "d48418a0f452b83a98a1c6ff48c23cc5f5707e1d252502f240b06958f7d23b67",
+   "bandingkan_sha256": "47cfd106f48690fa0ee4b20d6d529c7aa2312f5440d1e15179d615e0ce4b4544",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus 10 Ani\nnama\nBudi gagal skor\ngagal total -5 -5\nlulus -5\ngagal lulus 10\nselesai OK selesai\n0 gagal total total",
+   "aktual": "lulus 10 Ani\nnama\nBudi gagal skor\ngagal total -5 -5\nlulus -5\nselesai OK selesai\n0 gagal total total",
+   "harap_sha256": "23d919790b08e643ef99c4511d25d8389de38ae9a6872a59d862d910e2b286b9",
+   "aktual_sha256": "1195c174305ebeec538f04c6f251e0f0039ba568a78a137b87a46d63fcb84440",
+   "bandingkan_sha256": "80ef9023578d6ff1cd9a76877c7e7d50598f11393dea7ec49be95376607db2ba",
+   "nyaris": false,
+   "kolom_pertama_beda": 62
+  },
+  {
+   "harap": "Budi\nselesai\n10 total",
+   "aktual": "1 selesai selesai\nBudi",
+   "harap_sha256": "252f9c1fc3b72b99841c319ae7efdc6a8ffc17c02b2c6cd6d4f05048f6865887",
+   "aktual_sha256": "928ff64f0ca8c60a3e9618ea861f2d815dcbcec892746329fc8fe76ba22df9d8",
+   "bandingkan_sha256": "de2bbabb5788456d4b2038da227165667daa688a0955897d1ed77f744f1ddf24",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1\nBudi skor -5\n-5 total 0 selesai\ntotal OK\n-5\nOK\nnama 10 OK\nAni skor gagal nama",
+   "aktual": "lulus 3.0 selesai 3\nBudi lulus 10 Budi\ntotal OK\n-5\nOK\nnama 10 OK\nAni skor gagal nama",
+   "harap_sha256": "f8e928fb5f1ca1ae3525446982b4b990adee10c147ee4218926ff1acd4205a9a",
+   "aktual_sha256": "420db9ea700c824a11f3f23033249e65e7d209a1ba0aed5eead08ac932c1fba4",
+   "bandingkan_sha256": "8c71ea3419ef664707d2855d8be2423f208a0ad427ce1607db3bdd8565be95d1",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK gagal skor selesai\n-5 3 selesai\nOK\nlulus OK -5",
+   "aktual": "Budi Budi 1\nOK gagal skor selesai\n-5 3 selesai\nOK",
+   "harap_sha256": "22d747b5341d4b731535a15a65ab1a98b4e886a4639d48f06ad3194db32346cd",
+   "aktual_sha256": "7829e54b2a8b4f68d195dd3714069ca7a9cb34f9cd0e0fadf5e77457f8d11471",
+   "bandingkan_sha256": "9451ed4812cae1a484a0f54fed131d362385800c551d1faf5a8b2b6ad39d2921",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus\n-5\n3.0\n0\n3.0 Budi\n1 skor -5 -5",
+   "aktual": "-5\n3.0\n1 total\n0\n3.0 Budi\n1 skor -5 -5",
+   "harap_sha256": "d901730e04e1389545d245724dedf007ad51094afedbe799a25c5b2e5e0d925c",
+   "aktual_sha256": "9f93bca4dc2c7a0c468f5bd5d9401fe15c84fac87c7bf1ef17ddae02db69661c",
+   "bandingkan_sha256": "14b082f4e10b15b06d9ca36b6dd18144044368f22648af5e4779669a32cf5dfb",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "-5 OK 0\n3\n0 skor skor\n10 10 lulus\nAni skor\n-5 Budi 10 3.0",
+   "aktual": "-5 OK 0\n3\n-5 Budi 10 3.0\ngagal Budi lulus 1\nAni skor",
+   "harap_sha256": "ee82f81e27edcb153d13cfd64fb61cea20740ad4feb9eaeaa7a7950e0c67e0f3",
+   "aktual_sha256": "0b614ba61dc69714ef881068708f21170171b621e02e476d86658df70b625c24",
+   "bandingkan_sha256": "c39892b978946bdcdb446e4266bf3fb1fbde491cb9e222f648c634610d6a19f9",
+   "nyaris": false,
+   "kolom_pertama_beda": 11
+  },
+  {
+   "harap": "lulus 3\n3 lulus\nlulus 3\n10\n3.0 10",
+   "aktual": "lulus 3\nlulus 3\n3 lulus\n10\n3.0 10",
+   "harap_sha256": "bf967fb7cffd6587e7883d28fc2ab69aeab81bb8efad7ad95fa98bb26fe0d2a9",
+   "aktual_sha256": "0f18fdd77cd45dc935b3e75a9919ee6b04e4f2e7b412091ea11ed6ae6afc6f66",
+   "bandingkan_sha256": "edd74f3aeb64a1f70ef884b3fcf142ec8911557f0777c1bd6cdf877bacc5ab3b",
+   "nyaris": true,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "selesai selesai 1\n-5 nama Ani",
+   "aktual": "skor 3\n-5 nama Ani",
+   "harap_sha256": "a97aecc61ee190f9ca0b4493eeb7ee691ab4869b43be682b17ed574540d9eda5",
+   "aktual_sha256": "69e42473371a062553b82eefcd2f9ff8b425fc404d295e9961badb73366dce5f",
+   "bandingkan_sha256": "f666417bd41909a5554c7b1240fb0759ffb86d2f2417542c01a68af57ed0d86c",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "selesai 10\n3 skor 10 lulus\nOK 3 Budi\nlulus 1\n1 Ani\nAni selesai nama total\n0 -5 3.0\n-5 gagal",
+   "aktual": "selesai 10\n3 skor 10 lulus\nOK 3 Budi\n10\n1 Ani\nAni selesai nama total\n0\n-5 gagal",
+   "harap_sha256": "1dc57c54e66b6eedb511cb3edbb62dc0564c246180751107be801ca656d98794",
+   "aktual_sha256": "d5db8728a752837e62e57e93896ea882580217232149d85d690273eee3a2dcae",
+   "bandingkan_sha256": "cf0e0167b0cc28d83845cacf1a64cb519a552b9afc4f472582ff3f110684043d",
+   "nyaris": false,
+   "kolom_pertama_beda": 38
+  },
+  {
+   "harap": "3.0\nBudi gagal",
+   "aktual": "total 1 skor nama\n3\nBudi gagal",
+   "harap_sha256": "dfe8e31b2b2b74126c09b3d6a60b55c757ddd93d5ef398134ee61fff70d96e8b",
+   "aktual_sha256": "5da5194b163a63061abe4597e3bba7921482e1f968bd808d3e7394752e86064c",
+   "bandingkan_sha256": "baf9948c20a00a5570349e45578a74b3c42384266c6166d512a067921b4fa993",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor OK nama gagal",
+   "aktual": "OK\ntotal total\nskor OK nama gagal",
+   "harap_sha256": "7b98adae01a47affdabe352695e3b52d4ba7ebb7735566f9f5e487c39f8f7169",
+   "aktual_sha256": "529b5bb374dcd315c8979e175edeca6fa9ec91708bacd12c49b2a3b64f54db06",
+   "bandingkan_sha256": "e0ae88cf233cceb360b34dff137f336a7c6e8771c3a1f98a43c2d072276e8ae5",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai Budi\n3.0",
+   "aktual": "total Ani\nselesai Budi\n-5  nama OK\n3.0",
+   "harap_sha256": "d3ec078d4bd39bf484ffb0904ecca8b86be6a4587e01068c0d9de98b95e4deeb",
+   "aktual_sha256": "f5d74429b032c009fa53da4759a30baeadab89b21f0c23a0af3ebc3a261abe7d",
+   "bandingkan_sha256": "6fedb255782e314d072bcf3f8368ac7077027ae2944a333dd52d0d8462596d25",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3 OK OK Ani\ngagal selesai nama 10\nBudi 0 lulus OK\ntotal 0 nama\nOK 0 OK Budi",
+   "aktual": "3 OK OK Ani\ngagal selesai nama 10\n3.0 Budi\ntotal 0 nama\nOK 0 OK Budi",
+   "harap_sha256": "e163f6121ab6fdf5779576c21d847780ea6001a7fde60586b45ba17344f1a595",
+   "aktual_sha256": "4914fdc5d67a47a3ceff00f450ce10f4f6fd433d7d8e1d7b0fef1abda903d186",
+   "bandingkan_sha256": "cdce56401e1ae65f039ec639452fdb274b12a663df572303999ccc9192dfc3e6",
+   "nyaris": false,
+   "kolom_pertama_beda": 35
+  },
+  {
+   "harap": "3.0 total 1",
+   "aktual": "OK\ngagal",
+   "harap_sha256": "f45401d115b42b83a9aa9066d22e4d154bafa1fb8538b8bbc533955c4e48900e",
+   "aktual_sha256": "8c411f1d5db5d82caa7ba435c7bf88aa991ea7c6e259ffa91b48320424a6d401",
+   "bandingkan_sha256": "92aae4775499e74ff49843d45e610bcaeed25522237d835b88e579c04e605ffc",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3\n\nBudi skor\nAni\n0 gagal total 1\n3\n0 Ani lulus\n-5 -5",
+   "aktual": "3\n\nBudi skor\nAni\ngagal\n3\n0 Ani lulus\n-5 -5\n10",
+   "harap_sha256": "f9ee41879f8a8121af0126370ef2ee0f9272898ecef8f56172b0a5529f83794e",
+   "aktual_sha256": "b34ad2316da958304ca5a09ff377f40d8711aa9d1d3cfc0710f8b71a90b8056e",
+   "bandingkan_sha256": "4cd10acc8c36e39a461426f0e1df426c43e0022154149e788546d3de92e93b83",
+   "nyaris": false,
+   "kolom_pertama_beda": 18
+  },
+  {
+   "harap": "total\ntotal 10 nama nama\nOK\ntotal gagal 10 Budi",
+   "aktual": "total\ntotal 10 nama nama\nOK\ntotal gagal 10 Budi\nAni -5",
+   "harap_sha256": "ab62d04f0c2ab0bbb54ab98d0d5090ab6c110b70d2a70310c1b28eb21c815a8c",
+   "aktual_sha256": "470e92b057d973baef74fe49b939bd08358c7f8e5f4b145ee602ba7474c475bc",
+   "bandingkan_sha256": "09d075f092ad7f4f4ee6566df5aabb98dcbf4ba95a5484f14e95444114a95a8e",
+   "nyaris": true,
+   "kolom_pertama_beda": 48
+  },
+  {
+   "harap": "OK Budi Budi 3\ngagal Budi 3 10\n3.0  total skor\n10 skor OK total\nlulus\ngagal Budi 3 10",
+   "aktual": "OK Budi Budi 3\ngagal Budi 3 10\n3.0  total skor\ntotal  Budi\nlulus\ngagal Budi 3 10",
+   "harap_sha256": "402eb761195241870b5defe84c1497e864bb185b17d88632aa24f405881a2a1c",
+   "aktual_sha256": "31be5e790ad59b2f5b1bfe3f042575b4204545f9c9e95565ca714745bbf0a000",
+   "bandingkan_sha256": "d9e7b0737dc0fd90f387c5f8c6874110ba9d73d5a8d134752bbb87abb7996e51",
+   "nyaris": false,
+   "kolom_pertama_beda": 48
+  },
+  {
+   "harap": "gagal\n1 -5 selesai\n-5  -5\nBudi skor\n1 -5 selesai",
+   "aktual": "gagal\nskor -5\ngagal 3.0 3.0\nBudi skor\n1 -5 selesai",
+   "harap_sha256": "47e7add6234e5142eb57022421e957121b98c865428a5591318360c12ae0db74",
+   "aktual_sha256": "6097dc9d8495270e7a6f5a47c72e7c489fddddfd656f908a7a6d98d55a50bf0b",
+   "bandingkan_sha256": "55e5007b0e6f6d6b2bce913b3a1bbe4bf9f02831fafacd73a7e852c42953ac0c",
+   "nyaris": false,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "-5 lulus lulus 3\nlulus 0\nlulus skor 3 -5\nlulus 0",
+   "aktual": "gagal skor\n-5 lulus lulus 3\nlulus 0\nlulus skor 3 -5\nlulus 0",
+   "harap_sha256": "72f1542d0078eab1bc53c9a1574ef67cd62c93cf99cd71b6dc1a6f3a103c4db9",
+   "aktual_sha256": "bef5b5660088b52c03742b12a447e726f1746038685b3e9f5da8a9644e4d9645",
+   "bandingkan_sha256": "af12c7e31cba76470d99958e804f4a82cf30ccf6fbf46a366406576f25913826",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "gagal 3.0 lulus 3.0",
+   "aktual": "gagal 3.0 lulus 3.0",
+   "harap_sha256": "0eabd3958c740b975922fcd5ab508938a2188463b470f5ed5a1e4eacb40b5e51",
+   "aktual_sha256": "0eabd3958c740b975922fcd5ab508938a2188463b470f5ed5a1e4eacb40b5e51",
+   "bandingkan_sha256": "0bd3b606a471dfedd5211574be958d2713adc9256f67d85ac100fd92ac685b16",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "lulus total\nBudi Budi 3\n1 10 0\nBudi 0 OK\n3 3.0  3\nBudi 0 OK",
+   "aktual": "lulus total\nBudi Budi 3\n1 10 0\nnama  OK\nBudi 0 OK\n3 3.0  3\nBudi 0 OK",
+   "harap_sha256": "537fe2abc59d4bb023643c25dcb8983e62adf56a685ab7d003e2719b913aa902",
+   "aktual_sha256": "78f0134e537839a188c4c70ecfad3440aef2aeae4eeb053923451f5fe49a643f",
+   "bandingkan_sha256": "6688090e4fa857a40502a7e515247a6b5cc9c30a2c7b06077580c9181e61f02c",
+   "nyaris": true,
+   "kolom_pertama_beda": 32
+  },
+  {
+   "harap": "0 -5\n-5\n1 Budi OK\ntotal -5 Budi\n3.0 lulus 0\n3.0\nnama total\n1 Budi OK\nlulus Budi 3 selesai",
+   "aktual": "0 -5\n-5\n1 Budi OK\ntotal -5 Budi\n3.0 lulus 0\n3 skor -5\nnama total\n1 Budi OK\nAni\nlulus Budi 3 selesai",
+   "harap_sha256": "d2d30ad337e75fa00bb7040fa6e5a31146faedab77c18291052ea0ba40dd3d09",
+   "aktual_sha256": "fe329c406cad75046c96b828143c223874fea17bbf9428c62cbd0862477a40dc",
+   "bandingkan_sha256": "ddce7d735717afbdf64cf7cdd7c2c3f0bc9331b08661781c11f986f165649e84",
+   "nyaris": false,
+   "kolom_pertama_beda": 46
+  },
+  {
+   "harap": "3 nama\nselesai nama -5 0\n10 total OK total\n10 selesai skor OK\n3 nama",
+   "aktual": "3 nama\nselesai nama -5 0\nBudi nama OK\n10 selesai skor OK\n10 total OK total\n3 nama",
+   "harap_sha256": "6cbd68642b36e05c91abd77d772b375b2700e28e2d883d6d75b1532b18b69abf",
+   "aktual_sha256": "8a6e1635aac25a189eb022b70130b0f8ff3ee6d0c0ac0e3d5a0a27a3b083719d",
+   "bandingkan_sha256": "478a82b9db2f45e9b392e7fa1c59b95b7f967b11f57e7c6beda2234d768329e1",
+   "nyaris": true,
+   "kolom_pertama_beda": 26
+  },
+  {
+   "harap": "10 OK total skor",
+   "aktual": "10 OK total skor",
+   "harap_sha256": "996dcf086f89150c183049e2b4878d4ae412e0484c41ca3da8068e52b9df554e",
+   "aktual_sha256": "996dcf086f89150c183049e2b4878d4ae412e0484c41ca3da8068e52b9df554e",
+   "bandingkan_sha256": "e703b599dc64cda576e8bf9a0be347c59a5cf8e25ca3684ffdfb4b6b129eab11",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "selesai 3\ngagal Budi Budi lulus\nskor 10 3.0\nAni gagal -5 selesai\n10\ngagal Budi OK\ngagal Budi OK",
+   "aktual": "selesai 3\ngagal Budi OK\nskor 10 3.0\nAni gagal -5 selesai\ngagal Budi Budi lulus\ngagal Budi OK",
+   "harap_sha256": "f1641a90c5460052aa46f3849db417cd84e1ddc24365e8810064432faa983161",
+   "aktual_sha256": "d83de3236e775b1539300d835a9d7e7db4db7e90b820124450a8d3ef5e0a23e0",
+   "bandingkan_sha256": "ef97566c1015ff8584daad0c9e48dc507ae563e7cc65f7c15aa5515d320964d8",
+   "nyaris": false,
+   "kolom_pertama_beda": 22
+  },
+  {
+   "harap": "selesai\nselesai gagal  Budi",
+   "aktual": "selesai\nnama 1\nselesai gagal  Budi",
+   "harap_sha256": "0242d033a46e45a65a8cc65a9220a2613539f8fd0700d7cf6bc98be6c26c42b2",
+   "aktual_sha256": "aac7e24384800296378a3e6466cf26bbc2d3fa4755171d141b75693690641fe0",
+   "bandingkan_sha256": "1f12f76e7c41cac35b47d83841ee8d0d784316e8d6244484292d9bd37efe9166",
+   "nyaris": true,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "0 selesai gagal",
+   "aktual": "skor\nlulus skor OK 1",
+   "harap_sha256": "dad0d6ed2e9b0a7c0e96b9bc46a2f12da912dd76402568b7e480906df262156b",
+   "aktual_sha256": "ab40bdd34a9e60b771ad63e86ab548948e334eee6a0a6cabbf559efa59cdf3d6",
+   "bandingkan_sha256": "f223d748b1b6e945c71f8a2e29e7ce151818c676fb7b403fee06e7d1cd65f84d",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai nama 10\nBudi nama Ani 1\nlulus -5 3 skor\n0\ngagal 3 lulus\ntotal 3.0\ntotal nama",
+   "aktual": "selesai nama 10\n0\nBudi nama Ani 1\ngagal 3 lulus\ntotal 3.0\ntotal nama",
+   "harap_sha256": "f67b2d84ccbc4d48064e66535bbf646a3b273fa78750207cc761bc49d7c9b283",
+   "aktual_sha256": "77770dc8edb9f15d5414fe4ef853fd885fd47f70f876f8e665286721eb8330c2",
+   "bandingkan_sha256": "92508b3d4e7b50269d583fa6685ba679317709909387cfb5e6df563efb8539b5",
+   "nyaris": false,
+   "kolom_pertama_beda": 17
+  },
+  {
+   "harap": "gagal OK\n-5 3.0 Ani OK\n1 1 Budi 3\n1 Budi OK selesai\nselesai\nselesai\n3.0 3.0 OK",
+   "aktual": "lulus\ngagal OK\n-5 3.0 Ani OK\n1 1 Budi 3\n1 Budi OK selesai\nselesai\nselesai\n0 3.0 0 Budi",
+   "harap_sha256": "d210e74f35efb9663edc44a2b50bfe2b1f4fae78885b0b8b5e1f18418d56c7dd",
+   "aktual_sha256": "7670ab83c34441fcb774451e98723fd9546d6eba6e04d03a4bd107d78776dbdf",
+   "bandingkan_sha256": "50e70b887c32726f8cf692040ffa26da3b0d159733bd9ebd2ed9eab7a3c3a58e",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK 10\nskor\nBudi lulus\nnama gagal nama\ntotal\nlulus total nama lulus\n-5 3.0 skor -5\nskor selesai 10 gagal",
+   "aktual": "OK 10\nskor\nBudi lulus\nnama gagal nama\nlulus total nama lulus\n-5 3.0 skor -5\nskor selesai 10 gagal",
+   "harap_sha256": "0ac31107c52dedf551dd9a09a75af2cbd08fd8490401374826e6fe860bca90fe",
+   "aktual_sha256": "e422c16741af3254c9ce35c5078877186eafeadb17faa7bf30c1a9adca520139",
+   "bandingkan_sha256": "e3e32cab552a00c7f845fcd9ade432541a9d335b3202d6f2b07dadfe22432223",
+   "nyaris": true,
+   "kolom_pertama_beda": 39
+  },
+  {
+   "harap": "Budi\nAni\n3.0 Ani\n0\n10\n3.0 10",
+   "aktual": "0 total\nBudi\nAni\n3.0 Ani\n0\n10\n3.0 10\nlulus",
+   "harap_sha256": "f655e04a27dcdf8ef4d20de80fa41ddaafc6fc5548ea88f37b96c706df461a12",
+   "aktual_sha256": "9276e064b6308df5b91a5f7e2108707c13e1f336595f380926beb5523fbd55cf",
+   "bandingkan_sha256": "bc79338a9a8085e7a0d1f7f0466f10d9441a2ba529e0d34b48a6711a8676a494",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus\n0\n0 10\nlulus\n0 10\n10 skor total\nOK total",
+   "aktual": "lulus\n0\n0 10\n-5\nAni skor\n10 skor total",
+   "harap_sha256": "f66c1f3799a67e18ccff17cf126dda0de014013c873d7ddc6999efc38f3155ea",
+   "aktual_sha256": "72a1844aca93844fd998603fb5c2a1ca25a63acf048163e8d165132ae07dcc6a",
+   "bandingkan_sha256": "50c27e8a22687291c294e48da28f55f7c2a2946296179b05b2a1b62b54dde7cf",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "selesai\nAni Budi\n-5 OK\nskor Budi nama\nBudi 3.0 total Ani\n10\ngagal nama\n3 skor 1\nskor nama 1 lulus",
+   "aktual": "selesai\nAni Budi\nOK\n-5 OK\nskor Budi nama\nselesai Ani skor Ani\n10\ngagal nama\n3 skor 1\nskor nama 1 lulus",
+   "harap_sha256": "269257cad703973f43a08d08ace568cf8ec1fcfc070f175c19adf368c21c6ff3",
+   "aktual_sha256": "bee32a8d87e9529ca41d77fd9217eab08d55c1e9220ef4cc70ee6fd20bcd6704",
+   "bandingkan_sha256": "24435ca7db5155fa0f1315ba9df675cf2032f71851908fcd8664f9c0c5735cb4",
+   "nyaris": false,
+   "kolom_pertama_beda": 18
+  },
+  {
+   "harap": "10 0 10 10\nskor  selesai\nselesai\ntotal\nlulus\n10 0 10 10\nselesai gagal\nnama 3 Ani skor",
+   "aktual": "10 0 10 10\ntotal\nselesai\nskor  selesai\nlulus\n10 0 10 10\nskor lulus -5\nselesai gagal\nnama 3 Ani skor",
+   "harap_sha256": "7d6b49fa1dfca15922b7e2a1204ef36dea23224f9bf1732f0ea600fef1d1ace2",
+   "aktual_sha256": "b2f70e1364aa43fc9671f820e4bd6bcbd5de744dffda4b3ca8dcf1beffc7c8d8",
+   "bandingkan_sha256": "cf4c2362d0e1c98dfde1194de8b7c39d58c71b78f14fda528f87b8d87d220858",
+   "nyaris": true,
+   "kolom_pertama_beda": 12
+  },
+  {
+   "harap": "-5 gagal 1 3.0\nskor\n-5 gagal 1 3.0\nnama lulus",
+   "aktual": "-5 gagal 1 3.0\nskor\n-5 gagal 1 3.0\nBudi 10 OK",
+   "harap_sha256": "ce90bbef1433179d30a70f16f44d8d813ef3bf526baf81716f3101029b76fbfc",
+   "aktual_sha256": "49bd4017561847908ae925a1199215eef72a56c1c13b705241d1f79fcbcb6f18",
+   "bandingkan_sha256": "dd367a2b64af256e6a9eb14fd99ecc1685272cc8d7899db7b37f4f48c4ec3173",
+   "nyaris": false,
+   "kolom_pertama_beda": 36
+  },
+  {
+   "harap": "10\nOK\nAni -5\n-5 3 Ani\nOK\n3 lulus lulus 1\n1 1\n3.0 gagal -5 OK\n1 lulus skor total",
+   "aktual": "10\n0\nAni -5\nselesai\n-5 3 Ani\nOK\n3 lulus lulus 1\n1 1\n3.0 gagal -5 OK\n1 lulus skor total",
+   "harap_sha256": "004725f85603e76f72f75951df230f5eb15c4164285f113d6c3f43a039dd1ddc",
+   "aktual_sha256": "92fc6cb3ef5f6cbdb0af0b81892db2bdfe7b303de82a8a1255a31a63b0867b5f",
+   "bandingkan_sha256": "6707280c1aefddc482fe52f1e3e1fa338c81adfda0109ded077a07dbbc3b9977",
+   "nyaris": true,
+   "kolom_pertama_beda": 4
+  },
+  {
+   "harap": "Budi\n-5 lulus\nselesai nama nama\nselesai nama nama\n3 lulus",
+   "aktual": "Budi\n-5 lulus\n3 lulus\nselesai nama nama\nselesai nama nama\n3  nama",
+   "harap_sha256": "9b080006e8dd5ec532169edfd4ee405a1bb150f0fa4687047b81e48f98877f78",
+   "aktual_sha256": "5a1cd40b86f1fd909cf3b98a8f88cde064afec10cf1b9276e6eb4b29f67aeae2",
+   "bandingkan_sha256": "20a84e6b7bc1cc6be0d70a5aabb6a415368175b38c26c8d07d9281aade7a00c1",
+   "nyaris": true,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "Budi Ani 3\nBudi -5 skor",
+   "aktual": "Budi gagal OK\nBudi Ani 3\nBudi -5 skor",
+   "harap_sha256": "47b4d0c44c7175ba2cdbb2cd314b4c0cbef6532a1f11e7f8f49355a660fc500a",
+   "aktual_sha256": "bc38421dfe1bc889782f61b9103123d63cfa7ea8fd0c091104c3f5ba91606d4b",
+   "bandingkan_sha256": "b05661c1289da98ca70e2f0573e2978821a33c7d3d102eaaff65c33aa95d1246",
+   "nyaris": true,
+   "kolom_pertama_beda": 6
+  },
+  {
+   "harap": "nama OK Budi Ani\ntotal 1\nOK Ani gagal\n-5 nama\ntotal 1",
+   "aktual": "total 1\ntotal 1\nOK Ani gagal\n-5 nama\nAni Ani 0\nnama OK Budi Ani",
+   "harap_sha256": "df8744c735e7169f5c402abe49306de9d7fcd7e462442d8ebcc55c7b8b3e33fc",
+   "aktual_sha256": "e31a6b4f06acc2df3df2d9d3212d3b14d74beef619243bf0ee1d2478ec3cda33",
+   "bandingkan_sha256": "6bbd74e1b3028859855fd5ced5732110222577112f098af5aa89d17ed2370761",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3 skor Budi\ngagal 3.0 3\nlulus 1 10\nBudi 1\nskor\n3.0 -5\nAni nama",
+   "aktual": "skor\ngagal 3.0 3\nlulus 1 10\nBudi 1\n3 skor Budi\n3.0 -5\nAni nama",
+   "harap_sha256": "e4dff037365b05eb97315a66886b618603fe200ca27ed51c3a1a58c0cb0b0eef",
+   "aktual_sha256": "f2f8d57b339998f5633ec0753d205681ff1377ece70a07f8caf917aebec38380",
+   "bandingkan_sha256": "ecfcf0c5b6458ceeee69e095a3e0c30be51ced9915a8b762eb045da4611753d3",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0 OK Budi\ntotal Budi 0 gagal\nOK\nAni\n3.0 10 OK",
+   "aktual": "0 OK Budi\ntotal Budi 0 gagal\nOK\n1 3.0 -5\n3.0 10 OK",
+   "harap_sha256": "764fc7cdaa6a4812063e902c1f3ab7f86e0415f6360d60f2a9e126292678dbb4",
+   "aktual_sha256": "9aeb8b17967edf726c35d0703f464ee3b65c12871e10baed55c6740f2d72ab41",
+   "bandingkan_sha256": "5c6e1125aca74eba58b8d7c158c8db850d7937ec9e04ea8ff96110be7f7f9a1a",
+   "nyaris": false,
+   "kolom_pertama_beda": 33
+  },
+  {
+   "harap": "10 OK 0\n10 -5",
+   "aktual": "10 OK 0\n10 -5\nBudi -5",
+   "harap_sha256": "bd996c8b31894cf9f86d9fee0710bd8c7d740b051ba384312b10ca7f6e14814d",
+   "aktual_sha256": "d0daac33f1d548071d5e219761d42355bb1db5b9ed11552fca186ba713090471",
+   "bandingkan_sha256": "4756c8206bd719456550f58483fc502408e564a54d916d8c4509097c58977091",
+   "nyaris": true,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "10 3 selesai\nnama 3\n0 Budi Ani Budi\n3.0 nama\nlulus",
+   "aktual": "10 3 selesai\n0 Budi Ani Budi\n3\n3.0 nama\nlulus",
+   "harap_sha256": "c8e78daa07c22e023fd422502ca61e699893f9f806e3293e01a961d4aee6918f",
+   "aktual_sha256": "c11001a9ba48cfdf838bedef75a5235d16e3d0c00ff77186aab7c47f4c338156",
+   "bandingkan_sha256": "21a5ea3f81ae96eff8a3cf8860459e90d21edfba994a12fc94459987f2170970",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "3.0 Budi\nselesai Budi\nOK -5 lulus\n-5 skor nama lulus\n-5 skor nama lulus\nselesai\nBudi 3.0 Ani\nAni\nAni",
+   "aktual": "total\nselesai Budi\n\n-5 skor nama lulus\n-5 skor nama lulus\nselesai\nBudi 3.0 Ani\nAni\n3.0",
+   "harap_sha256": "2c05f226ec5701dc8566bab2ee1dc9f497ea163ef7db497a545450e695c254b4",
+   "aktual_sha256": "620521c4165461b218f0e75b0b67087e6a5a103aa96029e3d6933b108cc3599a",
+   "bandingkan_sha256": "655649e297ca1435ebdf868e8ce67657c46673be21e69e92eaab334f06d0a472",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "\n3 Ani 3\nBudi\nlulus\n\n1",
+   "aktual": "\n3 Ani 3\nBudi\nlulus\n\n1",
+   "harap_sha256": "a2279878a37777009093175307f6a64b320c1d925be2ae2f42c6e8f44d357d91",
+   "aktual_sha256": "a2279878a37777009093175307f6a64b320c1d925be2ae2f42c6e8f44d357d91",
+   "bandingkan_sha256": "f310321a683c4e64f14ca67315b2d9b83b8cac7ad70f0afdbb025c692f10ca50",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "nama\n1\n1\nselesai\n3 gagal 1\ntotal skor OK gagal",
+   "aktual": "3 selesai 3\n1\n1\nselesai\n3 gagal 1\ntotal skor OK gagal",
+   "harap_sha256": "ae4bad2d533664931d9d3734058bc634318567536cf9e397118bf695d896d32f",
+   "aktual_sha256": "ad379612b28815095d318da727d9bc5bf11c8ebea7abac5671c842082ed833ba",
+   "bandingkan_sha256": "bdd09ef546eb551d4a697a59eb076d5fed2665ae39fba8d7b120cb52eb2dcba6",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "nama Budi 0\nBudi -5 skor Ani\n1\n1  0\nlulus 1 gagal\n1",
+   "aktual": "nama Budi 0\nBudi -5 skor Ani\n1\n1  0\nselesai skor 10\nlulus 1 gagal\n1",
+   "harap_sha256": "0e60f6656b20bd27ae04aaa85c19ae5f66301bf5896c76fdd72eb67e7d0eed0e",
+   "aktual_sha256": "26566c7e157e7773b2fd23997d36b7cf32d3065c8b959eea89e5140d281d5c51",
+   "bandingkan_sha256": "dbba134a1aa5bdb53b98bc64281dfc344e2839007980d4f34f1feed8657bc5c8",
+   "nyaris": true,
+   "kolom_pertama_beda": 37
+  },
+  {
+   "harap": "lulus 10 0\n1 total  3\nlulus 10 0\nBudi gagal lulus\nBudi selesai\nOK Budi gagal\nAni\n3",
+   "aktual": "lulus 10 0\n1 total  3\nBudi gagal lulus\nBudi selesai\nOK Budi gagal\nAni\n3",
+   "harap_sha256": "08aeb3b6f2b67c9a5731fd944d0ada05028b2a4a86e5122547eab00ea1f9a9f2",
+   "aktual_sha256": "f78e5f0b3eabc4feb29cf04027917b0eab7efd83a4ddc452714fe82c456976df",
+   "bandingkan_sha256": "38568b0c9eeb59cdc5c131ad0513891978b003dcf7c0f6f342984c29d112676c",
+   "nyaris": false,
+   "kolom_pertama_beda": 23
+  },
+  {
+   "harap": "nama lulus nama\nlulus\nselesai\nAni 0 10\n3.0\n3.0 1 1\n\n0",
+   "aktual": "nama lulus nama\nselesai\nAni 0 10\n3.0\ntotal 0 10 3.0\n\n0",
+   "harap_sha256": "0d9da61bd81374da177f5a1a68c194e6faae07c8c22c1193b80cdb64508f6c7d",
+   "aktual_sha256": "5de45e391ac3a6821aa24f79a159ae197dc29268134b5dd77a3a7bc967c25f65",
+   "bandingkan_sha256": "e818123a0432e7aea7f6c5d382659c62003f450a0fed6e55cc2efb48322cea38",
+   "nyaris": false,
+   "kolom_pertama_beda": 17
+  },
+  {
+   "harap": "3 OK skor\n1 OK 3.0 1\nlulus\n3.0 lulus 3\nlulus total 3 lulus\ntotal Ani\nlulus\n-5 -5",
+   "aktual": "3 OK skor\n1 OK 3.0 1\n3.0\nlulus\n3.0 lulus 3\nlulus total 3 lulus\ntotal Ani\nlulus\n-5 -5",
+   "harap_sha256": "d54e1b984cb04189a22ed5bacb311c2564a74f83916753da9ac300df71b17857",
+   "aktual_sha256": "5bded636214e953a02fbec6e11b23c7274ca929af9c27d6574a482b8e9b4fed9",
+   "bandingkan_sha256": "2f70d44f62a7b0fdd9d71f4bd9004ecc0d035ca93b94596e723953a0bc2a859b",
+   "nyaris": true,
+   "kolom_pertama_beda": 22
+  },
+  {
+   "harap": "3 3 1 1\n3 -5\nOK\nBudi\n10 10\nAni total gagal lulus",
+   "aktual": "3 3 1 1\nOK\n3.0 total nama\nBudi\n10 10\nAni total gagal lulus",
+   "harap_sha256": "73038eb8d499b4ab70238319ae32be064971c9b619f938ea300ca72f776877ed",
+   "aktual_sha256": "e84bae1a00e356a2b2260f9637b7a91b80cb5037f3d10a7995bc96895de6a72c",
+   "bandingkan_sha256": "4fc9415b8efc53b8f8d54e3cad9cbc21bdd78cca68ec9690a97791c907c8f405",
+   "nyaris": false,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "10\n10\nOK selesai 0 1\n10",
+   "aktual": "nama gagal\nskor gagal\n10\nOK selesai 0 1\n10",
+   "harap_sha256": "01ac79dcf8a8f44b77101f8728e4d394e3d5bc730f2d1505a7e38a739ef5a265",
+   "aktual_sha256": "9ba344e0433a240def1b2d02ff8ec7f86810283a08f18548e391f05b0fec73bb",
+   "bandingkan_sha256": "1eb99d996571ca702ec1174acce3e35154b2810a1bf23439295c1a802c608e62",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "nama\nBudi\nselesai 10 Budi\n0 gagal lulus 10\nBudi\n3.0\nBudi",
+   "aktual": "nama\nBudi\nselesai 10 Budi\n0 gagal lulus 10\nBudi\nAni 1 10 3.0\n-5 -5 Budi 3.0",
+   "harap_sha256": "aa3ca04027955f4b7b355e2d3fe27c8d52bb5fe0eecc043d1296d0434bc1e534",
+   "aktual_sha256": "f12b5cea4d648a7aebed7b7e05a5a59948db96178dc78f89f039b4e8e039cfa1",
+   "bandingkan_sha256": "9e5bb49f498ec9fc0f1f0300af081b2247d808c1f872a9b5998a1eb22f39a2bd",
+   "nyaris": false,
+   "kolom_pertama_beda": 49
+  },
+  {
+   "harap": "Budi total lulus 3\n3.0\n1 lulus lulus\nBudi Budi\n3.0 Ani 3.0 3.0\n-5 nama lulus",
+   "aktual": "Budi total lulus 3\n3.0\n1 lulus lulus\nBudi Budi\n3.0 Ani 3.0 3.0\n-5 nama lulus",
+   "harap_sha256": "e68fb3f56affd7df8c7ded82863da29b2872c3f6cb335de0d4dcb27bf2173e3b",
+   "aktual_sha256": "e68fb3f56affd7df8c7ded82863da29b2872c3f6cb335de0d4dcb27bf2173e3b",
+   "bandingkan_sha256": "2e5f7ac784a9392b34b8088d1383e42f43ee5e9c70f9a60f933907cf180546cd",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "skor total skor\nBudi  0\nlulus 1\nselesai -5\nlulus OK\nselesai -5",
+   "aktual": "Ani nama 1 gagal\nBudi  0\nlulus 1\nselesai -5\ntotal Ani\nselesai -5",
+   "harap_sha256": "6cdcaca07b3156f3fadfe502158ba20da24e9454948b65111e45da276eda908c",
+   "aktual_sha256": "93d9357562f8cb7b244ed298eeaa8acff0c4dad41349082ab59e6fee3cd0a04a",
+   "bandingkan_sha256": "49e467e208c62067cb6e4addf95e8ffa828cde911376969789a1b56417614521",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1 3\nlulus\ngagal 1 nama\ntotal 3 lulus\n-5 0 gagal total\n3 gagal 1\ntotal 3 lulus",
+   "aktual": "1 3\nlulus\n-5 0 gagal total\ntotal 3 lulus\ngagal 1 nama\n3 gagal 1\ntotal 3 lulus",
+   "harap_sha256": "67dfd10d911c40b5fe9b0faa5d68f67c7d10692a83288eddabe19d567a66cca4",
+   "aktual_sha256": "eadde36f8b6b856e8d570ea3cb227fbbf5796ed118084465cf69a3071dd35bd6",
+   "bandingkan_sha256": "e283b8642ca5c79207a4543f499613d6e4cdae7c793a4d8f71354b163097fec9",
+   "nyaris": true,
+   "kolom_pertama_beda": 11
+  },
+  {
+   "harap": "total 3 nama\nBudi\ngagal 0 3 3.0\nOK 1 Ani\ntotal selesai 3.0",
+   "aktual": "total 3 nama\nBudi\ngagal 0 3 3.0\nOK 1 Ani\n3",
+   "harap_sha256": "fd0da65bee175c42ffb50832266ebc97b0467c9b07d38481579dd20dc9c2ef0b",
+   "aktual_sha256": "9c3511f331969687d600b44f628a13b648b12c6dea86e341d6ba685694f31b98",
+   "bandingkan_sha256": "cea1dfbf28d57fe762c8943bb43b650c161d5517a7f01344e7e539478a0f1bed",
+   "nyaris": true,
+   "kolom_pertama_beda": 42
+  },
+  {
+   "harap": "1 Budi\nAni 0\ngagal lulus total\n3.0 total",
+   "aktual": "1 Budi\nAni nama\ngagal lulus total\n3.0 total",
+   "harap_sha256": "48d6f2ce185309c46fed2658c76b90a7fef495bee6ca294857764a138855a00b",
+   "aktual_sha256": "a4adef9cb2e95e491cb1a7689145649cb3ce77a589bf520ac202fc4014faccad",
+   "bandingkan_sha256": "f141ace1d484204760f4534dd809899eec3f54da25dac7a81ff7ab02c738f56e",
+   "nyaris": false,
+   "kolom_pertama_beda": 12
+  },
+  {
+   "harap": "10 gagal 1 Ani\n0\ngagal 3.0 Ani selesai",
+   "aktual": "0\ngagal 3.0 Ani selesai\n10 gagal 1 Ani",
+   "harap_sha256": "81550ce2954bebd88e0e54db932dc1b54f3869c2f4b33654ed8d107afcf6af60",
+   "aktual_sha256": "62eacd185b79c9fa2b190e564de5476f8e4b0f00c15d88c3acfa2e81b24fae13",
+   "bandingkan_sha256": "bad8a77ba9ff0431c7b5ab717bd8c0fc29c3029230fbbe845c62af28f3b26362",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 selesai 0",
+   "aktual": "",
+   "harap_sha256": "d126823271bfaca5a88ad13f243e63047344b9205317122e6222bcd8e50f11c6",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "660b7ee4b92a9dafa80cbe5584b983d0aa3336cdbb8345432d09def49aaeb7f6",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Budi\nOK -5\n10\nskor 0\ngagal nama 1\nskor 0\nnama selesai 3.0",
+   "aktual": "10 1\n0 3.0  gagal\nOK -5\n10\nskor 0\ngagal nama 1\nskor 0",
+   "harap_sha256": "2b67337c7da4dd9769d255962e1d5e0531365c08869a4060caf538cce298b29f",
+   "aktual_sha256": "244b5fd516020d4ecebc4198925b296a370b6a7b56f2d9e8ea539e00d710fc10",
+   "bandingkan_sha256": "2104d4c1ea8d3bdd86ae9c31fa4c4451c606188f4777bcce6ee61c85562ace41",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1  gagal\nnama nama nama 3.0\nskor Ani\nnama Ani Ani 3.0",
+   "aktual": "Budi 0 lulus\nskor Ani\nnama Ani Ani 3.0",
+   "harap_sha256": "75fc598fa13d12617d600735d844095324d83b48b4de8369692cbfd61d5d8fc9",
+   "aktual_sha256": "3ff31b62ec2632e06d8be248f8e853a9db0a07129ebad73b673faeab3025391e",
+   "bandingkan_sha256": "8d6a74cb1396bc531369c621e7b3e6a20ad8af997ee64053a1fe5f43bb359afa",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus -5 lulus -5\n1 gagal\n3\nselesai lulus\nAni OK 3.0\nBudi\n0  Ani\ntotal OK -5 lulus\nAni",
+   "aktual": "lulus -5 lulus -5\n1 gagal\nAni\nselesai lulus\nAni OK 3.0\nBudi\ntotal OK -5 lulus\ngagal 3.0",
+   "harap_sha256": "379311824a22ab3b1b211771d4ce5f7d7649bbfc8fe88de32ed2084235e148da",
+   "aktual_sha256": "b97fb99363f4efcfc5df022128f1782dbf36e1e6d82c996c184d2c30e9e9a882",
+   "bandingkan_sha256": "e335e2ec73347a2f810cefe9693199ee4423d482ce99e20307aab54ac4642739",
+   "nyaris": false,
+   "kolom_pertama_beda": 27
+  },
+  {
+   "harap": "0\n10 0",
+   "aktual": "10 0",
+   "harap_sha256": "ef8ea63b2a5fbc521724b1d16053c98b14954c23893761e909f02fe9787bbf99",
+   "aktual_sha256": "9c9b7a35483efe4226a23d67fd920a2a2ee5b43211346536cd2acc228016a041",
+   "bandingkan_sha256": "79a77f11e14bef29de9577eabd432504cdfc05bc31f4393ea179dd53fff0f06a",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK 10 0",
+   "aktual": "",
+   "harap_sha256": "f8ee508cbf5e8d87a72b9449f00804166f5c275d18dcf66c39086339cea682f6",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "62784d0c6900668509ab94029dc0e0bba3df19e1244de7235ff07ff34d96707e",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK\ntotal gagal\nlulus 3.0\nskor nama -5 total\n1 Budi total\n1 nama\n1 nama\nOK Budi",
+   "aktual": "OK\ntotal skor total\nlulus 3.0\n1 Budi total\n1 nama\n1 nama\ntotal gagal",
+   "harap_sha256": "05ab21162e3a555dabb584e618ed2f1943a001d87f79e2f3fe0a7313d1cc6764",
+   "aktual_sha256": "7880841c50b67396fca7824e17bb6d296f745581f7399292e8dff93afc1244c1",
+   "bandingkan_sha256": "90c7b14c92ee42fefcb1467931ccea2c55a6726b17f09cfc9692a76f06ad801d",
+   "nyaris": false,
+   "kolom_pertama_beda": 10
+  },
+  {
+   "harap": "3.0\n-5\nAni skor total\nAni 10 skor\n1 nama 3\nlulus\n3.0",
+   "aktual": "-5\nAni skor total\n1 nama 3\n3.0",
+   "harap_sha256": "75a0021bbd3440a642d1c8359a6dfdfb8beac64a0012f0bfea3ff95ee0ff8f44",
+   "aktual_sha256": "21d563589d989fb3e71fd77595002b1cbd19a3df9a4c9af21d39d06a29a71b7a",
+   "bandingkan_sha256": "a08197a8cc904c5e54feee49e5e615f8f27c7e2ac38c408591fbe2d050cb415f",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0\nskor Budi skor OK\n-5 selesai\n3.0 Budi 3.0\n10\nlulus\n1 selesai 0\n3.0 total 0\n-5 selesai",
+   "aktual": "0\nskor Budi skor OK\n-5 selesai\n3.0 Budi 3.0\nlulus\n3.0 total 0\n-5 selesai",
+   "harap_sha256": "3ea948e5c60271b3ca19422cbd269fb1221d743853cc9078b8161a3a86fb7482",
+   "aktual_sha256": "e9f2c2ba2156b84c9710dc74d93b391f88cba1b80ad41c5cbdccea85261846ad",
+   "bandingkan_sha256": "85730503aacd0925cc33b15bc136500ec692904ca101783c955a6d413904d0f2",
+   "nyaris": false,
+   "kolom_pertama_beda": 45
+  },
+  {
+   "harap": "selesai 3.0 3.0\nselesai\nOK\n0 lulus 10 3\nOK gagal total\nOK Ani\ngagal selesai\nBudi 0  Ani\nskor gagal Budi",
+   "aktual": "selesai 3.0 3.0\nselesai\nOK\n0 lulus 10 3\nOK gagal total\nOK Ani\ngagal selesai\nBudi 0  Ani\n1 Ani 3\nskor gagal Budi",
+   "harap_sha256": "9ba1775caa03530dee011f4fa19a13947fb065a912568e03edb056ef32164375",
+   "aktual_sha256": "9b744e0274cbafd85ab9b6409c62645fad77b378f9b9f4c8a32d6a0c5ad47b31",
+   "bandingkan_sha256": "f6af1c23eefb2bb98afd231ff70af7d172668e6d4fd8392ae1547407e4353ac3",
+   "nyaris": true,
+   "kolom_pertama_beda": 89
+  },
+  {
+   "harap": "3\nskor OK  skor",
+   "aktual": "gagal\nskor OK  skor",
+   "harap_sha256": "792b81d5af39a56982a1395dec8b644e6983fc00a14053aa6605eb1cf3995956",
+   "aktual_sha256": "63e6e2a7a578ad76da4f795136c44cb0adb4a688b31903ef104bc5bff86b500e",
+   "bandingkan_sha256": "728b31f78c91d70c7e68f4d8f8a8dc3ba212e11da44fe3a53f7e37b4cb7815e9",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1 OK\n10 -5\n10 OK\nskor",
+   "aktual": "1 OK\n10 OK\n10 -5\nskor",
+   "harap_sha256": "72793e7c074d707ffe535fb95b06b3c4bee715d9f399cbc7282d056a11b7c159",
+   "aktual_sha256": "d9dfce413f61820cf0179b0297a60412ee12d8af9b056dc42bc54616573154e4",
+   "bandingkan_sha256": "5e291f603dabaa11b67b823c914dfa0369df5f22f37a227f1ed8e7becd979545",
+   "nyaris": true,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "3 total  gagal\n3.0\n0 1 10\nAni Ani 3\nlulus Budi 3.0\n3 Ani\nselesai nama nama lulus",
+   "aktual": "3 total  gagal\nlulus Budi 3.0\ntotal\n0 1 10\nAni Ani 3\nnama skor\n3 Ani\nselesai nama nama lulus",
+   "harap_sha256": "e2fb0f524beb3043dec672937e6b747182173aabc260ff1a837ec9c155697e10",
+   "aktual_sha256": "ffddf3f08b7ddf71a6b6ddfba875ded51822393d5f040ec7f96315952e7bc16d",
+   "bandingkan_sha256": "beac470170dec22024529182a1408fb6cfc6aaf746ad4549ebcb6398a2eb3c6f",
+   "nyaris": false,
+   "kolom_pertama_beda": 16
+  },
+  {
+   "harap": "3 skor\nAni 3 10\ngagal\nskor -5\nskor Budi total\n3 3 Ani skor\n3.0 selesai Ani 3.0",
+   "aktual": "3 skor\nAni 3 10\ngagal\nskor Budi total\nOK\n3 3 Ani skor\n3.0 selesai Ani 3.0\n-5 3 total Budi",
+   "harap_sha256": "416ac20a2c172512e93933385d27be3131adb07e05afb6eebe6d5e460462dbb2",
+   "aktual_sha256": "f2da32cf72fbeb847bfb25905fec31d874c5f6579797ae1af8bdaf190113ca23",
+   "bandingkan_sha256": "1d1241d08d2cfebcc4dbdaeb13aa32cb4d9ab3351013705058a06b24c61783b3",
+   "nyaris": false,
+   "kolom_pertama_beda": 28
+  },
+  {
+   "harap": "total total\nBudi 3.0\ntotal total",
+   "aktual": "1\nBudi 3.0\ntotal total",
+   "harap_sha256": "f5b6c072a3d72b25349c08091da3e18b84ad50729c1ccae9470a5510587ab06b",
+   "aktual_sha256": "3734281deffc15f73050c947cb31bf36b2622371912a8b23d9a41ae6c65087dd",
+   "bandingkan_sha256": "29b08bbd220512de47a4453c1bb0077a05716a216e98175d6879b233e7f90c6a",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor lulus selesai\nBudi\nskor 3.0\nAni selesai skor Ani\nOK Budi\n3 total",
+   "aktual": "skor lulus selesai\nBudi\n3 total\nskor 3.0\nAni selesai skor Ani\nOK Budi\ngagal total 1 Budi\n0 1",
+   "harap_sha256": "47ce02fd1cddb93f90e450ce6ee1408b8481bb0e9758f66194405899bdad1b64",
+   "aktual_sha256": "3f9ed73430c08f11458e9983dc1491dbb426a44bd4363708f7e35b8b555df18e",
+   "bandingkan_sha256": "c5585911ea7ed349ae1598b9cb1d3aa9196ad1aefb7b866511737e519893b02b",
+   "nyaris": true,
+   "kolom_pertama_beda": 25
+  },
+  {
+   "harap": "selesai nama 0 nama\ngagal nama\n\n10\n3.0 lulus\n1 0 skor\n-5 3\nselesai",
+   "aktual": "selesai nama 0 nama\ngagal nama\n\n10\n3.0 lulus\n1 0 skor\nBudi gagal\nselesai",
+   "harap_sha256": "db910964519d68aa5525fd8878b7229c0159409add7532bb589eb05ed51f860c",
+   "aktual_sha256": "92ed00bfd5b8a71aecd354dd22b3379473196f4fc9aa9cc9b675191715540df5",
+   "bandingkan_sha256": "7df54776706c9a7afd190acbd12adf9d8d6adbc317bb75d0b438d4ef3b5d44d8",
+   "nyaris": false,
+   "kolom_pertama_beda": 55
+  },
+  {
+   "harap": "selesai\nBudi total 0",
+   "aktual": "selesai\n3 10 Ani total",
+   "harap_sha256": "351a117bfe4da754ead1c833fc75750f08d14a79b60aebda3ef08b7ef92a6e87",
+   "aktual_sha256": "7bb61355c72f1df30c9de93f01caf2d1a94de81b2e77f765668b5526d53c3caa",
+   "bandingkan_sha256": "2ade63728d06e0589ff1f6ccce322c06c16200481e7c36b0199da01c275b9b19",
+   "nyaris": false,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "Budi\n0 Ani Budi",
+   "aktual": "Budi\nAni nama 3.0",
+   "harap_sha256": "356febeb4c0bffb5e31424ff4e8cad12672993499b2ef07189c588c8c8ea64c7",
+   "aktual_sha256": "f0bd19d5879919f5e92ae0c9fb985c6b8311b6d28e6c6b127b9f1496a7422c3e",
+   "bandingkan_sha256": "b249548849e466866d9cc26bfcabb807c1e2d244f34ca1d5a176e22ad21bf78a",
+   "nyaris": false,
+   "kolom_pertama_beda": 6
+  },
+  {
+   "harap": "Budi 3.0\nskor\ntotal\n0 -5 0 0\nnama 3.0 selesai\nlulus gagal\n-5\nselesai nama selesai nama\n0 -5 0 0",
+   "aktual": "Budi 3.0\nskor\ntotal\n0 -5 0 0\nnama 3.0 selesai\nBudi total nama\n-5\nselesai nama selesai nama\n0 -5 0 0",
+   "harap_sha256": "e53e8c78e0aa9ba5504450bbf6547789a8756741d81479e552a504f2dbd1ec07",
+   "aktual_sha256": "cd7ed9f023dd62e54647d9343703cef94833257752f67262365cfc9120b94b6c",
+   "bandingkan_sha256": "662fa11ef3125466d695ba0b01e1cd5004b30deeb56f7cbdef251377e02bccd0",
+   "nyaris": true,
+   "kolom_pertama_beda": 47
+  },
+  {
+   "harap": "nama nama selesai\nAni\nlulus 1\nnama Budi\nskor nama -5\nnama Ani\nOK gagal",
+   "aktual": "lulus 1\nnama Budi\nskor nama -5\n3.0 lulus\nnama Ani\nOK gagal",
+   "harap_sha256": "146d2132be40d675d8b9a627ec388444469c4f6211e2e39cbedf9401f7059d7e",
+   "aktual_sha256": "c238e2cdc8c84a58fd563b4af59ac9c5a6ab5e4be80bf8cdf1cc2693d49444e5",
+   "bandingkan_sha256": "7a517a10353a342b5eec595d3affa5a407730fc46e4c5f1ffcf2ee1307dd3bd6",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK nama total\nselesai gagal Ani selesai\nOK\nBudi\n10\nselesai OK selesai",
+   "aktual": "OK nama total\nOK\nBudi\n10\nlulus nama",
+   "harap_sha256": "5d9a3e0ab2859edeaf940e175af5cc61dcdf1ef1f10d751d9f6f27c10a58f8ec",
+   "aktual_sha256": "6cd4f1325357f4856461929a310f39e80b1993295e2b24b8f2956c02ebc4e6b6",
+   "bandingkan_sha256": "638dac7e723c979f1c9f3afae60f31be0d931e604f3f77f50ea37448e60c101f",
+   "nyaris": true,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "total 0 nama\n0 3 gagal",
+   "aktual": "gagal OK 3.0 OK\ntotal 0 nama\n0 3 gagal\nAni lulus Budi",
+   "harap_sha256": "fc9aa94dd601864137bb222ff05d1933a21a9b9e95e1d1f67f7e6c065a7c636e",
+   "aktual_sha256": "9fe63f1a1ddfc8a5706ce4cb60526637b37eb03485e2be6b8d4621f549abaeab",
+   "bandingkan_sha256": "ea8ff2795b53bf0cf1eeb7610c487a7fc19cd233a628d738fbfc205cab8c3bb5",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total 10 1 0\nBudi 1",
+   "aktual": "total 10 1 0\nBudi 1",
+   "harap_sha256": "251bfe60d188edadaa79fd0731bf4901d43365926698c44661a8091dd6c9d032",
+   "aktual_sha256": "251bfe60d188edadaa79fd0731bf4901d43365926698c44661a8091dd6c9d032",
+   "bandingkan_sha256": "279f6560834c50f9642048eec3d62ea4648242da0f8dbf0be36ceb2a7b2515a0",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "selesai gagal total\ntotal 10 gagal\nselesai  skor\nskor\ntotal total 3 3\nAni 3 nama",
+   "aktual": "lulus 1 total Budi\nselesai  skor\nskor\ntotal total 3 3\nAni 3 nama",
+   "harap_sha256": "5a5ff173f62048eb729ab497559005e86c92648ea8e520911e5a1b68c7ddbac4",
+   "aktual_sha256": "869cd571f8bdbe84d699999343d0d8a3ef9c2bf3859c6bcec327d733006847c8",
+   "bandingkan_sha256": "b140c568833b5e1d0c1b2297c534d0817410faad88e1a6e609a2199664e21b2e",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1 nama nama\nskor lulus\n10 skor Budi\nnama total skor skor\n10 selesai total\nOK total",
+   "aktual": "1 nama nama\nOK total\nnama total skor skor\n10 selesai total\n10 skor Budi",
+   "harap_sha256": "f907750103332cf56bed70c21b947d616e650214dcbeaf57f92733d9a739f271",
+   "aktual_sha256": "824ab4591e1f051d1a81750c43c0e6654ac2cf458e67e28701ed303c0bcabae5",
+   "bandingkan_sha256": "da6bf1e81e3c92754b4c3a7b2f5324052c69244295f85ea0ee5bbcf5a7c4afe2",
+   "nyaris": true,
+   "kolom_pertama_beda": 13
+  },
+  {
+   "harap": "0 nama OK\ngagal 3.0 gagal\nnama 10\n0 selesai  OK\nselesai gagal OK 3\n0 nama OK\nselesai",
+   "aktual": "0 nama OK\ngagal 3.0 gagal\nnama 10\nselesai gagal OK 3\n-5\n0 nama OK\nselesai\nlulus Budi",
+   "harap_sha256": "208f0e2ff2b15d05ca93513f41a0681aaf3ccd5ca93dc8dfc4e9230d6e0f2444",
+   "aktual_sha256": "2404f035b9bad8535069bd2a179762fd19a17511178414644e141ca599ac5304",
+   "bandingkan_sha256": "55b33708d44ed23e4259dc520ada3fddc5dada2fd46bc3349a78d7ade30e8d90",
+   "nyaris": false,
+   "kolom_pertama_beda": 35
+  },
+  {
+   "harap": "lulus nama OK\n1 Budi\nAni nama\n0 3 Ani -5\ntotal\n3.0 OK 10 0",
+   "aktual": "lulus nama OK\n1 Budi\nAni 0 3\n0 3 Ani -5\n3.0 OK 10 0",
+   "harap_sha256": "8b552a7cc05997c074454c4c9629e5826412053539c5cbe3d25f91ff32fb5bfc",
+   "aktual_sha256": "a3e9f823df4bbf3c9ba2972e713755f3e1ccd059c9ec103db2fcfa57fdb8a762",
+   "bandingkan_sha256": "0511a6c045186dff1589213674c403bea68a38f4ac2972c7c3589b4bb418e27d",
+   "nyaris": false,
+   "kolom_pertama_beda": 26
+  },
+  {
+   "harap": "Ani OK\nnama -5 Ani\n0 total skor",
+   "aktual": "Ani OK\nnama skor 10\n0 total skor",
+   "harap_sha256": "c6f6df0723398d8621536315422bdbadf1d33eb826035f6a95ea856746da45e2",
+   "aktual_sha256": "e241d599b089c03bb1fb37e27d9b77ce36b0cdf032a3846c88e8ae91a6d018fe",
+   "bandingkan_sha256": "63f3f52b216e3c6b76ca4239ba4fb0bf1e87467767b47b774d75f4221158e2fd",
+   "nyaris": false,
+   "kolom_pertama_beda": 13
+  },
+  {
+   "harap": "total Budi total\nlulus\nOK 1 10\nnama total 1 Budi\ntotal lulus OK 0\nlulus",
+   "aktual": "total Budi total\n0 Ani\nlulus\nOK 1 10\ntotal lulus OK 0\nlulus",
+   "harap_sha256": "20157f7af1c44328c48980ee616e5feae51f3c562c7d02dcda53511a5aaeaf85",
+   "aktual_sha256": "f99bdb8b8c10210c38b950834b3ac0d7d8af3f4e61d8dcc34f2170eb64217d83",
+   "bandingkan_sha256": "927991b21e86e1ba1d2efe84369f3dabbaed613c00549c3e9ea292ed061dc1e9",
+   "nyaris": false,
+   "kolom_pertama_beda": 18
+  },
+  {
+   "harap": "3.0\n3 skor -5\n3 skor -5\n0 nama nama\nnama Budi Budi\nskor  nama",
+   "aktual": "3.0\n3 skor -5\n3 skor -5\n0 nama nama\nskor  nama",
+   "harap_sha256": "5afc2acca06b2a0045fdfbf8f1c116d8efe66fdb82f26f2d298aa2399cfa85e3",
+   "aktual_sha256": "36c62c8df8acba265c042f6b8cfe607f9f2c8bc730508249938676d9c78b5d1e",
+   "bandingkan_sha256": "c55a20082deb6b0230ccd862b1a5829f5e3a719af37d547c4d96944b4af549c1",
+   "nyaris": true,
+   "kolom_pertama_beda": 37
+  },
+  {
+   "harap": "\n0 nama\n0 nama",
+   "aktual": "1 OK\n-5 3 OK nama\n\nselesai 1 OK 3.0\n0 nama",
+   "harap_sha256": "533c0f76db28758853e77b5d3a22dce15f9f64aa09dfb0ceb4ce69e136f8c7b8",
+   "aktual_sha256": "3a802531d165a687a186b5031de973eb73f348524a10a91d61515745a45a4c0b",
+   "bandingkan_sha256": "bea58417953e986545b5123e52e708966013f7bedbfe913223c5135e6255035e",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total gagal Ani",
+   "aktual": "Budi Budi 1 3.0",
+   "harap_sha256": "4e917972e33d5616f82060d2c264f44c21a33297d58c2e06b4cf0d0f1fba6f4c",
+   "aktual_sha256": "7bde6677485e1a2ec711ef48e930d3defe4933b83e7b235697d14ecbabe5af41",
+   "bandingkan_sha256": "0ff1252b05f82b8ece3a321cf9d4994ba6d289f2197dcc3cc9a07a426f22fb55",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 1\n1\n",
+   "aktual": "1\n",
+   "harap_sha256": "cf61d6e24ef6418a1bcebc9b5e97fef4dd12e8f07145bf093ba11b526a3fd3f3",
+   "aktual_sha256": "b927b496cc6b8581e9ed0df05a7601f527ee3af03bbb059d1cb8287b35a1e189",
+   "bandingkan_sha256": "2abc7bc1b82f0cda5af588069a01b06de7f4be64445490101c8090be05d0527d",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "skor  3.0\nselesai 3.0 selesai\nlulus Budi total\ngagal lulus skor Budi\n0 10\n1 nama total\nnama gagal Budi",
+   "aktual": "lulus\nselesai 3.0 selesai\nlulus Budi total\ngagal lulus skor Budi\n0 10\n1 nama total\n3.0 selesai nama",
+   "harap_sha256": "edf86a74146798139af84ac56ed976530f777bc017bca00fb79a0f542ab89c71",
+   "aktual_sha256": "c32f1c8abc9c58594ecccf21e9a822ff7b6e490a98116d887a0e999b6feebbdb",
+   "bandingkan_sha256": "d633a39a8a9df9dc988640f9f448073578dd4196b793aebc7146e485b94f6062",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK skor 10 3\n0 selesai",
+   "aktual": "10 10 10\n0 selesai",
+   "harap_sha256": "43a494a3e7175c268ba45166970eb1a33a7696c69c8d62f37fceb37b151b727c",
+   "aktual_sha256": "35cfea9bf57037beab491b1224781da716069cffd06e7809cc95fcca818748a7",
+   "bandingkan_sha256": "75b954a9a69a125d96471994cb4ea78c93b37d3c9a0fd9f046963d44e7339319",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3 OK\nBudi 3.0\n0 OK OK\nOK  Ani -5\nOK\n-5 -5 total\ntotal lulus Budi\ntotal -5 0",
+   "aktual": "3 OK\nBudi 3.0\ntotal lulus Budi\nOK  Ani -5\nOK\n-5 -5 total\n0 OK OK\nselesai Ani Budi",
+   "harap_sha256": "ac58a40447f4459ed207f21714d13eacded471fb9db9b1ef053ca973785327c7",
+   "aktual_sha256": "23a17793e5dd0a3e3def0edc504ca3053a716b5d74a5107967c0f935f523e958",
+   "bandingkan_sha256": "b580910937454b0486fae9e88b934c135f978c894db8cd966d771fdf4bfb63bf",
+   "nyaris": false,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "OK OK total\n3 1",
+   "aktual": "OK OK total\nOK -5",
+   "harap_sha256": "f75d6951ba392b7948b46b7004f9362bbfddc344b22525dbfe3792c58b030681",
+   "aktual_sha256": "155efd05cba78199a688f83fbdee626896cbdbd99db884a5e8c2faeba823200e",
+   "bandingkan_sha256": "47f1b8ca409aee9538fbb179f6742c1964622fbb531164469039ffe8237389f2",
+   "nyaris": false,
+   "kolom_pertama_beda": 13
+  },
+  {
+   "harap": "0 10 lulus\n3.0 Budi nama\n0 10 lulus",
+   "aktual": "0 10 lulus\nselesai\n0 10 lulus",
+   "harap_sha256": "1beb607b7bc5b9f5e8ea52b8563700c957df801303c5862de949f8bf0345f543",
+   "aktual_sha256": "41f7fb032c90c36b631cfb50891ee08f5d19a75bc77fdb1d05b6cd13e8dc8124",
+   "bandingkan_sha256": "579477b223d7a092fb921b66cfeab6e79af2a7af1fcda936881d6ff5185fdc9c",
+   "nyaris": false,
+   "kolom_pertama_beda": 12
+  },
+  {
+   "harap": "gagal 3.0 3.0\n-5 Budi\n0 lulus\nAni selesai\nlulus 3.0 1\ntotal\n0 1 -5 10\n1 OK total",
+   "aktual": "lulus 3.0 1\n-5 Budi\ngagal 3.0 3.0\nAni selesai\n0 lulus\ntotal\n0 1 -5 10\n1 OK total",
+   "harap_sha256": "bb79ff0e7e246338d1796c5e31785e2e6776dba150934a7dc4faf6485fa69dfd",
+   "aktual_sha256": "131ff2616306f02e342f295fe0bacfcb253bf9e58ca7cb9f9874b3128d28243d",
+   "bandingkan_sha256": "a9fa416fb471b0ea011a817dbcb86b6392057f114a62422fe1ff742c88aa42c9",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai\nOK\n1 3\nselesai\nskor",
+   "aktual": "selesai\nOK\n1 3\nselesai\nAni 10 nama\nskor",
+   "harap_sha256": "4c85c77da73dc4f8f5013e6889a36fa6dabf0d6d65cb7d37e025c1e8f452e185",
+   "aktual_sha256": "26227e816349c352dc7708c6a1472e739c6d37d362296b8f476a2d4b0311bf74",
+   "bandingkan_sha256": "f96207472a5741e0e6413c0a517dbf86c516ac7ebd45dcd3f27356b2e631c869",
+   "nyaris": true,
+   "kolom_pertama_beda": 24
+  },
+  {
+   "harap": "selesai nama 3 skor\n0 OK\n-5\nOK 3 lulus\nlulus Ani OK\n-5 skor 1 1\n0 OK",
+   "aktual": "selesai nama 3 skor\n0 OK\n-5\nskor selesai 3.0\nlulus Ani OK\n3\n0 OK",
+   "harap_sha256": "0d9c8e4cc222464b65695eeb9266a13389ad80fd96c271e2f64c2a365ff09d3c",
+   "aktual_sha256": "393ad5be1e9c34f6f1034c81000c0f8b03d24a2cf2b69e7c75bf55faccc0dd91",
+   "bandingkan_sha256": "df903d93552197cf0745b039f0ce4c72340f7252b76456fd13c691633c26fd14",
+   "nyaris": false,
+   "kolom_pertama_beda": 29
+  },
+  {
+   "harap": "1 lulus total\ngagal Ani lulus Budi\n3.0\n1 OK 10 OK\nOK Budi\n-5 skor\ntotal selesai Budi\n3.0 3.0 0\ntotal 0 Budi",
+   "aktual": "1 lulus total\ngagal Ani lulus Budi\n3.0 3.0 0\n1 OK 10 OK\n-5 skor\ntotal selesai Budi\n3.0\ntotal 0 Budi",
+   "harap_sha256": "0e60dbec6d6186d004569177cf4cd5159ad2215b14897f4b7e5e4249edc58b82",
+   "aktual_sha256": "b788a4c87c6e5077a9fec4dc8a647e656780b4c1e3bf1c1f65ddf1d9e12c3fed",
+   "bandingkan_sha256": "8b9123557564e993945ef722e08dcf383bf65edf6896e344a5103c4d534d78ef",
+   "nyaris": false,
+   "kolom_pertama_beda": 39
+  },
+  {
+   "harap": "skor gagal OK\nOK Budi\ntotal 0\ntotal 3.0 3.0\n3.0 lulus selesai 3.0",
+   "aktual": "skor gagal OK\ntotal 3.0 3.0\ntotal 0\nOK Budi\n3.0 lulus selesai 3.0\n1",
+   "harap_sha256": "da1ee6e643888756ee34d859e6b1e5e86ecdbabf2633961c812359c97bdefa2c",
+   "aktual_sha256": "969c640d751edc8bd8bcf7f8f3d2da8d7c825f3021ccf43204cd301d8f6a4cf9",
+   "bandingkan_sha256": "77a5dc07d0d9cf14027e26f175d4ee3a5a8915468c62e5a5ca08619d9ca8a446",
+   "nyaris": true,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "nama Ani 3 nama\n3 Ani OK lulus\nnama gagal",
+   "aktual": "nama Ani 3 nama\n3 3.0 3.0 1\nnama gagal",
+   "harap_sha256": "42a3c7c01c31d13c30955b05756233ea34533babccabba2d901420005db1b816",
+   "aktual_sha256": "fcfba6554c23feca9cf81da6c6d3dfe7575a3572a87d718d00367d6e419bfd47",
+   "bandingkan_sha256": "3f87b0475955d5aedf7f68a25065c3bc8903e51b0b2fc0e06fe3132bf106e701",
+   "nyaris": false,
+   "kolom_pertama_beda": 19
+  },
+  {
+   "harap": "OK lulus\n3.0  3\n3 -5 selesai\ntotal total\nlulus skor Ani 3.0\n3.0\n3.0 gagal",
+   "aktual": "OK lulus\n3.0  3\n3 -5 selesai\nAni 3 lulus\nlulus skor Ani 3.0\n3.0\n",
+   "harap_sha256": "3045da1c3cd8b8da9a57463d6a2da3c3eb4d56b6140619b8fcbe90be4f8f91fa",
+   "aktual_sha256": "94d99423d4bf20d6d45af6a6847cc0f04f4e4e0b829932d5514df57c5060d422",
+   "bandingkan_sha256": "4c3e93e8083fe8508d699cdc95ebd48ae63fe45877b4279a0e8df58dc798b621",
+   "nyaris": true,
+   "kolom_pertama_beda": 30
+  },
+  {
+   "harap": "1",
+   "aktual": "",
+   "harap_sha256": "391552c099c101b131feaf24c5795a6a15bc8ec82015424e0d2b4274a369a0bf",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "27ff0c2f8bc26753eb42f51a6f2e938290d14fb9f59392d2a10d67c617992b9e",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "nama 1 nama\nAni Ani 10\nskor 1\nAni\nlulus 1\nlulus 1",
+   "aktual": "Ani\nAni Ani 10\nskor 1\nnama 1 nama\n0\nlulus 1\nlulus 1",
+   "harap_sha256": "a8ff991b7e65a52411d3330cc713eb4d4313098580ee50fc56329c7547da5d37",
+   "aktual_sha256": "81eabc7613f0ea9cf0ec42aeae547d9b96e76a34f01c9841e4b6cf49e8a4d226",
+   "bandingkan_sha256": "0a4214ecd23946ca0316f5359d8099704c5f607e25ab9a9f2422a89442692dba",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK lulus lulus\n-5 lulus 3 -5\nOK lulus lulus\n3",
+   "aktual": "1 lulus 0\nOK lulus lulus\n-5 lulus 3 -5\nOK lulus lulus\n3\nnama",
+   "harap_sha256": "7ea36f993e41c45019de408c148d402ea511fca2472678b203e5ff9c053675e1",
+   "aktual_sha256": "200556081a333ffcf52fed9f0ec361d79d9d61905c802fba844ac549751b350f",
+   "bandingkan_sha256": "93f2f47f01075bfd0918a45d3e70f357f6e3f34362c6646742a03639b2c65426",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1 3.0 OK\ntotal\n3.0\nOK 0 lulus lulus\nOK selesai total\n",
+   "aktual": "1 3.0 OK\nAni 0 OK gagal\ntotal\n3.0\nOK 0 lulus lulus\nOK selesai total\n3.0 selesai skor 3.0\n",
+   "harap_sha256": "693dd70181071106dd0a7840c773d250e9346f3b81a863768be4d658adda6149",
+   "aktual_sha256": "e76495cb342b44f201c139051e7e1dcc1584d19654407f86f9eddfc95fcec35e",
+   "bandingkan_sha256": "c40a14a047bb63e9249ecffd3e1dfe66680d8bc49ab2aed8b9bc9e1c65e83fae",
+   "nyaris": true,
+   "kolom_pertama_beda": 10
+  },
+  {
+   "harap": "nama 10",
+   "aktual": "nama 10\nBudi",
+   "harap_sha256": "d36845ba1b6638583b6ac9422cfe8a76f6902c85910b1c440df6b28d74a7efda",
+   "aktual_sha256": "98f14a8b3c9f593217c3f51ff3ca58a125bda336822b866f9e647aad27b89214",
+   "bandingkan_sha256": "c0d45ae6892abda4ec60cbad6f3736558e7d59fd0caac777793e150fddb70bb8",
+   "nyaris": true,
+   "kolom_pertama_beda": 8
+  },
+  {
+   "harap": "skor Ani Budi Ani\nBudi total selesai total\n3.0  Ani nama",
+   "aktual": "0 1\nBudi total selesai total",
+   "harap_sha256": "84706dd1a6762ea643af1ca5b7b3d3e608402c8e6e5eb48bbba0d2f5e7fea355",
+   "aktual_sha256": "f3ab7c32d31a7b5da2485b858e7faf13b27838fa19d22ee7d65da4706a48e31b",
+   "bandingkan_sha256": "2124c28de77eb0576529b7c8c6e63e428bb052b191409a00fb85726c4cf12fe6",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Budi 1\nselesai\nlulus  total skor\n0 1 1\ntotal OK\n10\nselesai\nlulus\n0 total 3",
+   "aktual": "Budi 1\n0 total 3\nlulus  total skor\n0 1 1\ntotal OK\n10\nlulus\nselesai",
+   "harap_sha256": "1f0b6903481e7c4af204e901dd9866a06cc9cfb212631967c4614ebc58283be8",
+   "aktual_sha256": "242300130bc5f508981b2265958e9e29e8610a1c00106eb1df8d353bf7411751",
+   "bandingkan_sha256": "28bbcd72c7a303a8131c56add85a99d1188174aefda21009c65b77f2d896caf7",
+   "nyaris": false,
+   "kolom_pertama_beda": 8
+  },
+  {
+   "harap": "lulus\nskor Ani -5 -5\nBudi gagal 3\ngagal skor nama\nAni 10 Budi\nlulus\nBudi\n3\n0 selesai 3 1",
+   "aktual": "skor Ani -5 -5\nselesai 3.0 -5\ngagal skor nama\nAni 10 Budi\nlulus\nBudi\n3\n0 selesai 3 1",
+   "harap_sha256": "0607748eae7c41c99da0a9c3f88b63bbe3408e1032d8a3d7d59d8a6d341ce4be",
+   "aktual_sha256": "9220f2e172fa6bb601ddd3a98b6c612ab48ba0fa7a71cb4c13bbb77b7b5bbbd2",
+   "bandingkan_sha256": "34948e5fc83fea5fb6cac46ffc80e4b2c813ee40d8baccd229f7dd58234db3f5",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor\nnama  lulus OK\nBudi\nBudi skor 10 Ani\n-5 3.0\nnama\ntotal\nskor",
+   "aktual": "1 Budi\nskor\n0 skor Ani nama\nBudi\nBudi skor 10 Ani\n-5 3.0\nnama\ntotal\nskor",
+   "harap_sha256": "5b2baa03cfacacaa1c7e42021711b525de8fee2418e58c017c39f463d261359f",
+   "aktual_sha256": "0a9cf5e6e8661d828ebb15adbb483b458ffb01c0878610c7c522c4f9536cbbe4",
+   "bandingkan_sha256": "0e06da4a0074683a0052e7608a06a8e1432e4e4c2439a7c1217c8970f2053cbb",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1\n1 3 selesai\nnama lulus total\nskor 3.0 10 10\nOK skor 3\nselesai\nskor OK gagal Ani\ngagal\n10 gagal 3.0 OK",
+   "aktual": "1\n1 3 selesai\nnama lulus total\nskor 3.0 10 10\ntotal\nselesai\nskor OK gagal Ani\n10 gagal 3.0 OK\ntotal 1 Ani",
+   "harap_sha256": "1b316addfced58d9910fae660072060d266ea7c2aa9fb2db93dc6ce8eb06b857",
+   "aktual_sha256": "d6c257200315b117ef3c8478a237516d3970a47388f66f79f8c80b334f1112f5",
+   "bandingkan_sha256": "12693bc08bda76278a1d7aaadf62d3c124404be70748897b59079f7a47b0d458",
+   "nyaris": false,
+   "kolom_pertama_beda": 47
+  },
+  {
+   "harap": "skor selesai\ntotal\nlulus\ngagal\nskor selesai\ntotal\ngagal",
+   "aktual": "skor selesai\ntotal\ngagal\nskor selesai\ntotal\ngagal",
+   "harap_sha256": "356b0a820a92e3e872c8a40c6e8874cf4186eea0e39c6e96ac850cc001d755c5",
+   "aktual_sha256": "6437546cb43265ac69f46c5729f66ac7767127d0006114dfcb0d54524f1e7384",
+   "bandingkan_sha256": "39d679e1acc221255725ebd93c0eb7587f2a67bd3a8de0a490494bac19a52527",
+   "nyaris": false,
+   "kolom_pertama_beda": 20
+  },
+  {
+   "harap": "10 0 Ani lulus\ngagal Budi 3.0\n3.0 total\n10 selesai skor\n10 selesai skor\n3 selesai",
+   "aktual": "10 0 Ani lulus\ngagal Budi 3.0\n3.0 total\n10 selesai skor\n10 selesai skor\n3.0 -5 gagal",
+   "harap_sha256": "a3e3aef3f93b86148b65e8c4dda5f97b2372fdcfa593767e33da8639a9b24ef8",
+   "aktual_sha256": "7c20c0274347529e03ab060f8bd9e486c85ff1518284270616b4d1e6dba753aa",
+   "bandingkan_sha256": "7c2a44efc840c248bfb8eef9cf811d8185914f01184c8eb8b0358b5012d7899f",
+   "nyaris": false,
+   "kolom_pertama_beda": 74
+  },
+  {
+   "harap": "gagal\ntotal 10\ntotal 10",
+   "aktual": "gagal\ntotal 10\ntotal 10\nskor",
+   "harap_sha256": "819a4a943bcb808d774ced0f1617f133a4ee8c8f16efc9e7856a34e402813f0e",
+   "aktual_sha256": "f484e156d4feee2415dbdd27f8b144c17a4c5fd735399b2e2a1f00d230065ef0",
+   "bandingkan_sha256": "904d7878f2d51bfd2da4f67f0d909b7023b8b1de49ad070e3c42e817d4e3c7c3",
+   "nyaris": true,
+   "kolom_pertama_beda": 24
+  },
+  {
+   "harap": "3\n3\n10 skor 0\n-5 OK",
+   "aktual": "3\n10 gagal gagal 3.0\n-5 OK\n10 skor 0\n3",
+   "harap_sha256": "f9d3e295b2558670533b719be6145c0fcabcfae6ad91e428f4d0da35d02055e1",
+   "aktual_sha256": "bfe776442088f40a9da826c797b9859715a0711ba6d044f6d7bb07e1480e1c6c",
+   "bandingkan_sha256": "be50443b9eb8f63200fbd269cad176a14acc6814059b9609121303519be98ba5",
+   "nyaris": true,
+   "kolom_pertama_beda": 3
+  },
+  {
+   "harap": "lulus  10\nselesai Ani gagal\nnama 3.0 10 1\n0",
+   "aktual": "3.0 gagal 0\nlulus  10\nselesai Ani gagal\nnama 3.0 10 1\n0",
+   "harap_sha256": "b58f6b9a542750edff3d113c5f72a59a8b52b10d3de0f155b0a7d305fb8eabcb",
+   "aktual_sha256": "f7858db0d171bd875960bacc31fadcab0e54446b9c14e340560b32f17e6066d5",
+   "bandingkan_sha256": "076c41ac32832a8d490f90d45f2db4b3b3e7cad6f0f86c3a5a9b319fa23c2a39",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus selesai 10\n3.0 gagal skor OK\nBudi 0\n10 lulus OK lulus\n-5 selesai 1\nBudi 0",
+   "aktual": "3.0 gagal skor OK\nBudi 0\ngagal lulus 0 lulus\n10 lulus OK lulus\n-5 selesai 1\nBudi 0",
+   "harap_sha256": "74b772dbdcf59240b8426706d6f801b96ab1037a18d3814a08cb729536d31857",
+   "aktual_sha256": "714c3878f9deb3bf42d0cc22156f4d4ed2441089565e0416b4c4717473ef0f8e",
+   "bandingkan_sha256": "5b53b95e10eb681129e2c40881ffb47c9dde8b8301a33e4685c6ca7cbdb35a1e",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Ani 1 0\nlulus selesai OK 10\n-5\nnama gagal gagal\n\nskor nama\ngagal selesai gagal\nnama 1 1\n10",
+   "aktual": "Ani 1 0\nlulus selesai OK 10\n-5\nnama gagal gagal\nskor nama\ngagal selesai gagal\nnama 1 1\n10",
+   "harap_sha256": "5d1a962172aaca2c62edf4872f995badc8c7b4724508633fea6fa77994a8593f",
+   "aktual_sha256": "6f736a6b1b7f67b4d57a3ddfe6447c0f467c4c706fa76b54b77bc5343e87bee8",
+   "bandingkan_sha256": "7493a90946ef82bde33d1ece212b3e4038c3681d5264aaffe6d3f3e998167dea",
+   "nyaris": true,
+   "kolom_pertama_beda": 49
+  },
+  {
+   "harap": "selesai 1\n10 gagal -5\n-5 0  1\n10 0 3\nBudi nama gagal\nBudi gagal\nlulus selesai\nlulus total 3 selesai",
+   "aktual": "Budi nama gagal\n-5 0  1\n10 0 3\nselesai 1\nBudi gagal\n10 Budi\nlulus total 3 selesai",
+   "harap_sha256": "117dcf3f2604d037f79e098e65179eb201f75c925e444f2573d3cc19966dd915",
+   "aktual_sha256": "10e15d5d00ee9ebadc17283ce6ce987d91ff23d65b90131a0e9dbc5bea5275d7",
+   "bandingkan_sha256": "a2986ca068be452f21ae64942ba5f5f19ecadc1f2691b080157845c758d7f51a",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "gagal Ani Ani skor\n1\n1\n3 Ani\n",
+   "aktual": "gagal Ani Ani skor\n1\ngagal\n3 Ani\n",
+   "harap_sha256": "609d9fedba2b2968d11c065b4bb5cffd78fb0c6b7a31d4592ebb35e1849e1da3",
+   "aktual_sha256": "b16fc379ca13c94fc3a1eb314b3d6dfddc8eeb993df7633c7062025cce7afada",
+   "bandingkan_sha256": "b5606ba7c742fbd22cf243e153b75170622a7745849575ebf37b6f609d2b6d7f",
+   "nyaris": false,
+   "kolom_pertama_beda": 22
+  },
+  {
+   "harap": "10 0",
+   "aktual": "",
+   "harap_sha256": "9c9b7a35483efe4226a23d67fd920a2a2ee5b43211346536cd2acc228016a041",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "e40175b358b08eaa11df70bf6e964b2ec64e156fcaf7b37561e97d12c159fda0",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 OK 3.0\nBudi 0 3.0 selesai",
+   "aktual": "10 OK 3.0\nBudi 0 3.0 selesai\nskor 10 skor Ani",
+   "harap_sha256": "fcbbac36e1b00ad8d6f2bf6727a6a32197a9829702a0f0a2aae8ae654f92f1dd",
+   "aktual_sha256": "d3fcba2a15aaddfbb3fae59fd278acc60439f394653566359b44db01ee678596",
+   "bandingkan_sha256": "fb2e562cf8ea00f6bfb362b12ec15772ead38e6a03785439f1a1c9ca373ad83b",
+   "nyaris": true,
+   "kolom_pertama_beda": 29
+  },
+  {
+   "harap": "skor 3.0\n3\n-5\n3\n3 skor nama 10\nskor 10 nama\n3 Budi  -5\nskor",
+   "aktual": "3\nskor 3.0\n-5\n3\n3 skor nama 10\nskor 10 nama\n3 Budi  -5\nskor",
+   "harap_sha256": "9828423e93b443e6dba76b1131db299e30752a7bb3d83e58602978fcaf4d6290",
+   "aktual_sha256": "cc30ca7c2a2e77bcbcc12f701f68a277a92d9b492bf41d2dfef2e5cafd302764",
+   "bandingkan_sha256": "3b4506648ea9ca05a0b70843853caa8a21e02d2bd502c246dfda6b3abb6c1606",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "",
+   "aktual": "",
+   "harap_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "ec15c2d89902a5e93cd5aa98a98bb8f489a25f585047f3d4a1a838de103dce72",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "nama\nOK lulus\nskor total nama\n3 -5 -5\ngagal skor lulus skor\nAni\nselesai Ani\nBudi 1 3",
+   "aktual": "nama\nOK lulus\n3 -5 -5\ngagal skor lulus skor\nAni selesai 1\nselesai Ani\nBudi 1 3",
+   "harap_sha256": "232cef5d2f8e6436ec5be5076bf869a01d656e59c06102fa30c9f3bdcfa25717",
+   "aktual_sha256": "b78ba0d54bdcd2360e951979eaca684e0dd0b60715735e56b44f21ce8441d04c",
+   "bandingkan_sha256": "eb3f7e7c5ea59861091c0a30eab464d08809f9b604e12ec831790442f225e4d5",
+   "nyaris": false,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "nama Budi Ani\n1\nnama gagal 10 3\nskor",
+   "aktual": "nama Budi Ani\nskor\nnama gagal 10 3\nskor",
+   "harap_sha256": "9578eb782cfc1c42e8461ca35957939d5cae571b196c5bf2469c7770d8def187",
+   "aktual_sha256": "7c0764d7774c65fcb53fc963aed1a6d76a422638129598c365a3f68041c6bbdd",
+   "bandingkan_sha256": "de1dc5f731925efedba14498e0cac6cb5f2549931ee78b4af5c86d6cc3f2b99f",
+   "nyaris": false,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "total\n3.0\ngagal\n-5 -5 3.0",
+   "aktual": "total\n3.0\ngagal\n-5 -5 3.0",
+   "harap_sha256": "4e27cb40860f7f09471555ddee80f020efee4fae524f8c100ac32b847f8197e5",
+   "aktual_sha256": "4e27cb40860f7f09471555ddee80f020efee4fae524f8c100ac32b847f8197e5",
+   "bandingkan_sha256": "364f8ec17d9c1f7c74ab9edced251e5f1d6fc2e43065c1de37820fcd17d5f23e",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "0 1 lulus\nAni\nBudi\n-5 selesai\nOK skor 10\nBudi OK\nOK skor 10",
+   "aktual": "0 1 lulus\n10 3\nAni\nBudi\nOK skor 10\nBudi OK\nOK skor 10",
+   "harap_sha256": "e15f0c113baddd0fedb22063e21a2731662919e3a2e4fdc1d9e77d13a37227ad",
+   "aktual_sha256": "1159564fdc98de2fc2b927c1465656b523ccb336b6ff7ec5cccac789893516e1",
+   "bandingkan_sha256": "6ffe9240d2ddbb99a0df0107e6e4859b48dab2d019a01e16a31b5dc4d987d202",
+   "nyaris": false,
+   "kolom_pertama_beda": 11
+  },
+  {
+   "harap": "total\nnama 3.0\nBudi",
+   "aktual": "nama  0 3.0\nnama 3.0",
+   "harap_sha256": "c6f0f6c4f0678d02b2cf78777b1f635dee7b1825d3dbef3755fdd2b2fc810f9f",
+   "aktual_sha256": "0b4856813fca9c2f66d3098cff64d9ef0781a16b0d8875970c503bf34acac725",
+   "bandingkan_sha256": "cc47c0c2627164a71e234f279404fe1dfb6507d79ed8822831d5c3ce3c864966",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1 nama gagal\nAni selesai selesai\nskor\nlulus lulus lulus selesai\ngagal 10\n-5 OK Budi",
+   "aktual": "1 nama gagal\nAni selesai selesai\nskor\nBudi\nlulus lulus lulus selesai\ngagal 10\ntotal nama",
+   "harap_sha256": "45dd00c97768eac5c8a13eb0a5b3f5c168a981459fa4b76a91007b96d2d4352c",
+   "aktual_sha256": "bf09bf133596ae35ada57319733c911444bddf40ad81c63322d1ba946f2fb807",
+   "bandingkan_sha256": "fd5cd0140e664f94011d3e2d2b8f9411a0f69645269d37035688773edda6979d",
+   "nyaris": false,
+   "kolom_pertama_beda": 39
+  },
+  {
+   "harap": "3 10\nAni\n3 10\n1 10 total 10\ntotal\n10\ntotal gagal\nOK lulus Budi skor\n-5 gagal nama gagal",
+   "aktual": "3 10\nBudi\nAni\n3 10\n1 10 total 10\ntotal\n10\ntotal gagal\n-5 gagal nama gagal",
+   "harap_sha256": "348ea3ca469f61a98c7a53bde4f8dcda9a1a1b7015ba52f76d035b8e8750ed64",
+   "aktual_sha256": "5d32e1fef2aae7a228bf1e88a3645a1dac34d4432105ef6efcbcb6136aa304e9",
+   "bandingkan_sha256": "57765c7d7d53c971080319314747acb77e9e42b03accccae299e4e9c611273ce",
+   "nyaris": true,
+   "kolom_pertama_beda": 6
+  },
+  {
+   "harap": "total\nBudi\n0\n3 OK\nOK 3.0 0 1",
+   "aktual": "total\ntotal nama skor\n0\nOK Ani\nOK 3.0 0 1",
+   "harap_sha256": "a03e47a851b12474d6f72badb4042a7b9a0e8ad1caf9c8c45e4e594475a0abf1",
+   "aktual_sha256": "ca7b958a7eb303241186a76df0f0b22996f9effc4185540f09ed410b454dc89d",
+   "bandingkan_sha256": "f8f0531f57c6d4e30d9a7cfbe8bee31ab061747b3a6ac5f951783f53493cde45",
+   "nyaris": false,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "10 3.0 3 Ani\ntotal 1 Budi",
+   "aktual": "1\n10 3.0 3 Ani",
+   "harap_sha256": "d29a609c802546bb28d48a34e17b0d9ae615aa55a73313a45eab4b11d037746d",
+   "aktual_sha256": "dfd4eda83e489f248e3acc319e0acc4586558a8774b59e088ef069fd26222294",
+   "bandingkan_sha256": "9c1b2c04e757ca13a4b78ce0fd5c5f36ae17478f30024a7b5629b24b626d92ca",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "0 skor Ani\nlulus 10",
+   "aktual": "nama 1 1\n0 skor Ani\nBudi\nlulus 10",
+   "harap_sha256": "f8600cfc0ab2ce32b34cafb18f535dbc003ba5bb000ad83ee584c710b4641480",
+   "aktual_sha256": "dfc4d4d00dd6b88d5c9f8d1ff74888403f7f375b67a3a3da500cccc98c8282c9",
+   "bandingkan_sha256": "02fca4cdc280c77074e05f9e26687a63c273a80358ed97f7c759bb03c0ed0a48",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "-5 10 -5\n0\nnama Ani 0\n-5 10 -5",
+   "aktual": "nama gagal\n-5 10 -5\n-5 10 -5\nnama Ani 0\n0",
+   "harap_sha256": "00f7f1244cba053763eb0621688a1c10c9c045761233177dcc6e48134f53f431",
+   "aktual_sha256": "1c536509c24f8965021137c897387e63f92ff1af5c01296243e6374b32440d39",
+   "bandingkan_sha256": "505e8081cb3483011e66b61240812270d405bd57835ac7642f509c35941ac0b6",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "gagal gagal\nnama lulus -5\ntotal 10 OK",
+   "aktual": "OK skor\n-5\n10 gagal skor\ntotal 10 OK",
+   "harap_sha256": "fbf432d9b603b6513993813a75d53a10cf2e05df76c5a1d527253e3a3e8d7460",
+   "aktual_sha256": "09e2b93ed8fd79e20cf021c0452c44ea1246a90efd8a2b004e749c848dff0567",
+   "bandingkan_sha256": "c6ec186c8ebcc0ad1cf05c7b80294c3d23f85e39c0e9c9803fbc686dbbfee685",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total Budi 1\n0 3 nama\nskor selesai skor\nlulus Budi 1\nOK -5\n3.0 Ani\nBudi 3 gagal\n3 total",
+   "aktual": "total Budi 1\nskor selesai skor\nlulus Budi 1\nOK -5\n3.0 Ani\nBudi 3 gagal\n3 total",
+   "harap_sha256": "c15685bfdeac79cba5be1ec36c184de5a46eaade9e72f5d8588bc6d4b1dc3822",
+   "aktual_sha256": "94c6f5dad2fea5e7f24576efc43e77e07c8d8fd517fd2806a578fb4911403db2",
+   "bandingkan_sha256": "0c8b0702d4a8e80ae8dd818372d1ddb367532a61cdf9af637249ec581e379711",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "selesai 0 3.0",
+   "aktual": "0 skor skor",
+   "harap_sha256": "bfa0a0f52bb6762782fe9e86dae21abbbbe2fefb5c55dd4020916b76e5039b97",
+   "aktual_sha256": "0c69cd2de7cd7fb136163088092452ac0c962e9adc996e46527583de9d719cdf",
+   "bandingkan_sha256": "bd2d07b98567b5983a49ce1abe727a7d132cf9679ae05d8aee954fbdd1d9fb42",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3\ntotal gagal 3.0 lulus\nOK 10 lulus\n1 skor 3.0 skor\n3.0\nnama\n0",
+   "aktual": "nama\n3.0\ntotal gagal 3.0 lulus\n3.0\n1 skor 3.0 skor\nOK 10 lulus\n3\n0",
+   "harap_sha256": "92402c0415b64e7bb33d07da0620d147e0309ca2304eb78e8d41b5fefe763d42",
+   "aktual_sha256": "d823245e0ede9138974f4e3b6ccfae5ad06c7c12a8a78999c543adb43c0cae80",
+   "bandingkan_sha256": "07759f85b1981c2c64a1ab623ac410b623ea5a76d4bf705f01128d82c6c2a3e3",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 3\nlulus selesai\nskor\nAni Budi OK\nnama Ani total",
+   "aktual": "1 gagal Budi lulus\nlulus selesai\nskor\nAni Budi OK\nnama Ani total\ngagal skor -5",
+   "harap_sha256": "817de7cf1e6d386c34ffa612e514b31df72b0a5ab8ab5102545c2897b6fdacce",
+   "aktual_sha256": "6ae6a4581c73c361745f4a443ee6bf60d23d47ef13ba561a082d6f2a2cbef630",
+   "bandingkan_sha256": "a41874718de34931b7ab3edc434e011e114a30d5e88afc6cf2286eed154095a1",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "Budi nama\n3 Ani nama\ntotal selesai Ani 3.0\nOK  0 selesai",
+   "aktual": "OK  0 selesai\nlulus OK total\n3 Ani nama\ntotal selesai Ani 3.0\nBudi nama",
+   "harap_sha256": "7f9d274234bc5105b6d1cca34c11278b4b2a73fc2713895a86d46d27dfd4293c",
+   "aktual_sha256": "a5d87a9227ff2ea2c2cd53ff7164a2a3143ec5c227f3ae7de08ee6ab82c24327",
+   "bandingkan_sha256": "914d419272b328c1536e15b69fcb385d9b10579e9ba9ff2d0f205f88067b1519",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total",
+   "aktual": "OK total 0\ntotal\nOK skor -5\n10",
+   "harap_sha256": "714bdb4ba7da01e5e157aad5ab4c2a590a379b97e08b9152c63212b3e4dbcb28",
+   "aktual_sha256": "ca0d6044eb166438c0db93013400a28a267714d564caad6bfd4aaa2f6f240e25",
+   "bandingkan_sha256": "4973b3e69dc289c503a565c81f42fcb836c71ab01990d2ae85de0ceb824d8c0c",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK lulus\nOK lulus",
+   "aktual": "OK lulus\n0 3.0 1 lulus\nOK lulus",
+   "harap_sha256": "34383c3cc17c2d822cc607305300c4d44d7ebcdebeadb6f1b39aaf4196218aa7",
+   "aktual_sha256": "3c3602cd8f909329ce15e7297d1491a24f5236e977b477b334af4550505f50a8",
+   "bandingkan_sha256": "e4ae9eb6adaeecd21c17bf38972dcc525ecc9b1edc207791d53d2c618232a749",
+   "nyaris": true,
+   "kolom_pertama_beda": 10
+  },
+  {
+   "harap": "0 selesai gagal\nBudi lulus nama gagal\n0 1 1\nselesai\n1\nBudi lulus nama gagal",
+   "aktual": "0 selesai gagal\n10 -5\nBudi lulus nama gagal\n0 1 1\nselesai\n1\nBudi lulus nama gagal",
+   "harap_sha256": "e8974427e09e100c487276a7e3ae9eacf9940ec42df649879eb74bdf9f33c4ae",
+   "aktual_sha256": "63d0b9b685eee018cddeb5aac9bf55b7ba081018491b751f1b9b59f3ec41e38c",
+   "bandingkan_sha256": "e6e0cf8b122e9ea94f01411d2daf6e02e5ce2b789ec428f781e8b756ed8e8999",
+   "nyaris": true,
+   "kolom_pertama_beda": 17
+  },
+  {
+   "harap": "OK\nAni Budi Budi Budi",
+   "aktual": "OK\n3.0 3 total",
+   "harap_sha256": "1dd4eba1beea8311053e108d2ecf8e97fc176a2f709abe4bcf3ac4c4a525330f",
+   "aktual_sha256": "610b3af78a56fac211deb9c9bfee178567d828300cab20e2b89688d5c24bc27d",
+   "bandingkan_sha256": "061a952fddd4cb5731931fbff392133b20418aec18e047deed70469e286021a9",
+   "nyaris": false,
+   "kolom_pertama_beda": 4
+  },
+  {
+   "harap": "0 lulus nama Ani\nnama  0\nskor Budi\n10 3.0\nAni 3 -5\n10 total",
+   "aktual": "0 lulus nama Ani\ntotal 0 Ani\nskor Budi\nnama  0\n10 total",
+   "harap_sha256": "2c523965364d6630db9dfa645cc120d41d5cfc8610d800067a12daf59046fb31",
+   "aktual_sha256": "c315abe4dc09bb60603f7f2a41c39d4551cc8262c7054677445aa749d8bef0ba",
+   "bandingkan_sha256": "d78eaede99e34c32d7cad506c4e1c42cf19bad7d7a58d170a3570861dde5972a",
+   "nyaris": false,
+   "kolom_pertama_beda": 18
+  },
+  {
+   "harap": "-5 3 OK 3\n10 gagal 0 nama\n-5 nama skor selesai\n0\n3 1 3 3\n3 lulus 1",
+   "aktual": "-5 3 OK 3\n10 10\n-5 nama skor selesai\n0\n3 1 3 3\n3 lulus 1\n-5 Ani",
+   "harap_sha256": "d3c4efaabc3fb64c7a1af831879f39b7c56b2d96ee37613fec5ba27a3afb4970",
+   "aktual_sha256": "4b1ea7d3c02f1d52b25747ec9aa9a937f4822bf6799c38abc8b14e958d4e6b20",
+   "bandingkan_sha256": "8d5c6bbdbaca9c8725d7b285509ca1cc57030714eea0d0b7a36856824ddbbd38",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "total\n1 Ani nama lulus",
+   "aktual": "nama total\n1 Ani nama lulus",
+   "harap_sha256": "ecf35b9383c43c4ea8dc7458a2d2e96488a890bd0aaddc5aa1e5a8468d38f203",
+   "aktual_sha256": "9c1d3d9217097360c04fa93d3dbd8fa6649111e6f79848e1135d20a1c03a9e19",
+   "bandingkan_sha256": "8c47db51419ab187c590e8630d879df1e209409ed983dc2e318db4181d66cc28",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total\n1 lulus  1\nOK\n1 Ani 3.0 Ani\ngagal selesai -5 OK\nnama selesai -5\ngagal lulus Ani 3",
+   "aktual": "total\n1 lulus  1\nBudi 3.0 gagal skor\n1 Ani 3.0 Ani\ngagal selesai -5 OK\nnama selesai -5\ngagal lulus Ani 3",
+   "harap_sha256": "61d804814c5a80480038ec3577675bfb949de648e1ef5fdd6918aa5232037ad2",
+   "aktual_sha256": "19bb5f7c5bf671324a8dcfeb7715f10fb88e14df4d86143b24e55fe887f20ca6",
+   "bandingkan_sha256": "decaa8152f968c57ff2c5f32b17c72c4110d1a33d046c8bca38ef212cc3d584b",
+   "nyaris": false,
+   "kolom_pertama_beda": 18
+  },
+  {
+   "harap": "1 3.0  selesai\n3\nselesai\ngagal lulus skor\nBudi gagal\nselesai 0 nama\nskor\ngagal  skor OK",
+   "aktual": "total 3.0\n1 3.0  selesai\ngagal lulus skor\nselesai\n3\nBudi gagal\nselesai 0 nama\nskor\ngagal  skor OK",
+   "harap_sha256": "71de3b48ce3a71d370cb8e4f3a798cf6c2a7985942a7d90b188a7690304727a0",
+   "aktual_sha256": "39462f33d6dede35cd0eaf7510b95428472dd3db680bad86ce7295568113454d",
+   "bandingkan_sha256": "a3d8d734252c4fb58bcca1c70a2f6e1b020e334be3fd3c33b8a3e5b005a194fb",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3.0 0 OK\ngagal OK\n\nAni\n0 3.0 gagal\ntotal 1 Ani 3.0",
+   "aktual": "3.0 0 OK\ngagal OK\n\nAni -5\n0 3.0 gagal\ntotal 1 Ani 3.0",
+   "harap_sha256": "2accaeecdb610f312edb737cf09959dd09a42da20c895858e68cf16984e55197",
+   "aktual_sha256": "eb5e087e7487b6c3573cb5e07ae94d0cf8d90405df66ac677af27ba798a80525",
+   "bandingkan_sha256": "1f23e6ea85179da9054a763e1103bb51af3a12fcdacc875f531c6758297892fb",
+   "nyaris": false,
+   "kolom_pertama_beda": 23
+  },
+  {
+   "harap": "nama\nlulus total",
+   "aktual": "lulus total\nnama",
+   "harap_sha256": "a0661e075c1ddaff7d37ec2c26765c10a37a12c1d895a51c513c75d09a7e70ee",
+   "aktual_sha256": "a35f0942729abd982bbdb7f80504033b1824b9968fd8455209bf7825eeaf70ba",
+   "bandingkan_sha256": "a27918ddf827a34b7a472fab726edd688c547e208e9813fd8598247475034a52",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0\n0\n3\ntotal Ani 0\nselesai 10 selesai\nskor 1 Ani\nAni Ani  Ani\nnama Ani skor 10\n3.0",
+   "aktual": "0\n0\n3\ntotal Ani 0\nselesai 10 selesai\nskor 1 Ani\nAni Ani  Ani\nOK   OK\nnama Ani skor 10\n3.0",
+   "harap_sha256": "9d47f3878a415d95e0387d469aadde382e4b7f0a0d05f5000d88709f654c7c49",
+   "aktual_sha256": "f2811ef362b06275df9bf58d0eccd9ba51891739c72756cde7457c98959ad9f1",
+   "bandingkan_sha256": "3994d89b98d0fe7df5f4a2db3db13136da96f4302c23bb7d59bd118ab37134e1",
+   "nyaris": true,
+   "kolom_pertama_beda": 62
+  },
+  {
+   "harap": "1\n10 Ani selesai\n10 Ani 1 skor\n-5\nOK 10 Ani 0\n0\n3.0 3.0 OK Budi\ntotal -5 3.0",
+   "aktual": "1\n10 Ani selesai\n10 Ani 1 skor\ntotal -5 3.0\nOK 10 Ani 0\n0\n3.0 3.0 OK Budi\n-5",
+   "harap_sha256": "22c75261c956748076e1b62e44112a233fcaa05eb16779e7c5f07f04a04384f3",
+   "aktual_sha256": "334a1e5ca0eb57c98f5b820c4fd6caea601520dce3e1bb081f3e2f0dfe90053c",
+   "bandingkan_sha256": "cb07bc1a6e97b3e24d21cd3e5d10c69528eadf02c8bb5dc8b2340e7f31430e65",
+   "nyaris": true,
+   "kolom_pertama_beda": 32
+  },
+  {
+   "harap": "-5 Ani lulus\ntotal 3\ntotal 3\nBudi skor\n3.0\nAni 3.0",
+   "aktual": "-5 Ani lulus\nBudi skor\nlulus\ntotal 3\n3.0\nnama Budi nama lulus",
+   "harap_sha256": "e759e7b59f989383e6ea78921e357521dd8e69247530e0cd34025d7dd2a240f8",
+   "aktual_sha256": "b88aebce7336cb2595575ce1e588aa5d838375330436ef5a146bb39224333c90",
+   "bandingkan_sha256": "ce4c09672f7daf2fc8b2b4e98eb5ca761ff93d8c47ee6a55fbf8d74f3cc0d295",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "lulus\n-5 OK 10 3.0\n3 -5 10\nskor nama\nskor nama\ngagal",
+   "aktual": "Budi OK\n-5 OK 10 3.0\n3 -5 10\nskor nama\nskor nama\ngagal",
+   "harap_sha256": "f3aa57ab2eed4641b1c8166bfb8029fa3e4444b56ac90c24a017989ab2b88fdb",
+   "aktual_sha256": "9b1ed693acfdca79deaeae9c9962b7bd0c369c56db358f5440d1ecb3ff4121d0",
+   "bandingkan_sha256": "d2ea02e081672bc35d9a72946948c5b27c3e02401b193301e3c2fc53af8ff738",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 selesai\n1 1\n1 1\ngagal gagal nama selesai\n0 10 total\nBudi 3 1\nlulus selesai 3.0\nnama\n-5 OK",
+   "aktual": "10 selesai\n1 1\n1 1\ngagal gagal nama selesai\nnama\nBudi 3 1\nlulus selesai 3.0\n0 10 total\n0\n-5 OK",
+   "harap_sha256": "f3220f3fb7a22fc97cf24dc26240f2d30f5027ae88165dcb30d7d3a9991c58f1",
+   "aktual_sha256": "74c536ffcb2276419ff0b289fad94f56c3721c48aefa57301ef01ee3231eb4ac",
+   "bandingkan_sha256": "6a1b40a78264715a96650ba9d4c58af11cfdd56c9281f6932933649323043618",
+   "nyaris": true,
+   "kolom_pertama_beda": 45
+  },
+  {
+   "harap": "nama\n3.0 nama  -5",
+   "aktual": "3.0 nama  -5\nlulus  3.0 lulus",
+   "harap_sha256": "fa99ecbec74be6b45239160fdb0654a15fd11bb11d7bec287226f59810eb3858",
+   "aktual_sha256": "29325303b2b7c2cfc0cd1ad388803d9204285c4a5857eb2f9766e00b506c2a0c",
+   "bandingkan_sha256": "7dc448ce51d55ac633dbcd952ab658334ab6f21ebd83d64a7a8dbc28323bcac3",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0 lulus 3 3.0\n0 lulus 3 3.0",
+   "aktual": "0 lulus 3 3.0\n0 3.0 skor\n-5\n-5 Ani skor",
+   "harap_sha256": "e54b36a8194770ec9633156d48b275ff689c22bc8fcea5ffebe742caeb93724d",
+   "aktual_sha256": "3781bbc6dbb78a56e1f20beba92c2c24f04dad83d6597fd2c48f0cdfbd3a3157",
+   "bandingkan_sha256": "dde25835f0aefbcd044d9bf43af76cd4ff300b014918a231ea943ea610f3123a",
+   "nyaris": true,
+   "kolom_pertama_beda": 17
+  },
+  {
+   "harap": "3.0 OK 1",
+   "aktual": "3.0 Ani",
+   "harap_sha256": "b809078fceea475f485eb32f628423ea365ec2a5178b576e24d8e2175c8f5d88",
+   "aktual_sha256": "d82f28541ab53d390a2bf9d92d6fea15596bfd9e878d78ef6567fcf2030e7537",
+   "bandingkan_sha256": "f7b89e65a9aef45878a7992dd6fc507e00f7ddfc87f16dcce28102dcf5f57d71",
+   "nyaris": false,
+   "kolom_pertama_beda": 5
+  },
+  {
+   "harap": "0 3.0 1\n1  selesai 1\n3.0 gagal nama skor\nBudi -5 skor\nskor\nskor 0\n3.0\nlulus 3 0 0",
+   "aktual": "0 3.0 1\n1  selesai 1\nBudi -5 skor\n3.0 gagal nama skor\nskor 0\n3.0\nlulus 3 0 0",
+   "harap_sha256": "fdf3cb4c7676fd965b004c8167350b5ad8e5859c51249f8f470e961c07148d38",
+   "aktual_sha256": "be51e3de1d18b7ea9b1887655fda43d8db458d87728ee37399f2d12a6b04f472",
+   "bandingkan_sha256": "31eabc81f2d711a82a751d4c8b4621b5bb94ba9e9193d947c00a7ae4f8d3d581",
+   "nyaris": false,
+   "kolom_pertama_beda": 22
+  },
+  {
+   "harap": "OK\nOK 0 0 total\nBudi 1\nskor selesai Ani",
+   "aktual": "OK\n1 Ani total Budi\nOK 0 0 total\nBudi 1\nskor selesai Ani\nOK",
+   "harap_sha256": "552b49b6639660340af5d6fd7cb1ac44765d1062ac926bced972d4d2cf5fca20",
+   "aktual_sha256": "44f2202526c47b9b88ed0240552d3f02ba8d5d9c275ef9f639dca599a68eaab8",
+   "bandingkan_sha256": "1d0c7a3de248c21ec45a7ffa5b929c22752f6311013f2232bddcdfee1f0fe31d",
+   "nyaris": true,
+   "kolom_pertama_beda": 4
+  },
+  {
+   "harap": "total 3 Budi 10\n3.0 OK\nselesai\n10 0 skor lulus\n10 0 skor lulus",
+   "aktual": "total 3 Budi 10\n3.0 OK\n10 0 skor lulus",
+   "harap_sha256": "64a64d141ec4ac0abcba3c30d39aae0aab221ce9cd2eb2c94180bfdbb99c7882",
+   "aktual_sha256": "61b2a9ac1ffc9055f3c6b5aeeab650a3a15f3c27274d05ee8810186d48b12801",
+   "bandingkan_sha256": "3815dc59dfaae4789c362f7ef7eaf0314160cd7075f4e62197ca50587764521a",
+   "nyaris": false,
+   "kolom_pertama_beda": 24
+  },
+  {
+   "harap": "gagal\nOK 0 nama Ani\n3.0\nskor selesai nama\nskor Ani\nskor Ani\nOK gagal",
+   "aktual": "gagal\n3.0\nOK 0 nama Ani\nskor selesai nama\nskor Ani\nskor Ani\nOK gagal",
+   "harap_sha256": "4c4907c463b7d095a7cf2a20b66bcf3b3b94475d932929adba38b007837f0edd",
+   "aktual_sha256": "ea0e0b694ad4c6c3aa0bdf56ce6c9cc63c2dcda78b1f129a727a4c35b1b07433",
+   "bandingkan_sha256": "5190dae16261de40bef9f6169f11511ed7c7e940e90b7484c47fe3181aa4c211",
+   "nyaris": true,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "selesai\n\nskor lulus skor gagal\n3 1 10\nAni OK\n1  OK 3",
+   "aktual": "-5 0\n\nskor lulus skor gagal\n3 1 10\nAni OK\n1  OK 3",
+   "harap_sha256": "03cccccba8501aeb917f3fac44557ba3a26e600f8f20efd456f9e23ec58a3f02",
+   "aktual_sha256": "f9106e9fc5ba7253cdf85384b5018949f2d4cf6e2572a766e41978fa8ea9c16e",
+   "bandingkan_sha256": "333619c56aec1e77a593b6508d7e854d838324aed6cf02599c634ceb4b4ea78a",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total\n10 gagal -5\nBudi OK 3.0\n3 3.0 skor\n3.0 3 Budi\nlulus gagal 0 -5\ngagal lulus OK gagal",
+   "aktual": "total\n10 gagal -5\nBudi OK 3.0\n3.0 1 10 Ani\n3 3.0 skor\n3.0 3 Budi\nlulus gagal 0 -5\n1 0 3",
+   "harap_sha256": "c281aab74f7ffe0c6797ef478283c4ac49c4684e070ce20fc17b29f3684bebdd",
+   "aktual_sha256": "ec758305dfdeaada60a6ec06d93bb782bcd00f17253b58300630e2b876051d1b",
+   "bandingkan_sha256": "675e109372aa126c7881fbbefb8cb46e44e7ff0d046133f16c25fd8507078700",
+   "nyaris": false,
+   "kolom_pertama_beda": 32
+  },
+  {
+   "harap": "total skor\n10 3.0 0 0\n1 3\nlulus -5 10 Ani\n3.0\nlulus -5 10 Ani",
+   "aktual": "total skor\n1 3\nlulus -5 10 Ani\n10 3.0 0 0\n3.0\nselesai 3 10\nlulus -5 10 Ani",
+   "harap_sha256": "e514507e0967f6da9d177f2e53c8c7a541d33635ec2b56ea04d11fccd7d4d442",
+   "aktual_sha256": "f5c6639ac46d66e77251bef29c9ca671cad12cd4a4ac260c49f0e67af78f3ff1",
+   "bandingkan_sha256": "0dca938817f3496b3ecf362cad5e936c6a72180f20c00d296eee56f30d8bd094",
+   "nyaris": true,
+   "kolom_pertama_beda": 13
+  },
+  {
+   "harap": "total nama 3 1\nskor gagal\n-5 total gagal",
+   "aktual": "-5 total gagal\nskor gagal\ntotal nama 3 1",
+   "harap_sha256": "14ecba58cba4fb5b3c6eefb2890b760b433056150747363194aa5e631039876e",
+   "aktual_sha256": "46e77e2d2630696c9f80a959c6b8b9366a19d623614334242628b65116ed4e59",
+   "bandingkan_sha256": "4769eea6421e8adee8af7d1c471e2372c2e71925c63d1025663e837e4b3e7292",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1\nnama selesai selesai\ntotal 3.0 1 Ani\n10 3.0 1\ngagal selesai OK\ngagal Ani skor\nOK",
+   "aktual": "1\nnama selesai selesai\ntotal 3.0 1 Ani\n10 3.0 1\ngagal selesai OK\ngagal Ani skor\nnama -5\nOK",
+   "harap_sha256": "3ab1373aab2ea56a863a6303b326c2d56a870b8ddf46ab6c54fe948fde5493ee",
+   "aktual_sha256": "59ed7b7f79f8efd37275566f7bc18245c7568bcfb48b4a5556a5bd4ad90294d0",
+   "bandingkan_sha256": "04faf14665f2c4151790554917b5cfc1a0a863fd4ddcc46add91ab53fa96dee9",
+   "nyaris": true,
+   "kolom_pertama_beda": 81
+  },
+  {
+   "harap": "3.0  total\n3  3 Budi\n1 3.0 skor\nOK lulus\nOK selesai gagal\nOK lulus\nlulus\nlulus",
+   "aktual": "3  3 Budi\n3.0  total\n1 3.0 skor\nOK lulus\nOK selesai gagal\nOK lulus\nlulus\nlulus",
+   "harap_sha256": "48069ecad2cd829fe3216fce20dd42bae830d02a2f4510fd2a53e3934d4201ba",
+   "aktual_sha256": "f45405964332cbde75e7903dd2ec7d385326d6852cd324ab715dee40016e3cf7",
+   "bandingkan_sha256": "1ee5612d62e8c36eaa21d6265f48d2aa290be14a147fc4e95837803fb68994b9",
+   "nyaris": true,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "nama\nBudi 3 nama nama\nnama\n10 nama gagal\n0\nlulus 3.0",
+   "aktual": "Budi\nnama\nBudi 3 nama nama\nnama\n10 nama gagal\n0\nlulus 3.0",
+   "harap_sha256": "b1429d9282a20317217f3f5eb7053335f3a24e4f2c110f8b8dbaf1dd345e92fb",
+   "aktual_sha256": "7c64a056cddd211eb3230dea0f462a0121509ec9b262a64e0a66a7363e45483e",
+   "bandingkan_sha256": "881ef68eb77333cc642c7276d7662366ce791bca5f05484c4971b2ac0ccbb746",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "nama\n0 OK 1",
+   "aktual": "nama\n0 OK 1",
+   "harap_sha256": "ba1801d192cdd073ccc89e21877cd1e2ea5f4bd2b8ba692ea6487a147f821574",
+   "aktual_sha256": "ba1801d192cdd073ccc89e21877cd1e2ea5f4bd2b8ba692ea6487a147f821574",
+   "bandingkan_sha256": "d174ed34938871e30e832321276b8bcaeaf660b21404c6cb4598dbe846c235c2",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "OK selesai lulus 10\ngagal 3 3 selesai\nBudi OK 3 skor\ngagal 3 lulus",
+   "aktual": "gagal 3 3 selesai\ngagal 3 lulus\nBudi OK 3 skor",
+   "harap_sha256": "f073dfc86e05f3cabd10669f4f584af6aa9556765e3639fca682bdd7e1b5aebe",
+   "aktual_sha256": "998d795fc9239befe7cc84f561e9ef1ffae0569e5445e3417335c0678db134c5",
+   "bandingkan_sha256": "5512541dfef0fdff13c6e01e8847e15f3461b8075f523d80697b1b7cf124ee4e",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor 10 Budi\ntotal 0  gagal\n3\n10",
+   "aktual": "skor 10 Budi\n3.0\nskor\n10",
+   "harap_sha256": "980112058c3cea7107166fe8233a9d99c06cf6cb042d669014dde0645f477202",
+   "aktual_sha256": "155e8c14d0d138d546552cc50eab4c190e72649894c32914d603c1d96aaac075",
+   "bandingkan_sha256": "a707fbc7c97cf715a869bfcf277dcb38630bbc7c4ffd72f89f2572696a114f11",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "OK Ani\n3.0 nama",
+   "aktual": "-5  1 3.0\n3.0 nama",
+   "harap_sha256": "2afcc87465c577f672c281d953d74838902ab70a469bf5673aa7c16bc9930f69",
+   "aktual_sha256": "6cdb39ba9858fb0d378f5e4ea029a414dc0f6f38eeca17dcfe31c62539063ab9",
+   "bandingkan_sha256": "f7e937c492050bc3a5b79417eb5d03a9e331d09d2ea3956d8f1b671e90139518",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai -5\ntotal Budi\nBudi -5 total 3.0\nlulus\nAni 3\n0  Budi\nselesai\nselesai",
+   "aktual": "selesai -5\ntotal Budi\nBudi -5 total 3.0\nlulus\n0  Budi\nselesai\nselesai",
+   "harap_sha256": "3f3eab79f5db3ad9b03d4b2ad37800952c3f98310fe7749a1b40ce29b0d8b096",
+   "aktual_sha256": "5b5416abbed694bfc81878942f5f8e8946169106e6d30d0b52cc37de86ca0411",
+   "bandingkan_sha256": "3d201e9645e9867328738ba64ed26abf4446e9453d9dc796fde19a73e6df98f0",
+   "nyaris": false,
+   "kolom_pertama_beda": 47
+  },
+  {
+   "harap": "Ani 10 10 nama\ntotal OK 0\n0 3.0",
+   "aktual": "lulus selesai  Budi\nAni 10 10 nama\nAni lulus\ntotal OK 0\n0 3.0",
+   "harap_sha256": "bb98450eeee5b7a0debf6338db9ead3e8521ab299bfa11e216d9aa6b6fb4be45",
+   "aktual_sha256": "d5578f37571cd84dee9f501958370c62e5d69cc938297e5d1c8803e35af380d4",
+   "bandingkan_sha256": "7db7a16deacdb7bfaa3587a30928907b54f0532a76433886112f276f5a3fa9cd",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total\nnama\nBudi OK",
+   "aktual": "nama 3 selesai -5\ntotal\nnama\nBudi OK",
+   "harap_sha256": "0358a62a8e9f8ca3b67e550fab06bf5353ac88d64f41d3155d6c707b732ff4de",
+   "aktual_sha256": "2b6821e8c4ae97a6afec157ce9fcfb0df095d5efcfc0384006c0a7fae5eb0ded",
+   "bandingkan_sha256": "eafbc73b0e44b27fe2cea418f62a0f8d51db847fc383a76baea0e28ec1437329",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0 1 3.0\n3.0 3.0 nama skor\n0 1 3.0\ngagal\nBudi gagal 0\n0",
+   "aktual": "0 1 3.0\n3.0 3.0 nama skor\n0 1 3.0\ngagal\n0",
+   "harap_sha256": "5ed9f6c866f6f07b95bf5a492fce5c6d12135d1d6051f8718773912832d859d2",
+   "aktual_sha256": "61de6f5c53e5c6321c7a7cf3f56ddaf1aa603e5873396f5c8eee5e79fa4d348a",
+   "bandingkan_sha256": "48d59047b27bfd19392a54e51c318d90098b26500fa272f0b6e63a94ab922fb9",
+   "nyaris": false,
+   "kolom_pertama_beda": 41
+  },
+  {
+   "harap": "-5 skor 3\nnama\ngagal\n-5\n3.0 nama\ntotal\n1 nama Budi\nskor  gagal\nlulus",
+   "aktual": "-5 skor 3\nnama\ngagal\n-5\ntotal\n1 nama Budi\nskor  gagal\nlulus",
+   "harap_sha256": "f73789be15af69594b66c3aa9ad62505bfab3a8f6048ce613f823d2ad31ff46e",
+   "aktual_sha256": "37ddd1418f99764e638947b48b1bfba10d2487ea6560730f25967c59d63e2126",
+   "bandingkan_sha256": "668f34a65358ca900b6d1c3a2bd17c710a2c8618b8bbac7ca4dbdc70a86ead72",
+   "nyaris": false,
+   "kolom_pertama_beda": 25
+  },
+  {
+   "harap": "skor Budi 10 skor\ngagal nama\nskor Budi 10 skor",
+   "aktual": "skor Budi 10 skor\n-5 skor\nAni 3.0 0\nskor Budi 10 skor\nOK",
+   "harap_sha256": "25c02ee690514de9d52cc740649de5d5df250f43478c6936e9507d1df2760a16",
+   "aktual_sha256": "e9c121af4c68ab97ed689aa78fd26ab14922d11bac51cc3a2723579ce5a73f20",
+   "bandingkan_sha256": "75fa1e0a29dbd0e85a8d850200df979f9fad97d90911367b769468bc2da4a6b9",
+   "nyaris": false,
+   "kolom_pertama_beda": 19
+  },
+  {
+   "harap": "0 1\n10 total Ani Ani\n-5 Budi\n0 Ani\n1\nselesai",
+   "aktual": "10 total Ani Ani\n-5 Budi\n0 1\n0 Ani\n1\nselesai\nselesai",
+   "harap_sha256": "159a3f91de3f02fb8d41f2273f52a7634ed68f89ccfd1d39393946f20161e42e",
+   "aktual_sha256": "de7cf56f98aea7ba1431a61127f99720d1117a7be4dd5e9ba8829189072081e0",
+   "bandingkan_sha256": "68023dcedfb34bd04ad65723871cdab270ae763eafe6596650617cffab63fc42",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 1 gagal\n10 1 gagal",
+   "aktual": "gagal OK selesai\n10 1 gagal",
+   "harap_sha256": "69d6d5a994114a65d38c6e45ab9bc3120c59aba9b2ec443fd99a48e5d4775c3a",
+   "aktual_sha256": "d9cbd1b3d39680cf26a04a6fba145f63107c19e10f123b9012946d9a11b3cc31",
+   "bandingkan_sha256": "7727253f28e07e5ce4b22aa30c192dc975b7f8299aa5ea321b88ee8b1c4868aa",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1\n0 total  total\nskor -5 10 0",
+   "aktual": "1\n0 total  total\nskor -5 10 0\n-5 Ani 1",
+   "harap_sha256": "8797d34c0e8268c84010f173294dc118105b0a38629b102415c4cd1b972c1337",
+   "aktual_sha256": "781662c0ecfc407b0680207b4e67c7eb8496392e67e57d3482e61dc317d549f0",
+   "bandingkan_sha256": "4f9883db9e785f6422bf6b1c50610b7645cadf5b066e3dcde6cf1f06fa18209a",
+   "nyaris": true,
+   "kolom_pertama_beda": 30
+  },
+  {
+   "harap": "3 3 lulus lulus",
+   "aktual": "",
+   "harap_sha256": "4d17c1a5fb07ec5a095d203adeb79c9f39b6b5d0c94bc4a6ebeab436cc4651ba",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "9934b15e133dec54db0e150c84608e20a65908968853a41b73fcf45d187e428b",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3",
+   "aktual": "lulus OK  Budi",
+   "harap_sha256": "a4aab3f1f08004e907d2357fafe74cab56359bcb32e23f52e7eb1d3a9c0a2ad3",
+   "aktual_sha256": "0a658de66d0d00535d1a5e31c3ee331f0a837d495b3d5fba366ca4482e311dfc",
+   "bandingkan_sha256": "22635483b088f9baa32b08bf333b90bc5588a85cc3937c45ab602a88aa8a1720",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0\ngagal 3 3\nAni Ani\ntotal -5 selesai Budi\ngagal skor selesai 10\n3 -5 10\n0 gagal 3 total",
+   "aktual": "0\n0 gagal 3 total\nAni Ani\ntotal -5 selesai Budi\n3 -5 10\ngagal 3 3",
+   "harap_sha256": "6ec1cd1ddbc35d5928cd5e183b710855bf79d8bd00c683c40a20fabe4da8ebb2",
+   "aktual_sha256": "852799ce0a4ecb4cab89910fa0f5b61df63da665e45debd7c6556eb6a4438985",
+   "bandingkan_sha256": "063fd38f7fc2e1deadafb92e305c8b7bfd7ba3a92d2a94f69ba91c886d7c726f",
+   "nyaris": false,
+   "kolom_pertama_beda": 3
+  },
+  {
+   "harap": "OK  skor skor\n10 lulus lulus\nnama Ani\nBudi 10 nama 0\nskor skor -5\n3.0 skor 3 Budi\n3.0 skor 3 Budi\ngagal",
+   "aktual": "OK  skor skor\n10 lulus lulus\nnama Ani\nBudi 10 nama 0\nskor skor -5\nselesai 3.0\nAni nama Budi\ngagal",
+   "harap_sha256": "27ded92e20ea18dc7df76c1e6e10e5b423068d0ed1cb52624178359c3d4e389a",
+   "aktual_sha256": "a6fc5b8c5c4d9b790fffaefa0bedee07ff2476829fa7d7462c222f1ef6b43391",
+   "bandingkan_sha256": "20510e60163d77aace58189ff8f5aa0afe3bd9868fd01624491990bd92f4f0fc",
+   "nyaris": false,
+   "kolom_pertama_beda": 67
+  },
+  {
+   "harap": "OK Budi\n3.0 Ani gagal skor\n0\ntotal\nBudi\nOK Budi",
+   "aktual": "OK Budi\n0\n3.0 Ani gagal skor\nBudi\nOK Budi",
+   "harap_sha256": "d0f287999d5f9e6e4e9f1643764e906f3119650694c73ab1653ef74895b2029e",
+   "aktual_sha256": "9355ae059a862282efa7f5abd25fca79f05e8924b9155af7928744292cdd533e",
+   "bandingkan_sha256": "df7877717dba4d12bba1d7b1f46f7ae8173c4230723aa9546381b501c90e78fc",
+   "nyaris": false,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "3.0  selesai skor\n3.0\nnama\n3.0\ntotal Ani Budi\n3 gagal Budi",
+   "aktual": "3.0  selesai skor\n3.0 0 nama -5\n3.0\nnama\n3.0\ntotal Ani Budi\n3 gagal Budi",
+   "harap_sha256": "cc25a40175a47b7d9b76870a1ff61666156af0103f1d99499e114b289a11a85f",
+   "aktual_sha256": "2dd6dcc03219edefac865552be81bb83fd580d549bc742d26e7f6c0cbe1d73d1",
+   "bandingkan_sha256": "8300bed0b9212e17b8bddf8ad80c6addce17c56495b6c455e23d35eb5d468a30",
+   "nyaris": true,
+   "kolom_pertama_beda": 22
+  },
+  {
+   "harap": "nama 10 total\ntotal 0 nama lulus\nBudi Ani gagal\nOK 1 3\nOK 1 3\nskor  Budi\ntotal",
+   "aktual": "nama 10 total\ntotal 0 nama lulus\nOK 1 3\nBudi Ani gagal\nOK 1 3\nskor  Budi\ntotal",
+   "harap_sha256": "4bcede384d2f1d6aa35ced9d8bfcfd4eaf2cfc8c8f5671df96bd50815155715d",
+   "aktual_sha256": "610f348b1e38412f7f51bd882ffa4cc2a2077fbe8a607f40cf1bccd325ed2365",
+   "bandingkan_sha256": "e2e34200994f9c5d576e420211ad33fbfa49f17846eb81f5fe77b8f52a9e0a2a",
+   "nyaris": true,
+   "kolom_pertama_beda": 34
+  },
+  {
+   "harap": "nama skor\nselesai 10 3\nnama skor\nBudi nama 10 10\n0\n1 0\ngagal nama gagal 3",
+   "aktual": "nama skor\nselesai 10 3\nBudi nama 10 10\nskor Ani\n0\n1 0\ngagal nama gagal 3",
+   "harap_sha256": "d2e15061f6ae235d8040b67f6ee035ec2f4e69c242f1578ae8b4b6de61de04d6",
+   "aktual_sha256": "4065a74b2d0c66626ef991b67ba2902c697d52a4732b4e3d9659f02c43d848e6",
+   "bandingkan_sha256": "27ea76dad30e7b76480a5fb32c40941ad3267cd898e68577a0360e0a7a2d10ec",
+   "nyaris": true,
+   "kolom_pertama_beda": 24
+  },
+  {
+   "harap": "Ani 3.0",
+   "aktual": "",
+   "harap_sha256": "f85473952aff1f0fb43df7e3b50a68590a77723a646c5638abb6c3ac600c53d0",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "89178744185b1ff778a4d379fe3e4497107dafd529048be9fdad1af0724052d7",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total OK selesai\ntotal OK selesai\nOK lulus lulus\n10  lulus lulus\nselesai",
+   "aktual": "total OK selesai\ntotal OK selesai\nOK lulus lulus\ntotal nama total\nselesai",
+   "harap_sha256": "c33ee35deb3bdcf3c9d4da2658eb6a43ce3f15aa3172687774178777793caac5",
+   "aktual_sha256": "abb90f489d405df75218d98a26aa652ed24ac023862aad68fba37d5d89f314a2",
+   "bandingkan_sha256": "32ac866d49613dfebc93d14fd5e96b57bfbc2ed5673bf4a13f6073e2b5da8e17",
+   "nyaris": false,
+   "kolom_pertama_beda": 50
+  },
+  {
+   "harap": "lulus OK 3 -5\n3 total\n0 3\n3 total\nskor skor total total",
+   "aktual": "lulus OK 3 -5\n3 gagal Ani lulus\n0 3\n3 total\nskor skor total total",
+   "harap_sha256": "3808e69ade694c479a23f9f194215add6ccdf677dd4b89e31fb17e159f21c803",
+   "aktual_sha256": "dd374dbd591134dbdc89c61f96651ff9f0d4545b762fe0cc7037336d831f9ef4",
+   "bandingkan_sha256": "478308ed41898c4d35c6e08fad15dbf2a53991dd2b84e28420a58d5cb14262c1",
+   "nyaris": true,
+   "kolom_pertama_beda": 17
+  },
+  {
+   "harap": "3.0 skor\nselesai\nlulus 3 skor skor\n3 10\ntotal 1 selesai selesai\n3.0",
+   "aktual": "3 10\nselesai\n3.0 skor\ntotal 1 selesai selesai",
+   "harap_sha256": "4d4bfa9c20ffbeb1107c7cedc0720b1e494f6389a6d32b39ab3f701c88ae2535",
+   "aktual_sha256": "a7906c39afc174889b9d90f566a3d27c8620e52a4d49c9660ce96172861923d6",
+   "bandingkan_sha256": "ff9ad88f74f7fbe32fc96c839795e11a03ca1c9b4574fe9edf2973e6153b3aa9",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "-5 lulus\n3 nama\nskor",
+   "aktual": "3 nama\n-5 lulus\n-5 selesai 0 3.0\nskor",
+   "harap_sha256": "ed7034f9205ab9b6659f7f68a8c30d565e5fd5cb40b5066951d573cbab376d75",
+   "aktual_sha256": "38b7ca4fc46386ad573d0e2c0b484ed9b4622fe5e9ccddf43e936646908eed4e",
+   "bandingkan_sha256": "f2abeef5206c235a8e8b07c61f20cb0bf955fb47dd161961c2d817824fcd85b7",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "gagal\n1\n1 skor 0 lulus\ngagal\nskor skor 10 selesai\nBudi lulus  3.0",
+   "aktual": "\ngagal\n1\n1 skor 0 lulus\ngagal\nskor skor 10 selesai\nBudi lulus  3.0",
+   "harap_sha256": "64e4178f900c85cecf408c84f66c5d2087852796350063869544d3bfe2f7029e",
+   "aktual_sha256": "41b47e66902c9aea2850decea1f5fd757567d3dc2fef3f2e481d56fa36022869",
+   "bandingkan_sha256": "cf8df482b915c6cf6275a674ebb0f1c37c632352c66d4900479254f45238b68c",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 3.0 gagal\n10 skor OK 10\nBudi Ani\n3 Budi 3 -5\nBudi 3.0 0",
+   "aktual": "Budi Ani\n10 3.0 gagal\n3 Budi 3 -5\nBudi 3.0 0",
+   "harap_sha256": "7032fe8f37614fec9d8f4e3478227d7ed018427684a901afe53c950988a406e5",
+   "aktual_sha256": "94ed13f33d8530eebb1c33af3e6e51578bf3aa608875af8e91d3d3a76a1f97ca",
+   "bandingkan_sha256": "00feb74705a355f86b557a73d98dc097bf93b060d3fe0daea0c0ce4378982c0a",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 Ani\n10 1 total\n1\n10 1 total",
+   "aktual": "10 1 total\n10 Ani\n1\n10 1 total\nBudi -5",
+   "harap_sha256": "e430858ab6d86529587863ff2897caaa7ad0e08ca9659e15ac1528c98f8df112",
+   "aktual_sha256": "27c47b78fa124651f31d978db7d1cc070a0fd1a2330b033dda8a1631c3055922",
+   "bandingkan_sha256": "eefc26b7fbdb02f1ae42518b871407fa1dbc6c2854c36b68c26b54a7c55215a8",
+   "nyaris": true,
+   "kolom_pertama_beda": 4
+  },
+  {
+   "harap": "1\nskor",
+   "aktual": "skor\nnama total 3.0 -5\nOK total -5 lulus",
+   "harap_sha256": "0b75c5e0a34c079b5fd67ab3c1be11c1b09227e6b46a6d4c699e77f11ad34846",
+   "aktual_sha256": "b6dabce4c099c982838b7d1a4c83e34ae3cf30b97a12dbf9a2ec9493748c2392",
+   "bandingkan_sha256": "b91ccaeae0e8f87ef9364503fd93119f3a4d192380ba9f6d0b00da28ae82ce4f",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai -5 skor nama\ngagal 3 3.0 OK\n3.0 total selesai 10",
+   "aktual": "3.0 total selesai 10\ngagal 3 3.0 OK",
+   "harap_sha256": "7a49d12fe71a31b18feea431e2f81d7adcc2f2792bbc7560923aa26034e79b89",
+   "aktual_sha256": "ba80a544ec886967b5427bc4f0f361679882aef459edd03feed462e1aca86156",
+   "bandingkan_sha256": "d965100b3097f0fe95d9c54d471fd9003214cd72e554faa3b1b064be1896c821",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai selesai\nnama 3\nselesai skor\nnama -5 -5",
+   "aktual": "selesai selesai\nnama 3\nselesai skor\nnama -5 -5",
+   "harap_sha256": "cb27c9bb5ecb3520db6fbc2499badf2e341ce6ba61b197b83c4383b88d0a4a8a",
+   "aktual_sha256": "cb27c9bb5ecb3520db6fbc2499badf2e341ce6ba61b197b83c4383b88d0a4a8a",
+   "bandingkan_sha256": "291685e7e5603d609f663b9e47b0e9ec1e89d89f9fef474b56609f22f26235b9",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "lulus\n",
+   "aktual": "lulus\nskor selesai 3\n",
+   "harap_sha256": "f0c2ea0d27c5f9c864d13cbb6ce36eef987cbcfdd72175d005d2507e25888c81",
+   "aktual_sha256": "1b57549c9201679f23f6940e230eff389709a52b62a28d9bf390d860a82d1261",
+   "bandingkan_sha256": "caeaf4546d60ba0ffc0a792c5b114ffa07adf38c18912c610d1d0e10a42f3817",
+   "nyaris": true,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "gagal OK\ngagal OK",
+   "aktual": "3\ngagal OK",
+   "harap_sha256": "699ed9d58022b27fcfe6c459322f539ee92d1e9fb195be9dff96bdd31ffca94e",
+   "aktual_sha256": "83e752461aee69053105ce3d99cd81f0424f696bbecd87e9091a5af7406c35b6",
+   "bandingkan_sha256": "9fb3336b505a8996789c364bfa2f1405e5e299514b9987fca806a5f9d28bc3db",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Budi 1 Ani -5\ngagal\nselesai total 1\n0\ntotal\n1 OK gagal\nnama skor lulus total\nselesai Budi",
+   "aktual": "Budi 1 Ani -5\ngagal\ntotal\nselesai total 1\n1 OK gagal\nnama skor lulus total\nselesai Budi",
+   "harap_sha256": "9ebbc2f58b8942f6cedd6a65a484aa6922252825f0f5af112fa672798bdd9b02",
+   "aktual_sha256": "5dbdeadf2fff0d59a0f6dd7ff2a6e74754641fb287437238384884910c5cd0e9",
+   "bandingkan_sha256": "065d4497cd15ca4b8b124ab674d3e6c4bd446350b27051d25e4a073c1670b444",
+   "nyaris": false,
+   "kolom_pertama_beda": 21
+  },
+  {
+   "harap": "3.0\n3\nselesai 1 -5 1\nAni\ntotal 10",
+   "aktual": "3\nselesai 1 -5 1\nAni\ntotal 10",
+   "harap_sha256": "8ff0de806e0c914bd1be8a999d6b96f943e5e1990e443ce41f5af6075438edea",
+   "aktual_sha256": "81df5eef2939af737bbb11959e60156e796b6c8e5f75fe7db7737054112662d2",
+   "bandingkan_sha256": "bb27d99b627eb4a5d65858dac18d965b235b0bba1cb29554f92f2456826ddbf1",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "0 Budi",
+   "aktual": "nama",
+   "harap_sha256": "c93f251109c8cc60471c54724d9f5d0cfb21f981c39bc776e72d66d39a455f7c",
+   "aktual_sha256": "8843a5a403eaae1aa99288c7ed0030120c652062d49a4fb4d87f9c671895034d",
+   "bandingkan_sha256": "0111da0f6f35019edd3137c9bb29e9faf9a0bc21818e1885258803553f4ecdad",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total -5\nnama\nAni 3\nselesai 1 Budi\ntotal\nAni\ntotal\n3.0 -5 selesai 10\n3.0 1",
+   "aktual": "total -5\nnama\nAni 3\nselesai 1 Budi\nAni\ntotal\n3.0 -5 selesai 10\n3.0 1",
+   "harap_sha256": "9ac28c0873f834af9e4c2f047e8ee726e09804d7046fb309d30864efd50704fb",
+   "aktual_sha256": "2915a671cd6f45763e6a13c1b7b8d6b08dd9d1fff43f970faaf9929ac91fbffb",
+   "bandingkan_sha256": "4704a4c0bb7df6dff0ad8a9f41e48c689bdbf3bc08f4f4d80b3514da1391d2ed",
+   "nyaris": true,
+   "kolom_pertama_beda": 36
+  },
+  {
+   "harap": "3.0\nAni 3.0\nAni gagal\n1 3.0",
+   "aktual": "Ani gagal\n3.0\nAni 3.0\nskor  nama",
+   "harap_sha256": "b85c7c47b2ba99a03e24c9d2f6cce7da85a450a87f7027af804f213caaa513d8",
+   "aktual_sha256": "deb862afbe0f201d94c2d7342e3e0d14008b109e6dd3bb9c864c6752532cb119",
+   "bandingkan_sha256": "42f977a26dab063ede843d964ec233d187e39534ccdbb2078fb46bd1218d67b5",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Ani -5 10 1",
+   "aktual": "",
+   "harap_sha256": "19b083ae3750b360a796403aba6349232e86da6ea1dcc174537d38b4639aa0fb",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "d76d64e06434cb15ecad7d5e987ba5f2b225dc353c7a7e0fce244ac6b7accfd5",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total\ngagal 10",
+   "aktual": "gagal 10",
+   "harap_sha256": "1f685f15b10b1971ca351c6a39a9a8885e356fd4f47493d39ebcfed34b81fc54",
+   "aktual_sha256": "f733fa8367418f0f9275577d72756c425525bfdbe92be9456b2033fbe0c879b0",
+   "bandingkan_sha256": "d156e8819b1899bb392b17e067325ce856a17d254f7e40c251224ce9dc2f7091",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "Budi skor OK\nnama 0 OK\nOK -5 selesai 0\n0 3 3.0\n10\nAni OK lulus\nnama -5\n3.0 Budi",
+   "aktual": "Budi skor OK\nnama 0 OK\nOK -5 selesai 0\n0 3 3.0\n10\n3 nama Budi\n3.0 Budi",
+   "harap_sha256": "f4d3e06a6da3a3489fefafa000e714b51fd3d193b20b029a546da519ee8bec61",
+   "aktual_sha256": "438413f5d629f374384ec1f8c8363b9c25f073651d93b7efa6d7105368415f5a",
+   "bandingkan_sha256": "e91e56a43d63c937d7f3950021f3fd34d7043b705001ae25e4fa5f836e0d1a81",
+   "nyaris": false,
+   "kolom_pertama_beda": 51
+  },
+  {
+   "harap": "Budi Budi selesai 1\n",
+   "aktual": "Budi Budi selesai 1\nskor",
+   "harap_sha256": "708bebe5a1de694e121362b90ea83bffac553e6f497e54fe0d3f8f243731a1a3",
+   "aktual_sha256": "2e8be37178e3a35f04c2f4b3055743e4a21041d5acbcd63b840a1c2e1da94171",
+   "bandingkan_sha256": "4f9a124b2d01e78aafc86c3cb9ac3bf4b745e62008767f9a363b72937954e5b9",
+   "nyaris": true,
+   "kolom_pertama_beda": 21
+  },
+  {
+   "harap": "skor lulus\n10\n10 skor\ngagal selesai nama\nlulus 10 nama lulus\nBudi\n3.0 1 -5",
+   "aktual": "skor lulus\n10\ngagal selesai nama\n10 skor\nlulus 10 nama lulus\nBudi\n3.0 1 -5\n-5 lulus Ani",
+   "harap_sha256": "ce7177e30e21a4f7a0fbd111ecaac738a7393997a68eb929bea01938900445e1",
+   "aktual_sha256": "e8e53db4c10f021a83190cbaf32ed2c6b13ab7e4a91c23d7b6ef2267fa9047d1",
+   "bandingkan_sha256": "4cee4bc12f6ca97585f0e29a4ed63019eb29dc58fea5a2521ad898bcd0e5609a",
+   "nyaris": true,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "1 total -5 3\nskor gagal gagal\n1 3\ngagal\n10 lulus total Budi\n3   1\ngagal gagal",
+   "aktual": "1 total -5 3\n1 3\nskor gagal gagal\n10 lulus total Budi\ngagal gagal\n3   1",
+   "harap_sha256": "8b6a5104bc97a76a7475d01a9900a3fd5207e532845221b3aa48898218f09940",
+   "aktual_sha256": "6ef77e6f63e12496873235ddbaec836405fe4f6f704b8822bd6c1da3c351f3c7",
+   "bandingkan_sha256": "6c0d67bd2f225bf0e007cffadc22f8c23d8a223d944b4b6477f9eb3a956ec57b",
+   "nyaris": true,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "Budi OK Ani\nBudi -5 skor 3\nselesai selesai OK Budi\nBudi OK Ani\nnama selesai\nBudi OK",
+   "aktual": "Budi OK Ani\nBudi -5 skor 3\nskor lulus Ani\nselesai selesai OK Budi\n0\nnama selesai",
+   "harap_sha256": "eb5a150b8541f583da04537a6da767c4e630670053bd9b1060c132f999dc58c9",
+   "aktual_sha256": "fc6375a9f499f9c8fee11b0f850dc727ad6ab6d3f614c4af556a00c435e81156",
+   "bandingkan_sha256": "2bd6e5d63d6d0ddbf0d6827bd07b9a34309214482cffa66669e8e0ec7e75d353",
+   "nyaris": false,
+   "kolom_pertama_beda": 29
+  },
+  {
+   "harap": "-5 OK total\n10\n\nnama nama\nOK\n1 -5",
+   "aktual": "\n10\n-5 OK total\nnama nama\nOK\n1 -5",
+   "harap_sha256": "119c9a4d725246b572042b76b5e02a3bede5cc798f135a5dd94b473ebf62eb53",
+   "aktual_sha256": "b70f8f75a3b1c3cd1c9175a5cffabc19876a10b39acfc768e12831d17ad82e68",
+   "bandingkan_sha256": "7a80b9dd9a31f94e0850c3e55c8093d2d9b5f0b46eb91e52e460b992177b3418",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor 3\n3.0 Ani selesai total\n3\nAni gagal 1\n3.0 10 skor 3.0\n0 Ani 10\nnama",
+   "aktual": "skor 3\n3.0 Ani selesai total\nAni gagal 1\nnama\n3.0 10 skor 3.0\n0 Ani 10\n3",
+   "harap_sha256": "21838387c39ebd930862a7cf36d37f331cd8a235455613ad77d97c3e3c5bd459",
+   "aktual_sha256": "f6435f7508eb0fe355ab8b2f63e36e6140879d1ff40ec5772b72b5a53cf9a316",
+   "bandingkan_sha256": "1ef29340e8001fdd4702c0d4bd6d08c9547ea7d528336ee0395bfedf4f9939f5",
+   "nyaris": true,
+   "kolom_pertama_beda": 30
+  },
+  {
+   "harap": "1\n1\n\n10 1\nlulus Budi 1 -5\n1 total\nskor 0 nama\nlulus 1",
+   "aktual": "Ani selesai -5\nselesai\n1\n\n10 1\nlulus Budi 1 -5\n1 total\nskor 0 nama\nlulus 1\n3.0 nama",
+   "harap_sha256": "f7f2d964f5d245eed8737ef8a79f19667b5b9d6643b1b29dc8ebaa0d3b0aed59",
+   "aktual_sha256": "216c662cd88877f0a088228f70712fa6c03816a67f1d3d218f137377a2dfd855",
+   "bandingkan_sha256": "1ff6b3357894dda69c24a073860cddbfb73bfc35e4c863c0ca34cd9e89dffc88",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "-5 0\n-5\nskor\nskor Budi\n3 Budi 10 selesai\ngagal 3.0 total\n-5 selesai 0\n3.0 Budi\nselesai selesai Budi",
+   "aktual": "-5 0\n3.0 Budi\n3 Budi 10 selesai\ngagal 3.0 total\n-5 selesai 0\nskor\nselesai selesai Budi",
+   "harap_sha256": "d335cbd182f60b8690b53d1f15ec40f306d02d0c4ca2be5aa74099be6e5170a5",
+   "aktual_sha256": "49f20443340ce0f5da49395beb32d3614ef8342b6618b2cbafd612173df5bd82",
+   "bandingkan_sha256": "d48e9ddae77f1dd7e2370995f88abe11fd57cf853c5b7c95e408a7988583dec6",
+   "nyaris": false,
+   "kolom_pertama_beda": 6
+  },
+  {
+   "harap": "total total nama Ani\n10\n1 -5 3 gagal\nAni 3.0\nAni OK Ani 3.0\n0 selesai 3.0\ngagal Budi Ani total\nlulus skor selesai lulus",
+   "aktual": "total total nama Ani\n10\n1 -5 3 gagal\nBudi  10 selesai\nAni 3.0\nAni OK Ani 3.0\n0 selesai 3.0\ngagal Budi Ani total\nlulus skor selesai lulus",
+   "harap_sha256": "8eeec2ba68ac5e94e00f55b2b8a7837ce60e4732443e48005ad49bb0f5c2517c",
+   "aktual_sha256": "7124512590e797d936642d7e9c6cf297e054decf8c6301a854ac453d2edbd304",
+   "bandingkan_sha256": "72c7ffdbaabdfa294c570197d2dea1a4b558b4955653a9a25e66b6a16abdf0c9",
+   "nyaris": true,
+   "kolom_pertama_beda": 38
+  },
+  {
+   "harap": "Ani 3.0\n0\n3 0  10",
+   "aktual": "Ani 3.0\n3 0\n0\n3 0  10",
+   "harap_sha256": "4d746f25abb95103d03ac97bd4e5cff5e05c1db523819e134005e5ca59236d5e",
+   "aktual_sha256": "5c37e2a4b26e6f171325a358ed509588533b89320b1e91a51ba7f4abce9e05d2",
+   "bandingkan_sha256": "fea7c1af3d77a94e01c944721a54bce53b01c19283a540dc1e48f9ec1ea2a085",
+   "nyaris": true,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "skor\nnama OK\n10 0\nskor 1\nOK\n3 OK 3 3.0\nlulus -5\n10\n1 3.0",
+   "aktual": "skor\nskor 1\n10 0\nnama OK\n3.0 OK\nOK\n3 lulus -5 Budi\n3 OK 3 3.0\nlulus -5\n10\n1 3.0",
+   "harap_sha256": "4c51c35f7ee1dd60d10a6ea4711bd04a87ee202d6d5bfcc0b00e960c433aad00",
+   "aktual_sha256": "40c66709f90d40bc78ed08e5874d0b1499d42597abb5eed8a5cd28afb00fa23c",
+   "bandingkan_sha256": "526f86c5e4db9697a3261396fe20f1c52132973dab0c660ae0b110bac8901d3f",
+   "nyaris": true,
+   "kolom_pertama_beda": 6
+  },
+  {
+   "harap": "-5  1\nOK selesai\n-5  1\nskor skor selesai\n1 0 Budi total",
+   "aktual": "10 lulus total selesai\nOK selesai\n-5  1\n10 10 Budi\n1 0 Budi total",
+   "harap_sha256": "582bb5fb2f625f174efb489d2450b302b878697b590084aa96edd301c0e0ed5d",
+   "aktual_sha256": "0297feb8c316f76b8e09941f5be15be2142798125dc285ef9bbead9794353bcc",
+   "bandingkan_sha256": "1f383d5398ca1e349eff854b5c94308ace889c6eeee7704d9238e4df20fda483",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3  total\n0\n3.0 gagal Budi\nAni Budi\n0",
+   "aktual": "3  total\n0\n3.0 gagal Budi\nBudi 0\nAni Budi\n0",
+   "harap_sha256": "0d75bdd001629fd692b9e3fcad0f800faaed66b038e2f7b1068351184f379a19",
+   "aktual_sha256": "3a1d2e70c35631662656bb3ff51e4c98fe9bbb8f949610d3968f8a7a69cc15e6",
+   "bandingkan_sha256": "6bfb4f9910f215559c5f8b523c1ed2affebff0651c8338daf0667ffc30686f6c",
+   "nyaris": true,
+   "kolom_pertama_beda": 27
+  },
+  {
+   "harap": "nama\ntotal\n3.0 3 1\nlulus\nAni\nselesai 0 OK 1\n10 OK\n10 skor 3.0\nnama total OK",
+   "aktual": "0 gagal  skor\nnama\ntotal\n3.0 3 1\nlulus\nselesai 0 OK 1\nnama total OK\n10 OK\n10 skor 3.0\nAni",
+   "harap_sha256": "393424c3bb4c91c171b7f8a6cfff969a8ff39c9591904e3734ce3745296f7ce7",
+   "aktual_sha256": "d965cd646436acb0b16ee48d4a496d2da3acbdaa6d028f69494daf5fd523317c",
+   "bandingkan_sha256": "20fb184e943b2ec1b263a5d8a2cb8f18badf5d3ae50c1c00c2f263e41e9d1fd2",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai 10 0\ntotal OK 0\nnama -5 -5\n3.0  1\n10 -5 skor 10",
+   "aktual": "selesai 10 0\ntotal OK 0\nnama -5 -5\nAni\n3.0  1\n10 -5 skor 10",
+   "harap_sha256": "3b9d7b43c0e2db810150a77250681cf8f0520468ad9e1c0a0e86fbafecd07875",
+   "aktual_sha256": "2d28871f9ea08425003834f26fa8f1bd217ab2ff6e3e9dc176bda251f3124e1f",
+   "bandingkan_sha256": "aa7c74ee65cfa715843fdfd6bbc2095903832599c64805aec56302e1eb2d1c86",
+   "nyaris": true,
+   "kolom_pertama_beda": 36
+  },
+  {
+   "harap": "nama OK lulus skor\ntotal gagal\nlulus Ani selesai\n-5\n10 skor\ngagal Budi -5 selesai",
+   "aktual": "nama OK lulus skor\nnama\n-5\n10 skor\nskor 1 10 3\ngagal Budi -5 selesai",
+   "harap_sha256": "02173fd9fdb9f8ad68010aa0903a5af118162953d74ef78c63434ff4ae158b75",
+   "aktual_sha256": "10c08e025e7353d159dfbf3d13405e6247aed01a6f9c8d0b95a873631042567f",
+   "bandingkan_sha256": "f006fb00820d31feae23c5ffa7e9537bcbdea6da66f25223557aca683692cea5",
+   "nyaris": false,
+   "kolom_pertama_beda": 20
+  },
+  {
+   "harap": "0\nnama -5 lulus -5\ntotal 3 Ani\n0 gagal gagal\ngagal Ani",
+   "aktual": "0\ntotal 3 Ani\nOK 3.0\n0 gagal gagal\nlulus nama",
+   "harap_sha256": "645059233fe6b978b6f7b7cf57179cafbf263663179101a78278324ee39ef05d",
+   "aktual_sha256": "e822318d272a1d143705f8c7524b3794cffd3dc3717b2bec6eda35dadc816dad",
+   "bandingkan_sha256": "cbd6afca898a65453e3328bcad0257ec549af1d45d588cfc58be02a06a8157ee",
+   "nyaris": false,
+   "kolom_pertama_beda": 3
+  },
+  {
+   "harap": "Budi total lulus skor\nBudi total lulus skor\nOK 3\nlulus 0 skor Budi",
+   "aktual": "Budi total lulus skor\nOK 3\ngagal",
+   "harap_sha256": "5eaf9afc4d8e343e38f26597fef5a1d473e094a0337f763e343a9c62cbe98b8a",
+   "aktual_sha256": "d002f69c01c1861728e596a4a3ee25a57517d7e8e4e775c6740bcf3be9fced22",
+   "bandingkan_sha256": "da54d74711e95541e973335e6d3d58f3bfb21c2eac456ee3764d80c8bce43cc8",
+   "nyaris": false,
+   "kolom_pertama_beda": 23
+  },
+  {
+   "harap": "1 10 nama\ngagal selesai 3\ngagal\n-5 nama\ngagal selesai 3",
+   "aktual": "1 10 nama\ngagal selesai 3\ngagal\n-5 nama",
+   "harap_sha256": "e4d9a7085ee401fc2748b986cb576931db630422195aa78e4b65b7a03bc8023b",
+   "aktual_sha256": "4c3cfc2acf4f71e9c96a749b723ab4dc5a734c4e09ee5d9625152c7509a26b2b",
+   "bandingkan_sha256": "367e4e20b07e69d3151bd2505ab625b36047e81b1abc75ad89f8f4a2575695c2",
+   "nyaris": false,
+   "kolom_pertama_beda": 40
+  },
+  {
+   "harap": "skor\n1",
+   "aktual": "",
+   "harap_sha256": "e13ebc01d1a189d5f3b2ede193010ab0575d3e7366335c8ee4230f98490021ee",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "eedf2b08758172f1fc289abbad20980b71b2fe99423d406da63c55a668ba7452",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus",
+   "aktual": "10 -5 lulus\nAni",
+   "harap_sha256": "f84ff834a68482731c64a42ed6aef7eee97b772284b4a7eb55a51e43b6100742",
+   "aktual_sha256": "60ed36ac42b1f38daa202ee0b6f944bac28a81ade7a9bd33711c7d4430628443",
+   "bandingkan_sha256": "ff9e6c1a60f41dc1d8dbe0e1304b27a8ad7d915a3bf20d428ad9562a6da90153",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor\n\nBudi\nOK 3.0 1 Budi\nBudi lulus 10 Ani\n0 nama\nBudi Ani 3.0\nselesai gagal\n10",
+   "aktual": "skor\n\nBudi\nOK 3.0 1 Budi\nBudi lulus 10 Ani\nBudi Ani 3.0\nselesai gagal\n10",
+   "harap_sha256": "d1b2b342fe700e2bb24ff4e5554a99fb0d1df0a81ccea63b7e80c8899876e0d9",
+   "aktual_sha256": "4550d0417df863de68bf22a6c9e1543bcbb8119489f20554aa566a5c9702f43d",
+   "bandingkan_sha256": "25b3b3ea5c1284083ac7e9f2373491d93a500f4ec1b17a8a14b335e8e2a5e889",
+   "nyaris": false,
+   "kolom_pertama_beda": 44
+  },
+  {
+   "harap": "1 total 3.0\n1 3.0 gagal\nlulus\nlulus\n",
+   "aktual": "\nBudi\nlulus\nlulus\ntotal Budi Ani",
+   "harap_sha256": "77a78753926c461ff6ab02c3c1046157378dd7b2b30ba63f4ea836e7e7a8f7a5",
+   "aktual_sha256": "8b207d3cd47b5c3ffc5c3a504f677a220a88356740a47f7467297e94a8519bee",
+   "bandingkan_sha256": "5e4382eedb89df6400e90d965e411b3634277fce35487a99dc62ab726e94a7de",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "-5 1 Budi\nBudi\n3 3\nselesai skor\n3 skor\n3 -5 total 3.0",
+   "aktual": "-5 1 Budi\nBudi\n3 3\nselesai skor\nnama total lulus\n3 -5 total 3.0",
+   "harap_sha256": "f8198e17281c45dae16643f9f2c2160da9dcbc492d1e641549c2f07a0992d45c",
+   "aktual_sha256": "61a5c03a65a971e628b2b77b86682923748a7d09f86c875f9769a34678c0a2a1",
+   "bandingkan_sha256": "3f28ff512f13461886f52c8caac20608d48e7dcf8e4548203c576ab76499a566",
+   "nyaris": false,
+   "kolom_pertama_beda": 33
+  },
+  {
+   "harap": "gagal Ani nama\nnama\nnama\nnama",
+   "aktual": "nama\nnama\nnama",
+   "harap_sha256": "e08a13a7c2a766839bc70fffee7aa9aa1ba3100a1f3e8c1f5aee6e8efb03313f",
+   "aktual_sha256": "f8405fe2e37c0fc6fe8d18bb365ba6f268e1312826d78cba9ea04b9151484376",
+   "bandingkan_sha256": "c30cd3856929e424daa78ab1b75c136e4d76c0a85f4abf33080ae6a9f3fd3c94",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3 Ani\n3.0 1 3\n-5",
+   "aktual": "3.0 1 3\n-5",
+   "harap_sha256": "d57336263f50212fcc6f86168bb8fce4f4d79a8f3f874d39e12346f1062277e8",
+   "aktual_sha256": "849dfb168d3f401b2b8237d36ec3eb233698efaadff5ee3e629f90e07f985b3c",
+   "bandingkan_sha256": "e797528531b5501959d474782b042b92c5baba26f40f1278f9432a44ba9e2923",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "3.0 lulus 10\n3.0 10\ntotal\nlulus OK\nnama\n-5 Budi\ntotal",
+   "aktual": "3.0 lulus 10\n-5 Budi\nlulus OK\nnama\n3.0 10\ntotal\n1 total  0",
+   "harap_sha256": "43211ab9b49bceeaa8cd1c9ccbd17297430d7617d234970924354f818044c7d3",
+   "aktual_sha256": "5864361315cca41e1f381f50ebc885859d58cd2ebaf615ea6caf253b01691914",
+   "bandingkan_sha256": "37e6dc0160379e5ec90d15663f9a274049b0091d16c4f98ae84a6385e2274175",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "nama 1\n10 gagal\nselesai\nOK\nOK",
+   "aktual": "nama 1\nselesai\n10 gagal\nOK\nOK",
+   "harap_sha256": "448348a3c61158aaca3e6926b79b69b944ccfef0dd075098550b74939e887d1f",
+   "aktual_sha256": "28ee20d6e1c430c2002f679cf523339d293ea90452cf38a34d8508296666df46",
+   "bandingkan_sha256": "314adf65d36a2853ab50619bbbbefff70677419bbe62f0ad0d6645a1e00c7b9e",
+   "nyaris": true,
+   "kolom_pertama_beda": 8
+  },
+  {
+   "harap": "selesai 3",
+   "aktual": "gagal Ani",
+   "harap_sha256": "ba3180cb88ec8f63cf201ec936fc127fdd5a2c0e9f42b081ea6879fd2baac891",
+   "aktual_sha256": "f316d0bbf071ba2552565c7c01638ee5a1ba0476ec520b920e0092af48454275",
+   "bandingkan_sha256": "ba6ab7644d155cbe0d124e22631bc6f9c5dee7e6816d029b4cc5ae8daaa1a6b1",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0\nOK\ntotal -5\nOK",
+   "aktual": "0 total\nOK\n0\nOK",
+   "harap_sha256": "f3d6921aa9214f75d0cc306c2edfe9e0ee8e2e3b7ec44eeefe3538ef9d1a7d26",
+   "aktual_sha256": "498d4c6ad07eebeeb6b0f0369c752919707d79b18f8d6badf241a8994d7cd26d",
+   "bandingkan_sha256": "eabb5f7d4b2952bbb8c7da4f7f7b00f7de0faf977511ed25ab61552cbaf57f50",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "10 1 OK\nOK 3.0\nAni 0\ntotal 10 0 Ani\n1",
+   "aktual": "1\nOK 3.0\nAni 0\ntotal 10 0 Ani\nAni  total 3.0",
+   "harap_sha256": "cbec4a97e7d5aff2e7e7c3f568b3ec50b9455259ee5f34b5984aca42240c4b93",
+   "aktual_sha256": "a6ee4b1e39d0af8241ed46c0cdba3aa44eb76ec0f98e56fe5257b70b830ded0b",
+   "bandingkan_sha256": "7acdad2ae24653930e8c00318f1f5efa9abcf18f507d23cca5c90ec4682abc21",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "10 0 OK\n10 0 OK\nAni",
+   "aktual": "10 0 OK\nAni\nnama",
+   "harap_sha256": "2b213e197562809dac6ee31e19d3cca0fb026e4a6a933fc956ec3bb36bc374ca",
+   "aktual_sha256": "5ab145b8e36fd8719ae1d1d4a07dd0e26ae129493b33b0ef8cc7e3607c2f7055",
+   "bandingkan_sha256": "f26de2a77c4b36a3faba181febd1a71c34b56e24790513986d0f426f19b873c2",
+   "nyaris": false,
+   "kolom_pertama_beda": 9
+  },
+  {
+   "harap": "nama 1 Budi Budi\ntotal 3.0  lulus\ngagal 1 OK\ntotal",
+   "aktual": "nama 1 Budi Budi\ntotal 3.0  lulus\ngagal 1 OK",
+   "harap_sha256": "5ef0917f43128a32008af369fdd4f2db0f4f4e3824edea200e846d73f5d1e2e0",
+   "aktual_sha256": "e6a9467829faed92ffade223f686a6aa2501d4b7811c70d2306d7175ebb43d25",
+   "bandingkan_sha256": "b5e798fa2abde370cd73d5b1b33a7882acfde38b7ac0ff5e51107a68eac79dee",
+   "nyaris": true,
+   "kolom_pertama_beda": 45
+  },
+  {
+   "harap": "3 3\nskor\n-5 -5 OK\nlulus\n3 10 3.0 gagal\nskor 1\nskor 1",
+   "aktual": "3 3\nskor\n-5 -5 OK\nskor 1\n3 10 3.0 gagal\nlulus",
+   "harap_sha256": "7de460035c31fb9b1962a45114c49121befd159d5abeed4751962bdf64d6e28e",
+   "aktual_sha256": "530cf81c5f8e97aaf2a720c0ec695b71ad9d7a588a8667b185339338fd3c7333",
+   "bandingkan_sha256": "f20f4182a3a2b73b527e70d523f0f1c9ba4d34f26222d78b09481d07d3829ece",
+   "nyaris": false,
+   "kolom_pertama_beda": 19
+  },
+  {
+   "harap": "0\nselesai skor",
+   "aktual": "Ani\n0 skor -5\nselesai skor\ntotal 3.0",
+   "harap_sha256": "2ced1aef8d3e9d042be4aaf636c73f0798fc7ebb76925c039059e0e8f207f97e",
+   "aktual_sha256": "dd629407140a7cd75d251e705cd83427f8097c687704c1c1621717b5355d573d",
+   "bandingkan_sha256": "d64a81632d37b58963ac7711c26dd1ebcf45a68564f17f7d76e6f4c9fb5c7bae",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1 nama\nAni Budi lulus\ntotal 3\ntotal 3\nOK Ani",
+   "aktual": "Ani Budi lulus\ntotal 3\n1 nama\nOK Ani\n1 Budi",
+   "harap_sha256": "f78033b23695d0efdfc447209af36508f964a629c446a72408071ef678e923c0",
+   "aktual_sha256": "57472cc8eff6228d935558e64e359b511bbe25a171736682722b6dc9094a8ae0",
+   "bandingkan_sha256": "07fc3c0cc3521cab43dd50c99ea7d4753a79522507bdf951c7dd2e02fa7ea069",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3.0 10 Ani\nBudi Ani 3",
+   "aktual": "gagal  -5\n3.0 10 Ani\nBudi Ani 3",
+   "harap_sha256": "a42ddfb2ff7fa4d80e476d297ea9e42adca4b136884cc52b8ed753bd0181d628",
+   "aktual_sha256": "76872bb2e06bf4d64b256fcffcd148fee10d6c048e01b4cea8fe138dd3ee2c9e",
+   "bandingkan_sha256": "7d0c2e318feb59e7e9385e8f1fd3979534f5edc46d5dd8c1265e54fe8567bd74",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 1 gagal\n10 1 gagal",
+   "aktual": "lulus lulus 1 gagal\n10 1 gagal",
+   "harap_sha256": "69d6d5a994114a65d38c6e45ab9bc3120c59aba9b2ec443fd99a48e5d4775c3a",
+   "aktual_sha256": "a0231698e7be14b96e16df4d67938a6018e49850d15d958f02a0d99eca481166",
+   "bandingkan_sha256": "e7fe25dfe4ab7283cc072eb5fdcaa2ddd521fd488b0f5d6cc297c08e6685df87",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 skor nama\ngagal\n3.0 OK Budi 0\n3.0 OK Budi 0\n0 gagal skor\ntotal\nselesai -5 Budi selesai\n-5 selesai nama\nAni nama gagal 0",
+   "aktual": "10 skor nama\ngagal\n3.0 OK Budi 0\n3.0 OK Budi 0\n0 gagal skor\ntotal\n-5 selesai nama\nAni nama gagal 0",
+   "harap_sha256": "5fe2aeedfbb39c3dbc39432cb9a4dea3015f3ea5e9db7af566d0034d68a471af",
+   "aktual_sha256": "45746a7fc72f0a6bee7fa7a46bd31813466d7daa3e300c624a9327deaca548c7",
+   "bandingkan_sha256": "6337bdf37c81dd5df582984894ad3659da86cb08963a56b7e2490cc147f7e9ab",
+   "nyaris": false,
+   "kolom_pertama_beda": 67
+  },
+  {
+   "harap": "-5 3 selesai\nBudi -5 nama\nskor gagal\n1 gagal\n-5 0",
+   "aktual": "-5 3 selesai\nBudi -5 nama\n1 gagal\n-5 0",
+   "harap_sha256": "ae5f54ae52c3dde3ce0acb3c2691ab66a8bba625e1e121a01ed0ca9d482de61f",
+   "aktual_sha256": "bf267b9ff12f371844831aba727e5badb34e873da241bb0b7a7604d4bbb93ac3",
+   "bandingkan_sha256": "ad8660ed7aad2989a89fef0ea264ffe6f524828c2ebb312ffb6ccb5f2de6e138",
+   "nyaris": true,
+   "kolom_pertama_beda": 27
+  },
+  {
+   "harap": "lulus OK OK\nnama 3 1",
+   "aktual": "",
+   "harap_sha256": "1ae4e1bdf79d0ec7658ce6667b896e156aeee218cca1ec40cc2ea81707ff7727",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "8637a93a11a9dbbdfb964b97304d058b4c318ff2cf77f9d9c14dfd08fa957521",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0 selesai 3\ntotal\n3 gagal total OK\nOK skor\ntotal",
+   "aktual": "3 gagal total OK\ntotal\n0 selesai 3\n3 skor\ntotal",
+   "harap_sha256": "4f287851a8e70cbc107ba5cf196b67c9aaf0d1e144b23bdae0706bbcf9367030",
+   "aktual_sha256": "cf458764cea5b672ecadfb2a888ad7eeb6d759899751bf7d5760fbb5cc38fbe2",
+   "bandingkan_sha256": "12c0ef7b0766fa2390e3a6e9037c689d7b9c8be771fede44704272fa8f1bc1df",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "gagal Budi selesai\nskor OK total",
+   "aktual": "1\nskor OK total",
+   "harap_sha256": "cd3bf97e5639a4c3ea1a15e918de11abf790d0a0af1af4d821899beaf5ad4046",
+   "aktual_sha256": "13593b60518f0b30081f889e45430665ada1190729bc8a35804de2b0f4a0dc0d",
+   "bandingkan_sha256": "8a557db30fbc08ee49eeb238c935a13fd32967d44ca40da866860a492ed9a12d",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "1\n3 1 10",
+   "aktual": "1",
+   "harap_sha256": "dd2b9c70e62fbdc5e7ad30d2b6f148eba4a3bc92e543b17eb1f66a0636286a29",
+   "aktual_sha256": "391552c099c101b131feaf24c5795a6a15bc8ec82015424e0d2b4274a369a0bf",
+   "bandingkan_sha256": "cfc06ca7020a82cbb26ed83715882873ed9cf7a1125ea5c85586b05cc02f54d7",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "total Budi 10 Budi\ntotal Budi 10 Budi",
+   "aktual": "total Budi 10 Budi\ntotal Budi 10 Budi",
+   "harap_sha256": "33cc8a9efdff90f78d44d59632739c62e41248f5b35b31089c5c990548a50b7c",
+   "aktual_sha256": "33cc8a9efdff90f78d44d59632739c62e41248f5b35b31089c5c990548a50b7c",
+   "bandingkan_sha256": "57bb657bb434a242e27f6c6331994c290144793fcfe1c9453ddd2241cd6e437c",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "selesai\nnama Ani skor\ngagal -5 Budi 1\nselesai\ngagal 3.0\n10 OK",
+   "aktual": "OK\nnama Ani skor\nselesai\ngagal -5 Budi 1\nselesai\n10 OK",
+   "harap_sha256": "fad5f2f5a888de1b1ebd0f82806a2a4ed6d589720bea77c3550a82d63374d5b1",
+   "aktual_sha256": "cc5759049d992df21b7f2963d5b7a9f9d921486d364bea9e063dc6afadd0fdc4",
+   "bandingkan_sha256": "040b61cdf819e15965ee43519cbad508a5936d623e44044e108650ff0c2d50fb",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3.0 3.0 3.0\nlulus 1 0 1\n0 nama 1 Ani\nnama",
+   "aktual": "lulus 1 0 1\n3.0 3.0 3.0\n0 nama 1 Ani\n3.0",
+   "harap_sha256": "31a56bbf4a5b3d02ba2a71c4e025d9a07620660c578485998ed091262eff0a35",
+   "aktual_sha256": "930253eb5f971563485c35e035e524d46a685689710d54ed38b97e47d4f1b5ca",
+   "bandingkan_sha256": "eb151461dd7d3dfd98721b8e358f1aae8e7855c02597794f6c09a05e3cfc9b2b",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "skor\nselesai\n10 10 0 3.0\n3.0 3.0",
+   "aktual": "skor\nselesai\nlulus selesai\n3.0 3.0",
+   "harap_sha256": "ed41124307ddb8198445778ebfba129b75fe4903edbf969b46c0b1c736830007",
+   "aktual_sha256": "3d470a9d9fecfd0d982886e281a5b98f20fed35e31c4cc2a5062dda3d91ec793",
+   "bandingkan_sha256": "7c6ce238541a65542bf4917fbdf959c0c9e696383a875700a1f1492441659f9a",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "selesai -5 skor lulus\ntotal\nselesai -5 skor lulus",
+   "aktual": "selesai -5 skor lulus",
+   "harap_sha256": "cdff1e4190634843ad27357b2d5e3e74168235c121d77156ef07e244d5e54ac8",
+   "aktual_sha256": "8b9eb9dc4ac9d3ef32828281d600a9f05d25685f1d636db0185bd0777ef4dab5",
+   "bandingkan_sha256": "7abc1bbe94d9aeb54dde7803277ecfe4098eec4996edca03071a65fb0ccd60d4",
+   "nyaris": false,
+   "kolom_pertama_beda": 22
+  },
+  {
+   "harap": "10 10 Budi\n3 0\ngagal Budi OK OK\nBudi\n-5 selesai -5",
+   "aktual": "10 10 Budi\n3 0\ngagal Budi OK OK\nBudi",
+   "harap_sha256": "abfa5c0974c0425637f11ffb41704286632e0b9b4f79bd673c2917d942f15a4d",
+   "aktual_sha256": "44042730d3f59b4fbccdfc8e8b6074ed9371a6b6f7a467bd33954316e71887cb",
+   "bandingkan_sha256": "46a8138f17f5c254a63a6e498f361d16d0aa026986d5f4f49d95cb1d9ed11c7e",
+   "nyaris": false,
+   "kolom_pertama_beda": 37
+  },
+  {
+   "harap": "gagal lulus\n-5 3\nlulus OK 3.0\n3 gagal selesai\n1\n1 total gagal\nlulus  1 3.0\nOK 1",
+   "aktual": "gagal lulus\nAni 3.0\nlulus OK 3.0\n3 gagal selesai\n1\n1 total gagal\nlulus  1 3.0\nOK 1",
+   "harap_sha256": "a22c1db78171c99e551c1dac648c7fc84c29622666a58f8e8ef8f30bc1da8bc9",
+   "aktual_sha256": "e230595c13725cef1c12bc5df082679c759385c5f762462e346236dae1c8437c",
+   "bandingkan_sha256": "cd35d9e09ec9a1f1e522629ec6b9f251d0e8cc81a3fa0c175fb4d43985f5e3c8",
+   "nyaris": false,
+   "kolom_pertama_beda": 13
+  },
+  {
+   "harap": "skor OK",
+   "aktual": "",
+   "harap_sha256": "5f48aa6009fea06df31dbb43bea64939ea3e05642f4fdb001c2ac93b10fdd6fb",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "7c65a93ce1b1da0e949fcd41b108f8e8216b127fee1d6512d103471255943e4f",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "lulus 1 3 selesai\nnama\nskor\n-5 Budi lulus",
+   "aktual": "lulus 1 3 selesai\nnama\n3.0 10\nskor\nselesai 3",
+   "harap_sha256": "5e531a67ba23f7c327953ae251e8424918609662a506d80862ee563a58788fec",
+   "aktual_sha256": "670fc939635d2b2307df63b70c913c6387cb995eb2d0925173e8555ac04b6099",
+   "bandingkan_sha256": "e9f81b7f9f3447c1d810f245acc852ceb628fbdf17f60d9b713629a895df8578",
+   "nyaris": false,
+   "kolom_pertama_beda": 24
+  },
+  {
+   "harap": "OK\n1\nselesai 3.0\nnama Budi\n3.0 Budi\nAni\n3\nselesai",
+   "aktual": "OK\n1\nAni\nnama Budi\n3.0 Budi\nselesai 3.0\n3\nselesai",
+   "harap_sha256": "6e99b99bd07a079eaa27f6832703f139dfc9cbad6b76d0c167ab432b80cb7ede",
+   "aktual_sha256": "1b9b9bc14a34b8588d03d30fd11c6786742e19f8a1809ff6cd526a7099d556c7",
+   "bandingkan_sha256": "2546a73e593c633819a08f82efa255412d3740ed07f1d321e2c0cd570dd2e40f",
+   "nyaris": true,
+   "kolom_pertama_beda": 6
+  },
+  {
+   "harap": "-5 0 nama",
+   "aktual": "selesai skor",
+   "harap_sha256": "7ba3360f08a17bdd551a5c729db19ed9da0d7998ff6e934d4a4fe750e425f465",
+   "aktual_sha256": "3101e3c477cd45f6495f1f0c03d5dab3e363b4be14ba2ea3a1701b82b4a95aa9",
+   "bandingkan_sha256": "533e4903092a0233703ba48220cf4438bb4b757c3445d1831de24bc02a0d25ed",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai 3.0 selesai\n-5 selesai total\n1 selesai\n\nBudi skor\nlulus 1 -5\nAni -5 0 skor",
+   "aktual": "selesai 3.0 selesai\n-5 selesai total\n1 selesai\n\nBudi skor\nlulus 1 -5\nAni -5 0 skor",
+   "harap_sha256": "606d3102ab6adad254b33dffd29b0ce3c62543792d8b7bf40070ea345a2928ee",
+   "aktual_sha256": "606d3102ab6adad254b33dffd29b0ce3c62543792d8b7bf40070ea345a2928ee",
+   "bandingkan_sha256": "062f137804be3fce595742885a798508428b70033b0344bf179f8b893bc100a7",
+   "nyaris": false,
+   "kolom_pertama_beda": null
+  },
+  {
+   "harap": "skor total\n3 OK\n3.0 3.0 3 Ani\nAni lulus selesai 10",
+   "aktual": "lulus 10 3\n-5\n3 OK\n3.0 3.0 3 Ani\nskor OK",
+   "harap_sha256": "86c5b9fdc4705838f36b0dbf9fd9c54ba4a2fa30b6fe2d3225042948e4f836fe",
+   "aktual_sha256": "121a1628555bc6b328b40160c247d1f166d92936034c2d69ddfedff4a8e074fe",
+   "bandingkan_sha256": "1f7bf131b96eaf4c4e7975c1ffa29efffe76bb29a3e51312f71679ab3dc02571",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "0 0 Budi",
+   "aktual": "10 total -5",
+   "harap_sha256": "73f902838e0ea35dabc867c25dbd97d96506a29a761c62ea91980b7238053b17",
+   "aktual_sha256": "83dce0631b69834fe7758724c4fec7ee9b00b6159b2759c52335d20d60f6788b",
+   "bandingkan_sha256": "d917baf6178a95abacce267e58131e914116e723a5306579b8c6b917619b02b4",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "nama 3.0 gagal 3.0\nselesai\n10 OK\nnama 3.0 gagal 3.0\nBudi Ani 3 lulus\n3.0 lulus\nselesai -5 3\nAni 10 0 10\nselesai lulus",
+   "aktual": "nama 3.0 gagal 3.0\nselesai\n10 OK\nnama 3.0 gagal 3.0\nBudi Ani 3 lulus\n3.0 lulus\nlulus Budi\nselesai -5 3\nAni 10 0 10\nselesai lulus",
+   "harap_sha256": "2077cceac645d9f70b5b6043b7f3685ef2e23da3b6d8dd0a2e791411c73a9238",
+   "aktual_sha256": "7e4e098e7419d0b79536b4e7e56d8bc36f3a9520f596d0a533d27d1d6b679e7c",
+   "bandingkan_sha256": "4a4f87e6a6c33233d2a83f88e6486d2569b5c2312a7f1c00f5a0e839c0b518a3",
+   "nyaris": true,
+   "kolom_pertama_beda": 80
+  },
+  {
+   "harap": "1 3 Budi\nlulus total\nAni skor total gagal\ntotal OK\nlulus 3",
+   "aktual": "1 3 Budi\nAni skor total gagal\n1\nlulus total\ntotal OK\nlulus 3",
+   "harap_sha256": "b5b787c7423f512f7d312a57e4363c800e5c17c593c738fe394eadafd9987936",
+   "aktual_sha256": "535c6dbe90605fbfa2d4289244692a97811e42f7a8a865b3f97168df6db9261f",
+   "bandingkan_sha256": "ca50d19ed7cb54867188eccb39f96b58132a78ad56cb696f8fcf87160509ba9e",
+   "nyaris": true,
+   "kolom_pertama_beda": 10
+  },
+  {
+   "harap": "0 nama Budi\n1\n3.0 Ani selesai\n0 -5\n1",
+   "aktual": "1\n3.0 Ani selesai\n0 -5\n1",
+   "harap_sha256": "28b0efc1b9905173297aff2fbd4b9e5650cb961bfd03b30acb31cc214a771dac",
+   "aktual_sha256": "c3e12f7ad72594758ef3a531099a941ac357e52d679058b639afb39c40311a58",
+   "bandingkan_sha256": "89f84a1a2c66c35712860f12aa89e180d34efceb09a1ffc9c8797631dfa1b67e",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total Budi 10\nOK Budi 3.0 -5\n10 OK",
+   "aktual": "Budi lulus Budi\nOK Budi 3.0 -5\n10 OK",
+   "harap_sha256": "a66f069bd81a2fead4d558b8081ea4fb772560dc198c7b4a3a9be4cc4db939c1",
+   "aktual_sha256": "3ae8d493872791c261f331ad4a3f9c06af936082411e9bc12a5d68db64c643a6",
+   "bandingkan_sha256": "a24afc7535d1dfdb577f2fac85a02402a798b94c58fd162bb8ff5a2b64578fd6",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "3.0 -5\nBudi 0\ngagal 3.0 total\nBudi\n3.0 gagal 3\n3.0 gagal selesai\n10 3\nselesai 3",
+   "aktual": "3.0 -5\nBudi 0\nOK skor 1\ngagal 3.0 total\n-5 1 10\n3.0 gagal 3\n3.0 gagal selesai\n10 3\nselesai 3",
+   "harap_sha256": "a2e6bc532141c98876d7b139899aa616513171eb67a9fd187ccb9eb72caffdc5",
+   "aktual_sha256": "c8886a1dffaf7d9a281afaebb69fa9b3d1884a8b76060d4b920dc4a00dc5b6ab",
+   "bandingkan_sha256": "26c5412d8e4623c3112dbea9b11aa5a7b162dfd9f3cafd50b18592862cfe77a8",
+   "nyaris": false,
+   "kolom_pertama_beda": 15
+  },
+  {
+   "harap": "lulus 0 selesai skor\nnama selesai total",
+   "aktual": "3\nnama selesai total",
+   "harap_sha256": "59c078c196d68c4a9ad031df93ca903f906e1902b69ae6d3c59e9630a3e45d64",
+   "aktual_sha256": "1fc57c2946995118706e5c2bef13897c389f60e948f56a2ee3ab63f6ddd512ab",
+   "bandingkan_sha256": "f7082414f32720585b31acf86ac25bf53ff9d90883cf2d7ff51a2c99a60f1e63",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai\ntotal 0\nselesai Ani lulus -5\nlulus Ani gagal\nselesai\ngagal 10 nama total\n3.0 OK",
+   "aktual": "total 0\ntotal\nselesai Ani lulus -5\nlulus Ani gagal\ngagal 10 nama total\n3.0 OK",
+   "harap_sha256": "ada716413cf72be6f5a12bbd545ecf5753a65bdbcb23afc79c02e4227b0429e0",
+   "aktual_sha256": "09c18502d24d5f48a0ae53eb9054718a1fb57b95d3699e53e49fce639c26a12b",
+   "bandingkan_sha256": "c919c824a7352b272ee1505ad267b62efb62fec895f717400d79c6e2ad02c4fa",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "-5\nlulus\n3.0 total gagal\n\nskor selesai\n3 3.0 gagal gagal\ntotal lulus selesai Ani\ntotal  -5",
+   "aktual": "-5\nlulus\n\n3.0 total gagal\nskor selesai\n-5 0\ntotal lulus selesai Ani\n-5 OK Ani selesai",
+   "harap_sha256": "3649d7f2ac403bfaa3a84f85af7eb5c91f022a852e0fa561bcce3196bed5955f",
+   "aktual_sha256": "b83fb0f8e5d80f5c04344a9f85e08f63f7a70c6bb5f26afdcce897f3b6c3b208",
+   "bandingkan_sha256": "9f6274cf804e124296f48c731e80d9d1830dfcdcbabafa3089e81e64c5ea84eb",
+   "nyaris": false,
+   "kolom_pertama_beda": 10
+  },
+  {
+   "harap": "lulus\nselesai\ntotal\ngagal 3 OK skor\n10\nlulus selesai Budi\n3 1\n10 lulus skor\nOK",
+   "aktual": "lulus\n3.0 OK 3\ntotal\ngagal 3 OK skor\n10\nlulus selesai Budi\n3 1\nskor 3\nOK",
+   "harap_sha256": "39913bf82119a2ee110e97ac65b207d49493ca0247c85d57934f8c96b57079cd",
+   "aktual_sha256": "0c760cabeb107fb4a1dfd04000b710c291317efe9cb269fc1252c20e33d3c73c",
+   "bandingkan_sha256": "3a18376db837e71172f86ac7bf5ae0d97bdbfa7469c24f0d1bfecf6735332b90",
+   "nyaris": false,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "0 Ani\nskor 1\nAni",
+   "aktual": "0 Ani\nskor 1\n10\n10",
+   "harap_sha256": "1b2cfeb8ce6519e9764fb7e2aee712cf1bf74774ccdc509e66133b95220d74ba",
+   "aktual_sha256": "41a072d2a902425729961df2d978e5495de7d126f5ba07b0c7a37db730007c72",
+   "bandingkan_sha256": "5014bc05588d2a159cf479dbebe230628562087ad8c14cf7d04a4fb9207c30f2",
+   "nyaris": false,
+   "kolom_pertama_beda": 14
+  },
+  {
+   "harap": "total\n1 selesai -5\n1 selesai -5\n3",
+   "aktual": "1 selesai -5\ntotal\n\n3",
+   "harap_sha256": "0ed0d55d9983d0931c44925b804bba6a28bdbc2cd558fe1e9439b796a46fece7",
+   "aktual_sha256": "fb5aaa1b6ffbc7168841e56a51fcc0532d861eeb867b12cdcdc0eedbeb9a0583",
+   "bandingkan_sha256": "ca34c9aaa62ef6c2f9e0561d787769bab7b312671c3b46c4470fab49ebef771a",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 total\nBudi OK",
+   "aktual": "Budi OK\n0 OK 0",
+   "harap_sha256": "8d4ed902d5362ec9da1aae25fced162573bfb08eee5f1bddc397585ffba1d636",
+   "aktual_sha256": "8af1030e263eafaa9b4a1c65eeb010e6eb5b8202efca7bdd9efacc74c5929ff2",
+   "bandingkan_sha256": "5508c4d600e170df27bf95e8ce39b6015d51baf39711ad2eea4669ba9c7b7837",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "10 nama Budi\n3 total  3.0\nnama 3.0\n10 lulus 3 total",
+   "aktual": "1\n10 nama Budi\nnama 3.0\n10 lulus 3 total",
+   "harap_sha256": "5b0cab0a428581186531b2638506842e46462990b4b9fe1e0d1c8c50a617cdbd",
+   "aktual_sha256": "0e1eb08ac6be8ad47b3ceba44f8efe2029ab7a7dd1e56a162256827ab4fe4c86",
+   "bandingkan_sha256": "23418e62bd1da91d7de6defedfa14ed95a5ceee422f3a710a43767f8cd5e8ee0",
+   "nyaris": false,
+   "kolom_pertama_beda": 2
+  },
+  {
+   "harap": "Budi OK\nAni 1 3\nBudi OK\nOK nama skor\n10\nOK 1 Ani Budi\ngagal 1 3\nskor lulus",
+   "aktual": "Budi OK\nAni 1 3\nBudi OK\nBudi 3 -5 lulus\n10\nOK 1 Ani Budi\ngagal 1 3",
+   "harap_sha256": "ef92e911baa343dd8f509f7f6a09e7f2f39c871c0961fea63de545b5158bb97a",
+   "aktual_sha256": "13644026a1b5c036727e6b4fc947cd5f93a8fd5969d0b22170dbf76919156621",
+   "bandingkan_sha256": "fed96c4b65beac41f3e55e4cde28bf1aab51a5900301ac2fee6f7f4ecdccc4bb",
+   "nyaris": false,
+   "kolom_pertama_beda": 25
+  },
+  {
+   "harap": "OK  lulus\n3.0 Ani\n3\nOK  lulus\n-5 OK skor 10\nOK",
+   "aktual": "OK  lulus\n3.0 Ani\n3\nOK  lulus\n-5 OK skor 10",
+   "harap_sha256": "5a9cb0dc26024699c14e6f88d8ac84df3e0fec98ed4cf964f2d2681ac3a7f95e",
+   "aktual_sha256": "c1e26b590a7397bdfb3e68a6e5d193a7cbe5954d49ecec9612f04a866c057ff2",
+   "bandingkan_sha256": "89917fb1b4ea829b3375082bdb8646cd757cefb68bc2d14ea7f948367b2c397e",
+   "nyaris": true,
+   "kolom_pertama_beda": 44
+  },
+  {
+   "harap": "3.0 lulus\n10  skor skor",
+   "aktual": "",
+   "harap_sha256": "b41b4744fbad02449d20251395e47164ca9d1c517a1ca6db6306fe23c6ddd9ee",
+   "aktual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+   "bandingkan_sha256": "c397549aef6490fedecb40d5177eaabcff4e113f71bd08f57720b2e4db58d0f5",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK nama nama 3\nOK nama nama 3\nBudi  3.0 Ani",
+   "aktual": "OK nama nama 3\nBudi  3.0 Ani\nselesai",
+   "harap_sha256": "659bd2d8f85d743576aaacc41e22daedc96577f62b0409c4413e6528fea04fc6",
+   "aktual_sha256": "6a7e09e209651da4bde46454b127f3e5fe21a5a0cd975f6e266beaa11ef11a9a",
+   "bandingkan_sha256": "615902e3d3adeea76d723cae23222ae32a898f113ea3c40da1af7c9eaeff6af0",
+   "nyaris": false,
+   "kolom_pertama_beda": 16
+  },
+  {
+   "harap": "0 Ani selesai\n0 10 Budi 10\n3.0 Ani OK\nskor\nnama Budi 3 Ani\n\ntotal\nnama Budi 3 Ani\n3.0 lulus 1 nama",
+   "aktual": "0 10 Budi 10\nskor\nnama Budi 3 Ani\n\ntotal\nnama Budi 3 Ani\n3.0 lulus 1 nama",
+   "harap_sha256": "3e718f01bf3db0c8ebf2f7a42dd98a768ce74f8088fdf9c429a26a5a4a642126",
+   "aktual_sha256": "31db693b594b56124f452f8e652563916ab6005fa48ac16b31a1d9ebb8b3c169",
+   "bandingkan_sha256": "4bb7fe3c59143660d8fb059a96d940ec06cd83ea2a7c30fdec6593897ed8e67d",
+   "nyaris": false,
+   "kolom_pertama_beda": 3
+  },
+  {
+   "harap": "gagal 10 gagal",
+   "aktual": "1",
+   "harap_sha256": "67caff5010566e0e9b05bcf82d579d511041c05c52ba2b7d2b857a0a3611a453",
+   "aktual_sha256": "391552c099c101b131feaf24c5795a6a15bc8ec82015424e0d2b4274a369a0bf",
+   "bandingkan_sha256": "15a8fe2ba750ae2c883ca92e47197c65115d5e43e6ba1cc87fb4c4d9cb068196",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "selesai lulus skor\n0",
+   "aktual": "1\nselesai lulus skor\n0",
+   "harap_sha256": "f341803b87e9d2827ef61126822ff0a17ec7c2a8fcb1c8f323eb788956edf0f0",
+   "aktual_sha256": "44bdc54206303aad0429140c2dd49d85cb0380360dd062da5762083cd013ac9a",
+   "bandingkan_sha256": "0cb121f21d216540218bfd56aa7f206809fe4fc808c55340723d4cb4075b7c82",
+   "nyaris": true,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK skor 1 10",
+   "aktual": "0 Ani OK",
+   "harap_sha256": "9e8a9c4a6c2e2308d0fa28b824831e0d2fa3b53720bdb88d16a74cdc53087e82",
+   "aktual_sha256": "0f8fb98a20f4acddee5a7eb0da1c692d8f9aa86d3e58a24f5787828e60719254",
+   "bandingkan_sha256": "b08707a6c09df83b1bde5e8b918e5659f0ff1b4783c00c428c97d4d420aff8a0",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "total 1  3\nnama 10 3 total\n0 lulus\nOK 1 10\n3 Ani total\n-5\n3\nselesai",
+   "aktual": "selesai\nnama 10 3 total\n0 lulus\nOK 1 10\n3 Ani total\n-5\n3\nselesai\nAni total 1",
+   "harap_sha256": "c27946f6729c91269d2dbbb46363a7facde374b24b22e3420f018211aea65a1f",
+   "aktual_sha256": "2dc9c2c5aed38cd01791c2414363f468c78df60f3a8ec0c2e98227d4bcf380f4",
+   "bandingkan_sha256": "58c62c32c9b6b3ffdeeb11316d8b2912cbde75e656f9640834573df10e360d28",
+   "nyaris": false,
+   "kolom_pertama_beda": 1
+  },
+  {
+   "harap": "OK 10\nOK 10",
+   "aktual": "OK 10\ntotal",
+   "harap_sha256": "8f8a994fad7168ffc381f54a268ace74b4f91e3ea1cc0f67eb6b381b1b16c8af",
+   "aktual_sha256": "eb080531c62033f90adf92a9995341566eadef76bd7028a97f3ee2b57f228f0b",
+   "bandingkan_sha256": "01549e1dd128eeda7e9219304d4c539f232cd6b286abdc4beb01a0aecaa4086b",
+   "nyaris": false,
+   "kolom_pertama_beda": 7
+  },
+  {
+   "harap": "skor -5 skor total\n1\nskor -5 skor total\nBudi 0",
+   "aktual": "skor -5 skor total\nBudi Ani gagal\n1\nskor -5 skor total\nBudi 0",
+   "harap_sha256": "99e39c7d82137a93de98d6321d04cae210e4f43ea0a5516141f9c8620c29312a",
+   "aktual_sha256": "8825dc409118c7dab2bd2bc65be1bd44e49c84b4e7189f0d655c9e18bff0734c",
+   "bandingkan_sha256": "4d6fafddabc7b06d9235da1d23a955a38d8dd6e609a7187d0563fb2e7babe55e",
+   "nyaris": true,
+   "kolom_pertama_beda": 20
+  }
+ ]
+}

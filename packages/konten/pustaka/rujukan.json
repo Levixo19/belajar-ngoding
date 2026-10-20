@@ -1,0 +1,33 @@
+{
+"sumber":{
+"nama":"Repo tanpa lisensi terbuka",
+"pemilik":"-",
+"repo":"",
+"lisensi":"tautan saja",
+"atribusi":"Dua repo yang tidak mencantumkan lisensi, sehingga isinya hak cipta penuh penulisnya. Hanya tautan ke repo itu sendiri yang dicantumkan.",
+"kunci":"rujukan",
+"commit":""
+},
+"entri":[
+{
+"judul":"Getting a Gig: panduan mencari kerja developer",
+"url":"https://github.com/cassidoo/getting-a-gig",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Karier"
+],
+"catatan":"Kumpulan tautan tentang CV, portofolio, dan wawancara oleh Cassidy Williams. Repo tanpa lisensi, jadi dibuka langsung di GitHub."
+},
+{
+"judul":"Build Your Own X: bangun ulang teknologi dari nol",
+"url":"https://github.com/codecrafters-io/build-your-own-x",
+"jenis":"daftar",
+"bahasa":"en",
+"topik":[
+"Proyek"
+],
+"catatan":"Tutorial membangun Git, Docker, database, shell, dan lainnya sendiri. Repo tanpa lisensi, jadi dibuka langsung di GitHub."
+}
+]
+}

@@ -1,0 +1,295 @@
+{
+ "catatan": "DIHASILKAN alat/ekspor_bersama.py dari inti/galat.py. Jangan disunting dengan tangan.",
+ "bendera": "is",
+ "pola": [
+  {
+   "pola": "';' expected",
+   "ganti": "Ada baris yang lupa diakhiri titik koma (;). Di Java setiap pernyataan wajib ditutup titik koma."
+  },
+  {
+   "pola": "cannot find symbol.*?symbol:\\s*variable (\\w+)",
+   "ganti": "Variabel '$1' dipakai tapi belum pernah dideklarasikan. Periksa ejaan dan huruf besar/kecilnya -- Java membedakan Nama dan nama."
+  },
+  {
+   "pola": "cannot find symbol.*?symbol:\\s*method (\\w+)",
+   "ganti": "Method '$1' tidak dikenal. Periksa ejaannya, atau kelas/objek yang kamu panggil memang tidak punya method itu."
+  },
+  {
+   "pola": "cannot find symbol",
+   "ganti": "Ada nama (variabel, method, atau kelas) yang dipakai tapi belum dideklarasikan, atau ejaannya berbeda."
+  },
+  {
+   "pola": "incompatible types: (\\S+) cannot be converted to (\\S+)",
+   "ganti": "Tipe data tidak cocok: nilai bertipe $1 dimasukkan ke tempat yang menuntut $2. Konversi dulu, misalnya dengan Integer.parseInt()."
+  },
+  {
+   "pola": "class \\w+ is public, should be declared in a file named",
+   "ganti": "Nama kelas public harus sama persis dengan nama berkasnya. Aplikasi ini biasanya mengurusnya otomatis; pastikan hanya ada satu kelas public."
+  },
+  {
+   "pola": "missing return statement",
+   "ganti": "Ada method dengan tipe kembalian (bukan void) yang tidak selalu melakukan return. Pastikan semua cabang if/else mengembalikan nilai."
+  },
+  {
+   "pola": "unreachable statement",
+   "ganti": "Ada kode setelah return/break yang tidak akan pernah dijalankan."
+  },
+  {
+   "pola": "reached end of file while parsing",
+   "ganti": "Ada kurung kurawal { yang belum ditutup. Hitung kembali pasangan { dan }."
+  },
+  {
+   "pola": "NullPointerException",
+   "ganti": "Program memakai objek yang isinya null (belum diisi). Pastikan objeknya sudah dibuat dengan 'new' sebelum dipakai."
+  },
+  {
+   "pola": "ArrayIndexOutOfBoundsException",
+   "ganti": "Indeks array di luar jangkauan. Ingat indeks pertama adalah 0 dan yang terakhir adalah panjang - 1."
+  },
+  {
+   "pola": "NumberFormatException",
+   "ganti": "Gagal mengubah teks jadi angka. Teks yang dibaca bukan angka yang sah (mungkin ada spasi atau baris kosong)."
+  },
+  {
+   "pola": "ArithmeticException: / by zero",
+   "ganti": "Pembagian dengan nol. Periksa dulu apakah pembaginya nol."
+  },
+  {
+   "pola": "NoSuchElementException",
+   "ganti": "Scanner membaca input yang sudah habis. Latihan ini mungkin tidak mengirim input sebanyak yang kamu baca."
+  },
+  {
+   "pola": "IndentationError: (?:unexpected indent|expected an indented block)",
+   "ganti": "Indentasi (jumlah spasi di awal baris) tidak konsisten. Di Python indentasi menentukan blok kode -- pakai 4 spasi dan jangan campur spasi dengan tab."
+  },
+  {
+   "pola": "TabError",
+   "ganti": "Tab dan spasi tercampur dalam satu blok. Pilih salah satu, disarankan 4 spasi."
+  },
+  {
+   "pola": "SyntaxError: '(.)' was never closed",
+   "ganti": "Tanda '$1' dibuka tapi tidak pernah ditutup. Hitung lagi pasangan buka-tutupnya. Python menunjuk baris tempat tanda itu DIBUKA, bukan tempat kesalahannya baru terasa."
+  },
+  {
+   "pola": "SyntaxError: unmatched '(.)'",
+   "ganti": "Ada '$1' penutup yang tidak punya pasangan pembuka."
+  },
+  {
+   "pola": "SyntaxError: expected ':'",
+   "ganti": "Kurang titik dua (:) di akhir baris. Baris if, elif, else, for, while, def, dan class selalu ditutup titik dua."
+  },
+  {
+   "pola": "Perhaps you forgot a comma",
+   "ganti": "Sepertinya ada koma yang kurang di antara dua nilai."
+  },
+  {
+   "pola": "SyntaxError: cannot assign to (?:literal|expression)",
+   "ganti": "Sisi kiri tanda = harus berupa nama variabel. Kalau maksudmu MEMBANDINGKAN dua nilai, pakai == (dua tanda sama dengan)."
+  },
+  {
+   "pola": "SyntaxError: invalid syntax",
+   "ganti": "Ada kesalahan penulisan. Tersering: lupa titik dua (:) di akhir baris if/for/while/def, atau kurung yang belum ditutup."
+  },
+  {
+   "pola": "object is not subscriptable",
+   "ganti": "Nilai ini tidak bisa diakses dengan kurung siku [ ]. Kurung siku hanya berlaku untuk list, tuple, string, dan dictionary."
+  },
+  {
+   "pola": "object is not callable",
+   "ganti": "Nilai ini dipanggil seperti fungsi padahal bukan fungsi. Periksa apakah ada nama variabel yang tanpa sengaja menimpa nama fungsi."
+  },
+  {
+   "pola": "takes \\d+ positional arguments? but \\d+ (?:was|were) given",
+   "ganti": "Jumlah argumen saat memanggil fungsi tidak cocok dengan jumlah parameter di definisinya."
+  },
+  {
+   "pola": "SyntaxError: unterminated string literal",
+   "ganti": "Ada teks yang tanda kutipnya belum ditutup."
+  },
+  {
+   "pola": "NameError: name '(\\w+)' is not defined",
+   "ganti": "Nama '$1' dipakai sebelum dibuat. Periksa ejaan dan huruf besar/kecil, atau apakah variabelnya memang sudah diisi sebelumnya."
+  },
+  {
+   "pola": "TypeError: unsupported operand type\\(s\\) for \\+: 'int' and 'str'",
+   "ganti": "Angka dan teks tidak bisa dijumlahkan langsung. Ubah dulu dengan int(teks) atau str(angka)."
+  },
+  {
+   "pola": "TypeError: can only concatenate str",
+   "ganti": "Teks hanya bisa disambung dengan teks. Bungkus angkanya dengan str(), atau pakai f-string."
+  },
+  {
+   "pola": "ValueError: invalid literal for int\\(\\)",
+   "ganti": "int() menerima teks yang bukan angka. Kalau membaca input, pastikan isinya memang angka dan tidak ada spasi berlebih."
+  },
+  {
+   "pola": "IndexError: list index out of range",
+   "ganti": "Indeks list di luar jangkauan. Ingat indeks pertama 0 dan terakhir len(daftar) - 1."
+  },
+  {
+   "pola": "ZeroDivisionError",
+   "ganti": "Pembagian dengan nol. Periksa dulu apakah pembaginya nol."
+  },
+  {
+   "pola": "EOFError",
+   "ganti": "Program membaca input lebih banyak daripada yang tersedia. Periksa berapa kali input() dipanggil."
+  },
+  {
+   "pola": "AttributeError: '(\\w+)' object has no attribute '(\\w+)'",
+   "ganti": "Objek bertipe $1 tidak punya '$2'. Periksa ejaannya, atau tipe variabelnya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "ModuleNotFoundError: No module named '(\\w+)'",
+   "ganti": "Pustaka '$1' tidak terpasang. Latihan di aplikasi ini hanya boleh memakai pustaka bawaan bahasa."
+  },
+  {
+   "pola": "KeyError",
+   "ganti": "Kunci yang dicari tidak ada di dictionary. Periksa ejaannya, atau pakai .get(kunci) yang aman kalau kuncinya boleh tidak ada."
+  },
+  {
+   "pola": "expected ';' before",
+   "ganti": "Ada pernyataan yang lupa diakhiri titik koma (;)."
+  },
+  {
+   "pola": "undefined reference to `main'",
+   "ganti": "Program tidak punya fungsi main(). Setiap program C/C++ wajib punya int main(void) { ... }."
+  },
+  {
+   "pola": "undefined reference to `(\\w+)'",
+   "ganti": "Fungsi '$1' dipanggil tapi tidak pernah didefinisikan (atau pustakanya belum di-#include)."
+  },
+  {
+   "pola": "implicit declaration of function '(\\w+)'",
+   "ganti": "Fungsi '$1' dipakai sebelum dikenalkan. Biasanya kurang #include, misalnya <stdio.h> untuk printf atau <string.h> untuk strlen."
+  },
+  {
+   "pola": "'(\\w+)' undeclared",
+   "ganti": "Nama '$1' belum dideklarasikan. Deklarasikan tipenya dulu, misalnya: int $1 = 0;"
+  },
+  {
+   "pola": "format '%\\w+' expects argument of type",
+   "ganti": "Kode format printf tidak cocok dengan tipe datanya. %d untuk int, %f untuk float/double, %s untuk teks, %c untuk satu karakter."
+  },
+  {
+   "pola": "expected '\\}' at end of input",
+   "ganti": "Ada kurung kurawal { yang belum ditutup."
+  },
+  {
+   "pola": "segmentation fault",
+   "ganti": "Program mengakses memori yang bukan miliknya. Tersering: indeks array kelewat batas, atau pointer yang belum diisi."
+  },
+  {
+   "pola": "ReferenceError: (\\w+) is not defined",
+   "ganti": "Nama '$1' dipakai sebelum dibuat. Periksa ejaan dan huruf besar/kecilnya."
+  },
+  {
+   "pola": "TypeError: (\\S+) is not a function",
+   "ganti": "$1 dipanggil seperti fungsi padahal bukan fungsi. Periksa ejaan nama method-nya."
+  },
+  {
+   "pola": "TypeError: Cannot read propert(?:y|ies) of undefined",
+   "ganti": "Program membaca properti dari nilai undefined. Pastikan objek/array-nya sudah terisi sebelum dipakai."
+  },
+  {
+   "pola": "SyntaxError: Unexpected token",
+   "ganti": "Ada karakter yang tidak pada tempatnya. Tersering: kurung atau kurung kurawal yang tidak berpasangan."
+  },
+  {
+   "pola": "Assignment to constant variable",
+   "ganti": "Variabel yang dibuat dengan const tidak bisa diisi ulang. Pakai let kalau nilainya memang perlu berubah."
+  },
+  {
+   "pola": "\"([\\w/]+)\" imported and not used",
+   "ganti": "Paket \"$1\" di-import tapi tidak dipakai. Go melarang import yang menganggur -- hapus barisnya."
+  },
+  {
+   "pola": "(\\w+) declared and not used",
+   "ganti": "Variabel '$1' dibuat tapi tidak pernah dipakai. Go melarang itu -- hapus, atau pakai _ sebagai namanya."
+  },
+  {
+   "pola": "undefined: (\\w+)",
+   "ganti": "Nama '$1' belum didefinisikan. Periksa ejaannya; di Go huruf besar di awal nama juga bermakna."
+  },
+  {
+   "pola": "expected declaration",
+   "ganti": "Ada kode di luar fungsi. Di Go semua pernyataan harus berada di dalam func."
+  },
+  {
+   "pola": "invalid operation: .+ \\(mismatched types (\\S+) and (\\S+)\\)",
+   "ganti": "Tipe $1 dan $2 tidak bisa dioperasikan langsung. Go tidak mengonversi tipe secara otomatis."
+  },
+  {
+   "pola": "index out of range",
+   "ganti": "Indeks slice/array di luar jangkauan."
+  },
+  {
+   "pola": "unexpected EOF while looking for matching",
+   "ganti": "Ada tanda kutip atau kurung yang belum ditutup."
+  },
+  {
+   "pola": "syntax error near unexpected token",
+   "ganti": "Ada kesalahan penulisan. Di Bash, spasi di sekitar = saat memberi nilai TIDAK boleh ada: tulis nama=\"Budi\", bukan nama = \"Budi\"."
+  },
+  {
+   "pola": "line \\d+: (\\w+): command not found",
+   "ganti": "Bash mengira '$1' adalah nama perintah. Kalau maksudmu mengisi variabel, hilangkan spasi di sekitar tanda sama dengan: tulis $1=\"nilai\", bukan $1 = \"nilai\"."
+  },
+  {
+   "pola": "command not found",
+   "ganti": "Perintah tidak dikenal. Periksa ejaannya, atau program itu memang belum terpasang di komputer ini."
+  },
+  {
+   "pola": "integer expression expected",
+   "ganti": "Perbandingan angka memakai operator teks. Pakai -eq/-lt/-gt untuk angka dan =/!= untuk teks."
+  },
+  {
+   "pola": "near \"(\\w+)\": syntax error",
+   "ganti": "SQLite tidak mengenali \"$1\" di posisi itu. Kalau ini sintaks khas MySQL (AUTO_INCREMENT, ENGINE=InnoDB, SHOW TABLES), memang tidak didukung -- pakai padanan SQLite-nya."
+  },
+  {
+   "pola": "no such table: (\\w+)",
+   "ganti": "Tabel '$1' belum ada. Tiap latihan SQL dijalankan di database kosong; buat tabelnya dulu, atau pakai tabel dari bagian KONDISI AWAL."
+  },
+  {
+   "pola": "no such column: (\\w+)",
+   "ganti": "Kolom '$1' tidak ada di tabel itu. Periksa ejaan nama kolomnya."
+  },
+  {
+   "pola": "UNIQUE constraint failed: (\\S+)",
+   "ganti": "Nilai yang dimasukkan ke $1 sudah ada, padahal kolom itu wajib unik."
+  },
+  {
+   "pola": "<(\\w+)> dibuka tapi tidak pernah ditutup",
+   "ganti": "Tag <$1> tidak punya penutup </$1>. Browser tidak akan menampilkan pesan error untuk ini -- ia menebak sendiri di mana elemennya berakhir, dan tebakannya sering menelan elemen-elemen di bawahnya. Itu sebabnya satu tag yang lupa ditutup bisa membuat separuh halaman ikut bergeser."
+  },
+  {
+   "pola": "</(\\w+)> menutup sesuatu yang tidak pernah dibuka",
+   "ganti": "Ada </$1> tanpa <$1> pasangannya di atasnya. Biasanya ini sisa dari menghapus satu baris tapi lupa menghapus penutupnya."
+  },
+  {
+   "pola": "</(\\w+)> tidak diperlukan",
+   "ganti": "<$1> termasuk elemen kosong -- ia tidak membungkus apa pun, jadi tidak punya tag penutup. Cukup tulis <$1> saja."
+  },
+  {
+   "pola": "tidak diikuti '\\{'",
+   "ganti": "Setiap aturan CSS berbentuk `pemilih { properti: nilai; }`. Ada teks yang berdiri sendiri tanpa blok kurung kurawal di belakangnya."
+  },
+  {
+   "pola": "dibuka dengan '\\{' tapi tidak pernah ditutup",
+   "ganti": "Ada blok CSS yang kurung kurawalnya tidak ditutup. Semua aturan sesudahnya ikut tertelan ke dalam blok itu dan berhenti berlaku -- gejalanya: satu perubahan kecil membuat banyak gaya lain hilang."
+  },
+  {
+   "pola": "bukan deklarasi yang sah",
+   "ganti": "Deklarasi CSS selalu berbentuk `properti: nilai;` -- pakai titik dua antara nama properti dan nilainya, dan titik koma di akhirnya."
+  },
+  {
+   "pola": "blok '\\{ … \\}' tanpa pemilih",
+   "ganti": "Ada kurung kurawal yang tidak didahului pemilih. CSS perlu tahu elemen mana yang diatur: `p { ... }`, `.kartu { ... }`, `#judul { ... }`."
+  }
+ ],
+ "rapikan": {
+  "path": "(?:[^\\s:,\\\"']*[/\\\\])?belajar-[A-Za-z0-9_]+[/\\\\]([^\\s:,\\\"']+)",
+  "baris_berkas": "([\\w./\\\\-]+\\.\\w+:)(\\d+)",
+  "kata_line": "(\\bline )(\\d+)"
+ }
+}

@@ -2843,15 +2843,22 @@ fun main() {
     println("---")
 
     // --- BERSAMAAN ---
-    val hasil = mutableListOf<String>()
+    // Tiap thread menulis ke variabelnya SENDIRI. Satu daftar bersama
+    // kelihatan lebih rapi, tapi mutableListOf itu ArrayList yang tidak
+    // aman dipakai dua thread sekaligus: dua add() yang bertabrakan bisa
+    // membuat salah satu hasilnya HILANG, dan tidak ada error apa pun.
+    var hasilC = ""
+    var hasilD = ""
     val bersamaan = measureTimeMillis {
-        val t1 = Thread { hasil.add(ambil("C", 200)) }
-        val t2 = Thread { hasil.add(ambil("D", 200)) }
+        val t1 = Thread { hasilC = ambil("C", 200) }
+        val t2 = Thread { hasilD = ambil("D", 200) }
         t1.start(); t2.start()
+        // join() menunggu threadnya selesai, sekaligus menjamin nilai yang
+        // ditulis di dalamnya sudah terlihat di sini.
         t1.join(); t2.join()
     }
-    // Urutan selesainya thread TIDAK pasti: diurut supaya bisa diuji
-    hasil.sorted().forEach { println(it) }
+    println(hasilC)
+    println(hasilD)
     println("Bersamaan ~${bersamaan / 100 * 100} ms")
 
     println("---")

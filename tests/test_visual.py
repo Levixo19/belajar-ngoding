@@ -9,7 +9,7 @@ sys.path.insert(0, AKAR)
 sys.path.insert(0, os.path.join(AKAR, "alat"))
 
 from inti import jejak, runner, visual  # noqa: E402
-from main import LANGUAGES  # noqa: E402
+from inti.kurikulum import LANGUAGES  # noqa: E402
 import periksa_visual  # noqa: E402
 
 # Satu contoh sah untuk tiap jenis: pagar bahwa penggambar terminal tidak
@@ -125,8 +125,13 @@ class TestVisualSampaiKeDuaAntarmuka(unittest.TestCase):
 
     def test_terminal_menampilkan_judul_dan_label_yang_sama(self):
         import re
-        from layar import materials
-        teks = "\n".join(materials.baris_materi(self.m, "python", "", "python"))
+        # Penggambar terminal `inti/visual` -- sumber yang sama dengan yang
+        # dulu dipanggil lewat layar/materials, tanpa lapisan tampilan.
+        from inti import visual as modul_visual
+        potong = []
+        for nomor, g in enumerate(modul_visual.untuk("python", self.m["title"]), 1):
+            potong += modul_visual.baris(g, nomor=nomor)
+        teks = "\n".join(potong)
         polos = re.sub(r"\x1b\[[0-9;]*m", "", teks)
         self.assertIn("Gambar 1: Indeks", polos)
         self.assertIn("Gambar 2: Kotak bernama", polos)

@@ -1,0 +1,1105 @@
+{
+ "Pengenalan C++ & Perbedaan dari C": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "Dari hello.cpp sampai Halo Dunia! tercetak",
+   "ket": "g++ menolak membuat program kalau ada error. Peringatan dari -Wall nggak menghentikan kompilasi, tapi tetap perlu dibaca.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "tulis hello.cpp"
+    },
+    {
+     "jenis": "proses",
+     "teks": "g++ -std=c++17 -Wall hello.cpp"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "ada error?",
+     "tidak": 4
+    },
+    {
+     "jenis": "proses",
+     "teks": "baca pesan, perbaiki kode",
+     "ke": 1
+    },
+    {
+     "jenis": "proses",
+     "teks": "berkas hello jadi"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "./hello: Halo Dunia!"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "selesai"
+    }
+   ]
+  }
+ ],
+ "Variabel, Tipe Data & Namespace": [
+  {
+   "setelah": 1,
+   "jenis": "variabel",
+   "judul": "Variabel dari contoh tadi, masing-masing dengan tipenya",
+   "ket": "bool lulus menyimpan true, tapi cout mencetaknya sebagai 1. namaLengkap lahir dari nama + \" Wijaya\".",
+   "isi": [
+    [
+     "umur",
+     "20",
+     "int"
+    ],
+    [
+     "harga",
+     "15000.5",
+     "double"
+    ],
+    [
+     "lulus",
+     "true",
+     "bool"
+    ],
+    [
+     "nama",
+     "\"Andi\"",
+     "string"
+    ],
+    [
+     "namaLengkap",
+     "\"Andi Wijaya\"",
+     "string"
+    ]
+   ],
+   "sorot": [
+    "namaLengkap"
+   ]
+  }
+ ],
+ "Namespace Sendiri & Operator ::": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Dua pajak dan dua hitungTotal, tinggal di namespace berbeda",
+   "ket": "Nama lengkapnya dibaca dari atas ke bawah: toko::pajak, gudang::pajak, toko::detail::catat.",
+   "akar": {
+    "teks": "namespace global",
+    "anak": [
+     {
+      "teks": "toko",
+      "anak": [
+       {
+        "teks": "pajak = 0.11"
+       },
+       {
+        "teks": "hitungTotal()"
+       },
+       {
+        "teks": "detail",
+        "anak": [
+         {
+          "teks": "catat()"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "teks": "gudang",
+      "anak": [
+       {
+        "teks": "pajak = 0.0"
+       },
+       {
+        "teks": "hitungTotal()"
+       }
+      ]
+     },
+     {
+      "teks": "main()"
+     }
+    ]
+   }
+  }
+ ],
+ "enum class, Konstanta & Alias Tipe": [
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "Di balik Status tetap ada angka, tapi kamu harus memintanya",
+   "ket": "s == 2 ditolak compiler. static_cast<int>(s) baru memberi angka 2 untuk Status::Diblokir.",
+   "tabel": [
+    {
+     "nama": "enum class Status",
+     "kolom": [
+      "anggota",
+      "angka"
+     ],
+     "baris": [
+      [
+       "Status::Aktif",
+       "0"
+      ],
+      [
+       "Status::Nonaktif",
+       "1"
+      ],
+      [
+       "Status::Diblokir",
+       "2"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "Input/Output Modern (cin & cout)": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "Sesudah cin >> umur, tanda Enter masih tertinggal di antrean",
+   "ket": "Pengguna mengetik 20 lalu Enter. cin >> mengambil 20 dan berhenti tepat sebelum \\n. Tanpa cin.ignore(), getline langsung ketemu \\n ini dan memberi string kosong.",
+   "nama": "antrean masukan",
+   "isi": [
+    "2",
+    "0",
+    "\\n"
+   ],
+   "sorot": [
+    2
+   ],
+   "rentang": [
+    0,
+    2
+   ],
+   "penunjuk": {
+    "sisa": 2
+   }
+  }
+ ],
+ "String C++ Lebih Dalam & stringstream": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "substr(0, 7) mengambil tujuh huruf pertama dari kalimat",
+   "ket": "Cuma 12 huruf pertama \"Belajar C++ itu seru\" yang digambar, dan ␣ artinya spasi. Argumen kedua substr itu panjang, jadi hasilnya Belajar. at(8) memberi C.",
+   "nama": "kalimat",
+   "isi": [
+    "B",
+    "e",
+    "l",
+    "a",
+    "j",
+    "a",
+    "r",
+    "␣",
+    "C",
+    "+",
+    "+",
+    "␣"
+   ],
+   "rentang": [
+    0,
+    7
+   ],
+   "penunjuk": {
+    "at(8)": 8
+   }
+  }
+ ],
+ "Referensi (&) vs Pointer": [
+  {
+   "setelah": 0,
+   "jenis": "variabel",
+   "judul": "Satu kotak angka, dua cara menyebutnya",
+   "ket": "ref nggak punya kotak sendiri, dia cuma nama lain untuk angka. p punya kotak sendiri yang isinya alamat angka, dan dibaca lewat *p.",
+   "isi": [
+    [
+     "angka",
+     "20",
+     "int"
+    ],
+    [
+     "ref",
+     "(nama lain angka)",
+     "int&"
+    ],
+    [
+     "p",
+     "&angka",
+     "int*"
+    ]
+   ],
+   "sorot": [
+    "ref"
+   ]
+  }
+ ],
+ "Function Overloading & Default Parameter": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Compiler memilih versi fungsi dari argumen yang kamu kirim",
+   "ket": "Tipe kembalian nggak ikut dilihat. sapa(\"Andi\") memakai nilai default \"Halo\" untuk parameter keduanya.",
+   "tabel": [
+    {
+     "kolom": [
+      "panggilan",
+      "versi dipakai",
+      "hasil"
+     ],
+     "baris": [
+      [
+       "tambah(2, 3)",
+       "int, int",
+       "5"
+      ],
+      [
+       "tambah(2.5, 3.5)",
+       "double, double",
+       "6"
+      ],
+      [
+       "tambah(1, 2, 3)",
+       "int, int, int",
+       "6"
+      ],
+      [
+       "sapa(\"Andi\")",
+       "sapaan = \"Halo\"",
+       "Halo, Andi!"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "OOP: Class & Object Dasar": [
+  {
+   "setelah": 2,
+   "jenis": "memori",
+   "judul": "m1 dan m2 tinggal di stack, objek dari new tinggal di heap",
+   "ket": "ptr cuma menyimpan alamat. Objek Citra di heap tetap ada sampai kamu menulis delete ptr.",
+   "tumpukan": [
+    [
+     "m1",
+     "Andi, 20"
+    ],
+    [
+     "m2",
+     "Budi, 22"
+    ],
+    [
+     "ptr",
+     "@C"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "isi": "Mahasiswa nama=Citra"
+    }
+   ],
+   "label_tumpukan": "stack",
+   "label_heap": "heap (new)"
+  }
+ ],
+ "Constructor & Destructor": [
+  {
+   "setelah": 1,
+   "jenis": "tumpukan",
+   "judul": "Di dalam blok { }, m2 ditumpuk di atas m1 dan pergi lebih dulu",
+   "ket": "Begitu blok selesai, destructor m2 jalan dan mencetak Objek Budi dihancurkan. m1 baru dihancurkan di akhir main.",
+   "mode": "tumpukan",
+   "isi": [
+    "m1 (Andi)",
+    "m2 (Budi)"
+   ],
+   "label": "objek yang sedang hidup",
+   "operasi": "keluar blok: m2"
+  }
+ ],
+ "Encapsulation: private, public, protected": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Satu-satunya jalan mengurangi saldo adalah lewat tarik()",
+   "ket": "Di contoh, saldo 150000 dan tarik(200000) ditolak di pemeriksaan, jadi saldonya nggak berubah.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "tarik(jumlah)"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "jumlah > 0 && <= saldo?",
+     "tidak": 4
+    },
+    {
+     "jenis": "proses",
+     "teks": "saldo -= jumlah"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "return true",
+     "ke": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "return false"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "kembali ke pemanggil"
+    }
+   ]
+  }
+ ],
+ "Memecah Class ke Header (.h) & Sumber (.cpp)": [
+  {
+   "setelah": 4,
+   "jenis": "pohon",
+   "judul": "Tiap .cpp dikompilasi sendiri, lalu linker menyatukannya",
+   "ket": "rekening.h ikut masuk ke dua .cpp lewat #include, tapi nggak pernah ditulis di perintah g++.",
+   "akar": {
+    "teks": "app (linker)",
+    "anak": [
+     {
+      "teks": "main.cpp",
+      "anak": [
+       {
+        "teks": "rekening.h"
+       }
+      ]
+     },
+     {
+      "teks": "rekening.cpp",
+      "anak": [
+       {
+        "teks": "rekening.h"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Pointer this, Anggota static & explicit": [
+  {
+   "setelah": 3,
+   "jenis": "variabel",
+   "judul": "Tiap tiket punya kode sendiri, penghitungnya cuma satu",
+   "ket": "jumlahDibuat milik class Tiket, jadi a, b, dan c menaikkan angka yang sama. Hasil akhirnya 3.",
+   "isi": [
+    [
+     "a.kode",
+     "\"A-01\"",
+     "string"
+    ],
+    [
+     "b.kode",
+     "\"B-02\"",
+     "string"
+    ],
+    [
+     "c.kode",
+     "\"GRATIS\"",
+     "string"
+    ],
+    [
+     "jumlahDibuat",
+     "3",
+     "static int"
+    ]
+   ],
+   "sorot": [
+    "jumlahDibuat"
+   ]
+  }
+ ],
+ "Polymorphism & Virtual Function": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "Pointernya bertipe Hewan*, objek yang ditunjuk Kucing dan Anjing",
+   "ket": "Karena bersuara() virtual, h1->bersuara() melihat objek aslinya dan mencetak Tom: Meong!",
+   "tumpukan": [
+    [
+     "h1 (Hewan*)",
+     "@K"
+    ],
+    [
+     "h2 (Hewan*)",
+     "@A"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "K",
+     "isi": "Kucing nama=Tom"
+    },
+    {
+     "id": "A",
+     "isi": "Anjing nama=Bobby"
+    }
+   ],
+   "label_tumpukan": "pointer",
+   "label_heap": "objek (new)"
+  }
+ ],
+ "Abstract Class & Pure Virtual Function": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Bentuk cuma kontrak, objeknya selalu dari turunannya",
+   "ket": "Bentuk b; ditolak compiler karena luas() = 0. Lingkaran(7) dan Persegi(5) mengisi luas() masing-masing.",
+   "akar": {
+    "teks": "Bentuk (abstract)",
+    "anak": [
+     {
+      "teks": "Lingkaran",
+      "anak": [
+       {
+        "teks": "luas = 153.938"
+       }
+      ]
+     },
+     {
+      "teks": "Persegi",
+      "anak": [
+       {
+        "teks": "luas = 25"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Konversi Tipe: static_cast & dynamic_cast": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Hasil tiap konversi di contoh tadi",
+   "ket": "<double> dan <int> di sini singkatan static_cast<...>. Pembagian dua int membuang sisanya, dan <int> memotong desimal tanpa membulatkan.",
+   "tabel": [
+    {
+     "kolom": [
+      "konversi",
+      "nilai",
+      "hasil"
+     ],
+     "baris": [
+      [
+       "int / int",
+       "7 / 2",
+       "3"
+      ],
+      [
+       "<double> lalu /",
+       "7.0 / 2",
+       "3.5"
+      ],
+      [
+       "<int>",
+       "3.99",
+       "3"
+      ],
+      [
+       "<int>",
+       "'A'",
+       "65"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 2,
+   "jenis": "bit",
+   "judul": "Nol dikurangi satu di bilangan tanpa tanda jadi angka terbesar",
+   "ket": "Disederhanakan ke 8 bit supaya muat: semua bit jadi 1. size_t di mesinmu 64 bit, jadi hasilnya 18446744073709551615.",
+   "angka": 255,
+   "lebar": 8,
+   "label": "0 - 1 di unsigned 8 bit"
+  }
+ ],
+ "Operator Overloading": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Yang kamu tulis dan yang sebenarnya dipanggil compiler",
+   "ket": "cout << c jadi operator<<(cout, c), fungsi bebas (friend), karena yang ada di kiri tanda << adalah cout.",
+   "tabel": [
+    {
+     "kolom": [
+      "ditulis",
+      "dipanggil",
+      "hasil"
+     ],
+     "baris": [
+      [
+       "a + b",
+       "a.operator+(b)",
+       "(4, 6)"
+      ],
+      [
+       "a == b",
+       "a.operator==(b)",
+       "0"
+      ],
+      [
+       "cout << c",
+       "operator<< bebas",
+       "(4, 6)"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "Copy Constructor, operator= & Aturan Tiga": [
+  {
+   "setelah": 2,
+   "jenis": "memori",
+   "judul": "Shallow copy: dua objek, satu memori",
+   "ket": "Copy constructor bawaan cuma menyalin alamat. b.data[0] = 99 ikut mengubah a, dan delete[] jalan dua kali.",
+   "tumpukan": [
+    [
+     "a.data",
+     "@X"
+    ],
+    [
+     "b.data",
+     "@X"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "X",
+     "isi": "[99][0][0]"
+    }
+   ],
+   "label_tumpukan": "atribut",
+   "label_heap": "new int[3]"
+  },
+  {
+   "setelah": 3,
+   "jenis": "memori",
+   "judul": "Deep copy: tiap objek punya memorinya sendiri",
+   "ket": "Copy constructor buatan sendiri memesan memori baru lalu menyalin isinya, jadi a tetap 10 waktu b diubah jadi 99.",
+   "tumpukan": [
+    [
+     "a.data",
+     "@A"
+    ],
+    [
+     "b.data",
+     "@B"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "A",
+     "isi": "[10][0][0]"
+    },
+    {
+     "id": "B",
+     "isi": "[99][0][0]"
+    }
+   ],
+   "label_tumpukan": "atribut",
+   "label_heap": "new int[3]"
+  }
+ ],
+ "Templates (Generic Programming)": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Satu template, compiler membuat versi untuk tiap tipe",
+   "ket": "T ditebak dari argumennya. Untuk class template seperti Kotak<int>, tipenya kamu tulis sendiri di dalam < >.",
+   "tabel": [
+    {
+     "nama": "maksimum(a, b)",
+     "kolom": [
+      "argumen",
+      "T jadi",
+      "hasil"
+     ],
+     "baris": [
+      [
+       "3, 7",
+       "int",
+       "7"
+      ],
+      [
+       "3.5, 2.1",
+       "double",
+       "3.5"
+      ],
+      [
+       "\"apel\", \"jeruk\"",
+       "string",
+       "jeruk"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "STL: Vector & Array Container": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "vector nilai sesudah push_back(95)",
+   "ket": "95 masuk di ujung belakang, size() jadi 5. pop_back() sesudahnya membuang 95 lagi.",
+   "nama": "nilai",
+   "isi": [
+    "80",
+    "90",
+    "75",
+    "85",
+    "95"
+   ],
+   "sorot": [
+    4
+   ],
+   "penunjuk": {
+    "front()": 0,
+    "back()": 4
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "larik",
+   "judul": "Sesudah reserve(3): dua elemen, tempat untuk tiga",
+   "ket": "Kotak ketiga cuma tempat yang udah dipesan, belum elemen. Makanya size()=2 dan capacity()=3.",
+   "nama": "daftar",
+   "isi": [
+    "Andi",
+    "Budi",
+    "(kosong)"
+   ],
+   "rentang": [
+    0,
+    2
+   ]
+  }
+ ],
+ "STL: Map, Set & Pair": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "map nilai selalu urut menurut kunci",
+   "ket": "Range-based for selalu mengikuti abjad kunci, apa pun urutan kamu mengisinya. Di contoh ini urutan isinya kebetulan juga abjad.",
+   "tabel": [
+    {
+     "nama": "map<string, int>",
+     "kolom": [
+      "first (kunci)",
+      "second (nilai)"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "85"
+      ],
+      [
+       "Budi",
+       "90"
+      ],
+      [
+       "Citra",
+       "78"
+      ]
+     ],
+     "sorot_kolom": [
+      "first (kunci)"
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "set dari {5, 2, 8, 2, 5, 1}: duplikat hilang, sisanya terurut",
+   "nama": "angka",
+   "isi": [
+    "1",
+    "2",
+    "5",
+    "8"
+   ]
+  }
+ ],
+ "STL: unordered_map, stack, queue & Container Lain": [
+  {
+   "setelah": 2,
+   "jenis": "tumpukan",
+   "judul": "stack riwayat: halaman terakhir yang dibuka ada di atas",
+   "ket": "top() melihat detail-produk, pop() membuangnya. Yang tersisa di atas jadi daftar-produk.",
+   "mode": "tumpukan",
+   "isi": [
+    "beranda",
+    "daftar-produk",
+    "detail-produk"
+   ],
+   "label": "stack<string> riwayat",
+   "operasi": "pop() dari atas"
+  },
+  {
+   "setelah": 2,
+   "jenis": "tumpukan",
+   "judul": "queue antrean: yang datang duluan dilayani duluan",
+   "ket": "front() adalah Andi, back() adalah Citra. pop() melayani Andi, lalu Budi jadi yang terdepan.",
+   "mode": "antrean",
+   "isi": [
+    "Andi",
+    "Budi",
+    "Citra"
+   ],
+   "label": "queue<string> antrean",
+   "operasi": "pop() dari depan"
+  }
+ ],
+ "Iterator: Menelusuri & Menyunting Container": [
+  {
+   "setelah": 0,
+   "jenis": "larik",
+   "judul": "begin() di elemen pertama, end() sesudah elemen terakhir",
+   "ket": "Kotak (end) bukan elemen, cuma garis finis. Loop berhenti di it != end(), dan *end() nggak boleh dibaca.",
+   "nama": "antrean",
+   "isi": [
+    "Andi",
+    "Budi",
+    "Citra",
+    "(end)"
+   ],
+   "penunjuk": {
+    "begin()": 0,
+    "it": 1,
+    "end()": 3
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "larik",
+   "judul": "Angka genap yang dihapus lewat it = data.erase(it)",
+   "ket": "Yang disorot dibuang satu per satu. Sisanya 1 3 5, tanpa ada angka genap yang terlewat.",
+   "nama": "data",
+   "isi": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "sorot": [
+    1,
+    3,
+    5
+   ]
+  }
+ ],
+ "STL: Algorithm Library": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "find(begin, end, 5) mengembalikan iterator, bukan indeks",
+   "ket": "Sesudah diurutkan menurun, 5 ada di posisi 2. Indeksnya didapat dari it - data.begin().",
+   "nama": "data",
+   "isi": [
+    "9",
+    "8",
+    "5",
+    "3",
+    "2",
+    "1"
+   ],
+   "sorot": [
+    2
+   ],
+   "penunjuk": {
+    "begin()": 0,
+    "it": 2
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "accumulate empat argumen membawa hasil sementara",
+   "ket": "Nilai awalnya 0. Lambda cuma menambahkan elemen genap, jadi hasil akhirnya 2 + 8 = 10.",
+   "tabel": [
+    {
+     "kolom": [
+      "elemen n",
+      "sejauhIni baru"
+     ],
+     "baris": [
+      [
+       "5",
+       "0"
+      ],
+      [
+       "2",
+       "2"
+      ],
+      [
+       "8",
+       "10"
+      ],
+      [
+       "1",
+       "10"
+      ],
+      [
+       "9",
+       "10"
+      ],
+      [
+       "3",
+       "10"
+      ]
+     ],
+     "sorot_baris": [
+      1,
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "Smart Pointer: unique_ptr & shared_ptr": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "s1 dan s2 berbagi satu objek, hitungannya 2",
+   "ket": "Waktu s2 keluar scope, hitungannya turun jadi 1. Objek Budi baru dihapus waktu s1 juga pergi.",
+   "tumpukan": [
+    [
+     "s1",
+     "@B"
+    ],
+    [
+     "s2",
+     "@B"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "B",
+     "isi": "Mahasiswa Budi, count 2"
+    }
+   ],
+   "label_tumpukan": "shared_ptr",
+   "label_heap": "objek"
+  },
+  {
+   "setelah": 4,
+   "jenis": "memori",
+   "judul": "weak_ptr menunjuk tanpa ikut memiliki",
+   "ket": "use_count tetap 1 karena w nggak dihitung. Sesudah s.reset(), Citra dihapus dan w.expired() bernilai true.",
+   "tumpukan": [
+    [
+     "s",
+     "@C"
+    ],
+    [
+     "w (weak)",
+     "@C"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "isi": "Mahasiswa Citra, count 1"
+    }
+   ],
+   "label_tumpukan": "pointer",
+   "label_heap": "objek"
+  }
+ ],
+ "Exception Handling": [
+  {
+   "setelah": 4,
+   "jenis": "tumpukan",
+   "judul": "Exception membongkar call stack dari puncak sampai ketemu catch",
+   "ket": "Untuk kode 1, bacaKonfigurasi melempar. lapisanTengah mencatat lalu throw; ulang, dan main yang akhirnya menanganinya.",
+   "mode": "tumpukan",
+   "isi": [
+    "main()",
+    "lapisanTengah(1)",
+    "bacaKonfigurasi(1)"
+   ],
+   "label": "call stack saat throw",
+   "operasi": "bongkar dari puncak"
+  }
+ ],
+ "Berkas: ifstream & ofstream": [
+  {
+   "setelah": 1,
+   "jenis": "urutan",
+   "judul": "Tiga kali program menyentuh catatan.txt",
+   "ket": "Tanpa ios::app, pembukaan kedua akan menghapus dua baris pertama. getline akhirnya membaca 3 baris.",
+   "pelaku": [
+    "program",
+    "catatan.txt"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "ofstream: tulis 2 baris"
+    ],
+    [
+     0,
+     1,
+     "close()"
+    ],
+    [
+     0,
+     1,
+     "ofstream ios::app: +1 baris"
+    ],
+    [
+     0,
+     1,
+     "ifstream: buka untuk baca"
+    ],
+    [
+     1,
+     0,
+     "getline: 3 baris"
+    ]
+   ]
+  }
+ ],
+ "Lambda Expression & Fitur Modern C++": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "Sesudah sort berlambda, count_if menghitung yang lebih dari batas",
+   "ket": "Lambda [batas] memegang salinan 5. Yang lolos cuma 9 dan 8, jadi jumlahDiAtasBatas bernilai 2.",
+   "nama": "angka",
+   "isi": [
+    "9",
+    "8",
+    "5",
+    "3",
+    "2",
+    "1"
+   ],
+   "sorot": [
+    0,
+    1
+   ]
+  }
+ ],
+ "Functor & std::function": [
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "Tabel handler: nama perintah ke fungsi yang dikerjakan",
+   "ket": "Isi map bertipe function<void(int)>. Masukan tambah memanggil lambda pertama dengan angka 5.",
+   "tabel": [
+    {
+     "nama": "perintah",
+     "kolom": [
+      "kunci",
+      "isi function"
+     ],
+     "baris": [
+      [
+       "hapus",
+       "cetak menghapus"
+      ],
+      [
+       "tambah",
+       "cetak menambah"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  }
+ ],
+ "RAII & Move Semantics (Lanjutan)": [
+  {
+   "setelah": 4,
+   "jenis": "memori",
+   "judul": "Sesudah Buffer c = std::move(a): memori a pindah ke c",
+   "ket": "Copy membuat memori baru untuk b. Move cuma memindahkan pointernya, lalu a dikosongkan jadi nullptr dengan ukuran 0.",
+   "tumpukan": [
+    [
+     "a.data",
+     "nullptr"
+    ],
+    [
+     "b.data",
+     "@B"
+    ],
+    [
+     "c.data",
+     "@A"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "A",
+     "isi": "5 int, dulu milik a"
+    },
+    {
+     "id": "B",
+     "isi": "5 int, salinan untuk b"
+    }
+   ],
+   "label_tumpukan": "atribut",
+   "label_heap": "new int[5]"
+  }
+ ],
+ "Multithreading Dasar: thread, mutex & lock_guard": [
+  {
+   "setelah": 2,
+   "jenis": "urutan",
+   "judul": "Data race: dua kali counter++, hasilnya cuma naik satu",
+   "ket": "Thread 2 menyela di antara baca dan tulis milik thread 1. lock_guard mencegahnya karena cuma satu thread yang boleh masuk.",
+   "pelaku": [
+    "thread 1",
+    "counter",
+    "thread 2"
+   ],
+   "pesan": [
+    [
+     1,
+     0,
+     "baca 40"
+    ],
+    [
+     1,
+     2,
+     "baca 40"
+    ],
+    [
+     0,
+     1,
+     "tulis 41"
+    ],
+    [
+     2,
+     1,
+     "tulis 41"
+    ]
+   ]
+  }
+ ]
+}

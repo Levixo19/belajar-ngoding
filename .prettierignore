@@ -1,0 +1,4 @@
+# Konten kurikulum DIHASILKAN alat/ekspor_konten.py dan dibandingkan byte
+# per byte oleh tes. Satu kali diformat ulang = 16 MB berubah tanpa ada yang
+# tahu apa yang bergeser.
+packages/konten/**/*.json

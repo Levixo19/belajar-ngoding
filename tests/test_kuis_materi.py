@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from data.kuis_materi import KUIS_MATERI
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 from pelajar import konfigurasi, kuis_materi, progress
 from pelajar.progress import judul_kunci
 

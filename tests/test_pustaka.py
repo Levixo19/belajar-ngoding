@@ -21,7 +21,7 @@ import unittest
 from urllib.parse import urlsplit
 
 from inti import pustaka
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATERI = "/home/vi/folder_materi/materi-belajar"

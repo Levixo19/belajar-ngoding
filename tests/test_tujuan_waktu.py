@@ -4,7 +4,7 @@ import os
 import tempfile
 import unittest
 
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 from pelajar import konfigurasi, waktu
 
 

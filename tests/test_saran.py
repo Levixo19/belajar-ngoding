@@ -8,7 +8,7 @@ from datetime import date, timedelta
 from pelajar import konfigurasi
 from pelajar import progress
 from pelajar import saran
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 
 
 class BasisSaran(unittest.TestCase):

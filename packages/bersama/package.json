@@ -1,0 +1,17 @@
+{
+  "name": "@belajar/bersama",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Algoritma yang dipakai server dan klien: penyorot sintaks, penerjemah galat, penjelas beda keluaran.",
+  "exports": {
+    "./sorot": "./src/sorot.ts",
+    "./beda": "./src/beda.ts",
+    "./galat": "./src/galat.ts"
+  },
+  "scripts": {
+    "golden": "node uji/golden-sorot.ts && node uji/golden-beda.ts && node uji/golden-galat.ts",
+    "gigi": "python3 uji/gigi-golden.py",
+    "tipe": "tsc --noEmit"
+  }
+}

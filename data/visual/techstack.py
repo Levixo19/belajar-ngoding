@@ -1009,9 +1009,9 @@ VISUAL = {
             "setelah": 3,
             "jenis": "pohon",
             "judul": "Satu aplikasi, beberapa paket dengan arah yang jelas",
-            "ket": "Susunan aplikasi Belajar Ngoding. Paket di bawah (inti) nggak pernah mengimpor paket yang memakainya.",
+            "ket": "Susunan aplikasi belajar-codingV2. Paket di bawah (inti) nggak pernah mengimpor paket yang memakainya.",
             "akar": {
-                "teks": "Belajar Ngoding",
+                "teks": "belajar-codingV2",
                 "anak": [
                     {
                         "teks": "inti/",

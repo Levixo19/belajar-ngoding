@@ -22,7 +22,7 @@ import sys
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AKAR)
 
-from main import LANGUAGES  # noqa: E402
+from inti.kurikulum import LANGUAGES  # noqa: E402
 from webapp import isi  # noqa: E402
 
 # Singkatan dan nama yang memang ditulis kapital. Kata kapital lain di prosa

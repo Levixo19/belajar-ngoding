@@ -35,7 +35,7 @@ import time
 from pelajar import bab as modul_bab
 from inti import beda
 from inti import berkas as modul_berkas
-from layar import exercises
+from inti import latihan as exercises
 from inti import galat as modul_galat
 from inti import pustaka as modul_pustaka
 from pelajar import konfigurasi
@@ -44,7 +44,7 @@ from pelajar import simpanan
 from pelajar import waktu
 from pelajar import tebak as modul_tebak
 from pelajar import karier as modul_karier
-import main as aplikasi
+from inti import kurikulum as aplikasi
 from pelajar import progress
 from inti import runner
 from pelajar import saran as modul_saran

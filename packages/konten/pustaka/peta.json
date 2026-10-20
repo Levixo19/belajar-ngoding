@@ -1,0 +1,963 @@
+{
+"sumber":{
+"nama":"roadmap.sh",
+"pemilik":"roadmap.sh",
+"repo":"https://roadmap.sh",
+"lisensi":"tautan saja",
+"atribusi":"Tautan ke peta belajar di roadmap.sh. Isinya hak cipta roadmap.sh dan tidak disalin; lisensinya hanya mengizinkan membagikan tautan.",
+"kunci":"peta",
+"commit":"63364ae"
+},
+"entri":[
+{
+"judul":"Peta belajar AI Agents",
+"url":"https://roadmap.sh/ai-agents",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar AI & Data Scientist",
+"url":"https://roadmap.sh/ai-data-scientist",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar AI Engineer",
+"url":"https://roadmap.sh/ai-engineer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar AI Product Builder",
+"url":"https://roadmap.sh/ai-product-builder",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar AI Red Teaming",
+"url":"https://roadmap.sh/ai-red-teaming",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Android",
+"url":"https://roadmap.sh/android",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Angular",
+"url":"https://roadmap.sh/angular",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar API Design",
+"url":"https://roadmap.sh/api-design",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar ASP.NET Core",
+"url":"https://roadmap.sh/aspnet-core",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar AWS",
+"url":"https://roadmap.sh/aws",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Backend",
+"url":"https://roadmap.sh/backend",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Backend (pemula)",
+"url":"https://roadmap.sh/backend-beginner",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar BI Analyst",
+"url":"https://roadmap.sh/bi-analyst",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Blockchain",
+"url":"https://roadmap.sh/blockchain",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar C",
+"url":"https://roadmap.sh/c",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Claude Code",
+"url":"https://roadmap.sh/claude-code",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Cloudflare",
+"url":"https://roadmap.sh/cloudflare",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Code Review",
+"url":"https://roadmap.sh/code-review",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Computer Science",
+"url":"https://roadmap.sh/computer-science",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar C++",
+"url":"https://roadmap.sh/cpp",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar CSS",
+"url":"https://roadmap.sh/css",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Cyber Security",
+"url":"https://roadmap.sh/cyber-security",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Data Analyst",
+"url":"https://roadmap.sh/data-analyst",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Data Engineer",
+"url":"https://roadmap.sh/data-engineer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Data Structures & Algorithms",
+"url":"https://roadmap.sh/datastructures-and-algorithms",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Design System",
+"url":"https://roadmap.sh/design-system",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar DevOps",
+"url":"https://roadmap.sh/devops",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar DevOps (pemula)",
+"url":"https://roadmap.sh/devops-beginner",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar DevRel",
+"url":"https://roadmap.sh/devrel",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar DevSecOps",
+"url":"https://roadmap.sh/devsecops",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Django",
+"url":"https://roadmap.sh/django",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Docker",
+"url":"https://roadmap.sh/docker",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Elasticsearch",
+"url":"https://roadmap.sh/elasticsearch",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Engineering Manager",
+"url":"https://roadmap.sh/engineering-manager",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Flutter",
+"url":"https://roadmap.sh/flutter",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Forward Deployed Engineer",
+"url":"https://roadmap.sh/forward-deployed-engineer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Frontend",
+"url":"https://roadmap.sh/frontend",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Frontend (pemula)",
+"url":"https://roadmap.sh/frontend-beginner",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Full Stack",
+"url":"https://roadmap.sh/full-stack",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Game Developer",
+"url":"https://roadmap.sh/game-developer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Git & GitHub",
+"url":"https://roadmap.sh/git-github",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Git Github Beginner",
+"url":"https://roadmap.sh/git-github-beginner",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Go",
+"url":"https://roadmap.sh/golang",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar GraphQL",
+"url":"https://roadmap.sh/graphql",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar HTML",
+"url":"https://roadmap.sh/html",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Inference Engineering",
+"url":"https://roadmap.sh/inference-engineering",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar iOS",
+"url":"https://roadmap.sh/ios",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Java",
+"url":"https://roadmap.sh/java",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar JavaScript",
+"url":"https://roadmap.sh/javascript",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Kotlin",
+"url":"https://roadmap.sh/kotlin",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Kubernetes",
+"url":"https://roadmap.sh/kubernetes",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Laravel",
+"url":"https://roadmap.sh/laravel",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Leetcode",
+"url":"https://roadmap.sh/leetcode",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Linux",
+"url":"https://roadmap.sh/linux",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Machine Learning",
+"url":"https://roadmap.sh/machine-learning",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar MLOps",
+"url":"https://roadmap.sh/mlops",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar MongoDB",
+"url":"https://roadmap.sh/mongodb",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Network Engineer",
+"url":"https://roadmap.sh/network-engineer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Next.js",
+"url":"https://roadmap.sh/nextjs",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Node.js",
+"url":"https://roadmap.sh/nodejs",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Openclaw",
+"url":"https://roadmap.sh/openclaw",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar PHP",
+"url":"https://roadmap.sh/php",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar PostgreSQL DBA",
+"url":"https://roadmap.sh/postgresql-dba",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Power Bi",
+"url":"https://roadmap.sh/power-bi",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Product Design",
+"url":"https://roadmap.sh/product-design",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Product Manager",
+"url":"https://roadmap.sh/product-manager",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Prompt Engineering",
+"url":"https://roadmap.sh/prompt-engineering",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Python",
+"url":"https://roadmap.sh/python",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Python Data Analysis",
+"url":"https://roadmap.sh/python-data-analysis",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar QA",
+"url":"https://roadmap.sh/qa",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar R",
+"url":"https://roadmap.sh/r",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar R Programming",
+"url":"https://roadmap.sh/r-programming",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar React",
+"url":"https://roadmap.sh/react",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar React Native",
+"url":"https://roadmap.sh/react-native",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Redis",
+"url":"https://roadmap.sh/redis",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Ruby",
+"url":"https://roadmap.sh/ruby",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Ruby On Rails",
+"url":"https://roadmap.sh/ruby-on-rails",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Rust",
+"url":"https://roadmap.sh/rust",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Scala",
+"url":"https://roadmap.sh/scala",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Seo",
+"url":"https://roadmap.sh/seo",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Server Side Game Developer",
+"url":"https://roadmap.sh/server-side-game-developer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Shell / Bash",
+"url":"https://roadmap.sh/shell-bash",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Software Architect",
+"url":"https://roadmap.sh/software-architect",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Software Design & Architecture",
+"url":"https://roadmap.sh/software-design-architecture",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Spring Boot",
+"url":"https://roadmap.sh/spring-boot",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar SQL",
+"url":"https://roadmap.sh/sql",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Swift Ui",
+"url":"https://roadmap.sh/swift-ui",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar System Design",
+"url":"https://roadmap.sh/system-design",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Technical Writer",
+"url":"https://roadmap.sh/technical-writer",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Terraform",
+"url":"https://roadmap.sh/terraform",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar TypeScript",
+"url":"https://roadmap.sh/typescript",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar UX Design",
+"url":"https://roadmap.sh/ux-design",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Vibe Coding",
+"url":"https://roadmap.sh/vibe-coding",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar Vue",
+"url":"https://roadmap.sh/vue",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+},
+{
+"judul":"Peta belajar WordPress",
+"url":"https://roadmap.sh/wordpress",
+"jenis":"peta",
+"bahasa":"en",
+"topik":[
+"Peta belajar"
+],
+"catatan":"Peta topik interaktif di roadmap.sh, berbahasa Inggris."
+}
+]
+}

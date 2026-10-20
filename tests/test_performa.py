@@ -10,7 +10,7 @@ import threading
 import time
 import unittest
 
-import main
+from inti import kurikulum as main
 from inti import pustaka, runner
 from webapp import isi
 from webapp import server as modul_server

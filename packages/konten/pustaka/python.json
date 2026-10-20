@@ -1,0 +1,5197 @@
+{
+"sumber":{
+"nama":"awesome-python",
+"pemilik":"Vinta Chen",
+"repo":"https://github.com/vinta/awesome-python",
+"lisensi":"CC BY 4.0",
+"atribusi":"Daftar dari awesome-python oleh Vinta Chen, CC BY 4.0.",
+"kunci":"python",
+"commit":"bb79ec0"
+},
+"entri":[
+{
+"judul":"django-ai-plugins",
+"url":"https://github.com/vintasoftware/django-ai-plugins",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Django backend agent skills for Django, DRF, Celery, and Django-specific code review."
+},
+{
+"judul":"sentry-skills",
+"url":"https://github.com/getsentry/skills",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Agent skills the Sentry team uses for code review, pull requests, and Django reviews."
+},
+{
+"judul":"trailofbits-skills",
+"url":"https://github.com/trailofbits/skills",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Security skills for vulnerability detection, auditing, and testing."
+},
+{
+"judul":"langchain",
+"url":"https://github.com/langchain-ai/langchain",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A framework for building agents and LLM-powered applications."
+},
+{
+"judul":"langgraph",
+"url":"https://github.com/langchain-ai/langgraph",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Low-level orchestration framework for building stateful, long-running LLM agents."
+},
+{
+"judul":"pydantic-ai",
+"url":"https://github.com/pydantic/pydantic-ai",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A Python agent framework for building generative AI applications with structured schemas."
+},
+{
+"judul":"crewai",
+"url":"https://github.com/crewAIInc/crewAI",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A framework for orchestrating role-playing autonomous AI agents for collaborative task solving."
+},
+{
+"judul":"claude-agent-sdk",
+"url":"https://github.com/anthropics/claude-agent-sdk-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Anthropic's Python SDK for building AI agents on Claude Code's harness — custom tools, in-process MCP servers, hooks."
+},
+{
+"judul":"openai-agents",
+"url":"https://github.com/openai/openai-agents-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"OpenAI's framework for building and managing AI agents."
+},
+{
+"judul":"google-adk",
+"url":"https://github.com/google/adk-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Google's code-first toolkit for building, evaluating, and deploying AI agents."
+},
+{
+"judul":"mcp",
+"url":"https://github.com/modelcontextprotocol/python-sdk",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"The official Python SDK for building Model Context Protocol servers and clients."
+},
+{
+"judul":"fastmcp",
+"url":"https://github.com/PrefectHQ/fastmcp",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A high-level, Pythonic framework for building MCP servers and clients."
+},
+{
+"judul":"hermes-agent",
+"url":"https://github.com/NousResearch/hermes-agent",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"An adaptive personal AI assistant that grows with you."
+},
+{
+"judul":"AstrBot",
+"url":"https://github.com/AstrBotDevs/AstrBot",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A multi-platform AI assistant that connects LLMs to chat apps like Telegram, Slack, and QQ, extensible with Python plugins."
+},
+{
+"judul":"dspy",
+"url":"https://github.com/stanfordnlp/dspy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A framework for programming, not prompting, language models."
+},
+{
+"judul":"instructor",
+"url":"https://github.com/567-labs/instructor",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A library for extracting structured data from LLMs, powered by Pydantic."
+},
+{
+"judul":"llama-index",
+"url":"https://github.com/run-llama/llama_index",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A toolkit for building RAG pipelines and agents over your data."
+},
+{
+"judul":"mem0",
+"url":"https://github.com/mem0ai/mem0",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"An intelligent memory layer for AI agents enabling personalized interactions."
+},
+{
+"judul":"openviking",
+"url":"https://github.com/volcengine/OpenViking",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A context database for AI agents that unifies memory, resources, and skills."
+},
+{
+"judul":"semantica",
+"url":"https://github.com/semantica-agi/semantica",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A graph-native context and knowledge layer for AI agents with reasoning, provenance, and governance."
+},
+{
+"judul":"transformers",
+"url":"https://github.com/huggingface/transformers",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"The model-definition framework for pretrained models in text, computer vision, audio, video, and multimodal tasks, for inference and training."
+},
+{
+"judul":"sglang",
+"url":"https://github.com/sgl-project/sglang",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A high-performance serving framework for large language models and multimodal models."
+},
+{
+"judul":"vllm",
+"url":"https://github.com/vllm-project/vllm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A high-throughput and memory-efficient inference and serving engine for LLMs."
+},
+{
+"judul":"mlx-lm",
+"url":"https://github.com/ml-explore/mlx-lm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Run and fine-tune large language models on Apple Silicon with MLX."
+},
+{
+"judul":"litellm",
+"url":"https://github.com/BerriAI/litellm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Call 100+ LLMs using OpenAI format."
+},
+{
+"judul":"diffusers",
+"url":"https://github.com/huggingface/diffusers",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A library that provides pre-trained diffusion models for generating and editing images, audio, and video."
+},
+{
+"judul":"peft",
+"url":"https://github.com/huggingface/peft",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A library for parameter-efficient fine-tuning of large pretrained models."
+},
+{
+"judul":"trl",
+"url":"https://github.com/huggingface/trl",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A library for post-training transformer language models with SFT, DPO, GRPO, and other trainers."
+},
+{
+"judul":"unsloth",
+"url":"https://github.com/unslothai/unsloth",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Faster, lower-memory LLM fine-tuning, as a Python library or a desktop app."
+},
+{
+"judul":"axolotl",
+"url":"https://github.com/axolotl-ai-cloud/axolotl",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A framework for fine-tuning and post-training large language models."
+},
+{
+"judul":"faster-whisper",
+"url":"https://github.com/SYSTRAN/faster-whisper",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A Whisper reimplementation on CTranslate2, up to 4 times faster than openai-whisper with less memory."
+},
+{
+"judul":"openai-whisper",
+"url":"https://github.com/openai/whisper",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"A general-purpose automatic speech recognition model trained on 680k hours of multilingual and multitask supervised data."
+},
+{
+"judul":"gTTS",
+"url":"https://github.com/pndurette/gTTS",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Python library and CLI tool for converting text to speech using Google Translate TTS."
+},
+{
+"judul":"funasr",
+"url":"https://github.com/modelscope/FunASR",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"AI and Agents"
+],
+"catatan":"Industrial-grade speech recognition toolkit with speaker diarization and emotion detection."
+},
+{
+"judul":"pytorch",
+"url":"https://github.com/pytorch/pytorch",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"Tensors and Dynamic neural networks in Python with strong GPU acceleration."
+},
+{
+"judul":"pytorch-lightning",
+"url":"https://github.com/Lightning-AI/pytorch-lightning",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"Deep learning framework to train, deploy, and ship AI products Lightning fast."
+},
+{
+"judul":"jax",
+"url":"https://github.com/jax-ml/jax",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"A library for high-performance numerical computing with automatic differentiation and JIT compilation."
+},
+{
+"judul":"keras",
+"url":"https://github.com/keras-team/keras",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"A high-level deep learning library with support for JAX, TensorFlow, and PyTorch backends."
+},
+{
+"judul":"tensorflow",
+"url":"https://github.com/tensorflow/tensorflow",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"An end-to-end machine learning platform from Google."
+},
+{
+"judul":"gymnasium",
+"url":"https://github.com/Farama-Foundation/Gymnasium",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"A standard API for reinforcement learning environments with popular reference environments (gym successor)."
+},
+{
+"judul":"stable-baselines3",
+"url":"https://github.com/DLR-RM/stable-baselines3",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Deep Learning"
+],
+"catatan":"PyTorch implementations of Stable Baselines (deep) reinforcement learning algorithms."
+},
+{
+"judul":"scikit-learn",
+"url":"https://github.com/scikit-learn/scikit-learn",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"The most popular Python library for Machine Learning with extensive documentation and community support."
+},
+{
+"judul":"pgmpy",
+"url":"https://github.com/pgmpy/pgmpy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A Python library for causal and probabilistic reasoning with graphical models."
+},
+{
+"judul":"feature-engine",
+"url":"https://github.com/feature-engine/feature_engine",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"sklearn compatible API with the widest toolset for feature engineering and selection."
+},
+{
+"judul":"xgboost",
+"url":"https://github.com/dmlc/xgboost",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A scalable, portable, and distributed gradient boosting library."
+},
+{
+"judul":"lightgbm",
+"url":"https://github.com/lightgbm-org/LightGBM",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A fast, distributed, high performance gradient boosting framework."
+},
+{
+"judul":"catboost",
+"url":"https://github.com/catboost/catboost",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A fast, scalable, high performance gradient boosting on decision trees library."
+},
+{
+"judul":"prophet",
+"url":"https://github.com/facebook/prophet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A tool for producing forecasts for time series with multiple seasonality and trend changes."
+},
+{
+"judul":"statsforecast",
+"url":"https://github.com/Nixtla/statsforecast",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"Fast statistical forecasting models such as ARIMA, ETS, and Theta, compiled with numba."
+},
+{
+"judul":"sktime",
+"url":"https://github.com/sktime/sktime",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A unified scikit-learn-style framework for forecasting and other time-series learning tasks."
+},
+{
+"judul":"timesfm",
+"url":"https://github.com/google-research/timesfm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Machine Learning"
+],
+"catatan":"A pretrained foundation model from Google Research for time-series forecasting, with non-commercial default weights."
+},
+{
+"judul":"nltk",
+"url":"https://github.com/nltk/nltk",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"A leading platform for building Python programs to work with human language data."
+},
+{
+"judul":"spacy",
+"url":"https://github.com/explosion/spaCy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"A library for industrial-strength natural language processing in Python and Cython."
+},
+{
+"judul":"gensim",
+"url":"https://github.com/piskvorky/gensim",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"Topic Modeling for Humans."
+},
+{
+"judul":"stanza",
+"url":"https://github.com/stanfordnlp/stanza",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"The Stanford NLP Group's official Python library, supporting 60+ languages."
+},
+{
+"judul":"jieba",
+"url":"https://github.com/fxsjy/jieba",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"The most popular Chinese text segmentation library."
+},
+{
+"judul":"pypinyin",
+"url":"https://github.com/mozillazg/python-pinyin",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"Convert Chinese hanzi (漢字) to pinyin (拼音)."
+},
+{
+"judul":"pangu.py",
+"url":"https://github.com/vinta/pangu.py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Natural Language Processing"
+],
+"catatan":"Paranoid text spacing."
+},
+{
+"judul":"opencv-python",
+"url":"https://github.com/opencv/opencv-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"Open Source Computer Vision Library."
+},
+{
+"judul":"ultralytics",
+"url":"https://github.com/ultralytics/ultralytics",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"Ultralytics YOLO for object detection, segmentation, pose estimation, classification, and tracking."
+},
+{
+"judul":"kornia",
+"url":"https://github.com/kornia/kornia",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"Open Source Differentiable Computer Vision Library for PyTorch."
+},
+{
+"judul":"fiftyone",
+"url":"https://github.com/voxel51/fiftyone",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"The open-source tool for building high-quality datasets and computer vision models."
+},
+{
+"judul":"pytesseract",
+"url":"https://github.com/madmaze/pytesseract",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"A wrapper for the Tesseract OCR engine."
+},
+{
+"judul":"easyocr",
+"url":"https://github.com/JaidedAI/EasyOCR",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"Ready-to-use OCR with 80+ languages supported."
+},
+{
+"judul":"paddleocr",
+"url":"https://github.com/PaddlePaddle/PaddleOCR",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Computer Vision"
+],
+"catatan":"Multilingual OCR and document parsing toolkit based on PaddlePaddle."
+},
+{
+"judul":"annoy",
+"url":"https://github.com/spotify/annoy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Recommender Systems"
+],
+"catatan":"Approximate Nearest Neighbors in C++/Python optimized for memory usage."
+},
+{
+"judul":"implicit",
+"url":"https://github.com/benfred/implicit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Recommender Systems"
+],
+"catatan":"A fast Python implementation of collaborative filtering for implicit datasets."
+},
+{
+"judul":"scikit-surprise",
+"url":"https://github.com/NicolasHug/Surprise",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Recommender Systems"
+],
+"catatan":"A scikit for building and analyzing recommender systems."
+},
+{
+"judul":"flask",
+"url":"https://github.com/pallets/flask",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"A microframework for Python."
+},
+{
+"judul":"awesome-flask",
+"url":"https://github.com/humiaozuzu/awesome-flask",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":""
+},
+{
+"judul":"django",
+"url":"https://github.com/django/django",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks",
+"ORM",
+"Geolocation"
+],
+"catatan":"A high-level web framework that encourages rapid development and clean, pragmatic design."
+},
+{
+"judul":"awesome-django",
+"url":"https://github.com/wsvincent/awesome-django",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":""
+},
+{
+"judul":"bottle",
+"url":"https://github.com/bottlepy/bottle",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"A fast and simple micro-framework distributed as a single file with no dependencies."
+},
+{
+"judul":"pyramid",
+"url":"https://github.com/Pylons/pyramid",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"A small, fast, down-to-earth, open source Python web framework."
+},
+{
+"judul":"fasthtml",
+"url":"https://github.com/AnswerDotAI/fasthtml",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"The fastest way to create an HTML app."
+},
+{
+"judul":"starlette",
+"url":"https://github.com/Kludex/starlette",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"A lightweight ASGI framework and toolkit for building high-performance async services."
+},
+{
+"judul":"tornado",
+"url":"https://github.com/tornadoweb/tornado",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"A web framework and asynchronous networking library."
+},
+{
+"judul":"litestar",
+"url":"https://github.com/litestar-org/litestar",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"Production-ready, capable and extensible ASGI Web framework."
+},
+{
+"judul":"reflex",
+"url":"https://github.com/reflex-dev/reflex",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Frameworks"
+],
+"catatan":"A framework for building reactive, full-stack web applications entirely with Python."
+},
+{
+"judul":"django-rest-framework",
+"url":"https://github.com/encode/django-rest-framework",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"A powerful and flexible toolkit to build web APIs."
+},
+{
+"judul":"django-ninja",
+"url":"https://github.com/vitalik/django-ninja",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"Fast, Django REST framework based on type hints and Pydantic."
+},
+{
+"judul":"strawberry-django",
+"url":"https://github.com/strawberry-graphql/strawberry-django",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"Strawberry GraphQL integration with Django."
+},
+{
+"judul":"django-modern-rest",
+"url":"https://github.com/wemake-services/django-modern-rest",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"Modern REST with speed, types, async, msgspec, pydantic and other goodies!"
+},
+{
+"judul":"flask-restx",
+"url":"https://github.com/python-restx/flask-restx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"Fully featured framework for fast, easy and documented API development with Flask."
+},
+{
+"judul":"flask-smorest",
+"url":"https://github.com/marshmallow-code/flask-smorest",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"A Flask/Marshmallow-based REST API framework with automatic OpenAPI documentation."
+},
+{
+"judul":"apiflask",
+"url":"https://github.com/apiflask/apiflask",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"A lightweight Python web API framework based on Flask, supporting marshmallow schemas and Pydantic models."
+},
+{
+"judul":"fastapi",
+"url":"https://github.com/fastapi/fastapi",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"A modern, fast, web framework for building APIs with standard Python type hints."
+},
+{
+"judul":"strawberry",
+"url":"https://github.com/strawberry-graphql/strawberry",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"A GraphQL library that leverages Python type annotations for schema definition."
+},
+{
+"judul":"connexion",
+"url":"https://github.com/spec-first/connexion",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"A spec-first framework that automatically handles requests based on your OpenAPI specification."
+},
+{
+"judul":"grpcio",
+"url":"https://github.com/grpc/grpc",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web APIs"
+],
+"catatan":"HTTP/2-based RPC framework with Python bindings, built by Google."
+},
+{
+"judul":"uvicorn",
+"url":"https://github.com/Kludex/uvicorn",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Servers"
+],
+"catatan":"A lightning-fast ASGI server implementation."
+},
+{
+"judul":"granian",
+"url":"https://github.com/emmett-framework/granian",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Servers"
+],
+"catatan":"A Rust HTTP server for Python applications built on top of Hyper and Tokio, supporting WSGI/ASGI/RSGI."
+},
+{
+"judul":"hypercorn",
+"url":"https://github.com/pgjones/hypercorn",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Servers"
+],
+"catatan":"An ASGI and WSGI Server based on Hyper libraries and inspired by Gunicorn."
+},
+{
+"judul":"gunicorn",
+"url":"https://github.com/benoitc/gunicorn",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Servers"
+],
+"catatan":"A pre-fork WSGI server with a native ASGI worker, ported from Ruby's Unicorn project."
+},
+{
+"judul":"waitress",
+"url":"https://github.com/Pylons/waitress",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Servers"
+],
+"catatan":"Multi-threaded, powers Pyramid."
+},
+{
+"judul":"websockets",
+"url":"https://github.com/python-websockets/websockets",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"WebSocket"
+],
+"catatan":"A library for building WebSocket servers and clients with a focus on correctness and simplicity."
+},
+{
+"judul":"channels",
+"url":"https://github.com/django/channels",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"WebSocket"
+],
+"catatan":"Brings WebSocket, long-poll HTTP, and other async support to Django."
+},
+{
+"judul":"flask-socketio",
+"url":"https://github.com/miguelgrinberg/Flask-SocketIO",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"WebSocket"
+],
+"catatan":"Socket.IO integration for Flask applications."
+},
+{
+"judul":"autobahn-python",
+"url":"https://github.com/crossbario/autobahn-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"WebSocket"
+],
+"catatan":"WebSocket & WAMP for Python on Twisted and asyncio."
+},
+{
+"judul":"jinja",
+"url":"https://github.com/pallets/jinja",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Template Engines"
+],
+"catatan":"A modern and designer friendly templating language."
+},
+{
+"judul":"mako",
+"url":"https://github.com/sqlalchemy/mako",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Template Engines"
+],
+"catatan":"Hyperfast and lightweight templating for the Python platform."
+},
+{
+"judul":"whitenoise",
+"url":"https://github.com/evansd/whitenoise",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Asset Management"
+],
+"catatan":"Radically simplified static file serving for WSGI applications, with compression and caching headers."
+},
+{
+"judul":"django-storages",
+"url":"https://github.com/jschneier/django-storages",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Asset Management"
+],
+"catatan":"A collection of custom storage back ends for Django."
+},
+{
+"judul":"django-compressor",
+"url":"https://github.com/django-compressor/django-compressor",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Asset Management"
+],
+"catatan":"Compresses linked and inline JavaScript or CSS into a single cached file."
+},
+{
+"judul":"oauthlib",
+"url":"https://github.com/oauthlib/oauthlib",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"A generic and thorough implementation of the OAuth request-signing logic."
+},
+{
+"judul":"authlib",
+"url":"https://github.com/authlib/authlib",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"A comprehensive library for building OAuth, OpenID Connect, and JWT/JWS/JWE/JWK/JWA."
+},
+{
+"judul":"django-allauth",
+"url":"https://github.com/pennersr/django-allauth",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"Authentication app for Django that \"just works.\""
+},
+{
+"judul":"django-oauth-toolkit",
+"url":"https://github.com/django-oauth/django-oauth-toolkit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"An OAuth 2.0 authorization server for Django."
+},
+{
+"judul":"pyjwt",
+"url":"https://github.com/jpadilla/pyjwt",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"JSON Web Token implementation in Python."
+},
+{
+"judul":"django-guardian",
+"url":"https://github.com/django-guardian/django-guardian",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"Implementation of per-object permissions for Django."
+},
+{
+"judul":"django-rules",
+"url":"https://github.com/dfunckt/django-rules",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Authentication"
+],
+"catatan":"A tiny but powerful app providing object-level permissions to Django, without requiring a database."
+},
+{
+"judul":"flask-admin",
+"url":"https://github.com/pallets-eco/flask-admin",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Admin Panels"
+],
+"catatan":"Simple and extensible administrative interface framework for Flask."
+},
+{
+"judul":"django-unfold",
+"url":"https://github.com/unfoldadmin/django-unfold",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Admin Panels"
+],
+"catatan":"A modern Django admin theme for building dashboards, internal tools, and business applications."
+},
+{
+"judul":"sqladmin",
+"url":"https://github.com/smithyhq/sqladmin",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Admin Panels"
+],
+"catatan":"An admin interface for SQLAlchemy models in FastAPI and Starlette."
+},
+{
+"judul":"django-grappelli",
+"url":"https://github.com/sehmaschine/django-grappelli",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Admin Panels"
+],
+"catatan":"A jazzy skin for the Django Admin-Interface."
+},
+{
+"judul":"wagtail",
+"url":"https://github.com/wagtail/wagtail",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CMS"
+],
+"catatan":"A Django content management system."
+},
+{
+"judul":"django-cms",
+"url":"https://github.com/django-cms/django-cms",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CMS"
+],
+"catatan":"The easy-to-use and developer-friendly enterprise CMS powered by Django."
+},
+{
+"judul":"odoo",
+"url":"https://github.com/odoo/odoo",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ERP"
+],
+"catatan":"A suite of open source business apps: CRM, e-commerce, accounting, inventory, and thousands of community modules."
+},
+{
+"judul":"pelican",
+"url":"https://github.com/getpelican/pelican",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Static Site Generators"
+],
+"catatan":"Static site generator that supports Markdown and reST syntax."
+},
+{
+"judul":"nikola",
+"url":"https://github.com/getnikola/nikola",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Static Site Generators"
+],
+"catatan":"A static website and blog generator."
+},
+{
+"judul":"requests",
+"url":"https://github.com/psf/requests",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTTP Clients"
+],
+"catatan":"HTTP Requests for Humans."
+},
+{
+"judul":"aiohttp",
+"url":"https://github.com/aio-libs/aiohttp",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTTP Clients"
+],
+"catatan":"Asynchronous HTTP client/server framework for asyncio and Python."
+},
+{
+"judul":"httpx2",
+"url":"https://github.com/pydantic/httpx2",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTTP Clients"
+],
+"catatan":"HTTP/1.1 and HTTP/2 client with sync and async APIs, maintained by Pydantic (httpx fork)."
+},
+{
+"judul":"urllib3",
+"url":"https://github.com/urllib3/urllib3",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTTP Clients"
+],
+"catatan":"An HTTP library with thread-safe connection pooling, file post, and more."
+},
+{
+"judul":"httpx",
+"url":"https://github.com/encode/httpx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTTP Clients"
+],
+"catatan":"A next generation HTTP client for Python."
+},
+{
+"judul":"yarl",
+"url":"https://github.com/aio-libs/yarl",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTTP Clients"
+],
+"catatan":"Yet another URL library."
+},
+{
+"judul":"browser-use",
+"url":"https://github.com/browser-use/browser-use",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"Make websites accessible for AI agents with easy browser automation."
+},
+{
+"judul":"scrapy",
+"url":"https://github.com/scrapy/scrapy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"A fast high-level web crawling and scraping framework."
+},
+{
+"judul":"crawl4ai",
+"url":"https://github.com/unclecode/crawl4ai",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"An open-source, LLM-friendly web crawler that provides lightning-fast, structured data extraction specifically designed for AI agents."
+},
+{
+"judul":"stagehand",
+"url":"https://github.com/browserbase/stagehand",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"A fast and token-efficient browser automation SDK to extract data and perform self-healing actions on web pages."
+},
+{
+"judul":"jev-ultrafast",
+"url":"https://github.com/browser-use/jev-ultrafast",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"A fast browser agent that picks actions from an indexed table of page elements through TypeSafe's hosted Jev API, using a small LLM only to type text."
+},
+{
+"judul":"markdownify",
+"url":"https://github.com/matthewwithanm/python-markdownify",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"Convert HTML to Markdown, with customizable tag handling."
+},
+{
+"judul":"feedparser",
+"url":"https://github.com/kurtmckee/feedparser",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"Universal feed parser."
+},
+{
+"judul":"trafilatura",
+"url":"https://github.com/adbar/trafilatura",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Scraping"
+],
+"catatan":"A tool for gathering text and metadata from the web, with built-in content filtering."
+},
+{
+"judul":"aiosmtplib",
+"url":"https://github.com/cole/aiosmtplib",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Email"
+],
+"catatan":"An asyncio SMTP client."
+},
+{
+"judul":"django-anymail",
+"url":"https://github.com/anymail/django-anymail",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Email"
+],
+"catatan":"Django email backends and webhooks for transactional email services such as Amazon SES, Brevo, Mailgun, Postmark, and Resend."
+},
+{
+"judul":"yagmail",
+"url":"https://github.com/kootenpv/yagmail",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Email"
+],
+"catatan":"Yet another Gmail/SMTP client."
+},
+{
+"judul":"sqlalchemy",
+"url":"https://github.com/sqlalchemy/sqlalchemy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"The Python SQL Toolkit and Object Relational Mapper."
+},
+{
+"judul":"awesome-sqlalchemy",
+"url":"https://github.com/dahlia/awesome-sqlalchemy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":""
+},
+{
+"judul":"peewee",
+"url":"https://github.com/coleifer/peewee",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"A small, expressive ORM."
+},
+{
+"judul":"sqlmodel",
+"url":"https://github.com/fastapi/sqlmodel",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"SQLModel is based on Python type annotations, and powered by Pydantic and SQLAlchemy."
+},
+{
+"judul":"pynamodb",
+"url":"https://github.com/pynamodb/PynamoDB",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"A Pythonic interface for Amazon DynamoDB."
+},
+{
+"judul":"mongoengine",
+"url":"https://github.com/MongoEngine/mongoengine",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"A Python Object-Document-Mapper for working with MongoDB."
+},
+{
+"judul":"beanie",
+"url":"https://github.com/BeanieODM/beanie",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"An asynchronous Python object-document mapper (ODM) for MongoDB."
+},
+{
+"judul":"django-mongodb-backend",
+"url":"https://github.com/mongodb/django-mongodb-backend",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"ORM"
+],
+"catatan":"Official MongoDB database backend for Django."
+},
+{
+"judul":"pymysql",
+"url":"https://github.com/PyMySQL/PyMySQL",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"A pure-Python MySQL and MariaDB client library, based on PEP 249."
+},
+{
+"judul":"mysqlclient",
+"url":"https://github.com/PyMySQL/mysqlclient",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"MySQL and MariaDB connector (MySQLdb1 fork)."
+},
+{
+"judul":"psycopg",
+"url":"https://github.com/psycopg/psycopg",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"A PostgreSQL adapter for Python, the successor to psycopg2."
+},
+{
+"judul":"asyncpg",
+"url":"https://github.com/MagicStack/asyncpg",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"A fast PostgreSQL Database Client Library for Python/asyncio."
+},
+{
+"judul":"sqlite3",
+"url":"https://docs.python.org/3/library/sqlite3.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"(Python standard library) SQLite interface compliant with DB-API 2.0."
+},
+{
+"judul":"sqlite-utils",
+"url":"https://github.com/simonw/sqlite-utils",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"Python CLI utility and library for manipulating SQLite databases."
+},
+{
+"judul":"clickhouse-connect",
+"url":"https://github.com/ClickHouse/clickhouse-connect",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"The official ClickHouse client, with SQLAlchemy and Superset connectors."
+},
+{
+"judul":"clickhouse-driver",
+"url":"https://github.com/mymarilyn/clickhouse-driver",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"Python driver with native interface for ClickHouse."
+},
+{
+"judul":"pyodbc",
+"url":"https://github.com/mkleehammer/pyodbc",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"An ODBC bridge for connecting to SQL Server and any other ODBC-accessible database."
+},
+{
+"judul":"oracledb",
+"url":"https://github.com/oracle/python-oracledb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"The official Python driver for Oracle Database, successor to cx_Oracle."
+},
+{
+"judul":"mssql-python",
+"url":"https://github.com/microsoft/mssql-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"Official Microsoft driver for SQL Server and Azure SQL, built on ODBC for high performance."
+},
+{
+"judul":"redis",
+"url":"https://github.com/redis/redis-py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"The Python client for Redis."
+},
+{
+"judul":"pymongo",
+"url":"https://github.com/mongodb/mongo-python-driver",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"The official Python client for MongoDB."
+},
+{
+"judul":"cassandra-driver",
+"url":"https://github.com/apache/cassandra-python-driver",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database Drivers"
+],
+"catatan":"The Python Driver for Apache Cassandra."
+},
+{
+"judul":"duckdb",
+"url":"https://github.com/duckdb/duckdb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database"
+],
+"catatan":"An in-process SQL OLAP database management system; optimized for analytics and fast queries, similar to SQLite but for analytical workloads."
+},
+{
+"judul":"chdb",
+"url":"https://github.com/chdb-io/chdb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database"
+],
+"catatan":"In-process OLAP SQL engine with the full ClickHouse dialect, zero-copy pandas/Arrow interop, and federation to remote ClickHouse clusters via remoteSecure()."
+},
+{
+"judul":"lancedb",
+"url":"https://github.com/lancedb/lancedb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database"
+],
+"catatan":"A developer-friendly embedded retrieval database for multimodal AI."
+},
+{
+"judul":"chromadb",
+"url":"https://github.com/chroma-core/chroma",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database"
+],
+"catatan":"An open-source embedding database for building AI applications with embeddings and semantic search."
+},
+{
+"judul":"zvec",
+"url":"https://github.com/alibaba/zvec",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database"
+],
+"catatan":"A lightweight, in-process vector database that embeds directly into applications."
+},
+{
+"judul":"tinydb",
+"url":"https://github.com/msiemens/tinydb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Database"
+],
+"catatan":"A tiny, document-oriented database."
+},
+{
+"judul":"cachetools",
+"url":"https://github.com/tkem/cachetools",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Caching"
+],
+"catatan":"Extensible memoizing collections and decorators."
+},
+{
+"judul":"diskcache",
+"url":"https://github.com/grantjenks/python-diskcache",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Caching"
+],
+"catatan":"SQLite and file backed cache backend, compatible with Django."
+},
+{
+"judul":"hishel",
+"url":"https://github.com/karpetrosyan/hishel",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Caching"
+],
+"catatan":"RFC 9111 compliant HTTP caching for clients like httpx and requests and servers like FastAPI, with sync and async support."
+},
+{
+"judul":"django-cacheops",
+"url":"https://github.com/Suor/django-cacheops",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Caching"
+],
+"catatan":"A slick ORM cache with automatic granular event-driven invalidation."
+},
+{
+"judul":"dogpile.cache",
+"url":"https://github.com/sqlalchemy/dogpile.cache",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Caching"
+],
+"catatan":"dogpile.cache is a next generation replacement for Beaker made by the same authors."
+},
+{
+"judul":"opensearch-py",
+"url":"https://github.com/opensearch-project/opensearch-py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Search"
+],
+"catatan":"The official low-level Python client for OpenSearch."
+},
+{
+"judul":"elasticsearch",
+"url":"https://github.com/elastic/elasticsearch-py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Search"
+],
+"catatan":"The official low-level Python client for Elasticsearch."
+},
+{
+"judul":"meilisearch",
+"url":"https://github.com/meilisearch/meilisearch-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Search"
+],
+"catatan":"The official Python client for the Meilisearch search engine."
+},
+{
+"judul":"django-haystack",
+"url":"https://github.com/django-haystack/django-haystack",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Search"
+],
+"catatan":"Modular search for Django."
+},
+{
+"judul":"msgpack",
+"url":"https://github.com/msgpack/msgpack-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Serialization"
+],
+"catatan":"MessagePack serializer implementation for Python."
+},
+{
+"judul":"orjson",
+"url":"https://github.com/ijl/orjson",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Serialization"
+],
+"catatan":"Fast, correct JSON library."
+},
+{
+"judul":"marshmallow",
+"url":"https://github.com/marshmallow-code/marshmallow",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Serialization"
+],
+"catatan":"A lightweight library for converting complex objects to and from simple Python datatypes."
+},
+{
+"judul":"msgspec",
+"url":"https://github.com/msgspec/msgspec",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Serialization"
+],
+"catatan":"A fast serialization and validation library with built-in support for JSON, MessagePack, YAML, and TOML."
+},
+{
+"judul":"pandas",
+"url":"https://github.com/pandas-dev/pandas",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Analysis"
+],
+"catatan":"A library providing high-performance, easy-to-use data structures and data analysis tools."
+},
+{
+"judul":"polars",
+"url":"https://github.com/pola-rs/polars",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Analysis"
+],
+"catatan":"A fast DataFrame library implemented in Rust with a Python API."
+},
+{
+"judul":"ibis-framework",
+"url":"https://github.com/ibis-project/ibis",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Analysis"
+],
+"catatan":"A portable Python dataframe library with a single API for 20+ backends."
+},
+{
+"judul":"awswrangler",
+"url":"https://github.com/aws/aws-sdk-pandas",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Ingestion / ETL"
+],
+"catatan":"Pandas integration with AWS services like Athena, Glue, Redshift, S3, and DynamoDB."
+},
+{
+"judul":"dlt",
+"url":"https://github.com/dlt-hub/dlt",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Ingestion / ETL"
+],
+"catatan":"A Python library for building data pipelines with automatic schema inference, incremental loading, and support for multiple sources and destinations."
+},
+{
+"judul":"yfinance",
+"url":"https://github.com/ranaroussi/yfinance",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Ingestion / ETL"
+],
+"catatan":"Easy Pythonic way to download market and financial data from Yahoo Finance."
+},
+{
+"judul":"akshare",
+"url":"https://github.com/akfamily/akshare",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Ingestion / ETL"
+],
+"catatan":"A financial data interface library, with data provided for academic research only."
+},
+{
+"judul":"edgartools",
+"url":"https://github.com/dgunning/edgartools",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Ingestion / ETL"
+],
+"catatan":"Library for downloading structured data from SEC EDGAR filings and XBRL financial statements."
+},
+{
+"judul":"openbb",
+"url":"https://github.com/openbq-org/OpenBB",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Ingestion / ETL"
+],
+"catatan":"A financial data platform for analysts, quants and AI agents."
+},
+{
+"judul":"pydantic",
+"url":"https://github.com/pydantic/pydantic",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Validation"
+],
+"catatan":"Data validation using Python type hints."
+},
+{
+"judul":"jsonschema",
+"url":"https://github.com/python-jsonschema/jsonschema",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Validation"
+],
+"catatan":"An implementation of JSON Schema for Python."
+},
+{
+"judul":"great-expectations",
+"url":"https://github.com/fivetran/great_expectations",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Validation"
+],
+"catatan":"A data quality framework for validating, documenting, and profiling data with declarative expectations."
+},
+{
+"judul":"pandera",
+"url":"https://github.com/unionai-oss/pandera",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Validation"
+],
+"catatan":"A data validation library for dataframes, with support for pandas, polars, PySpark, and more."
+},
+{
+"judul":"matplotlib",
+"url":"https://github.com/matplotlib/matplotlib",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"A comprehensive library for creating static, animated, and interactive visualizations."
+},
+{
+"judul":"plotly",
+"url":"https://github.com/plotly/plotly.py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Interactive graphing library for Python."
+},
+{
+"judul":"seaborn",
+"url":"https://github.com/mwaskom/seaborn",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Statistical data visualization using Matplotlib."
+},
+{
+"judul":"altair",
+"url":"https://github.com/vega/altair",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Declarative statistical visualization library for Python."
+},
+{
+"judul":"bokeh",
+"url":"https://github.com/bokeh/bokeh",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Interactive Web Plotting for Python."
+},
+{
+"judul":"graphviz",
+"url":"https://github.com/xflr6/graphviz",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Simple Python interface for creating and rendering Graphviz graphs."
+},
+{
+"judul":"cartopy",
+"url":"https://github.com/SciTools/cartopy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"A cartographic python library with matplotlib support."
+},
+{
+"judul":"graphify",
+"url":"https://github.com/Graphify-Labs/graphify",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Turn any folder of code, SQL schemas, docs, papers, images, or videos into a queryable knowledge graph."
+},
+{
+"judul":"streamlit",
+"url":"https://github.com/streamlit/streamlit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"A framework which lets you build dashboards, generate reports, or create chat apps in minutes."
+},
+{
+"judul":"dash",
+"url":"https://github.com/plotly/dash",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"A framework for building data apps and dashboards in pure Python, built on Plotly."
+},
+{
+"judul":"gradio",
+"url":"https://github.com/gradio-app/gradio",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Data Visualization"
+],
+"catatan":"Build and share machine learning apps, all in Python."
+},
+{
+"judul":"geopandas",
+"url":"https://github.com/geopandas/geopandas",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Geolocation"
+],
+"catatan":"Python tools for geographic data (GeoSeries/GeoDataFrame) built on pandas."
+},
+{
+"judul":"geopy",
+"url":"https://github.com/geopy/geopy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Geolocation"
+],
+"catatan":"Python Geocoding Toolbox."
+},
+{
+"judul":"geojson",
+"url":"https://github.com/jazzband/geojson",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Geolocation"
+],
+"catatan":"Python bindings and utilities for GeoJSON."
+},
+{
+"judul":"numpy",
+"url":"https://github.com/numpy/numpy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A fundamental package for scientific computing with Python."
+},
+{
+"judul":"scipy",
+"url":"https://github.com/scipy/scipy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Fundamental algorithms for scientific computing in Python."
+},
+{
+"judul":"numba",
+"url":"https://github.com/numba/numba",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A NumPy-aware JIT compiler for Python, using LLVM."
+},
+{
+"judul":"sympy",
+"url":"https://github.com/sympy/sympy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A Python library for symbolic mathematics."
+},
+{
+"judul":"statsmodels",
+"url":"https://github.com/statsmodels/statsmodels",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Statistical modeling and econometrics in Python."
+},
+{
+"judul":"rdkit",
+"url":"https://github.com/rdkit/rdkit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Cheminformatics and Machine Learning Software."
+},
+{
+"judul":"biopython",
+"url":"https://github.com/biopython/biopython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Biopython is a set of freely available tools for biological computation."
+},
+{
+"judul":"pint",
+"url":"https://github.com/hgrecco/pint",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Operate and manipulate physical quantities with units and dimensional analysis."
+},
+{
+"judul":"astropy",
+"url":"https://github.com/astropy/astropy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A community Python library for Astronomy."
+},
+{
+"judul":"obspy",
+"url":"https://github.com/obspy/obspy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A Python toolbox for seismology."
+},
+{
+"judul":"pymc",
+"url":"https://github.com/pymc-devs/pymc",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Probabilistic programming and Bayesian modeling in Python."
+},
+{
+"judul":"simpy",
+"url":"https://gitlab.com/team-simpy/simpy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A process-based discrete-event simulation framework."
+},
+{
+"judul":"mesa",
+"url":"https://github.com/mesa/mesa",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"An agent-based modeling framework for building, analyzing, and visualizing complex system simulations."
+},
+{
+"judul":"networkx",
+"url":"https://github.com/networkx/networkx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"A high-productivity software for complex networks."
+},
+{
+"judul":"shapely",
+"url":"https://github.com/shapely/shapely",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Manipulation and analysis of geometric objects in the Cartesian plane."
+},
+{
+"judul":"colour-science",
+"url":"https://github.com/colour-science/colour",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"Implementing a comprehensive number of colour theory transformations and algorithms."
+},
+{
+"judul":"manim",
+"url":"https://github.com/ManimCommunity/manim",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Science"
+],
+"catatan":"An animation engine for explanatory math videos."
+},
+{
+"judul":"qiskit",
+"url":"https://github.com/Qiskit/qiskit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Quantum Computing"
+],
+"catatan":"An IBM-backed quantum SDK for building, simulating, and running circuits on real quantum hardware."
+},
+{
+"judul":"qutip",
+"url":"https://github.com/qutip/qutip",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Quantum Computing"
+],
+"catatan":"Quantum Toolbox in Python."
+},
+{
+"judul":"pennylane",
+"url":"https://github.com/PennyLaneAI/pennylane",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Quantum Computing"
+],
+"catatan":"A cross-platform library for quantum computing, quantum machine learning, and quantum chemistry."
+},
+{
+"judul":"cirq",
+"url":"https://github.com/quantumlib/Cirq",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Quantum Computing"
+],
+"catatan":"A Google-developed framework focused on hardware-aware quantum circuit design for NISQ devices."
+},
+{
+"judul":"sortedcontainers",
+"url":"https://github.com/grantjenks/python-sortedcontainers",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Algorithms and Design Patterns"
+],
+"catatan":"Fast and pure-Python implementation of sorted collections."
+},
+{
+"judul":"algorithms",
+"url":"https://github.com/keon/algorithms",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Algorithms and Design Patterns"
+],
+"catatan":"Minimal examples of data structures and algorithms."
+},
+{
+"judul":"thealgorithms",
+"url":"https://github.com/TheAlgorithms/Python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Algorithms and Design Patterns"
+],
+"catatan":"All Algorithms implemented in Python."
+},
+{
+"judul":"python-patterns",
+"url":"https://github.com/faif/python-patterns",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Algorithms and Design Patterns"
+],
+"catatan":"A collection of design patterns and idioms in Python."
+},
+{
+"judul":"python-statemachine",
+"url":"https://github.com/fgmacedo/python-statemachine",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Algorithms and Design Patterns"
+],
+"catatan":"Expressive statecharts and finite state machines with a declarative API, in sync and async codebases."
+},
+{
+"judul":"ipython",
+"url":"https://github.com/ipython/ipython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Interactive Interpreter"
+],
+"catatan":"A powerful interactive Python shell, and the kernel behind Jupyter notebooks."
+},
+{
+"judul":"notebook",
+"url":"https://github.com/jupyter/notebook",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Interactive Interpreter"
+],
+"catatan":"A web-based notebook environment for interactive computing."
+},
+{
+"judul":"awesome-jupyter",
+"url":"https://github.com/markusschanta/awesome-jupyter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Interactive Interpreter"
+],
+"catatan":""
+},
+{
+"judul":"marimo",
+"url":"https://github.com/marimo-team/marimo",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Interactive Interpreter"
+],
+"catatan":"A reactive notebook for Python, stored as pure Python and runnable as a script or app."
+},
+{
+"judul":"ptpython",
+"url":"https://github.com/prompt-toolkit/ptpython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Interactive Interpreter"
+],
+"catatan":"Advanced Python REPL built on top of the python-prompt-toolkit."
+},
+{
+"judul":"import-linter",
+"url":"https://github.com/seddonym/import-linter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A linter that enforces architectural constraints on imports between Python modules."
+},
+{
+"judul":"vulture",
+"url":"https://github.com/jendrikseipp/vulture",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A tool for finding and analyzing dead Python code."
+},
+{
+"judul":"complexipy",
+"url":"https://github.com/rohaquinlop/complexipy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"Cognitive complexity analysis for Python code, written in Rust."
+},
+{
+"judul":"prospector",
+"url":"https://github.com/prospector-dev/prospector",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A tool to analyze Python code."
+},
+{
+"judul":"pre-commit",
+"url":"https://github.com/pre-commit/pre-commit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A framework for managing and maintaining multi-language pre-commit hooks."
+},
+{
+"judul":"ruff",
+"url":"https://github.com/astral-sh/ruff",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"An extremely fast Python linter and code formatter."
+},
+{
+"judul":"black",
+"url":"https://github.com/psf/black",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"The uncompromising Python code formatter."
+},
+{
+"judul":"isort",
+"url":"https://github.com/PyCQA/isort",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A Python utility / library to sort imports."
+},
+{
+"judul":"pylint",
+"url":"https://github.com/pylint-dev/pylint",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A fully customizable source code analyzer."
+},
+{
+"judul":"flake8",
+"url":"https://github.com/PyCQA/flake8",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A wrapper around pycodestyle, pyflakes and McCabe."
+},
+{
+"judul":"awesome-flake8-extensions",
+"url":"https://github.com/DmytroLitvinov/awesome-flake8-extensions",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":""
+},
+{
+"judul":"bandit",
+"url":"https://github.com/PyCQA/bandit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A tool designed to find common security issues in Python code."
+},
+{
+"judul":"rope",
+"url":"https://github.com/python-rope/rope",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"Rope is a python refactoring library."
+},
+{
+"judul":"mypy",
+"url":"https://github.com/python/mypy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A static type checker for Python."
+},
+{
+"judul":"ty",
+"url":"https://github.com/astral-sh/ty",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"An extremely fast Python type checker and language server."
+},
+{
+"judul":"pyright",
+"url":"https://github.com/microsoft/pyright",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"Full-featured static type checker for Python from Microsoft, the engine behind Pylance."
+},
+{
+"judul":"pyrefly",
+"url":"https://github.com/facebook/pyrefly",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Code Analysis"
+],
+"catatan":"A fast type checker and language server for Python."
+},
+{
+"judul":"pytest",
+"url":"https://github.com/pytest-dev/pytest",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A mature full-featured Python testing tool."
+},
+{
+"judul":"awesome-pytest",
+"url":"https://github.com/augustogoulart/awesome-pytest",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":""
+},
+{
+"judul":"hypothesis",
+"url":"https://github.com/HypothesisWorks/hypothesis",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Hypothesis is an advanced Quickcheck style property based testing library."
+},
+{
+"judul":"robotframework",
+"url":"https://github.com/robotframework/robotframework",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A generic test automation framework."
+},
+{
+"judul":"tox",
+"url":"https://github.com/tox-dev/tox",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Auto builds and tests distributions in multiple Python versions."
+},
+{
+"judul":"nox",
+"url":"https://github.com/wntrblm/nox",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Flexible test automation for Python."
+},
+{
+"judul":"playwright-python",
+"url":"https://github.com/microsoft/playwright-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Python version of the Playwright testing and automation library."
+},
+{
+"judul":"selenium",
+"url":"https://github.com/SeleniumHQ/selenium",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Python bindings for Selenium WebDriver."
+},
+{
+"judul":"seleniumbase",
+"url":"https://github.com/seleniumbase/SeleniumBase",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Python framework for web automation & testing, with stealth options."
+},
+{
+"judul":"locust",
+"url":"https://github.com/locustio/locust",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Scalable user load testing tool written in Python."
+},
+{
+"judul":"schemathesis",
+"url":"https://github.com/schemathesis/schemathesis",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A tool for automatic property-based testing of web APIs from OpenAPI or GraphQL schemas."
+},
+{
+"judul":"unittest.mock",
+"url":"https://docs.python.org/3/library/unittest.mock.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"(Python standard library) A mocking and patching library."
+},
+{
+"judul":"responses",
+"url":"https://github.com/getsentry/responses",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A utility library for mocking out the requests Python library."
+},
+{
+"judul":"vcrpy",
+"url":"https://github.com/kevin1024/vcrpy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Record and replay HTTP interactions on your tests."
+},
+{
+"judul":"respx",
+"url":"https://github.com/lundberg/respx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Mock HTTPX with awesome request patterns and response side effects."
+},
+{
+"judul":"time-machine",
+"url":"https://github.com/adamchainz/time-machine",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Travel through time in your tests by mocking the current time at the C level."
+},
+{
+"judul":"factory-boy",
+"url":"https://github.com/FactoryBoy/factory_boy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A test fixtures replacement for Python."
+},
+{
+"judul":"polyfactory",
+"url":"https://github.com/litestar-org/polyfactory",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A mock data generation library based on type hints (continuation of pydantic-factories)."
+},
+{
+"judul":"coverage",
+"url":"https://github.com/coveragepy/coveragepy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"Code coverage measurement."
+},
+{
+"judul":"faker",
+"url":"https://github.com/joke2k/faker",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A Python package that generates fake data."
+},
+{
+"judul":"mimesis",
+"url":"https://github.com/lk-geimfari/mimesis",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Testing"
+],
+"catatan":"A Python library for generating fake but realistic data in multiple languages and locales."
+},
+{
+"judul":"ipdb",
+"url":"https://github.com/gotcha/ipdb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"IPython-enabled pdb."
+},
+{
+"judul":"pudb",
+"url":"https://github.com/inducer/pudb",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A full-screen, console-based Python debugger."
+},
+{
+"judul":"viztracer",
+"url":"https://github.com/gaogaotiantian/viztracer",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A low-overhead tool that traces and visualizes Python code execution."
+},
+{
+"judul":"py-spy",
+"url":"https://github.com/benfred/py-spy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A sampling profiler for Python programs. Written in Rust."
+},
+{
+"judul":"memray",
+"url":"https://github.com/bloomberg/memray",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A memory profiler that tracks allocations in Python code, native extensions, and the interpreter itself."
+},
+{
+"judul":"pyinstrument",
+"url":"https://github.com/joerick/pyinstrument",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A statistical wall-clock profiler with low overhead and readable call-tree output."
+},
+{
+"judul":"scalene",
+"url":"https://github.com/plasma-umass/scalene",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A high-performance, high-precision CPU, GPU, and memory profiler for Python."
+},
+{
+"judul":"django-debug-toolbar",
+"url":"https://github.com/django-commons/django-debug-toolbar",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"Display various debug information for Django."
+},
+{
+"judul":"icecream",
+"url":"https://github.com/gruns/icecream",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"Inspect variables, expressions, and program execution with a single, simple function call."
+},
+{
+"judul":"flask-debugtoolbar",
+"url":"https://github.com/pallets-eco/flask-debugtoolbar",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Debugging Tools"
+],
+"catatan":"A port of the django-debug-toolbar to flask."
+},
+{
+"judul":"invoke",
+"url":"https://github.com/pyinvoke/invoke",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Build Tools"
+],
+"catatan":"A tool for managing shell-oriented subprocesses and organizing executable Python code into CLI-invokable tasks."
+},
+{
+"judul":"poethepoet",
+"url":"https://github.com/nat-n/poethepoet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Build Tools"
+],
+"catatan":"A task runner that defines tasks in pyproject.toml and works with poetry or uv."
+},
+{
+"judul":"scons",
+"url":"https://github.com/SCons/scons",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Build Tools"
+],
+"catatan":"A software construction tool."
+},
+{
+"judul":"doit",
+"url":"https://github.com/pydoit/doit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Build Tools"
+],
+"catatan":"A task runner and build tool."
+},
+{
+"judul":"sphinx",
+"url":"https://github.com/sphinx-doc/sphinx/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Documentation"
+],
+"catatan":"Python Documentation generator."
+},
+{
+"judul":"awesome-sphinxdoc",
+"url":"https://github.com/ygzgxyz/awesome-sphinxdoc",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Documentation"
+],
+"catatan":""
+},
+{
+"judul":"mkdocs-material",
+"url":"https://github.com/squidfunk/mkdocs-material",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Documentation"
+],
+"catatan":"A documentation framework and Material Design theme built on MkDocs."
+},
+{
+"judul":"diagrams",
+"url":"https://github.com/mingrammer/diagrams",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Documentation"
+],
+"catatan":"Diagram as Code."
+},
+{
+"judul":"pdoc",
+"url":"https://github.com/mitmproxy/pdoc",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Documentation"
+],
+"catatan":"Auto-generates API documentation for Python projects."
+},
+{
+"judul":"zensical",
+"url":"https://github.com/zensical/zensical",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Documentation"
+],
+"catatan":"A modern static site generator for technical documentation."
+},
+{
+"judul":"boto3",
+"url":"https://github.com/boto/boto3",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Python interface to Amazon Web Services."
+},
+{
+"judul":"awscli",
+"url":"https://github.com/aws/aws-cli",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Universal Command Line Interface for Amazon Web Services; the PyPI package is v1, in maintenance mode, while v2 ships as AWS's bundled installer."
+},
+{
+"judul":"azure-sdk-for-python",
+"url":"https://github.com/Azure/azure-sdk-for-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Microsoft Azure SDK for Python, published as per-service packages."
+},
+{
+"judul":"google-cloud-python",
+"url":"https://github.com/googleapis/google-cloud-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Google Cloud client libraries for Python, published as per-service packages."
+},
+{
+"judul":"ansible",
+"url":"https://github.com/ansible/ansible",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A radically simple IT automation platform."
+},
+{
+"judul":"cloud-init",
+"url":"https://github.com/canonical/cloud-init",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A multi-distribution package that handles early initialization of a cloud instance."
+},
+{
+"judul":"pyinfra",
+"url":"https://github.com/pyinfra-dev/pyinfra",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Turns Python code into shell commands and runs them on your servers."
+},
+{
+"judul":"salt",
+"url":"https://github.com/saltstack/salt",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Infrastructure automation and management system."
+},
+{
+"judul":"fabric",
+"url":"https://github.com/fabric/fabric",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A simple, Pythonic tool for remote execution and deployment."
+},
+{
+"judul":"chalice",
+"url":"https://github.com/aws/chalice",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A Python serverless microframework for AWS."
+},
+{
+"judul":"psutil",
+"url":"https://github.com/giampaolo/psutil",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A cross-platform process and system utilities module."
+},
+{
+"judul":"sentry-sdk",
+"url":"https://github.com/getsentry/sentry-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Sentry SDK for Python."
+},
+{
+"judul":"supervisor",
+"url":"https://github.com/Supervisor/supervisor",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"Supervisor process control system for UNIX."
+},
+{
+"judul":"flower",
+"url":"https://github.com/mher/flower",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A real-time monitor and web admin for Celery task queues."
+},
+{
+"judul":"sh",
+"url":"https://github.com/amoffat/sh",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A full-fledged subprocess replacement for Python."
+},
+{
+"judul":"borgbackup",
+"url":"https://github.com/borgbackup/borg",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"DevOps Tools"
+],
+"catatan":"A deduplicating archiver with compression and encryption."
+},
+{
+"judul":"pyspark",
+"url":"https://github.com/apache/spark",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distributed Computing"
+],
+"catatan":"Apache Spark Python API."
+},
+{
+"judul":"dask",
+"url":"https://github.com/dask/dask",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distributed Computing"
+],
+"catatan":"A flexible parallel computing library for analytic computing."
+},
+{
+"judul":"ray",
+"url":"https://github.com/ray-project/ray/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distributed Computing"
+],
+"catatan":"A unified framework for scaling AI and Python applications."
+},
+{
+"judul":"joblib",
+"url":"https://github.com/joblib/joblib",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distributed Computing"
+],
+"catatan":"Parallel computing and disk-based caching for Python functions."
+},
+{
+"judul":"mpi4py",
+"url":"https://github.com/mpi4py/mpi4py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distributed Computing"
+],
+"catatan":"Python bindings for MPI."
+},
+{
+"judul":"celery",
+"url":"https://github.com/celery/celery",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Task Queues"
+],
+"catatan":"An asynchronous task queue/job queue based on distributed message passing."
+},
+{
+"judul":"rq",
+"url":"https://github.com/rq/rq",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Task Queues"
+],
+"catatan":"Simple job queues for Python."
+},
+{
+"judul":"dramatiq",
+"url":"https://github.com/Bogdanp/dramatiq",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Task Queues"
+],
+"catatan":"A fast and reliable background task processing library for Python 3."
+},
+{
+"judul":"huey",
+"url":"https://github.com/coleifer/huey",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Task Queues"
+],
+"catatan":"A little task queue with multi-process, multi-thread, or greenlet workers."
+},
+{
+"judul":"taskiq",
+"url":"https://github.com/taskiq-python/taskiq",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Task Queues"
+],
+"catatan":"Distributed task queue with native asyncio support and pluggable brokers."
+},
+{
+"judul":"confluent-kafka",
+"url":"https://github.com/confluentinc/confluent-kafka-python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Messaging"
+],
+"catatan":"Confluent's Python client for Apache Kafka, built on librdkafka."
+},
+{
+"judul":"pika",
+"url":"https://github.com/pika/pika",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Messaging"
+],
+"catatan":"Pure-Python RabbitMQ/AMQP 0-9-1 client library."
+},
+{
+"judul":"paho-mqtt",
+"url":"https://github.com/eclipse-paho/paho.mqtt.python",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Messaging"
+],
+"catatan":"The Eclipse Paho MQTT client for Python."
+},
+{
+"judul":"faststream",
+"url":"https://github.com/ag2ai/faststream",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Messaging"
+],
+"catatan":"A framework for building asynchronous services over Apache Kafka, RabbitMQ, NATS, MQTT and Redis."
+},
+{
+"judul":"apscheduler",
+"url":"https://github.com/agronholm/apscheduler",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Job Schedulers"
+],
+"catatan":"A light but powerful in-process task scheduler that lets you schedule functions."
+},
+{
+"judul":"schedule",
+"url":"https://github.com/dbader/schedule",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Job Schedulers"
+],
+"catatan":"Python job scheduling for humans."
+},
+{
+"judul":"dagster",
+"url":"https://github.com/dagster-io/dagster",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Job Schedulers"
+],
+"catatan":"An orchestration platform for the development, production, and observation of data assets."
+},
+{
+"judul":"apache-airflow",
+"url":"https://github.com/apache/airflow",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Job Schedulers"
+],
+"catatan":"Airflow is a platform to programmatically author, schedule and monitor workflows."
+},
+{
+"judul":"prefect",
+"url":"https://github.com/PrefectHQ/prefect",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Job Schedulers"
+],
+"catatan":"A modern workflow orchestration framework that makes it easy to build, schedule and monitor robust data pipelines."
+},
+{
+"judul":"logging",
+"url":"https://docs.python.org/3/library/logging.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Logging"
+],
+"catatan":"(Python standard library) Logging facility for Python."
+},
+{
+"judul":"structlog",
+"url":"https://github.com/hynek/structlog",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Logging"
+],
+"catatan":"Structured logging made easy."
+},
+{
+"judul":"loguru",
+"url":"https://github.com/Delgan/loguru",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Logging"
+],
+"catatan":"Library which aims to bring enjoyable logging in Python."
+},
+{
+"judul":"logfire",
+"url":"https://github.com/pydantic/logfire",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Logging"
+],
+"catatan":"The observability platform for Python, from the makers of Pydantic."
+},
+{
+"judul":"scapy",
+"url":"https://github.com/secdev/scapy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Network Virtualization"
+],
+"catatan":"A brilliant packet manipulation library."
+},
+{
+"judul":"netmiko",
+"url":"https://github.com/ktbyers/netmiko",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Network Virtualization"
+],
+"catatan":"Multi-vendor library to simplify CLI connections to network devices."
+},
+{
+"judul":"napalm",
+"url":"https://github.com/napalm-automation/napalm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Network Virtualization"
+],
+"catatan":"Cross-vendor API to manipulate network devices."
+},
+{
+"judul":"argparse",
+"url":"https://docs.python.org/3/library/argparse.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"(Python standard library) Command-line option and argument parsing."
+},
+{
+"judul":"click",
+"url":"https://github.com/pallets/click/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A package for creating beautiful command line interfaces in a composable way."
+},
+{
+"judul":"typer",
+"url":"https://github.com/fastapi/typer",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"Modern CLI framework that uses Python type hints. Built on Click."
+},
+{
+"judul":"prompt_toolkit",
+"url":"https://github.com/prompt-toolkit/python-prompt-toolkit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A library for building powerful interactive command lines."
+},
+{
+"judul":"fire",
+"url":"https://github.com/google/python-fire",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A library for creating command line interfaces from absolutely any Python object."
+},
+{
+"judul":"rich",
+"url":"https://github.com/Textualize/rich",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"Python library for rich text and beautiful formatting in the terminal. Also provides a great RichHandler log handler."
+},
+{
+"judul":"tqdm",
+"url":"https://github.com/tqdm/tqdm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"Fast, extensible progress bar for loops and CLI."
+},
+{
+"judul":"colorama",
+"url":"https://github.com/tartley/colorama",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"Cross-platform colored terminal text."
+},
+{
+"judul":"alive-progress",
+"url":"https://github.com/rsalmei/alive-progress",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A new kind of Progress Bar, with real-time throughput, eta and very cool animations."
+},
+{
+"judul":"textual",
+"url":"https://github.com/Textualize/textual",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A framework for building interactive user interfaces that run in the terminal and the browser."
+},
+{
+"judul":"urwid",
+"url":"https://github.com/urwid/urwid",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A library for creating terminal GUI applications with strong support for widgets, events, rich colors, etc."
+},
+{
+"judul":"asciimatics",
+"url":"https://github.com/peterbrittain/asciimatics",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Development"
+],
+"catatan":"A package to create full-screen text UIs (from interactive forms to ASCII animations)."
+},
+{
+"judul":"pgcli",
+"url":"https://github.com/dbcli/pgcli",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"PostgreSQL CLI with autocompletion and syntax highlighting."
+},
+{
+"judul":"mycli",
+"url":"https://github.com/dbcli/mycli",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"MySQL CLI with autocompletion and syntax highlighting."
+},
+{
+"judul":"litecli",
+"url":"https://github.com/dbcli/litecli",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"SQLite CLI with autocompletion and syntax highlighting."
+},
+{
+"judul":"iredis",
+"url":"https://github.com/laixintao/iredis",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"Redis CLI with autocompletion and syntax highlighting."
+},
+{
+"judul":"yt-dlp",
+"url":"https://github.com/yt-dlp/yt-dlp",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"A command-line program to download videos from YouTube and other video sites, a fork of youtube-dl."
+},
+{
+"judul":"httpie",
+"url":"https://github.com/httpie/cli",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"A command line HTTP client, a user-friendly cURL replacement."
+},
+{
+"judul":"cookiecutter",
+"url":"https://github.com/cookiecutter/cookiecutter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"A command-line utility that creates projects from cookiecutters (project templates)."
+},
+{
+"judul":"copier",
+"url":"https://github.com/copier-org/copier",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"A library and command-line utility for rendering project templates."
+},
+{
+"judul":"xonsh",
+"url":"https://github.com/xonsh/xonsh/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"A Python-powered shell. Full-featured and cross-platform."
+},
+{
+"judul":"tmuxp",
+"url":"https://github.com/tmux-python/tmuxp",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"CLI Tools"
+],
+"catatan":"A tmux session manager."
+},
+{
+"judul":"PyGObject",
+"url":"https://github.com/GNOME/pygobject",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"Python Bindings for GLib/GObject/GIO/GTK."
+},
+{
+"judul":"dearpygui",
+"url":"https://github.com/hoffstadt/DearPyGui",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"A simple GPU-accelerated Python GUI framework."
+},
+{
+"judul":"Kivy",
+"url":"https://github.com/kivy/kivy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"An open-source framework for cross-platform GUI apps on desktop, mobile, and embedded platforms."
+},
+{
+"judul":"wxPython",
+"url":"https://github.com/wxWidgets/Phoenix",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"A cross-platform GUI toolkit that wraps the wxWidgets C++ library."
+},
+{
+"judul":"toga",
+"url":"https://github.com/beeware/toga",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"A Python native, OS native GUI toolkit."
+},
+{
+"judul":"PySide6",
+"url":"https://github.com/pyside/pyside-setup",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"Qt for Python offers the official Python bindings for Qt, largely API-compatible with PyQt6 but with different licensing."
+},
+{
+"judul":"PyQt6",
+"url":"https://www.riverbankcomputing.com/static/Docs/PyQt6/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"Python bindings for the Qt cross-platform application and UI framework."
+},
+{
+"judul":"tkinter",
+"url":"https://docs.python.org/3/library/tkinter.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"(Python standard library) The standard Python interface to the Tcl/Tk GUI toolkit."
+},
+{
+"judul":"customtkinter",
+"url":"https://github.com/tomschimansky/customtkinter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"A modern and customizable python UI-library based on Tkinter."
+},
+{
+"judul":"pywebview",
+"url":"https://github.com/r0x0r/pywebview/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"A lightweight cross-platform native wrapper around a webview component."
+},
+{
+"judul":"nicegui",
+"url":"https://github.com/zauberzeug/nicegui",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"An easy-to-use, Python-based UI framework, which shows up in your web browser."
+},
+{
+"judul":"flet",
+"url":"https://github.com/flet-dev/flet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"GUI Development"
+],
+"catatan":"Cross-platform GUI framework for building modern apps in pure Python."
+},
+{
+"judul":"charset-normalizer",
+"url":"https://github.com/jawah/charset_normalizer",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"Universal character encoding detector, and a dependency of requests."
+},
+{
+"judul":"chardet",
+"url":"https://github.com/chardet/chardet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"Python character encoding detector."
+},
+{
+"judul":"ftfy",
+"url":"https://github.com/rspeer/python-ftfy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"Makes Unicode text less broken and more consistent automagically."
+},
+{
+"judul":"rapidfuzz",
+"url":"https://github.com/rapidfuzz/RapidFuzz",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"Rapid fuzzy string matching using various string metrics, with a C++ core."
+},
+{
+"judul":"difflib",
+"url":"https://docs.python.org/3/library/difflib.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"(Python standard library) Helpers for computing deltas."
+},
+{
+"judul":"pyfiglet",
+"url":"https://github.com/pwaller/pyfiglet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"An implementation of figlet written in Python."
+},
+{
+"judul":"babel",
+"url":"https://github.com/python-babel/babel",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"An internationalization library for Python."
+},
+{
+"judul":"pygments",
+"url":"https://github.com/pygments/pygments",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"A generic syntax highlighter."
+},
+{
+"judul":"pyparsing",
+"url":"https://github.com/pyparsing/pyparsing",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"A Python library for creating PEG parsers."
+},
+{
+"judul":"sqlparse",
+"url":"https://github.com/andialbrecht/sqlparse",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"A non-validating SQL parser."
+},
+{
+"judul":"phonenumbers",
+"url":"https://github.com/daviddrysdale/python-phonenumbers",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"Parsing, formatting, storing and validating international phone numbers."
+},
+{
+"judul":"parsy",
+"url":"https://github.com/python-parsy/parsy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"Easy, generic parser combinator library for creating parsers."
+},
+{
+"judul":"python-slugify",
+"url":"https://github.com/un33k/python-slugify",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"A Python slugify library that translates unicode to ASCII."
+},
+{
+"judul":"unidecode",
+"url":"https://github.com/avian2/unidecode",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"ASCII transliterations of Unicode text."
+},
+{
+"judul":"shortuuid",
+"url":"https://github.com/skorokithakis/shortuuid",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Text Processing"
+],
+"catatan":"A generator library for concise, unambiguous and URL-safe UUIDs."
+},
+{
+"judul":"lxml",
+"url":"https://github.com/lxml/lxml",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTML Manipulation"
+],
+"catatan":"A very fast, easy-to-use and versatile library for handling HTML and XML."
+},
+{
+"judul":"beautifulsoup4",
+"url":"https://www.crummy.com/software/BeautifulSoup/bs4/doc/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTML Manipulation"
+],
+"catatan":"Providing Pythonic idioms for iterating, searching, and modifying HTML or XML."
+},
+{
+"judul":"xmltodict",
+"url":"https://github.com/martinblech/xmltodict",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTML Manipulation"
+],
+"catatan":"Working with XML feel like you are working with JSON."
+},
+{
+"judul":"markupsafe",
+"url":"https://github.com/pallets/markupsafe",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTML Manipulation"
+],
+"catatan":"Safely adds untrusted strings to HTML/XML markup."
+},
+{
+"judul":"justhtml",
+"url":"https://github.com/EmilStenstrom/justhtml/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"HTML Manipulation"
+],
+"catatan":"A pure Python HTML5 parser that sanitizes untrusted HTML by default."
+},
+{
+"judul":"pyelftools",
+"url":"https://github.com/eliben/pyelftools",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"Parsing and analyzing ELF files and DWARF debugging information."
+},
+{
+"judul":"tablib",
+"url":"https://github.com/jazzband/tablib",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A module for Tabular Datasets in XLS, CSV, JSON, YAML."
+},
+{
+"judul":"markitdown",
+"url":"https://github.com/microsoft/markitdown",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"Python tool for converting files and office documents to Markdown."
+},
+{
+"judul":"docling",
+"url":"https://github.com/docling-project/docling",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"Library for converting documents into structured data."
+},
+{
+"judul":"openpyxl",
+"url":"https://openpyxl.readthedocs.io/en/stable/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A library for reading and writing Excel 2010 xlsx/xlsm/xltx/xltm files."
+},
+{
+"judul":"xlsxwriter",
+"url":"https://github.com/jmcnamara/XlsxWriter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A Python module for creating Excel .xlsx files."
+},
+{
+"judul":"python-docx",
+"url":"https://github.com/python-openxml/python-docx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"Creates, reads, and updates Microsoft Word (.docx) files."
+},
+{
+"judul":"python-pptx",
+"url":"https://github.com/scanny/python-pptx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"Python library for creating and updating PowerPoint (.pptx) files."
+},
+{
+"judul":"pypdf",
+"url":"https://github.com/py-pdf/pypdf",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A library capable of splitting, merging, cropping, and transforming PDF pages."
+},
+{
+"judul":"pymupdf",
+"url":"https://github.com/pymupdf/PyMuPDF",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A fast library for extracting, rendering, and editing PDF and other document formats, built on MuPDF."
+},
+{
+"judul":"reportlab",
+"url":"https://docs.reportlab.com/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"An open-source library for generating PDFs and graphics."
+},
+{
+"judul":"pdfminer.six",
+"url":"https://github.com/pdfminer/pdfminer.six",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A community-maintained fork of PDFMiner for extracting information from PDF documents."
+},
+{
+"judul":"weasyprint",
+"url":"https://github.com/Kozea/WeasyPrint",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A visual rendering engine for HTML and CSS that can export to PDF."
+},
+{
+"judul":"markdown-it-py",
+"url":"https://github.com/executablebooks/markdown-it-py",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"Markdown parser with 100% CommonMark support, extensions, and syntax plugins."
+},
+{
+"judul":"markdown",
+"url":"https://github.com/Python-Markdown/markdown",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A Python implementation of John Gruber’s Markdown."
+},
+{
+"judul":"mistune",
+"url":"https://github.com/lepture/mistune",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A fast yet powerful Python Markdown parser with renderers and plugins."
+},
+{
+"judul":"tomllib",
+"url":"https://docs.python.org/3/library/tomllib.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"(Python standard library) Parse TOML files."
+},
+{
+"judul":"pyyaml",
+"url":"https://github.com/yaml/pyyaml",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Format Processing"
+],
+"catatan":"A full-featured YAML framework for Python."
+},
+{
+"judul":"mimetypes",
+"url":"https://docs.python.org/3/library/mimetypes.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Manipulation"
+],
+"catatan":"(Python standard library) Map filenames to MIME types."
+},
+{
+"judul":"pathlib",
+"url":"https://docs.python.org/3/library/pathlib.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Manipulation"
+],
+"catatan":"(Python standard library) A cross-platform, object-oriented path library."
+},
+{
+"judul":"watchfiles",
+"url":"https://github.com/samuelcolvin/watchfiles",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Manipulation"
+],
+"catatan":"Simple, modern and fast file watching and code reload in python."
+},
+{
+"judul":"watchdog",
+"url":"https://github.com/gorakhargosh/watchdog",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Manipulation"
+],
+"catatan":"API and shell utilities to monitor file system events."
+},
+{
+"judul":"python-magic",
+"url":"https://github.com/ahupp/python-magic",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"File Manipulation"
+],
+"catatan":"A Python interface to the libmagic file type identification library."
+},
+{
+"judul":"qrcode",
+"url":"https://github.com/lincolnloop/python-qrcode",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"A pure Python QR Code generator."
+},
+{
+"judul":"python-barcode",
+"url":"https://github.com/WhyNotHugo/python-barcode",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"Create barcodes in Python with no extra dependencies."
+},
+{
+"judul":"pillow",
+"url":"https://github.com/python-pillow/Pillow",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"Pillow is the friendly PIL fork."
+},
+{
+"judul":"scikit-image",
+"url":"https://github.com/scikit-image/scikit-image",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"A Python library for (scientific) image processing."
+},
+{
+"judul":"rembg",
+"url":"https://github.com/danielgatis/rembg",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"A tool to remove image backgrounds."
+},
+{
+"judul":"wand",
+"url":"https://github.com/emcconville/wand",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"Python bindings for MagickWand, C API for ImageMagick."
+},
+{
+"judul":"pyvips",
+"url":"https://github.com/libvips/pyvips",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"A binding for libvips, a fast image processing library with low memory needs."
+},
+{
+"judul":"thumbor",
+"url":"https://github.com/thumbor/thumbor",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Image Processing"
+],
+"catatan":"A smart imaging service. It enables on-demand crop, re-sizing and flipping of images."
+},
+{
+"judul":"soundfile",
+"url":"https://github.com/bastibe/python-soundfile",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"An audio library for reading and writing sound files, based on libsndfile, CFFI, and NumPy."
+},
+{
+"judul":"librosa",
+"url":"https://github.com/librosa/librosa",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"Python library for audio and music analysis."
+},
+{
+"judul":"pydub",
+"url":"https://github.com/jiaaro/pydub",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"Manipulate audio with a simple and easy high level interface."
+},
+{
+"judul":"av",
+"url":"https://github.com/PyAV-Org/PyAV",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"Pythonic bindings for FFmpeg's libraries."
+},
+{
+"judul":"moviepy",
+"url":"https://github.com/Zulko/moviepy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"A module for script-based movie editing with many formats, including animated GIFs."
+},
+{
+"judul":"mutagen",
+"url":"https://github.com/quodlibet/mutagen",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"A Python module to handle audio metadata."
+},
+{
+"judul":"tinytag",
+"url":"https://github.com/tinytag/tinytag",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"A library for reading audio file metadata of MP3, MP4, WAV, OGG, FLAC, WMA, and AIFF files."
+},
+{
+"judul":"beets",
+"url":"https://github.com/beetbox/beets",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Audio & Video Processing"
+],
+"catatan":"A music library manager and MusicBrainz tagger."
+},
+{
+"judul":"panda3d",
+"url":"https://github.com/panda3d/panda3d",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Game Development"
+],
+"catatan":"3D game engine developed jointly by Disney and contributors from around the world."
+},
+{
+"judul":"pyglet",
+"url":"https://github.com/pyglet/pyglet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Game Development"
+],
+"catatan":"A cross-platform windowing and multimedia library for Python."
+},
+{
+"judul":"pygame-ce",
+"url":"https://github.com/pygame-community/pygame-ce",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Game Development"
+],
+"catatan":"An actively developed drop-in replacement with new features and performance improvements (pygame fork)."
+},
+{
+"judul":"pygame",
+"url":"https://github.com/pygame/pygame",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Game Development"
+],
+"catatan":"Pygame is a set of Python modules designed for writing games."
+},
+{
+"judul":"arcade",
+"url":"https://github.com/pythonarcade/arcade",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Game Development"
+],
+"catatan":"An easy-to-use library for creating 2D arcade games."
+},
+{
+"judul":"renpy",
+"url":"https://github.com/renpy/renpy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Game Development"
+],
+"catatan":"A Visual Novel engine."
+},
+{
+"judul":"cpython",
+"url":"https://github.com/python/cpython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Implementations"
+],
+"catatan":"Default, most widely used implementation of the Python programming language written in C."
+},
+{
+"judul":"micropython",
+"url":"https://github.com/micropython/micropython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Implementations"
+],
+"catatan":"A lean and efficient Python implementation for microcontrollers and constrained systems."
+},
+{
+"judul":"pypy",
+"url":"https://github.com/pypy/pypy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Implementations"
+],
+"catatan":"A very fast and compliant implementation of the Python language."
+},
+{
+"judul":"Cython",
+"url":"https://github.com/cython/cython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Implementations"
+],
+"catatan":"Optimizing Static Compiler for Python."
+},
+{
+"judul":"pyodide",
+"url":"https://github.com/pyodide/pyodide",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Implementations"
+],
+"catatan":"Python distribution for the browser and Node.js based on WebAssembly."
+},
+{
+"judul":"attrs",
+"url":"https://github.com/python-attrs/attrs",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Built-in Classes Enhancement"
+],
+"catatan":"Replacement for init, eq, repr, etc. boilerplate in class definitions."
+},
+{
+"judul":"bidict",
+"url":"https://github.com/jab/bidict",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Built-in Classes Enhancement"
+],
+"catatan":"Efficient, Pythonic bidirectional map data structures and related functionality."
+},
+{
+"judul":"uuid-utils",
+"url":"https://github.com/aminalaee/uuid-utils",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Built-in Classes Enhancement"
+],
+"catatan":"A fast, Rust-backed drop-in replacement for Python's built-in uuid module."
+},
+{
+"judul":"python-box",
+"url":"https://github.com/cdgriffith/Box",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Built-in Classes Enhancement"
+],
+"catatan":"Python dictionaries with advanced dot notation access."
+},
+{
+"judul":"functools",
+"url":"https://docs.python.org/3/library/functools.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Functional Programming"
+],
+"catatan":"(Python standard library) Higher-order functions and operations on callable objects."
+},
+{
+"judul":"more-itertools",
+"url":"https://github.com/more-itertools/more-itertools",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Functional Programming"
+],
+"catatan":"More routines for operating on iterables, beyond itertools."
+},
+{
+"judul":"toolz",
+"url":"https://github.com/pytoolz/toolz",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Functional Programming"
+],
+"catatan":"A collection of functional utilities for iterators, functions, and dictionaries. Also available as cytoolz for Cython-accelerated performance."
+},
+{
+"judul":"funcy",
+"url":"https://github.com/Suor/funcy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Functional Programming"
+],
+"catatan":"A fancy and practical functional tools."
+},
+{
+"judul":"returns",
+"url":"https://github.com/dry-python/returns",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Functional Programming"
+],
+"catatan":"A set of type-safe monads, transformers, and composition utilities."
+},
+{
+"judul":"asyncio",
+"url":"https://docs.python.org/3/library/asyncio.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"(Python standard library) Asynchronous I/O, event loop, coroutines and tasks."
+},
+{
+"judul":"awesome-asyncio",
+"url":"https://github.com/timofurrer/awesome-asyncio",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":""
+},
+{
+"judul":"anyio",
+"url":"https://github.com/agronholm/anyio",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"A high-level async concurrency and networking framework that works on top of asyncio or trio."
+},
+{
+"judul":"uvloop",
+"url":"https://github.com/MagicStack/uvloop",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"Ultra fast asyncio event loop."
+},
+{
+"judul":"trio",
+"url":"https://github.com/python-trio/trio",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"A friendly library for async concurrency and I/O."
+},
+{
+"judul":"gevent",
+"url":"https://github.com/gevent/gevent",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"A coroutine-based Python networking library that uses greenlet."
+},
+{
+"judul":"Twisted",
+"url":"https://github.com/twisted/twisted",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"An event-driven networking engine."
+},
+{
+"judul":"concurrent.futures",
+"url":"https://docs.python.org/3/library/concurrent.futures.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"(Python standard library) A high-level interface for asynchronously executing callables."
+},
+{
+"judul":"multiprocessing",
+"url":"https://docs.python.org/3/library/multiprocessing.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Asynchronous Programming"
+],
+"catatan":"(Python standard library) Process-based parallelism."
+},
+{
+"judul":"zoneinfo",
+"url":"https://docs.python.org/3/library/zoneinfo.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Date and Time"
+],
+"catatan":"(Python standard library) IANA time zone support. Brings the tz database into Python."
+},
+{
+"judul":"python-dateutil",
+"url":"https://github.com/dateutil/dateutil",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Date and Time"
+],
+"catatan":"Extensions to the standard Python datetime module."
+},
+{
+"judul":"dateparser",
+"url":"https://github.com/scrapinghub/dateparser",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Date and Time"
+],
+"catatan":"A Python parser for human-readable dates in over 200 language locales."
+},
+{
+"judul":"pendulum",
+"url":"https://github.com/python-pendulum/pendulum",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Date and Time"
+],
+"catatan":"Python datetimes made easy."
+},
+{
+"judul":"whenever",
+"url":"https://github.com/ariebovenberg/whenever",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Date and Time"
+],
+"catatan":"A modern datetime library, type-safe and DST-safe, in Rust or pure Python."
+},
+{
+"judul":"virtualenv",
+"url":"https://github.com/pypa/virtualenv",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Environment Management"
+],
+"catatan":"A tool to create isolated Python environments."
+},
+{
+"judul":"uv",
+"url":"https://github.com/astral-sh/uv",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Environment Management",
+"Package Management",
+"Supply Chain Security"
+],
+"catatan":"An extremely fast Python version, package and project manager, written in Rust."
+},
+{
+"judul":"pyenv",
+"url":"https://github.com/pyenv/pyenv",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Environment Management"
+],
+"catatan":"Simple Python version management."
+},
+{
+"judul":"pip",
+"url":"https://github.com/pypa/pip",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"The package installer for Python."
+},
+{
+"judul":"poetry",
+"url":"https://github.com/python-poetry/poetry",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"Python dependency management and packaging made easy."
+},
+{
+"judul":"hatch",
+"url":"https://github.com/pypa/hatch",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"Modern, extensible Python project manager for environments, builds, and publishing."
+},
+{
+"judul":"pipx",
+"url":"https://github.com/pypa/pipx",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"Install and Run Python Applications in Isolated Environments. Like npx in Node.js."
+},
+{
+"judul":"conda",
+"url":"https://github.com/conda/conda/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"Cross-platform, Python-agnostic binary package manager."
+},
+{
+"judul":"setuptools",
+"url":"https://github.com/pypa/setuptools",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"The historical and still most widely used pyproject build backend."
+},
+{
+"judul":"poetry-core",
+"url":"https://github.com/python-poetry/poetry-core",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Management"
+],
+"catatan":"Poetry's PEP 517 build backend, usable without Poetry itself."
+},
+{
+"judul":"pypiserver",
+"url":"https://github.com/pypiserver/pypiserver",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Repositories"
+],
+"catatan":"A minimal PyPI server for uploading and installing packages with pip."
+},
+{
+"judul":"devpi",
+"url":"https://github.com/devpi/devpi",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Repositories"
+],
+"catatan":"PyPI server and packaging/testing/release tool."
+},
+{
+"judul":"bandersnatch",
+"url":"https://github.com/pypa/bandersnatch/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Package Repositories"
+],
+"catatan":"PyPI mirroring tool provided by Python Packaging Authority (PyPA)."
+},
+{
+"judul":"pyinstaller",
+"url":"https://github.com/pyinstaller/pyinstaller",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distribution"
+],
+"catatan":"Converts Python programs into stand-alone executables (cross-platform)."
+},
+{
+"judul":"Nuitka",
+"url":"https://github.com/Nuitka/Nuitka",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distribution"
+],
+"catatan":"Compiles Python programs into high-performance standalone executables (cross-platform)."
+},
+{
+"judul":"pex",
+"url":"https://github.com/pex-tool/pex",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distribution"
+],
+"catatan":"A tool for building self-contained Python executable environments (PEP 441 zipapps)."
+},
+{
+"judul":"cx-Freeze",
+"url":"https://github.com/marcelotduarte/cx_Freeze",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distribution"
+],
+"catatan":"Converts Python scripts into standalone executables and installers for Windows, macOS, and Linux."
+},
+{
+"judul":"pyarmor",
+"url":"https://github.com/dashingsoft/pyarmor",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Distribution"
+],
+"catatan":"A tool used to obfuscate python scripts, bind obfuscated scripts to fixed machine or expire obfuscated scripts."
+},
+{
+"judul":"configparser",
+"url":"https://docs.python.org/3/library/configparser.html",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Configuration Files"
+],
+"catatan":"(Python standard library) INI file parser."
+},
+{
+"judul":"python-dotenv",
+"url":"https://github.com/theskumar/python-dotenv",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Configuration Files"
+],
+"catatan":"Reads key-value pairs from a .env file and sets them as environment variables."
+},
+{
+"judul":"pydantic-settings",
+"url":"https://github.com/pydantic/pydantic-settings",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Configuration Files"
+],
+"catatan":"Settings management using Pydantic models with validation, loading from environment variables and secrets files."
+},
+{
+"judul":"hydra-core",
+"url":"https://github.com/hydra-ecosystem/hydra",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Configuration Files"
+],
+"catatan":"Hydra is a framework for elegantly configuring complex applications."
+},
+{
+"judul":"dynaconf",
+"url":"https://github.com/dynaconf/dynaconf",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Configuration Files"
+],
+"catatan":"Dynaconf is a configuration manager with plugins for Django and Flask."
+},
+{
+"judul":"cryptography",
+"url":"https://github.com/pyca/cryptography",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Cryptography"
+],
+"catatan":"A package designed to expose cryptographic primitives and recipes to Python developers."
+},
+{
+"judul":"pynacl",
+"url":"https://github.com/pyca/pynacl",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Cryptography"
+],
+"catatan":"Python binding to libsodium, a fork of the Networking and Cryptography (NaCl) library."
+},
+{
+"judul":"paramiko",
+"url":"https://github.com/paramiko/paramiko",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Cryptography"
+],
+"catatan":"The leading native Python SSHv2 protocol library."
+},
+{
+"judul":"itsdangerous",
+"url":"https://github.com/pallets/itsdangerous",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Cryptography"
+],
+"catatan":"Safely pass trusted data to untrusted environments and back."
+},
+{
+"judul":"mitmproxy",
+"url":"https://github.com/mitmproxy/mitmproxy",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Penetration Testing"
+],
+"catatan":"An interactive TLS-capable intercepting HTTP proxy for penetration testers and software developers."
+},
+{
+"judul":"impacket",
+"url":"https://github.com/fortra/impacket",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Penetration Testing"
+],
+"catatan":"A collection of Python classes for working with network protocols, widely used for Windows and Active Directory testing."
+},
+{
+"judul":"sqlmap",
+"url":"https://github.com/sqlmapproject/sqlmap",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Penetration Testing"
+],
+"catatan":"Automatic SQL injection and database takeover tool."
+},
+{
+"judul":"pwntools",
+"url":"https://github.com/Gallopsled/pwntools",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Penetration Testing"
+],
+"catatan":"A CTF framework and exploit development library."
+},
+{
+"judul":"sherlock-project",
+"url":"https://github.com/sherlock-project/sherlock",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Penetration Testing"
+],
+"catatan":"Hunt down social media accounts by username across social networks."
+},
+{
+"judul":"pip-audit",
+"url":"https://github.com/pypa/pip-audit",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Supply Chain Security"
+],
+"catatan":"Audits Python environments and dependency trees for known vulnerabilities, using the Python Packaging Advisory Database or OSV."
+},
+{
+"judul":"nh3",
+"url":"https://github.com/messense/nh3",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Security"
+],
+"catatan":"Python binding to the ammonia HTML sanitizer, a fast replacement for bleach."
+},
+{
+"judul":"secure",
+"url":"https://github.com/TypeError/secure",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Web Security"
+],
+"catatan":"HTTP security headers for Python web applications with ASGI and WSGI middleware."
+},
+{
+"judul":"pyserial",
+"url":"https://github.com/pyserial/pyserial",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"Python serial port access library for Windows, macOS, Linux, and BSD."
+},
+{
+"judul":"pynput",
+"url":"https://github.com/moses-palmer/pynput",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"A library to control and monitor input devices."
+},
+{
+"judul":"bleak",
+"url":"https://github.com/hbldh/bleak",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"A cross platform Bluetooth Low Energy Client for Python using asyncio."
+},
+{
+"judul":"jumpstarter",
+"url":"https://github.com/jumpstarter-dev/jumpstarter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Hardware"
+],
+"catatan":"A hardware-in-the-loop testing framework with a Python client library for automated testing on real and virtual hardware."
+},
+{
+"judul":"pywin32",
+"url":"https://github.com/mhammond/pywin32",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Microsoft Windows"
+],
+"catatan":"Python Extensions for Windows."
+},
+{
+"judul":"pythonnet",
+"url":"https://github.com/pythonnet/pythonnet",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Microsoft Windows"
+],
+"catatan":"Python Integration with the .NET Common Language Runtime (CLR)."
+},
+{
+"judul":"pyenv-win",
+"url":"https://github.com/pyenv-win/pyenv-win",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Microsoft Windows"
+],
+"catatan":"A Python version manager for Windows (rbenv-win fork)."
+},
+{
+"judul":"winpython",
+"url":"https://github.com/winpython/winpython",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Microsoft Windows"
+],
+"catatan":"Portable Python distribution for Windows."
+},
+{
+"judul":"blinker",
+"url":"https://github.com/pallets-eco/blinker",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A fast Python in-process signal/event dispatching system."
+},
+{
+"judul":"boltons",
+"url":"https://github.com/mahmoud/boltons",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Miscellaneous"
+],
+"catatan":"A set of pure-Python utilities."
+},
+{
+"judul":"Awesome Python Newsletter",
+"url":"https://python.libhunt.com/newsletter",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Newsletters"
+],
+"catatan":""
+},
+{
+"judul":"Pycoder's Weekly",
+"url":"https://pycoders.com/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Newsletters"
+],
+"catatan":""
+},
+{
+"judul":"Python Tricks",
+"url":"https://realpython.com/python-tricks/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Newsletters"
+],
+"catatan":""
+},
+{
+"judul":"Python Weekly",
+"url":"https://www.pythonweekly.com/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Newsletters"
+],
+"catatan":""
+},
+{
+"judul":"Django Chat",
+"url":"https://djangochat.com/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Podcasts"
+],
+"catatan":""
+},
+{
+"judul":"PyPodcats",
+"url":"https://pypodcats.live",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Podcasts"
+],
+"catatan":""
+},
+{
+"judul":"Python Bytes",
+"url":"https://pythonbytes.fm",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Podcasts"
+],
+"catatan":""
+},
+{
+"judul":"Talk Python To Me",
+"url":"https://talkpython.fm/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Podcasts"
+],
+"catatan":""
+},
+{
+"judul":"The Real Python Podcast",
+"url":"https://realpython.com/podcasts/rpp/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Podcasts"
+],
+"catatan":""
+},
+{
+"judul":"Python Developer Tooling Handbook",
+"url":"https://pydevtools.com/",
+"jenis":"pustaka",
+"bahasa":"en",
+"topik":[
+"Resources › Websites"
+],
+"catatan":"Comprehensive guide to modern Python developer tools covering package management, linting, type checking, testing, and more."
+}
+]
+}

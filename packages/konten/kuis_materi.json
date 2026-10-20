@@ -1,0 +1,2757 @@
+{
+ "html": {
+  "Kuis 1: Dasar HTML & Struktur Dokumen": [
+   "Apa Itu HTML & Halaman Pertamamu",
+   "Apa Itu HTML & Halaman Pertamamu",
+   "Apa Itu HTML & Halaman Pertamamu",
+   "Tautan (a) dan Gambar (img)",
+   "Komentar, Sarang, dan Berburu Kesalahan",
+   "Struktur Dokumen: head dan body",
+   "Atribut: class, id, dan yang Sering Dipakai",
+   "Apa Itu HTML & Halaman Pertamamu"
+  ],
+  "Kuis 2: Teks dan Daftar": [
+   "Teks: Heading, Paragraf, dan Penekanan",
+   "Teks: Heading, Paragraf, dan Penekanan",
+   "Daftar: ul, ol, dan dl",
+   "Daftar: ul, ol, dan dl",
+   "Daftar: ul, ol, dan dl",
+   "Struktur Dokumen: head dan body",
+   "Struktur Dokumen: head dan body",
+   "Teks: Heading, Paragraf, dan Penekanan"
+  ],
+  "Kuis 3: Tautan, Gambar, dan Atribut": [
+   "Tautan (a) dan Gambar (img)",
+   "Tautan (a) dan Gambar (img)",
+   "Tautan (a) dan Gambar (img)",
+   "Tautan (a) dan Gambar (img)",
+   "Tautan (a) dan Gambar (img)",
+   "Tautan (a) dan Gambar (img)",
+   "Tautan (a) dan Gambar (img)",
+   "Atribut: class, id, dan yang Sering Dipakai"
+  ],
+  "Kuis 4: Semantik dan Tabel": [
+   "Elemen Semantik: header, nav, main, article, footer",
+   "Elemen Semantik: header, nav, main, article, footer",
+   "Elemen Semantik: header, nav, main, article, footer",
+   "Tabel",
+   "Tabel",
+   "Tabel",
+   "Tabel",
+   "Tabel"
+  ],
+  "Kuis 5: Formulir dan Metadata": [
+   "Formulir: input, label, dan button",
+   "Formulir: input, label, dan button",
+   "Formulir: input, label, dan button",
+   "Formulir: input, label, dan button",
+   "Formulir: input, label, dan button",
+   "Formulir: input, label, dan button",
+   "Apa Itu HTML & Halaman Pertamamu",
+   "Struktur Dokumen: head dan body"
+  ]
+ },
+ "css": {
+  "Kuis 1: Dasar CSS dan Pemilih": [
+   "Apa Itu CSS & Tiga Cara Menautkannya",
+   "Apa Itu CSS & Tiga Cara Menautkannya",
+   "Pemilih: Elemen, Class, dan ID",
+   "Pemilih: Elemen, Class, dan ID",
+   "Pemilih: Elemen, Class, dan ID",
+   "Pemilih: Elemen, Class, dan ID",
+   "Pemilih: Elemen, Class, dan ID",
+   "Apa Itu CSS & Tiga Cara Menautkannya"
+  ],
+  "Kuis 2: Warna, Satuan, dan Teks": [
+   "Warna dan Satuan",
+   "Warna dan Satuan",
+   "Warna dan Satuan",
+   "Warna dan Satuan",
+   "Warna dan Satuan",
+   "Teks dan Font",
+   "Teks dan Font",
+   "Warna dan Satuan"
+  ],
+  "Kuis 3: Box Model dan Display": [
+   "Box Model: margin, border, padding, content",
+   "Box Model: margin, border, padding, content",
+   "Box Model: margin, border, padding, content",
+   "Box Model: margin, border, padding, content",
+   "Display dan Alur Dokumen",
+   "Display dan Alur Dokumen",
+   "Display dan Alur Dokumen",
+   "Box Model: margin, border, padding, content"
+  ],
+  "Kuis 4: Flexbox dan Grid": [
+   "Flexbox",
+   "Flexbox",
+   "Flexbox",
+   "Flexbox",
+   "Flexbox",
+   "Flexbox",
+   "Grid",
+   "Grid"
+  ],
+  "Kuis 5: Position, Pseudo-class, dan Responsif": [
+   "Position: static, relative, absolute, fixed, sticky",
+   "Position: static, relative, absolute, fixed, sticky",
+   "Position: static, relative, absolute, fixed, sticky",
+   "Position: static, relative, absolute, fixed, sticky",
+   "Pseudo-class dan Pseudo-element",
+   "Pseudo-class dan Pseudo-element",
+   "Pseudo-class dan Pseudo-element",
+   "Responsif: media query"
+  ]
+ },
+ "java": {
+  "Kuis 1: Dasar-Dasar Java": [
+   "Pengenalan Java & Persiapan",
+   "Pengenalan Java & Persiapan",
+   "Variabel & Tipe Data",
+   "Operator",
+   "Operator",
+   "Pengenalan Java & Persiapan",
+   "Operator",
+   "Operator",
+   "Variabel & Tipe Data",
+   "Operator"
+  ],
+  "Kuis 2: Percabangan & Perulangan": [
+   "Percabangan (if / switch)",
+   "Perulangan (Loop)",
+   "Perulangan (Loop)",
+   "Perulangan (Loop)",
+   "Perulangan (Loop)",
+   "Percabangan (if / switch)",
+   "Percabangan (if / switch)",
+   "Perulangan (Loop)"
+  ],
+  "Kuis 3: Array & Method": [
+   "Array",
+   "Array",
+   "Array",
+   "Method (Fungsi)",
+   "Method (Fungsi)",
+   "Method (Fungsi)",
+   "String & Scanner (Input)",
+   "Method (Fungsi)"
+  ],
+  "Kuis 4: OOP (Class, Object, dll)": [
+   "OOP: Class & Object",
+   "OOP: Inheritance (Pewarisan)",
+   "Anggota Class: Constructor, static, dan Konstanta",
+   "Anggota Class: Constructor, static, dan Konstanta",
+   "OOP: Polymorphism",
+   "OOP: Abstract & Interface",
+   "OOP: Abstract & Interface",
+   "OOP: Class & Object",
+   "OOP: Inheritance (Pewarisan)",
+   "OOP: Inheritance (Pewarisan)"
+  ],
+  "Kuis 5: Exception & Collection": [
+   "Exception Handling",
+   "Exception Handling",
+   "Exception Handling",
+   "Collection Framework",
+   "Collection Framework",
+   "Collection Framework",
+   "Array",
+   "Exception Handling",
+   "Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque",
+   "Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque",
+   "Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque",
+   "Antrean dan Tumpukan: Queue, Deque, dan ArrayDeque"
+  ],
+  "Kuis 6: Lambda, Stream & Generics": [
+   "Lambda Expression & Functional Interface",
+   "Lambda Expression & Functional Interface",
+   "Lambda Expression & Functional Interface",
+   "Stream API",
+   "Stream API",
+   "Collection Framework",
+   "Optional & Null Safety",
+   "Optional & Null Safety"
+  ],
+  "Kuis 7: Multithreading, JDBC & Testing": [
+   "Multithreading & Concurrency Dasar",
+   "Multithreading & Concurrency Dasar",
+   "JDBC: Menghubungkan Java ke Database",
+   "JDBC: Menghubungkan Java ke Database",
+   "JDBC: Menghubungkan Java ke Database",
+   "Anotasi: Metadata untuk Compiler & Framework",
+   "Unit Testing dengan JUnit",
+   "Concurrency Lanjutan: Future, Atomic, dan Koleksi Aman-Thread"
+  ]
+ },
+ "sql": {
+  "Kuis 1: Dasar SQL & DDL": [
+   "Pengenalan Database & SQL",
+   "DDL: Membuat Struktur Tabel",
+   "DDL: Membuat Struktur Tabel",
+   "DDL: Membuat Struktur Tabel",
+   "DDL: Membuat Struktur Tabel",
+   "DDL: Membuat Struktur Tabel",
+   "DDL: Membuat Struktur Tabel",
+   "Pengenalan Database & SQL"
+  ],
+  "Kuis 2: DML (INSERT, UPDATE, DELETE)": [
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete",
+   "DML: Insert, Update, Delete"
+  ],
+  "Kuis 3: SELECT & Filtering": [
+   "Pengenalan Database & SQL",
+   "SELECT & Filtering",
+   "SELECT & Filtering",
+   "SELECT & Filtering",
+   "SELECT & Filtering",
+   "SELECT & Filtering",
+   "SELECT & Filtering",
+   "SELECT & Filtering"
+  ],
+  "Kuis 4: Agregasi & Grouping": [
+   "Ekspresi, NULL & CASE",
+   "Ekspresi, NULL & CASE",
+   "Agregasi & Grouping",
+   "Agregasi & Grouping",
+   "Agregasi & Grouping",
+   "Membuka Database & Berkas SQL Orang Lain",
+   "Agregasi & Grouping",
+   "Ekspresi, NULL & CASE"
+  ],
+  "Kuis 5: JOIN & Lanjutan": [
+   "JOIN: Menghubungkan Tabel",
+   "JOIN: Menghubungkan Tabel",
+   "JOIN: Menghubungkan Tabel",
+   "DDL: Membuat Struktur Tabel",
+   "JOIN: Menghubungkan Tabel",
+   "Subquery & Fungsi Lanjutan",
+   "Subquery & Fungsi Lanjutan",
+   "Subquery & Fungsi Lanjutan",
+   "Index, Normalisasi & Best Practice",
+   "Index, Normalisasi & Best Practice"
+  ],
+  "Kuis 6: Window Function & CTE": [
+   "Window Function (Fungsi Jendela)",
+   "Window Function (Fungsi Jendela)",
+   "Window Function (Fungsi Jendela)",
+   "Common Table Expression (CTE) & Recursive Query",
+   "Common Table Expression (CTE) & Recursive Query",
+   "Common Table Expression (CTE) & Recursive Query",
+   "Common Table Expression (CTE) & Recursive Query"
+  ],
+  "Kuis 7: View, Trigger & Transaction Lanjutan": [
+   "View, Stored Procedure & Trigger",
+   "View, Stored Procedure & Trigger",
+   "View, Stored Procedure & Trigger",
+   "Transaction & Isolation Level Lanjutan",
+   "Transaction & Isolation Level Lanjutan",
+   "Transaction & Isolation Level Lanjutan",
+   "Transaction & Isolation Level Lanjutan",
+   "Roadmap Lanjutan: NoSQL, Scaling & Karir Database"
+  ]
+ },
+ "python": {
+  "Kuis 1: Dasar Python & Tipe Data": [
+   "Pengenalan Python & Instalasi",
+   "Pengenalan Python & Instalasi",
+   "Variabel & Tipe Data",
+   "Operator",
+   "Operator",
+   "Operator",
+   "Variabel & Tipe Data",
+   "Operator"
+  ],
+  "Kuis 2: Percabangan & Perulangan": [
+   "Percabangan (if / elif / else)",
+   "Perulangan (for & while)",
+   "Percabangan (if / elif / else)",
+   "Perulangan (for & while)",
+   "Perulangan (for & while)",
+   "Perulangan (for & while)",
+   "Perulangan (for & while)",
+   "Perulangan (for & while)"
+  ],
+  "Kuis 3: String, List, Tuple, Dict & Set": [
+   "String & Formatting",
+   "String & Formatting",
+   "List & Tuple",
+   "Dictionary & Set",
+   "Dictionary & Set",
+   "Dictionary & Set",
+   "List & Tuple",
+   "String & Formatting"
+  ],
+  "Kuis 4: Function, Lambda & Comprehension": [
+   "Function (Fungsi)",
+   "Function (Fungsi)",
+   "Function (Fungsi)",
+   "Lambda & Higher-Order Function",
+   "Lambda & Higher-Order Function",
+   "Function (Fungsi)",
+   "List Comprehension & Generator Expression",
+   "List Comprehension & Generator Expression"
+  ],
+  "Kuis 5: OOP Python": [
+   "OOP: Class & Object",
+   "OOP: Class & Object",
+   "OOP: Inheritance & Polymorphism",
+   "OOP: Encapsulation & Dunder Methods",
+   "OOP: Encapsulation & Dunder Methods",
+   "OOP: Inheritance & Polymorphism",
+   "OOP: Encapsulation & Dunder Methods",
+   "OOP: Inheritance & Polymorphism"
+  ],
+  "Kuis 6: Exception, Module & File I/O": [
+   "Exception Handling",
+   "Masukan, Keluaran & Modul Bawaan",
+   "Exception Handling",
+   "File I/O",
+   "File I/O",
+   "File I/O",
+   "Module & Package",
+   "Module & Package"
+  ],
+  "Kuis 7: Iterator, Generator, Decorator & Testing": [
+   "Iterator & Generator",
+   "List Comprehension & Generator Expression",
+   "Decorator & Context Manager",
+   "Decorator & Context Manager",
+   "Rekursi",
+   "Decorator & Context Manager",
+   "Virtual Environment, pip & Testing (pytest)",
+   "Virtual Environment, pip & Testing (pytest)"
+  ]
+ },
+ "javascript": {
+  "Kuis 1: Dasar JavaScript & Tipe Data": [
+   "Pengenalan JavaScript & Cara Menjalankan",
+   "Variabel (var, let, const) & Tipe Data",
+   "Variabel (var, let, const) & Tipe Data",
+   "Operator",
+   "Operator",
+   "Variabel (var, let, const) & Tipe Data",
+   "Variabel (var, let, const) & Tipe Data",
+   "Percabangan (if / else / switch)"
+  ],
+  "Kuis 2: Percabangan, Perulangan & Operator": [
+   "Percabangan (if / else / switch)",
+   "Perulangan (for, while, for...of, for...in)",
+   "Perulangan (for, while, for...of, for...in)",
+   "Operator",
+   "Operator",
+   "Perulangan (for, while, for...of, for...in)",
+   "Percabangan (if / else / switch)",
+   "Percabangan (if / else / switch)"
+  ],
+  "Kuis 3: String, Array & Object": [
+   "String & Template Literal",
+   "Array & Method Array (map/filter/reduce)",
+   "Array & Method Array (map/filter/reduce)",
+   "Array & Method Array (map/filter/reduce)",
+   "Array & Method Array (map/filter/reduce)",
+   "Object & Destructuring",
+   "Object & Destructuring",
+   "Array & Method Array (map/filter/reduce)"
+  ],
+  "Kuis 4: Function, Scope & Closure": [
+   "Function: Declaration, Expression & Arrow Function",
+   "Function: Declaration, Expression & Arrow Function",
+   "Variabel (var, let, const) & Tipe Data",
+   "Scope & Closure",
+   "Scope & Closure",
+   "Function: Declaration, Expression & Arrow Function",
+   "Function: Declaration, Expression & Arrow Function",
+   "Scope & Closure"
+  ],
+  "Kuis 5: OOP JavaScript (Class & Prototype)": [
+   "OOP: Class & Object (ES6+)",
+   "Prototype: OOP di Balik Layar JavaScript",
+   "Prototype: OOP di Balik Layar JavaScript",
+   "OOP: Class & Object (ES6+)",
+   "OOP: Class & Object (ES6+)",
+   "OOP: Class & Object (ES6+)",
+   "OOP: Class & Object (ES6+)",
+   "Prototype: OOP di Balik Layar JavaScript"
+  ],
+  "Kuis 6: Exception Handling & 'this'": [
+   "Exception Handling",
+   "Exception Handling",
+   "Keyword 'this' & Context",
+   "Keyword 'this' & Context",
+   "Keyword 'this' & Context",
+   "Exception Handling",
+   "Exception Handling",
+   "Keyword 'this' & Context"
+  ],
+  "Kuis 7: Asynchronous JavaScript (Promise & async/await)": [
+   "Asynchronous JavaScript: Callback",
+   "Asynchronous JavaScript: Promise",
+   "Asynchronous JavaScript: async/await",
+   "Asynchronous JavaScript: async/await",
+   "Asynchronous JavaScript: Promise",
+   "Asynchronous JavaScript: async/await",
+   "Asynchronous JavaScript: async/await",
+   "JSON & Fetch API"
+  ]
+ },
+ "c": {
+  "Kuis 1: Dasar C & Tipe Data": [
+   "Pengenalan C & Instalasi",
+   "Pengenalan C & Instalasi",
+   "Variabel & Tipe Data",
+   "Input & Output (printf & scanf)",
+   "Variabel & Tipe Data",
+   "Pengenalan C & Instalasi",
+   "Pengenalan C & Instalasi",
+   "Variabel & Tipe Data"
+  ],
+  "Kuis 2: Percabangan, Perulangan & Array": [
+   "Percabangan (if / else / switch)",
+   "Percabangan (if / else / switch)",
+   "Perulangan (for, while, do-while)",
+   "Array",
+   "Array",
+   "Array",
+   "Array",
+   "Perulangan (for, while, do-while)"
+  ],
+  "Kuis 3: String & Function": [
+   "String (Array of Char)",
+   "String (Array of Char)",
+   "String (Array of Char)",
+   "String (Array of Char)",
+   "Function (Fungsi)",
+   "Function (Fungsi)",
+   "Function (Fungsi)",
+   "Function (Fungsi)"
+  ],
+  "Kuis 4: Pointer Dasar & Pointer-Array": [
+   "Input & Output (printf & scanf)",
+   "Pointer Dasar",
+   "Pointer Dasar",
+   "Pointer & Array: Hubungan Erat Keduanya",
+   "Pointer & Array: Hubungan Erat Keduanya",
+   "Pointer & Array: Hubungan Erat Keduanya",
+   "Pointer Dasar",
+   "Pointer Dasar"
+  ],
+  "Kuis 5: Dynamic Memory & Struct": [
+   "Dynamic Memory Allocation (malloc, calloc, free)",
+   "Dynamic Memory Allocation (malloc, calloc, free)",
+   "Dynamic Memory Allocation (malloc, calloc, free)",
+   "Dynamic Memory Allocation (malloc, calloc, free)",
+   "Struct",
+   "Struct",
+   "Struct",
+   "Dynamic Memory Allocation (malloc, calloc, free)"
+  ],
+  "Kuis 6: Union, Enum, File I/O & Preprocessor": [
+   "Union & Enum",
+   "Union & Enum",
+   "File I/O",
+   "File I/O",
+   "Variabel & Tipe Data",
+   "Ekspresi, Prioritas Operator & Prefix/Postfix",
+   "Preprocessor & Macro",
+   "Debugging: gdb, valgrind & Bug Umum"
+  ],
+  "Kuis 7: Function Pointer, Linked List & Debugging": [
+   "Function Pointer",
+   "Function Pointer",
+   "Linked List: Struktur Data Dinamis",
+   "Linked List: Struktur Data Dinamis",
+   "Linked List: Struktur Data Dinamis",
+   "Debugging: gdb, valgrind & Bug Umum",
+   "Debugging: gdb, valgrind & Bug Umum",
+   "Debugging: gdb, valgrind & Bug Umum"
+  ]
+ },
+ "cpp": {
+  "Kuis 1: Dasar C++ & Perbedaan dari C": [
+   "Pengenalan C++ & Perbedaan dari C",
+   "Pengenalan C++ & Perbedaan dari C",
+   "Pengenalan C++ & Perbedaan dari C",
+   "Pengenalan C++ & Perbedaan dari C",
+   "Variabel, Tipe Data & Namespace",
+   "Pengenalan C++ & Perbedaan dari C",
+   "Variabel, Tipe Data & Namespace",
+   "Pengenalan C++ & Perbedaan dari C"
+  ],
+  "Kuis 2: Referensi, Overloading & cin/cout": [
+   "Referensi (&) vs Pointer",
+   "Referensi (&) vs Pointer",
+   "Referensi (&) vs Pointer",
+   "Function Overloading & Default Parameter",
+   "Function Overloading & Default Parameter",
+   "Input/Output Modern (cin & cout)",
+   "Input/Output Modern (cin & cout)",
+   "Function Overloading & Default Parameter"
+  ],
+  "Kuis 3: OOP Dasar (Class, Constructor, Encapsulation)": [
+   "OOP: Class & Object Dasar",
+   "Constructor & Destructor",
+   "Constructor & Destructor",
+   "Constructor & Destructor",
+   "Encapsulation: private, public, protected",
+   "Encapsulation: private, public, protected",
+   "OOP: Class & Object Dasar",
+   "OOP: Class & Object Dasar"
+  ],
+  "Kuis 4: Inheritance & Polymorphism": [
+   "Inheritance (Pewarisan)",
+   "Inheritance (Pewarisan)",
+   "Polymorphism & Virtual Function",
+   "Polymorphism & Virtual Function",
+   "Abstract Class & Pure Virtual Function",
+   "Abstract Class & Pure Virtual Function",
+   "Inheritance (Pewarisan)",
+   "Encapsulation: private, public, protected"
+  ],
+  "Kuis 5: Operator Overloading & Templates": [
+   "Operator Overloading",
+   "Operator Overloading",
+   "Templates (Generic Programming)",
+   "Templates (Generic Programming)",
+   "Templates (Generic Programming)",
+   "Templates (Generic Programming)",
+   "Operator Overloading",
+   "Templates (Generic Programming)"
+  ],
+  "Kuis 6: STL (vector, map, set, algorithm)": [
+   "STL: Vector & Array Container",
+   "STL: Vector & Array Container",
+   "STL: Map, Set & Pair",
+   "STL: Map, Set & Pair",
+   "STL: Map, Set & Pair",
+   "STL: Algorithm Library",
+   "Iterator: Menelusuri & Menyunting Container",
+   "STL: Algorithm Library"
+  ],
+  "Kuis 7: Smart Pointer, Exception & Fitur Modern C++": [
+   "Smart Pointer: unique_ptr & shared_ptr",
+   "Smart Pointer: unique_ptr & shared_ptr",
+   "Smart Pointer: unique_ptr & shared_ptr",
+   "Smart Pointer: unique_ptr & shared_ptr",
+   "Exception Handling",
+   "RAII & Move Semantics (Lanjutan)",
+   "Lambda Expression & Fitur Modern C++",
+   "STL: Map, Set & Pair"
+  ]
+ },
+ "bash": {
+  "Kuis 1: Dasar Bash & Variabel": [
+   "Pengenalan Shell & Bash",
+   "Variabel & Quoting",
+   "Variabel & Quoting",
+   "Pengenalan Shell & Bash",
+   "Variabel & Quoting",
+   "Variabel & Quoting",
+   "Variabel & Quoting",
+   "Variabel & Quoting"
+  ],
+  "Kuis 2: Input, Output & Aritmatika": [
+   "Input & Output",
+   "Input & Output",
+   "Aritmatika & Angka",
+   "Aritmatika & Angka",
+   "Input & Output",
+   "Input & Output",
+   "Input & Output",
+   "Input & Output"
+  ],
+  "Kuis 3: Percabangan": [
+   "Percabangan (if, case)",
+   "Percabangan (if, case)",
+   "Percabangan (if, case)",
+   "Percabangan (if, case)",
+   "Percabangan (if, case)",
+   "Percabangan (if, case)",
+   "Percabangan (if, case)",
+   "Proses, source, dan Subshell"
+  ],
+  "Kuis 4: Perulangan & Array": [
+   "Perulangan (for, while, until)",
+   "Perulangan (for, while, until)",
+   "Perulangan (for, while, until)",
+   "Array",
+   "Array",
+   "Array",
+   "Perulangan (for, while, until)",
+   "Perulangan (for, while, until)"
+  ],
+  "Kuis 5: Fungsi, String & Praktik Baik": [
+   "Fungsi",
+   "Fungsi",
+   "Fungsi",
+   "Operasi String",
+   "Operasi String",
+   "Argumen & Exit Code",
+   "Debugging & Praktik Baik",
+   "Variabel & Quoting"
+  ]
+ },
+ "go": {
+  "Kuis 1: Dasar Go & Tipe Data": [
+   "Pengenalan Go & Instalasi",
+   "Pengenalan Go & Instalasi",
+   "Variabel, Konstanta & Tipe Data",
+   "Variabel, Konstanta & Tipe Data",
+   "Variabel, Konstanta & Tipe Data",
+   "String, Rune & Package strings",
+   "Pengenalan Go & Instalasi",
+   "Input & Output dengan fmt"
+  ],
+  "Kuis 2: Operator & Percabangan": [
+   "Operator",
+   "Operator",
+   "Percabangan (if & switch)",
+   "Percabangan (if & switch)",
+   "Percabangan (if & switch)",
+   "Percabangan (if & switch)",
+   "Operator",
+   "Percabangan (if & switch)"
+  ],
+  "Kuis 3: Perulangan, Slice & Map": [
+   "Perulangan (for)",
+   "Array & Slice",
+   "Array & Slice",
+   "Perulangan (for)",
+   "Perulangan (for)",
+   "Map",
+   "Map",
+   "Array & Slice"
+  ],
+  "Kuis 4: Fungsi & Pointer": [
+   "Fungsi",
+   "Fungsi",
+   "Fungsi",
+   "Fungsi",
+   "Pointer",
+   "Pointer",
+   "Pointer",
+   "Fungsi"
+  ],
+  "Kuis 5: Struct, Method & Interface": [
+   "Struct & Method",
+   "Struct & Method",
+   "Interface",
+   "Interface",
+   "Interface",
+   "Interface",
+   "Struct & Method",
+   "Fungsi"
+  ],
+  "Kuis 6: Error Handling & Concurrency": [
+   "Fungsi",
+   "Interface",
+   "Error Handling",
+   "Error Handling",
+   "Goroutine & Channel",
+   "Goroutine & Channel",
+   "Goroutine & Channel",
+   "Goroutine & Channel"
+  ]
+ },
+ "csharp": {
+  "Kuis 1: Dasar C# & Tipe Data": [
+   "Pengenalan C# & .NET",
+   "Variabel, Tipe Data & Konversi",
+   "Operator & Ekspresi",
+   "Variabel, Tipe Data & Konversi",
+   "Variabel, Tipe Data & Konversi",
+   "Variabel, Tipe Data & Konversi",
+   "Variabel, Tipe Data & Konversi",
+   "Variabel, Tipe Data & Konversi"
+  ],
+  "Kuis 2: Kendali Alur & String": [
+   "Percabangan: if, switch & Pattern Matching",
+   "Operator & Ekspresi",
+   "Operator & Ekspresi",
+   "Input, Output & String",
+   "Percabangan: if, switch & Pattern Matching",
+   "Input, Output & String",
+   "Input, Output & String",
+   "Perulangan: for, while, foreach"
+  ],
+  "Kuis 3: Array, Koleksi & LINQ": [
+   "Array & Indeks",
+   "Array & Indeks",
+   "List, Dictionary & Koleksi Generik",
+   "List, Dictionary & Koleksi Generik",
+   "List, Dictionary & Koleksi Generik",
+   "LINQ: Bertanya pada Data",
+   "LINQ: Bertanya pada Data",
+   "LINQ: Bertanya pada Data"
+  ],
+  "Kuis 4: OOP di C#": [
+   "Class & Objek",
+   "Pewarisan & Polimorfisme",
+   "Pewarisan & Polimorfisme",
+   "Pewarisan & Polimorfisme",
+   "Interface",
+   "Struct, Record & Tipe Nilai",
+   "Struct, Record & Tipe Nilai",
+   "Interface"
+  ],
+  "Kuis 5: Exception, Generic & Delegate": [
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Generic: Tipe sebagai Parameter",
+   "Delegate, Event & Lambda",
+   "Delegate, Event & Lambda",
+   "Delegate, Event & Lambda",
+   "Exception & Penanganan Galat"
+  ],
+  "Kuis 6: Async, Berkas & Praktik Baik": [
+   "async & await",
+   "async & await",
+   "async & await",
+   "async & await",
+   "Bekerja dengan Berkas",
+   "Bekerja dengan Berkas",
+   "IDisposable & using",
+   "Konvensi Kode & Kualitas"
+  ]
+ },
+ "rust": {
+  "Kuis 1: Dasar Rust & Tipe Data": [
+   "Pengenalan Rust & Instalasi",
+   "Variabel, Mutabilitas & Tipe Data",
+   "Variabel, Mutabilitas & Tipe Data",
+   "Variabel, Mutabilitas & Tipe Data",
+   "Variabel, Mutabilitas & Tipe Data",
+   "Variabel, Mutabilitas & Tipe Data",
+   "Fungsi, Ekspresi & Pernyataan",
+   "Fungsi, Ekspresi & Pernyataan"
+  ],
+  "Kuis 2: Ownership & Borrowing": [
+   "Ownership: Aturan Inti Rust",
+   "Ownership: Aturan Inti Rust",
+   "Reference & Borrowing",
+   "Reference & Borrowing",
+   "Reference & Borrowing",
+   "Reference & Borrowing",
+   "Slice & String",
+   "Ownership: Aturan Inti Rust"
+  ],
+  "Kuis 3: Struct, Enum & Pattern Matching": [
+   "Enum & Option",
+   "Enum & Option",
+   "Pattern Matching: match & if let",
+   "Struct",
+   "Struct",
+   "Pattern Matching: match & if let",
+   "Pattern Matching: match & if let",
+   "Smart Pointer: Box, Rc & RefCell"
+  ],
+  "Kuis 4: Koleksi, Galat & Iterator": [
+   "Vec & HashMap",
+   "Vec & HashMap",
+   "Vec & HashMap",
+   "Closure & Iterator",
+   "Penanganan Galat: panic! & Result",
+   "Penanganan Galat: panic! & Result",
+   "Closure & Iterator",
+   "Membaca Masukan & Berkas"
+  ],
+  "Kuis 5: Generic, Trait & Lifetime": [
+   "Generic",
+   "Generic",
+   "Trait",
+   "Trait",
+   "Lifetime",
+   "Lifetime",
+   "Lifetime",
+   "Trait Standar & Konversi"
+  ],
+  "Kuis 6: Smart Pointer, Concurrency & Cargo": [
+   "Smart Pointer: Box, Rc & RefCell",
+   "Smart Pointer: Box, Rc & RefCell",
+   "Concurrency: Thread & Channel",
+   "Concurrency: Thread & Channel",
+   "Smart Pointer: Box, Rc & RefCell",
+   "Concurrency: Thread & Channel",
+   "Modul, Crate & Cargo",
+   "Modul, Crate & Cargo"
+  ]
+ },
+ "php": {
+  "Kuis 1: Dasar PHP & Tipe Data": [
+   "Pengenalan PHP & Instalasi",
+   "String & Interpolasi",
+   "Operator & Perbandingan",
+   "Variabel & Tipe Data",
+   "String & Interpolasi",
+   "Variabel & Tipe Data",
+   "Variabel & Tipe Data",
+   "Variabel & Tipe Data"
+  ],
+  "Kuis 2: Operator, Array & Perulangan": [
+   "Operator & Perbandingan",
+   "Operator & Perbandingan",
+   "Operator & Perbandingan",
+   "Array: Daftar dan Kamus Sekaligus",
+   "Array: Daftar dan Kamus Sekaligus",
+   "Array: Daftar dan Kamus Sekaligus",
+   "Percabangan & Perulangan",
+   "Percabangan & Perulangan"
+  ],
+  "Kuis 3: Fungsi & String": [
+   "Fungsi & Tipe",
+   "Fungsi & Tipe",
+   "Fungsi & Tipe",
+   "String & Interpolasi",
+   "String & Interpolasi",
+   "Fungsi & Tipe",
+   "Fungsi & Tipe",
+   "Fungsi & Tipe"
+  ],
+  "Kuis 4: OOP di PHP": [
+   "Class & Objek",
+   "Class & Objek",
+   "Pewarisan, Interface & Trait",
+   "Pewarisan, Interface & Trait",
+   "Pewarisan, Interface & Trait",
+   "Enum & Objek Nilai",
+   "Enum & Objek Nilai",
+   "Enum & Objek Nilai"
+  ],
+  "Kuis 5: Exception, Berkas & JSON": [
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Bekerja dengan Berkas & JSON",
+   "Bekerja dengan Berkas & JSON",
+   "Bekerja dengan Berkas & JSON",
+   "Bekerja dengan Berkas & JSON",
+   "Bekerja dengan Berkas & JSON"
+  ],
+  "Kuis 6: Web, Database & Keamanan": [
+   "PHP untuk Web: Request, Form & Sesi",
+   "PHP untuk Web: Request, Form & Sesi",
+   "Database dengan PDO",
+   "PHP untuk Web: Request, Form & Sesi",
+   "Praktik Baik & Keamanan",
+   "Database dengan PDO",
+   "Database dengan PDO",
+   "Composer, Autoload & Namespace"
+  ]
+ },
+ "ruby": {
+  "Kuis 1: Dasar Ruby & Objek": [
+   "Pengenalan Ruby & Instalasi",
+   "Pengenalan Ruby & Instalasi",
+   "Variabel, Tipe & Objek",
+   "Variabel, Tipe & Objek",
+   "Kendali Alur",
+   "String & Symbol",
+   "Pengenalan Ruby & Instalasi",
+   "Variabel, Tipe & Objek"
+  ],
+  "Kuis 2: Array, Hash & Kendali Alur": [
+   "Array & Hash",
+   "Array & Hash",
+   "Array & Hash",
+   "Kendali Alur",
+   "Kendali Alur",
+   "Kendali Alur",
+   "Array & Hash",
+   "Array & Hash"
+  ],
+  "Kuis 3: Blok, Proc & Lambda": [
+   "Blok, Proc & Lambda",
+   "Blok, Proc & Lambda",
+   "Blok, Proc & Lambda",
+   "Blok, Proc & Lambda",
+   "String & Symbol",
+   "Blok, Proc & Lambda",
+   "Kendali Alur",
+   "Enumerable: Kekuatan Sesungguhnya"
+  ],
+  "Kuis 4: Class, Module & Mixin": [
+   "Class & Objek",
+   "Class & Objek",
+   "Pewarisan, Module & Mixin",
+   "Pewarisan, Module & Mixin",
+   "Method & Argumen",
+   "Enumerable: Kekuatan Sesungguhnya",
+   "Pewarisan, Module & Mixin",
+   "Pewarisan, Module & Mixin"
+  ],
+  "Kuis 5: Exception & Berkas": [
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Blok, Proc & Lambda",
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Blok, Proc & Lambda",
+   "Berkas, JSON & Baris Perintah",
+   "Gem, Bundler & Struktur Proyek"
+  ],
+  "Kuis 6: Gem, Tes & Metaprogramming": [
+   "Gem, Bundler & Struktur Proyek",
+   "Gem, Bundler & Struktur Proyek",
+   "Pengujian dengan Minitest & RSpec",
+   "Pengujian dengan Minitest & RSpec",
+   "Pengujian dengan Minitest & RSpec",
+   "Metaprogramming Secukupnya",
+   "Metaprogramming Secukupnya",
+   "Metaprogramming Secukupnya"
+  ]
+ },
+ "kotlin": {
+  "Kuis 1: Dasar Kotlin & Tipe": [
+   "Pengenalan Kotlin & Instalasi",
+   "val, var & Tipe Data",
+   "val, var & Tipe Data",
+   "val, var & Tipe Data",
+   "Pengenalan Kotlin & Instalasi",
+   "val, var & Tipe Data",
+   "Pengenalan Kotlin & Instalasi",
+   "val, var & Tipe Data"
+  ],
+  "Kuis 2: Null Safety": [
+   "Null Safety",
+   "Null Safety",
+   "Null Safety",
+   "Null Safety",
+   "Null Safety",
+   "Null Safety",
+   "Null Safety",
+   "Null Safety"
+  ],
+  "Kuis 3: Fungsi, Lambda & Koleksi": [
+   "Kendali Alur",
+   "Pengenalan Kotlin & Instalasi",
+   "Pengenalan Kotlin & Instalasi",
+   "Lambda & Higher-Order Function",
+   "Lambda & Higher-Order Function",
+   "Koleksi",
+   "Koleksi",
+   "Koleksi"
+  ],
+  "Kuis 4: Class, Data Class & Sealed": [
+   "Pewarisan & Interface",
+   "Data Class, Object & Sealed",
+   "Data Class, Object & Sealed",
+   "Class, Properti & Constructor",
+   "Data Class, Object & Sealed",
+   "Pewarisan & Interface",
+   "Class, Properti & Constructor",
+   "Class, Properti & Constructor"
+  ],
+  "Kuis 5: Generic, Exception & Coroutine": [
+   "Generic & Extension Lanjut",
+   "Generic & Extension Lanjut",
+   "Pengenalan Kotlin & Instalasi",
+   "Class, Properti & Constructor",
+   "Coroutine: Asinkron Tanpa Callback",
+   "Coroutine: Asinkron Tanpa Callback",
+   "Coroutine: Asinkron Tanpa Callback",
+   "Exception & Penanganan Galat"
+  ],
+  "Kuis 6: Teks, Berkas, Gradle & Tes": [
+   "Teks, Regex & Format",
+   "Teks, Regex & Format",
+   "Berkas & Baris Perintah",
+   "Exception & Penanganan Galat",
+   "Struktur Proyek & Gradle",
+   "Struktur Proyek & Gradle",
+   "Pengujian",
+   "Pengujian"
+  ]
+ },
+ "typescript": {
+  "Kuis 1: Dasar TypeScript": [
+   "Pengenalan TypeScript & Instalasi",
+   "Pengenalan TypeScript & Instalasi",
+   "Tipe Dasar",
+   "Tipe Dasar",
+   "Pengenalan TypeScript & Instalasi",
+   "Tipe Dasar",
+   "Tipe Dasar",
+   "Tipe Dasar"
+  ],
+  "Kuis 2: Union, Narrowing & Literal": [
+   "Union, Literal & Narrowing",
+   "Union, Literal & Narrowing",
+   "Union, Literal & Narrowing",
+   "Union, Literal & Narrowing",
+   "Interface & Type Alias",
+   "Union, Literal & Narrowing",
+   "Enum, const & Readonly",
+   "Tipe Dasar"
+  ],
+  "Kuis 3: Interface, Fungsi & Class": [
+   "Interface & Type Alias",
+   "Interface & Type Alias",
+   "Fungsi & Tipe Fungsi",
+   "Fungsi & Tipe Fungsi",
+   "Class & Modifier Akses",
+   "Class & Modifier Akses",
+   "Class & Modifier Akses",
+   "Fungsi & Tipe Fungsi"
+  ],
+  "Kuis 4: Generic & Tipe Lanjut": [
+   "Generic",
+   "Generic",
+   "Tipe Lanjut",
+   "Tipe Lanjut",
+   "Tipe Lanjut",
+   "Generic",
+   "Tipe Lanjut",
+   "Tipe Lanjut"
+  ],
+  "Kuis 5: Async, Modul & Data Luar": [
+   "Async, Promise & await",
+   "Async, Promise & await",
+   "Async, Promise & await",
+   "Async, Promise & await",
+   "Modul: import & export",
+   "Modul: import & export",
+   "Data dari Luar: Tipe Bukan Jaminan",
+   "Data dari Luar: Tipe Bukan Jaminan"
+  ],
+  "Kuis 6: Koleksi, Lingkungan & Tes": [
+   "Bekerja dengan Data & Koleksi",
+   "Bekerja dengan Data & Koleksi",
+   "Bekerja dengan Data & Koleksi",
+   "Interface & Type Alias",
+   "TypeScript di Node & Browser",
+   "Pengenalan TypeScript & Instalasi",
+   "Pengujian",
+   "Pengujian"
+  ]
+ },
+ "vb": {
+  "Kuis 1: Dasar VB.NET": [
+   "Pengenalan Visual Basic .NET",
+   "Pengenalan Visual Basic .NET",
+   "Option Strict & Tipe Data",
+   "Pengenalan Visual Basic .NET",
+   "Pengenalan Visual Basic .NET",
+   "Array & Koleksi",
+   "Perulangan",
+   "Pengenalan Visual Basic .NET"
+  ],
+  "Kuis 2: Operator & Kendali Alur": [
+   "Option Strict & Tipe Data",
+   "Operator & Perbandingan",
+   "Operator & Perbandingan",
+   "Percabangan: If & Select Case",
+   "Percabangan: If & Select Case",
+   "Perulangan",
+   "Operator & Perbandingan",
+   "Operator & Perbandingan"
+  ],
+  "Kuis 3: Array, Koleksi & Prosedur": [
+   "Array & Koleksi",
+   "Array & Koleksi",
+   "Array & Koleksi",
+   "Sub, Function & Parameter",
+   "Sub, Function & Parameter",
+   "Class, Property & Constructor",
+   "Class, Property & Constructor",
+   "Pengenalan Visual Basic .NET"
+  ],
+  "Kuis 4: OOP di VB": [
+   "Pewarisan, Interface & MustInherit",
+   "Pewarisan, Interface & MustInherit",
+   "Pewarisan, Interface & MustInherit",
+   "Pewarisan, Interface & MustInherit",
+   "Structure, Enum & Module",
+   "Structure, Enum & Module",
+   "Structure, Enum & Module",
+   "Structure, Enum & Module"
+  ],
+  "Kuis 5: Exception, LINQ & Berkas": [
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "Exception & Penanganan Galat",
+   "LINQ & Lambda",
+   "LINQ & Lambda",
+   "Berkas, Data & Using",
+   "Berkas, Data & Using"
+  ],
+  "Kuis 6: Praktik Baik & Jebakan": [
+   "Percabangan: If & Select Case",
+   "Pengenalan Visual Basic .NET",
+   "Praktik Baik & Jebakan Umum",
+   "Praktik Baik & Jebakan Umum",
+   "Exception & Penanganan Galat",
+   "Class, Property & Constructor",
+   "Structure, Enum & Module",
+   "Pengenalan Visual Basic .NET"
+  ]
+ },
+ "aplikasi": {
+  "Kuis 1: Lapisan Aplikasi": [
+   "Lapisan-lapisan Aplikasi Web",
+   "Lapisan-lapisan Aplikasi Web",
+   "Lapisan-lapisan Aplikasi Web",
+   "DAO: Satu-satunya Pintu ke Database",
+   "Entitas: Benda Menjadi Kelas",
+   "Lapisan-lapisan Aplikasi Web"
+  ],
+  "Kuis 2: Model Data": [
+   "Model Data: dari Benda Nyata ke Tabel",
+   "Model Data: dari Benda Nyata ke Tabel",
+   "Model Data: dari Benda Nyata ke Tabel",
+   "Model Data: dari Benda Nyata ke Tabel",
+   "Model Data: dari Benda Nyata ke Tabel"
+  ],
+  "Kuis 3: HTTP, Controller, dan Tampilan": [
+   "Controller: Menerjemahkan HTTP",
+   "Controller: Menerjemahkan HTTP",
+   "Tampilan: JSP, Tiles, dan Kenapa Dipisah",
+   "Tampilan: JSP, Tiles, dan Kenapa Dipisah",
+   "Controller: Menerjemahkan HTTP"
+  ],
+  "Kuis 4: Keamanan dan Produksi": [
+   "Keamanan: Autentikasi vs Otorisasi",
+   "Keamanan: Autentikasi vs Otorisasi",
+   "Wadah Objek Spring: Bean dan Injeksi Dependensi",
+   "Keamanan: Autentikasi vs Otorisasi",
+   "Database di Produksi",
+   "Database di Produksi",
+   "Deploy, Cadangan, dan Cara Mundur"
+  ],
+  "Kuis 5: Bean, Validasi, dan Balasan HTTP": [
+   "Wadah Objek Spring: Bean dan Injeksi Dependensi",
+   "Wadah Objek Spring: Bean dan Injeksi Dependensi",
+   "Wadah Objek Spring: Bean dan Injeksi Dependensi",
+   "Wadah Objek Spring: Bean dan Injeksi Dependensi",
+   "DTO dan Validasi Masukan",
+   "Kode Status HTTP dan Penanganan Error Terpusat",
+   "Kode Status HTTP dan Penanganan Error Terpusat",
+   "Kode Status HTTP dan Penanganan Error Terpusat"
+  ]
+ },
+ "fedora": {
+  "Kuis 1: Dasar Fedora, Shell & Navigasi": [
+   "Manajemen Paket dengan DNF5",
+   "Mengenal Fedora & Anatomi Sistemnya",
+   "Navigasi & Peta Direktori Fedora",
+   "Navigasi & Peta Direktori Fedora",
+   "Shell, Terminal & Cara Bertanya ke Sistem",
+   "Navigasi & Peta Direktori Fedora",
+   "Membuat, Menyalin, Memindah & Menghapus",
+   "Membaca Isi Berkas"
+  ],
+  "Kuis 2: Izin, Pengguna & Pengolahan Teks": [
+   "Izin Berkas & Kepemilikan",
+   "Izin Berkas & Kepemilikan",
+   "Izin Berkas & Kepemilikan",
+   "Pengguna, Grup, sudo & polkit",
+   "Pengguna, Grup, sudo & polkit",
+   "Mengolah Teks: cut, sort, uniq, tr",
+   "Mengolah Teks: cut, sort, uniq, tr",
+   "sed & awk"
+  ],
+  "Kuis 3: DNF5, RPM & Flatpak": [
+   "Manajemen Paket dengan DNF5",
+   "Manajemen Paket dengan DNF5",
+   "Manajemen Paket dengan DNF5",
+   "Manajemen Paket dengan DNF5",
+   "RPM, Repositori, COPR & RPM Fusion",
+   "RPM, Repositori, COPR & RPM Fusion",
+   "Flatpak & Aplikasi Terkurung",
+   "RPM, Repositori, COPR & RPM Fusion"
+  ],
+  "Kuis 4: systemd, Timer & Proses": [
+   "systemd: Unit, Layanan & Target",
+   "systemd: Unit, Layanan & Target",
+   "systemd: Unit, Layanan & Target",
+   "systemd: Unit, Layanan & Target",
+   "Penjadwalan: systemd Timer & cron",
+   "Penjadwalan: systemd Timer & cron",
+   "Proses, Sinyal & Sumber Daya",
+   "Proses, Sinyal & Sumber Daya"
+  ],
+  "Kuis 5: Jaringan, firewalld & SELinux": [
+   "Mengenal Fedora & Anatomi Sistemnya",
+   "firewalld: Zona & Layanan",
+   "firewalld: Zona & Layanan",
+   "SELinux: Lapisan Keamanan Khas Fedora",
+   "SELinux: Lapisan Keamanan Khas Fedora",
+   "SELinux: Lapisan Keamanan Khas Fedora",
+   "Diagnosis Jaringan: ip, ss, DNS",
+   "Diagnosis Jaringan: ip, ss, DNS"
+  ],
+  "Kuis 6: Penyimpanan, Btrfs, Container & Skrip": [
+   "Mengenal Fedora & Anatomi Sistemnya",
+   "Penyimpanan: Disk, Mount & fstab",
+   "Penyimpanan: Disk, Mount & fstab",
+   "Btrfs: Subvolume, Snapshot & Kompresi",
+   "LVM, RAID & Enkripsi LUKS",
+   "Container: Podman, Toolbox & Distrobox",
+   "Skrip Otomasi: Menyatukan Semuanya",
+   "Skrip Otomasi: Menyatukan Semuanya"
+  ]
+ },
+ "git": {
+  "Kuis 1: Dasar Git, Commit, dan Riwayat": [
+   "Apa Itu Git & Masalah yang Ia Selesaikan",
+   "Apa Itu Git & Masalah yang Ia Selesaikan",
+   "Memasang Git & Memperkenalkan Diri",
+   "Tiga Area Kerja & Commit Pertama",
+   "Tiga Area Kerja & Commit Pertama",
+   "Membaca Status, Diff, dan Riwayat",
+   "Membaca Status, Diff, dan Riwayat",
+   "Membaca Status, Diff, dan Riwayat"
+  ],
+  "Kuis 2: Mengendalikan Perubahan": [
+   ".gitignore: Berkas yang Tidak Boleh Masuk Riwayat",
+   ".gitignore: Berkas yang Tidak Boleh Masuk Riwayat",
+   ".gitignore: Berkas yang Tidak Boleh Masuk Riwayat",
+   "Mengubah Nama, Memindah, dan Menghapus Berkas Terlacak",
+   "Pesan Commit yang Baik & Conventional Commits",
+   "Pesan Commit yang Baik & Conventional Commits",
+   "Membatalkan dengan Aman: restore, amend, revert",
+   "Membatalkan dengan Aman: restore, amend, revert"
+  ],
+  "Kuis 3: Branch, Merge, dan Konflik": [
+   "Branch: Apa Itu dan Kenapa Begitu Murah",
+   "Branch: Apa Itu dan Kenapa Begitu Murah",
+   "Membuat, Berpindah, dan Menghapus Branch",
+   "Membuat, Berpindah, dan Menghapus Branch",
+   "Merge: Fast-forward vs Merge Commit",
+   "Merge: Fast-forward vs Merge Commit",
+   "Merge: Fast-forward vs Merge Commit",
+   "Konflik Merge dan Cara Menyelesaikannya"
+  ],
+  "Kuis 4: Remote, GitHub, dan Pull Request": [
+   "Remote: clone, fetch, dan pull",
+   "Remote: clone, fetch, dan pull",
+   "Push, Pull, dan Alur Harian",
+   "GitHub: Akun, Kunci SSH, dan Repo Pertama",
+   "GitHub: Akun, Kunci SSH, dan Repo Pertama",
+   "Pull Request: Alur Kerja Tim di GitHub",
+   "Pull Request: Alur Kerja Tim di GitHub",
+   "Push, Pull, dan Alur Harian"
+  ],
+  "Kuis 5: Menulis Ulang dan Menyelamatkan Riwayat": [
+   "reset: Memundurkan HEAD dengan Tiga Tingkat Kekuatan",
+   "reset: Memundurkan HEAD dengan Tiga Tingkat Kekuatan",
+   "Rebase: Riwayat Lurus dan rebase -i",
+   "Rebase: Riwayat Lurus dan rebase -i",
+   "Stash, Cherry-pick, dan Tag",
+   "Stash, Cherry-pick, dan Tag",
+   "reset: Memundurkan HEAD dengan Tiga Tingkat Kekuatan",
+   "Reflog dan Bisect: Jaring Pengaman dan Detektif"
+  ]
+ },
+ "techstack": {
+  "Kuis 1: Peta Besar": [
+   "Apa Itu Tech Stack dan Kenapa Pilihannya Banyak Sekali",
+   "Apa Itu Tech Stack dan Kenapa Pilihannya Banyak Sekali",
+   "Apa Itu Tech Stack dan Kenapa Pilihannya Banyak Sekali",
+   "Perjalanan Satu Request dari Browser sampai Database",
+   "Perjalanan Satu Request dari Browser sampai Database",
+   "Perjalanan Satu Request dari Browser sampai Database",
+   "Jalur Belajar per Peran Berdasarkan Roadmap"
+  ],
+  "Kuis 2: Stack Web Klasik dan MVC": [
+   "LAMP, LEMP, dan Paket Server Lokal",
+   "LAMP, LEMP, dan Paket Server Lokal",
+   "MVC dan Arsitektur Berlapis",
+   "MVC dan Arsitektur Berlapis",
+   "Pola Rendering Web: MPA, SPA, SSR, SSG, dan Islands",
+   "Pola Rendering Web: MPA, SPA, SSR, SSG, dan Islands",
+   "Pola Rendering Web: MPA, SPA, SSR, SSG, dan Islands"
+  ],
+  "Kuis 3: Stack JavaScript Full-Stack": [
+   "MERN dari Dekat: Satu Bahasa dari Database ke Browser",
+   "MERN dari Dekat: Satu Bahasa dari Database ke Browser",
+   "MEAN, MEVN, dan PERN: Varian Stack JavaScript",
+   "MEAN, MEVN, dan PERN: Varian Stack JavaScript",
+   "MEAN, MEVN, dan PERN: Varian Stack JavaScript",
+   "Dari Jamstack ke Next.js, T3, dan Meta-Framework",
+   "Dari Jamstack ke Next.js, T3, dan Meta-Framework",
+   "Dari Jamstack ke Next.js, T3, dan Meta-Framework"
+  ],
+  "Kuis 4: Stack Framework Backend dan Frontend": [
+   "Stack Laravel: TALL dan Inertia",
+   "Stack Laravel: TALL dan Inertia",
+   "Stack Python: Django, FastAPI, dan React",
+   "Stack Python: Django, FastAPI, dan React",
+   "Spring Boot dan Angular: Stack Korporat Java",
+   "Spring Boot dan Angular: Stack Korporat Java",
+   "Stack .NET dan Blazor: C# dari Server sampai Browser",
+   "Stack HTML over the Wire: Hotwire, PETAL, GOTH, BETH",
+   "Stack HTML over the Wire: Hotwire, PETAL, GOTH, BETH"
+  ],
+  "Kuis 5: Stack Cloud dan Peta Lintas Ranah": [
+   "Serverless dan Edge: Kode Tanpa Mengurus Server",
+   "BaaS, Headless, dan MACH: Merakit dari Layanan Jadi",
+   "BaaS, Headless, dan MACH: Merakit dari Layanan Jadi",
+   "Serverless dan Edge: Kode Tanpa Mengurus Server",
+   "Serverless dan Edge: Kode Tanpa Mengurus Server",
+   "Peta Stack Lintas Ranah: Data, AI, Mobile, Pemantauan",
+   "Peta Stack Lintas Ranah: Data, AI, Mobile, Pemantauan",
+   "BaaS, Headless, dan MACH: Merakit dari Layanan Jadi"
+  ],
+  "Kuis 6: Praktik Rekayasa": [
+   "Piramida Tes, TDD, dan BDD",
+   "Piramida Tes, TDD, dan BDD",
+   "Code Review, Pair Programming, dan Linting",
+   "Alur Git, Semantic Versioning, dan Conventional Commits",
+   "Alur Git, Semantic Versioning, dan Conventional Commits",
+   "Kode Bersih: SOLID, DRY, Refactoring, dan Design Pattern",
+   "Alur Git, Semantic Versioning, dan Conventional Commits",
+   "Code Review, Pair Programming, dan Linting"
+  ],
+  "Kuis 7: Pola Arsitektur Aplikasi": [
+   "Monolit dan Monolit Modular",
+   "Hexagonal, Onion, dan Clean Architecture",
+   "Hexagonal, Onion, dan Clean Architecture",
+   "Domain-Driven Design dan Vertical Slice",
+   "Domain-Driven Design dan Vertical Slice",
+   "MVVM, Aliran Data Satu Arah, dan Pola Lainnya",
+   "MVVM, Aliran Data Satu Arah, dan Pola Lainnya",
+   "MVVM, Aliran Data Satu Arah, dan Pola Lainnya"
+  ],
+  "Kuis 8: System Design: Skala dan Cache": [
+   "Skalabilitas, Stateless, dan Estimasi Kasar",
+   "Skalabilitas, Stateless, dan Estimasi Kasar",
+   "Load Balancer dan Reverse Proxy",
+   "Load Balancer dan Reverse Proxy",
+   "Caching dan CDN",
+   "Caching dan CDN",
+   "Caching dan CDN",
+   "Gaya Komunikasi API: REST, GraphQL, gRPC, Webhook"
+  ],
+  "Kuis 9: Data Tersebar dan Keandalan": [
+   "Memilih Database dan Replikasi",
+   "Memilih Database dan Replikasi",
+   "Sharding, Consistent Hashing, dan Teorema CAP",
+   "Sharding, Consistent Hashing, dan Teorema CAP",
+   "Sharding, Consistent Hashing, dan Teorema CAP",
+   "Rate Limiting dan Throttling",
+   "Rate Limiting dan Throttling",
+   "High Availability dan Pemulihan Bencana"
+  ],
+  "Kuis 10: Arsitektur Terdistribusi": [
+   "Microservices: Kapan Memecah dan Berapa Harganya",
+   "Microservices: Kapan Memecah dan Berapa Harganya",
+   "Antrean Pesan dan Event-Driven Architecture",
+   "Antrean Pesan dan Event-Driven Architecture",
+   "CQRS, Event Sourcing, dan Saga",
+   "Retry, Idempotensi, dan Circuit Breaker",
+   "Retry, Idempotensi, dan Circuit Breaker",
+   "API Gateway, BFF, dan Service Mesh"
+  ],
+  "Kuis 11: Operasi, Rilis, dan Keamanan": [
+   "CI/CD dan Strategi Deployment",
+   "CI/CD dan Strategi Deployment",
+   "Twelve-Factor App, IaC, dan GitOps",
+   "Observability, SLO, dan Budaya SRE",
+   "Observability, SLO, dan Budaya SRE",
+   "Identitas dan Rantai Pasok dalam Arsitektur",
+   "Identitas dan Rantai Pasok dalam Arsitektur"
+  ],
+  "Kuis 12: Dokumentasi, Tim, dan Memilih Stack": [
+   "ADR, C4 Model, dan Dokumentasi Arsitektur",
+   "ADR, C4 Model, dan Dokumentasi Arsitektur",
+   "Cara Tim Bekerja: Agile, Monorepo, dan Asisten AI",
+   "Cara Tim Bekerja: Agile, Monorepo, dan Asisten AI",
+   "Cara Memilih Stack: Kriteria, Lisensi, dan Umur",
+   "Cara Memilih Stack: Kriteria, Lisensi, dan Umur",
+   "Studi Kasus Memilih Stack untuk Tiga Proyek"
+  ]
+ },
+ "frontend": {
+  "Kuis 1: Dari Halaman Statis ke Aplikasi Frontend": [
+   "Kenapa Framework Frontend Ada",
+   "Node.js dan npm sebagai Alat Kerja",
+   "Node.js dan npm sebagai Alat Kerja",
+   "Node.js dan npm sebagai Alat Kerja",
+   "pnpm, Yarn, dan Manajer Versi Node",
+   "pnpm, Yarn, dan Manajer Versi Node"
+  ],
+  "Kuis 2: Aksesibilitas Sejak Baris Pertama": [
+   "WCAG 2.2 dan Kontras Warna",
+   "WCAG 2.2 dan Kontras Warna",
+   "WAI-ARIA dan Nama yang Dibacakan",
+   "WAI-ARIA dan Nama yang Dibacakan",
+   "WAI-ARIA dan Nama yang Dibacakan",
+   "DevTools dan Alat Uji Aksesibilitas",
+   "DevTools dan Alat Uji Aksesibilitas",
+   "Pembaca Layar: Mencoba Orca di Fedora"
+  ],
+  "Kuis 3: Komponen dan Reaktivitas dari Nol": [
+   "Komponen dan Virtual DOM dari Nol",
+   "Komponen dan Virtual DOM dari Nol",
+   "Signal dan Proxy Reaktif dari Nol",
+   "Signal dan Proxy Reaktif dari Nol",
+   "Render di Server, Statis, dan Hydration",
+   "Render di Server, Statis, dan Hydration",
+   "Render di Server, Statis, dan Hydration",
+   "Web Components, Lit, dan Stencil"
+  ],
+  "Kuis 4: Menata Gaya: Tailwind dan Pipeline CSS": [
+   "Tailwind CSS: Berpikir dengan Kelas Utility",
+   "Tailwind CSS: Berpikir dengan Kelas Utility",
+   "Tailwind CSS: Berpikir dengan Kelas Utility",
+   "Tailwind v4: Tema, Varian, dan Plugin",
+   "Sass, PostCSS, dan Pipeline CSS",
+   "Sass, PostCSS, dan Pipeline CSS",
+   "Bootstrap, CSS Modules, dan Peta Cara Menata Gaya",
+   "Bootstrap, CSS Modules, dan Peta Cara Menata Gaya"
+  ],
+  "Kuis 5: Build Tool, TypeScript, dan Kualitas Kode": [
+   "Bundler dari Nol: Graf Modul dan Tree-Shaking",
+   "Vite 8 dan Rolldown",
+   "Vite 8 dan Rolldown",
+   "Vite 8 dan Rolldown",
+   "Peta Build Tool: webpack sampai Turbopack",
+   "TypeScript di Proyek Frontend",
+   "ESLint 10, Prettier, dan Biome",
+   "ESLint 10, Prettier, dan Biome"
+  ],
+  "Kuis 6: React: Komponen, State, dan Hooks": [
+   "React: JSX, Komponen, dan Props",
+   "React: JSX, Komponen, dan Props",
+   "State, Hooks, dan Efek di React",
+   "State, Hooks, dan Efek di React",
+   "State, Hooks, dan Efek di React",
+   "React Modern: Context, Suspense, dan Server Components",
+   "React Modern: Context, Suspense, dan Server Components",
+   "Mengetik Komponen React dengan TypeScript"
+  ],
+  "Kuis 7: Ekosistem React: Rute, Data, State, dan Form": [
+   "Rute di React: React Router dan TanStack Router",
+   "Rute di React: React Router dan TanStack Router",
+   "Server State: TanStack Query, SWR, dan Klien API",
+   "Server State: TanStack Query, SWR, dan Klien API",
+   "Server State: TanStack Query, SWR, dan Klien API",
+   "Client State: Redux Toolkit, Zustand, dan Jotai",
+   "Client State: Redux Toolkit, Zustand, dan Jotai",
+   "Form dan Validasi: React Hook Form dan Zod"
+  ],
+  "Kuis 8: Vue: Reaktif dan Ramah Pemula": [
+   "Vue: Template dan Reaktivitas",
+   "Vue: Template dan Reaktivitas",
+   "Vue: Template dan Reaktivitas",
+   "Vue Composition API dan Komponen Satu Berkas",
+   "Vue Composition API dan Komponen Satu Berkas",
+   "Pinia, Vue Router, dan Peta Ekosistem Vue"
+  ],
+  "Kuis 9: Angular: Framework Lengkap untuk Tim Besar": [
+   "Angular: Komponen Standalone, Template, dan Signals",
+   "Angular: Komponen Standalone, Template, dan Signals",
+   "Dependency Injection, Service, dan RxJS di Angular",
+   "Dependency Injection, Service, dan RxJS di Angular",
+   "Dependency Injection, Service, dan RxJS di Angular",
+   "Peta Ekosistem Angular: NgRx, Material, dan Analog"
+  ],
+  "Kuis 10: Svelte, HTML dari Server, dan Framework Lain": [
+   "Svelte 5: Komponen dan Runes",
+   "Svelte 5: Komponen dan Runes",
+   "SvelteKit: Rute, Load, dan Form Action",
+   "SvelteKit: Rute, Load, dan Form Action",
+   "htmx, Alpine.js, dan Hotwire: HTML dari Server",
+   "htmx, Alpine.js, dan Hotwire: HTML dari Server",
+   "Peta Framework UI: Solid, Preact, Qwik, dan Lainnya",
+   "Kode Warisan: jQuery, Moment, dan Penggantinya"
+  ],
+  "Kuis 11: Testing Frontend": [
+   "End-to-End dengan Playwright dan Peta Alat E2E",
+   "Unit Test: node:test, Vitest, dan Jest",
+   "Testing Library dan DOM Palsu",
+   "Testing Library dan DOM Palsu",
+   "Mock API dengan MSW dan Katalog Komponen Storybook",
+   "Mock API dengan MSW dan Katalog Komponen Storybook",
+   "End-to-End dengan Playwright dan Peta Alat E2E",
+   "End-to-End dengan Playwright dan Peta Alat E2E"
+  ],
+  "Kuis 12: Meta-framework Full-stack": [
+   "Next.js: App Router dan Server Components",
+   "Next.js: App Router dan Server Components",
+   "Next.js: Data, Cache, dan Deploy",
+   "Next.js: Data, Cache, dan Deploy",
+   "Nuxt dan Astro: Vue Full-stack dan Islands",
+   "Nuxt dan Astro: Vue Full-stack dan Islands",
+   "Peta Meta-framework dan Generator Situs Statis",
+   "Peta Meta-framework dan Generator Situs Statis"
+  ],
+  "Kuis 13: Design System, Animasi, dan Monorepo": [
+   "Komponen Headless, shadcn/ui, dan Pustaka Komponen",
+   "Komponen Headless, shadcn/ui, dan Pustaka Komponen",
+   "Animasi dan Grafis: Motion, GSAP, D3, dan Three.js",
+   "Animasi dan Grafis: Motion, GSAP, D3, dan Three.js",
+   "Monorepo: Workspaces, Turborepo, dan Nx",
+   "Monorepo: Workspaces, Turborepo, dan Nx"
+  ],
+  "Kuis 14: PWA, WebAssembly, dan di Luar Browser": [
+   "PWA: Service Worker dan Strategi Cache",
+   "PWA: Service Worker dan Strategi Cache",
+   "PWA: Service Worker dan Strategi Cache",
+   "WebAssembly untuk Developer Frontend",
+   "Desktop dan Mobile dari Teknologi Web",
+   "Desktop dan Mobile dari Teknologi Web",
+   "Deno, Bun, Edge, dan Tempat Deploy Frontend",
+   "Deno, Bun, Edge, dan Tempat Deploy Frontend"
+  ]
+ },
+ "backend": {
+  "Kuis 1: Cara Kerja Backend": [
+   "Apa Itu Backend dan Kenapa API Ada",
+   "HTTP dari Dekat: Metode, Status, Header, dan HTTPS",
+   "HTTP dari Dekat: Metode, Status, Header, dan HTTPS",
+   "HTTP dari Dekat: Metode, Status, Header, dan HTTPS",
+   "HTTP dari Dekat: Metode, Status, Header, dan HTTPS",
+   "Aplikasi Sebagai Fungsi: WSGI, ASGI, dan Rack",
+   "Aplikasi Sebagai Fungsi: WSGI, ASGI, dan Rack",
+   "Router dan Middleware dari Nol",
+   "Router dan Middleware dari Nol",
+   "Router dan Middleware dari Nol"
+  ],
+  "Kuis 2: Merancang API REST": [
+   "Merancang Sumber Daya REST yang Rapi",
+   "Merancang Sumber Daya REST yang Rapi",
+   "Merancang Sumber Daya REST yang Rapi",
+   "Validasi Input dan Pesan Error yang Jelas",
+   "Validasi Input dan Pesan Error yang Jelas",
+   "Validasi Input dan Pesan Error yang Jelas",
+   "Dokumentasi dan Pengujian API dengan OpenAPI",
+   "Dokumentasi dan Pengujian API dengan OpenAPI",
+   "CORS: Saat Browser Menolak Respons API",
+   "CORS: Saat Browser Menolak Respons API"
+  ],
+  "Kuis 3: JavaScript di Server": [
+   "Node.js dan Express: Server JavaScript Pertama",
+   "Node.js dan Express: Server JavaScript Pertama",
+   "API Express Lengkap dengan Validasi dan Prisma",
+   "API Express Lengkap dengan Validasi dan Prisma",
+   "API Express Lengkap dengan Validasi dan Prisma",
+   "NestJS: Modul, Controller, dan Provider",
+   "NestJS: Modul, Controller, dan Provider",
+   "NestJS dengan TypeORM, Pipe Validasi, dan Swagger",
+   "NestJS dengan TypeORM, Pipe Validasi, dan Swagger",
+   "Peta Framework dan Runtime JavaScript"
+  ],
+  "Kuis 4: Python di Server": [
+   "Flask: Microframework yang Mudah Dibaca",
+   "Flask: Microframework yang Mudah Dibaca",
+   "Flask dengan SQLAlchemy dan Blueprint",
+   "Flask dengan SQLAlchemy dan Blueprint",
+   "Flask dengan SQLAlchemy dan Blueprint",
+   "FastAPI: Type Hints Jadi Validasi dan Dokumen",
+   "FastAPI: Type Hints Jadi Validasi dan Dokumen",
+   "FastAPI Async, Dependency, dan SQLModel",
+   "FastAPI Async, Dependency, dan SQLModel",
+   "FastAPI Async, Dependency, dan SQLModel"
+  ],
+  "Kuis 5: Django dan Ekosistem Python": [
+   "Django: Model, View, Template, dan Admin",
+   "Django: Model, View, Template, dan Admin",
+   "Django: Model, View, Template, dan Admin",
+   "Django: Model, View, Template, dan Admin",
+   "API Django dengan DRF dan Django Ninja",
+   "API Django dengan DRF dan Django Ninja",
+   "Django: Model, View, Template, dan Admin",
+   "Peta Framework Python"
+  ],
+  "Kuis 6: Spring Boot dan Dunia JVM": [
+   "Spring Boot: Proyek Pertama dan Dependency Injection",
+   "Spring Boot: Proyek Pertama dan Dependency Injection",
+   "Spring Boot: Proyek Pertama dan Dependency Injection",
+   "Spring Data JPA dan Hibernate di Spring Boot",
+   "Spring Data JPA dan Hibernate di Spring Boot",
+   "Spring Data JPA dan Hibernate di Spring Boot",
+   "Spring Data JPA dan Hibernate di Spring Boot",
+   "Peta Framework Java, Kotlin, dan JVM"
+  ],
+  "Kuis 7: ASP.NET Core dan Dunia .NET": [
+   "ASP.NET Core Minimal API: Endpoint Pertama",
+   "ASP.NET Core Minimal API: Endpoint Pertama",
+   "ASP.NET Core Minimal API: Endpoint Pertama",
+   "ASP.NET Core dengan Controller dan EF Core",
+   "ASP.NET Core dengan Controller dan EF Core",
+   "ASP.NET Core Minimal API: Endpoint Pertama",
+   "ASP.NET Core Minimal API: Endpoint Pertama",
+   "Peta Ekosistem .NET di Luar ASP.NET Core"
+  ],
+  "Kuis 8: Laravel dan Dunia PHP": [
+   "Laravel: Rute, Controller, dan Blade",
+   "Laravel: Rute, Controller, dan Blade",
+   "Laravel dengan Eloquent, Validasi, dan Sanctum",
+   "Laravel dengan Eloquent, Validasi, dan Sanctum",
+   "Laravel dengan Eloquent, Validasi, dan Sanctum",
+   "Laravel dengan Eloquent, Validasi, dan Sanctum",
+   "Laravel dengan Eloquent, Validasi, dan Sanctum"
+  ],
+  "Kuis 9: Ruby on Rails dan Framework Konvensi Lain": [
+   "Ruby on Rails: Konvensi, Generator, dan MVC",
+   "Ruby on Rails: Konvensi, Generator, dan MVC",
+   "Active Record dan Resource di Rails",
+   "Active Record dan Resource di Rails",
+   "Active Record dan Resource di Rails",
+   "Peta Framework PHP dan Ruby",
+   "Peta Framework PHP dan Ruby",
+   "Peta Framework PHP dan Ruby"
+  ],
+  "Kuis 10: Go, Rust, dan Peta Lintas Bahasa": [
+   "Go net/http: Server API Tanpa Framework",
+   "Go net/http: Server API Tanpa Framework",
+   "Go net/http: Server API Tanpa Framework",
+   "Gin dan GORM untuk API Go",
+   "Gin dan GORM untuk API Go",
+   "Peta Framework Go, Rust, dan Bahasa Lain",
+   "Peta Framework Go, Rust, dan Bahasa Lain",
+   "Peta ORM dan Query Builder Lintas Bahasa",
+   "Peta ORM dan Query Builder Lintas Bahasa"
+  ],
+  "Kuis 11: Autentikasi": [
+   "Session, Cookie, dan Menyimpan Kata Sandi",
+   "Session, Cookie, dan Menyimpan Kata Sandi",
+   "Session, Cookie, dan Menyimpan Kata Sandi",
+   "Session, Cookie, dan Menyimpan Kata Sandi",
+   "Basic Auth, API Key, Token Bearer, dan JWT",
+   "Basic Auth, API Key, Token Bearer, dan JWT",
+   "Basic Auth, API Key, Token Bearer, dan JWT",
+   "Basic Auth, API Key, Token Bearer, dan JWT",
+   "Peta Pustaka Autentikasi per Framework"
+  ],
+  "Kuis 12: OAuth, SSO, dan Otorisasi": [
+   "OpenID Connect, SSO, dan Keycloak",
+   "OAuth 2.0 dan PKCE: Izin Tanpa Kata Sandi",
+   "OAuth 2.0 dan PKCE: Izin Tanpa Kata Sandi",
+   "OpenID Connect, SSO, dan Keycloak",
+   "Otorisasi, Rate Limiting, dan Celah API Umum",
+   "Otorisasi, Rate Limiting, dan Celah API Umum",
+   "Otorisasi, Rate Limiting, dan Celah API Umum",
+   "Otorisasi, Rate Limiting, dan Celah API Umum",
+   "Peta Layanan Identitas Terkelola",
+   "Peta Layanan Identitas Terkelola"
+  ],
+  "Kuis 13: Cache, Antrean, dan Message Broker": [
+   "Cache dengan Redis dan Valkey",
+   "Cache dengan Redis dan Valkey",
+   "Cache dengan Redis dan Valkey",
+   "Redis untuk Sesi, Pub/Sub, dan Antrean Tugas",
+   "Redis untuk Sesi, Pub/Sub, dan Antrean Tugas",
+   "RabbitMQ: Exchange, Antrean, dan Acknowledgement",
+   "RabbitMQ: Exchange, Antrean, dan Acknowledgement",
+   "Kafka: Log, Partisi, dan Consumer Group",
+   "Kafka: Log, Partisi, dan Consumer Group",
+   "Peta Message Broker dan Antrean Lainnya",
+   "Peta Cache dan Penyimpanan Memori Lainnya"
+  ],
+  "Kuis 14: Real-time dan Gaya API Lanjutan": [
+   "WebSocket, SSE, dan Long Polling",
+   "WebSocket, SSE, dan Long Polling",
+   "WebSocket, SSE, dan Long Polling",
+   "GraphQL: Skema, Resolver, dan Server",
+   "GraphQL: Skema, Resolver, dan Server",
+   "GraphQL: Skema, Resolver, dan Server",
+   "gRPC, Protobuf, dan Gaya RPC Lain",
+   "gRPC, Protobuf, dan Gaya RPC Lain",
+   "gRPC, Protobuf, dan Gaya RPC Lain"
+  ],
+  "Kuis 15: Deploy dan Arsitektur Backend": [
+   "Nginx Sebagai Reverse Proxy untuk API",
+   "Nginx Sebagai Reverse Proxy untuk API",
+   "Nginx Sebagai Reverse Proxy untuk API",
+   "Server Aplikasi di Belakang Nginx",
+   "Server Aplikasi di Belakang Nginx",
+   "Server Aplikasi di Belakang Nginx",
+   "Peta Web Server dan Server Aplikasi",
+   "Peta Web Server dan Server Aplikasi",
+   "Arsitektur Backend: Monolit, Event, dan Ketahanan",
+   "Arsitektur Backend: Monolit, Event, dan Ketahanan",
+   "Arsitektur Backend: Monolit, Event, dan Ketahanan",
+   "Peta CMS Headless dan Backend-as-a-Service"
+  ]
+ },
+ "database": {
+  "Kuis 1: Peta Dunia Database": [
+   "Memilih Jenis Database dari Pola Aksesnya",
+   "Memilih Jenis Database dari Pola Aksesnya",
+   "Memilih Jenis Database dari Pola Aksesnya",
+   "Memilih Jenis Database dari Pola Aksesnya",
+   "Memilih Jenis Database dari Pola Aksesnya",
+   "Database Tertanam: di Aplikasi, di Ponsel, dan di Browser",
+   "Database Tertanam: di Aplikasi, di Ponsel, dan di Browser",
+   "Database Tertanam: di Aplikasi, di Ponsel, dan di Browser"
+  ],
+  "Kuis 2: SQLite Lebih Dalam": [
+   "SQLite: Satu Berkas, Tanpa Server",
+   "SQLite: Satu Berkas, Tanpa Server",
+   "SQLite: Satu Berkas, Tanpa Server",
+   "Fitur SQLite yang Jarang Diketahui: JSON, FTS5, dan R*Tree",
+   "Fitur SQLite yang Jarang Diketahui: JSON, FTS5, dan R*Tree",
+   "Mode WAL, Satu Penulis, dan Kapan SQLite Sudah Cukup",
+   "Mode WAL, Satu Penulis, dan Kapan SQLite Sudah Cukup",
+   "Mode WAL, Satu Penulis, dan Kapan SQLite Sudah Cukup"
+  ],
+  "Kuis 3: Skema dan Indeks yang Tahan Lama": [
+   "Dari Cerita Bisnis ke Skema: Kunci, Relasi, dan Pola",
+   "Dari Cerita Bisnis ke Skema: Kunci, Relasi, dan Pola",
+   "Dari Cerita Bisnis ke Skema: Kunci, Relasi, dan Pola",
+   "Cara Kerja Indeks: B-Tree, Hash, dan Kawan-Kawannya",
+   "Cara Kerja Indeks: B-Tree, Hash, dan Kawan-Kawannya",
+   "Cara Kerja Indeks: B-Tree, Hash, dan Kawan-Kawannya",
+   "Membaca Rencana Kueri dan Memburu Kueri Lambat",
+   "Membaca Rencana Kueri dan Memburu Kueri Lambat",
+   "Membaca Rencana Kueri dan Memburu Kueri Lambat"
+  ],
+  "Kuis 4: Transaksi dan Kode Aplikasi": [
+   "Tingkat Isolasi dan Anomali yang Dicegahnya",
+   "Tingkat Isolasi dan Anomali yang Dicegahnya",
+   "Tingkat Isolasi dan Anomali yang Dicegahnya",
+   "MVCC, Kunci, dan Deadlock",
+   "MVCC, Kunci, dan Deadlock",
+   "MVCC, Kunci, dan Deadlock",
+   "MVCC, Kunci, dan Deadlock",
+   "ORM, Pool Koneksi, dan Masalah N+1",
+   "ORM, Pool Koneksi, dan Masalah N+1",
+   "Migrasi Skema Tanpa Downtime"
+  ],
+  "Kuis 5: PostgreSQL": [
+   "PostgreSQL di Fedora: Pasang, psql, dan Database Pertama",
+   "PostgreSQL di Fedora: Pasang, psql, dan Database Pertama",
+   "Tipe Data Kaya PostgreSQL: JSONB, Array, UUID, dan Range",
+   "Tipe Data Kaya PostgreSQL: JSONB, Array, UUID, dan Range",
+   "Tipe Data Kaya PostgreSQL: JSONB, Array, UUID, dan Range",
+   "Role, Hak Akses, dan Row Level Security di PostgreSQL",
+   "Role, Hak Akses, dan Row Level Security di PostgreSQL",
+   "Ekstensi PostgreSQL dan Data Peta dengan PostGIS",
+   "Ekstensi PostgreSQL dan Data Peta dengan PostGIS"
+  ],
+  "Kuis 6: MySQL, MariaDB, dan Relasional Korporat": [
+   "MySQL dan InnoDB: Logat, Charset, dan Versi LTS",
+   "MySQL dan InnoDB: Logat, Charset, dan Versi LTS",
+   "MySQL dan InnoDB: Logat, Charset, dan Versi LTS",
+   "MySQL dan InnoDB: Logat, Charset, dan Versi LTS",
+   "MariaDB: Cabang MySQL yang Tumbuh Sendiri",
+   "MariaDB: Cabang MySQL yang Tumbuh Sendiri",
+   "Peta Relasional Korporat: SQL Server, Oracle, Db2, dan Lainnya",
+   "Peta Relasional Korporat: SQL Server, Oracle, Db2, dan Lainnya",
+   "Peta Relasional Korporat: SQL Server, Oracle, Db2, dan Lainnya"
+  ],
+  "Kuis 7: Redis, Valkey, dan Caching": [
+   "Redis dan Valkey: Struktur Data di Dalam Memori",
+   "Redis dan Valkey: Struktur Data di Dalam Memori",
+   "Pola Caching: Cache-Aside, TTL, dan Invalidasi",
+   "Pola Caching: Cache-Aside, TTL, dan Invalidasi",
+   "Pola Caching: Cache-Aside, TTL, dan Invalidasi",
+   "Pola Caching: Cache-Aside, TTL, dan Invalidasi",
+   "Redis untuk Antrean, Pub/Sub, dan Pembatas Laju",
+   "Redis untuk Antrean, Pub/Sub, dan Pembatas Laju",
+   "Redis untuk Antrean, Pub/Sub, dan Pembatas Laju"
+  ],
+  "Kuis 8: MongoDB dan Database Dokumen": [
+   "MongoDB: Dokumen, Koleksi, dan CRUD",
+   "MongoDB: Dokumen, Koleksi, dan CRUD",
+   "Kueri, Indeks, dan Aggregation Pipeline MongoDB",
+   "Kueri, Indeks, dan Aggregation Pipeline MongoDB",
+   "Kueri, Indeks, dan Aggregation Pipeline MongoDB",
+   "Merancang Skema Dokumen: Sematkan atau Rujuk",
+   "Merancang Skema Dokumen: Sematkan atau Rujuk",
+   "MongoDB: Dokumen, Koleksi, dan CRUD",
+   "Peta Database Dokumen: Couchbase sampai RethinkDB",
+   "Peta Database Dokumen: Couchbase sampai RethinkDB"
+  ],
+  "Kuis 9: Backend Siap Pakai dan Database Cloud": [
+   "Firebase dan Firestore: Backend Tanpa Server Sendiri",
+   "Firebase dan Firestore: Backend Tanpa Server Sendiri",
+   "Firebase dan Firestore: Backend Tanpa Server Sendiri",
+   "Supabase, Appwrite, dan PocketBase",
+   "Supabase, Appwrite, dan PocketBase",
+   "Supabase, Appwrite, dan PocketBase",
+   "Peta Database Cloud: Terkelola dan Serverless",
+   "Peta Database Cloud: Terkelola dan Serverless",
+   "Peta Database Cloud: Terkelola dan Serverless"
+  ],
+  "Kuis 10: Keandalan: Disk, Backup, dan Replika": [
+   "WAL, B-Tree, dan LSM-Tree: Jalan Data Menuju Disk",
+   "WAL, B-Tree, dan LSM-Tree: Jalan Data Menuju Disk",
+   "WAL, B-Tree, dan LSM-Tree: Jalan Data Menuju Disk",
+   "Backup, Restore, dan Pemulihan ke Titik Waktu",
+   "Backup, Restore, dan Pemulihan ke Titik Waktu",
+   "Replikasi, Failover, dan Ketersediaan Tinggi",
+   "Replikasi, Failover, dan Ketersediaan Tinggi",
+   "Replikasi, Failover, dan Ketersediaan Tinggi",
+   "Replikasi, Failover, dan Ketersediaan Tinggi"
+  ],
+  "Kuis 11: Skala dan Sistem Terdistribusi": [
+   "Sharding, Partisi, dan Vitess",
+   "Sharding, Partisi, dan Vitess",
+   "Sharding, Partisi, dan Vitess",
+   "Teorema CAP, Konsistensi, dan Konsensus Raft",
+   "Teorema CAP, Konsistensi, dan Konsensus Raft",
+   "Teorema CAP, Konsistensi, dan Konsensus Raft",
+   "Teorema CAP, Konsistensi, dan Konsensus Raft",
+   "Peta Database Terdistribusi: NewSQL dan Kolom Lebar",
+   "Peta Database Terdistribusi: NewSQL dan Kolom Lebar"
+  ],
+  "Kuis 12: Mencari dan Menganalisis Data": [
+   "Indeks Terbalik dan Skor Relevansi BM25",
+   "Indeks Terbalik dan Skor Relevansi BM25",
+   "Indeks Terbalik dan Skor Relevansi BM25",
+   "Peta Mesin Pencari: Elasticsearch, OpenSearch, dan Lainnya",
+   "Peta Mesin Pencari: Elasticsearch, OpenSearch, dan Lainnya",
+   "Peta Mesin Pencari: Elasticsearch, OpenSearch, dan Lainnya",
+   "OLTP, OLAP, dan Skema Bintang",
+   "OLTP, OLAP, dan Skema Bintang",
+   "OLTP, OLAP, dan Skema Bintang",
+   "Peta Analitik: DuckDB, ClickHouse, dan Gudang Data Cloud"
+  ],
+  "Kuis 13: Graf, Deret Waktu, dan Vektor": [
+   "Database Graf: Neo4j, Cypher, dan Pesaingnya",
+   "Database Graf: Neo4j, Cypher, dan Pesaingnya",
+   "Peta Deret Waktu: InfluxDB, TimescaleDB, dan Prometheus",
+   "Peta Deret Waktu: InfluxDB, TimescaleDB, dan Prometheus",
+   "Embedding dan Pencarian Vektor dengan pgvector",
+   "Embedding dan Pencarian Vektor dengan pgvector",
+   "Embedding dan Pencarian Vektor dengan pgvector",
+   "Peta Database Vektor: Pinecone sampai LanceDB",
+   "Peta Database Vektor: Pinecone sampai LanceDB"
+  ]
+ },
+ "mobile": {
+  "Kuis 1: Peta Dunia Aplikasi": [
+   "Native, Lintas Platform, Web, dan Desktop",
+   "Native, Lintas Platform, Web, dan Desktop",
+   "Jalur Belajar dari Fedora Tanpa Mac",
+   "Jalur Belajar dari Fedora Tanpa Mac",
+   "UI Thread, Event, dan Siklus Hidup Layar",
+   "UI Thread, Event, dan Siklus Hidup Layar",
+   "UI Thread, Event, dan Siklus Hidup Layar"
+  ],
+  "Kuis 2: Android Pertama": [
+   "Platform Android, API Level, dan Struktur Proyek",
+   "Platform Android, API Level, dan Struktur Proyek",
+   "Platform Android, API Level, dan Struktur Proyek",
+   "Android Studio dan Emulator di Fedora",
+   "Gradle dan Android Gradle Plugin",
+   "Gradle dan Android Gradle Plugin",
+   "Siklus Hidup Activity dan Perubahan Konfigurasi",
+   "Siklus Hidup Activity dan Perubahan Konfigurasi"
+  ],
+  "Kuis 3: Jetpack Compose": [
+   "State, remember, dan Recomposition",
+   "State, remember, dan Recomposition",
+   "Layout, Daftar, dan Material 3",
+   "State, remember, dan Recomposition",
+   "Warisan View dan Layout XML",
+   "Composable Pertama dan Cara Compose Menggambar",
+   "State, remember, dan Recomposition",
+   "State, remember, dan Recomposition"
+  ],
+  "Kuis 4: Arsitektur Aplikasi Android": [
+   "ViewModel, UiState, dan Navigasi",
+   "ViewModel, UiState, dan Navigasi",
+   "Coroutines dan Flow untuk Kode Asinkron",
+   "Coroutines dan Flow untuk Kode Asinkron",
+   "Room: Database Lokal di Android",
+   "Room: Database Lokal di Android",
+   "Retrofit dan OkHttp: Bicara dengan API",
+   "Retrofit dan OkHttp: Bicara dengan API",
+   "Hilt dan Dependency Injection"
+  ],
+  "Kuis 5: Dunia Apple dari Linux": [
+   "Swift Sekilas untuk Pelajar Kotlin",
+   "Swift Sekilas untuk Pelajar Kotlin",
+   "SwiftUI dan UIKit: Dua Cara Membangun Layar iOS",
+   "SwiftUI dan UIKit: Dua Cara Membangun Layar iOS",
+   "Xcode, Simulator, dan Pengelola Paket Swift",
+   "Xcode, Simulator, dan Pengelola Paket Swift",
+   "Xcode, Simulator, dan Pengelola Paket Swift",
+   "Peta Framework Apple"
+  ],
+  "Kuis 6: Flutter dan Dart": [
+   "Dart untuk Pemrogram JavaScript",
+   "Dart untuk Pemrogram JavaScript",
+   "Widget, Element, dan Cara Flutter Menggambar",
+   "Widget, Element, dan Cara Flutter Menggambar",
+   "Widget, Element, dan Cara Flutter Menggambar",
+   "State Management Flutter: setState, Riverpod, dan Bloc",
+   "State Management Flutter: setState, Riverpod, dan Bloc"
+  ],
+  "Kuis 7: React Native dan Expo": [
+   "React Native: Komponen Native dari JavaScript",
+   "React Native: Komponen Native dari JavaScript",
+   "React Native: Komponen Native dari JavaScript",
+   "Expo, EAS Build, dan Jalur iOS dari Linux",
+   "Expo, EAS Build, dan Jalur iOS dari Linux",
+   "Expo, EAS Build, dan Jalur iOS dari Linux",
+   "Navigasi dengan React Navigation dan Expo Router",
+   "Navigasi dengan React Navigation dan Expo Router"
+  ],
+  "Kuis 8: Berbagi Kode Lintas Platform Lain": [
+   "Kotlin Multiplatform dan Compose Multiplatform",
+   "Kotlin Multiplatform dan Compose Multiplatform",
+   "Kotlin Multiplatform dan Compose Multiplatform",
+   "Aplikasi Hybrid: Ionic, Capacitor, dan Cordova",
+   "Aplikasi Hybrid: Ionic, Capacitor, dan Cordova",
+   "Aplikasi Hybrid: Ionic, Capacitor, dan Cordova",
+   "Peta Lintas Platform Lain",
+   "Peta Lintas Platform Lain"
+  ],
+  "Kuis 9: Aplikasi Desktop": [
+   "Electron: Proses Main, Renderer, dan IPC",
+   "Electron: Proses Main, Renderer, dan IPC",
+   "Electron: Proses Main, Renderer, dan IPC",
+   "Tauri dan Wails: Desktop Ringan dengan Webview Bawaan",
+   "Tauri dan Wails: Desktop Ringan dengan Webview Bawaan",
+   "GUI Immediate Mode dengan Dear ImGui",
+   "GUI Immediate Mode dengan Dear ImGui",
+   "Peta Toolkit Desktop Native",
+   "Peta Toolkit Desktop Native"
+  ],
+  "Kuis 10: Uji, Otomasi, dan Layanan Backend": [
+   "Menguji Aplikasi Mobile: Unit, UI, dan Instrumentasi",
+   "Menguji Aplikasi Mobile: Unit, UI, dan Instrumentasi",
+   "Menguji Aplikasi Mobile: Unit, UI, dan Instrumentasi",
+   "Firebase untuk Aplikasi Mobile",
+   "Firebase untuk Aplikasi Mobile",
+   "Firebase untuk Aplikasi Mobile",
+   "Fastlane dan CI/CD Rilis Mobile",
+   "Fastlane dan CI/CD Rilis Mobile"
+  ],
+  "Kuis 11: Rilis ke Toko Aplikasi": [
+   "Google Play Console: Jalur Rilis dan Uji Tertutup",
+   "Google Play Console: Jalur Rilis dan Uji Tertutup",
+   "Google Play Console: Jalur Rilis dan Uji Tertutup",
+   "Verifikasi Developer Android Mulai 2026",
+   "Verifikasi Developer Android Mulai 2026",
+   "App Store Connect dan TestFlight",
+   "Toko Lain: F-Droid dan Microsoft Store",
+   "Toko Lain: F-Droid dan Microsoft Store",
+   "Aturan Baru yang Bikin Tutorial Lama Menyesatkan"
+  ]
+ },
+ "game": {
+  "Kuis 1: Cara Game Bekerja": [
+   "Game Loop, Frame, dan Delta Time",
+   "Game Loop, Frame, dan Delta Time",
+   "Fixed Timestep dan Jam Palsu",
+   "Fixed Timestep dan Jam Palsu",
+   "Fixed Timestep dan Jam Palsu",
+   "Input, Event, dan State Game",
+   "Input, Event, dan State Game"
+  ],
+  "Kuis 2: Matematika Game 2D": [
+   "Vektor 2D: Posisi, Kecepatan, dan Arah",
+   "Vektor 2D: Posisi, Kecepatan, dan Arah",
+   "Tabrakan AABB, Lingkaran, dan Respons",
+   "Tabrakan AABB, Lingkaran, dan Respons",
+   "Tabrakan AABB, Lingkaran, dan Respons",
+   "Tabrakan AABB, Lingkaran, dan Respons",
+   "Transformasi: Translasi, Rotasi, dan Skala",
+   "Transformasi: Translasi, Rotasi, dan Skala"
+  ],
+  "Kuis 3: Game 2D di Browser": [
+   "Phaser: Scene, Sprite, dan Fisika Arcade",
+   "Phaser: Scene, Sprite, dan Fisika Arcade",
+   "Tilemap, Kamera, dan Animasi Sprite",
+   "Tilemap, Kamera, dan Animasi Sprite",
+   "Tilemap, Kamera, dan Animasi Sprite",
+   "State Machine untuk Karakter dan Menu",
+   "State Machine untuk Karakter dan Menu",
+   "Tilemap, Kamera, dan Animasi Sprite"
+  ],
+  "Kuis 4: Godot Engine": [
+   "Godot: Scene Tree, Node, dan Sinyal",
+   "Godot: Scene Tree, Node, dan Sinyal",
+   "Godot: Scene Tree, Node, dan Sinyal",
+   "GDScript untuk Pelajar JavaScript dan Python",
+   "Godot: Scene Tree, Node, dan Sinyal",
+   "Godot: Scene Tree, Node, dan Sinyal",
+   "GDScript untuk Pelajar JavaScript dan Python"
+  ],
+  "Kuis 5: Unity": [
+   "Unity: GameObject, Component, dan Siklus Update",
+   "Fisika Unity: Rigidbody, Collider, dan FixedUpdate",
+   "Fisika Unity: Rigidbody, Collider, dan FixedUpdate",
+   "Unity: GameObject, Component, dan Siklus Update",
+   "Membangun Game Unity untuk Android dan Web",
+   "Membangun Game Unity untuk Android dan Web",
+   "Membangun Game Unity untuk Android dan Web",
+   "Unity: GameObject, Component, dan Siklus Update"
+  ],
+  "Kuis 6: AI Game dan Pathfinding": [
+   "Pathfinding Grid: BFS, Dijkstra, dan A*",
+   "Pathfinding Grid: BFS, Dijkstra, dan A*",
+   "Pathfinding Grid: BFS, Dijkstra, dan A*",
+   "Perilaku Musuh: State Machine dan Behavior Tree",
+   "Perilaku Musuh: State Machine dan Behavior Tree",
+   "Perilaku Musuh: State Machine dan Behavior Tree",
+   "Pathfinding Grid: BFS, Dijkstra, dan A*",
+   "Pathfinding Grid: BFS, Dijkstra, dan A*"
+  ],
+  "Kuis 7: Engine Lain dan Menerbitkan Game": [
+   "Unreal Engine: Blueprints, C++, dan Royalti",
+   "Unreal Engine: Blueprints, C++, dan Royalti",
+   "Peta Engine dan Framework Game",
+   "Peta Engine dan Framework Game",
+   "Peta Engine dan Framework Game",
+   "Menerbitkan Game: itch.io dan Steam",
+   "Menerbitkan Game: itch.io dan Steam",
+   "Menerbitkan Game: itch.io dan Steam"
+  ],
+  "Kuis 8: Grafis Komputer dan API GPU": [
+   "Shader, GLSL, dan HLSL",
+   "Pipeline Grafis: dari Segitiga ke Piksel",
+   "Rasterizer Perangkat Lunak",
+   "Rasterizer Perangkat Lunak",
+   "Shader, GLSL, dan HLSL",
+   "OpenGL, OpenGL ES, dan WebGL",
+   "Vulkan, Metal, DirectX 12, dan WebGPU",
+   "Vulkan, Metal, DirectX 12, dan WebGPU",
+   "Vulkan, Metal, DirectX 12, dan WebGPU"
+  ],
+  "Kuis 9: ECS dan Simulasi Deterministik": [
+   "Entity Component System",
+   "Entity Component System",
+   "Entity Component System",
+   "Determinisme, Replay, dan Netcode Dasar",
+   "Determinisme, Replay, dan Netcode Dasar",
+   "Determinisme, Replay, dan Netcode Dasar",
+   "Determinisme, Replay, dan Netcode Dasar"
+  ],
+  "Kuis 10: AR, VR, dan XR": [
+   "Matematika AR: Raycast, Anchor, dan Matriks 4x4",
+   "Matematika AR: Raycast, Anchor, dan Matriks 4x4",
+   "Matematika AR: Raycast, Anchor, dan Matriks 4x4",
+   "ARCore, ARKit, dan RealityKit",
+   "OpenXR, Meta Quest, dan Android XR",
+   "OpenXR, Meta Quest, dan Android XR",
+   "visionOS dan WebXR",
+   "visionOS dan WebXR"
+  ]
+ },
+ "iot": {
+  "Kuis 1: Dari Program PC ke Mikrokontroler": [
+   "Apa Itu Sistem Embedded",
+   "Apa Itu Sistem Embedded",
+   "Listrik Dasar untuk Programmer",
+   "Listrik Dasar untuk Programmer",
+   "Listrik Dasar untuk Programmer",
+   "GPIO: Pin Digital Masuk dan Keluar",
+   "GPIO: Pin Digital Masuk dan Keluar"
+  ],
+  "Kuis 2: Arduino dan Kerja Tanpa Memblokir": [
+   "millis(), delay(), dan Kerja Tanpa Memblokir",
+   "millis(), delay(), dan Kerja Tanpa Memblokir",
+   "millis(), delay(), dan Kerja Tanpa Memblokir",
+   "Membaca Tombol dan Debounce",
+   "Membaca Tombol dan Debounce",
+   "Membaca Tombol dan Debounce",
+   "Arduino: Papan, IDE, setup, dan loop",
+   "Arduino: Papan, IDE, setup, dan loop"
+  ],
+  "Kuis 3: Bit, Register, dan Data Berukuran Pasti": [
+   "Bitmask: Set, Clear, Toggle, dan Baca Bit",
+   "Bitmask: Set, Clear, Toggle, dan Baca Bit",
+   "Register Perangkat Keras dan volatile",
+   "Register Perangkat Keras dan volatile",
+   "Register Perangkat Keras dan volatile",
+   "Tipe Berukuran Pasti, Endianness, dan Pengepakan",
+   "Tipe Berukuran Pasti, Endianness, dan Pengepakan",
+   "Tipe Berukuran Pasti, Endianness, dan Pengepakan"
+  ],
+  "Kuis 4: Sinyal Analog dan Komunikasi Serial": [
+   "ADC, PWM, dan Sinyal Analog",
+   "ADC, PWM, dan Sinyal Analog",
+   "ADC, PWM, dan Sinyal Analog",
+   "UART, I2C, dan SPI",
+   "UART, I2C, dan SPI",
+   "UART, I2C, dan SPI",
+   "Ring Buffer untuk Data Serial",
+   "Ring Buffer untuk Data Serial"
+  ],
+  "Kuis 5: Papan Populer dan Alatnya": [
+   "ESP32 dan ESP-IDF",
+   "ESP32 dan ESP-IDF",
+   "ESP32 dan ESP-IDF",
+   "Raspberry Pi Pico dan Pico SDK",
+   "Raspberry Pi Pico dan Pico SDK",
+   "MicroPython dan CircuitPython",
+   "MicroPython dan CircuitPython",
+   "PlatformIO: Satu Alat untuk Banyak Papan"
+  ],
+  "Kuis 6: RTOS: Banyak Tugas di Satu Chip": [
+   "Kenapa RTOS: Task, Tick, dan Penjadwal",
+   "Kenapa RTOS: Task, Tick, dan Penjadwal",
+   "FreeRTOS: Task, Queue, dan Semaphore",
+   "FreeRTOS: Task, Queue, dan Semaphore",
+   "FreeRTOS: Task, Queue, dan Semaphore",
+   "FreeRTOS: Task, Queue, dan Semaphore",
+   "Zephyr: Devicetree, Kconfig, dan west",
+   "Zephyr: Devicetree, Kconfig, dan west"
+  ],
+  "Kuis 7: Protokol Biner dan MQTT": [
+   "Frame Protokol: Header, Panjang, Payload, Checksum",
+   "Frame Protokol: Header, Panjang, Payload, Checksum",
+   "CRC dan Checksum",
+   "CRC dan Checksum",
+   "MQTT: Publish, Subscribe, dan Topik",
+   "MQTT: Publish, Subscribe, dan Topik",
+   "MQTT: Publish, Subscribe, dan Topik",
+   "Broker Mosquitto di Mesin Sendiri",
+   "Broker Mosquitto di Mesin Sendiri"
+  ],
+  "Kuis 8: Gateway dan Rumah Pintar": [
+   "Raspberry Pi sebagai Gateway IoT",
+   "Raspberry Pi sebagai Gateway IoT",
+   "Raspberry Pi sebagai Gateway IoT",
+   "Node-RED: Pemrograman Berbasis Alur",
+   "Node-RED: Pemrograman Berbasis Alur",
+   "Home Assistant, ESPHome, dan Matter",
+   "Home Assistant, ESPHome, dan Matter",
+   "Home Assistant, ESPHome, dan Matter"
+  ],
+  "Kuis 9: Embedded Profesional": [
+   "STM32 dan HAL: Embedded di Industri",
+   "STM32 dan HAL: Embedded di Industri",
+   "Embedded Rust dan Keamanan Memori",
+   "Embedded Rust dan Keamanan Memori",
+   "Linux Tertanam dengan Yocto",
+   "Watchdog, Hemat Daya, dan Update Firmware OTA",
+   "Watchdog, Hemat Daya, dan Update Firmware OTA",
+   "Watchdog, Hemat Daya, dan Update Firmware OTA"
+  ]
+ },
+ "devops": {
+  "Kuis 1: Fondasi DevOps": [
+   "Apa Itu DevOps, SRE, dan Metrik DORA",
+   "Apa Itu DevOps, SRE, dan Metrik DORA",
+   "Apa Itu DevOps, SRE, dan Metrik DORA",
+   "Linux Server, SSH, dan Firewall untuk DevOps",
+   "Linux Server, SSH, dan Firewall untuk DevOps",
+   "Linux Server, SSH, dan Firewall untuk DevOps",
+   "YAML, Bahasa Konfigurasi Alat DevOps",
+   "YAML, Bahasa Konfigurasi Alat DevOps"
+  ],
+  "Kuis 2: Jaringan dan Web Server": [
+   "Protokol Jaringan, Port, dan Alat Diagnosis",
+   "Protokol Jaringan, Port, dan Alat Diagnosis",
+   "Protokol Jaringan, Port, dan Alat Diagnosis",
+   "DNS: Dari Nama Domain ke Alamat IP",
+   "DNS: Dari Nama Domain ke Alamat IP",
+   "Nginx: Web Server dan Reverse Proxy",
+   "Nginx Lanjutan: HTTPS, location, dan Load Balancing",
+   "Nginx Lanjutan: HTTPS, location, dan Load Balancing",
+   "Peta Web Server, VPN, dan Email untuk Server"
+  ],
+  "Kuis 3: Container dengan Docker": [
+   "Container dan Image: Kenapa Docker Ada",
+   "Container dan Image: Kenapa Docker Ada",
+   "Container dan Image: Kenapa Docker Ada",
+   "Dockerfile dan Cache Layer",
+   "Dockerfile dan Cache Layer",
+   "Dockerfile dan Cache Layer",
+   "Volume, Jaringan, dan Image Docker yang Aman",
+   "Volume, Jaringan, dan Image Docker yang Aman",
+   "Volume, Jaringan, dan Image Docker yang Aman"
+  ],
+  "Kuis 4: Compose, Podman, dan Registry": [
+   "Compose Lanjutan: Healthcheck, Variabel, dan Profil",
+   "Compose Lanjutan: Healthcheck, Variabel, dan Profil",
+   "Compose Lanjutan: Healthcheck, Variabel, dan Profil",
+   "Docker Compose: Banyak Container dalam Satu Berkas",
+   "Docker Compose: Banyak Container dalam Satu Berkas",
+   "Podman: Container Tanpa Root di Fedora",
+   "Podman: Container Tanpa Root di Fedora",
+   "Registry dan Runtime: Docker Hub, containerd, LXC",
+   "Registry dan Runtime: Docker Hub, containerd, LXC"
+  ],
+  "Kuis 5: CI/CD dengan GitHub Actions": [
+   "GitHub Actions: Pipeline Pertama dari Commit ke Tes",
+   "GitHub Actions: Pipeline Pertama dari Commit ke Tes",
+   "GitHub Actions: Matriks, Cache, dan Artefak",
+   "GitHub Actions: Matriks, Cache, dan Artefak",
+   "GitHub Actions: Secrets, OIDC, dan Keamanan Workflow",
+   "GitHub Actions: Secrets, OIDC, dan Keamanan Workflow",
+   "GitLab CI dan Jenkins",
+   "GitLab CI dan Jenkins",
+   "Peta CI/CD Lain dan Repositori Artefak"
+  ],
+  "Kuis 6: Cloud dan Layanan Inti AWS": [
+   "Dasar Cloud dan Peta Penyedia: AWS, Google Cloud, Azure",
+   "AWS IAM: Siapa Boleh Melakukan Apa",
+   "AWS IAM: Siapa Boleh Melakukan Apa",
+   "EC2 dan VPC: Server dan Jaringan di AWS",
+   "EC2 dan VPC: Server dan Jaringan di AWS",
+   "S3 dan CloudFront: Berkas dan CDN di AWS",
+   "RDS, DynamoDB, ELB, Route 53, dan CloudWatch",
+   "RDS, DynamoDB, ELB, Route 53, dan CloudWatch",
+   "Dasar Cloud dan Peta Penyedia: AWS, Google Cloud, Azure"
+  ],
+  "Kuis 7: Serverless, Edge, dan PaaS": [
+   "AWS Lambda: Menjalankan Fungsi Tanpa Server",
+   "AWS Lambda: Menjalankan Fungsi Tanpa Server",
+   "Lambda dengan API Gateway, SQS, dan EventBridge",
+   "Lambda dengan API Gateway, SQS, dan EventBridge",
+   "Lambda dengan API Gateway, SQS, dan EventBridge",
+   "Cloudflare Workers dan Platform Edge",
+   "Cloudflare Workers dan Platform Edge",
+   "Peta Platform Deploy: Cloud Run, Vercel, Heroku, Firebase",
+   "Peta Platform Deploy: Cloud Run, Vercel, Heroku, Firebase"
+  ],
+  "Kuis 8: Infrastructure as Code": [
+   "Terraform State, Plan, dan Backend Jarak Jauh",
+   "Terraform State, Plan, dan Backend Jarak Jauh",
+   "Terraform State, Plan, dan Backend Jarak Jauh",
+   "Terraform: Infrastruktur Ditulis sebagai Kode",
+   "Modul Terraform dan Terraform di Pipeline",
+   "Modul Terraform dan Terraform di Pipeline",
+   "Ansible Lanjutan: Role, Template, dan Idempotensi",
+   "Ansible: Otomasi Server Lewat SSH",
+   "Peta IaC: OpenTofu, Pulumi, CloudFormation, Chef, Puppet"
+  ],
+  "Kuis 9: Kubernetes": [
+   "Kubernetes: Arsitektur, Reconciliation, dan Klaster Lokal",
+   "Kubernetes: Arsitektur, Reconciliation, dan Klaster Lokal",
+   "Pod, Deployment, dan Strategi Rilis",
+   "Pod, Deployment, dan Strategi Rilis",
+   "Pod, Deployment, dan Strategi Rilis",
+   "Service, Ingress, dan Gateway API",
+   "Service, Ingress, dan Gateway API",
+   "ConfigMap, Secret, Probe, dan Batas Resource",
+   "ConfigMap, Secret, Probe, dan Batas Resource",
+   "Peta Orkestrasi: EKS, ECS, OpenShift, Nomad, Service Mesh"
+  ],
+  "Kuis 10: Helm dan GitOps": [
+   "Helm: Memasang Aplikasi dengan Chart",
+   "Helm: Memasang Aplikasi dengan Chart",
+   "Membuat Chart Helm dan Kapan Memilih Kustomize",
+   "Membuat Chart Helm dan Kapan Memilih Kustomize",
+   "GitOps dengan Argo CD",
+   "GitOps dengan Argo CD",
+   "Argo CD Lanjutan: Drift, Rollback, dan Flux",
+   "Argo CD Lanjutan: Drift, Rollback, dan Flux",
+   "Argo CD Lanjutan: Drift, Rollback, dan Flux"
+  ],
+  "Kuis 11: Observability": [
+   "Dasar Observability: Metrik, Log, Trace, dan SLO",
+   "Dasar Observability: Metrik, Log, Trace, dan SLO",
+   "Prometheus: Mengumpulkan Metrik dari Aplikasi",
+   "Prometheus: Mengumpulkan Metrik dari Aplikasi",
+   "PromQL, Alert, dan Dasbor Grafana",
+   "PromQL, Alert, dan Dasbor Grafana",
+   "OpenTelemetry: Satu Standar untuk Telemetri",
+   "Tracing dengan OpenTelemetry dan Jaeger",
+   "Tracing dengan OpenTelemetry dan Jaeger",
+   "Log Terpusat: Loki, Alloy, ELK, dan Fluent Bit",
+   "Peta Observability dan On-Call: Datadog sampai PagerDuty"
+  ],
+  "Kuis 12: Biaya Cloud": [
+   "FinOps: Membaca dan Menekan Tagihan Cloud",
+   "FinOps: Membaca dan Menekan Tagihan Cloud",
+   "FinOps: Membaca dan Menekan Tagihan Cloud",
+   "FinOps: Membaca dan Menekan Tagihan Cloud",
+   "FinOps: Membaca dan Menekan Tagihan Cloud",
+   "FinOps: Membaca dan Menekan Tagihan Cloud"
+  ]
+ },
+ "keamanan": {
+  "Kuis 1: Pola Pikir Bertahan": [
+   "Keamanan Siber dari Sisi Bertahan: CIA dan Risiko",
+   "Keamanan Siber dari Sisi Bertahan: CIA dan Risiko",
+   "Etika, Hukum, dan Lab Legal untuk Belajar Keamanan",
+   "Etika, Hukum, dan Lab Legal untuk Belajar Keamanan",
+   "Threat Modeling dengan STRIDE dan PASTA",
+   "Threat Modeling dengan STRIDE dan PASTA",
+   "Threat Modeling dengan STRIDE dan PASTA",
+   "Secure SDLC: Keamanan di Setiap Tahap Pengembangan",
+   "Secure SDLC: Keamanan di Setiap Tahap Pengembangan"
+  ],
+  "Kuis 2: Kriptografi Terapan": [
+   "Hash, Checksum, dan Integritas Data",
+   "Hash, Checksum, dan Integritas Data",
+   "Menyimpan Password: Salt, PBKDF2, bcrypt, dan Argon2",
+   "Menyimpan Password: Salt, PBKDF2, bcrypt, dan Argon2",
+   "Menyimpan Password: Salt, PBKDF2, bcrypt, dan Argon2",
+   "Enkripsi Simetris, Asimetris, dan Tanda Tangan Digital",
+   "Enkripsi Simetris, Asimetris, dan Tanda Tangan Digital",
+   "Sertifikat, PKI, dan Manajemen Kunci",
+   "Sertifikat, PKI, dan Manajemen Kunci"
+  ],
+  "Kuis 3: Autentikasi dan Otorisasi": [
+   "Autentikasi: Password, MFA, dan Passkey",
+   "Autentikasi: Password, MFA, dan Passkey",
+   "Autentikasi: Password, MFA, dan Passkey",
+   "Sesi, Cookie, dan JWT",
+   "Sesi, Cookie, dan JWT",
+   "OAuth 2.0, OpenID Connect, dan SSO",
+   "OAuth 2.0, OpenID Connect, dan SSO",
+   "Otorisasi: RBAC, Least Privilege, dan Policy as Code",
+   "Otorisasi: RBAC, Least Privilege, dan Policy as Code",
+   "Peta Penyedia Identitas: Keycloak, Auth0, Okta, Ping"
+  ],
+  "Kuis 4: OWASP Top 10:2025": [
+   "Kontrol Akses Rusak dan Salah Konfigurasi",
+   "Kontrol Akses Rusak dan Salah Konfigurasi",
+   "Kontrol Akses Rusak dan Salah Konfigurasi",
+   "Injeksi dan XSS: Validasi Masukan dan Encoding Keluaran",
+   "Injeksi dan XSS: Validasi Masukan dan Encoding Keluaran",
+   "Desain Tidak Aman, Logging Lemah, dan Exception Bocor",
+   "Desain Tidak Aman, Logging Lemah, dan Exception Bocor",
+   "Desain Tidak Aman, Logging Lemah, dan Exception Bocor",
+   "OWASP Top 10:2025: Peta Risiko Aplikasi Web"
+  ],
+  "Kuis 5: Keamanan API dan Perlindungan Layanan": [
+   "Rate Limiting, Brute Force, dan Perlindungan Login",
+   "Rate Limiting, Brute Force, dan Perlindungan Login",
+   "Rate Limiting, Brute Force, dan Perlindungan Login",
+   "Header Keamanan, CORS, dan Cookie Aman",
+   "Header Keamanan, CORS, dan Cookie Aman",
+   "Header Keamanan, CORS, dan Cookie Aman",
+   "Keamanan API: Skema, Kunci API, dan Logging Aman",
+   "Keamanan API: Skema, Kunci API, dan Logging Aman"
+  ],
+  "Kuis 6: Rahasia dan Rantai Pasok": [
+   "Manajemen Rahasia: Kunci Tidak Boleh Ada di Kode",
+   "Vault dan OpenBao: Brankas Rahasia Terpusat",
+   "Vault dan OpenBao: Brankas Rahasia Terpusat",
+   "Rahasia di Git dan Kubernetes: SOPS, Sealed Secrets, ESO",
+   "Rantai Pasok Perangkat Lunak: Lockfile dan Dependensi",
+   "Rantai Pasok Perangkat Lunak: Lockfile dan Dependensi",
+   "SBOM dan Tanda Tangan Artefak: Syft dan Sigstore",
+   "SBOM dan Tanda Tangan Artefak: Syft dan Sigstore"
+  ],
+  "Kuis 7: DevSecOps": [
+   "DevSecOps: SAST, SCA, DAST, dan Gerbang Kualitas",
+   "DevSecOps: SAST, SCA, DAST, dan Gerbang Kualitas",
+   "DevSecOps: SAST, SCA, DAST, dan Gerbang Kualitas",
+   "Analisis Kode Statis: SonarQube dan CodeQL",
+   "Analisis Kode Statis: SonarQube dan CodeQL",
+   "Analisis Kode Statis: SonarQube dan CodeQL",
+   "Memindai Dependensi dan Image: Trivy dan Snyk",
+   "Memindai Dependensi dan Image: Trivy dan Snyk",
+   "Memindai Infrastructure as Code: Checkov dan KICS"
+  ],
+  "Kuis 8: Menguji Sistem Milik Sendiri": [
+   "Memetakan Jaringan Sendiri dengan Nmap",
+   "Memetakan Jaringan Sendiri dengan Nmap",
+   "Memetakan Jaringan Sendiri dengan Nmap",
+   "Menguji Aplikasi Web Sendiri: ZAP dan Burp Suite",
+   "Menguji Aplikasi Web Sendiri: ZAP dan Burp Suite",
+   "Menguji Aplikasi Web Sendiri: ZAP dan Burp Suite",
+   "Pemindai Kerentanan: Nessus, OpenVAS, dan Qualys",
+   "Pemindai Kerentanan: Nessus, OpenVAS, dan Qualys"
+  ],
+  "Kuis 9: Deteksi, Respons, dan Keamanan Cloud": [
+   "Log Keamanan dan SIEM: Mendeteksi Serangan",
+   "Log Keamanan dan SIEM: Mendeteksi Serangan",
+   "Respons Insiden, SOAR, dan Postmortem",
+   "Respons Insiden, SOAR, dan Postmortem",
+   "Respons Insiden, SOAR, dan Postmortem",
+   "Keamanan Cloud dan Kubernetes: IAM, CSPM, dan Wiz",
+   "Keamanan Cloud dan Kubernetes: IAM, CSPM, dan Wiz",
+   "Peta Vendor Keamanan Perusahaan: EDR, PAM, Firewall",
+   "Peta Vendor Keamanan Perusahaan: EDR, PAM, Firewall"
+  ],
+  "Kuis 10: Kepatuhan dan Privasi": [
+   "Kepatuhan: ISO 27001, SOC 2, NIST CSF, dan UU PDP",
+   "Kepatuhan: ISO 27001, SOC 2, NIST CSF, dan UU PDP",
+   "Kepatuhan: ISO 27001, SOC 2, NIST CSF, dan UU PDP",
+   "Kepatuhan: ISO 27001, SOC 2, NIST CSF, dan UU PDP",
+   "Privasi Data: Klasifikasi, Retensi, dan Minimalisasi",
+   "Privasi Data: Klasifikasi, Retensi, dan Minimalisasi",
+   "Privasi Data: Klasifikasi, Retensi, dan Minimalisasi",
+   "Privasi Data: Klasifikasi, Retensi, dan Minimalisasi"
+  ]
+ },
+ "data": {
+  "Kuis 1: Berpikir dengan Data": [
+   "Statistik Deskriptif: Pusat dan Sebaran",
+   "Statistik Deskriptif: Pusat dan Sebaran",
+   "Peluang dan Distribusi Lewat Simulasi",
+   "Peluang dan Distribusi Lewat Simulasi",
+   "Korelasi, Regresi, dan Jebakan Sebab-Akibat",
+   "Korelasi, Regresi, dan Jebakan Sebab-Akibat",
+   "Alur Kerja Analisis Data",
+   "Alur Kerja Analisis Data"
+  ],
+  "Kuis 2: Lingkungan Kerja Data": [
+   "Jupyter, Colab, dan Kaggle",
+   "Jupyter, Colab, dan Kaggle",
+   "Environment Python: venv, conda, dan Miniforge",
+   "Environment Python: venv, conda, dan Miniforge",
+   "Environment Python: venv, conda, dan Miniforge",
+   "Spreadsheet sebagai Alat Analisis Pertama",
+   "Spreadsheet sebagai Alat Analisis Pertama"
+  ],
+  "Kuis 3: NumPy dan Matematika Numerik": [
+   "NumPy: Larik N-Dimensi dan Broadcasting",
+   "NumPy: Larik N-Dimensi dan Broadcasting",
+   "NumPy: Larik N-Dimensi dan Broadcasting",
+   "NumPy: Larik N-Dimensi dan Broadcasting",
+   "Vektor, Matriks, dan Gradien",
+   "Vektor, Matriks, dan Gradien",
+   "SciPy untuk Statistik dan Optimasi",
+   "NumPy: Larik N-Dimensi dan Broadcasting"
+  ],
+  "Kuis 4: pandas: Mengolah Tabel": [
+   "pandas: Series, DataFrame, dan Membaca Data",
+   "pandas: Series, DataFrame, dan Membaca Data",
+   "pandas: Membersihkan Data Kotor",
+   "pandas: Membersihkan Data Kotor",
+   "pandas: Group By, Pivot, dan Menggabung Tabel",
+   "pandas: Group By, Pivot, dan Menggabung Tabel",
+   "pandas: Group By, Pivot, dan Menggabung Tabel",
+   "pandas: Series, DataFrame, dan Membaca Data"
+  ],
+  "Kuis 5: Visualisasi dan Aplikasi Data": [
+   "Matplotlib: Grafik yang Jujur dan Jelas",
+   "Matplotlib: Grafik yang Jujur dan Jelas",
+   "Matplotlib: Grafik yang Jujur dan Jelas",
+   "Peta Pustaka Grafik: Seaborn, Plotly, Altair, Bokeh",
+   "Peta Pustaka Grafik: Seaborn, Plotly, Altair, Bokeh",
+   "Aplikasi Data: Streamlit, Gradio, dan Dash",
+   "Aplikasi Data: Streamlit, Gradio, dan Dash"
+  ],
+  "Kuis 6: Statistik Inferensial dan Eksperimen": [
+   "Sampel, Selang Kepercayaan, dan p-value",
+   "Sampel, Selang Kepercayaan, dan p-value",
+   "Uji Hipotesis dengan Uji Permutasi",
+   "A/B Testing untuk Keputusan Produk",
+   "A/B Testing untuk Keputusan Produk",
+   "A/B Testing untuk Keputusan Produk",
+   "Deret Waktu dan Peramalan Sederhana",
+   "Deret Waktu dan Peramalan Sederhana"
+  ],
+  "Kuis 7: Data Kolumnar di Satu Mesin": [
+   "Baris vs Kolom: Apache Arrow dan Parquet",
+   "Baris vs Kolom: Apache Arrow dan Parquet",
+   "Baris vs Kolom: Apache Arrow dan Parquet",
+   "DuckDB: SQL Analitik di Laptop",
+   "Polars dan Dask Saat pandas Mulai Berat",
+   "Polars dan Dask Saat pandas Mulai Berat",
+   "Polars dan Dask Saat pandas Mulai Berat"
+  ],
+  "Kuis 8: R dan Alat Statistik Lain": [
+   "R untuk Pengguna Python",
+   "Tidyverse: dplyr dan ggplot2",
+   "Tidyverse: dplyr dan ggplot2",
+   "Tidyverse: dplyr dan ggplot2",
+   "Peta Ekosistem R: Shiny, Quarto, tidymodels",
+   "R untuk Pengguna Python",
+   "Peta Alat Statistik Lain: Julia, MATLAB, SAS, SPSS"
+  ],
+  "Kuis 9: Dasar Rekayasa Data": [
+   "ETL, ELT, dan Pipeline yang Idempoten",
+   "ETL, ELT, dan Pipeline yang Idempoten",
+   "Warehouse, Data Lake, dan Lakehouse",
+   "Pemodelan Dimensional: Star Schema dan SCD",
+   "Pemodelan Dimensional: Star Schema dan SCD",
+   "Pemodelan Dimensional: Star Schema dan SCD",
+   "Kualitas Data, Lineage, dan Data Pribadi",
+   "Kualitas Data, Lineage, dan Data Pribadi"
+  ],
+  "Kuis 10: Orkestrasi dan Transformasi Data": [
+   "Apache Airflow: DAG, Jadwal, dan Retry",
+   "Airflow dalam Praktik: Operator, XCom, Backfill",
+   "Airflow dalam Praktik: Operator, XCom, Backfill",
+   "Airflow dalam Praktik: Operator, XCom, Backfill",
+   "dbt: Model SQL, ref, dan Uji Data",
+   "dbt: Model SQL, ref, dan Uji Data",
+   "Peta Orkestrasi dan Ingest Data",
+   "Peta Orkestrasi dan Ingest Data"
+  ],
+  "Kuis 11: Big Data dan Streaming": [
+   "Apache Spark: Dari MapReduce ke DataFrame",
+   "Apache Spark: Dari MapReduce ke DataFrame",
+   "PySpark dalam Praktik",
+   "PySpark dalam Praktik",
+   "Apache Kafka: Log, Topik, dan Offset",
+   "Apache Kafka: Log, Topik, dan Offset",
+   "Apache Kafka: Log, Topik, dan Offset",
+   "Peta Ekosistem Big Data dan Streaming"
+  ],
+  "Kuis 12: Lakehouse dan Platform Data Cloud": [
+   "Format Tabel Terbuka: Iceberg, Delta Lake, Hudi",
+   "Format Tabel Terbuka: Iceberg, Delta Lake, Hudi",
+   "Format Tabel Terbuka: Iceberg, Delta Lake, Hudi",
+   "Format Tabel Terbuka: Iceberg, Delta Lake, Hudi",
+   "Databricks dan Snowflake",
+   "Peta Platform Data Cloud",
+   "Peta Platform Data Cloud"
+  ],
+  "Kuis 13: BI dan Komunikasi Data": [
+   "Power BI: Model Data, DAX, dan Power Query",
+   "Power BI: Model Data, DAX, dan Power Query",
+   "Power BI: Model Data, DAX, dan Power Query",
+   "Merancang Dasbor yang Dibaca Orang",
+   "Merancang Dasbor yang Dibaca Orang",
+   "Peta Alat BI: Tableau, Looker, Metabase, Superset",
+   "Peta Alat BI: Tableau, Looker, Metabase, Superset",
+   "Peta Alat BI: Tableau, Looker, Metabase, Superset"
+  ]
+ },
+ "ai": {
+  "Kuis 1: Cara Mesin Belajar": [
+   "Apa Itu Machine Learning",
+   "Apa Itu Machine Learning",
+   "Train, Test, dan Overfitting",
+   "Train, Test, dan Overfitting",
+   "Train, Test, dan Overfitting",
+   "Mengukur Model: Akurasi, Presisi, Recall",
+   "Mengukur Model: Akurasi, Presisi, Recall",
+   "Mengukur Model: Akurasi, Presisi, Recall"
+  ],
+  "Kuis 2: ML Klasik dengan scikit-learn": [
+   "scikit-learn: fit, predict, dan Pipeline",
+   "Regresi, Pohon Keputusan, dan k-means",
+   "Regresi, Pohon Keputusan, dan k-means",
+   "Regresi, Pohon Keputusan, dan k-means",
+   "Validasi Silang dan Tuning Hyperparameter",
+   "Validasi Silang dan Tuning Hyperparameter",
+   "Gradient Boosting: XGBoost, LightGBM, CatBoost",
+   "Gradient Boosting: XGBoost, LightGBM, CatBoost"
+  ],
+  "Kuis 3: Jaringan Saraf dari Nol": [
+   "Neuron, Fungsi Aktivasi, dan Loss",
+   "Neuron, Fungsi Aktivasi, dan Loss",
+   "Backpropagation dan Autograd Mini",
+   "Backpropagation dan Autograd Mini",
+   "CNN, RNN, dan Transformer dalam Gambaran Besar",
+   "CNN, RNN, dan Transformer dalam Gambaran Besar",
+   "CNN, RNN, dan Transformer dalam Gambaran Besar",
+   "CNN, RNN, dan Transformer dalam Gambaran Besar"
+  ],
+  "Kuis 4: PyTorch dan Framework Deep Learning": [
+   "PyTorch: Tensor, Device, dan Autograd",
+   "PyTorch: Tensor, Device, dan Autograd",
+   "PyTorch: Loop Pelatihan Model",
+   "PyTorch: Loop Pelatihan Model",
+   "Peta Framework: TensorFlow, Keras, JAX, Lightning",
+   "Peta Framework: TensorFlow, Keras, JAX, Lightning",
+   "Computer Vision dan NLP Klasik",
+   "Computer Vision dan NLP Klasik"
+  ],
+  "Kuis 5: Cara Kerja LLM": [
+   "Dari Token ke Teks: Cara Kerja LLM",
+   "Dari Token ke Teks: Cara Kerja LLM",
+   "Dari Token ke Teks: Cara Kerja LLM",
+   "Dari Token ke Teks: Cara Kerja LLM",
+   "Dari Token ke Teks: Cara Kerja LLM",
+   "Prompt Engineering yang Bisa Diuji",
+   "Prompt Engineering yang Bisa Diuji",
+   "Prompt Engineering yang Bisa Diuji"
+  ],
+  "Kuis 6: Memakai LLM lewat API": [
+   "API LLM: Pesan, Token, Biaya, dan Streaming",
+   "API LLM: Pesan, Token, Biaya, dan Streaming",
+   "API LLM: Pesan, Token, Biaya, dan Streaming",
+   "API LLM: Pesan, Token, Biaya, dan Streaming",
+   "Claude, OpenAI, dan Gemini dalam Praktik",
+   "Tool Use dan Keluaran Terstruktur",
+   "Tool Use dan Keluaran Terstruktur",
+   "Peta Penyedia Model dan LLM di Cloud"
+  ],
+  "Kuis 7: Model Terbuka dan LLM Lokal": [
+   "Ollama: Menjalankan Model di Laptop",
+   "Ollama: Menjalankan Model di Laptop",
+   "Peta Model Terbuka: Llama, Qwen, DeepSeek, Gemma",
+   "Peta Model Terbuka: Llama, Qwen, DeepSeek, Gemma",
+   "LM Studio, llama.cpp, dan Kuantisasi",
+   "LM Studio, llama.cpp, dan Kuantisasi",
+   "LM Studio, llama.cpp, dan Kuantisasi"
+  ],
+  "Kuis 8: Hugging Face dan Ekosistem Model": [
+   "Hugging Face Hub, Model Card, dan Lisensi",
+   "Hugging Face Hub, Model Card, dan Lisensi",
+   "Transformers: Pipeline, Tokenizer, dan Multimodal",
+   "Transformers: Pipeline, Tokenizer, dan Multimodal",
+   "Fine-tuning dan LoRA: Kapan Perlu",
+   "Fine-tuning dan LoRA: Kapan Perlu",
+   "Menyajikan Model: ONNX, ONNX Runtime, vLLM",
+   "Menyajikan Model: ONNX, ONNX Runtime, vLLM"
+  ],
+  "Kuis 9: Embeddings, RAG, dan Vector Database": [
+   "Embeddings dan Pencarian Semantik",
+   "Embeddings dan Pencarian Semantik",
+   "Embeddings dan Pencarian Semantik",
+   "RAG dari Nol: Potong, Cari, Rakit",
+   "RAG dari Nol: Potong, Cari, Rakit",
+   "RAG yang Lebih Baik: Hibrida, Rerank, Konteks",
+   "RAG yang Lebih Baik: Hibrida, Rerank, Konteks",
+   "pgvector dan Peta Vector Database"
+  ],
+  "Kuis 10: Agen AI dan MCP": [
+   "Loop Agen: Amati, Pikir, Bertindak",
+   "Loop Agen: Amati, Pikir, Bertindak",
+   "Memori, Perencanaan, dan Multi-Agen",
+   "MCP: Host, Client, dan Server",
+   "MCP: Host, Client, dan Server",
+   "Membangun Server MCP Mini",
+   "Keamanan Agen: Prompt Injection dan Izin",
+   "Keamanan Agen: Prompt Injection dan Izin"
+  ],
+  "Kuis 11: Framework LLM dan Agen": [
+   "LangChain dan LangGraph",
+   "LangChain dan LangGraph",
+   "LangChain dan LangGraph",
+   "SDK Agen Resmi: Claude, OpenAI, Google, Microsoft",
+   "SDK Agen Resmi: Claude, OpenAI, Google, Microsoft",
+   "Peta Framework RAG, Agen, dan Otomasi",
+   "Peta Framework RAG, Agen, dan Otomasi"
+  ],
+  "Kuis 12: Evaluasi dan Observability LLM": [
+   "Evaluasi LLM: Dataset Uji dan Penilai",
+   "Evaluasi LLM: Dataset Uji dan Penilai",
+   "Evaluasi LLM: Dataset Uji dan Penilai",
+   "Peta Alat Eval dan Observability LLM",
+   "Peta Alat Eval dan Observability LLM",
+   "Peta Alat Eval dan Observability LLM",
+   "Evaluasi LLM: Dataset Uji dan Penilai"
+  ],
+  "Kuis 13: MLOps: Model sampai Produksi": [
+   "Siklus MLOps dan MLflow",
+   "Siklus MLOps dan MLflow",
+   "Versi Data, Serving, dan Pemantauan Drift",
+   "Versi Data, Serving, dan Pemantauan Drift",
+   "Versi Data, Serving, dan Pemantauan Drift",
+   "Peta Platform MLOps",
+   "Peta Platform MLOps",
+   "Peta Platform MLOps"
+  ]
+ },
+ "bahasalain": {
+  "Kuis 1: Cara Membaca Bahasa Baru": [
+   "Peta Paradigma Pemrograman",
+   "Peta Paradigma Pemrograman",
+   "Sistem Tipe: Statis, Dinamis, Kuat, dan Bertahap",
+   "Sistem Tipe: Statis, Dinamis, Kuat, dan Bertahap",
+   "Sistem Tipe: Statis, Dinamis, Kuat, dan Bertahap",
+   "Model Memori dan Mesin yang Menjalankan Kode",
+   "Model Memori dan Mesin yang Menjalankan Kode",
+   "Belajar Bahasa ke-N dengan Cepat"
+  ],
+  "Kuis 2: Skrip dan Otomasi Sistem": [
+   "PowerShell dan Pipeline Objek",
+   "PowerShell dan Pipeline Objek",
+   "PowerShell dan Pipeline Objek",
+   "PowerShell untuk Skrip Otomasi Sehari-hari",
+   "PowerShell untuk Skrip Otomasi Sehari-hari",
+   "Perl: Regex dan Olah Teks",
+   "Perl: Regex dan Olah Teks",
+   "Peta Bahasa Skrip: Awk, Tcl, Raku, Batch, VBScript"
+  ],
+  "Kuis 3: Lua dan Bahasa Skrip Game": [
+   "Lua: Table, Fungsi, dan Indeks dari Satu",
+   "Lua: Table, Fungsi, dan Indeks dari Satu",
+   "Lua Lanjut: Metatable, Closure, dan Coroutine",
+   "Lua Lanjut: Metatable, Closure, dan Coroutine",
+   "GDScript: Node, Signal, dan Game Loop di Godot",
+   "GDScript: Node, Signal, dan Game Loop di Godot",
+   "GDScript: Node, Signal, dan Game Loop di Godot",
+   "Peta Skrip Game: Luau, GML, dan Haxe"
+  ],
+  "Kuis 4: Swift dan Dart untuk Aplikasi": [
+   "Swift: Optional, Struct, dan Protokol",
+   "Swift: Optional, Struct, dan Protokol",
+   "Swift Lanjut: Konkurensi dan Warisan Objective-C",
+   "Swift Lanjut: Konkurensi dan Warisan Objective-C",
+   "Dart: Null Safety, Kelas, dan Async",
+   "Dart: Null Safety, Kelas, dan Async",
+   "Dart Lanjut: Event Loop, Stream, dan Isolate",
+   "Dart Lanjut: Event Loop, Stream, dan Isolate"
+  ],
+  "Kuis 5: Bahasa Data dan Sains": [
+   "R: Vektor, Data Frame, dan Statistik Dasar",
+   "R: Vektor, Data Frame, dan Statistik Dasar",
+   "R: Vektor, Data Frame, dan Statistik Dasar",
+   "R Lanjut: Pipe, Tidyverse, dan ggplot2",
+   "R Lanjut: Pipe, Tidyverse, dan ggplot2",
+   "MATLAB dan GNU Octave: Berpikir dalam Matriks",
+   "MATLAB dan GNU Octave: Berpikir dalam Matriks",
+   "Peta Bahasa Sains dan Bahasa Array"
+  ],
+  "Kuis 6: JVM dan .NET di Luar Java dan C#": [
+   "Scala: Fungsional dan OOP di JVM",
+   "Scala: Fungsional dan OOP di JVM",
+   "Groovy: Bahasa di Balik Jenkinsfile dan Gradle",
+   "Groovy: Bahasa di Balik Jenkinsfile dan Gradle",
+   "Groovy: Bahasa di Balik Jenkinsfile dan Gradle",
+   "F#: Pemrograman Fungsional di .NET",
+   "F#: Pemrograman Fungsional di .NET",
+   "F#: Pemrograman Fungsional di .NET"
+  ],
+  "Kuis 7: BEAM: Elixir, Erlang, dan Gleam": [
+   "Elixir: Pattern Matching dan Operator Pipe",
+   "Elixir: Pattern Matching dan Operator Pipe",
+   "Elixir: Pattern Matching dan Operator Pipe",
+   "Elixir dan OTP: Proses, Pesan, dan Supervisor",
+   "Elixir dan OTP: Proses, Pesan, dan Supervisor",
+   "Elixir dan OTP: Proses, Pesan, dan Supervisor",
+   "Peta BEAM: Erlang dan Gleam",
+   "Peta BEAM: Erlang dan Gleam"
+  ],
+  "Kuis 8: Fungsional Murni": [
+   "Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas",
+   "Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas",
+   "Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas",
+   "Haskell Lanjut: Maybe, Typeclass, dan Monad IO",
+   "Haskell Lanjut: Maybe, Typeclass, dan Monad IO",
+   "Haskell Lanjut: Maybe, Typeclass, dan Monad IO",
+   "Peta Fungsional dan Transpiler JavaScript",
+   "Peta Fungsional dan Transpiler JavaScript"
+  ],
+  "Kuis 9: Lisp, Logika, dan Bukti": [
+   "Keluarga Lisp: Common Lisp, Scheme, Racket, Clojure",
+   "Keluarga Lisp: Common Lisp, Scheme, Racket, Clojure",
+   "Keluarga Lisp: Common Lisp, Scheme, Racket, Clojure",
+   "Prolog dan Lean: Logika yang Bisa Dijalankan",
+   "Prolog dan Lean: Logika yang Bisa Dijalankan",
+   "Prolog dan Lean: Logika yang Bisa Dijalankan",
+   "Prolog dan Lean: Logika yang Bisa Dijalankan"
+  ],
+  "Kuis 10: Bahasa Sistem dan Tingkat Rendah": [
+   "Assembly: Register, Instruksi, dan Syscall",
+   "Assembly: Register, Instruksi, dan Syscall",
+   "Assembly Lanjut: Stack, Fungsi, dan Konvensi Panggilan",
+   "Assembly Lanjut: Stack, Fungsi, dan Konvensi Panggilan",
+   "Zig: Alokator Eksplisit dan comptime",
+   "Zig: Alokator Eksplisit dan comptime",
+   "Zig: Alokator Eksplisit dan comptime",
+   "Peta Bahasa Sistem Generasi Baru"
+  ],
+  "Kuis 11: Enterprise dan Kode Warisan": [
+   "COBOL: Bahasa Transaksi yang Masih Bekerja",
+   "COBOL: Bahasa Transaksi yang Masih Bekerja",
+   "COBOL: Bahasa Transaksi yang Masih Bekerja",
+   "VBA: Makro untuk Excel dan Office",
+   "VBA: Makro untuk Excel dan Office",
+   "Peta Bahasa Enterprise: ABAP, Apex, X++, RPG, PL/I",
+   "Peta Dialek SQL Prosedural: PL/SQL, T-SQL, PL/pgSQL",
+   "Peta Dialek SQL Prosedural: PL/SQL, T-SQL, PL/pgSQL",
+   "Peta Kode Warisan: Delphi, VB6, FoxPro, CFML, ActionScript"
+  ],
+  "Kuis 12: Perangkat Keras dan Industri": [
+   "Verilog dan VHDL: Menulis Rangkaian sebagai Kode",
+   "Verilog dan VHDL: Menulis Rangkaian sebagai Kode",
+   "Verilog dan VHDL: Menulis Rangkaian sebagai Kode",
+   "MicroPython: Python di Mikrokontroler",
+   "MicroPython: Python di Mikrokontroler",
+   "Peta Otomasi Industri: Ladder Logic dan LabVIEW",
+   "Peta Otomasi Industri: Ladder Logic dan LabVIEW",
+   "Peta Otomasi Industri: Ladder Logic dan LabVIEW"
+  ],
+  "Kuis 13: Smart Contract, Konfigurasi, dan Proyek Akhir": [
+   "Solidity dan Bahasa Smart Contract Lain",
+   "Solidity dan Bahasa Smart Contract Lain",
+   "Solidity dan Bahasa Smart Contract Lain",
+   "Solidity dan Bahasa Smart Contract Lain",
+   "Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina",
+   "Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina",
+   "Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina",
+   "Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina"
+  ]
+ }
+}

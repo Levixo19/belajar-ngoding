@@ -1,0 +1,1614 @@
+{
+ "Pengenalan JavaScript & Cara Menjalankan": [
+  {
+   "setelah": 0,
+   "jenis": "pohon",
+   "judul": "Satu bahasa, dua lingkungan dengan objek bawaan yang beda",
+   "ket": "Bahasanya sama. Yang beda objek di sekitarnya: document cuma ada di browser, process cuma ada di Node. Contoh di aplikasi ini jalan di Node.",
+   "akar": {
+    "teks": "JavaScript",
+    "anak": [
+     {
+      "teks": "Browser",
+      "anak": [
+       {
+        "teks": "document"
+       },
+       {
+        "teks": "alert"
+       },
+       {
+        "teks": "localStorage"
+       }
+      ]
+     },
+     {
+      "teks": "Node.js",
+      "anak": [
+       {
+        "teks": "process"
+       },
+       {
+        "teks": "require"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Variabel (var, let, const) & Tipe Data": [
+  {
+   "setelah": 1,
+   "jenis": "variabel",
+   "judul": "Delapan variabel dari contoh tadi, masing-masing dengan tipenya",
+   "ket": "Angka BigInt dipendekkan supaya muat. typeof null menjawab \"object\", padahal tipenya null: itu quirk lama yang disebut di kode.",
+   "isi": [
+    [
+     "umur",
+     "20",
+     "number"
+    ],
+    [
+     "harga",
+     "15000.50",
+     "number"
+    ],
+    [
+     "nama",
+     "\"Budi\"",
+     "string"
+    ],
+    [
+     "lulus",
+     "true",
+     "boolean"
+    ],
+    [
+     "kosong",
+     "null",
+     "null"
+    ],
+    [
+     "belumDiisi",
+     "undefined",
+     "undefined"
+    ],
+    [
+     "id",
+     "Symbol(\"id\")",
+     "symbol"
+    ],
+    [
+     "bigNum",
+     "1234567890...890n",
+     "bigint"
+    ]
+   ],
+   "sorot": [
+    "kosong"
+   ]
+  }
+ ],
+ "Operator": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "stok ?? 10 dengan stok = 0: angka nol tetap dipakai",
+   "ket": "?? cuma menyerah pada null dan undefined. Dengan ||, nol dianggap kosong dan hasilnya jadi 10.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "stok ?? 10, dengan stok = 0"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "stok null atau undefined?",
+     "tidak": 3
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "hasilnya 10",
+     "ke": 4
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "hasilnya stok, yaitu 0"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "console.log mencetak hasilnya"
+    }
+   ]
+  },
+  {
+   "setelah": 5,
+   "jenis": "bit",
+   "judul": "izin = BACA | TULIS: dua bit menyala dalam satu angka",
+   "ket": "BACA = 1 (bit paling kanan), TULIS = 2, HAPUS = 4. Hasilnya 3, dan izin & HAPUS bernilai 0 karena bit ketiga mati.",
+   "angka": 3,
+   "lebar": 4,
+   "label": "izin = 1 | 2 = 3"
+  }
+ ],
+ "Angka: Konversi Tipe, Math, dan Presisi Desimal": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Empat cara membulatkan, dan bedanya baru kelihatan di angka minus",
+   "ket": "Baris terakhir yang sering mengagetkan: Math.round(-4.5) jadi -4, karena .5 selalu dibulatkan ke arah plus.",
+   "tabel": [
+    {
+     "nama": "Math.xxx(x)",
+     "kolom": [
+      "x",
+      "floor",
+      "ceil",
+      "round",
+      "trunc"
+     ],
+     "baris": [
+      [
+       "4.7",
+       "4",
+       "5",
+       "5",
+       "4"
+      ],
+      [
+       "-4.7",
+       "-5",
+       "-4",
+       "-5",
+       "-4"
+      ],
+      [
+       "4.5",
+       "4",
+       "5",
+       "5",
+       "4"
+      ],
+      [
+       "-4.5",
+       "-5",
+       "-4",
+       "-4",
+       "-4"
+      ]
+     ],
+     "sorot_baris": [
+      3
+     ],
+     "sorot_kolom": [
+      "round"
+     ]
+    }
+   ]
+  }
+ ],
+ "Percabangan (if / else / switch)": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "switch dengan nilai = 2 jatuh terus sampai ketemu break",
+   "ket": "case 2 nggak punya break, jadi isi case 3 ikut jalan. break di case 3 yang akhirnya menghentikan switch.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "switch (nilai), nilai = 2"
+    },
+    {
+     "jenis": "proses",
+     "teks": "lompat ke case yang === 2"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "case 2: cetak dua"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "case 3: cetak tiga"
+    },
+    {
+     "jenis": "proses",
+     "teks": "break: keluar dari switch"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "case 4 nggak pernah jalan"
+    }
+   ]
+  }
+ ],
+ "Perulangan (for, while, for...of, for...in)": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Loop while dari contoh: continue di 5, break di 8",
+   "ket": "continue melompat balik ke pengecekan kondisi, break keluar dari loop. Yang tercetak: 1 2 3 4 6 7.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "let j = 1"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "j <= 10?",
+     "tidak": 7
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "j === 5?",
+     "tidak": 4
+    },
+    {
+     "jenis": "proses",
+     "teks": "j++ lalu continue",
+     "ke": 1
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "j === 8?",
+     "ya": 7,
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "cetak j"
+    },
+    {
+     "jenis": "proses",
+     "teks": "j++",
+     "ke": 1
+    },
+    {
+     "jenis": "selesai",
+     "teks": "keluar dari loop"
+    }
+   ]
+  }
+ ],
+ "String & Template Literal": [
+  {
+   "setelah": 0,
+   "jenis": "larik",
+   "judul": "\"JavaScript\" per karakter: indeksnya mulai dari 0",
+   "ket": "s.slice(0, 4) mengambil indeks 0 sampai 3, jadi \"Java\". Indeks 4 nggak ikut. s.at(-1) menunjuk karakter terakhir.",
+   "nama": "s",
+   "isi": [
+    "J",
+    "a",
+    "v",
+    "a",
+    "S",
+    "c",
+    "r",
+    "i",
+    "p",
+    "t"
+   ],
+   "rentang": [
+    0,
+    4
+   ],
+   "penunjuk": {
+    "s[0]": 0,
+    "at(-1)": 9
+   }
+  }
+ ],
+ "Tanggal & Waktu dengan Date": [
+  {
+   "setelah": 0,
+   "jenis": "larik",
+   "judul": "Bulan di Date dihitung dari 0, jadi 2 berarti Maret",
+   "ket": "new Date(2026, 2, 17) itu 17 Maret. Array NAMA_BULAN pas dengan getMonth() justru karena keduanya mulai dari 0.",
+   "nama": "NAMA_BULAN",
+   "isi": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des"
+   ],
+   "sorot": [
+    2
+   ],
+   "penunjuk": {
+    "bulan 2": 2
+   }
+  },
+  {
+   "setelah": 3,
+   "jenis": "alur",
+   "judul": "waktuLalu() memilih satuan dari selisih detiknya",
+   "ket": "Ambangnya 60 detik, 3600 detik (1 jam), dan 86400 detik (1 hari). Selisih 3 jam jatuh ke cabang \"jam lalu\".",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "detik = selisih / 1000"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "detik < 60?",
+     "tidak": 3
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "baru saja",
+     "ke": 8
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "detik < 3600?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "N menit lalu",
+     "ke": 8
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "detik < 86400?",
+     "tidak": 7
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "N jam lalu (3 jam lalu)",
+     "ke": 8
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "N hari lalu"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "kembalikan teksnya"
+    }
+   ]
+  }
+ ],
+ "Regular Expression: Mencari Pola dalam Teks": [
+  {
+   "setelah": 2,
+   "jenis": "variabel",
+   "judul": "Named group dari pola tanggal di teks pesanan",
+   "ket": "Tiap (?<nama>...) jadi satu property di groups, isinya selalu string. Disusun ulang, hasilnya 17-05-2024.",
+   "isi": [
+    [
+     "g.tahun",
+     "\"2024\"",
+     "string"
+    ],
+    [
+     "g.bulan",
+     "\"05\"",
+     "string"
+    ],
+    [
+     "g.hari",
+     "\"17\"",
+     "string"
+    ]
+   ]
+  }
+ ],
+ "Array & Method Array (map/filter/reduce)": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "filter(n => n >= 75) menyaring nilai yang lolos",
+   "ket": "Kotak yang disorot masuk ke array baru [80, 90, 75, 85, 95]. Cuma 60 yang tertinggal, dan array aslinya nggak berubah.",
+   "nama": "nilai",
+   "isi": [
+    "80",
+    "90",
+    "75",
+    "85",
+    "60",
+    "95"
+   ],
+   "sorot": [
+    0,
+    1,
+    2,
+    3,
+    5
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "reduce((acc, n) => acc + n, 0) putaran demi putaran",
+   "ket": "Nilai yang dikembalikan tiap putaran jadi acc di putaran berikutnya. Nilai awal 0 jadi acc pertama.",
+   "tabel": [
+    {
+     "nama": "[80, 90, 75]",
+     "kolom": [
+      "putaran",
+      "acc",
+      "n",
+      "dikembalikan"
+     ],
+     "baris": [
+      [
+       "1",
+       "0",
+       "80",
+       "80"
+      ],
+      [
+       "2",
+       "80",
+       "90",
+       "170"
+      ],
+      [
+       "3",
+       "170",
+       "75",
+       "245"
+      ]
+     ],
+     "sorot_kolom": [
+      "dikembalikan"
+     ]
+    }
+   ],
+   "panah": "nilai akhir: 245"
+  }
+ ],
+ "Object & Destructuring": [
+  {
+   "setelah": 5,
+   "jenis": "pohon",
+   "judul": "Bentuk object respons yang ditiru destructuring bersarang",
+   "ket": "Sisi kiri destructuring menyusuri jalur yang sama: data, lalu user, lalu nama dan alamat.kota.",
+   "akar": {
+    "teks": "respons",
+    "anak": [
+     {
+      "teks": "status: 200"
+     },
+     {
+      "teks": "data",
+      "anak": [
+       {
+        "teks": "user",
+        "anak": [
+         {
+          "teks": "nama: \"Andi\""
+         },
+         {
+          "teks": "alamat",
+          "anak": [
+           {
+            "teks": "kota: \"Jakarta\""
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Nilai vs Referensi & Menyalin Data": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "Primitif disalin isinya, object disalin alamatnya",
+   "ket": "a dan b berdiri sendiri. user1 dan user2 menunjuk kotak yang sama, jadi user2.umur = 21 ikut terlihat dari user1.",
+   "tumpukan": [
+    [
+     "a",
+     "10"
+    ],
+    [
+     "b",
+     "99"
+    ],
+    [
+     "user1",
+     "@U1"
+    ],
+    [
+     "user2",
+     "@U1"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "U1",
+     "isi": "{ nama: 'Andi', umur: 21 }"
+    }
+   ],
+   "label_tumpukan": "variabel",
+   "label_heap": "object"
+  },
+  {
+   "setelah": 3,
+   "jenis": "memori",
+   "judul": "Salinan dangkal: dua object, tapi alamat di dalamnya tetap satu",
+   "ket": "{ ...user } membuat object baru, tapi property alamat di keduanya menunjuk object A yang sama. salinan.alamat juga A, jadi kota user ikut jadi Bandung.",
+   "tumpukan": [
+    [
+     "user",
+     "@U"
+    ],
+    [
+     "salinan",
+     "@S"
+    ],
+    [
+     "user.alamat",
+     "@A"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "U",
+     "isi": "{ nama: 'Andi', alamat: A }"
+    },
+    {
+     "id": "S",
+     "isi": "{ nama: 'Budi', alamat: A }"
+    },
+    {
+     "id": "A",
+     "isi": "{ kota: 'Bandung', pos }"
+    }
+   ],
+   "label_tumpukan": "nama",
+   "label_heap": "object"
+  }
+ ],
+ "Map & Set": [
+  {
+   "setelah": 3,
+   "jenis": "larik",
+   "judul": "new Set(id) cuma menyimpan kemunculan pertama tiap angka",
+   "ket": "Yang disorot masuk ke Set, urutannya tetap: 7, 3, 9, 1. Sisanya duplikat dan diabaikan, jadi size-nya 4.",
+   "nama": "id",
+   "isi": [
+    "7",
+    "3",
+    "7",
+    "9",
+    "3",
+    "3",
+    "1"
+   ],
+   "sorot": [
+    0,
+    1,
+    3,
+    6
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "Isi Map frekuensi untuk \"ada gula ada semut ada gula\"",
+   "ket": "Urutan baris mengikuti kata yang pertama kali muncul. Tiap kata baru mulai dari 0 lalu ditambah 1.",
+   "tabel": [
+    {
+     "nama": "frekuensi",
+     "kolom": [
+      "key",
+      "value"
+     ],
+     "baris": [
+      [
+       "ada",
+       "3"
+      ],
+      [
+       "gula",
+       "2"
+      ],
+      [
+       "semut",
+       "1"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ]
+    }
+   ]
+  }
+ ],
+ "Function: Declaration, Expression & Arrow Function": [
+  {
+   "setelah": 1,
+   "jenis": "variabel",
+   "judul": "sapaOrang(\"Andi\") mengisi parameternya begini",
+   "ket": "sapaan nggak dikirim, jadi nilai bawaannya yang dipakai. Hasilnya Halo, Andi!",
+   "isi": [
+    [
+     "nama",
+     "\"Andi\""
+    ],
+    [
+     "sapaan",
+     "\"Halo\" (bawaan)"
+    ]
+   ],
+   "sorot": [
+    "sapaan"
+   ]
+  },
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "Rest parameter: total(1, 2, 3, 4) menerima satu array angka",
+   "ket": "...angka mengumpulkan semua argumen jadi array betulan, jadi reduce bisa langsung dipakai. Hasilnya 10.",
+   "nama": "angka",
+   "isi": [
+    "1",
+    "2",
+    "3",
+    "4"
+   ]
+  }
+ ],
+ "Scope & Closure": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "Dua counter, dua closure, masing-masing dengan hitung sendiri",
+   "ket": "Disederhanakan: tiap panggilan buatCounter() bikin variabel hitung baru yang dibawa fungsinya. Sesudah contoh, counter1 di 3, counter2 di 1.",
+   "tumpukan": [
+    [
+     "counter1",
+     "@C1"
+    ],
+    [
+     "counter2",
+     "@C2"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "C1",
+     "isi": "fungsi + hitung = 3"
+    },
+    {
+     "id": "C2",
+     "isi": "fungsi + hitung = 1"
+    }
+   ],
+   "label_tumpukan": "variabel",
+   "label_heap": "closure"
+  }
+ ],
+ "Pola Fungsi: IIFE, Rekursi, dan Currying": [
+  {
+   "setelah": 3,
+   "jenis": "tumpukan",
+   "judul": "Call stack faktorial(5) waktu sampai di base case",
+   "ket": "Tiap panggilan menaruh satu kartu. faktorial(1) mengembalikan 1, lalu kartu diangkat satu per satu: 2, 6, 24, 120.",
+   "mode": "tumpukan",
+   "isi": [
+    "faktorial(5)",
+    "faktorial(4)",
+    "faktorial(3)",
+    "faktorial(2)",
+    "faktorial(1)"
+   ],
+   "label": "call stack",
+   "operasi": "base case: return 1"
+  },
+  {
+   "setelah": 3,
+   "jenis": "pohon",
+   "judul": "Object menu yang ditelusuri cetakMenu() secara rekursif",
+   "ket": "cetakMenu memanggil dirinya untuk tiap anak, satu tingkat lebih dalam. Simpul tanpa anak menghentikan rekursinya.",
+   "akar": {
+    "teks": "Root",
+    "anak": [
+     {
+      "teks": "Produk",
+      "anak": [
+       {
+        "teks": "Sepatu"
+       },
+       {
+        "teks": "Tas"
+       }
+      ]
+     },
+     {
+      "teks": "Tentang"
+     }
+    ]
+   }
+  }
+ ],
+ "Iterator & Generator": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Yang dikerjakan for...of di balik layar",
+   "ket": "for...of minta iterator ke array, lalu memanggil next() sampai done bernilai true.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "it = buah[Symbol.iterator]()"
+    },
+    {
+     "jenis": "proses",
+     "teks": "langkah = it.next()"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "langkah.done masih false?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "cetak langkah.value"
+    },
+    {
+     "jenis": "proses",
+     "teks": "langkah = it.next()",
+     "ke": 2
+    },
+    {
+     "jenis": "selesai",
+     "teks": "loop berhenti"
+    }
+   ]
+  },
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "Empat kali g.next() pada hitungMundur(3)",
+   "ket": "Badan generator baru jalan di next() pertama, lalu tidur di tiap yield. Panggilan keempat mengakhirinya.",
+   "tabel": [
+    {
+     "nama": "g = hitungMundur(3)",
+     "kolom": [
+      "panggilan",
+      "value",
+      "done"
+     ],
+     "baris": [
+      [
+       "next() ke-1",
+       "3",
+       "false"
+      ],
+      [
+       "next() ke-2",
+       "2",
+       "false"
+      ],
+      [
+       "next() ke-3",
+       "1",
+       "false"
+      ],
+      [
+       "next() ke-4",
+       "undefined",
+       "true"
+      ]
+     ],
+     "sorot_baris": [
+      3
+     ]
+    }
+   ]
+  }
+ ],
+ "Keyword 'this' & Context": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Nilai this ditentukan cara memanggil, bukan tempat menulis",
+   "ket": "m = mahasiswa dari contoh. Baris kedua: tanpa objek di depan titik, this jadi undefined di strict mode dan objek global tanpa strict.",
+   "tabel": [
+    {
+     "kolom": [
+      "cara memanggil",
+      "this di dalamnya"
+     ],
+     "baris": [
+      [
+       "m.sapaBiasa()",
+       "m"
+      ],
+      [
+       "sapa() dilepas",
+       "undefined/global"
+      ],
+      [
+       "m.sapaArrow()",
+       "this scope luar"
+      ],
+      [
+       "sapa.bind(m)()",
+       "m"
+      ],
+      [
+       "new Timer()",
+       "objek baru"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  }
+ ],
+ "OOP: Class & Object (ES6+)": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Kucing dan Anjing mewarisi Hewan, lalu menimpa bersuara()",
+   "ket": "Keduanya dapat this.nama dari Hewan. Anjing memanggil super(nama) dulu, baru menambah ras.",
+   "akar": {
+    "teks": "Hewan (nama)",
+    "anak": [
+     {
+      "teks": "Kucing: Meong!"
+     },
+     {
+      "teks": "Anjing (ras): Guk!"
+     }
+    ]
+   }
+  }
+ ],
+ "Prototype: OOP di Balik Layar JavaScript": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Rantai pencarian kucing.bersuara(), dari atas ke bawah",
+   "ket": "bersuara nggak ada di objek kucing, jadi JavaScript turun satu langkah ke Hewan.prototype dan ketemu di sana. Ujung rantainya null.",
+   "akar": {
+    "teks": "kucing: nama",
+    "anak": [
+     {
+      "teks": "Hewan.prototype",
+      "anak": [
+       {
+        "teks": "Object.prototype",
+        "anak": [
+         {
+          "teks": "null"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Exception Handling": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Jalan program try-catch-finally di contoh bagi()",
+   "ket": "Begitu bagi(10, 0) melempar Error, sisa blok try dilewati. finally tetap jalan di akhir.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "masuk blok try"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "bagi(10, 2): cetak 5"
+    },
+    {
+     "jenis": "proses",
+     "teks": "bagi(10, 0) melempar Error"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "catch: Terjadi error: ..."
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "finally: Selesai mencoba..."
+    },
+    {
+     "jenis": "selesai",
+     "teks": "program lanjut"
+    }
+   ]
+  },
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Silsilah error: turunan juga lolos instanceof induknya",
+   "ket": "new TypeError(...) instanceof Error bernilai true. Karena itu pemeriksaan di catch ditulis dari yang paling khusus.",
+   "akar": {
+    "teks": "Error",
+    "anak": [
+     {
+      "teks": "TypeError"
+     },
+     {
+      "teks": "RangeError"
+     },
+     {
+      "teks": "SyntaxError"
+     },
+     {
+      "teks": "GagalValidasi"
+     },
+     {
+      "teks": "GagalJaringan"
+     }
+    ]
+   }
+  }
+ ],
+ "Asynchronous JavaScript: Callback": [
+  {
+   "setelah": 4,
+   "jenis": "urutan",
+   "judul": "Kenapa urutannya 1, 2, 3, 4, 5 walau setTimeout ditulis duluan",
+   "ket": "Baris 1 dan 2 dicetak langsung. Begitu call stack kosong, antrean microtask dihabiskan dulu, baru satu macrotask diambil.",
+   "pelaku": [
+    "Call stack",
+    "Microtask",
+    "Macrotask"
+   ],
+   "pesan": [
+    [
+     0,
+     2,
+     "titip callback 5 (setTimeout)"
+    ],
+    [
+     0,
+     1,
+     "titip callback 3 (then)"
+    ],
+    [
+     0,
+     1,
+     "titip callback 4 (queueMicro)"
+    ],
+    [
+     1,
+     0,
+     "stack kosong: jalankan 3"
+    ],
+    [
+     1,
+     0,
+     "lalu jalankan 4"
+    ],
+    [
+     2,
+     0,
+     "microtask habis: jalankan 5"
+    ]
+   ]
+  }
+ ],
+ "Asynchronous JavaScript: Promise": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Perjalanan Promise dari ambilData(id): pending lalu selesai",
+   "ket": "Promise mulai pending, lalu berakhir fulfilled atau rejected. .finally jalan di kedua jalur.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "ambilData(id): pending"
+    },
+    {
+     "jenis": "proses",
+     "teks": "tunggu 1 detik"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "id > 0?",
+     "tidak": 5
+    },
+    {
+     "jenis": "proses",
+     "teks": "resolve: fulfilled"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": ".then: Sukses: Data-1",
+     "ke": 7
+    },
+    {
+     "jenis": "proses",
+     "teks": "reject: rejected"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": ".catch: Gagal: ID tidak valid"
+    },
+    {
+     "jenis": "selesai",
+     "teks": ".finally: Selesai."
+    }
+   ]
+  }
+ ],
+ "Asynchronous JavaScript: async/await": [
+  {
+   "setelah": 1,
+   "jenis": "urutan",
+   "judul": "Tiga await berurutan: tiap permintaan menunggu yang sebelumnya",
+   "ket": "ambilData(2) baru dimulai sesudah Data-1 datang, jadi totalnya sekitar 3 detik.",
+   "pelaku": [
+    "prosesSemua",
+    "ambilData"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "ambilData(1)"
+    ],
+    [
+     1,
+     0,
+     "Data-1 (detik ke-1)"
+    ],
+    [
+     0,
+     1,
+     "ambilData(2)"
+    ],
+    [
+     1,
+     0,
+     "Data-2 (detik ke-2)"
+    ],
+    [
+     0,
+     1,
+     "ambilData(3)"
+    ],
+    [
+     1,
+     0,
+     "Data-3 (detik ke-3)"
+    ]
+   ]
+  },
+  {
+   "setelah": 2,
+   "jenis": "urutan",
+   "judul": "Promise.all: ketiganya dimulai bareng, ditunggu bersamaan",
+   "ket": "Ketiga timer jalan sekaligus, jadi await Promise.all selesai sekitar 1 detik, selama Promise yang paling lama.",
+   "pelaku": [
+    "paralel",
+    "ambilData"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "ambilData(1), (2), (3) sekaligus"
+    ],
+    [
+     1,
+     0,
+     "Data-1 (detik ke-1)"
+    ],
+    [
+     1,
+     0,
+     "Data-2 (detik ke-1)"
+    ],
+    [
+     1,
+     0,
+     "Data-3 (detik ke-1)"
+    ]
+   ]
+  }
+ ],
+ "DOM Manipulation & Event Dasar": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Pohon DOM sesudah appendChild menambah li baru ke ul",
+   "ket": "Disederhanakan: cuma elemen yang disentuh contoh. querySelector mencari di pohon ini, dan appendChild menambah anak terakhir ul.",
+   "akar": {
+    "teks": "document",
+    "anak": [
+     {
+      "teks": "html",
+      "anak": [
+       {
+        "teks": "head",
+        "anak": [
+         {
+          "teks": "title"
+         }
+        ]
+       },
+       {
+        "teks": "body",
+        "anak": [
+         {
+          "teks": "h1 (Judul Baru)"
+         },
+         {
+          "teks": "ul",
+          "anak": [
+           {
+            "teks": "li"
+           },
+           {
+            "teks": "li (Item baru)"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Form, Atribut, dan Event Lanjutan": [
+  {
+   "setelah": 1,
+   "jenis": "variabel",
+   "judul": "Nilai dari form selalu string, sampai kamu mengubahnya",
+   "ket": "harga + jumlah menggabungkan teks jadi \"150003\". Sesudah Number(harga) * Number(jumlah), hasilnya angka 45000.",
+   "isi": [
+    [
+     "harga",
+     "\"15000\"",
+     "string"
+    ],
+    [
+     "jumlah",
+     "\"3\"",
+     "string"
+    ],
+    [
+     "harga + jumlah",
+     "\"150003\"",
+     "string"
+    ],
+    [
+     "hasil kali",
+     "45000",
+     "number"
+    ]
+   ],
+   "sorot": [
+    "harga + jumlah"
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "alur",
+   "judul": "Klik di tombol hapus naik sampai listener di ul",
+   "ket": "Listener cuma satu, di ul. closest('.hapus') memastikan kliknya memang dari tombol hapus. Sesudah itu event tetap naik ke document.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "klik di <button class=\"hapus\">"
+    },
+    {
+     "jenis": "proses",
+     "teks": "naik ke <li data-id=\"2\">"
+    },
+    {
+     "jenis": "proses",
+     "teks": "naik ke <ul id=\"daftar-menu\">"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "e.target.closest('.hapus')?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "hapus baris dengan id 2"
+    },
+    {
+     "jenis": "proses",
+     "teks": "naik terus sampai document"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "event selesai"
+    }
+   ]
+  }
+ ],
+ "JSON & Fetch API": [
+  {
+   "setelah": 1,
+   "jenis": "urutan",
+   "judul": "Dua kali menunggu di ambilDataUser: balasan, lalu isinya",
+   "ket": "await fetch selesai begitu kepala balasan datang. Isinya masih teks JSON, jadi response.json() perlu ditunggu sekali lagi.",
+   "pelaku": [
+    "Kode kita",
+    "fetch",
+    "Server API"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "fetch(.../users/1)"
+    ],
+    [
+     1,
+     2,
+     "GET /users/1"
+    ],
+    [
+     2,
+     1,
+     "200 OK + teks JSON"
+    ],
+    [
+     1,
+     0,
+     "Response (ok: true)"
+    ],
+    [
+     0,
+     1,
+     "await response.json()"
+    ],
+    [
+     1,
+     0,
+     "object JS siap dipakai"
+    ]
+   ]
+  }
+ ],
+ "Module (import/export) & npm Dasar": [
+  {
+   "setelah": 0,
+   "jenis": "urutan",
+   "judul": "main.js mengambil satu default dan dua named dari matematika.js",
+   "ket": "Nama default bebas dipilih di sisi import. Nama di dalam { } harus persis sama dengan yang di-export.",
+   "pelaku": [
+    "main.js",
+    "matematika.js"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "import kali, { tambah, PI }"
+    ],
+    [
+     1,
+     0,
+     "default: fungsi kali"
+    ],
+    [
+     1,
+     0,
+     "named: tambah dan PI"
+    ]
+   ]
+  }
+ ],
+ "Module Lanjutan: Semua Bentuk Import & Export": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "utama.js cukup menyebut satu alamat: barrel alat/index.js",
+   "ket": "index.js meneruskan semua named export matematika.js, dan default milik uang.js diteruskan sebagai named export rupiah.",
+   "akar": {
+    "teks": "utama.js",
+    "anak": [
+     {
+      "teks": "alat/index.js",
+      "anak": [
+       {
+        "teks": "matematika.js",
+        "anak": [
+         {
+          "teks": "PPN"
+         },
+         {
+          "teks": "pajak"
+         },
+         {
+          "teks": "totalBayar"
+         }
+        ]
+       },
+       {
+        "teks": "uang.js",
+        "anak": [
+         {
+          "teks": "rupiah (default)"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Node.js: Process, Berkas, dan Path": [
+  {
+   "setelah": 0,
+   "jenis": "larik",
+   "judul": "process.argv untuk perintah node file.js kopi teh",
+   "ket": "Dua isi pertama milik Node: jalur program node dan jalur berkasnya (di sini dipendekkan). slice(2) mengambil argumenmu saja.",
+   "nama": "process.argv",
+   "isi": [
+    "node",
+    "file.js",
+    "kopi",
+    "teh"
+   ],
+   "rentang": [
+    2,
+    4
+   ]
+  }
+ ],
+ "Web API: Observer dan Animasi di Browser": [
+  {
+   "setelah": 1,
+   "jenis": "urutan",
+   "judul": "Lazy load: browser yang memberi tahu, kode kita cukup menunggu",
+   "ket": "Nggak ada pengecekan saat scroll. Callback cuma dipanggil waktu status terlihat gambarnya berubah.",
+   "pelaku": [
+    "Kode kita",
+    "Browser",
+    "<img>"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "observe(img)"
+    ],
+    [
+     1,
+     0,
+     "img masuk layar: callback"
+    ],
+    [
+     0,
+     2,
+     "src = dataset.src"
+    ],
+    [
+     0,
+     1,
+     "unobserve(img)"
+    ]
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "alur",
+   "judul": "Loop animasi requestAnimationFrame dari contoh kotak",
+   "ket": "Posisi dihitung dari waktu, jadi kecepatannya sama di layar 60Hz dan 144Hz. Tanpa rAF di akhir, animasinya berhenti sesudah satu frame.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "requestAnimationFrame(animasikan)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "berlalu = timestamp - waktuMulai"
+    },
+    {
+     "jenis": "proses",
+     "teks": "posisi = berlalu / 1000 * 100"
+    },
+    {
+     "jenis": "proses",
+     "teks": "geser kotak lewat transform"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "posisi < 300?",
+     "tidak": 6
+    },
+    {
+     "jenis": "proses",
+     "teks": "minta frame berikutnya",
+     "ke": 1
+    },
+    {
+     "jenis": "selesai",
+     "teks": "animasi berhenti"
+    }
+   ]
+  }
+ ],
+ "Web API: Geolocation, Clipboard, dan Perangkat": [
+  {
+   "setelah": 1,
+   "jenis": "urutan",
+   "judul": "getCurrentPosition minta izin dulu, baru memanggil callback",
+   "ket": "Gambar ini jalur kalau pengguna mengizinkan. Kalau ditolak, browser memanggil callback gagal dengan error.code 1.",
+   "pelaku": [
+    "Kode kita",
+    "Browser",
+    "Pengguna"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "getCurrentPosition(...)"
+    ],
+    [
+     1,
+     2,
+     "popup: izinkan lokasi?"
+    ],
+    [
+     2,
+     1,
+     "Izinkan"
+    ],
+    [
+     1,
+     0,
+     "callback sukses(position)"
+    ]
+   ]
+  }
+ ],
+ "Canvas API: Menggambar dengan JavaScript": [
+  {
+   "setelah": 6,
+   "jenis": "alur",
+   "judul": "Satu frame animasi bola: hapus, gambar ulang, geser",
+   "ket": "Canvas nggak menyimpan bentuk, cuma piksel. Jadi tiap frame seluruh kanvas dibersihkan lalu bola digambar di posisi baru.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "requestAnimationFrame(gambarFrame)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "clearRect seluruh kanvas"
+    },
+    {
+     "jenis": "proses",
+     "teks": "arc + fill: bola di x"
+    },
+    {
+     "jenis": "proses",
+     "teks": "x += kecepatan"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "x lewat tepi kanvas?",
+     "tidak": 6
+    },
+    {
+     "jenis": "proses",
+     "teks": "x = 20"
+    },
+    {
+     "jenis": "proses",
+     "teks": "minta frame berikutnya",
+     "ke": 1
+    }
+   ]
+  }
+ ],
+ "Membaca Repo JavaScript Sungguhan": [
+  {
+   "setelah": 0,
+   "jenis": "pohon",
+   "judul": "Repo toko-online: yang perlu kamu buka cuma src/ dan tests/",
+   "ket": "node_modules/ dan dist/ dihasilkan mesin. Kode yang ditulis manusia ada di src/ dan tests/.",
+   "akar": {
+    "teks": "toko-online/",
+    "anak": [
+     {
+      "teks": "README.md"
+     },
+     {
+      "teks": "package.json"
+     },
+     {
+      "teks": "node_modules/"
+     },
+     {
+      "teks": "dist/"
+     },
+     {
+      "teks": "src/",
+      "anak": [
+       {
+        "teks": "main.js"
+       },
+       {
+        "teks": "keranjang.js"
+       },
+       {
+        "teks": "komponen/"
+       }
+      ]
+     },
+     {
+      "teks": "tests/",
+      "anak": [
+       {
+        "teks": "keranjang.test.js"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Roadmap Menjadi JavaScript Developer Handal": [
+  {
+   "setelah": 0,
+   "jenis": "pohon",
+   "judul": "Tiga jalur spesialisasi sesudah fondasi JavaScript",
+   "ket": "Pilih satu jalur dulu. HTML, CSS, dan TypeScript dipakai di jalur frontend, database dipakai di jalur backend.",
+   "akar": {
+    "teks": "Fondasi JavaScript",
+    "anak": [
+     {
+      "teks": "Frontend",
+      "anak": [
+       {
+        "teks": "React/Vue/Angular"
+       },
+       {
+        "teks": "TypeScript"
+       }
+      ]
+     },
+     {
+      "teks": "Backend",
+      "anak": [
+       {
+        "teks": "Node.js + Express"
+       },
+       {
+        "teks": "Database"
+       }
+      ]
+     },
+     {
+      "teks": "Mobile",
+      "anak": [
+       {
+        "teks": "React Native"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

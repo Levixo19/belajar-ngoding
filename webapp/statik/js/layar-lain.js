@@ -664,7 +664,7 @@ export async function layarAtur(_params, ctx) {
     h("section", {},
       h("span.mata", {}, "Tentang"),
       h("div.kartu", {},
-        h("p", {}, `Belajar Ngoding versi ${ctx.awal.versi} `
+        h("p", {}, `belajar-codingV2 versi ${ctx.awal.versi} `
           + `(antarmuka web ${ctx.awal.versi_web}). Tanpa dependensi luar: `
           + "cukup Python 3.8+ dan sebuah browser."),
         h("p.baris-sisi", { gaya: { margin: "0" } },

@@ -17,7 +17,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "alat"))
 
-from main import LANGUAGES  # noqa: E402
+from inti.kurikulum import LANGUAGES  # noqa: E402
 from periksa_kuis import masalah_soal, petunjuk_bocor  # noqa: E402
 
 AMBANG_TERPANJANG = 0.40

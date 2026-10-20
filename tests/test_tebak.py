@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from inti import runner
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 from pelajar import konfigurasi, progress, tebak
 
 L = {l["key"]: l for l in LANGUAGES}

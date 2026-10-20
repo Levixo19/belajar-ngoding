@@ -10,7 +10,7 @@ import unittest
 
 from inti import sorot
 from inti import tema
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 
 
 def semua_potongan_kode():

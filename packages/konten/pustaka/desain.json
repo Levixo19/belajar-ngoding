@@ -1,0 +1,1413 @@
+{
+"sumber":{
+"nama":"system-design-primer",
+"pemilik":"Donne Martin",
+"repo":"https://github.com/donnemartin/system-design-primer",
+"lisensi":"CC BY 4.0",
+"atribusi":"Bacaan dari The System Design Primer oleh Donne Martin, CC BY 4.0.",
+"kunci":"desain",
+"commit":"ae9bbd7"
+},
+"entri":[
+{
+"judul":"Clones",
+"url":"https://web.archive.org/web/20220530193911/https://www.lecloud.net/post/7295452622/scalability-for-dummies-part-1-clones",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"System design topics: start here › Step 2: Review the scalability article",
+"Load balancer"
+],
+"catatan":""
+},
+{
+"judul":"Databases",
+"url":"https://web.archive.org/web/20220602114024/https://www.lecloud.net/post/7994751381/scalability-for-dummies-part-2-database",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"System design topics: start here › Step 2: Review the scalability article",
+"Database › NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"Caches",
+"url":"https://web.archive.org/web/20230126233752/https://www.lecloud.net/post/9246290032/scalability-for-dummies-part-3-cache",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"System design topics: start here › Step 2: Review the scalability article",
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"Asynchronism",
+"url":"https://web.archive.org/web/20220926171507/https://www.lecloud.net/post/9699762917/scalability-for-dummies-part-4-asynchronism",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"System design topics: start here › Step 2: Review the scalability article"
+],
+"catatan":""
+},
+{
+"judul":"A word on scalability",
+"url":"http://www.allthingsdistributed.com/2006/03/a_word_on_scalability.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Performance vs scalability"
+],
+"catatan":""
+},
+{
+"judul":"Scalability, availability, stability, patterns",
+"url":"http://www.slideshare.net/jboner/scalability-availability-stability-patterns/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Performance vs scalability",
+"Database › Relational database management system (RDBMS) › Master-master replication",
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"Understanding latency vs throughput",
+"url":"https://community.cadence.com/cadence_blogs_8/b/fv/posts/understanding-latency-vs-throughput",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Latency vs throughput"
+],
+"catatan":""
+},
+{
+"judul":"CAP theorem revisited",
+"url":"https://robertgreiner.com/cap-theorem-revisited/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Availability vs consistency"
+],
+"catatan":""
+},
+{
+"judul":"A plain english introduction to CAP theorem",
+"url":"http://ksat.me/a-plain-english-introduction-to-cap-theorem",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Availability vs consistency"
+],
+"catatan":""
+},
+{
+"judul":"CAP FAQ",
+"url":"https://github.com/henryr/cap-faq",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Availability vs consistency"
+],
+"catatan":""
+},
+{
+"judul":"The CAP theorem",
+"url":"https://www.youtube.com/watch?v=k-Yaq8AHlFA",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Availability vs consistency"
+],
+"catatan":""
+},
+{
+"judul":"Transactions across data centers",
+"url":"http://snarfed.org/transactions_across_datacenters_io.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Consistency patterns"
+],
+"catatan":""
+},
+{
+"judul":"Weighted round robin",
+"url":"https://www.jscape.com/blog/load-balancing-algorithms",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Domain name system"
+],
+"catatan":""
+},
+{
+"judul":"Latency-based",
+"url":"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Domain name system"
+],
+"catatan":""
+},
+{
+"judul":"Geolocation-based",
+"url":"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Domain name system"
+],
+"catatan":""
+},
+{
+"judul":"DNS architecture",
+"url":"https://technet.microsoft.com/en-us/library/dd197427(v=ws.10).aspx",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Domain name system"
+],
+"catatan":""
+},
+{
+"judul":"Wikipedia",
+"url":"https://en.wikipedia.org/wiki/Domain_Name_System",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Domain name system"
+],
+"catatan":""
+},
+{
+"judul":"DNS articles",
+"url":"https://support.dnsimple.com/categories/dns/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Domain name system"
+],
+"catatan":""
+},
+{
+"judul":"Globally distributed content delivery",
+"url":"https://figshare.com/articles/Globally_distributed_content_delivery/6605972",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Content delivery network"
+],
+"catatan":""
+},
+{
+"judul":"The differences between push and pull CDNs",
+"url":"https://www.geeksforgeeks.org/system-design/pull-cdn-vs-push-cdn/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Content delivery network"
+],
+"catatan":""
+},
+{
+"judul":"Wikipedia",
+"url":"https://en.wikipedia.org/wiki/Content_delivery_network",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Content delivery network"
+],
+"catatan":""
+},
+{
+"judul":"Round robin or weighted round robin",
+"url":"https://www.g33kinfo.com/info/round-robin-vs-weighted-round-robin-lb",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer"
+],
+"catatan":""
+},
+{
+"judul":"NGINX architecture",
+"url":"https://www.nginx.com/blog/inside-nginx-how-we-designed-for-performance-scale/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer",
+"Reverse proxy (web server)"
+],
+"catatan":""
+},
+{
+"judul":"HAProxy architecture guide",
+"url":"http://www.haproxy.org/download/1.2/doc/architecture.txt",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer",
+"Reverse proxy (web server)"
+],
+"catatan":""
+},
+{
+"judul":"Wikipedia",
+"url":"https://en.wikipedia.org/wiki/Load_balancing_(computing)",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer"
+],
+"catatan":""
+},
+{
+"judul":"Layer 4 load balancing",
+"url":"https://www.nginx.com/resources/glossary/layer-4-load-balancing/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer"
+],
+"catatan":""
+},
+{
+"judul":"Layer 7 load balancing",
+"url":"https://www.nginx.com/resources/glossary/layer-7-load-balancing/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer"
+],
+"catatan":""
+},
+{
+"judul":"ELB listener config",
+"url":"http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-listener-config.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Load balancer"
+],
+"catatan":""
+},
+{
+"judul":"Reverse proxy vs load balancer",
+"url":"https://www.nginx.com/resources/glossary/reverse-proxy-vs-load-balancer/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Reverse proxy (web server)"
+],
+"catatan":""
+},
+{
+"judul":"Wikipedia",
+"url":"https://en.wikipedia.org/wiki/Reverse_proxy",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Reverse proxy (web server)"
+],
+"catatan":""
+},
+{
+"judul":"Intro to architecting systems for scale",
+"url":"http://lethain.com/introduction-to-architecting-systems-for-scale",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Application layer",
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"Crack the system design interview",
+"url":"http://www.puncsky.com/blog/2016-02-13-crack-the-system-design-interview",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Application layer",
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"Service oriented architecture",
+"url":"https://en.wikipedia.org/wiki/Service-oriented_architecture",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Application layer"
+],
+"catatan":""
+},
+{
+"judul":"Introduction to Zookeeper",
+"url":"http://www.slideshare.net/sauravhaloi/introduction-to-apache-zookeeper",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Application layer"
+],
+"catatan":""
+},
+{
+"judul":"Here's what you need to know about building microservices",
+"url":"https://cloudncode.wordpress.com/2016/07/22/msa-getting-started/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Application layer"
+],
+"catatan":""
+},
+{
+"judul":"Multi-master replication",
+"url":"https://en.wikipedia.org/wiki/Multi-master_replication",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › Master-master replication"
+],
+"catatan":""
+},
+{
+"judul":"Scaling up to your first 10 million users",
+"url":"https://www.youtube.com/watch?v=kKjm4ehYiMs",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › Federation",
+"Database › SQL or NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"The coming of the shard",
+"url":"http://highscalability.com/blog/2009/8/6/an-unorthodox-approach-to-database-design-the-coming-of-the.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › Sharding"
+],
+"catatan":""
+},
+{
+"judul":"Shard database architecture",
+"url":"https://en.wikipedia.org/wiki/Shard_(database_architecture)",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › Sharding"
+],
+"catatan":""
+},
+{
+"judul":"Consistent hashing",
+"url":"http://www.paperplanes.de/2011/12/9/the-magic-of-consistent-hashing.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › Sharding"
+],
+"catatan":""
+},
+{
+"judul":"Denormalization",
+"url":"https://en.wikipedia.org/wiki/Denormalization",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › Denormalization › Disadvantage(s): denormalization"
+],
+"catatan":""
+},
+{
+"judul":"Tips for optimizing MySQL queries",
+"url":"http://aiddroid.com/10-tips-optimizing-mysql-queries-dont-suck/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › SQL tuning"
+],
+"catatan":""
+},
+{
+"judul":"Is there a good reason i see VARCHAR(255) used so often?",
+"url":"http://stackoverflow.com/questions/1217466/is-there-a-good-reason-i-see-varchar255-used-so-often-as-opposed-to-another-l",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › SQL tuning"
+],
+"catatan":""
+},
+{
+"judul":"How do null values affect performance?",
+"url":"http://stackoverflow.com/questions/1017239/how-do-null-values-affect-performance-in-a-database-search",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › SQL tuning"
+],
+"catatan":""
+},
+{
+"judul":"Slow query log",
+"url":"http://dev.mysql.com/doc/refman/5.7/en/slow-query-log.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › Relational database management system (RDBMS) › SQL tuning"
+],
+"catatan":""
+},
+{
+"judul":"Key-value database",
+"url":"https://en.wikipedia.org/wiki/Key-value_database",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Key-value store"
+],
+"catatan":""
+},
+{
+"judul":"Disadvantages of key-value stores",
+"url":"http://stackoverflow.com/questions/4056093/what-are-the-disadvantages-of-using-a-key-value-table-over-nullable-columns-or",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Key-value store"
+],
+"catatan":""
+},
+{
+"judul":"Redis architecture",
+"url":"http://qnimate.com/overview-of-redis-architecture/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Key-value store"
+],
+"catatan":""
+},
+{
+"judul":"Memcached architecture",
+"url":"https://adayinthelifeof.nl/2011/02/06/memcache-internals/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Key-value store"
+],
+"catatan":""
+},
+{
+"judul":"Document-oriented database",
+"url":"https://en.wikipedia.org/wiki/Document-oriented_database",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Document store"
+],
+"catatan":""
+},
+{
+"judul":"MongoDB architecture",
+"url":"https://www.mongodb.com/mongodb-architecture",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Document store"
+],
+"catatan":""
+},
+{
+"judul":"CouchDB architecture",
+"url":"https://blog.couchdb.org/2016/08/01/couchdb-2-0-architecture/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Document store"
+],
+"catatan":""
+},
+{
+"judul":"Elasticsearch architecture",
+"url":"https://www.elastic.co/blog/found-elasticsearch-from-the-bottom-up",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Document store"
+],
+"catatan":""
+},
+{
+"judul":"SQL & NoSQL, a brief history",
+"url":"http://blog.grio.com/2015/11/sql-nosql-a-brief-history.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Wide column store"
+],
+"catatan":""
+},
+{
+"judul":"Bigtable architecture",
+"url":"http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/chang06bigtable.pdf",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Wide column store"
+],
+"catatan":""
+},
+{
+"judul":"HBase architecture",
+"url":"https://www.edureka.co/blog/hbase-architecture/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Wide column store"
+],
+"catatan":""
+},
+{
+"judul":"Cassandra architecture",
+"url":"http://docs.datastax.com/en/cassandra/3.0/cassandra/architecture/archIntro.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Wide column store"
+],
+"catatan":""
+},
+{
+"judul":"Graph database",
+"url":"https://en.wikipedia.org/wiki/Graph_database",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Graph database"
+],
+"catatan":""
+},
+{
+"judul":"Neo4j",
+"url":"https://neo4j.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Graph database"
+],
+"catatan":""
+},
+{
+"judul":"FlockDB",
+"url":"https://blog.twitter.com/2010/introducing-flockdb",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL › Graph database"
+],
+"catatan":""
+},
+{
+"judul":"Explanation of base terminology",
+"url":"http://stackoverflow.com/questions/3342497/explanation-of-base-terminology",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"NoSQL databases a survey and decision guidance",
+"url":"https://medium.com/baqend-blog/nosql-databases-a-survey-and-decision-guidance-ea7823a822d#.wskogqenq",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"Introduction to NoSQL",
+"url":"https://www.youtube.com/watch?v=qI_g07C_Q5I",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"NoSQL patterns",
+"url":"http://horicky.blogspot.com/2009/11/nosql-patterns.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"SQL vs NoSQL differences",
+"url":"https://www.sitepoint.com/sql-vs-nosql-differences/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Database › SQL or NoSQL"
+],
+"catatan":""
+},
+{
+"judul":"From cache to in-memory data grid",
+"url":"http://www.slideshare.net/tmatyashovsky/from-cache-to-in-memory-data-grid-introduction-to-hazelcast",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"Scalable system design patterns",
+"url":"http://horicky.blogspot.com/2010/10/scalable-system-design-patterns.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"AWS ElastiCache strategies",
+"url":"http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/Strategies.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"Wikipedia",
+"url":"https://en.wikipedia.org/wiki/Cache_(computing)",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Cache"
+],
+"catatan":""
+},
+{
+"judul":"It's all a numbers game",
+"url":"https://www.youtube.com/watch?v=1KRYH75wgy4",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Asynchronism"
+],
+"catatan":""
+},
+{
+"judul":"Applying back pressure when overloaded",
+"url":"http://mechanical-sympathy.blogspot.com/2012/05/apply-back-pressure-when-overloaded.html",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Asynchronism"
+],
+"catatan":""
+},
+{
+"judul":"Little's law",
+"url":"https://en.wikipedia.org/wiki/Little%27s_law",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Asynchronism"
+],
+"catatan":""
+},
+{
+"judul":"What is the difference between a message queue and a task queue?",
+"url":"https://www.quora.com/What-is-the-difference-between-a-message-queue-and-a-task-queue-Why-would-a-task-queue-require-a-message-broker-like-RabbitMQ-Redis-Celery-or-IronMQ-to-function",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Asynchronism"
+],
+"catatan":""
+},
+{
+"judul":"What is HTTP?",
+"url":"https://www.nginx.com/resources/glossary/http/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › Hypertext transfer protocol (HTTP)"
+],
+"catatan":""
+},
+{
+"judul":"Difference between HTTP and TCP",
+"url":"https://www.quora.com/What-is-the-difference-between-HTTP-protocol-and-TCP-protocol",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › Hypertext transfer protocol (HTTP)"
+],
+"catatan":""
+},
+{
+"judul":"Difference between PUT and PATCH",
+"url":"https://laracasts.com/discuss/channels/general-discussion/whats-the-differences-between-put-and-patch?page=1",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › Hypertext transfer protocol (HTTP)"
+],
+"catatan":""
+},
+{
+"judul":"Acknowledgement",
+"url":"https://en.wikipedia.org/wiki/Acknowledgement_(data_networks)",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › Transmission control protocol (TCP)"
+],
+"catatan":"packets and automatic retransmission"
+},
+{
+"judul":"Networking for game programming",
+"url":"https://gafferongames.com/post/udp_vs_tcp/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › User datagram protocol (UDP)"
+],
+"catatan":""
+},
+{
+"judul":"Key differences between TCP and UDP protocols",
+"url":"http://www.cyberciti.biz/faq/key-differences-between-tcp-and-udp-protocols/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › User datagram protocol (UDP)"
+],
+"catatan":""
+},
+{
+"judul":"Difference between TCP and UDP",
+"url":"http://stackoverflow.com/questions/5970383/difference-between-tcp-and-udp",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › User datagram protocol (UDP)"
+],
+"catatan":""
+},
+{
+"judul":"Transmission control protocol",
+"url":"https://en.wikipedia.org/wiki/Transmission_Control_Protocol",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › User datagram protocol (UDP)"
+],
+"catatan":""
+},
+{
+"judul":"User datagram protocol",
+"url":"https://en.wikipedia.org/wiki/User_Datagram_Protocol",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › User datagram protocol (UDP)"
+],
+"catatan":""
+},
+{
+"judul":"Scaling memcache at Facebook",
+"url":"http://www.cs.bu.edu/~jappavoo/jappavoo.github.com/451/papers/memcache-fb.pdf",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › User datagram protocol (UDP)"
+],
+"catatan":""
+},
+{
+"judul":"Do you really know why you prefer REST over RPC",
+"url":"https://apihandyman.io/do-you-really-know-why-you-prefer-rest-over-rpc/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"When are RPC-ish approaches more appropriate than REST?",
+"url":"http://programmers.stackexchange.com/a/181186",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"REST vs JSON-RPC",
+"url":"http://stackoverflow.com/questions/15056878/rest-vs-json-rpc",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"Debunking the myths of RPC and REST",
+"url":"https://web.archive.org/web/20170608193645/http://etherealbits.com/2012/12/debunking-the-myths-of-rpc-rest/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"What are the drawbacks of using REST",
+"url":"https://www.quora.com/What-are-the-drawbacks-of-using-RESTful-APIs",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"Thrift",
+"url":"https://code.facebook.com/posts/1468950976659943/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"Why REST for internal use and not RPC",
+"url":"http://arstechnica.com/civis/viewtopic.php?t=1190508",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Communication › RPC and REST calls comparison"
+],
+"catatan":""
+},
+{
+"judul":"API security checklist",
+"url":"https://github.com/shieldfy/API-Security-Checklist",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Security guide for developers",
+"url":"https://github.com/FallibleInc/security-guide-for-developers",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"OWASP top ten",
+"url":"https://www.owasp.org/index.php/OWASP_Top_Ten_Cheat_Sheet",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Security"
+],
+"catatan":""
+},
+{
+"judul":"Powers of two",
+"url":"https://en.wikipedia.org/wiki/Power_of_two",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Powers of two table"
+],
+"catatan":""
+},
+{
+"judul":"Latency numbers every programmer should know - 1",
+"url":"https://gist.github.com/jboner/2841832",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Latency numbers every programmer should know"
+],
+"catatan":""
+},
+{
+"judul":"Latency numbers every programmer should know - 2",
+"url":"https://gist.github.com/hellerbarde/2843375",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Latency numbers every programmer should know"
+],
+"catatan":""
+},
+{
+"judul":"Designs, lessons, and advice from building large distributed systems",
+"url":"http://www.cs.cornell.edu/projects/ladis2009/talks/dean-keynote-ladis2009.pdf",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Latency numbers every programmer should know"
+],
+"catatan":""
+},
+{
+"judul":"Software Engineering Advice from Building Large-Scale Distributed Systems",
+"url":"https://static.googleusercontent.com/media/research.google.com/en//people/jeff/stanford-295-talk.pdf",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Latency numbers every programmer should know"
+],
+"catatan":""
+},
+{
+"judul":"Airbnb Engineering",
+"url":"http://nerds.airbnb.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Atlassian Developers",
+"url":"https://developer.atlassian.com/blog/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"AWS Blog",
+"url":"https://aws.amazon.com/blogs/aws/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Bitly Engineering Blog",
+"url":"http://word.bitly.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Box Blogs",
+"url":"https://blog.box.com/blog/category/engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Cloudera Developer Blog",
+"url":"http://blog.cloudera.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Dropbox Tech Blog",
+"url":"https://tech.dropbox.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Engineering at Quora",
+"url":"https://www.quora.com/q/quoraengineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Ebay Tech Blog",
+"url":"http://www.ebaytechblog.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Evernote Tech Blog",
+"url":"https://blog.evernote.com/tech/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Etsy Code as Craft",
+"url":"http://codeascraft.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Facebook Engineering",
+"url":"https://www.facebook.com/Engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Flickr Code",
+"url":"http://code.flickr.net/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Foursquare Engineering Blog",
+"url":"http://engineering.foursquare.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"GitHub Engineering Blog",
+"url":"https://github.blog/category/engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Google Research Blog",
+"url":"http://googleresearch.blogspot.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Groupon Engineering Blog",
+"url":"https://engineering.groupon.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Heroku Engineering Blog",
+"url":"https://engineering.heroku.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Hubspot Engineering Blog",
+"url":"http://product.hubspot.com/blog/topic/engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"High Scalability",
+"url":"http://highscalability.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Instagram Engineering",
+"url":"http://instagram-engineering.tumblr.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Intel Software Blog",
+"url":"https://software.intel.com/en-us/blogs/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Jane Street Tech Blog",
+"url":"https://blogs.janestreet.com/category/ocaml/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"LinkedIn Engineering",
+"url":"http://engineering.linkedin.com/blog",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Microsoft Engineering",
+"url":"https://engineering.microsoft.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Microsoft Python Engineering",
+"url":"https://blogs.msdn.microsoft.com/pythonengineering/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Netflix Tech Blog",
+"url":"http://techblog.netflix.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Paypal Developer Blog",
+"url":"https://developer.paypal.com/community/blog/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Pinterest Engineering Blog",
+"url":"https://medium.com/@Pinterest_Engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Reddit Blog",
+"url":"http://www.redditblog.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Salesforce Engineering Blog",
+"url":"https://developer.salesforce.com/blogs/engineering/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Slack Engineering Blog",
+"url":"https://slack.engineering/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Spotify Labs",
+"url":"https://labs.spotify.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Stripe Engineering Blog",
+"url":"https://stripe.com/blog/engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Twilio Engineering Blog",
+"url":"http://www.twilio.com/engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Twitter Engineering",
+"url":"https://blog.twitter.com/engineering/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Uber Engineering Blog",
+"url":"http://eng.uber.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Yahoo Engineering Blog",
+"url":"http://yahooeng.tumblr.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Yelp Engineering Blog",
+"url":"http://engineeringblog.yelp.com/",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"Zynga Engineering Blog",
+"url":"https://www.zynga.com/blogs/engineering",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+},
+{
+"judul":"kilimchoi/engineering-blogs",
+"url":"https://github.com/kilimchoi/engineering-blogs",
+"jenis":"bacaan",
+"bahasa":"en",
+"topik":[
+"Appendix › Company engineering blogs"
+],
+"catatan":""
+}
+]
+}

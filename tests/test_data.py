@@ -7,8 +7,8 @@ index jawaban meleset atau judul kembar mudah lolos. Tes ini menangkapnya.
 import re
 import unittest
 
-from main import LANGUAGES
-from layar.materials import teks_polos
+from inti.kurikulum import LANGUAGES
+from inti.materi import teks_polos
 from inti import runner
 
 TINGKAT_URUT = ["Mudah", "Menengah", "Lanjut", "Sulit"]

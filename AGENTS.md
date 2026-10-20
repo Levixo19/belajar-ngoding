@@ -1,8 +1,10 @@
 # Catatan untuk agen
 
-Aplikasi belajar pemrograman berbahasa Indonesia dengan **dua antarmuka** —
-terminal dan web — di atas satu inti yang sama. **Tanpa dependensi yang perlu
-dipasang**: Python 3.8+ dan stdlib saja di sisi server, plus JavaScript tanpa
+Aplikasi belajar pemrograman berbahasa Indonesia berbasis **web**.
+Antarmuka terminal DIBUANG 2026-10-20 (lihat "Jalan ke MERN"): pemiliknya
+tidak pernah memakainya, dan `webapp/api.py` terpaksa menarik 3.376 baris
+TUI hanya untuk meminjam registry serta logika latihan. **Tanpa dependensi
+yang perlu dipasang**: Python 3.8+ dan stdlib saja di sisi server, plus JavaScript tanpa
 langkah build. Runner, penyorot sintaks, diff, tema, server HTTP, dan editor
 kode semuanya ditulis tangan, dan tetap begitu.
 
@@ -22,7 +24,7 @@ Semua nama fungsi, variabel, komentar, docstring, dan teks antarmuka memakai
 **Bahasa Indonesia**. Ikuti gaya yang sudah ada.
 
 Status: 32 kurikulum, 1.062 materi dalam 287 bab bertingkat, 266 kuis / 2.159
-soal, 558 latihan termasuk 32 proyek akhir, 1308 tes. Dua puluh kurikulum
+soal, 558 latihan termasuk 32 proyek akhir, 1165 tes. Dua puluh kurikulum
 pertama mengajarkan BAHASA; dua belas sisanya ranah tech stack (lihat
 "Kurikulum tech stack" di bawah).
 Tiap materi ditutup bagian "Di dunia nyata" (kasus nyata + cara memecahkannya),
@@ -40,17 +42,29 @@ ulang yang sudah ada.
 ## Menjalankan
 
 ```bash
-python3 main.py          # antarmuka terminal
-python3 belajar-web.py   # antarmuka web (membuka browser sendiri)
+python3 belajar-web.py   # membuka browser sendiri
 
-python3 -m unittest discover -s tests -t .                        # semua (~3,5 menit)
-BELAJAR_SKIP_LAMBAT=1 python3 -m unittest discover -s tests -t .  # ~40 detik
+python3 -m unittest discover -s tests -t .                        # semua (~55 menit)
+BELAJAR_SKIP_LAMBAT=1 python3 -m unittest discover -s tests -t .  # ~50 detik
+python3 alat/ekspor_konten.py --tulis    # perbarui packages/konten/ sesudah data/ berubah
 BELAJAR_BAHASA=go python3 -m unittest tests.test_solutions        # satu bahasa
+
+npm install          # SATU perkakas (@types/node). Aplikasinya tidak butuh ini
+npm run tipe         # tsc --noEmit atas packages/bersama
+npm run golden       # adu port TypeScript (sorot, beda) dengan rekaman Python
+npm run gigi --workspace @belajar/bersama   # baterai mutasi: pagarnya bisa merah?
+python3 alat/golden_bersama.py --tulis   # perbarui rekaman sesudah sorot/galat/beda berubah
+python3 alat/ekspor_bersama.py --tulis   # perbarui tabel kata kunci untuk sisi TS
 ```
+
+Dua alat ekspor di atas WAJIB dijalankan ulang setiap kali sumbernya berubah,
+dan lupa melakukannya bukan kelalaian yang diam: `test_konten_json` mengadu
+JSON dengan sumber Python setiap suite jalan, jadi menyunting `data/` tanpa
+mengekspor ulang langsung memerah.
 
 Tes lambat mengompilasi ratusan program latihan. Jalankan versi penuh sebelum
 commit apa pun yang menyentuh `data/`, `inti/runner.py`, atau
-`layar/exercises.py`.
+`inti/latihan.py`.
 
 ## Peta modul
 
@@ -61,11 +75,13 @@ namanya berhenti memberi tahu apa pun.
 
 | Modul | Tanggung jawab |
 |---|---|
-| `main.py` | Registry `LANGUAGES` + menu utama & dashboard. Tetap di AKAR karena ia titik masuk (`python3 main.py`) |
+| `inti/kurikulum.py` | Registry `LANGUAGES`, versi, statistik per bahasa, laporan kemajuan. SATU-SATUNYA sumber daftar kurikulum |
+| `inti/latihan.py` | Logika latihan: nama berkas kerja, kerangka editor, kunci jawaban (`bangun_tests`) |
+| `inti/materi.py` | `teks_polos`: isi materi sebagai teks biasa, dipakai pencarian |
 | **`inti/`** | **Mesin. Tidak tahu ada antarmuka terminal atau web** |
 | `inti/runner.py` | Eksekusi kode berbatas waktu/memori + pencocokan output |
 | `inti/struktur.py` | Membaca HTML & CSS jadi pohon — itu "keluaran" kedua bahasa itu |
-| `inti/sorot.py` | Penyorot sintaks 10 bahasa, pemindai token satu lintasan |
+| `inti/sorot.py` | Penyorot sintaks: 19 set aturan + 16 alias, pemindai token satu lintasan |
 | `inti/berkas.py` | Menentukan sebuah blok kode itu berkas, potongan, sesi, multi, atau ilustrasi |
 | `inti/galat.py` | Menerjemahkan pesan compiler ke bahasa manusia |
 | `inti/beda.py` | Menjelaskan kenapa output pelajar berbeda |
@@ -79,9 +95,6 @@ namanya berhenti memberi tahu apa pun.
 | `pelajar/kuis_materi.py` | Kuis -> materi yang diujinya (kesiapan kuis, "Baca lagi"); datanya `data/kuis_materi.py` |
 | `pelajar/waktu.py` | Perkiraan menit materi/kuis/latihan, satu rumus untuk terminal dan web |
 | `pelajar/tebak.py` | "Tebak keluarannya": contoh materi yang layak ditebak dan pemilihan kartunya |
-| **`layar/`** | **Antarmuka terminal. Satu-satunya lapisan yang mencetak** |
-| `layar/utils.py` | Primitif tampilan: paginasi, menu, input, pembungkus baris |
-| `layar/materials.py` `layar/quiz.py` `layar/exercises.py` `layar/navigasi.py` | Layar-layar terminal |
 | `data/bab.py` | Pembagian materi jadi bab bertingkat. DIHASILKAN, bukan diketik |
 
 **`inti/struktur.py` wajib tetap bersebelahan dengan `inti/runner.py`.** Runner
@@ -91,20 +104,13 @@ Memisahkan keduanya tidak menimbulkan error impor di mana pun — yang terjadi
 cuma SELURUH latihan HTML dan CSS berhenti bisa dinilai, dan pesannya berupa
 "berkas tidak ditemukan" dari subprocess yang tidak ada yang membacanya.
 
-**`layar/exercises.py` belum sepenuhnya "layar".** `webapp/api.py` memakainya
-untuk `bangun_tests`, `DIR_KERJA`, dan `_kerangka` — logika latihan, bukan
-tampilan. Begitu juga `main.py` yang memegang registry `LANGUAGES` sekaligus
-menu terminal. Keduanya warisan, dan memindahkan isinya sekarang berarti
-mengubah PERILAKU, bukan sekadar merapikan berkas. Catat, jangan tambal.
-
-`layar/materials.py` sekarang DUA TINGKAT: daftar bab dulu, baru materi di
-dalamnya. Penjagaan penguncian duduk di `render_material`, bukan di menunya,
-karena itulah satu-satunya pintu masuk materi di terminal — menu bab, pencarian
-lokal, pencarian global, bookmark, "lanjutkan yang terakhir", dan antrean saran
-semuanya berakhir di fungsi itu.
-
-`layar/utils.C` menyimpan ANSI mentah dan masih dipakai di beberapa tempat lama.
-Untuk kode baru pakai `tema.cat(teks, "peran")`.
+**Utang "layar/exercises belum sepenuhnya layar" SUDAH DIBAYAR** (2026-10-20).
+Dulu `webapp/api.py` mengimpor `bangun_tests`, `DIR_KERJA`, dan `_kerangka`
+dari lapisan terminal, dan `main.py` memegang registry sekaligus menu. Isinya
+sekarang tinggal di `inti/latihan.py` dan `inti/kurikulum.py`, dan lapisan
+terminalnya sendiri sudah tidak ada. Yang mengikat sekarang kebalikannya:
+**`webapp/` tidak boleh mengimpor apa pun yang mencetak ke layar**, dan
+aturan itu gratis dijaga karena tidak ada lagi lapisan semacam itu.
 
 ### Antarmuka web
 
@@ -113,7 +119,7 @@ belajar sendiri — semuanya dipinjam.
 
 | Modul | Tanggung jawab |
 |---|---|
-| `belajar-web.py` | Peluncur: nyalakan server, buka browser. Tetap di AKAR, sama seperti `main.py` |
+| `belajar-web.py` | Peluncur: nyalakan server, buka browser. Satu-satunya titik masuk |
 | `webapp/server.py` | HTTP, tabel rute, dan TIGA lapis penjagaan |
 | `webapp/api.py` | Endpoint JSON; membungkus hasil modul inti |
 | `webapp/isi.py` | Konten kurikulum → struktur JSON (blok, token, petunjuk) |
@@ -142,6 +148,19 @@ belajar sendiri — semuanya dipinjam.
 | `statik/js/layar-*.js` | Layar-layar web |
 | `statik/js/ikon.js` | 24 ikon garis SVG, satu keluarga, mewarisi currentColor |
 | `statik/gaya.css` | Satu lembar gaya; 4 tema; aturan gerak & arah desain di dalamnya |
+
+### Paket TypeScript (`packages/`)
+
+Workspace npm. Tidak ada langkah build: Node 24 menjalankan `.ts` langsung.
+
+| Modul | Tanggung jawab |
+|---|---|
+| `packages/konten/` | Seluruh kurikulum sebagai JSON + `tipe.ts`. DIHASILKAN `alat/ekspor_konten.py` |
+| `packages/bersama/src/sorot.ts` | Pemindai sintaks, port `inti/sorot.py`. NOL rujukan ke `document` |
+| `packages/bersama/src/beda.ts` | Penjelas beda keluaran, port `inti/beda.py` + `difflib.SequenceMatcher` |
+| `packages/bersama/data/aturan-sorot.json` | Tabel kata kunci + alias + pemetaan. DIHASILKAN `alat/ekspor_bersama.py` |
+| `packages/bersama/golden/` | Sidik keluaran `sorot`/`galat`/`beda` dari Python. DIHASILKAN `alat/golden_bersama.py` |
+| `packages/bersama/uji/` | Pembanding golden + penguji giginya |
 
 ## Invarian yang gampang dilanggar
 
@@ -182,7 +201,7 @@ latihan Fedora baru.
 Blok perintah materinya SESI (`inti/berkas.py` memperlakukan `git` persis
 seperti `fedora`): `git reset --hard` dan `git push --force` di sana ditujukan
 ke repositori MILIK PELAJAR. Latihannya skrip bershebang yang membuat
-repositori sendiri di `mktemp -d`, dan kerangka editornya (`layar/exercises.py`)
+repositori sendiri di `mktemp -d`, dan kerangka editornya (`inti/latihan.py`)
 sudah memuat baris itu supaya skrip yang salah ketik tidak pernah menyentuh
 repositori sungguhan. Dua hal yang tidak kelihatan:
 
@@ -904,8 +923,7 @@ Kesiapan sebuah profesi adalah rata-rata kelompok bekalnya, dan persen tiap
 kurikulum diambil dari `progress.statistik_bahasa` -- angka "x% selesai" yang
 sama dengan halaman bahasa, bukan definisi kedua. `gaji` HANYA diisi dari
 halaman publik yang memang untuk peran itu (tanggal diperiksa wajib ada);
-angka dari halaman "pendekatan" sengaja dibuang. Terminal (`layar/karier.py`,
-`layar/pustaka.py`) dan web memanggil fungsi inti yang sama.
+angka dari halaman "pendekatan" sengaja dibuang.
 
 ### Proyek akhir
 
@@ -1135,7 +1153,7 @@ yang dominan dapat materi sendiri, pemain kecil masuk materi "peta". Yang
 mengikat:
 
 * **Satu registry: `data/kurikulum_tech.py`.** Kurikulum ranah TIDAK
-  didaftarkan di `data/__init__.py` atau ditulis tangan di `main.py`.
+  didaftarkan di `data/__init__.py` atau ditulis tangan di `inti/kurikulum.py`.
   Registry memuat `data/<key>_materials/_quizzes/_exercises.py` dan
   `data/visual/<key>.py` kalau ada, lalu memperluas `LANGUAGES`, `BAB`,
   `KUIS_MATERI`, dan peta Pustaka (`topik`/`peta` per entri, hanya untuk
@@ -1161,8 +1179,8 @@ mengikat:
   ILUSTRASI. Nilai di `berkas.BAHASA_LUAR` (YAML, Dockerfile, JSX, Swift,
   dialek SQL selain SQLite, ...) tidak pernah dijalankan dan diberi petunjuk
   "dibaca di sini, dicoba di proyekmu". `"browser"` untuk JS yang memakai
-  `document`. Web (`isi.bahasa_blok`), terminal (`layar/materials.py`),
-  `tebak.py`, dan `test_solutions` semuanya membaca medan ini.
+  `document`. `isi.bahasa_blok`, `tebak.py`, dan `test_solutions` semuanya
+  membaca medan ini.
 * **Program utuh yang mengimpor paket pihak ketiga = POTONGAN**
   (`berkas.paket_luar`, `butuh_paket`): Python, JS/TS, Java/Kotlin, Rust,
   Go, C#, C/C++. Aplikasi wajib offline dan tidak memasang paket, jadi
@@ -1175,6 +1193,133 @@ mengikat:
   tampil sebagai `<ol start="2026">`; tujuh materi lama ikut kena.
 * **Peta Karier**: kurikulum ranah masuk `pelengkap`, bukan `bekal`.
   Menambah bekal menurunkan persen kesiapan pelajar yang sudah tercatat.
+
+## Jalan ke MERN (2026-10-20)
+
+Pemilik minta aplikasi ini di-refactor jadi MERN + TypeScript, sekaligus
+sebagai cara belajar stack itu. Rencananya bertahap, dan tiap tahap berhenti
+di keadaan yang masih utuh. Yang SUDAH dikerjakan:
+
+**Tahap -1 — terminal dibuang.** `layar/` (3.376 baris), `main.py`, dan 150
+tes TUI dihapus. Yang dipindahkan lebih dulu, karena lapisan web memakainya:
+`LANGUAGES` + `VERSI` + `_stat` + `_teks_laporan` ke `inti/kurikulum.py`,
+logika latihan ke `inti/latihan.py`, `teks_polos` ke `inti/materi.py`.
+Ketiganya dibuktikan identik dengan aslinya sebelum yang lama dihapus.
+Hasil yang dikejar: `import webapp.api` sekarang TIDAK memuat satu pun modul
+terminal. Jangan membuat lapisan web mengimpor dari lapisan tampilan lagi.
+
+**Tahap 0 — konten jadi JSON.** `alat/ekspor_konten.py` menulis
+`packages/konten/`: 32 kurikulum, bab, kuis_materi, karier, gambar, dan
+pustaka. Aturannya:
+
+* **Kuis disimpan MENTAH**, sebelum `normalisasi.seimbangkan_kuis` memutar
+  posisi opsinya. Kalau yang tersimpan hasil rotasi lalu pembacanya memutar
+  lagi, opsi berputar DUA KALI -- dan `test_normalisasi_menjaga_jawaban_tetap_benar`
+  tetap hijau, karena rotasi memang menjaga korelasi opsi dengan jawabannya.
+  Yang rusak diam-diam cuma penjelasan soal yang menyebut posisi opsi.
+  `sidik.json` menyimpan SHA-256 hasil pasca-rotasi sebagai pagarnya.
+* **Buktinya roundtrip, bukan suite.** `test_data.py` adalah tes SKEMA; ia
+  tetap hijau walau sebuah nilai berubah asal bentuknya sah. Yang membuktikan
+  lossless adalah ekspor -> impor balik -> `==` terhadap objek Python asli.
+* **Jangan memformat ulang `packages/konten/**.json`** (ada di
+  `.prettierignore`). Sekali diformat, 16 MB berubah tanpa ada yang tahu apa
+  yang bergeser.
+* `tests/test_konten_json.py` mengadu JSON dengan sumber Python tiap suite
+  jalan, jadi menyunting `data/` tanpa mengekspor ulang langsung memerah.
+* Kunci berbentuk angka DILARANG: `JSON.parse` di V8 menata ulang kunci
+  seperti `"0"` ke depan, jadi objeknya tidak pulih sama di sisi JavaScript.
+
+**Tahap 0,5 — algoritma bersama: `sorot` dan `beda` sudah diport.**
+`inti/sorot.py` -> `packages/bersama/src/sorot.ts`, `inti/beda.py` ->
+`src/beda.ts`. Pembuktiannya bukan "dibaca sepertinya sama":
+`uji/golden-sorot.ts` membangun ulang korpusnya dari `packages/konten/` lalu
+mengadu sidik SHA-256 token untuk SELURUH 3.315 blok kode kurikulum, dan
+`uji/golden-beda.ts` mengadu 312 pasangan keluaran -- keduanya melawan rekaman
+yang dibuat dari Python SEBELUM port itu ada. Ikut suite lewat
+`test_konten_json.TestAlgoritmaTypeScript` (skip kalau `node` tidak ada, bukan
+lulus diam-diam). Yang mengikat:
+
+* **`difflib.SequenceMatcher` DIPORT, bukan diganti pustaka.** Ia bukan Myers
+  diff: Ratcliff/Obershelp, cari blok cocok terpanjang lalu rekursi ke kiri
+  dan kanannya. `diff`/`fast-diff` npm akan memberi penyejajaran berbeda untuk
+  baris yang berpindah tempat, dan yang pelajar lihat bukan "diff-nya lain"
+  melainkan penjelasan yang menunjuk baris yang salah. `autojunk=False` juga
+  bagian dari kontraknya.
+* **Dua loop perluasan CPython sengaja TIDAK diport.** Keduanya ada di balik
+  `not isbjunk(...)`; tanpa junk, DP `j2len` sudah menghitung run terpanjang
+  di setiap `(i, j)`, jadi tidak ada sisa untuk diperluas. Diukur: dengan
+  keduanya dicabut, ke-312 pasangan tetap cocok. Yang membatalkan alasan itu
+  cuma satu -- menyalakan `isjunk` atau `autojunk=True` di `inti/beda.py`.
+  Kalau itu terjadi, keduanya WAJIB ikut diport.
+* **`render()` dan `_potong()` tidak ikut.** Keduanya menggambar diff ANSI 76
+  kolom untuk terminal yang sudah dibuang. React menggambar `Beda` sendiri.
+* **Pasangan uji `beda` ada dua jenis.** 12 ditulis tangan untuk heuristik
+  DIAGNOSISNYA, 300 DIHASILKAN dengan seed tetap (`20261020`) untuk
+  penyejajarnya. Seed itu bagian dari rekaman: menggantinya berarti mengganti
+  seluruh korpus, dan rekaman yang korpusnya berubah tidak membuktikan apa pun
+  soal perubahan yang sedang diperiksa. Perluas dengan MENAMBAH di ujung.
+  Tiga pasangan terakhir di `PASANGAN` ada khusus untuk menutup cabang
+  diagnosis yang tidak pernah terpicu korpus hasilan -- ditemukan oleh baterai
+  mutasi, bukan dengan dibaca.
+
+* **Jangan bangun korpus golden dari `lang["runner"]`.** Yang dipakai
+  aplikasi `isi.bahasa_blok` (materi) dan `isi.bahasa_sorot` (latihan), dan
+  keduanya melewati `berkas.sorot_untuk`. Versi pertama alat ini memakai
+  runner mentah, dan 408 dari 3.315 kasus direkam untuk bahasa yang tidak
+  pernah dipakai -- `terminal` bukan bash, `jsx` bukan javascript,
+  `postgresql` bukan sql. 344 di antaranya menghasilkan token yang BERBEDA,
+  jadi rekamannya membekukan jalur mati: pagar yang tidak bisa memerah untuk
+  perubahan nyata, dan memerah untuk perubahan yang tidak pernah terlihat.
+* **Sidik memakai `separators=(",", ":")`.** Bawaan `json.dumps` menyisipkan
+  spasi, `JSON.stringify` tidak pernah. Tanpa pemisah yang sama, sidik yang
+  dua-duanya BENAR tetap berbeda -- dan gejalanya tiga ribu sidik yang tidak
+  satu pun cocok, yang terbaca seperti port yang gagal total. `golden_beda`
+  menyidik sebuah dict, jadi sisi TS yang mereproduksinya nanti wajib
+  mengurutkan kunci sendiri; `JSON.stringify` tidak melakukannya.
+* **`bahasa_didukung()` bukan uji keanggotaan.** Ia membuang duplikat
+  berdasarkan `id()`, jadi ia menjawab "ada berapa SET aturan", bukan "nama
+  apa saja yang dikenali". Memakainya sebagai `in` menggolongkan setiap alias
+  sebagai tidak tersorot, dan `aplikasi` (68 blok, alias Java) langsung
+  melompat ke puncak daftar sebagai buktinya. Yang benar `in sorot.ATURAN`.
+* **Tabel kata kuncinya DIHASILKAN, bukan diketik ulang di TS**
+  (`alat/ekspor_bersama.py` -> `packages/bersama/data/aturan-sorot.json`).
+  Alias ikut diekspor sebagai peta nama, dan pemetaan `sorot_untuk` ikut
+  dibawa supaya sisi TS tidak menulis tabel keduanya.
+* **Tidak ada langkah build untuk paket ini.** Node 24 menjalankan `.ts`
+  langsung lewat pelucutan tipe; `tsc` cuma pemeriksa (`npm run tipe`,
+  `noEmit`). `npm install` di akar memasang SATU perkakas (`@types/node`).
+  Aplikasinya sendiri tetap jalan dengan `python3 belajar-web.py` tanpa npm.
+* **Pagarnya sudah diuji bisa MERAH**, dan itu bagian dari pekerjaannya:
+  `alat/uji_gigi_golden.py` (3 mutasi di sisi Python) dan
+  `packages/bersama/uji/gigi-golden.py` (8 mutasi di sisi TS, tiap sel menagih
+  KATEGORI keluhannya, bukan cuma kode keluar bukan-nol). Baterai itu yang
+  menemukan dua hal yang tidak kelihatan saat dibaca: dua loop mati di port
+  `SequenceMatcher`, dan satu cabang diagnosis yang tidak pernah terpicu
+  korpusnya. Keduanya hijau di baterai berarti "tidak terbukti apa-apa", bukan
+  "lulus" -- sel yang tumpul dibetulkan, bukan diterima.
+* **Sidiknya lewat satu penyerial, `uji/sidik.ts`.** Ia yang mengurutkan kunci
+  objek; `JSON.stringify` tidak. Tanpa itu sidik `bandingkan` bergeser setiap
+  kali urutan dua medan ditukar di kode -- perubahan yang tidak mengubah satu
+  pun perilaku.
+
+**Temuan sampingan yang belum dikerjakan: 421 dari 3.315 blok kode tampil
+TANPA warna.** Rekaman cakupan di `golden/sorot.json` menamai semuanya. 118 di
+antaranya `"teks"` dan memang harus polos (diagram). Sisanya 303 blok di 76
+bahasa yang tidak punya aturan di `sorot.py` -- yang terbesar `yaml` (59),
+`swift` (24), `dart` (17), `http`/`lua`/`r` (13 masing-masing). Semuanya lahir
+bersama 12 kurikulum tech stack. Menambah aturan untuk salah satunya sekarang
+terbaca sebagai perbaikan yang terukur di angka `cakupan`, bukan sebagai
+"golden bergeser".
+
+Yang BELUM: `galat` ke TS (rekamannya sudah ada, 9 pesan compiler), tes
+kontrak 19 endpoint, plugin token Vite, lalu React + TypeScript (Tahap 1) dan
+Express + MongoDB sebagai fitur baru berdampingan (Tahap 1,5). Rencana lengkap
+beserta angkanya ada di riwayat sesi. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
+`inti/runner.py` + `struktur.py` + `jejak.py` adalah satu sidecar Python.
+Diuji di mesin ini: `ulimit -v` merusak JVM ("Could not reserve enough space
+for object heap"), dan `bash -c` memakai string shell sementara
+`runner.py` menurunkan nama kelas Java DARI KODE PELAJAR -- itu menukar pagar
+yang ada dengan lubang injeksi.
 
 ## Gaya bahasa materi
 
@@ -1209,7 +1354,7 @@ contoh. Yang mengikat untuk tulisan baru:
 
 1. Buat `data/<key>_materials.py`, `_quizzes.py`, `_exercises.py`.
 2. Ekspor di `data/__init__.py`. Kuis WAJIB dibungkus `seimbangkan_kuis()`.
-3. Tambah satu entri di `LANGUAGES` (`main.py`).
+3. Tambah satu entri di `LANGUAGES` (`inti/kurikulum.py`).
 3b. Tambah pembagian babnya di `data/bab.py`. Tanpa itu bahasa baru tampil
    sebagai satu bab raksasa berisi semuanya — jalur cadangan yang sengaja ada
    supaya tidak ada materi yang hilang, tapi bukan yang diinginkan.

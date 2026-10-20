@@ -4541,7 +4541,7 @@ spec:
                     "    pembaruan, lengkap dengan catatan rilisnya. Tugasmu",
                     "    meninjau dan menggabungkannya, bukan menumpuknya.",
                     "  - Kurangi dependensi. Paket yang nggak ada nggak bisa",
-                    "    disusupi. Aplikasi Belajar Ngoding yang sedang kamu pakai",
+                    "    disusupi. Aplikasi belajar-codingV2 yang sedang kamu pakai",
                     "    ini sengaja cuma memakai pustaka standar Python, dan itu",
                     "    keputusan rantai pasok.",
                     "",

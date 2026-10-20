@@ -44,7 +44,7 @@ def _argumen(argv=None):
 
 def _cetak_sambutan(url, langsung_buka):
     from inti import runner
-    from main import LANGUAGES
+    from inti.kurikulum import LANGUAGES
 
     materi = sum(len(l["materials"]) for l in LANGUAGES)
     soal = sum(len(q["questions"]) for l in LANGUAGES for q in l["quizzes"])

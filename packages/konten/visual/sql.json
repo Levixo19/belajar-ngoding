@@ -1,0 +1,1762 @@
+{
+ "Pengenalan Database & SQL": [
+  {
+   "setelah": 0,
+   "jenis": "tabel",
+   "judul": "Satu baris satu mahasiswa, satu kolom satu jenis data",
+   "ket": "Baris Andi disorot. Pertemuan baris itu dengan kolom nama, yaitu 'Andi', adalah satu sel.",
+   "tabel": [
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika",
+       "3.5"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info",
+       "3.2"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ],
+     "sorot_kolom": [
+      "nama"
+     ]
+    }
+   ]
+  }
+ ],
+ "DDL: Membuat Struktur Tabel": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "FOREIGN KEY: nim di tabel nilai wajib ada di tabel mahasiswa",
+   "ket": "Isi barisnya cuma contoh. Nilai dengan nim 105 bakal ditolak, karena mahasiswa bernim 105 nggak ada.",
+   "tabel": [
+    {
+     "nama": "nilai",
+     "kolom": [
+      "id",
+      "nim",
+      "kode",
+      "skor"
+     ],
+     "baris": [
+      [
+       "1",
+       "101",
+       "IF101",
+       "85"
+      ],
+      [
+       "2",
+       "102",
+       "IF101",
+       "78"
+      ],
+      [
+       "3",
+       "101",
+       "IF202",
+       "90"
+      ]
+     ],
+     "sorot_kolom": [
+      "nim"
+     ]
+    },
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info"
+      ]
+     ],
+     "sorot_kolom": [
+      "nim"
+     ]
+    }
+   ],
+   "panah": "nilai.nim menunjuk mahasiswa.nim"
+  }
+ ],
+ "Tipe Data, Constraint & Kunci Gabungan": [
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "Kunci gabungan dan ON DELETE CASCADE di skema utuh tadi",
+   "ket": "Siswa 1 dan IF101 masing-masing muncul dua kali, yang unik pasangannya. Dua baris yang disorot milik siswa 1, dan ikut terhapus lewat CASCADE.",
+   "tabel": [
+    {
+     "nama": "ambil_kelas (sebelum)",
+     "kolom": [
+      "siswa_id",
+      "kelas_kode",
+      "nilai"
+     ],
+     "baris": [
+      [
+       "1",
+       "IF101",
+       "90"
+      ],
+      [
+       "1",
+       "IF202",
+       "85"
+      ],
+      [
+       "2",
+       "IF101",
+       "78"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      1
+     ],
+     "sorot_kolom": [
+      "siswa_id",
+      "kelas_kode"
+     ]
+    },
+    {
+     "nama": "ambil_kelas (sesudah)",
+     "kolom": [
+      "siswa_id",
+      "kelas_kode",
+      "nilai"
+     ],
+     "baris": [
+      [
+       "2",
+       "IF101",
+       "78"
+      ]
+     ]
+    }
+   ],
+   "panah": "DELETE FROM siswa WHERE id = 1"
+  }
+ ],
+ "Membuka Database & Berkas SQL Orang Lain": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Peta database yang dibaca ulang lewat SELECT biasa",
+   "ket": "Hasil dua SELECT terakhir di contoh tadi: daftar isi database, lalu kolom-kolom tabel buku.",
+   "tabel": [
+    {
+     "nama": "sqlite_master",
+     "kolom": [
+      "type",
+      "name"
+     ],
+     "baris": [
+      [
+       "index",
+       "idx_buku_penulis"
+      ],
+      [
+       "table",
+       "buku"
+      ],
+      [
+       "table",
+       "penulis"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    },
+    {
+     "nama": "pragma_table_info",
+     "kolom": [
+      "name",
+      "type",
+      "notnull",
+      "pk"
+     ],
+     "baris": [
+      [
+       "id",
+       "INTEGER",
+       "0",
+       "1"
+      ],
+      [
+       "judul",
+       "TEXT",
+       "1",
+       "0"
+      ],
+      [
+       "penulis_id",
+       "INTEGER",
+       "0",
+       "0"
+      ]
+     ]
+    }
+   ],
+   "panah": "buka tabel buku"
+  }
+ ],
+ "DML: Insert, Update, Delete": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Tiga perintah di contoh tadi, dan baris mana yang kena",
+   "ket": "Isi awalnya dari contoh INSERT di atas. Tiap perintah cuma mengenai baris yang cocok dengan WHERE-nya.",
+   "tabel": [
+    {
+     "nama": "mahasiswa (sebelum)",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika",
+       "3.5"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info",
+       "3.2"
+      ],
+      [
+       "103",
+       "Citra",
+       "Informatika",
+       "3.8"
+      ]
+     ]
+    },
+    {
+     "nama": "mahasiswa (sesudah)",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika",
+       "3.7"
+      ],
+      [
+       "103",
+       "Citra",
+       "Data Science",
+       "3.9"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      1
+     ]
+    }
+   ],
+   "panah": "UPDATE nim 101 dan 103, DELETE nim 102"
+  }
+ ],
+ "SELECT & Filtering": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "WHERE jurusan = 'Informatika' meloloskan tiga baris",
+   "ket": "Datanya tabel contoh di atas. Baris yang disorot lolos, sisanya dibuang dari hasil.",
+   "tabel": [
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan",
+      "ipk",
+      "angkatan"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika",
+       "3.5",
+       "2023"
+      ],
+      [
+       "102",
+       "Budi",
+       "Informatika",
+       "3.2",
+       "2023"
+      ],
+      [
+       "103",
+       "Citra",
+       "Sistem Info",
+       "3.8",
+       "2022"
+      ],
+      [
+       "104",
+       "Dewi",
+       "Sistem Info",
+       "2.9",
+       "2022"
+      ],
+      [
+       "105",
+       "Eko",
+       "Teknik Komp",
+       "3.6",
+       "2021"
+      ],
+      [
+       "106",
+       "Farah",
+       "Informatika",
+       "4.0",
+       "2021"
+      ],
+      [
+       "107",
+       "Gilang",
+       "Teknik Komp",
+       "2.7",
+       "2023"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      1,
+      5
+     ],
+     "sorot_kolom": [
+      "jurusan"
+     ]
+    }
+   ]
+  }
+ ],
+ "Ekspresi, NULL & CASE": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "harga * stok AS nilai_stok: kolom yang cuma ada di hasil",
+   "ket": "Hasil query nomor 1. Kolom nilai_stok dihitung tiap baris dan nggak pernah disimpan ke tabel produk.",
+   "tabel": [
+    {
+     "kolom": [
+      "nama",
+      "harga",
+      "stok",
+      "nilai_stok"
+     ],
+     "baris": [
+      [
+       "Kopi Kapal Api",
+       "3000",
+       "100",
+       "300000"
+      ],
+      [
+       "Teh Botol",
+       "5000",
+       "40",
+       "200000"
+      ],
+      [
+       "Beras 5kg",
+       "68000",
+       "50",
+       "3400000"
+      ]
+     ],
+     "sorot_kolom": [
+      "nilai_stok"
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "NULL menular ke ekspresi, lalu ditangkap WHEN ipk IS NULL",
+   "ket": "Gabungan hasil query 3 dan 8. Baris Citra kosong di ipk + 1, dan CASE memberinya label sendiri karena WHEN itu ditulis paling atas.",
+   "tabel": [
+    {
+     "kolom": [
+      "nama",
+      "ipk",
+      "ipk + 1",
+      "predikat"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "3.5",
+       "4.5",
+       "Cumlaude"
+      ],
+      [
+       "Budi",
+       "2.9",
+       "3.9",
+       "Biasa"
+      ],
+      [
+       "Citra",
+       "NULL",
+       "NULL",
+       "Belum ada nilai"
+      ],
+      [
+       "Dewi",
+       "3.8",
+       "4.8",
+       "Cumlaude"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "Agregasi & Grouping": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "GROUP BY jurusan: tujuh baris diringkas jadi tiga",
+   "ket": "Data mahasiswa dari materi SELECT. Rata-rata Informatika aslinya 3.5666..., di sini dibulatkan dua angka.",
+   "tabel": [
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nama",
+      "jurusan",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "Informatika",
+       "3.5"
+      ],
+      [
+       "Budi",
+       "Informatika",
+       "3.2"
+      ],
+      [
+       "Farah",
+       "Informatika",
+       "4.0"
+      ],
+      [
+       "Citra",
+       "Sistem Info",
+       "3.8"
+      ],
+      [
+       "Dewi",
+       "Sistem Info",
+       "2.9"
+      ],
+      [
+       "Eko",
+       "Teknik Komp",
+       "3.6"
+      ],
+      [
+       "Gilang",
+       "Teknik Komp",
+       "2.7"
+      ]
+     ],
+     "sorot_kolom": [
+      "jurusan"
+     ]
+    },
+    {
+     "nama": "hasil",
+     "kolom": [
+      "jurusan",
+      "rata_ipk"
+     ],
+     "baris": [
+      [
+       "Informatika",
+       "3.57"
+      ],
+      [
+       "Sistem Info",
+       "3.35"
+      ],
+      [
+       "Teknik Komp",
+       "3.15"
+      ]
+     ]
+    }
+   ],
+   "panah": "GROUP BY jurusan, AVG(ipk)"
+  },
+  {
+   "setelah": 4,
+   "jenis": "larik",
+   "judul": "LIMIT 3 OFFSET 3: lewati tiga, ambil tiga berikutnya",
+   "ket": "Urutan dari ORDER BY ipk DESC. Halaman 2 berisi baris ke-4 sampai ke-6, sesuai rumus OFFSET = (2 - 1) * 3.",
+   "nama": "urut ipk DESC",
+   "isi": [
+    "Farah",
+    "Citra",
+    "Eko",
+    "Andi",
+    "Budi",
+    "Dewi",
+    "Gilang"
+   ],
+   "rentang": [
+    3,
+    6
+   ],
+   "penunjuk": {
+    "OFFSET 3": 3
+   }
+  }
+ ],
+ "JOIN: Menghubungkan Tabel": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Kolom nim yang menghubungkan tabel nilai ke mahasiswa",
+   "ket": "Contoh isi untuk tabel di atas. Citra belum punya nilai, jadi nim 103 nggak muncul di tabel nilai.",
+   "tabel": [
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info"
+      ],
+      [
+       "103",
+       "Citra",
+       "Informatika"
+      ]
+     ],
+     "sorot_kolom": [
+      "nim"
+     ]
+    },
+    {
+     "nama": "nilai",
+     "kolom": [
+      "nim",
+      "kode",
+      "skor"
+     ],
+     "baris": [
+      [
+       "101",
+       "IF101",
+       "85"
+      ],
+      [
+       "101",
+       "IF202",
+       "90"
+      ],
+      [
+       "102",
+       "IF101",
+       "78"
+      ]
+     ],
+     "sorot_kolom": [
+      "nim"
+     ]
+    }
+   ],
+   "panah": "dicocokkan lewat nim"
+  },
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "LEFT JOIN: Citra tetap muncul, kolom nilainya NULL",
+   "ket": "Dengan isi contoh yang sama. INNER JOIN cuma memberi tiga baris teratas; baris Citra yang disorot hanya ada di LEFT JOIN.",
+   "tabel": [
+    {
+     "nama": "m LEFT JOIN n",
+     "kolom": [
+      "nama",
+      "kode",
+      "skor"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "IF101",
+       "85"
+      ],
+      [
+       "Andi",
+       "IF202",
+       "90"
+      ],
+      [
+       "Budi",
+       "IF101",
+       "78"
+      ],
+      [
+       "Citra",
+       "NULL",
+       "NULL"
+      ]
+     ],
+     "sorot_baris": [
+      3
+     ]
+    }
+   ]
+  }
+ ],
+ "Subquery & Fungsi Lanjutan": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Subquery dikerjakan dulu, hasilnya jadi pembanding di WHERE",
+   "ket": "Contoh pertama dengan tujuh mahasiswa dari materi SELECT. Empat baris yang disorot punya ipk di atas rata-rata.",
+   "tabel": [
+    {
+     "nama": "SELECT AVG(ipk)",
+     "kolom": [
+      "AVG(ipk)"
+     ],
+     "baris": [
+      [
+       "3.38571428571429"
+      ]
+     ]
+    },
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nama",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "3.5"
+      ],
+      [
+       "Budi",
+       "3.2"
+      ],
+      [
+       "Citra",
+       "3.8"
+      ],
+      [
+       "Dewi",
+       "2.9"
+      ],
+      [
+       "Eko",
+       "3.6"
+      ],
+      [
+       "Farah",
+       "4.0"
+      ],
+      [
+       "Gilang",
+       "2.7"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      2,
+      4,
+      5
+     ]
+    }
+   ],
+   "panah": "WHERE ipk > hasil subquery"
+  }
+ ],
+ "Fungsi Teks, Tanggal & Agregat Teks": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "group_concat meringkas banyak nama jadi satu teks per kota",
+   "ket": "Hasil query terakhir di contoh tadi. Baris Andi dan Citra sama-sama Bandung, jadi namanya digabung jadi satu sel.",
+   "tabel": [
+    {
+     "nama": "pelanggan",
+     "kolom": [
+      "id",
+      "nama_depan",
+      "kota"
+     ],
+     "baris": [
+      [
+       "1",
+       "Andi",
+       "Bandung"
+      ],
+      [
+       "2",
+       "Budi",
+       "Surabaya"
+      ],
+      [
+       "3",
+       "Citra",
+       "Bandung"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      2
+     ]
+    },
+    {
+     "nama": "hasil",
+     "kolom": [
+      "kota",
+      "jumlah",
+      "daftar"
+     ],
+     "baris": [
+      [
+       "Bandung",
+       "2",
+       "Andi, Citra"
+      ],
+      [
+       "Surabaya",
+       "1",
+       "Budi"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ]
+    }
+   ],
+   "panah": "GROUP BY kota, group_concat(nama_depan)"
+  },
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "Menggeser tanggal di SQLite, termasuk 31 Maret yang meluber",
+   "ket": "Hasil query kedua di contoh tadi. Citra: 31 Maret + 1 bulan jadi 1 Mei di SQLite, sedangkan MySQL dan PostgreSQL memberi 30 April.",
+   "tabel": [
+    {
+     "kolom": [
+      "nama",
+      "tanggal_daftar",
+      "tenggat_bayar",
+      "perpanjangan"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "2023-11-05",
+       "2023-12-05",
+       "2023-12-05"
+      ],
+      [
+       "Budi",
+       "2024-01-20",
+       "2024-02-19",
+       "2024-02-20"
+      ],
+      [
+       "Citra",
+       "2024-03-31",
+       "2024-04-30",
+       "2024-05-01"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ],
+     "sorot_kolom": [
+      "perpanjangan"
+     ]
+    }
+   ]
+  }
+ ],
+ "EXISTS, Subquery Berkorelasi & Operator Himpunan": [
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "Anti-join: Budi nggak punya pasangan, dan satu nim NULL",
+   "ket": "Data contoh tadi. Budi (disorot) hasil NOT EXISTS. Baris nim NULL (disorot) yang bikin NOT IN mengembalikan nol baris.",
+   "tabel": [
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nim",
+      "nama"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi"
+      ],
+      [
+       "102",
+       "Budi"
+      ],
+      [
+       "103",
+       "Citra"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    },
+    {
+     "nama": "nilai",
+     "kolom": [
+      "nim",
+      "kode",
+      "skor"
+     ],
+     "baris": [
+      [
+       "101",
+       "IF101",
+       "88"
+      ],
+      [
+       "103",
+       "IF101",
+       "75"
+      ],
+      [
+       "NULL",
+       "IF101",
+       "60"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ],
+   "panah": "dicari pasangannya lewat nim"
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "EXCEPT dua arah: P01 hilang, P04 baru muncul",
+   "ket": "P03 cocok kalau yang dibandingkan cuma kode, tapi ikut muncul di EXCEPT seluruh baris karena namanya berubah.",
+   "tabel": [
+    {
+     "nama": "stok_lama",
+     "kolom": [
+      "kode",
+      "nama"
+     ],
+     "baris": [
+      [
+       "P01",
+       "Beras"
+      ],
+      [
+       "P02",
+       "Gula"
+      ],
+      [
+       "P03",
+       "Kopi"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ]
+    },
+    {
+     "nama": "stok_baru",
+     "kolom": [
+      "kode",
+      "nama"
+     ],
+     "baris": [
+      [
+       "P02",
+       "Gula"
+      ],
+      [
+       "P03",
+       "Kopi Bubuk"
+      ],
+      [
+       "P04",
+       "Teh"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ],
+   "panah": "dibandingkan"
+  }
+ ],
+ "DML Lanjutan: INSERT dari Query, UPSERT & RETURNING": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "INSERT ... SELECT menyalin dua pesanan lama ke arsip",
+   "ket": "Langkah 1 di skrip tadi. Baris yang disorot terpilih oleh WHERE, dan baru dihapus dari pesanan sesudah salinannya masuk.",
+   "tabel": [
+    {
+     "nama": "pesanan",
+     "kolom": [
+      "id",
+      "email",
+      "tanggal",
+      "total"
+     ],
+     "baris": [
+      [
+       "1",
+       "andi@mail.com",
+       "2023-11-02",
+       "150000"
+      ],
+      [
+       "2",
+       "budi@mail.com",
+       "2023-12-20",
+       "90000"
+      ],
+      [
+       "3",
+       "andi@mail.com",
+       "2024-03-14",
+       "250000"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      1
+     ]
+    },
+    {
+     "nama": "arsip",
+     "kolom": [
+      "id",
+      "email",
+      "tanggal",
+      "total"
+     ],
+     "baris": [
+      [
+       "1",
+       "andi@mail.com",
+       "2023-11-02",
+       "150000"
+      ],
+      [
+       "2",
+       "budi@mail.com",
+       "2023-12-20",
+       "90000"
+      ]
+     ]
+    }
+   ],
+   "panah": "WHERE tanggal < '2024-01-01'"
+  },
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "UPSERT dua kali dengan email yang sama, barisnya tetap satu",
+   "ket": "Langkah 3 di skrip tadi. INSERT kedua bentrok di email, jadi belanjanya ditambah: 150000 + 250000.",
+   "tabel": [
+    {
+     "nama": "sesudah INSERT pertama",
+     "kolom": [
+      "email",
+      "nama",
+      "belanja"
+     ],
+     "baris": [
+      [
+       "andi@mail.com",
+       "Andi",
+       "150000"
+      ]
+     ]
+    },
+    {
+     "nama": "sesudah INSERT kedua",
+     "kolom": [
+      "email",
+      "nama",
+      "belanja"
+     ],
+     "baris": [
+      [
+       "andi@mail.com",
+       "Andi",
+       "400000"
+      ]
+     ],
+     "sorot_kolom": [
+      "belanja"
+     ]
+    }
+   ],
+   "panah": "ON CONFLICT (email) DO UPDATE"
+  }
+ ],
+ "Index, Normalisasi & Best Practice": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Nama dan jurusan yang berulang dipindah ke tabelnya sendiri",
+   "ket": "Isi barisnya contoh. Sesudah dipecah, tabel nilai cukup menyimpan nim, kode, dan skor.",
+   "tabel": [
+    {
+     "nama": "nilai (belum rapi)",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan",
+      "kode",
+      "skor"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika",
+       "IF101",
+       "85"
+      ],
+      [
+       "101",
+       "Andi",
+       "Informatika",
+       "IF202",
+       "90"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info",
+       "IF101",
+       "78"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info",
+       "IF303",
+       "80"
+      ]
+     ],
+     "sorot_kolom": [
+      "nama",
+      "jurusan"
+     ]
+    },
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nim",
+      "nama",
+      "jurusan"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "Informatika"
+      ],
+      [
+       "102",
+       "Budi",
+       "Sistem Info"
+      ]
+     ]
+    }
+   ],
+   "panah": "nama & jurusan cukup disimpan sekali"
+  }
+ ],
+ "Keamanan Query: Parameter, Injeksi & Hak Akses": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Sandi diisi ' OR '1'='1, dan seluruh tabel ikut keluar",
+   "ket": "Hasil query ketiga. Bagian OR '1'='1' selalu benar, jadi semua baris lolos, termasuk akun admin.",
+   "tabel": [
+    {
+     "kolom": [
+      "id",
+      "email"
+     ],
+     "baris": [
+      [
+       "1",
+       "levi@contoh.id"
+      ],
+      [
+       "2",
+       "dina@contoh.id"
+      ],
+      [
+       "3",
+       "admin@contoh.id"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "Membaca EXPLAIN & Rencana Eksekusi": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Rencana MySQL tadi diringkas: tabel m masih dibaca semua",
+   "ket": "Lima kolom paling penting dari dua row di atas. type ALL tanpa key di tabel m adalah bagian yang perlu diperbaiki.",
+   "tabel": [
+    {
+     "kolom": [
+      "table",
+      "type",
+      "key",
+      "rows",
+      "Extra"
+     ],
+     "baris": [
+      [
+       "m",
+       "ALL",
+       "NULL",
+       "9821",
+       "Using where"
+      ],
+      [
+       "n",
+       "ref",
+       "idx_nim",
+       "4",
+       "NULL"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ],
+     "sorot_kolom": [
+      "type"
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 3,
+   "jenis": "pohon",
+   "judul": "Rencana PostgreSQL tadi sebagai pohon, dibaca dari bawah",
+   "ket": "Daun dikerjakan duluan: kedua Seq Scan, lalu Hash, lalu Hash Join di akar yang menghasilkan baris untukmu. Baris Filter tadi syarat milik Seq Scan, bukan node.",
+   "akar": {
+    "teks": "Hash Join",
+    "anak": [
+     {
+      "teks": "Seq Scan nilai n"
+     },
+     {
+      "teks": "Hash",
+      "anak": [
+       {
+        "teks": "Seq Scan mahasiswa"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Window Function (Fungsi Jendela)": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Tiga fungsi peringkat pada IPK yang seri: 3.5, 3.5, 3.2",
+   "ket": "Angka dari komentar di contoh tadi, namanya cuma contoh. Baris Budi memperlihatkan bedanya: RANK lompat ke 3, DENSE_RANK lanjut ke 2.",
+   "tabel": [
+    {
+     "kolom": [
+      "nama",
+      "ipk",
+      "no_urut",
+      "peringkat",
+      "peringkat_rapat"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "3.5",
+       "1",
+       "1",
+       "1"
+      ],
+      [
+       "Hesti",
+       "3.5",
+       "2",
+       "1",
+       "1"
+      ],
+      [
+       "Budi",
+       "3.2",
+       "3",
+       "3",
+       "2"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Running total dan LAG: semua baris tetap ada",
+   "ket": "Angka penjualannya contoh. Bulan pertama nggak punya bulan sebelumnya, jadi LAG-nya NULL.",
+   "tabel": [
+    {
+     "kolom": [
+      "bulan",
+      "total_penjualan",
+      "total_berjalan",
+      "bulan_lalu"
+     ],
+     "baris": [
+      [
+       "2024-01",
+       "100",
+       "100",
+       "NULL"
+      ],
+      [
+       "2024-02",
+       "150",
+       "250",
+       "100"
+      ],
+      [
+       "2024-03",
+       "120",
+       "370",
+       "150"
+      ]
+     ],
+     "sorot_kolom": [
+      "total_berjalan"
+     ]
+    }
+   ]
+  }
+ ],
+ "Common Table Expression (CTE) & Recursive Query": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "Cara recursive CTE berputar sampai nggak ada baris baru",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "anchor: Direktur (id = 1)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "cari bawahan dari hasil terakhir"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "ada baris baru?",
+     "tidak": 4
+    },
+    {
+     "jenis": "proses",
+     "teks": "tambahkan, level + 1",
+     "ke": 1
+    },
+    {
+     "jenis": "selesai",
+     "teks": "SELECT * FROM hierarki"
+    }
+   ]
+  },
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Hasil hierarki: satu baris anchor, lalu satu level per putaran",
+   "ket": "Isi tabel karyawan di sini contoh, karena kode di atas nggak mengisinya.",
+   "tabel": [
+    {
+     "nama": "hierarki",
+     "kolom": [
+      "id",
+      "nama",
+      "atasan_id",
+      "level"
+     ],
+     "baris": [
+      [
+       "1",
+       "Direktur",
+       "NULL",
+       "1"
+      ],
+      [
+       "2",
+       "Manajer A",
+       "1",
+       "2"
+      ],
+      [
+       "3",
+       "Manajer B",
+       "1",
+       "2"
+      ],
+      [
+       "4",
+       "Staf C",
+       "2",
+       "3"
+      ],
+      [
+       "5",
+       "Staf D",
+       "3",
+       "3"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ],
+     "sorot_kolom": [
+      "level"
+     ]
+    }
+   ]
+  }
+ ],
+ "View, Stored Procedure & Trigger": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "View mahasiswa_unggulan: query yang disimpan, bukan salinan",
+   "ket": "Data dari materi SELECT. Tiap kali view dibaca, WHERE ipk >= 3.5 dijalankan ulang ke tabel aslinya.",
+   "tabel": [
+    {
+     "nama": "mahasiswa",
+     "kolom": [
+      "nama",
+      "jurusan",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "Informatika",
+       "3.5"
+      ],
+      [
+       "Budi",
+       "Informatika",
+       "3.2"
+      ],
+      [
+       "Citra",
+       "Sistem Info",
+       "3.8"
+      ],
+      [
+       "Dewi",
+       "Sistem Info",
+       "2.9"
+      ],
+      [
+       "Eko",
+       "Teknik Komp",
+       "3.6"
+      ],
+      [
+       "Farah",
+       "Informatika",
+       "4.0"
+      ],
+      [
+       "Gilang",
+       "Teknik Komp",
+       "2.7"
+      ]
+     ],
+     "sorot_baris": [
+      0,
+      2,
+      4,
+      5
+     ]
+    },
+    {
+     "nama": "mahasiswa_unggulan",
+     "kolom": [
+      "nama",
+      "jurusan",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "Andi",
+       "Informatika",
+       "3.5"
+      ],
+      [
+       "Citra",
+       "Sistem Info",
+       "3.8"
+      ],
+      [
+       "Eko",
+       "Teknik Komp",
+       "3.6"
+      ],
+      [
+       "Farah",
+       "Informatika",
+       "4.0"
+      ]
+     ]
+    }
+   ],
+   "panah": "WHERE ipk >= 3.5, tiap kali dibaca"
+  },
+  {
+   "setelah": 5,
+   "jenis": "urutan",
+   "judul": "Trigger jalan sendiri tiap kali ada UPDATE",
+   "ket": "Aplikasinya cuma mengirim UPDATE. Baris log ditulis database, tanpa dipanggil siapa pun.",
+   "pelaku": [
+    "aplikasi",
+    "mahasiswa",
+    "trigger",
+    "log_mahasiswa"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "UPDATE ... WHERE nim = 101"
+    ],
+    [
+     1,
+     2,
+     "AFTER UPDATE, per baris"
+    ],
+    [
+     2,
+     3,
+     "INSERT (101, 'UPDATE', NOW())"
+    ],
+    [
+     1,
+     0,
+     "UPDATE selesai"
+    ]
+   ]
+  }
+ ],
+ "Bahasa Prosedural di Database": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "LOOP berlabel di demo_perulangan: LEAVE keluar, ITERATE lanjut",
+   "ket": "Bagian 3 di contoh tadi. Dengan n = 5, LOOP ini cuma menambahkan ganjil:1, ganjil:3, dan ganjil:5 ke hasil.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "SET i = 0"
+    },
+    {
+     "jenis": "proses",
+     "teks": "SET i = i + 1"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "i <= n ?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "i genap?",
+     "ya": 1,
+     "tidak": 4
+    },
+    {
+     "jenis": "proses",
+     "teks": "hasil += 'ganjil:' + i",
+     "ke": 1
+    },
+    {
+     "jenis": "selesai",
+     "teks": "LEAVE putaran"
+    }
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "Trigger SQLite tadi menolak ipk 7.00, baris Budi nggak masuk",
+   "ket": "INSERT kedua gagal dengan pesan dari RAISE. Yang tersisa di tabel cuma baris Andi.",
+   "tabel": [
+    {
+     "nama": "INSERT yang dicoba",
+     "kolom": [
+      "nim",
+      "nama",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "3.50"
+      ],
+      [
+       "102",
+       "Budi",
+       "7.00"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    },
+    {
+     "nama": "pendaftar",
+     "kolom": [
+      "nim",
+      "nama",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "101",
+       "Andi",
+       "3.5"
+      ]
+     ]
+    }
+   ],
+   "panah": "WHEN NEW.ipk < 0.0 OR NEW.ipk > 4.0"
+  }
+ ],
+ "Transaction & Isolation Level Lanjutan": [
+  {
+   "setelah": 3,
+   "jenis": "urutan",
+   "judul": "FOR UPDATE: transaction kedua menunggu, lalu membaca saldo baru",
+   "ket": "Disederhanakan jadi dua transaction yang sama-sama mau mengurangi saldo rekening A.",
+   "pelaku": [
+    "transaksi 1",
+    "database",
+    "transaksi 2"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "SELECT saldo A FOR UPDATE"
+    ],
+    [
+     2,
+     1,
+     "SELECT saldo A FOR UPDATE"
+    ],
+    [
+     1,
+     1,
+     "transaksi 2 menunggu kunci A"
+    ],
+    [
+     0,
+     1,
+     "UPDATE saldo A dan B"
+    ],
+    [
+     0,
+     1,
+     "COMMIT, kunci dilepas"
+    ],
+    [
+     1,
+     2,
+     "saldo A yang sudah dikurangi"
+    ]
+   ]
+  },
+  {
+   "setelah": 6,
+   "jenis": "urutan",
+   "judul": "Deadlock: dua transaction saling menunggu kunci",
+   "ket": "Database mendeteksinya dan membatalkan salah satu, misalnya transaksi 2. Mengunci dengan urutan yang sama mencegahnya.",
+   "pelaku": [
+    "transaksi 1",
+    "database",
+    "transaksi 2"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "kunci baris A"
+    ],
+    [
+     2,
+     1,
+     "kunci baris B"
+    ],
+    [
+     0,
+     1,
+     "minta B: menunggu"
+    ],
+    [
+     2,
+     1,
+     "minta A: menunggu"
+    ],
+    [
+     1,
+     2,
+     "deadlock, kamu di-ROLLBACK"
+    ],
+    [
+     1,
+     0,
+     "kunci B didapat, lanjut"
+    ]
+   ]
+  }
+ ],
+ "Roadmap Lanjutan: NoSQL, Scaling & Karir Database": [
+  {
+   "setelah": 1,
+   "jenis": "urutan",
+   "judul": "Caching: permintaan kedua dijawab dari memori",
+   "ket": "Database cuma ditanya waktu hasilnya belum ada di cache (Redis atau Memcached).",
+   "pelaku": [
+    "aplikasi",
+    "cache",
+    "database"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "ada hasil query ini?"
+    ],
+    [
+     1,
+     0,
+     "belum ada"
+    ],
+    [
+     0,
+     2,
+     "SELECT ..."
+    ],
+    [
+     2,
+     0,
+     "hasil"
+    ],
+    [
+     0,
+     1,
+     "simpan hasilnya"
+    ],
+    [
+     0,
+     1,
+     "permintaan berikutnya: ada?"
+    ],
+    [
+     1,
+     0,
+     "ada, langsung dari memori"
+    ]
+   ]
+  }
+ ]
+}

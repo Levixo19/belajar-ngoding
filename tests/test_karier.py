@@ -15,7 +15,7 @@ import tempfile
 import unittest
 
 from data import karier as data_karier
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 from pelajar import karier
 from pelajar import progress
 

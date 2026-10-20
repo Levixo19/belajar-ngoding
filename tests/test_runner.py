@@ -543,8 +543,8 @@ _PANGGILAN_ANAK = frozenset({
     "getoutput", "getstatusoutput",
 })
 
-_PAKET_PRODUKSI = ("inti", "pelajar", "layar", "webapp")
-_AKAR_PRODUKSI = ("main.py", "belajar-web.py")
+_PAKET_PRODUKSI = ("inti", "pelajar", "webapp")
+_AKAR_PRODUKSI = ("belajar-web.py",)
 
 # Situs di tingkat modul tidak punya fungsi pembungkus; ia tetap butuh nama
 # supaya kunci whitelist-nya bisa ditulis orang.
@@ -556,8 +556,6 @@ _MODUL = "<modul>"
 DIIZINKAN_MEWARISI = {
     ("inti/runner.py", "_sqlite_aman"):
         "hanya membaca returncode; keluarannya tidak pernah diurai",
-    ("layar/exercises.py", "tulis_kode"):
-        "$EDITOR di tty pelajar; tidak ada teks yang diparsing",
 }
 
 

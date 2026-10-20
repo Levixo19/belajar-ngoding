@@ -1,0 +1,123 @@
+{
+"sumber":{
+"nama":"freeCodeCamp",
+"pemilik":"freeCodeCamp.org",
+"repo":"https://www.freecodecamp.org/learn",
+"lisensi":"tautan saja",
+"atribusi":"Tautan ke sertifikasi gratis freeCodeCamp.org. Isi kurikulumnya berhak cipta freeCodeCamp.org dan tidak disalin. Tidak ada dukungan resmi dari freeCodeCamp.",
+"kunci":"fcc",
+"commit":"34b1acde"
+},
+"entri":[
+{
+"judul":"Full-Stack Developer Curriculum",
+"url":"https://www.freecodecamp.org/learn/full-stack-developer-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"Responsive Web Design",
+"url":"https://www.freecodecamp.org/learn/responsive-web-design-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"JavaScript",
+"url":"https://www.freecodecamp.org/learn/javascript-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"Front-End Development Libraries",
+"url":"https://www.freecodecamp.org/learn/front-end-development-libraries-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"Python",
+"url":"https://www.freecodecamp.org/learn/python-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"Relational Databases",
+"url":"https://www.freecodecamp.org/learn/relational-databases-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"Back-End Development and APIs",
+"url":"https://www.freecodecamp.org/learn/back-end-development-and-apis-v9/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"A2 English for Developers (Beta)",
+"url":"https://www.freecodecamp.org/learn/a2-english-for-developers/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"B1 English for Developers (Beta)",
+"url":"https://www.freecodecamp.org/learn/b1-english-for-developers/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"A1 Professional Spanish (Beta)",
+"url":"https://www.freecodecamp.org/learn/a1-professional-spanish/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+},
+{
+"judul":"A1 Professional Chinese (Beta)",
+"url":"https://www.freecodecamp.org/learn/a1-professional-chinese/",
+"jenis":"kursus",
+"bahasa":"en",
+"topik":[
+"Sertifikasi freeCodeCamp"
+],
+"catatan":"Kursus interaktif gratis bersertifikat, berbahasa Inggris."
+}
+]
+}

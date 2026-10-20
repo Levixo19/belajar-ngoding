@@ -11,7 +11,7 @@ import unittest
 
 from inti import berkas
 from inti import runner
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 
 LEWATI_LAMBAT = os.environ.get("BELAJAR_SKIP_LAMBAT") == "1"
 
@@ -260,7 +260,7 @@ class TestSeluruhKontenPunyaInstruksi(unittest.TestCase):
 
     def test_nama_berkas_latihan_cocok_dengan_yang_dipakai_runner(self):
         """Instruksi yang ditampilkan harus sama dengan berkas yang benar-benar ditulis."""
-        from layar.exercises import nama_kerja
+        from inti.latihan import nama_kerja
         for lang in LANGUAGES:
             for ex in lang["exercises"]:
                 with self.subTest(bahasa=lang["label"], latihan=ex["title"]):
@@ -271,7 +271,7 @@ class TestSeluruhKontenPunyaInstruksi(unittest.TestCase):
 
     def test_nama_kelas_java_cocok_dengan_nama_berkas_latihan(self):
         """javac menolak kalau nama kelas public beda dari nama berkas."""
-        from layar.exercises import nama_kerja, _kerangka
+        from inti.latihan import nama_kerja, _kerangka
         lang = next(l for l in LANGUAGES if l["runner"] == "java")
         for ex in lang["exercises"]:
             with self.subTest(latihan=ex["title"]):

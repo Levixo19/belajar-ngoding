@@ -1,0 +1,16 @@
+{
+  "name": "belajar-ngoding",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aplikasi belajar pemrograman berbahasa Indonesia. Server dan runner Python; algoritma bersama dan antarmuka dalam TypeScript.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "golden": "npm run golden --workspace @belajar/bersama",
+    "tipe": "npm run tipe --workspace @belajar/bersama"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}

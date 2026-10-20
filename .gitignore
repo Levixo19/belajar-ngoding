@@ -38,3 +38,19 @@ install.log
 
 # Tangkapan layar dan snapshot alat uji browser (Playwright MCP)
 .playwright-mcp/
+
+# Dependensi npm. Paket di packages/ memakai workspace npm; yang dipasang
+# cuma perkakas (@types/node, lalu Vite/React di Tahap 1). Isi kurikulum dan
+# seluruh algoritmanya tidak pernah bergantung pada satu paket pun -- aplikasi
+# ini wajib utuh tanpa internet.
+node_modules/
+
+# Direktori kerja alat bantu agen. Bukan bagian aplikasi, dan isinya bisa
+# memuat transkrip serta catatan sesi.
+.agents/
+.brud/
+.claude/
+.codex/
+
+# Tangkapan layar sekali pakai
+ringkasan.png

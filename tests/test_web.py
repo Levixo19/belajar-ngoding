@@ -37,14 +37,14 @@ import subprocess
 import tempfile
 import threading
 import unittest
-import urllib.error
-import urllib.request
+import urllib.error, urllib.request
 from datetime import date
 
 from pelajar import bab
 from pelajar import konfigurasi
 from pelajar import progress
 from webapp import api, isi, sesi
+from inti.materi import teks_polos
 from webapp import catatan as modul_catatan
 from webapp import server as modul_server
 
@@ -185,7 +185,7 @@ class TestPenjagaanServer(BasisWeb):
         """Kalau halamannya sendiri butuh token, tidak ada cara memulai."""
         with urllib.request.urlopen(self.url, timeout=10) as f:
             self.assertEqual(f.status, 200)
-            self.assertIn("Belajar Ngoding", f.read().decode())
+            self.assertIn("belajar-codingV2", f.read().decode())
 
     def test_token_ditanam_ke_halaman(self):
         with urllib.request.urlopen(self.url, timeout=10) as f:
@@ -4478,7 +4478,7 @@ class TestLompatKeIsi(unittest.TestCase):
     Dua nama rute yang dipakai versi pertama catatan ini SALAH dan angkanya
     ikut salah: `#/pengaturan` bukan rute — `LAYAR` menyimpan `atur`, dan
     `uraikanRute` menjatuhkan nama tak dikenal ke `dasbor` (`document.title`
-    keluar "Dasbor · Belajar Ngoding"), jadi baris itu mengukur dasbor dua
+    keluar "Dasbor · belajar-codingV2"), jadi baris itu mengukur dasbor dua
     kali; dan `#/bahasa` tanpa kunci masuk cabang GALAT, bukan layar bahasa.
     Yang sah: `#/atur` dan `#/bahasa/javascript`.
 
@@ -6937,7 +6937,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
         # DILARANG di sini `api.kuis_selesai`: ia menulis progres sungguhan
         # lewat `record_quiz_score`/`perbarui_soal_salah`, dan kelas ini tidak
         # mengalihkan `~/.belajar_ngoding_progress.json` milik pemilik mesin.
-        from main import LANGUAGES
+        from inti.kurikulum import LANGUAGES
         lang = next(b for b in LANGUAGES if b["key"] == "java")
         soal_kur = lang["quizzes"][0]["questions"]
         for acak in (True, False):
@@ -7432,7 +7432,7 @@ class TestAlamatKomentar(unittest.TestCase):
     }
 
     CARI = ("webapp/statik/js", "webapp/statik", "webapp", "pelajar", "inti",
-            "layar", "tests", "")
+            "tests", "")
 
     KOMENTAR = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
     ALAMAT = re.compile(r"([\w.-]+\.(?:js|py|css)):(\d+)")
@@ -7623,7 +7623,7 @@ class TestNamaSimbolDiKomentar(unittest.TestCase):
     def _sumber_repo(self):
         """[(nama berkas, isi)] seluruh `.js`/`.py` tempat simbol bisa tinggal."""
         keluar = []
-        for d in ("webapp", "pelajar", "inti", "layar", "tests"):
+        for d in ("webapp", "pelajar", "inti", "tests"):
             for jalur, _, berkas in os.walk(os.path.join(self._akar(), d)):
                 if "__pycache__" in os.path.relpath(jalur, self._akar()).split(os.sep):
                     continue  # KOMPONEN jalur, bukan substring: TestSaksiSumberSimbol
@@ -7631,8 +7631,8 @@ class TestNamaSimbolDiKomentar(unittest.TestCase):
                     if n.endswith((".js", ".py")):
                         with open(os.path.join(jalur, n), encoding="utf-8") as f:
                             keluar.append((n, f.read()))
-        with open(os.path.join(self._akar(), "main.py"), encoding="utf-8") as f:
-            keluar.append(("main.py", f.read()))
+        with open(os.path.join(self._akar(), "belajar-web.py"), encoding="utf-8") as f:
+            keluar.append(("belajar-web.py", f.read()))
         return keluar
 
     @staticmethod
@@ -7760,7 +7760,7 @@ class TestRujukanAntarBerkasTidakMenunjukRuangKosong(unittest.TestCase):
     SEPI = re.compile(r"^[\s*{}()\[\];,.:'\"<>/|+-]*$")
     TUTUP = re.compile(r"^\s*[}\)\]]+[\s;,]*$")
     CARI = ("webapp/statik/js", "webapp/statik", "webapp", "pelajar", "inti",
-            "layar", "tests", "")
+            "tests", "")
     # alamat -> alasan. KOSONG hari ini, dan itu bagian dari klaimnya.
     PENGECUALIAN = {}
 
@@ -8985,7 +8985,7 @@ class TestIsiSamaDenganTerminal(BasisWeb):
 
     def test_seluruh_kurikulum_tampil_utuh_di_kedua_antarmuka(self):
         """Setiap baris body di SETIAP materi harus sampai ke sisi web."""
-        from layar import materials
+        # Sumber kebenaran isi materi: data kurikulum itu sendiri.
         for lang in api.LANGUAGES:
             for m in lang["materials"]:
                 web = self._huruf(self._prosa_web(m, lang))
@@ -9004,7 +9004,7 @@ class TestIsiSamaDenganTerminal(BasisWeb):
                             self.assertIn(inti, web,
                                           "baris ini terbaca di terminal tapi "
                                           "tidak pernah sampai ke web")
-                self.assertIn(m["title"], materials.teks_polos(m))
+                self.assertIn(m["title"], teks_polos(m))
 
 
 # ------------------------------------------- lompat ke baris dari pesan galat
@@ -15200,9 +15200,7 @@ class TestSaksiSumberSimbol(unittest.TestCase):
         ("webapp", "suara.js"),
         ("pelajar", "progress.py"),
         ("inti", "runner.py"),
-        ("layar", "exercises.py"),
         ("tests", "test_web.py"),
-        ("akar", "main.py"),
     )
 
     def test_sumber_simbol_memuat_saksi_tiap_subtree(self):
@@ -19330,8 +19328,8 @@ class TestKontrakKelasHidup(unittest.TestCase):
     TEMPLAT = r"([A-Za-z][\w-]*-)\$\{"
 
     DIR_KORPUS = (("webapp/statik/js", ".js"), ("webapp", ".py"),
-                  ("inti", ".py"), ("pelajar", ".py"), ("layar", ".py"))
-    BERKAS_KORPUS = ("webapp/statik/index.html", "main.py", "belajar-web.py")
+                  ("inti", ".py"), ("pelajar", ".py"))
+    BERKAS_KORPUS = ("webapp/statik/index.html", "belajar-web.py")
     LUAR_KORPUS = ("tests", "data")
 
     # Ruang PAJAK bukan ruang KORPUS, dan bedanya bukan kebetulan: yang di atas
@@ -19340,8 +19338,8 @@ class TestKontrakKelasHidup(unittest.TestCase):
     # alamat `gaya.css:NNNN` terbanyak di repo ini -- dan sapuannya rekursif.
     AMBANG = 5
     RUJUK = r"gaya\.css:(\d+)"
-    DIR_PAJAK = ("webapp", "tests", "inti", "pelajar", "layar")
-    BERKAS_PAJAK = ("main.py", "belajar-web.py")
+    DIR_PAJAK = ("webapp", "tests", "inti", "pelajar")
+    BERKAS_PAJAK = ("belajar-web.py",)
     LUAR_PAJAK = ("__pycache__", ".git", ".remember", "data")
 
     # Dan karena `tests/` ikut, pajaknya bisa dibayar oleh berkas yang MENULIS
@@ -22395,7 +22393,7 @@ class TestBlokKeluaranApaAdanya(unittest.TestCase):
     """
 
     def test_pohon_html_di_soal_utuh_satu_blok(self):
-        from main import LANGUAGES
+        from inti.kurikulum import LANGUAGES
         html = next(l for l in LANGUAGES if l["key"] == "html")
         blok = isi.blok_badan(html["exercises"][0]["question"])
         kepala = next(i for i, b in enumerate(blok)

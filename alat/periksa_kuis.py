@@ -30,7 +30,7 @@ AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AKAR)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from main import LANGUAGES  # noqa: E402
+from inti.kurikulum import LANGUAGES  # noqa: E402
 from periksa_gaya import AKRONIM  # noqa: E402
 
 KATA_KAPITAL = re.compile(r"\b[A-Z][A-Z]{2,}\b")

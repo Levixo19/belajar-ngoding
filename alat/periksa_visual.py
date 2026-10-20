@@ -19,7 +19,7 @@ AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AKAR)
 
 from inti import visual  # noqa: E402
-from main import LANGUAGES  # noqa: E402
+from inti.kurikulum import LANGUAGES  # noqa: E402
 
 LEBAR_TERMINAL = 78
 

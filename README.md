@@ -1,4 +1,4 @@
-# Belajar Ngoding
+# belajar-codingV2
 
 Aplikasi belajar pemrograman berbahasa Indonesia, tanpa dependensi apa pun di
 luar Python 3.8+ dan sebuah browser.
@@ -8,14 +8,12 @@ dinilai otomatis** dari output programmu, bukan sekadar "intip jawaban" — dan
 kalau salah, aplikasi menunjukkan **baris dan kolom mana** yang berbeda,
 lengkap dengan tebakan penyebabnya.
 
-Ada dua antarmuka di atas inti yang sama. Keduanya membaca dan menulis berkas
-progres yang sama, jadi materi yang dibaca di browser langsung terhitung di
-terminal — dan sebaliknya.
-
 ```bash
-python3 belajar-web.py   # antarmuka web: editor kode, animasi, 4 tema
-python3 main.py          # antarmuka terminal
+python3 belajar-web.py   # editor kode, animasi, 4 tema
 ```
+
+Antarmuka terminal yang dulu ada sudah dibuang (2026-10-20). Satu-satunya
+titik masuk sekarang `belajar-web.py`.
 
 ## Antarmuka web
 
@@ -27,8 +25,8 @@ mendengarkan di `127.0.0.1`.
 indentasi otomatis, kurung yang menutup sendiri, Tab yang menambah indentasi
 alih-alih memindahkan fokus, dan `Ctrl+/` untuk mengomentari baris. Ditulis
 tangan di atas `<textarea>` — tidak ada CodeMirror, tidak ada langkah build.
-Kodemu tetap disimpan ke `~/belajar-ngoding/kerjaanku/`, berkas yang sama yang
-dipakai aplikasi terminal, jadi bisa dibuka di editor favoritmu kapan saja.
+Kodemu tetap disimpan ke `~/belajar-ngoding/kerjaanku/` sebagai berkas biasa,
+jadi bisa dibuka di editor favoritmu kapan saja.
 
 **Ruang Coba.** Halaman kosong untuk menjalankan kode apa pun di sepuluh
 bahasa, lengkap dengan stdin. Tidak dinilai dan tidak menyentuh progres —
@@ -199,11 +197,10 @@ atasnya.
 
 Toolchain bersifat opsional. Materi dan kuis tetap jalan penuh tanpa compiler
 apa pun; yang mati hanya penilaian otomatis untuk bahasa bersangkutan — dan
-aplikasi memberi tahu **perintah persis** untuk memasangnya di sistemmu:
-
-```
-python3 main.py --cek-toolchain
-```
+aplikasi memberi tahu **perintah persis** untuk memasangnya di sistemmu. Tiap
+kartu bahasa di dasbor menandainya sebelum diklik — "butuh go", "tanpa pasang
+apa pun", atau "siap dijalankan" — jadi tidak ada tombol yang berujung
+penolakan.
 
 Latihan bahasa yang toolchain-nya belum ada tetap bisa dikerjakan dan ditandai
 selesai secara manual, jadi progresnya tidak mentok di 0%.
@@ -284,52 +281,35 @@ warna, lebar layar, tinggi halaman, durasi timer, editor, dan target harian —
 semua lewat menu Pengaturan, tersimpan di `~/.belajar_ngoding_config.json`.
 Tampilannya mengikuti lebar terminal secara otomatis.
 
-## Baris perintah
-
-```
-python3 main.py                    menu interaktif
-python3 main.py --bantuan          daftar semua opsi
-python3 main.py --cek-toolchain    compiler apa yang sudah/belum terpasang
-python3 main.py --statistik        ringkasan progres, lalu keluar
-python3 main.py --laporan          laporan kemajuan Markdown ke layar
-python3 main.py --laporan x.md     ...atau ke berkas
-python3 main.py --bahasa go        langsung buka satu bahasa
-python3 main.py --tema terang      paksa tema
-python3 main.py --tanpa-warna      matikan warna (juga hormati NO_COLOR)
-python3 main.py --ekspor p.json    ekspor progres
-python3 main.py --impor p.json     impor progres (progres lama dicadangkan)
-```
-
 ## Struktur
 
 Folder mengikuti arah ketergantungan, bukan selera: tidak ada satu paket pun
 yang mengimpor paket di atasnya.
 
 ```
-main.py            titik masuk terminal — juga registry LANGUAGES
-belajar-web.py     titik masuk web: nyalakan server, buka browser
+belajar-web.py     satu-satunya titik masuk: nyalakan server, buka browser
 
 inti/              mesin; tidak tahu apa-apa soal antarmuka
+  kurikulum.py     registry LANGUAGES, versi, statistik, laporan kemajuan
+  latihan.py       logika latihan: nama berkas kerja, kerangka, kunci jawaban
+  materi.py        isi materi sebagai teks biasa, dipakai pencarian
   runner.py        eksekusi kode berbatas waktu/memori + pencocokan output
   struktur.py      membaca HTML & CSS jadi pohon — "keluaran" kedua bahasa itu
-  sorot.py         penyorot sintaks 10 bahasa (pemindai token satu lintasan)
+  sorot.py         penyorot sintaks: 19 set aturan + 16 alias
   berkas.py        menentukan blok kode itu berkas utuh, potongan, atau sesi
   galat.py         penerjemah pesan error compiler/runtime ke bahasa Indonesia
   beda.py          diff output harapan vs hasil + diagnosis penyebabnya
-  tema.py          palet warna: deteksi kemampuan terminal + 4 tema
+  visual.py        spesifikasi gambar konsep materi (13 jenis)
+  jejak.py         pelacak langkah program Python ("Lihat jalannya")
+  pustaka.py       9.809 tautan belajar beratribusi
 
 pelajar/           keadaan & aturan yang melekat pada orangnya
   progress.py      progres, XP, level, streak, badge, penjadwalan, ekspor/impor
   bab.py           bab mana yang terbuka — satu-satunya yang memutuskannya
   konfigurasi.py   preferensi pengguna yang bertahan antar sesi
+  simpanan.py      baca/tulis JSON pelajar: karantina, .bak, lapor gagal simpan
   saran.py         rekomendasi langkah berikutnya & tantangan harian
-
-layar/             antarmuka terminal; satu-satunya lapisan yang mencetak
-  utils.py         helper tampilan (lebar responsif, input, paginasi)
-  materials.py     pembaca materi, bookmark, pencarian dalam satu bahasa
-  quiz.py          mesin kuis
-  exercises.py     latihan coding + auto-checker
-  navigasi.py      pencarian global, bookmark, lanjut terakhir
+  karier.py        kesiapan 21 profesi dari persen kurikulum yang sama
 
 webapp/            antarmuka web di atas modul yang sama
   server.py        server HTTP + penjagaan token, Origin, dan path
@@ -337,16 +317,21 @@ webapp/            antarmuka web di atas modul yang sama
   isi.py           konten kurikulum → struktur JSON siap render
   sesi.py          sesi kuis di memori (acak + pemetaan ulang jawaban)
   catatan.py       catatan pribadi, berkas terpisah dari progres
-  statik/          satu halaman, satu lembar gaya, sepuluh modul JavaScript
+  statik/          satu halaman, satu lembar gaya, modul JavaScript
   statik/js/gerak.js      mesin animasi: solver pegas, urutan, pemicu
   statik/js/pratinjau.js  bingkai pratinjau halaman HTML/CSS pelajar
   statik/js/ikon.js       24 ikon garis, satu keluarga, tanpa berkas gambar
 
-data/              konten kurikulum, 3 berkas per bahasa
+packages/          sisi TypeScript (workspace npm, tanpa langkah build)
+  konten/          seluruh kurikulum sebagai JSON + tipe TS (DIHASILKAN)
+  bersama/         sorot, beda, galat sebagai satu implementasi TS + golden
+
+data/              konten kurikulum, 3 berkas per kurikulum
   bab.py           pembagian materi jadi bab bertingkat (dihasilkan, bukan diketik)
 
+alat/              alat baris perintah: ekspor, pemeriksa, penulis naskah
 contoh/            bukan bagian aplikasi; tidak ada yang mengimpornya
-tests/             774 tes
+tests/             suite Python; sisi TS diuji lewat packages/bersama/uji/
 ```
 
 `inti/struktur.py` sengaja duduk bersebelahan dengan `inti/runner.py`: runner
@@ -357,7 +342,7 @@ keduanya diam-diam mematikan penilaian seluruh latihan HTML dan CSS.
 
 1. Buat `data/<bahasa>_materials.py`, `_quizzes.py`, `_exercises.py`.
 2. Ekspor ketiganya di `data/__init__.py`.
-3. Tambahkan satu entri di `LANGUAGES` pada `main.py`.
+3. Tambahkan satu entri di `LANGUAGES` pada `inti/kurikulum.py`.
 4. Kalau kodenya perlu bisa dijalankan, tambahkan `Toolchain` di
    `runner.TOOLCHAINS` — termasuk field `instalasi` per sistem operasi.
 5. Tambahkan aturan leksikal di `sorot.ATURAN` supaya contoh kodenya tersorot.
@@ -447,6 +432,15 @@ Catatan pribadi sengaja tinggal di berkasnya sendiri: `Reset progres` ada dan
 memang dipakai, dan "kosongkan nilai Java" tidak boleh diam-diam ikut membakar
 tulisan tanganmu. Progres bisa dikumpulkan lagi dengan belajar ulang; catatan
 tidak.
+
+Keempat nama di tabel itu memakai `belajar_ngoding`/`belajar-ngoding`, nama
+lama aplikasi ini, dan **sengaja tidak ikut diganti** saat proyeknya berganti
+nama. Alasannya bukan kemalasan: mengganti nama di situ tidak menimbulkan satu
+pun error — aplikasinya cuma akan membuka berkas baru yang kosong, dan yang
+terlihat adalah progres, catatan, serta seluruh kode yang pernah kamu tulis
+hilang. Kalau suatu saat memang mau diganti, jalurnya pemindahan yang
+disengaja: baca nama baru dulu, jatuh ke nama lama kalau belum ada, salin
+sekali, dan sisakan cadangannya.
 
 Preferensi tampilan web (tema, ukuran huruf, saklar animasi, lebar kolom baca)
 disimpan di browser, bukan di berkas mana pun — tema yang enak di terminal dan

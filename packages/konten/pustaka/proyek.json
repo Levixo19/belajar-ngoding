@@ -1,0 +1,4455 @@
+{
+"sumber":{
+"nama":"project-based-learning",
+"pemilik":"practical-tutorials",
+"repo":"https://github.com/practical-tutorials/project-based-learning",
+"lisensi":"MIT",
+"atribusi":"Daftar dari project-based-learning, Copyright (c) 2021 practical-tutorials, lisensi MIT.",
+"kunci":"proyek",
+"commit":"a3a2cc5"
+},
+"entri":[
+{
+"judul":"Build an Interpreter",
+"url":"http://www.craftinginterpreters.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++",
+"Java"
+],
+"catatan":"(Chapter 14 on is written in C)"
+},
+{
+"judul":"Write a Shell in C",
+"url":"https://brennan.io/2015/01/16/write-a-shell-in-c/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a FUSE Filesystem",
+"url":"https://www.cs.nmsu.edu/~pfeiffer/fuse-tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Build Your Own Text Editor",
+"url":"http://viewsourcecode.org/snaptoken/kilo/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Build Your Own Lisp",
+"url":"http://www.buildyourownlisp.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"How to Program an NES Game in C",
+"url":"https://nesdoug.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write an OS from scratch",
+"url":"https://github.com/tuhdo/os01",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"How to create an OS from scratch",
+"url":"https://github.com/cfenollosa/os-tutorial",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Building a CHIP-8 Emulator",
+"url":"https://austinmorlan.com/posts/chip8_emulator/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Beginning Game Programming with C++ and SDL",
+"url":"http://lazyfoo.net/tutorials/SDL/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Implementing a Key-Value Store",
+"url":"http://codecapsule.com/2012/11/07/ikvs-implementing-a-key-value-store-table-of-contents/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Tiny 3D graphics projects · Tiny Renderer or how OpenGL works: software rendering in 500 lines of code",
+"url":"https://github.com/ssloy/tinyrenderer/wiki",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Tiny 3D graphics projects · Understandable RayTracing in 256 lines of bare C++",
+"url":"https://github.com/ssloy/tinyraytracer/wiki",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Tiny 3D graphics projects · KABOOM! in 180 lines of bare C++",
+"url":"https://github.com/ssloy/tinykaboom/wiki",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Tiny 3D graphics projects · 486 lines of C++: old-school FPS in a weekend",
+"url":"https://github.com/ssloy/tinyraycaster/wiki",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a minimal x86-64 JIT compiler in C++ · Part 1",
+"url":"https://solarianprogrammer.com/2018/01/10/writing-minimal-x86-64-jit-compiler-cpp/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a minimal x86-64 JIT compiler in C++ · Part 2",
+"url":"https://solarianprogrammer.com/2018/01/12/writing-minimal-x86-64-jit-compiler-cpp-part-2/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Build a Live Code-reloader Library for C++",
+"url":"http://howistart.org/posts/cpp/1/index.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a hash table in C",
+"url":"https://github.com/jamesroutley/write-a-hash-table",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's Build a Simple Database",
+"url":"https://cstack.github.io/db_tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a Bootloader in C",
+"url":"http://3zanders.co.uk/2017/10/13/writing-a-bootloader/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Linux Container in 500 Lines of Code",
+"url":"https://blog.lizzie.io/linux-containers-in-500-loc.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write Your Own Virtual Machine",
+"url":"https://justinmeiners.github.io/lc3-vm/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Learning KVM - Implement Your Own Linux Kernel",
+"url":"https://david942j.blogspot.com/2018/10/note-learning-kvm-implement-your-own.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Build Your Own Redis with C/C++",
+"url":"https://build-your-own.org/redis/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 1: Integers, Lexing and Code Generation",
+"url":"https://norasandler.com/2017/11/29/Write-a-Compiler.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 2: Unary Operators",
+"url":"https://norasandler.com/2017/12/05/Write-a-Compiler-2.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 3: Binary Operators",
+"url":"https://norasandler.com/2017/12/15/Write-a-Compiler-3.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 4: Even More Binary Operators",
+"url":"https://norasandler.com/2017/12/28/Write-a-Compiler-4.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 5: Local Variables",
+"url":"https://norasandler.com/2018/01/08/Write-a-Compiler-5.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 6: Conditionals",
+"url":"https://norasandler.com/2018/02/25/Write-a-Compiler-6.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 7: Compound Statements",
+"url":"https://norasandler.com/2018/03/14/Write-a-Compiler-7.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 8: Loops",
+"url":"https://norasandler.com/2018/04/10/Write-a-Compiler-8.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 9: Functions",
+"url":"https://norasandler.com/2018/06/27/Write-a-Compiler-9.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Write a C compiler · Part 10: Global Variables",
+"url":"https://norasandler.com/2019/02/18/Write-a-Compiler-10.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Implementing a Language with LLVM",
+"url":"https://llvm.org/docs/tutorial/#kaleidoscope-implementing-a-language-with-llvm",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++",
+"OCaml"
+],
+"catatan":""
+},
+{
+"judul":"Meta Crush Saga: a C++17 compile-time game",
+"url":"https://jguegant.github.io//jguegant.github.io/blogs/tech/meta-crush-saga.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"High-Performance Matrix Multiplication",
+"url":"https://gist.github.com/nadavrot/5b35d44e8ba3dd718e595e40184d03f0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Space Invaders from Scratch · Part 1",
+"url":"http://nicktasios.nl/posts/space-invaders-from-scratch-part-1.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Space Invaders from Scratch · Part 2",
+"url":"http://nicktasios.nl/posts/space-invaders-from-scratch-part-2.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Space Invaders from Scratch · Part 3",
+"url":"http://nicktasios.nl/posts/space-invaders-from-scratch-part-3.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Space Invaders from Scratch · Part 4",
+"url":"http://nicktasios.nl/posts/space-invaders-from-scratch-part-4.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Space Invaders from Scratch · Part 5",
+"url":"http://nicktasios.nl/posts/space-invaders-from-scratch-part-5.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Tetris Tutorial in C++ Platform Independent",
+"url":"http://javilop.com/gamedev/tetris-tutorial-in-c-platform-independent-focused-in-game-logic-for-beginners/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 1: Setup",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-setup/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 2: Breakpoints",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-breakpoints/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 3: Registers and memory",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-registers/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 4: Elves and dwarves",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-elf-dwarf/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 5: Source and signals",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-source-signal/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 6: Source-level stepping",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-dwarf-step/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 7: Source-level breakpoints",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-source-break/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 8: Stack unwinding",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-unwinding/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 9: Handling variables",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-variables/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Linux Debugger · Part 10: Advanced topics",
+"url":"https://blog.tartanllama.xyz/writing-a-linux-debugger-advanced-topics/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 1: Introduction, selecting a language, and doing some planning",
+"url":"https://briancallahan.net/blog/20210814.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 2: A lexer",
+"url":"https://briancallahan.net/blog/20210815.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 3: A parser",
+"url":"https://briancallahan.net/blog/20210816.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 4: Testing",
+"url":"https://briancallahan.net/blog/20210817.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 5: A code generator",
+"url":"https://briancallahan.net/blog/20210818.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 6: Input and output",
+"url":"https://briancallahan.net/blog/20210819.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 7: Arrays",
+"url":"https://briancallahan.net/blog/20210822.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's write a compiler · Part 8: Strings, forward references, and conclusion",
+"url":"https://briancallahan.net/blog/20210826.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's Code a TCP/IP Stack · Part 1: Ethernet & ARP",
+"url":"http://www.saminiir.com/lets-code-tcp-ip-stack-1-ethernet-arp/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's Code a TCP/IP Stack · Part 2: IPv4 & ICMPv4",
+"url":"http://www.saminiir.com/lets-code-tcp-ip-stack-2-ipv4-icmpv4/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's Code a TCP/IP Stack · Part 3: TCP Basics & Handshake",
+"url":"http://www.saminiir.com/lets-code-tcp-ip-stack-3-tcp-handshake/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's Code a TCP/IP Stack · Part 4: TCP Data Flow & Socket API",
+"url":"http://www.saminiir.com/lets-code-tcp-ip-stack-4-tcp-data-flow-socket-api/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Let's Code a TCP/IP Stack · Part 5: TCP Retransmission",
+"url":"http://www.saminiir.com/lets-code-tcp-ip-stack-5-tcp-retransmission/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Programming concurrent servers · Part 1 - Introduction",
+"url":"https://eli.thegreenplace.net/2017/concurrent-servers-part-1-introduction/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Programming concurrent servers · Part 2 - Threads",
+"url":"https://eli.thegreenplace.net/2017/concurrent-servers-part-2-threads/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Programming concurrent servers · Part 3 - Event-driven",
+"url":"https://eli.thegreenplace.net/2017/concurrent-servers-part-3-event-driven/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Programming concurrent servers · Part 4 - libuv",
+"url":"https://eli.thegreenplace.net/2017/concurrent-servers-part-4-libuv/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Programming concurrent servers · Part 5 - Redis case study",
+"url":"https://eli.thegreenplace.net/2017/concurrent-servers-part-5-redis-case-study/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Programming concurrent servers · Part 6 - Callbacks, Promises and async/await",
+"url":"https://eli.thegreenplace.net/2018/concurrent-servers-part-6-callbacks-promises-and-asyncawait/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Part 1 - The protocol",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Part 2 - Networking",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker-p2",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Part 3 - Server",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker-p3",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Part 4 - Data structures",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker-p4",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Part 5 - Topic abstraction",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker-p5",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Part 6 - Handlers",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker-p6",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"MQTT Broker from scratch · Bonus - Multithreading",
+"url":"https://codepr.github.io/posts/sol-mqtt-broker-bonus",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Networking from Scratch",
+"url":"https://github.com/TanayK07/networking-from-scratch",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Breakout",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Breakout",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Setting up",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Setting-up",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Rendering Sprites",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Rendering-Sprites",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Levels",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Levels",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Ball",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Collisions/Ball",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Collision detection",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-detection",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Collision resolution",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-resolution",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Particles",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Particles",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Postprocessing",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Postprocessing",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Powerups",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Powerups",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Audio",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Audio",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Render text",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Render-text",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Creating 2D Breakout game clone in C++ with OpenGL · Final thoughts",
+"url":"https://learnopengl.com/In-Practice/2D-Game/Final-thoughts",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"Handmade Hero",
+"url":"https://handmadehero.org",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":""
+},
+{
+"judul":"How to Make Minecraft in C++/OpenGL",
+"url":"https://www.youtube.com/playlist?list=PLMZ_9w2XRxiZq1vfw1lrpCMRDufe2MKV_",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C/C++"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Learn C# By Building a Simple RPG Game",
+"url":"http://scottlilly.com/learn-c-by-building-a-simple-rpg-index/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C#"
+],
+"catatan":""
+},
+{
+"judul":"Create a Rogue-like game in C#",
+"url":"https://roguesharp.wordpress.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C#"
+],
+"catatan":""
+},
+{
+"judul":"Create a Blank App with C# and Xamarin (work in progress)",
+"url":"https://www.intertech.com/Blog/xamarin-tutorial-part-1-create-a-blank-app/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C#"
+],
+"catatan":""
+},
+{
+"judul":"Build iOS Photo Library App with Xamarin and Visual Studio",
+"url":"https://www.raywenderlich.com/134049/building-ios-apps-with-xamarin-and-visual-studio",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C#"
+],
+"catatan":""
+},
+{
+"judul":"Building the CoreWiki",
+"url":"https://www.youtube.com/playlist?list=PLVMqA0_8O85yC78I4Xj7z48ES48IQBa7p",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"C#"
+],
+"catatan":"This is a Wiki-style content management system that has been completely written in C# with ASP.NET Core and Razor Pages. You can find the source code here."
+},
+{
+"judul":"Build a Twitter Bot with Clojure",
+"url":"http://howistart.org/posts/clojure/1/index.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Clojure"
+],
+"catatan":""
+},
+{
+"judul":"Building a Spell-Checker",
+"url":"https://bernhardwenzel.com/articles/clojure-spellchecker/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Clojure"
+],
+"catatan":""
+},
+{
+"judul":"Building a JIRA integration with Clojure & Atlassian Connect",
+"url":"https://hackernoon.com/building-a-jira-integration-with-clojure-atlassian-connect-506ebd112807",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Clojure"
+],
+"catatan":""
+},
+{
+"judul":"Prototyping with Clojure",
+"url":"https://github.com/aliaksandr-s/prototyping-with-clojure",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Clojure"
+],
+"catatan":""
+},
+{
+"judul":"Tetris in ClojureScript",
+"url":"https://shaunlebron.github.io/t3tr0s-slides",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Clojure"
+],
+"catatan":""
+},
+{
+"judul":"Amazon Clone with Admin Panel",
+"url":"https://youtu.be/O3nmP-lZAdg",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Food Delivery App",
+"url":"https://youtu.be/7dAt-JMSCVQ",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Google Docs Clone",
+"url":"https://youtu.be/0_GJ1w_iG44",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Instagram Clone",
+"url":"https://youtu.be/mEPm9w5QlJM",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Multiplayer TicTacToe Game",
+"url":"https://youtu.be/Aut-wfXacXg",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"TikTok Clone",
+"url":"https://youtu.be/4E4V9F3cbp4",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Ticket Booking App",
+"url":"https://youtu.be/71AsYo2q_0Y",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Travel App",
+"url":"https://youtu.be/x4DydJKVvQk",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Twitch Clone",
+"url":"https://youtu.be/U9YKZrDX0CQ",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"WhatsApp Clone",
+"url":"https://youtu.be/yqwfP2vXWJQ",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Wordle Clone",
+"url":"https://youtu.be/_W0RN_Cqhpg",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Zoom Clone",
+"url":"https://youtu.be/sMA1dKbv33Y",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Netflix Clone",
+"url":"https://youtu.be/J8IFNKzs3TI",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Dart"
+],
+"catatan":""
+},
+{
+"judul":"Building a Simple Chat App With Elixir and Phoenix",
+"url":"https://sheharyar.me/blog/simple-chat-phoenix-elixir/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Elixir"
+],
+"catatan":""
+},
+{
+"judul":"How to write a super fast link shortener with Elixir, Phoenix, and Mnesia",
+"url":"https://medium.com/free-code-camp/how-to-write-a-super-fast-link-shortener-with-elixir-phoenix-and-mnesia-70ffa1564b3c",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Elixir"
+],
+"catatan":""
+},
+{
+"judul":"ChatBus : build your first multi-user chat room app with Erlang/OTP",
+"url":"https://medium.com/@kansi/chatbus-build-your-first-multi-user-chat-room-app-with-erlang-otp-b55f72064901",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Erlang"
+],
+"catatan":""
+},
+{
+"judul":"Making a Chat App with Erlang, Rebar, Cowboy and Bullet",
+"url":"https://marianoguerra.org/posts/making-a-chat-app-with-erlang-rebar-cowboy-and-bullet/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Erlang"
+],
+"catatan":""
+},
+{
+"judul":"Write your own Excel in 100 lines of F#",
+"url":"http://tomasp.net/blog/2018/write-your-own-excel",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"F#"
+],
+"catatan":""
+},
+{
+"judul":"Build a Simple HTTP Server with Java",
+"url":"http://javarevisited.blogspot.com/2015/06/how-to-create-http-server-in-java-serversocket-example.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Java"
+],
+"catatan":""
+},
+{
+"judul":"Build an Android Flashlight App",
+"url":"https://www.youtube.com/watch?v=dhWL4DC7Krs",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Java"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Build a Spring Boot App with User Authentication",
+"url":"https://spring.io/guides/gs/securing-web/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Java"
+],
+"catatan":""
+},
+{
+"judul":"Build 30 things in 30 days with 30 tutorials",
+"url":"https://javascript30.com",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"JavaScript"
+],
+"catatan":""
+},
+{
+"judul":"Build a Jupyter Notebook Extension",
+"url":"https://link.medium.com/wWUO7TN8SS",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"JavaScript"
+],
+"catatan":""
+},
+{
+"judul":"Build a Simple Weather App With Vanilla JavaScript",
+"url":"https://webdesign.tutsplus.com/tutorials/build-a-simple-weather-app-with-vanilla-javascript--cms-33893",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"JavaScript"
+],
+"catatan":""
+},
+{
+"judul":"Build a Todo List App in JavaScript",
+"url":"https://github.com/dwyl/javascript-todo-list-tutorial",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"JavaScript"
+],
+"catatan":""
+},
+{
+"judul":"Build A Loading Screen",
+"url":"https://medium.freecodecamp.org/how-to-build-a-delightful-loading-screen-in-5-minutes-847991da509f",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build an HTML Calculator with JS",
+"url":"https://medium.freecodecamp.org/how-to-build-an-html-calculator-app-from-scratch-using-javascript-4454b8714b98",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build Snake using only JavaScript, HTML & CSS",
+"url":"https://www.freecodecamp.org/news/think-like-a-programmer-how-to-build-snake-using-only-javascript-html-and-css-7b1479c3339e/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a React Native Todo Application",
+"url":"https://egghead.io/courses/build-a-react-native-todo-application",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a React Native Application with Redux Thunk",
+"url":"https://medium.com/@alialhaddad/how-to-use-redux-thunk-in-react-and-react-native-4743a1321bd0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Create Serverless React.js Apps",
+"url":"http://serverless-stack.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Create a Trello Clone",
+"url":"http://codeloveandboards.com/blog/2016/01/04/trello-tribute-with-phoenix-and-react-pt-1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"React Tutorial: Cloning Yelp",
+"url":"https://www.fullstackreact.com/articles/react-tutorial-cloning-yelp/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a Full Stack Movie Voting App with Test-First Development using Mocha, React, Redux and Immutable",
+"url":"https://teropa.info/blog/2015/09/10/full-stack-redux-tutorial.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Simple Medium Clone using React.js and Node.js",
+"url":"https://medium.com/@kris101/clone-medium-on-node-js-and-react-js-731cdfbb6878",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Integrate MailChimp in JS",
+"url":"https://medium.freecodecamp.org/how-to-integrate-mailchimp-in-a-javascript-web-app-2a889fb43f6f",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Chrome Extension with React + Parcel",
+"url":"https://medium.freecodecamp.org/building-chrome-extensions-in-react-parcel-79d0240dd58f",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A ToDo App With React Native",
+"url":"https://blog.hasura.io/tutorial-fullstack-react-native-with-graphql-and-authentication-18183d13373a",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Make a Chat Application",
+"url":"https://medium.freecodecamp.org/how-to-build-a-chat-application-using-react-redux-redux-saga-and-web-sockets-47423e4bc21a",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Create a News App with React Native",
+"url":"https://medium.freecodecamp.org/create-a-news-app-using-react-native-ced249263627",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Learn Webpack For React",
+"url":"https://medium.freecodecamp.org/learn-webpack-for-react-a36d4cac5060",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Testing React App With Puppeteer and Jest",
+"url":"https://blog.bitsrc.io/testing-your-react-app-with-puppeteer-and-jest-c72b3dfcde59",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build Your Own React Boilerplate",
+"url":"https://medium.freecodecamp.org/how-to-build-your-own-react-boilerplate-2f8cbbeb9b3f",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Code The Game Of Life With React",
+"url":"https://medium.freecodecamp.org/create-gameoflife-with-react-in-one-hour-8e686a410174",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"A Basic React+Redux Introductory Tutorial",
+"url":"https://hackernoon.com/a-basic-react-redux-introductory-tutorial-adcc681eeb5e",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build an Appointment Scheduler",
+"url":"https://hackernoon.com/build-an-appointment-scheduler-using-react-twilio-and-cosmic-js-95377f6d1040",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Chat App with Sentiment Analysis",
+"url":"https://codeburst.io/build-a-chat-app-with-sentiment-analysis-using-next-js-c43ebf3ea643",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Full Stack Web Application Setup",
+"url":"https://hackernoon.com/full-stack-web-application-using-react-node-js-express-and-webpack-97dbd5b9d708",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Create Todoist clone with React and Firebase",
+"url":"https://www.youtube.com/watch?v=hT3j87FMR6M",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 1",
+"url":"https://www.youtube.com/watch?v=3QngsWA9IEE",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 2",
+"url":"https://www.youtube.com/watch?v=XnoTmO06OYo",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 3",
+"url":"https://www.youtube.com/watch?v=us51Jne67_I",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 4",
+"url":"https://www.youtube.com/watch?v=iZx7hqHb5MU",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 5",
+"url":"https://www.youtube.com/watch?v=lpba9vBqXl0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 6",
+"url":"https://www.youtube.com/watch?v=Jvp8j6zrFHE",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Random Quote Machine · Part 7",
+"url":"https://www.youtube.com/watch?v=M_hFfrN8_PQ",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"React Phone E-Commerce Project(video)",
+"url":"https://www.youtube.com/watch?v=-edmQKcOW8s",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"App Router",
+"url":"https://nextjs.org/learn/dashboard-app",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build an offline-capable Hacker News client with Angular 2+ · Part 1",
+"url":"https://houssein.me/angular2-hacker-news",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build an offline-capable Hacker News client with Angular 2+ · Part 2",
+"url":"https://houssein.me/progressive-angular-applications",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Beautiful Real World App with Angular 8 : · Part I",
+"url":"https://medium.com/@hamedbaatour/build-a-real-world-beautiful-web-app-with-angular-6-a-to-z-ultimate-guide-2018-part-i-e121dd1d55e",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Beautiful Real World App with Angular 8 : · Part II",
+"url":"https://medium.com/@hamedbaatour/build-a-real-world-beautiful-web-app-with-angular-8-the-ultimate-guide-2019-part-ii-fe70852b2d6d",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build Responsive layout with BootStrap 4 and Angular 6",
+"url":"https://medium.com/@tomastrajan/how-to-build-responsive-layouts-with-bootstrap-4-and-angular-6-cfbb108d797b",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"ToDo App with Angular 5 · Introduction to Angular",
+"url":"http://www.discoversdk.com/blog/intro-to-angular-and-the-evolution-of-the-web",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"ToDo App with Angular 5 · Part 1",
+"url":"http://www.discoversdk.com/blog/angular-5-to-do-list-app-part-1",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Test-Driven Development with Node, Postgres and Knex",
+"url":"http://mherman.org/blog/2016/04/28/test-driven-development-with-node/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Write a Twitter Bot in Node.js · Part 1",
+"url":"https://codeburst.io/build-a-simple-twitter-bot-with-node-js-in-just-38-lines-of-code-ed92db9eb078",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Write a Twitter Bot in Node.js · Part 2",
+"url":"https://codeburst.io/build-a-simple-twitter-bot-with-node-js-part-2-do-more-2ef1e039715d",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Simple Search Bot in 30 minutes",
+"url":"https://medium.freecodecamp.org/how-to-build-a-simple-search-bot-in-30-minutes-eb56fcedcdb1",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Job Scraping Web App",
+"url":"https://medium.freecodecamp.org/how-i-built-a-job-scraping-web-app-using-node-js-and-indreed-7fbba124bbdc",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Building a GitHub App",
+"url":"https://blog.scottlogic.com/2017/05/22/gifbot-github-integration.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Vue 2 + Firebase: How to build a Vue app with Firebase authentication system in 15 minutes",
+"url":"https://medium.com/@anas.mammeri/vue-2-firebase-how-to-build-a-vue-app-with-firebase-authentication-system-in-15-minutes-fdce6f289c3c",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Vue.js Application Tutorial – Creating a Simple Budgeting App with Vue",
+"url":"https://matthiashager.com/complete-vuejs-application-tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a Blog with Vue, GraphQL and Apollo",
+"url":"https://www.digitalocean.com/community/tutorials/how-to-build-a-blog-with-vue-graphql-and-apollo-client",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a full stack web application using MEVN (MongoDB, Express, Vue, Node) stack · Part 1",
+"url":"https://medium.com/@anaida07/mevn-stack-application-part-1-3a27b61dcae0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a full stack web application using MEVN (MongoDB, Express, Vue, Node) stack · Part 2",
+"url":"https://medium.com/@anaida07/mevn-stack-application-part-2-2-9ebcf8a22753",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Vue.js To-Do List Tutorial (video)",
+"url":"https://www.youtube.com/watch?v=78tNYZUS-ps",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Vue 2 + Pub/Sub: Build a peer to peer multi-user platform for games",
+"url":"https://www.ably.io/tutorials/peer-to-peer-vue",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a Progressive Web Application (PWA) · Part 1",
+"url":"https://bitsofco.de/bitsofcode-pwa-part-1-offline-first-with-service-worker/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a Progressive Web Application (PWA) · Part 2",
+"url":"https://bitsofco.de/bitsofcode-pwa-part-2-instant-loading-with-indexeddb/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a Progressive Web Application (PWA) · Part 3",
+"url":"https://bitsofco.de/bitsofcode-pwa-part-3-push-notifications/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Native Desktop App with JS",
+"url":"https://medium.freecodecamp.org/build-native-desktop-apps-with-javascript-a49ede90d8e9",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build a Powerful API with NodeJs,GraphQL and Hapi · Part I",
+"url":"https://medium.com/@wesharehoodies/how-to-setup-a-powerful-api-with-nodejs-graphql-mongodb-hapi-and-swagger-e251ac189649",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Learn D3 using examples",
+"url":"https://www.sitepoint.com/d3-js-data-visualizations/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Learn To Make A Line Chart",
+"url":"https://medium.freecodecamp.org/learn-to-create-a-line-chart-using-d3-js-4f43f1ee716b",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Make 2D Breakout Game using Phaser",
+"url":"https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_breakout_game_Phaser",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Make Flappy Bird in HTML5 and JavaScript with Phaser · Part 1",
+"url":"http://www.lessmilk.com/tutorial/flappy-bird-phaser-1",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Make Flappy Bird in HTML5 and JavaScript with Phaser · Part 2",
+"url":"http://www.lessmilk.com/tutorial/flappy-bird-phaser-2",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Desktop Chat App with React and Electron",
+"url":"https://medium.freecodecamp.org/build-a-desktop-chat-app-with-react-electron-and-chatkit-744d168e6f2f",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"How to Build a Web Framework in Less Than 20 Lines of Code",
+"url":"https://www.pubnub.com/blog/build-yourself-a-web-framework-in-less-than-20-lines-of-code/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build Yourself a Redux",
+"url":"https://zapier.com/engineering/how-to-build-redux/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"How to write your own Virtual DOM",
+"url":"https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Build A Realtime Serverless GraphQL API with WebSockets on AWS",
+"url":"https://andrewgriffithsonline.com/blog/serverless-websockets-on-aws/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"HTML and CSS"
+],
+"catatan":""
+},
+{
+"judul":"Keddit - Learn Kotlin While Developing an Android Application",
+"url":"https://medium.com/@juanchosaravia/learn-kotlin-while-developing-an-android-app-introduction-567e21ff9664",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Kotlin"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 0: Introduction",
+"url":"https://github.com/a327ex/blog/issues/30",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 1: Game Loop",
+"url":"https://github.com/a327ex/blog/issues/15",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 2: Libraries",
+"url":"https://github.com/a327ex/blog/issues/16",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 3: Rooms and Areas",
+"url":"https://github.com/a327ex/blog/issues/17",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 4: Exercises",
+"url":"https://github.com/a327ex/blog/issues/18",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 5: Game Basics",
+"url":"https://github.com/a327ex/blog/issues/19",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 6: Player Basics",
+"url":"https://github.com/a327ex/blog/issues/20",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 7: Player Stats and Attacks",
+"url":"https://github.com/a327ex/blog/issues/21",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 8: Enemies",
+"url":"https://github.com/a327ex/blog/issues/22",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 9: Director and Gameplay Loop",
+"url":"https://github.com/a327ex/blog/issues/23",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 10: Coding Practices",
+"url":"https://github.com/a327ex/blog/issues/24",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 11: Passives",
+"url":"https://github.com/a327ex/blog/issues/25",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 12: More Passives",
+"url":"https://github.com/a327ex/blog/issues/26",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 13: Skill Tree",
+"url":"https://github.com/a327ex/blog/issues/27",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 14: Console",
+"url":"https://github.com/a327ex/blog/issues/28",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"BYTEPATH: Creation of a Complete Game with Lua and LÖVE · Part 15: Final",
+"url":"https://github.com/a327ex/blog/issues/29",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Lua"
+],
+"catatan":""
+},
+{
+"judul":"Mining Twitter Data with Python",
+"url":"https://marcobonzanini.com/2015/03/02/mining-twitter-data-with-python-part-1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Scrape a Website with Scrapy and MongoDB",
+"url":"https://realpython.com/blog/python/web-scraping-with-scrapy-and-mongodb/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"How To Scrape With Python and Selenium WebDriver",
+"url":"http://www.byperth.com/2018/04/25/guide-web-scraping-101-what-you-need-to-know-and-how-to-scrape-with-python-selenium-webdriver/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Which Movie Should I Watch using BeautifulSoup",
+"url":"https://medium.com/@nishantsahoo.in/which-movie-should-i-watch-5c83a3c0f5b1",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Microblog with Flask",
+"url":"https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create a Blog Web App In Django",
+"url":"https://tutorial.djangogirls.org/en/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Choose Your Own Adventure Presentations",
+"url":"https://www.twilio.com/blog/2015/03/choose-your-own-adventures-presentations-wizard-mode-part-1-of-3.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Todo List with Flask and RethinkDB",
+"url":"https://realpython.com/blog/python/rethink-flask-a-simple-todo-list-powered-by-flask-and-rethinkdb/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Todo List with Django and Test-Driven Development",
+"url":"http://www.obeythetestinggoat.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a RESTful Microservice in Python",
+"url":"http://www.skybert.net/python/developing-a-restful-micro-service-in-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Microservices with Docker, Flask, and React",
+"url":"https://testdriven.io/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build A Simple Web App With Flask",
+"url":"https://pythonspot.com/flask-web-app-with-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create A Django API in under 20 minutes",
+"url":"https://codeburst.io/create-a-django-api-in-under-20-minutes-2a082a60f6f3",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Realtime Chat application with Vue, django-notifs, RabbitMQ and uWSGI · Part 1",
+"url":"https://danidee10.github.io/2018/01/01/realtime-django-1.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Realtime Chat application with Vue, django-notifs, RabbitMQ and uWSGI · Part 2",
+"url":"https://danidee10.github.io/2018/01/03/realtime-django-2.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Realtime Chat application with Vue, django-notifs, RabbitMQ and uWSGI · Part 3",
+"url":"https://danidee10.github.io/2018/01/07/realtime-django-3.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Realtime Chat application with Vue, django-notifs, RabbitMQ and uWSGI · Part 4",
+"url":"https://danidee10.github.io/2018/01/10/realtime-django-4.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Realtime Chat application with Vue, django-notifs, RabbitMQ and uWSGI · Part 5",
+"url":"https://danidee10.github.io/2018/01/13/realtime-django-5.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Realtime Chat application with Vue, django-notifs, RabbitMQ and uWSGI · Part 6",
+"url":"https://danidee10.github.io/2018/03/12/realtime-django-6.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Creating APIs with Python - Comprehensive Course for Beginners (video)",
+"url":"https://www.freecodecamp.org/news/creating-apis-with-python-free-19-hour-course/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build Your First Streamlit Data App",
+"url":"https://docs.streamlit.io/get-started/tutorials/create-an-app",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Reddit Bot",
+"url":"https://www.pythonforengineers.com/blog/build-a-reddit-bot-part-1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"How to Make a Reddit Bot - YouTube",
+"url":"https://www.youtube.com/watch?v=krTUf7BpTc0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Build a Facebook Messenger Bot",
+"url":"https://blog.hartleybrody.com/fb-messenger-bot/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Making a Reddit + Facebook Messenger Bot",
+"url":"https://pythontips.com/2017/04/13/making-a-reddit-facebook-messenger-bot/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"How To Create a Telegram Bot Using Python · Part 1",
+"url":"https://khashtamov.com/en/how-to-create-a-telegram-bot-using-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"How To Create a Telegram Bot Using Python · Part 2",
+"url":"https://khashtamov.com/en/how-to-deploy-telegram-bot-django/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create a Twitter Bot In Python",
+"url":"https://medium.freecodecamp.org/creating-a-twitter-bot-in-python-with-tweepy-ac524157a607",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Python For Data Science by Doing Several Projects (video): · Part 1: Introduction",
+"url":"https://www.youtube.com/watch?v=T5pRlIbr6gg",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Python For Data Science by Doing Several Projects (video): · Part 2: Twitter Sentiment Analysis",
+"url":"https://www.youtube.com/watch?v=o_OZdbCzHUA",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Python For Data Science by Doing Several Projects (video): · Part 3: Recommendation Systems",
+"url":"https://www.youtube.com/watch?v=9gBC9R-msAk&list=PL2-dafEMk2A6QKz1mrk1uIGfHkC1zZ6UU&index=3",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Python For Data Science by Doing Several Projects (video): · Part 4: Predicting Stock Prices",
+"url":"https://www.youtube.com/watch?v=SSu00IRRraY&index=4&list=PL2-dafEMk2A6QKz1mrk1uIGfHkC1zZ6UU",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Python For Data Science by Doing Several Projects (video): · Part 5: Deep Dream in TensorFlow",
+"url":"https://www.youtube.com/watch?v=MrBzgvUNr4w&list=PL2-dafEMk2A6QKz1mrk1uIGfHkC1zZ6UU&index=5",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Python For Data Science by Doing Several Projects (video): · Part 6: Genetic Algorithms",
+"url":"https://www.youtube.com/watch?v=dSofAXnnFrY&index=6&list=PL2-dafEMk2A6QKz1mrk1uIGfHkC1zZ6UU",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Write Linear Regression From Scratch in Python",
+"url":"https://www.youtube.com/watch?v=uwwWVAgJBcM",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Step-By-Step Machine Learning In Python",
+"url":"https://machinelearningmastery.com/machine-learning-in-python-step-by-step/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Predict Quality Of Wine",
+"url":"https://medium.freecodecamp.org/using-machine-learning-to-predict-the-quality-of-wines-9e2e13d7480d",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Solving A Fruits Classification Problem",
+"url":"https://towardsdatascience.com/solving-a-simple-classification-problem-with-python-fruits-lovers-edition-d20ab6b071d2",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Unsupervised Learning with Python",
+"url":"https://scikit-learn.org/stable/unsupervised_learning.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build Your Own Neural Net from Scratch in Python",
+"url":"https://towardsdatascience.com/how-to-build-your-own-neural-network-from-scratch-in-python-68998a08e4f6",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Linear Regression in Python without sklearn",
+"url":"https://medium.com/we-are-orb/linear-regression-in-python-without-scikit-learn-50aef4b8d122",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Multivariate Linear Regression without sklearn",
+"url":"https://medium.com/we-are-orb/multivariate-linear-regression-in-python-without-scikit-learn-7091b1d45905",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Music Recommender using KNN",
+"url":"https://towardsdatascience.com/how-to-build-a-simple-song-recommender-296fcbc8c85",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Find Similar Quora Questions- · Using BOW, TFIDF and Xgboost",
+"url":"https://towardsdatascience.com/finding-similar-quora-questions-with-bow-tfidf-and-random-forest-c54ad88d1370",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Find Similar Quora Questions- · Using Word2Vec and Xgboost",
+"url":"https://towardsdatascience.com/finding-similar-quora-questions-with-word2vec-and-xgboost-1a19ad272c0d",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Detecting Fake News with Python and Machine Learning",
+"url":"https://data-flair.training/blogs/advanced-python-project-detecting-fake-news/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build A Document Scanner",
+"url":"https://www.pyimagesearch.com/2014/09/01/build-kick-ass-mobile-document-scanner-just-5-minutes/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build A Face Detector using OpenCV and Deep Learning",
+"url":"https://www.pyimagesearch.com/2018/02/26/face-detection-with-opencv-and-deep-learning/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build fastest custom object Detection system yusing YOLOv3(video playlist)",
+"url":"https://www.youtube.com/playlist?list=PLKHYJbyeQ1a0oGzgRXy-QwAN1tSV4XZxg",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Face Recognition System using OpenCV, Python and Deep Learning",
+"url":"https://www.pyimagesearch.com/2018/06/18/face-recognition-with-opencv-python-and-deep-learning/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Detect The Salient Features in an Image",
+"url":"https://www.pyimagesearch.com/2018/07/16/opencv-saliency-detection/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build A Barcode Scanner",
+"url":"https://www.pyimagesearch.com/2018/05/21/an-opencv-barcode-and-qr-code-scanner-with-zbar/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Face Clustering with Python",
+"url":"https://www.pyimagesearch.com/2018/07/09/face-clustering-with-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Object Tracking with Camshift",
+"url":"https://www.pyimagesearch.com/wp-content/uploads/2014/11/opencv_crash_course_camshift.pdf",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Semantic Segmentation with OpenCV and Deep Learning",
+"url":"https://www.pyimagesearch.com/2018/09/03/semantic-segmentation-with-opencv-and-deep-learning/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Text Detection in Images and Videos",
+"url":"https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"People Counter using OpenCV",
+"url":"https://www.pyimagesearch.com/2018/08/13/opencv-people-counter/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Tracking Multiple Objects with OpenCV",
+"url":"https://www.pyimagesearch.com/2018/08/06/tracking-multiple-objects-with-opencv/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Neural Style Transfer with OpenCV",
+"url":"https://www.pyimagesearch.com/2018/08/27/neural-style-transfer-with-opencv/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"OpenCV OCR and Text Recognition",
+"url":"https://www.pyimagesearch.com/2018/09/17/opencv-ocr-and-text-recognition-with-tesseract/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Text Skew Correction Tutorial",
+"url":"https://www.pyimagesearch.com/2017/02/20/text-skew-correction-opencv-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Facial Landmark Detection Tutorial",
+"url":"https://www.pyimagesearch.com/2017/04/03/facial-landmarks-dlib-opencv-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Object Detection using Mask-R-CNN",
+"url":"https://www.learnopencv.com/deep-learning-based-object-detection-and-instance-segmentation-using-mask-r-cnn-in-opencv-python-c/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Automatic Target Detection Tutorial",
+"url":"https://www.pyimagesearch.com/2015/05/04/target-acquired-finding-targets-in-drone-and-quadcopter-video-streams-using-python-and-opencv/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"EigenFaces using OpenCV",
+"url":"https://www.learnopencv.com/eigenface-using-opencv-c-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Faster(5-point) Facial Landmark Detection Tutorial",
+"url":"https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Hand Keypoint Detection",
+"url":"https://www.learnopencv.com/hand-keypoint-detection-using-deep-learning-and-opencv/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Dlib Correlation Object Tracking - · Single Object Tracker",
+"url":"https://www.pyimagesearch.com/2018/10/22/object-tracking-with-dlib/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Dlib Correlation Object Tracking - · Multiple Object Tracker",
+"url":"https://www.pyimagesearch.com/2018/10/29/multi-object-tracking-with-dlib/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Image Stitching with OpenCV and Python",
+"url":"https://www.pyimagesearch.com/2018/12/17/image-stitching-with-opencv-and-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Instance Segmentation with OpenCV",
+"url":"https://www.pyimagesearch.com/2018/11/26/instance-segmentation-with-opencv/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Face mask detector",
+"url":"https://www.pyimagesearch.com/2020/05/04/covid-19-face-mask-detector-with-opencv-keras-tensorflow-and-deep-learning/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Using Convolutional Neural Nets to Detect Facial Keypoints",
+"url":"http://danielnouri.org/notes/2014/12/17/using-convolutional-neural-nets-to-detect-facial-keypoints-tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Generate an Average Face using Python and OpenCV",
+"url":"https://www.learnopencv.com/average-face-opencv-c-python-tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Break A Captcha System using CNNs",
+"url":"https://medium.com/@ageitgey/how-to-break-a-captcha-system-in-15-minutes-with-machine-learning-dbebb035a710",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Use pre-trained Inception model to provide image predictions",
+"url":"https://medium.com/google-cloud/keras-inception-v3-on-google-compute-engine-a54918b0058",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create your first CNN",
+"url":"https://hackernoon.com/deep-learning-cnns-in-tensorflow-with-gpus-cba6efe0acc2",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build A Facial Recognition Pipeline",
+"url":"https://hackernoon.com/building-a-facial-recognition-pipeline-with-deep-learning-in-tensorflow-66e7645015b8",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build An Image Caption Generator",
+"url":"https://medium.freecodecamp.org/building-an-image-caption-generator-with-deep-learning-in-tensorflow-a142722e9b1f",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Make your Own Face Recognition System",
+"url":"https://medium.freecodecamp.org/making-your-own-face-recognition-system-29a8e728107c",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Train a Language Detection AI in 20 minutes",
+"url":"https://towardsdatascience.com/how-i-trained-a-language-detection-ai-in-20-minutes-with-a-97-accuracy-fdeca0fb7724",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Object Detection With Neural Networks",
+"url":"https://towardsdatascience.com/object-detection-with-neural-networks-a4e2c46b4491",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part I - Data Cleaning",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-bb5b01ebad90",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part II - EDA, Data Visualisation",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-2-333514854913",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part III - Zipf's Law, Data Visualisation",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-3-zipfs-law-data-visualisation-fc9eadda71e7",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part IV - Feature Extraction(count vectoriser)",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-4-count-vectorizer-b3f4944e51b5",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part V - Feature Extraction(Tfidf vectoriser)",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-5-50b4e87d9bdd",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part VI - Doc2Vec",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-6-doc2vec-603f11832504",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part VII - Phrase Modeling + Doc2Vec",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-7-phrase-modeling-doc2vec-592a8a996867",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part VIII - Dimensionality Reduction",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-8-dimensionality-reduction-chi2-pca-c6d06fb3fcf3",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part IX - Neural Nets with TF-IDF vectors",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-9-neural-networks-with-tfidf-vectors-using-d0b4af6be6d7",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part X - Neural Nets with word2vec/doc2vec",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-10-neural-network-with-a6441269aa3c",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn Twitter Sentiment Analysis - · Part XI - CNN with Word2Vec",
+"url":"https://towardsdatascience.com/another-twitter-sentiment-analysis-with-python-part-11-cnn-word2vec-41f5e28eda74",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Use Transfer Learning for custom image classification",
+"url":"https://becominghuman.ai/transfer-learning-retraining-inception-v3-for-custom-image-classification-2820f653c557",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Learn to Code a simple Neural Network in 11 lines of Python",
+"url":"https://iamtrask.github.io/2015/07/12/basic-python-network/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Neural Network using Gradient Descent Approach",
+"url":"https://iamtrask.github.io/2015/07/27/python-network-part2/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Train a Keras Model To Generate Colors",
+"url":"https://heartbeat.fritz.ai/how-to-train-a-keras-model-to-generate-colors-3bc79e54971b",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Get Started with Keras on a Custom Dataset",
+"url":"https://www.pyimagesearch.com/2018/09/10/keras-tutorial-how-to-get-started-with-keras-deep-learning-and-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Use EigenFaces and FisherFaces on Faces94 dataset",
+"url":"https://nicholastsmith.wordpress.com/2016/02/18/eigenfaces-versus-fisherfaces-on-the-faces94-database-with-scikit-learn/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Kaggle MNIST Digit Recognizer Tutorial",
+"url":"https://medium.com/@lvarruda/how-to-get-top-2-position-on-kaggles-mnist-digit-recognizer-48185d80a2d4",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Fashion MNIST tutorial with tf.keras",
+"url":"https://medium.com/tensorflow/hello-deep-learning-fashion-mnist-with-keras-50fcff8cd74a",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"CNN using Keras to automatically classify root health",
+"url":"https://www.pyimagesearch.com/2018/10/15/deep-learning-hydroponics-and-medical-marijuana/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Keras vs Tensorflow",
+"url":"https://www.pyimagesearch.com/2018/10/08/keras-vs-tensorflow-which-one-is-better-and-which-one-should-i-learn/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Deep Learning and Medical Image Analysis for Malaria Detection",
+"url":"https://www.pyimagesearch.com/2018/12/03/deep-learning-and-medical-image-analysis-with-keras/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Transfer Learning for Image Classification using Keras",
+"url":"https://towardsdatascience.com/transfer-learning-for-image-classification-using-keras-c47ccf09c8c8",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Code a Smile Classifier using CNNS in Python",
+"url":"https://github.com/kylemcdonald/SmileCNN",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Natural Language Processing using scikit-learn",
+"url":"https://towardsdatascience.com/natural-language-processing-count-vectorization-with-scikit-learn-e7804269bb5e",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Code a Taylor Swift Lyrics Generator",
+"url":"https://towardsdatascience.com/ai-generates-taylor-swifts-song-lyrics-6fd92a03ef7e",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Mask detection using PyTorch Lightning",
+"url":"https://towardsdatascience.com/how-i-built-a-face-mask-detector-for-covid-19-using-pytorch-lightning-67eb3752fd61",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Simple Interpreter",
+"url":"https://ruslanspivak.com/lsbasi-part1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Simple Blockchain in Python",
+"url":"https://hackernoon.com/learn-blockchains-by-building-one-117428612f46",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Building a Gas Pump Scanner with OpenCV/Python/iOS",
+"url":"https://hackernoon.com/building-a-gas-pump-scanner-with-opencv-python-ios-116fe6c9ae8b",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build a Distributed Streaming System with Python and Kafka",
+"url":"https://codequs.com/p/S14jQ5UyG/build-a-distributed-streaming-system-with-apache-kafka-and-python",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Writing a basic x86-64 JIT compiler from scratch in stock Python",
+"url":"https://csl.name/post/python-jit/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Making a low level (Linux) debugger · Part 1",
+"url":"https://blog.asrpo.com/making_a_low_level_debugger",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Making a low level (Linux) debugger · Part 2: C",
+"url":"https://blog.asrpo.com/making_a_low_level_debugger_part_2",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Implementing a Search Engine · Part 1",
+"url":"http://www.ardendertat.com/2011/05/30/how-to-implement-a-search-engine-part-1-create-index/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Implementing a Search Engine · Part 2",
+"url":"http://www.ardendertat.com/2011/05/31/how-to-implement-a-search-engine-part-2-query-index/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Implementing a Search Engine · Part 3",
+"url":"http://www.ardendertat.com/2011/07/17/how-to-implement-a-search-engine-part-3-ranking-tf-idf/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build the Game of Life",
+"url":"https://robertheaton.com/2018/07/20/project-2-game-of-life/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create terminal ASCII art",
+"url":"https://robertheaton.com/2018/06/12/programming-projects-for-advanced-beginners-ascii-art/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Write a Tic-Tac-Toe AI",
+"url":"https://robertheaton.com/2018/10/09/programming-projects-for-advanced-beginners-3-a/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create photomosaic art",
+"url":"https://robertheaton.com/2018/11/03/programming-project-4-photomosaics/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Build the game \"Snake\" in the terminal",
+"url":"https://robertheaton.com/2018/12/02/programming-project-5-snake/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Write yourself a Git",
+"url":"https://wyag.thb.lt/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"A Python implementation of a Python bytecode runner",
+"url":"https://www.aosabook.org/en/500L/a-python-interpreter-written-in-python.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create a Voice assistant using Python",
+"url":"https://www.geeksforgeeks.org/voice-assistant-using-python/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Python"
+],
+"catatan":""
+},
+{
+"judul":"Create a Real Time Chat App with Golang, Angular 2, and WebSocket",
+"url":"https://web.archive.org/web/20260214230813/https://www.thepolyglotdeveloper.com/2016/12/create-real-time-chat-app-golang-angular-2-websockets/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Go Web Applications and Microservices Using Gin",
+"url":"https://semaphoreci.com/community/tutorials/building-go-web-applications-and-microservices-using-gin",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"How to Use Godog for Behavior-driven Development in Go",
+"url":"https://semaphoreci.com/community/tutorials/how-to-use-godog-for-behavior-driven-development-in-go",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 1: Basic Prototype",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 2: Proof of Work",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-2/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 3: Persistence and CLI",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-3/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 4: Transactions 1",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-4/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 5: Address",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-5/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 6: Transactions 2",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-6/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building Blockchain in Go · Part 7: Network",
+"url":"https://jeiwan.net/posts/building-blockchain-in-go-part-7/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a container from scratch in Go - Liz Rice (Microscaling Systems)(video)",
+"url":"https://www.youtube.com/watch?v=8fi7uSYlOdc",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Build Web Application with GoLang",
+"url":"https://astaxie.gitbooks.io/build-web-application-with-golang/content/en/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a Chat Application in Go with ReactJS · Part 1: Initial Setup",
+"url":"https://tutorialedge.net/projects/chat-system-in-go-and-react/part-1-initial-setup/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a Chat Application in Go with ReactJS · Part 2: Simple Communication",
+"url":"https://tutorialedge.net/projects/chat-system-in-go-and-react/part-2-simple-communication/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a Chat Application in Go with ReactJS · Part 3: Designing our Frontend",
+"url":"https://tutorialedge.net/projects/chat-system-in-go-and-react/part-3-designing-our-frontend/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a Chat Application in Go with ReactJS · Part 4: Handling Multiple Clients",
+"url":"https://tutorialedge.net/projects/chat-system-in-go-and-react/part-4-handling-multiple-clients/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a Chat Application in Go with ReactJS · Part 5: Improving the Frontend",
+"url":"https://tutorialedge.net/projects/chat-system-in-go-and-react/part-5-improved-frontend/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a Chat Application in Go with ReactJS · Part 6: Dockerizing your Backend",
+"url":"https://tutorialedge.net/projects/chat-system-in-go-and-react/part-6-dockerizing-your-backend/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Go WebAssembly Tutorial - Building a Calculator Tutorial",
+"url":"https://tutorialedge.net/golang/go-webassembly-tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 1 - standard library",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-1-standard-library/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 2 - using a router package",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-2-using-a-router-package/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 3 - using a web framework",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-3-using-a-web-framework/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 4 - using OpenAPI and Swagger",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-4-using-openapi-and-swagger/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 5 - middleware",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-5-middleware/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 6 - authentication",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-6-authentication/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST Servers in Go · Part 7 - GraphQL",
+"url":"https://eli.thegreenplace.net/2021/rest-servers-in-go-part-7-graphql/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Let's build a URL shortener in Go · Part 1 - Project setup",
+"url":"https://www.eddywm.com/lets-build-a-url-shortener-in-go/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Let's build a URL shortener in Go · Part 2 - Storage Layer",
+"url":"https://www.eddywm.com/lets-build-a-url-shortener-in-go-with-redis-part-2-storage-layer/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Let's build a URL shortener in Go · Part 3 - Short Link Generator",
+"url":"https://www.eddywm.com/lets-build-a-url-shortener-in-go-part-3-short-link-generation/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Let's build a URL shortener in Go · Part 4 - Forwarding",
+"url":"https://www.eddywm.com/lets-build-a-url-shortener-in-go-part-iv-forwarding/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a TCP Chat in Go(video)",
+"url":"https://www.youtube.com/watch?v=Sphme0BqJiY",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"Building a BitTorrent client from the ground up in Go",
+"url":"https://blog.jse.li/posts/torrent/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"REST API masterclass with Go, PostgreSQL and Docker(video playlist) in progress",
+"url":"https://www.youtube.com/watch?v=rx6CPDK_5mU&list=PLy_6D98if3ULEtXtNSY_2qN21VCKgoQAE",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Go"
+],
+"catatan":""
+},
+{
+"judul":"How To Build A Blog With Laravel",
+"url":"https://www.youtube.com/playlist?list=PLwAKR305CRO-Q90J---jXVzbOd4CDRbVx",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Make Your Own Blog (in Pure PHP)",
+"url":"http://ilovephp.jondh.me.uk/en/tutorial/make-your-own-blog",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build A Real Estate Website Example with SilverStripe",
+"url":"https://www.silverstripe.org/learn/lessons/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Building Realtime Chat App with Laravel 5.4 and VueJS",
+"url":"https://www.youtube.com/playlist?list=PLXsbBbd36_uVjOFH_P25__XAyGsohXWlv",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Build A Social Network: Laravel 5 - Youtube",
+"url":"https://www.youtube.com/playlist?list=PLfdtiltiRHWGGxaR6uFtwZnnbcXqyq8JD",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":"(video)"
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 0: Introduction",
+"url":"https://medium.com/@ashokgelal/writing-a-full-featured-multi-tenant-laravel-app-from-scratch-a0e1a7350d9d",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 1: Setup",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-1-4049a3cc229d",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 2: Roles and Permissions",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-2-roles-and-permissions-d9a5bfe5d525",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 3: Invitation",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-3-invitation-c982dca55eb9",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 4: Authentication",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-4-tenancy-aware-authentication-e0ee37270bc8",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 5: Testing",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-2-unit-tests-96d6dfbf0617",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 6: User Profile",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-5-user-profile-5c3d0c655f3a",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a full-featured multi-tenant app with Laravel · Part 7: Deployment",
+"url":"https://medium.com/@ashokgelal/a-full-featured-multi-tenant-app-with-laravel-part-7-deployment-40bb3c895627",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Build a Laravel CRUD Application From Scratch",
+"url":"https://www.codewall.co.uk/laravel-crud-demo-with-resource-controller-tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"PHP"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Game Boy Emulator in OCaml",
+"url":"https://linoscope.github.io/writing-a-game-boy-emulator-in-ocaml/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"OCaml"
+],
+"catatan":""
+},
+{
+"judul":"Build a Network Stack with Ruby",
+"url":"https://medium.com/geckoboard-under-the-hood/how-to-build-a-network-stack-in-ruby-f73aeb1b661b",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build your own Redis · Part 0: Introduction",
+"url":"https://rohitpaulk.com/articles/redis-0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build your own Redis · Part 1: Barebones TCP Server",
+"url":"https://rohitpaulk.com/articles/redis-1",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build your own Redis · Part 2: PING <-> PONG",
+"url":"https://rohitpaulk.com/articles/redis-2",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build your own Redis · Part 3: Concurrent Clients",
+"url":"https://rohitpaulk.com/articles/redis-3",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build your own Redis · Part 4: ECHO",
+"url":"https://rohitpaulk.com/articles/redis-4",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Rebuilding Git in Ruby",
+"url":"https://thoughtbot.com/blog/rebuilding-git-in-ruby",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"The Ruby on Rails Tutorial",
+"url":"https://www.railstutorial.org/book",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build Instagram From Scratch with Ruby on Rails",
+"url":"https://www.dropbox.com/s/9vq430e9s3q7pu8/Let%27s%20Build%20Instagram%20with%20Ruby%20on%20Rails%20-%20Free%20Edition.pdf?dl=0",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Build a Social Network using Rails",
+"url":"https://medium.com/rails-ember-beyond/how-to-build-a-social-network-using-rails-eb31da569233",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"How To Build a Ruby on Rails Application",
+"url":"https://www.digitalocean.com/community/tutorials/how-to-build-a-ruby-on-rails-application",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Ruby"
+],
+"catatan":""
+},
+{
+"judul":"Write You a Haskell - Build a modern functional compiler",
+"url":"http://dev.stephendiehl.com/fun/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Haskell"
+],
+"catatan":""
+},
+{
+"judul":"Write Yourself a Scheme in 48 hours",
+"url":"https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Haskell"
+],
+"catatan":""
+},
+{
+"judul":"Write You A Scheme, Version 2",
+"url":"https://github.com/adamwespiser/scheme",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Haskell"
+],
+"catatan":""
+},
+{
+"judul":"Roll Your Own IRC Bot",
+"url":"https://wiki.haskell.org/Roll_your_own_IRC_bot",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Haskell"
+],
+"catatan":""
+},
+{
+"judul":"Making Movie Monad",
+"url":"https://lettier.github.io/posts/2016-08-15-making-movie-monad.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Haskell"
+],
+"catatan":""
+},
+{
+"judul":"Making a Website with Haskell (outdated)",
+"url":"http://adit.io/posts/2013-04-15-making-a-website-with-haskell.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Haskell"
+],
+"catatan":""
+},
+{
+"judul":"Build Web Apps with Shiny",
+"url":"http://shiny.rstudio.com/tutorial/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"R"
+],
+"catatan":""
+},
+{
+"judul":"Build A Cryptocurrency Bot",
+"url":"https://towardsdatascience.com/build-a-cryptocurrency-trading-bot-with-r-1445c429e1b1",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"R"
+],
+"catatan":""
+},
+{
+"judul":"Learn Associate Rule Mining in R",
+"url":"https://towardsdatascience.com/association-rule-mining-in-r-ddf2d044ae50",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"R"
+],
+"catatan":""
+},
+{
+"judul":"A Simple Web App in Rust · Part 1",
+"url":"http://joelmccracken.github.io/entries/a-simple-web-app-in-rust-pt-1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"A Simple Web App in Rust · Part 2a",
+"url":"http://joelmccracken.github.io/entries/a-simple-web-app-in-rust-pt-2a/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"A Simple Web App in Rust · Part 2b",
+"url":"http://joelmccracken.github.io/entries/a-simple-web-app-in-rust-pt-2b/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Write an OS in pure Rust",
+"url":"https://os.phil-opp.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Build a browser engine in Rust",
+"url":"https://limpet.net/mbrubeck/2014/08/08/toy-layout-engine-1.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Write a Microservice in Rust",
+"url":"http://www.goldsborough.me/rust/web/tutorial/2018/01/20/17-01-11-writing_a_microservice_in_rust/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Learning Rust with Too Many Linked Lists",
+"url":"https://rust-unofficial.github.io/too-many-lists/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Rust in Detail: Writing Scalable Chat Service from Scratch · Part 1: Implementing WebSocket. Introduction.",
+"url":"https://nbaksalyar.github.io/2015/07/10/writing-chat-in-rust.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Rust in Detail: Writing Scalable Chat Service from Scratch · Part 2: Sending and Receiving Messages",
+"url":"https://nbaksalyar.github.io/2015/11/09/rust-in-detail-2.html",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Writing a Rust Roguelike for the Desktop and the Web",
+"url":"https://aimlesslygoingforward.com/blog/2019/02/09/writing-a-rust-roguelike-for-the-desktop-and-the-web/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Single Page Applications using Rust",
+"url":"http://www.sheshbabu.com/posts/rust-wasm-yew-single-page-application/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Writing NES Emulator in Rust",
+"url":"https://bugzmanov.github.io/nes_ebook/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Create a simulation of evolution using neural network and genetic algorithm, and compile the application to WebAssembly · Part 1",
+"url":"https://pwy.io/en/posts/learning-to-fly-pt1/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Create a simulation of evolution using neural network and genetic algorithm, and compile the application to WebAssembly · Part 2",
+"url":"https://pwy.io/en/posts/learning-to-fly-pt2/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Create a simulation of evolution using neural network and genetic algorithm, and compile the application to WebAssembly · Part 3",
+"url":"https://pwy.io/en/posts/learning-to-fly-pt3/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Create a simulation of evolution using neural network and genetic algorithm, and compile the application to WebAssembly · Part 4",
+"url":"https://pwy.io/en/posts/learning-to-fly-pt4/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"hecto: Build your own text editor in Rust",
+"url":"https://www.flenker.blog/hecto/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Rust"
+],
+"catatan":""
+},
+{
+"judul":"Simple actor-based blockchain",
+"url":"https://www.freecodecamp.org/news/how-to-build-a-simple-actor-based-blockchain-aac1e996c177/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Scala"
+],
+"catatan":""
+},
+{
+"judul":"No Magic: Regular Expressions",
+"url":"https://rcoh.svbtle.com/no-magic-regular-expressions",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Scala"
+],
+"catatan":""
+},
+{
+"judul":"Hacking with Swift - Learn Swift by doing 39 projects",
+"url":"https://www.hackingwithswift.com/read",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Swift"
+],
+"catatan":""
+},
+{
+"judul":"Retro first-person shooter from scratch",
+"url":"https://github.com/nicklockwood/RetroRampage",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Swift"
+],
+"catatan":""
+},
+{
+"judul":"Build an iOS App with SwiftUI",
+"url":"https://www.swift.org/getting-started/swiftui/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Swift"
+],
+"catatan":""
+},
+{
+"judul":"Developing iOS Apps with SwiftUI (Stanford CS193p)",
+"url":"https://cs193p.sites.stanford.edu/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Swift"
+],
+"catatan":"(video)"
+},
+{
+"judul":"React Redux Links",
+"url":"https://github.com/markerikson/react-redux-links",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Udemy.com",
+"url":"https://www.udemy.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Full Stack Python",
+"url":"https://www.fullstackpython.com/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Node School",
+"url":"https://nodeschool.io/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"DigitalOcean Community Tutorials",
+"url":"https://www.digitalocean.com/community/tutorials",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Exercism",
+"url":"http://www.exercism.io/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Egghead.io",
+"url":"http://www.egghead.io/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Michael Herman's Blog",
+"url":"http://mherman.org/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"Enlight",
+"url":"https://enlight.nyc/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+},
+{
+"judul":"CodeCrafters",
+"url":"https://codecrafters.io/",
+"jenis":"proyek",
+"bahasa":"en",
+"topik":[
+"Additional Resources"
+],
+"catatan":""
+}
+]
+}

@@ -9222,7 +9222,7 @@ console.log('reduced ' + (kurangiGerak ? '  langsung ke 100' : animasi(easeOutCu
                     "yang pusing melihat gerakan besar. Browser meneruskannya sebagai",
                     "media query prefers-reduced-motion. Baris terakhir program di",
                     "atas meniru keputusan itu: kalau pengguna minta dikurangi,",
-                    "elemen langsung muncul di tujuannya. Aplikasi Belajar Ngoding ini",
+                    "elemen langsung muncul di tujuannya. Aplikasi belajar-codingV2 ini",
                     "juga memegang aturan yang sama.",
                     "",
                     "  @media (prefers-reduced-motion: reduce) {",

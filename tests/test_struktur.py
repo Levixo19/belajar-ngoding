@@ -349,7 +349,7 @@ class TestLatihanHtmlCss(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        import main
+        from inti import kurikulum as main
         cls.bahasa = [l for l in main.LANGUAGES if l["key"] in ("html", "css")]
         cls.assertTrue_ = len(cls.bahasa) == 2
 

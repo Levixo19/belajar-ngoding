@@ -1,0 +1,1227 @@
+{
+ "Pengenalan C & Instalasi": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "Dari hello.c sampai Halo Dunia! tercetak",
+   "ket": "gcc menolak membuat executable kalau masih ada error. Sesudah berkas hello jadi, kamu menjalankannya dengan ./hello.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "tulis hello.c"
+    },
+    {
+     "jenis": "proses",
+     "teks": "gcc hello.c -o hello"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "ada error?",
+     "tidak": 4
+    },
+    {
+     "jenis": "proses",
+     "teks": "baca pesan, perbaiki kode",
+     "ke": 1
+    },
+    {
+     "jenis": "proses",
+     "teks": "berkas hello jadi"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "./hello: Halo Dunia!"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "return 0, selesai"
+    }
+   ]
+  }
+ ],
+ "Variabel & Tipe Data": [
+  {
+   "setelah": 1,
+   "jenis": "variabel",
+   "judul": "Empat variabel dari contoh tadi, masing-masing dengan tipenya",
+   "ket": "lulus menyimpan true, tapi printf dengan %d mencetaknya sebagai 1. Karakter ditulis pakai kutip tunggal.",
+   "isi": [
+    [
+     "umur",
+     "20",
+     "int"
+    ],
+    [
+     "harga",
+     "15000.50",
+     "double"
+    ],
+    [
+     "grade",
+     "'A'",
+     "char"
+    ],
+    [
+     "lulus",
+     "true",
+     "bool"
+    ]
+   ]
+  }
+ ],
+ "Bilangan Biner, Heksadesimal & Tipe Bilangan Bulat": [
+  {
+   "setelah": 1,
+   "jenis": "bit",
+   "judul": "Angka 12 di dalam satu byte: cuma bit 8 dan bit 4 yang menyala",
+   "ket": "8 + 4 = 12. Dibaca per empat bit, 0000 1100 sama dengan hex 0C.",
+   "angka": 12,
+   "lebar": 8,
+   "label": "unsigned int a = 12"
+  },
+  {
+   "setelah": 3,
+   "jenis": "bit",
+   "judul": "250 + 10 di unsigned char berputar jadi 4",
+   "ket": "260 butuh 9 bit, padahal unsigned char cuma punya 8. Yang tersisa 260 - 256 = 4, tanpa pesan apa pun.",
+   "angka": 4,
+   "lebar": 8,
+   "label": "unsigned char b = 250 + 10"
+  }
+ ],
+ "Operator": [
+  {
+   "setelah": 1,
+   "jenis": "bit",
+   "judul": "a & b: bit menyala cuma di posisi yang menyala di keduanya",
+   "ket": "a = 12 (1100) dan b = 10 (1010). Posisi yang sama-sama 1 cuma bit bernilai 8, jadi hasilnya 8.",
+   "angka": 8,
+   "lebar": 8,
+   "label": "12 & 10 = 8"
+  }
+ ],
+ "Ekspresi, Prioritas Operator & Prefix/Postfix": [
+  {
+   "setelah": 1,
+   "jenis": "tumpukan",
+   "judul": "stack[++top] menaruh di atas, stack[top--] mengambil dari atas",
+   "ket": "Sesudah dua kali push, top bernilai 1. Pop pertama membaca 200, baru top turun jadi 0.",
+   "mode": "tumpukan",
+   "isi": [
+    "stack[0] = 100",
+    "stack[1] = 200"
+   ],
+   "label": "int stack[10], top = 1",
+   "operasi": "pop: stack[top--]"
+  }
+ ],
+ "Percabangan (if / else / switch)": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "nilai = 85 berhenti di syarat pertama yang benar",
+   "ket": "85 gagal di >= 90, lalu lolos di >= 80. Begitu B dicetak, syarat sesudahnya nggak diperiksa lagi.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "nilai = 85"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "nilai >= 90?",
+     "tidak": 3
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "cetak A",
+     "ke": 8
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "nilai >= 80?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "cetak B",
+     "ke": 8
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "nilai >= 70?",
+     "tidak": 7
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "cetak C",
+     "ke": 8
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "cetak D"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "lanjut ke ternary"
+    }
+   ]
+  }
+ ],
+ "Perulangan (for, while, do-while)": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "for (int i = 1; i <= 5; i++) dipecah jadi langkah-langkahnya",
+   "ket": "Kondisi dicek sebelum tiap putaran, i++ dijalankan sesudahnya. Waktu i jadi 6, loop berhenti.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "int i = 1"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "i <= 5?",
+     "tidak": 4
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "printf(\"%d \", i)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "i++",
+     "ke": 1
+    },
+    {
+     "jenis": "selesai",
+     "teks": "tercetak 1 2 3 4 5"
+    }
+   ]
+  }
+ ],
+ "Array": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "nilai[] berisi empat int yang berjejer, indeksnya 0 sampai 3",
+   "ket": "sizeof(nilai) / sizeof(nilai[0]) = 16 / 4 = 4. Totalnya 330, jadi rata-ratanya 82.50. nilai[4] sudah di luar array.",
+   "nama": "int nilai[]",
+   "isi": [
+    "80",
+    "90",
+    "75",
+    "85"
+   ]
+  },
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "matriks[2][3]: baris dulu, baru kolom",
+   "ket": "matriks[0][1] artinya baris 0, kolom 1, isinya 2.",
+   "tabel": [
+    {
+     "nama": "int matriks[2][3]",
+     "kolom": [
+      "baris",
+      "[0]",
+      "[1]",
+      "[2]"
+     ],
+     "baris": [
+      [
+       "[0]",
+       "1",
+       "2",
+       "3"
+      ],
+      [
+       "[1]",
+       "4",
+       "5",
+       "6"
+      ]
+     ],
+     "sorot_baris": [
+      0
+     ],
+     "sorot_kolom": [
+      "[1]"
+     ]
+    }
+   ]
+  }
+ ],
+ "String (Array of Char)": [
+  {
+   "setelah": 0,
+   "jenis": "larik",
+   "judul": "\"Andi\" butuh lima slot: empat huruf dan penutup '\\0'",
+   "ket": "strlen(nama) menghitung sampai sebelum '\\0', jadi hasilnya 4. Tanpa slot kelima, string-nya nggak punya akhir.",
+   "nama": "char nama[]",
+   "isi": [
+    "'A'",
+    "'n'",
+    "'d'",
+    "'i'",
+    "'\\0'"
+   ],
+   "sorot": [
+    4
+   ]
+  }
+ ],
+ "Pustaka Standar: math.h, ctype.h, stdlib & time.h": [
+  {
+   "setelah": 3,
+   "jenis": "larik",
+   "judul": "strtol(\"12abc\", &sisa, 10) berhenti di huruf pertama",
+   "ket": "Hasilnya 12, dan sisa menunjuk 'a'. Karena *sisa bukan '\\0', masukan itu ditolak. Rentang yang ditandai adalah digit yang terbaca.",
+   "nama": "teks",
+   "isi": [
+    "'1'",
+    "'2'",
+    "'a'",
+    "'b'",
+    "'c'",
+    "'\\0'"
+   ],
+   "penunjuk": {
+    "teks": 0,
+    "sisa": 2
+   },
+   "rentang": [
+    0,
+    2
+   ]
+  }
+ ],
+ "Function (Fungsi)": [
+  {
+   "setelah": 2,
+   "jenis": "memori",
+   "judul": "tambahSatu(angka) bekerja pada salinan, angka di main tetap 5",
+   "ket": "x lahir sebagai salinan 5, lalu naik jadi 6. Begitu fungsinya selesai, x hilang dan angka nggak ikut berubah.",
+   "tumpukan": [
+    [
+     "angka (main)",
+     "5"
+    ],
+    [
+     "x (salinan)",
+     "6"
+    ]
+   ],
+   "label_tumpukan": "stack"
+  }
+ ],
+ "Rekursi": [
+  {
+   "setelah": 2,
+   "jenis": "tumpukan",
+   "judul": "hitungMundur(3) menumpuk empat bingkai sebelum ada yang keluar",
+   "ket": "Tiap bingkai punya n dan lokal sendiri. hitungMundur(0) di paling atas keluar duluan, lalu yang lain menyusul terbalik.",
+   "mode": "tumpukan",
+   "isi": [
+    "main()",
+    "hitungMundur(3)",
+    "hitungMundur(2)",
+    "hitungMundur(1)",
+    "hitungMundur(0)"
+   ],
+   "label": "call stack",
+   "operasi": "base case: n == 0"
+  },
+  {
+   "setelah": 4,
+   "jenis": "pohon",
+   "judul": "fibRekursif(4) menghitung fib(2) dua kali",
+   "ket": "Tiap simpul satu panggilan, jadi 9 panggilan untuk fib(4). Makin besar n, pengulangan seperti ini makin membengkak.",
+   "akar": {
+    "teks": "fib(4)",
+    "anak": [
+     {
+      "teks": "fib(3)",
+      "anak": [
+       {
+        "teks": "fib(2)",
+        "anak": [
+         {
+          "teks": "fib(1) = 1"
+         },
+         {
+          "teks": "fib(0) = 0"
+         }
+        ]
+       },
+       {
+        "teks": "fib(1) = 1"
+       }
+      ]
+     },
+     {
+      "teks": "fib(2)",
+      "anak": [
+       {
+        "teks": "fib(1) = 1"
+       },
+       {
+        "teks": "fib(0) = 0"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Lingkup, Masa Hidup & Kelas Penyimpanan Variabel": [
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "static mengingat nilainya, variabel lokal biasa lahir ulang",
+   "ket": "Ini keluaran program nomor_tiket di atas. Variabel terakhir yang static terus naik, yang biasa selalu kembali ke 1.",
+   "tabel": [
+    {
+     "nama": "tiga kali panggilan",
+     "kolom": [
+      "panggilan",
+      "static",
+      "lokal biasa"
+     ],
+     "baris": [
+      [
+       "1",
+       "1",
+       "1"
+      ],
+      [
+       "2",
+       "2",
+       "1"
+      ],
+      [
+       "3",
+       "3",
+       "1"
+      ]
+     ],
+     "sorot_kolom": [
+      "static"
+     ]
+    }
+   ]
+  }
+ ],
+ "Pointer Dasar": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "ptr menyimpan alamat angka, jadi *ptr = 99 mengubah angka",
+   "ket": "Dua-duanya variabel lokal di stack. Gambarnya cuma memisahkan si penunjuk (kiri) dari variabel yang ditunjuk (kanan).",
+   "tumpukan": [
+    [
+     "ptr",
+     "@A"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "A",
+     "isi": "angka = 99"
+    }
+   ],
+   "label_tumpukan": "int *ptr",
+   "label_heap": "yang ditunjuk"
+  },
+  {
+   "setelah": 2,
+   "jenis": "memori",
+   "judul": "tukar(&x, &y) memegang alamat x dan y milik main",
+   "ket": "a dan b di dalam tukar cuma menyimpan alamat. Lewat *a dan *b, nilai x dan y di main yang ditukar.",
+   "tumpukan": [
+    [
+     "a (tukar)",
+     "@X"
+    ],
+    [
+     "b (tukar)",
+     "@Y"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "X",
+     "isi": "x = 2"
+    },
+    {
+     "id": "Y",
+     "isi": "y = 1"
+    }
+   ],
+   "label_tumpukan": "parameter",
+   "label_heap": "variabel di main"
+  }
+ ],
+ "Pointer & Array: Hubungan Erat Keduanya": [
+  {
+   "setelah": 1,
+   "jenis": "larik",
+   "judul": "Sesudah ptr++, ptr pindah satu elemen, bukan satu byte",
+   "ket": "ptr mulai di angka[0]. ptr++ melompat sizeof(int) byte, jadi *ptr sekarang 20, sama dengan *(angka + 1).",
+   "nama": "int angka[]",
+   "isi": [
+    "10",
+    "20",
+    "30",
+    "40",
+    "50"
+   ],
+   "penunjuk": {
+    "angka": 0,
+    "ptr": 1
+   }
+  },
+  {
+   "setelah": 3,
+   "jenis": "larik",
+   "judul": "nilai[2][3] di memori: enam int berderet, baris 0 dulu",
+   "ket": "m[i][j] ada di posisi i * 3 + j. Rentang yang ditandai adalah baris 1, dan nilai[1][0] di posisi 3.",
+   "nama": "int nilai[2][3]",
+   "isi": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+   ],
+   "rentang": [
+    3,
+    6
+   ],
+   "sorot": [
+    3
+   ]
+  }
+ ],
+ "String Lanjutan: char *, const & Keluarga mem*": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "kotak menyimpan hurufnya sendiri, tunjuk cuma menyimpan alamat",
+   "ket": "Kotak kanan di sini bagian program yang cuma boleh dibaca, bukan heap. Menulis tunjuk[0] berarti menulis ke sana.",
+   "tumpukan": [
+    [
+     "kotak",
+     "\"Halo\" (5 byte)"
+    ],
+    [
+     "tunjuk",
+     "@L"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "L",
+     "isi": "\"halo\" (literal)"
+    }
+   ],
+   "label_tumpukan": "stack",
+   "label_heap": "read-only"
+  }
+ ],
+ "Dynamic Memory Allocation (malloc, calloc, free)": [
+  {
+   "setelah": 1,
+   "jenis": "memori",
+   "judul": "angka di stack menunjuk tiga int yang dipesan malloc di heap",
+   "ket": "Misalnya kamu mengetik 3. Blok di heap tetap ada sampai free(angka), lalu angka diisi NULL supaya nggak menggantung.",
+   "tumpukan": [
+    [
+     "n",
+     "3"
+    ],
+    [
+     "angka",
+     "@H"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "H",
+     "isi": "[10][20][30]"
+    }
+   ],
+   "label_tumpukan": "stack",
+   "label_heap": "heap (malloc)"
+  },
+  {
+   "setelah": 3,
+   "jenis": "larik",
+   "judul": "Sesudah dua kali digandakan, kapasitasnya 8 tapi baru 5 terisi",
+   "ket": "jumlah = 5, kapasitas = 8. Tiga slot terakhir belum diisi, isinya sampah karena realloc nggak menolkannya.",
+   "nama": "int *data",
+   "isi": [
+    "1",
+    "4",
+    "9",
+    "16",
+    "25",
+    "?",
+    "?",
+    "?"
+   ],
+   "rentang": [
+    0,
+    5
+   ]
+  }
+ ],
+ "Struct": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Array of struct: tiap elemen satu mahasiswa utuh",
+   "ket": "daftar[1].nama berisi \"Dedi\". Field-nya diambil dengan titik.",
+   "tabel": [
+    {
+     "nama": "Mahasiswa daftar[2]",
+     "kolom": [
+      "indeks",
+      "nama",
+      "umur",
+      "ipk"
+     ],
+     "baris": [
+      [
+       "[0]",
+       "Citra",
+       "21",
+       "3.8"
+      ],
+      [
+       "[1]",
+       "Dedi",
+       "23",
+       "2.9"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 2,
+   "jenis": "memori",
+   "judul": "setor(&r1, 50000) mengubah r1 lewat pointer r",
+   "ket": "r->saldo += jumlah sama dengan (*r).saldo += jumlah. Yang berubah r1 milik main, jadi saldonya 150000.",
+   "tumpukan": [
+    [
+     "r (setor)",
+     "@R"
+    ]
+   ],
+   "heap": [
+    {
+     "id": "R",
+     "isi": "nama=Andi saldo=150000"
+    }
+   ],
+   "label_tumpukan": "parameter",
+   "label_heap": "r1 di main"
+  }
+ ],
+ "Struct Lanjutan: Inisialisasi Bernama, Bit-field & Tata Letak Memori": [
+  {
+   "setelah": 3,
+   "jenis": "tabel",
+   "judul": "struct Boros 24 byte, padahal isinya cuma 14",
+   "ket": "Padding menggeser b ke alamat kelipatan 4 dan d ke kelipatan 8. Hasil gcc di x86-64, sama dengan offsetof di contoh.",
+   "tabel": [
+    {
+     "nama": "struct Boros",
+     "kolom": [
+      "byte",
+      "isi"
+     ],
+     "baris": [
+      [
+       "0",
+       "a (char)"
+      ],
+      [
+       "1-3",
+       "padding"
+      ],
+      [
+       "4-7",
+       "b (int)"
+      ],
+      [
+       "8",
+       "c (char)"
+      ],
+      [
+       "9-15",
+       "padding"
+      ],
+      [
+       "16-23",
+       "d (double)"
+      ]
+     ],
+     "sorot_baris": [
+      1,
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "bit",
+   "judul": "Tiga field dalam satu byte: tipe, prioritas, dan aktif",
+   "ket": "Bit 0 aktif = 1, bit 1-3 prioritas = 5 (101), bit 4-7 tipe = 9 (1001). Hasilnya 0x9B, sama dengan paket manual.",
+   "angka": 155,
+   "lebar": 8,
+   "label": "paket = 0x9B"
+  }
+ ],
+ "Union & Enum": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "enum Hari: tiap nama cuma label untuk sebuah angka",
+   "ket": "Tanpa nilai yang ditulis sendiri, hitungannya mulai dari 0. RABU bernilai 2, jadi printf mencetak 2.",
+   "tabel": [
+    {
+     "nama": "enum Hari",
+     "kolom": [
+      "nama",
+      "nilai"
+     ],
+     "baris": [
+      [
+       "SENIN",
+       "0"
+      ],
+      [
+       "SELASA",
+       "1"
+      ],
+      [
+       "RABU",
+       "2"
+      ],
+      [
+       "KAMIS",
+       "3"
+      ],
+      [
+       "JUMAT",
+       "4"
+      ],
+      [
+       "SABTU",
+       "5"
+      ],
+      [
+       "MINGGU",
+       "6"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "File I/O": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Membaca catatan.txt baris demi baris sampai fgets mengembalikan NULL",
+   "ket": "Cek NULL dulu sesudah fopen. Loop berhenti waktu fgets nggak dapat baris lagi, lalu berkasnya ditutup.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "fopen(\"catatan.txt\", \"r\")"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "fp2 == NULL?",
+     "tidak": 3
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "pesan gagal, return 1",
+     "ke": 6
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "fgets dapat satu baris?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "printf(\"Baca: %s\", baris)",
+     "ke": 3
+    },
+    {
+     "jenis": "proses",
+     "teks": "fclose(fp2)"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "selesai"
+    }
+   ]
+  }
+ ],
+ "Program & Sistem: argc, argv, Stream Standar & Kode Keluar": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "./argumen 21 apel dipecah shell jadi tiga kata di argv",
+   "ket": "argc = 3 karena nama program ikut dihitung. Slot sesudah yang terakhir dijamin NULL.",
+   "tabel": [
+    {
+     "nama": "argc = 3",
+     "kolom": [
+      "indeks",
+      "argv[i]"
+     ],
+     "baris": [
+      [
+       "0",
+       "\"./argumen\""
+      ],
+      [
+       "1",
+       "\"21\""
+      ],
+      [
+       "2",
+       "\"apel\""
+      ],
+      [
+       "3",
+       "NULL"
+      ]
+     ],
+     "sorot_baris": [
+      3
+     ]
+    }
+   ]
+  }
+ ],
+ "I/O Tingkat Karakter & Berkas Biner": [
+  {
+   "setelah": 3,
+   "jenis": "larik",
+   "judul": "Record sama besar, jadi fseek bisa langsung lompat ke indeks 2",
+   "ket": "Di x86-64 satu Mahasiswa 32 byte, jadi record indeks 2 mulai di byte 2 x 32 = 64. Andi dan Budi nggak perlu dibaca.",
+   "nama": "mahasiswa.dat",
+   "isi": [
+    "Andi",
+    "Budi",
+    "Citra"
+   ],
+   "penunjuk": {
+    "fseek": 2
+   },
+   "sorot": [
+    2
+   ]
+  }
+ ],
+ "Menangani Kegagalan: errno, perror, assert & goto cleanup": [
+  {
+   "setelah": 3,
+   "jenis": "tumpukan",
+   "judul": "Yang terakhir dibuka dibereskan paling dulu",
+   "ket": "Gagal di fopen berarti fp belum ada, jadi lompat ke bebaskan_keluar. Tangga labelnya membereskan dari atas ke bawah.",
+   "mode": "tumpukan",
+   "isi": [
+    "masuk (malloc)",
+    "keluar (malloc)",
+    "fp (fopen)"
+   ],
+   "label": "sumber daya yang sudah dibuat",
+   "operasi": "tutup_berkas dulu"
+  }
+ ],
+ "Preprocessor & Macro": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "Yang kamu tulis dan yang dilihat compiler sesudah preprocessor",
+   "ket": "Preprocessor cuma menempel teks. Kurung di KUADRAT membuat 2+3 dihitung utuh, jadi hasilnya 25, bukan 11.",
+   "tabel": [
+    {
+     "nama": "penggantian teks",
+     "kolom": [
+      "ditulis",
+      "sesudah diganti"
+     ],
+     "baris": [
+      [
+       "PI",
+       "3.14159"
+      ],
+      [
+       "KUADRAT(5)",
+       "((5) * (5))"
+      ],
+      [
+       "KUADRAT(2+3)",
+       "((2+3) * (2+3))"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "Preprocessor Lanjutan: Kompilasi Bersyarat & Makro Sungguhan": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Rantai #if memilih satu cabang sebelum kompilasi dimulai",
+   "ket": "Cabang yang kalah nggak pernah sampai ke compiler. Di Linux, NAMA_OS jadi \"Linux\" dan BERSIHKAN jadi \"clear\".",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "preprocessor membaca #if"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "defined(_WIN32)?",
+     "tidak": 3
+    },
+    {
+     "jenis": "proses",
+     "teks": "NAMA_OS \"Windows\"",
+     "ke": 8
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "defined(__APPLE__)?",
+     "tidak": 5
+    },
+    {
+     "jenis": "proses",
+     "teks": "NAMA_OS \"macOS\"",
+     "ke": 8
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "defined(__linux__)?",
+     "tidak": 7
+    },
+    {
+     "jenis": "proses",
+     "teks": "NAMA_OS \"Linux\"",
+     "ke": 8
+    },
+    {
+     "jenis": "selesai",
+     "teks": "#error: kompilasi berhenti"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "kompilasi lanjut"
+    }
+   ]
+  }
+ ],
+ "Function Pointer": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "operasiList: indeks memilih fungsi, lalu fungsinya dipanggil",
+   "ket": "operasiList[i](10, 5) memanggil fungsi yang alamatnya tersimpan di slot i. Loop di contoh mencetak tiga baris ini.",
+   "tabel": [
+    {
+     "nama": "int (*operasiList[3])",
+     "kolom": [
+      "i",
+      "fungsi",
+      "hasil (10, 5)"
+     ],
+     "baris": [
+      [
+       "0",
+       "tambah",
+       "15"
+      ],
+      [
+       "1",
+       "kurang",
+       "5"
+      ],
+      [
+       "2",
+       "kali",
+       "50"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "C Generik: void *, qsort & Fungsi Variadic": [
+  {
+   "setelah": 3,
+   "jenis": "larik",
+   "judul": "Sesudah qsort, bsearch menemukan 13 di indeks 3",
+   "ket": "{42, 7, 13, 7, 99, 1} diurutkan banding_int. bsearch cuma sah pada array yang sudah terurut dengan pembanding yang sama.",
+   "nama": "angka (terurut)",
+   "isi": [
+    "1",
+    "7",
+    "7",
+    "13",
+    "42",
+    "99"
+   ],
+   "sorot": [
+    3
+   ],
+   "penunjuk": {
+    "ketemu": 3
+   }
+  }
+ ],
+ "Linked List: Struktur Data Dinamis": [
+  {
+   "setelah": 1,
+   "jenis": "tabel",
+   "judul": "head menunjuk node 10, dan tiap next menunjuk node berikutnya",
+   "ket": "head menunjuk N1. tambahDiAwal dipanggil dengan 30, 20, lalu 10, jadi 10 paling depan. Ketiga node terpisah di heap, dan yang menyambungkan cuma next.",
+   "tabel": [
+    {
+     "nama": "node hasil malloc",
+     "kolom": [
+      "node",
+      "data",
+      "next"
+     ],
+     "baris": [
+      [
+       "N1",
+       "10",
+       "N2"
+      ],
+      [
+       "N2",
+       "20",
+       "N3"
+      ],
+      [
+       "N3",
+       "30",
+       "NULL"
+      ]
+     ],
+     "sorot_kolom": [
+      "next"
+     ]
+    }
+   ]
+  }
+ ],
+ "Kompilasi Multi-File & Header (.h)": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Dua berkas .c berbagi satu janji di matematika.h",
+   "ket": "main.c cuma tahu prototype-nya. Isi tambah dan kurang ada di matematika.c, dan linker yang menyambungkan keduanya.",
+   "akar": {
+    "teks": "program",
+    "anak": [
+     {
+      "teks": "main.c",
+      "anak": [
+       {
+        "teks": "<stdio.h>"
+       },
+       {
+        "teks": "\"matematika.h\""
+       }
+      ]
+     },
+     {
+      "teks": "matematika.c",
+      "anak": [
+       {
+        "teks": "\"matematika.h\""
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Membangun Proyek C: Kompilasi Terpisah, Linker & Build System": [
+  {
+   "setelah": 0,
+   "jenis": "alur",
+   "judul": "Empat tahap di balik satu perintah gcc",
+   "ket": "Tiga tahap pertama dikerjakan per berkas .c. Baru linker yang melihat semuanya, dan di sanalah undefined reference muncul.",
+   "langkah": [
+    {
+     "jenis": "masukan",
+     "teks": "main.c"
+    },
+    {
+     "jenis": "proses",
+     "teks": "preprocessor: main.i (gcc -E)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "compiler: main.s (gcc -S)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "assembler: main.o (gcc -c)"
+    },
+    {
+     "jenis": "proses",
+     "teks": "linker: + statistik.o, -lm"
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "executable program"
+    }
+   ]
+  },
+  {
+   "setelah": 3,
+   "jenis": "pohon",
+   "judul": "Rantai prasyarat di Makefile: program butuh dua .o",
+   "ket": "make membandingkan waktu ubah. touch statistik.c cuma membuat statistik.o dan program dibuat ulang; main.o nggak disentuh.",
+   "akar": {
+    "teks": "program",
+    "anak": [
+     {
+      "teks": "main.o",
+      "anak": [
+       {
+        "teks": "main.c"
+       },
+       {
+        "teks": "statistik.h"
+       }
+      ]
+     },
+     {
+      "teks": "statistik.o",
+      "anak": [
+       {
+        "teks": "statistik.c"
+       },
+       {
+        "teks": "statistik.h"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Debugging: gdb, valgrind & Bug Umum": [
+  {
+   "setelah": 1,
+   "jenis": "alur",
+   "judul": "Dari crash ke baris penyebabnya dengan gdb",
+   "ket": "-g membuat gdb bisa menyebut nomor baris dan nama variabel. Ulangi print sampai ketemu nilai yang nggak masuk akal.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "program crash"
+    },
+    {
+     "jenis": "proses",
+     "teks": "gcc -Wall -Wextra -g"
+    },
+    {
+     "jenis": "proses",
+     "teks": "gdb ./program, lalu run"
+    },
+    {
+     "jenis": "proses",
+     "teks": "backtrace: fungsi mana?"
+    },
+    {
+     "jenis": "proses",
+     "teks": "print nama_variabel"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "penyebab ketemu?",
+     "tidak": 3
+    },
+    {
+     "jenis": "proses",
+     "teks": "perbaiki, uji dengan valgrind"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "selesai"
+    }
+   ]
+  }
+ ],
+ "Roadmap Menjadi C Programmer Handal": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Sesudah fondasi, ada tiga jalur yang bisa kamu pilih",
+   "ket": "Contoh di tiap cabang diambil dari daftar di atas.",
+   "akar": {
+    "teks": "fondasi C",
+    "anak": [
+     {
+      "teks": "systems",
+      "anak": [
+       {
+        "teks": "system call, POSIX"
+       },
+       {
+        "teks": "Git, Redis, SQLite"
+       }
+      ]
+     },
+     {
+      "teks": "embedded",
+      "anak": [
+       {
+        "teks": "Arduino, ESP32"
+       },
+       {
+        "teks": "register, volatile"
+       }
+      ]
+     },
+     {
+      "teks": "bahasa lanjutan",
+      "anak": [
+       {
+        "teks": "C++"
+       },
+       {
+        "teks": "Rust"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

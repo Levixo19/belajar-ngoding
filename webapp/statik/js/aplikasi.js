@@ -275,7 +275,7 @@ async function gambarRute({ pindahFokus = true } = {}) {
   } else {
     panggung.appendChild(hasil.el);
     bersihLayar = hasil.saatKeluar || null;
-    document.title = (hasil.judul ? hasil.judul + " · " : "") + "Belajar Ngoding";
+    document.title = (hasil.judul ? hasil.judul + " · " : "") + "belajar-codingV2";
     gambarKonteks(hasil.konteks || null);
     /* Fokus pindah ke panggung di setiap navigasi, dan itu memang benar: ia
        yang membuat pembaca layar mengumumkan layar baru alih-alih diam. Yang

@@ -30,7 +30,7 @@ from pelajar import bab
 from pelajar import konfigurasi
 from pelajar import progress
 from data.bab import BAB
-from main import LANGUAGES
+from inti.kurikulum import LANGUAGES
 
 
 def kunci_materi(lang, indeks):

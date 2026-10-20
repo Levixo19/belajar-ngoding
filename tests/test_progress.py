@@ -671,7 +671,7 @@ class TestKunciTanpaNomor(BasisProgres):
         Itu tabrakan diam: progres materi A ikut menandai materi B selesai.
         Dijaga di sini supaya penambahan materi apa pun ketahuan sejak awal.
         """
-        from main import LANGUAGES
+        from inti.kurikulum import LANGUAGES
         for lang in LANGUAGES:
             for bidang in ("materials", "quizzes", "exercises"):
                 judul = [progress.judul_kunci(o["title"]) for o in lang[bidang]]

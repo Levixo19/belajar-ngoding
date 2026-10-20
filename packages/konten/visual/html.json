@@ -1,0 +1,1185 @@
+{
+ "Apa Itu HTML & Halaman Pertamamu": [
+  {
+   "setelah": 3,
+   "jenis": "pohon",
+   "judul": "Halaman pertamamu dibaca browser jadi pohon ini",
+   "ket": "Yang menjorok ada di dalam elemen di atasnya. head dan body anak html.",
+   "akar": {
+    "teks": "html lang=\"id\"",
+    "anak": [
+     {
+      "teks": "head",
+      "anak": [
+       {
+        "teks": "meta charset"
+       },
+       {
+        "teks": "title"
+       }
+      ]
+     },
+     {
+      "teks": "body",
+      "anak": [
+       {
+        "teks": "h1 \"Halo, Dunia!\""
+       },
+       {
+        "teks": "p"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "pohon",
+   "judul": "div yang lupa ditutup ikut menelan h2",
+   "ket": "Di berkas, h2 ditulis sesudah kotak. Tanpa </div>, h2 masuk ke div.",
+   "akar": {
+    "teks": "div",
+    "anak": [
+     {
+      "teks": "p"
+     },
+     {
+      "teks": "h2 (nyasar)"
+     }
+    ]
+   }
+  }
+ ],
+ "Komentar, Sarang, dan Berburu Kesalahan": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Pohon Toko Bunga Melati: komentar dan blok Promo hilang",
+   "ket": "Penanda bagian, TODO, dan blok Promo yang dibungkus komentar hilang.",
+   "akar": {
+    "teks": "body",
+    "anak": [
+     {
+      "teks": "div",
+      "anak": [
+       {
+        "teks": "h1"
+       },
+       {
+        "teks": "p"
+       }
+      ]
+     },
+     {
+      "teks": "div",
+      "anak": [
+       {
+        "teks": "h2"
+       },
+       {
+        "teks": "p"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "tumpukan",
+   "judul": "Tag yang terbuka bertumpuk seperti piring",
+   "ket": "strong dibuka terakhir, jadi </strong> datang dulu, lalu </p>, </div>.",
+   "mode": "tumpukan",
+   "isi": [
+    "div",
+    "p",
+    "strong"
+   ],
+   "label": "tag yang masih terbuka",
+   "operasi": "tutup: strong dulu"
+  }
+ ],
+ "Struktur Dokumen: head dan body": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Kerangka Warung Kopi Pagi: keterangan di head, isi di body",
+   "ket": "Isi head nggak tampil di layar. Pengunjung cuma melihat isi body.",
+   "akar": {
+    "teks": "html lang=\"id\"",
+    "anak": [
+     {
+      "teks": "head",
+      "anak": [
+       {
+        "teks": "meta charset"
+       },
+       {
+        "teks": "meta viewport"
+       },
+       {
+        "teks": "title"
+       },
+       {
+        "teks": "link gaya.css"
+       }
+      ]
+     },
+     {
+      "teks": "body",
+      "anak": [
+       {
+        "teks": "h1"
+       },
+       {
+        "teks": "p"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 3,
+   "jenis": "pohon",
+   "judul": "Satu <a> membungkus seluruh kartu Kopi Tubruk",
+   "ket": "Gambar, judul, dan ringkasan di satu tautan, jadi semuanya bisa diklik.",
+   "akar": {
+    "teks": "a class=\"kartu\"",
+    "anak": [
+     {
+      "teks": "img"
+     },
+     {
+      "teks": "h3 \"Kopi Tubruk\""
+     },
+     {
+      "teks": "p"
+     }
+    ]
+   }
+  }
+ ],
+ "Teks: Heading, Paragraf, dan Penekanan": [
+  {
+   "setelah": 1,
+   "jenis": "pohon",
+   "judul": "Heading di contoh tadi membentuk daftar isi seperti ini",
+   "ket": "Ini kerangka isi, judulnya dipendekkan. Di DOM semuanya bersaudara.",
+   "akar": {
+    "teks": "h1 Menyeduh Kopi",
+    "anak": [
+     {
+      "teks": "h2 Alat",
+      "anak": [
+       {
+        "teks": "h3 Penggiling"
+       },
+       {
+        "teks": "h3 Penyaring"
+       }
+      ]
+     },
+     {
+      "teks": "h2 Langkah"
+     }
+    ]
+   }
+  }
+ ],
+ "Kutipan, Waktu, dan Penanda Teks Lainnya": [
+  {
+   "setelah": 4,
+   "jenis": "pohon",
+   "judul": "Kenapa teks paragrafnya kelihatan bolong",
+   "ket": "Di DOM, teks p terpotong jadi simpul teks di sela dua time.",
+   "akar": {
+    "teks": "p",
+    "anak": [
+     {
+      "teks": "\"Terbit \""
+     },
+     {
+      "teks": "time 2024-01-15",
+      "anak": [
+       {
+        "teks": "\"15 Januari 2024\""
+       }
+      ]
+     },
+     {
+      "teks": "\", diperbarui \""
+     },
+     {
+      "teks": "time 2024-03-02",
+      "anak": [
+       {
+        "teks": "\"2 Maret 2024\""
+       }
+      ]
+     },
+     {
+      "teks": "\".\""
+     }
+    ]
+   }
+  }
+ ],
+ "Daftar: ul, ol, dan dl": [
+  {
+   "setelah": 4,
+   "jenis": "pohon",
+   "judul": "Daftar anak tinggal di dalam li, sebelum </li>",
+   "ket": "ul kedua adalah anak li \"Kopi panas\". Anak langsung ul tetap cuma li.",
+   "akar": {
+    "teks": "ul",
+    "anak": [
+     {
+      "teks": "li Kopi panas",
+      "anak": [
+       {
+        "teks": "ul",
+        "anak": [
+         {
+          "teks": "li Tubruk"
+         },
+         {
+          "teks": "li V60"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "teks": "li Kopi dingin",
+      "anak": [
+       {
+        "teks": "ul",
+        "anak": [
+         {
+          "teks": "li Es kopi susu"
+         },
+         {
+          "teks": "li Cold brew"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "pohon",
+   "judul": "dl: Robusta punya satu istilah dan dua penjelasan",
+   "ket": "dt dan dd semuanya anak langsung dl. dd ikut dt terakhir di atasnya.",
+   "akar": {
+    "teks": "dl",
+    "anak": [
+     {
+      "teks": "dt Arabika"
+     },
+     {
+      "teks": "dd asam, wangi"
+     },
+     {
+      "teks": "dt Robusta"
+     },
+     {
+      "teks": "dd pahit, berat"
+     },
+     {
+      "teks": "dd kopi instan"
+     }
+    ]
+   }
+  }
+ ],
+ "Menjalankan Halaman Sendiri: Server Lokal dan Jalur Berkas": [
+  {
+   "setelah": 0,
+   "jenis": "pohon",
+   "judul": "Susunan folder kopi/ yang dipakai di materi ini",
+   "ket": "Lewat server, kopi/ jadi akar situs. /gaya.css menunjuk berkas di sini.",
+   "akar": {
+    "teks": "kopi/",
+    "anak": [
+     {
+      "teks": "index.html"
+     },
+     {
+      "teks": "gaya.css"
+     },
+     {
+      "teks": "halaman/",
+      "anak": [
+       {
+        "teks": "menu.html"
+       }
+      ]
+     },
+     {
+      "teks": "gambar/",
+      "anak": [
+       {
+        "teks": "biji-kopi.jpg"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 2,
+   "jenis": "urutan",
+   "judul": "Tiap berkas diminta satu per satu, dan tiap jawaban punya kode",
+   "ket": "Ini yang tercatat di terminal. 200 terkirim, 404 alamatnya nggak ada.",
+   "pelaku": [
+    "Browser",
+    "http.server"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "GET /"
+    ],
+    [
+     1,
+     0,
+     "200 index.html"
+    ],
+    [
+     0,
+     1,
+     "GET /gaya.css"
+    ],
+    [
+     1,
+     0,
+     "200 gaya.css"
+    ],
+    [
+     0,
+     1,
+     "GET /gambar/biji.jpg"
+    ],
+    [
+     1,
+     0,
+     "404 File not found"
+    ]
+   ]
+  }
+ ],
+ "Atribut: class, id, dan yang Sering Dipakai": [
+  {
+   "setelah": 5,
+   "jenis": "tabel",
+   "judul": "Atribut boolean: yang dilihat cuma ada atau nggaknya",
+   "ket": "Nilai \"false\" atau kosong nggak dibaca. Hapus atributnya untuk hidup.",
+   "tabel": [
+    {
+     "nama": "<button ...>",
+     "kolom": [
+      "ditulis",
+      "tombol"
+     ],
+     "baris": [
+      [
+       "disabled",
+       "mati"
+      ],
+      [
+       "disabled=\"false\"",
+       "mati"
+      ],
+      [
+       "disabled=\"\"",
+       "mati"
+      ],
+      [
+       "(tanpa disabled)",
+       "hidup"
+      ]
+     ],
+     "sorot_baris": [
+      3
+     ]
+    }
+   ]
+  }
+ ],
+ "Menempelkan CSS dan JavaScript: style, script, dan Atribut on*": [
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "Empat cara memuat app.js, kapan diunduh dan kapan jalan",
+   "ket": "Cuma bentuk polos yang menghentikan penggambaran halaman.",
+   "tabel": [
+    {
+     "kolom": [
+      "ditulis",
+      "diunduh",
+      "dijalankan"
+     ],
+     "baris": [
+      [
+       "polos",
+       "menghentikan",
+       "begitu tiba"
+      ],
+      [
+       "defer",
+       "sambil jalan",
+       "halaman siap"
+      ],
+      [
+       "async",
+       "sambil jalan",
+       "begitu tiba"
+      ],
+      [
+       "type=\"module\"",
+       "sambil jalan",
+       "halaman siap"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  }
+ ],
+ "Elemen Semantik: header, nav, main, article, footer": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Blog Kopi Pagi dari atas: tiap bagian punya nama perannya",
+   "ket": "Pembaca layar bisa lompat langsung ke landmark seperti main dan nav.",
+   "akar": {
+    "teks": "body",
+    "anak": [
+     {
+      "teks": "header",
+      "anak": [
+       {
+        "teks": "h1"
+       },
+       {
+        "teks": "p"
+       }
+      ]
+     },
+     {
+      "teks": "nav",
+      "anak": [
+       {
+        "teks": "ul (3 tautan)"
+       }
+      ]
+     },
+     {
+      "teks": "main",
+      "anak": [
+       {
+        "teks": "article",
+        "anak": [
+         {
+          "teks": "h2"
+         },
+         {
+          "teks": "p"
+         }
+        ]
+       },
+       {
+        "teks": "article",
+        "anak": [
+         {
+          "teks": "h2"
+         },
+         {
+          "teks": "p"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "teks": "aside",
+      "anak": [
+       {
+        "teks": "h2"
+       },
+       {
+        "teks": "ul"
+       }
+      ]
+     },
+     {
+      "teks": "footer",
+      "anak": [
+       {
+        "teks": "p"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Gambar Lanjutan: srcset, picture, lazy, dan SVG Sebaris": [
+  {
+   "setelah": 2,
+   "jenis": "alur",
+   "judul": "Cara browser memilih berkas di <picture> corong V60",
+   "ket": "Berhenti di source pertama yang cocok. Yang menggambar tetap img.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "Baca <picture>"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "Paham image/avif?",
+     "tidak": 3
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "Unduh v60.avif",
+     "ke": 6
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "Paham image/webp?",
+     "tidak": 5
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "Unduh v60.webp",
+     "ke": 6
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "Unduh v60.jpg dari src img"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "Tampil di kotak <img>"
+    }
+   ]
+  }
+ ],
+ "Video, Audio, dan Konten Tersemat lewat iframe": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Isi wadah <video>: dua format, satu takarir, satu cadangan",
+   "ket": "Browser memakai source pertama yang bisa diputar.",
+   "akar": {
+    "teks": "video controls",
+    "anak": [
+     {
+      "teks": "source .webm"
+     },
+     {
+      "teks": "source .mp4"
+     },
+     {
+      "teks": "track captions"
+     },
+     {
+      "teks": "p (cadangan)",
+      "anak": [
+       {
+        "teks": "a Unduh berkasnya"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "Tabel": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Bagian-bagian tabel harga menu",
+   "ket": "caption jadi anak pertama. Kolom pertama di tbody pakai th scope=row.",
+   "akar": {
+    "teks": "table",
+    "anak": [
+     {
+      "teks": "caption"
+     },
+     {
+      "teks": "thead",
+      "anak": [
+       {
+        "teks": "tr (3 th col)"
+       }
+      ]
+     },
+     {
+      "teks": "tbody",
+      "anak": [
+       {
+        "teks": "tr Kopi tubruk"
+       },
+       {
+        "teks": "tr Kopi susu"
+       },
+       {
+        "teks": "tr Cold brew"
+       }
+      ]
+     },
+     {
+      "teks": "tfoot",
+      "anak": [
+       {
+        "teks": "tr td colspan=3"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Sel 22.000 punya dua judul berkat scope",
+   "ket": "Yang dibacakan: \"Kopi susu, Gelas besar, 22.000\", bukan angkanya aja.",
+   "tabel": [
+    {
+     "nama": "Harga menu",
+     "kolom": [
+      "Menu",
+      "Gelas kecil",
+      "Gelas besar"
+     ],
+     "baris": [
+      [
+       "Kopi tubruk",
+       "12.000",
+       "15.000"
+      ],
+      [
+       "Kopi susu",
+       "18.000",
+       "22.000"
+      ],
+      [
+       "Cold brew",
+       "20.000",
+       "25.000"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ],
+     "sorot_kolom": [
+      "Gelas besar"
+     ]
+    }
+   ]
+  }
+ ],
+ "Formulir: input, label, dan button": [
+  {
+   "setelah": 4,
+   "jenis": "urutan",
+   "judul": "Yang sampai ke server cuma pasangan name=nilai",
+   "ket": "Disederhanakan. Isian tanpa name nggak ikut di baris data itu.",
+   "pelaku": [
+    "Pengguna",
+    "Browser",
+    "Server"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "isi form, tekan Kirim pesanan"
+    ],
+    [
+     1,
+     2,
+     "POST /pesan"
+    ],
+    [
+     1,
+     2,
+     "nama=Andi&jumlah=2"
+    ],
+    [
+     2,
+     1,
+     "halaman jawaban"
+    ]
+   ]
+  }
+ ],
+ "Formulir Lanjutan: select, textarea, dan Validasi": [
+  {
+   "setelah": 6,
+   "jenis": "alur",
+   "judul": "Browser memeriksa demi kenyamanan, server demi keamanan",
+   "ket": "Pemeriksaan browser bisa dilewati, jadi server memeriksa ulang.",
+   "langkah": [
+    {
+     "jenis": "mulai",
+     "teks": "Tekan Daftar"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "Lolos required, pattern?",
+     "tidak": 2,
+     "ya": 3
+    },
+    {
+     "jenis": "keluaran",
+     "teks": "Gelembung pesan, batal kirim",
+     "ke": 0
+    },
+    {
+     "jenis": "proses",
+     "teks": "Kirim ke server"
+    },
+    {
+     "jenis": "keputusan",
+     "teks": "Server: data sah?",
+     "tidak": 6
+    },
+    {
+     "jenis": "selesai",
+     "teks": "Disimpan"
+    },
+    {
+     "jenis": "selesai",
+     "teks": "Ditolak server"
+    }
+   ]
+  }
+ ],
+ "Formulir di Kode Nyata: Jenis Input Lain, Unggah Berkas, dan autocomplete": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "readonly dan disabled: mirip di layar, beda di data",
+   "ket": "Baris yang disorot: isian disabled hilang dari data yang dikirim.",
+   "tabel": [
+    {
+     "kolom": [
+      "hal",
+      "readonly",
+      "disabled"
+     ],
+     "baris": [
+      [
+       "bisa diubah?",
+       "tidak",
+       "tidak"
+      ],
+      [
+       "ikut terkirim?",
+       "ya",
+       "tidak"
+      ],
+      [
+       "bisa difokus?",
+       "ya",
+       "tidak"
+      ],
+      [
+       "divalidasi?",
+       "tidak",
+       "tidak"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  }
+ ],
+ "Elemen Interaktif Bawaan: details, dialog, dan progress": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "summary dan paragraf sama-sama anak langsung details",
+   "ket": "Yang bikin summary jadi judul lipatan cuma posisinya sebagai anak pertama.",
+   "akar": {
+    "teks": "details name=\"faq\"",
+    "anak": [
+     {
+      "teks": "summary (pertama)"
+     },
+     {
+      "teks": "p Boleh, ..."
+     },
+     {
+      "teks": "p Wadahnya ..."
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 4,
+   "jenis": "urutan",
+   "judul": "Dialog konfirmasi batal pesanan, dari klik sampai returnValue",
+   "ket": "method=\"dialog\" nggak menghubungi server. Esc bikin returnValue kosong.",
+   "pelaku": [
+    "Pengguna",
+    "Halaman",
+    "Dialog"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "klik Batalkan pesanan"
+    ],
+    [
+     1,
+     2,
+     "showModal()"
+    ],
+    [
+     0,
+     2,
+     "tekan Ya, batalkan"
+    ],
+    [
+     2,
+     1,
+     "close, returnValue \"batal\""
+    ],
+    [
+     1,
+     0,
+     "Tombol yang ditekan: batal"
+    ]
+   ]
+  }
+ ],
+ "Bisa Dipakai Semua Orang: role, aria-*, dan tabindex": [
+  {
+   "setelah": 3,
+   "jenis": "urutan",
+   "judul": "Nilai ARIA nggak berubah sendiri, skrip yang menggantinya",
+   "ket": "Tanpa skrip, pembaca layar tetap bilang tertutup.",
+   "pelaku": [
+    "Pengguna",
+    "Tombol menu",
+    "Skrip",
+    "Pembaca layar"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "klik"
+    ],
+    [
+     1,
+     2,
+     "event click"
+    ],
+    [
+     2,
+     1,
+     "aria-expanded=\"true\""
+    ],
+    [
+     2,
+     1,
+     "aria-label=\"Tutup menu\""
+    ],
+    [
+     1,
+     3,
+     "Tutup menu, terbuka"
+    ]
+   ]
+  },
+  {
+   "setelah": 4,
+   "jenis": "tabel",
+   "judul": "Tiga macam nilai tabindex",
+   "ket": "Angka positif memotong antrean seluruh halaman. Jangan dipakai.",
+   "tabel": [
+    {
+     "kolom": [
+      "tabindex",
+      "ikut antrean Tab",
+      "focus() dari JS"
+     ],
+     "baris": [
+      [
+       "\"0\"",
+       "ya, urutan tulis",
+       "bisa"
+      ],
+      [
+       "\"-1\"",
+       "tidak",
+       "bisa"
+      ],
+      [
+       "\"1\" ke atas",
+       "ya, paling dulu",
+       "bisa"
+      ]
+     ],
+     "sorot_baris": [
+      2
+     ]
+    }
+   ]
+  }
+ ],
+ "Metadata: title, meta, dan Kenapa Itu Penting": [
+  {
+   "setelah": 3,
+   "jenis": "urutan",
+   "judul": "Kartu pratinjau disusun server aplikasi chat, bukan browsermu",
+   "ket": "Server itu mengambil gambarnya sendiri, jadi og:image wajib lengkap.",
+   "pelaku": [
+    "Pengguna",
+    "Aplikasi chat",
+    "Situsmu"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "tempel tautan v60.html"
+    ],
+    [
+     1,
+     2,
+     "GET /v60.html"
+    ],
+    [
+     2,
+     1,
+     "HTML berisi meta og:"
+    ],
+    [
+     1,
+     2,
+     "GET /gambar/v60.jpg"
+    ],
+    [
+     2,
+     1,
+     "berkas gambar"
+    ],
+    [
+     1,
+     0,
+     "kartu: judul, gambar, ringkas"
+    ]
+   ]
+  }
+ ],
+ "Merakit Satu Halaman Utuh": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "Peta halaman Warung Kopi Pagi sebelum dibaca baris demi baris",
+   "ket": "Disederhanakan: h2, h3, dan elemen kecil lain dilewati.",
+   "akar": {
+    "teks": "body",
+    "anak": [
+     {
+      "teks": "header"
+     },
+     {
+      "teks": "nav"
+     },
+     {
+      "teks": "main",
+      "anak": [
+       {
+        "teks": "article#menu",
+        "anak": [
+         {
+          "teks": "figure"
+         },
+         {
+          "teks": "table"
+         },
+         {
+          "teks": "ol"
+         }
+        ]
+       },
+       {
+        "teks": "article#jadwal",
+        "anak": [
+         {
+          "teks": "dl"
+         }
+        ]
+       },
+       {
+        "teks": "article#pesan",
+        "anak": [
+         {
+          "teks": "form"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "teks": "aside"
+     },
+     {
+      "teks": "footer"
+     }
+    ]
+   }
+  }
+ ],
+ "Canvas: Menggambar Langsung di Halaman": [
+  {
+   "setelah": 2,
+   "jenis": "tabel",
+   "judul": "Tiga kanvas di contoh: piksel internal lawan ukuran tampil",
+   "ket": "Atribut menentukan piksel. CSS cuma meregangkan atau menciutkan.",
+   "tabel": [
+    {
+     "kolom": [
+      "canvas",
+      "piksel internal",
+      "tampil",
+      "hasil"
+     ],
+     "baris": [
+      [
+       "#tajam",
+       "800x600",
+       "800x600",
+       "tajam"
+      ],
+      [
+       "#buram",
+       "300x150",
+       "800x600",
+       "buram"
+      ],
+      [
+       "#tajam-retina",
+       "1600x1200",
+       "800x600",
+       "tajam di retina"
+      ]
+     ],
+     "sorot_baris": [
+      1
+     ]
+    }
+   ]
+  }
+ ],
+ "Membaca Berkas .html di Dunia Nyata": [
+  {
+   "setelah": 2,
+   "jenis": "pohon",
+   "judul": "kartu-menu dan cetakannya di pohon struktur",
+   "ket": "Isi template ada di markup, tapi nggak digambar di layar.",
+   "akar": {
+    "teks": "body",
+    "anak": [
+     {
+      "teks": "h1"
+     },
+     {
+      "teks": "kartu-menu",
+      "anak": [
+       {
+        "teks": "span slot=\"nama\""
+       },
+       {
+        "teks": "p"
+       }
+      ]
+     },
+     {
+      "teks": "template",
+      "anak": [
+       {
+        "teks": "article.kartu",
+        "anak": [
+         {
+          "teks": "img"
+         },
+         {
+          "teks": "h3",
+          "anak": [
+           {
+            "teks": "slot name=\"nama\""
+           }
+          ]
+         },
+         {
+          "teks": "div",
+          "anak": [
+           {
+            "teks": "slot"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "teks": "script"
+     }
+    ]
+   }
+  },
+  {
+   "setelah": 2,
+   "jenis": "urutan",
+   "judul": "Kurung {{ }} di cetakan nggak pernah sampai ke browser",
+   "ket": "Server mengisi cetakan dulu, lalu mengirim HTML biasa.",
+   "pelaku": [
+    "Browser",
+    "Server",
+    "Cetakan"
+   ],
+   "pesan": [
+    [
+     0,
+     1,
+     "GET /menu"
+    ],
+    [
+     1,
+     2,
+     "isi {{ item.nama }} dkk."
+    ],
+    [
+     2,
+     1,
+     "HTML yang sudah terisi"
+    ],
+    [
+     1,
+     0,
+     "HTML tanpa {{ }} dan {% %}"
+    ]
+   ]
+  }
+ ]
+}

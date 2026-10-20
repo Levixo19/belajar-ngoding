@@ -27,8 +27,8 @@ import unittest
 
 from inti import runner
 from inti.berkas import PROGRAM, jenis_kode
-from layar.exercises import bangun_tests, bisa_dinilai, gabung_setup
-from main import LANGUAGES
+from inti.latihan import bangun_tests, bisa_dinilai, gabung_setup
+from inti.kurikulum import LANGUAGES
 
 LEWATI_LAMBAT = os.environ.get("BELAJAR_SKIP_LAMBAT") == "1"
 HANYA_BAHASA = os.environ.get("BELAJAR_BAHASA", "").lower()
@@ -394,7 +394,7 @@ class TestKerangkaTidakMenggagalkan(unittest.TestCase):
     LAMBAT = ("python", "javascript", "sql", "ruby", "bash")
 
     def test_kerangka_ditambah_solusi_tetap_lulus(self):
-        from layar.exercises import _kerangka
+        from inti.latihan import _kerangka
         bahasa = self.SELALU + (() if LEWATI_LAMBAT else self.LAMBAT)
         for lang in LANGUAGES:
             if lang["key"] not in bahasa or not runner.tersedia(lang["runner"]):

@@ -1,0 +1,29 @@
+{
+  "//": [
+    "Dipakai `npm run tipe` (tsc --noEmit). Node 24 menjalankan berkas .ts di",
+    "paket ini secara langsung lewat pelucutan tipe, jadi TIDAK ada langkah",
+    "build dan TIDAK ada keluaran yang dihasilkan -- `tsc` di sini cuma",
+    "pemeriksa, bukan kompiler. Itu sebabnya `noEmit` dan",
+    "`allowImportingTsExtensions` berpasangan: impor dengan akhiran `.ts`",
+    "memang yang Node butuhkan, dan tsc baru mengizinkannya kalau ia tahu",
+    "tidak sedang menghasilkan berkas apa pun.",
+    "",
+    "`verbatimModuleSyntax` bukan selera: tanpa itu `import { type Token }`",
+    "boleh ditulis sebagai impor nilai biasa, dan pelucut tipe Node akan",
+    "meninggalkan impor ke sesuatu yang tidak ada saat dijalankan."
+  ],
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "uji/**/*.ts"]
+}
