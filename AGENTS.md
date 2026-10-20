@@ -1,5 +1,18 @@
 # Catatan untuk agen
 
+Nama proyeknya **`belajar-codingV2`** (2026-10-20, dari `VERSI = "2.0"` di
+`inti/kurikulum.py`). Nama lamanya "Belajar Ngoding", dan masih ada di EMPAT
+tempat yang **sengaja tidak diganti**: `~/.belajar_ngoding_progress.json`
+(`pelajar/progress.py`), `~/.belajar_ngoding_config.json`
+(`pelajar/konfigurasi.py`), `~/.belajar_ngoding_catatan.json`
+(`webapp/catatan.py`), dan `~/belajar-ngoding/kerjaanku/` (`inti/latihan.py`).
+Keempatnya jalur data pemilik. Mengganti nama di situ tidak menimbulkan satu
+pun error — aplikasinya cuma membuka berkas baru yang kosong, dan yang terlihat
+adalah progres, catatan pribadi, serta SELURUH kode jawaban yang pernah ia
+tulis hilang. Kalau suatu hari memang mau diganti, jalurnya pemindahan yang
+disengaja lewat `pelajar/simpanan.py`: baca nama baru dulu, jatuh ke nama lama
+kalau belum ada, salin sekali, sisakan cadangannya.
+
 Aplikasi belajar pemrograman berbahasa Indonesia berbasis **web**.
 Antarmuka terminal DIBUANG 2026-10-20 (lihat "Jalan ke MERN"): pemiliknya
 tidak pernah memakainya, dan `webapp/api.py` terpaksa menarik 3.376 baris
