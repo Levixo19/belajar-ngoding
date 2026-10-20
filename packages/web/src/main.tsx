@@ -26,6 +26,7 @@ import { Karier } from "./layar/Karier.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
 import { Statistik } from "./layar/Statistik.tsx";
+import { Belajar } from "./layar/Belajar.tsx";
 import { Coba, Latihan } from "./layar/Kerja.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 import { ingat, terapkanTampilan } from "./lokal.ts";
@@ -198,6 +199,16 @@ function Isi({
     return <Karier id={arg} />;
   }
 
+  if (nama === "materi" && arg) {
+    return (
+      <Belajar
+        kunciBahasa={arg}
+        indeks={Number(arg2 ?? 0) || 0}
+        onKonteks={onKonteks}
+      />
+    );
+  }
+
   if (nama === "latihan" && arg) {
     return (
       <Latihan
@@ -256,9 +267,10 @@ function Isi({
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Delapan layar sudah diport: Langit, Peta Karier, Pustaka,
-          Statistik, Pengaturan, Tebak keluarannya, Ruang Coba, dan ruang
-          kerja latihan. Yang tersisa pembaca materi. Kedua antarmuka
+          Sembilan layar sudah diport: Langit, Peta Karier, Pustaka,
+          Statistik, Pengaturan, Tebak keluarannya, Ruang Coba, ruang
+          kerja latihan, dan pembaca materi. Yang tersisa dasbor, halaman
+          bahasa, kuis, bookmark, catatan, dan pencarian. Kedua antarmuka
           memakai API serta berkas gaya yang sama.
         </p>
         <div className="deret">
