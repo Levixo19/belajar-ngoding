@@ -23,17 +23,32 @@ SINI = os.path.dirname(os.path.abspath(__file__))
 PAKET = os.path.dirname(SINI)
 
 
+PAKET_WEB = os.path.join(os.path.dirname(PAKET), "web")
+
+
 def sumber(nama):
     return os.path.join(PAKET, "src", nama)
 
 
-# {pembanding: (berkas sumber, [(nama, dari, ke, kategori keluhan)])}
+def sumber_web(nama):
+    return os.path.join(PAKET_WEB, "src", nama)
+
+
+# {pembanding: (paket, berkas sumber, [(nama, dari, ke, kategori keluhan)])}
+#
+# `paket` ada karena baterai ini tidak lagi hanya menguji `packages/bersama`:
+# pembanding editor tinggal di `packages/web/uji`, dan sumber yang dimutasinya
+# `packages/web/src`. Menurunkannya dari ekstensi berkas -- `.ts` berarti
+# bersama, `.mjs` berarti web -- memang lebih singkat, tapi ia benar hanya
+# selama kebetulan itu bertahan, dan pembanding berikutnya yang memakai
+# ekstensi "salah" akan dijalankan dari direktori yang salah dengan pesan
+# "Cannot find module" yang menyalahkan impornya.
 #
 # Mutan dipilih supaya masing-masing merusak LAPISAN yang berbeda, dan supaya
 # hampir semuanya TIDAK menimbulkan error di mana pun -- persis jenis kerusakan
 # yang cuma rekaman ini bisa menangkap.
 BATERAI = {
-    "golden-sorot.ts": (sumber("sorot.ts"), [
+    "golden-sorot.ts": (PAKET, sumber("sorot.ts"), [
         (
             "gabung dilepas (token tidak dipadatkan)",
             "  return gabung(hasil);",
@@ -65,7 +80,7 @@ BATERAI = {
             "bahasa penyorot berbeda",
         ),
     ]),
-    "golden-beda.ts": (sumber("beda.ts"), [
+    "golden-beda.ts": (PAKET, sumber("beda.ts"), [
         (
             # Jantung penyejajarnya: tanpa akumulasi DP, setiap baris cocok
             # jadi blok sepanjang satu, dan blok "terpanjang" berhenti berarti.
@@ -93,7 +108,7 @@ BATERAI = {
             "nyaris()",
         ),
     ]),
-    "golden-galat.ts": (sumber("galat.ts"), [
+    "golden-galat.ts": (PAKET, sumber("galat.ts"), [
         (
             # `re.IGNORECASE | re.DOTALL` di Python dipasang sekali untuk
             # SELURUH tabel. Melupakannya di TS membuat pola yang melintasi
@@ -132,22 +147,78 @@ BATERAI = {
             "ringkas() berbeda",
         ),
     ]),
+    # Pembanding ini beda jenis dari tiga di atasnya: ia tidak mengadu dengan
+    # rekaman Python melainkan dengan `editor.js` yang masih berjalan di
+    # aplikasi lama, potongan demi potongan, atas seluruh kode kurikulum.
+    # Mutan terakhirnya menagih asersi yang TERPISAH dari perbandingan itu --
+    # identitas byte, satu-satunya sifat yang dua sisi bisa langgar bersamaan
+    # tanpa pernah berbeda satu sama lain.
+    "banding-editor.mjs": (PAKET_WEB, sumber_web("komponen/editor-teks.ts"), [
+        (
+            # Pembuka membaca tinggi tumpukan SEBELUM push. Menukarnya menggeser
+            # seluruh warna satu tingkat, dan pasangan pembuka-penutup berhenti
+            # berwarna sama -- satu-satunya hal yang membuat fitur ini berguna.
+            "pembuka membaca tumpukan sesudah push",
+            "        hasil.push([jenis, c, tumpukan.length % WARNA_KURUNG]);\n"
+            "        tumpukan.push(c);",
+            "        tumpukan.push(c);\n"
+            "        hasil.push([jenis, c, tumpukan.length % WARNA_KURUNG]);",
+            "pisahKurung",
+        ),
+        (
+            # Kurung di dalam string dan komentar ikut dihitung: 2.270 + 981 di
+            # kurikulum ini, dan satu saja meracuni kedalaman SELURUH kode
+            # sesudahnya.
+            "jenis token tidak lagi disaring",
+            '    if (jenis !== "operator") {',
+            '    if (jenis === "jenis-yang-tidak-ada") {',
+            "pisahKurung",
+        ),
+        (
+            # Spasi pembuka baris tetap dibelah di tempat yang benar, cuma
+            # berhenti mengaku indentasi. Tidak ada byte yang bergeser, tidak
+            # ada potongan yang hilang -- yang hilang cuma pemandunya.
+            "potongan indentasi memakai jenis induknya",
+            '      hasil.push(["indentasi", teks.slice(a - pos, b - pos), null]);',
+            "      hasil.push([jenis, teks.slice(a - pos, b - pos), null]);",
+            "pisahInden",
+        ),
+        (
+            # `atas` sengaja TIDAK dijepit ke nol: baris yang tergulir keluar
+            # pandangan memang bernilai negatif, dan dijepit ia jadi garis macet
+            # di tepi atas yang mengaku "baris aktifmu di sini".
+            "posisi pita dijepit ke nol",
+            "    atas: paddingAtas + (n - 1) * tinggiBaris - scrollTop,",
+            "    atas: Math.max(0, paddingAtas + (n - 1) * tinggiBaris - scrollTop),",
+            "posisiPita",
+        ),
+        (
+            # Kurungnya ikut lagi di potongan sesudahnya, jadi gabungan teksnya
+            # lebih panjang daripada masukannya. Warnanya tetap masuk akal dan
+            # tidak ada error di mana pun; yang terjadi cuma kursor mendarat di
+            # huruf yang salah, makin jauh makin melenceng.
+            "kurung tidak dilewati sesudah dipotong",
+            "      mulai = i + 1;",
+            "      mulai = i;",
+            "IDENTITAS BYTE RUSAK",
+        ),
+    ]),
 }
 
 
-def jalankan(pembanding):
-    hasil = subprocess.run(["node", os.path.join(SINI, pembanding)],
-                           cwd=PAKET, capture_output=True, text=True)
+def jalankan(pembanding, akar):
+    hasil = subprocess.run(["node", os.path.join(akar, "uji", pembanding)],
+                           cwd=akar, capture_output=True, text=True)
     return hasil.returncode, hasil.stdout + hasil.stderr
 
 
-def sel(pembanding, jalur, nama, dari, ke, kategori, asli):
+def sel(pembanding, akar, jalur, nama, dari, ke, kategori, asli):
     if asli.count(dari) != 1:
         print(f"    {nama:42s} JANGKAR TIDAK UNIK ({asli.count(dari)} kecocokan)")
         return False
     with open(jalur, "w", encoding="utf-8") as f:
         f.write(asli.replace(dari, ke))
-    rc, keluaran = jalankan(pembanding)
+    rc, keluaran = jalankan(pembanding, akar)
     rusak = "SyntaxError" in keluaran or "Cannot find" in keluaran
     kena = kategori in keluaran
     ok = rc != 0 and kena and not rusak
@@ -158,7 +229,7 @@ def sel(pembanding, jalur, nama, dari, ke, kategori, asli):
     elif not kena:
         sebab = f"merah tapi BUKAN karena {kategori!r}"
     else:
-        n = re.search(r"bergeser:? (\d+)", keluaran)
+        n = re.search(r"(?i:bergeser):? (\d+)", keluaran)
         sebab = f"{kategori} ({n.group(1) if n else '?'} temuan)"
     print(f"    {nama:42s} {'MERAH' if ok else 'TUMPUL':7s} {sebab}")
     return ok
@@ -166,7 +237,7 @@ def sel(pembanding, jalur, nama, dari, ke, kategori, asli):
 
 def main():
     semua = []
-    for pembanding, (jalur, mutan) in BATERAI.items():
+    for pembanding, (akar, jalur, mutan) in BATERAI.items():
         print(f"{pembanding}  (mutasi di {os.path.basename(jalur)})")
         with open(jalur, encoding="utf-8") as f:
             asli = f.read()
@@ -174,7 +245,7 @@ def main():
         # Pagar nol per baterai: tanpa mutasi apa pun, pembandingnya WAJIB
         # hijau. Tanpa ini, pembanding yang sudah merah sejak awal membuat
         # seluruh sel di bawahnya "merah" tanpa membuktikan apa pun.
-        rc, keluaran = jalankan(pembanding)
+        rc, keluaran = jalankan(pembanding, akar)
         if rc != 0:
             print("    PAGAR NOL GAGAL: sudah merah sebelum dimutasi.")
             print("   ", keluaran.strip()[:400].replace("\n", "\n    "))
@@ -184,12 +255,13 @@ def main():
 
         try:
             for nama, dari, ke, kategori in mutan:
-                semua.append(sel(pembanding, jalur, nama, dari, ke, kategori, asli))
+                semua.append(
+                    sel(pembanding, akar, jalur, nama, dari, ke, kategori, asli))
         finally:
             with open(jalur, "w", encoding="utf-8") as f:
                 f.write(asli)
 
-        rc, _ = jalankan(pembanding)
+        rc, _ = jalankan(pembanding, akar)
         if rc != 0:
             print("    PEMULIHAN GAGAL: sumbernya tidak kembali seperti semula.")
             semua.append(False)
