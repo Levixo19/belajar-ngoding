@@ -326,6 +326,49 @@ BATERAI = {
                 "tata",
             ),
         ]),
+    "banding-jejak.mjs": (
+        "banding-jejak.mjs", PAKET_WEB,
+        sumber_web("komponen/jejak-teks.ts"), [
+            (
+                # Dua baris sumber menyatu jadi satu. Panel menomori barisnya
+                # dari hasil ini lalu menyorot baris yang dikirim pelacak
+                # Python -- jadi seluruh sisa rekaman menyorot baris yang
+                # salah, dan yang dipelajari orang urutan eksekusi yang tidak
+                # pernah terjadi. Selnya menagih asersi penyambungan ulang,
+                # yang TERPISAH dari perbandingan: kedua sisi bisa konsisten
+                # salah dan hasil yang cocok tidak memberi tahu apa pun.
+                "pemisah baris dilewati satu",
+                "      if (i > 0) baris.push([]);",
+                "      if (i > 1) baris.push([]);",
+                "PENYAMBUNGAN RUSAK",
+            ),
+            (
+                # Potongan kosong ikut jadi token. Teksnya tetap tersambung
+                # benar dan jumlah barisnya tetap benar; yang berubah cuma
+                # jumlah simpul yang digambar per baris.
+                "potongan kosong ikut jadi token",
+                "      if (p) (baris[baris.length - 1] as Token[]).push([jenis, p]);",
+                "      (baris[baris.length - 1] as Token[]).push([jenis, p]);",
+                "tokenPerBaris",
+            ),
+            (
+                "nilai kembali kosong disebut null",
+                "    return `${atas.nama} selesai dan mengembalikan "
+                "${l.nilai ? l.nilai.r : \"None\"}.`;",
+                "    return `${atas.nama} selesai dan mengembalikan "
+                "${l.nilai ? l.nilai.r : \"null\"}.`;",
+                "kalimat kembali",
+            ),
+            (
+                # Kalimat penutup rekaman hilang. Tidak ada yang rusak; yang
+                # hilang cuma satu-satunya tanda bahwa rekamannya memang
+                # berhenti di situ, bukan macet.
+                "penanda langkah terakhir dilepas",
+                '    + (adaBerikut ? "" : " Ini langkah terakhir yang tercatat.");',
+                '    + (adaBerikut ? "" : "");',
+                "kalimat baris",
+            ),
+        ]),
 }
 
 

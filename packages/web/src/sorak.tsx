@@ -125,3 +125,32 @@ export async function salin(teks: string, pesan = "Kode disalin."): Promise<void
     }
   }
 }
+
+let pengumum: HTMLDivElement | null = null;
+
+/**
+ * Bacakan sebuah kalimat ke pembaca layar tanpa menampilkan apa pun.
+ *
+ * Bedanya dengan `sorak()`: toast MUNCUL di layar, jadi ia salah dipakai untuk
+ * hal yang cuma perlu didengar. Hasil kuis dan hasil Periksa latihan dulu cuma
+ * ditandai warna dan kelas; fokus pindah ke tombol berikutnya dan pembaca layar
+ * hanya mendengar nama tombol itu (WCAG 4.1.3).
+ *
+ * Simpulnya dibuat di luar React dan dipakai ulang. Itu disengaja: ia hidup
+ * lebih lama daripada layar mana pun yang memanggilnya, dan sebuah live region
+ * yang ikut dilepas saat layar berganti tidak pernah sempat dibacakan. Isinya
+ * DIKOSONGKAN dulu lalu diisi 60 ms kemudian -- pembaca layar mengabaikan teks
+ * yang sama dengan yang sudah ada di situ.
+ */
+export function umumkan(teks: string): void {
+  if (!pengumum) {
+    pengumum = document.createElement("div");
+    pengumum.className = "pengumum";
+    pengumum.setAttribute("aria-live", "polite");
+    pengumum.setAttribute("role", "status");
+    document.body.appendChild(pengumum);
+  }
+  const el = pengumum;
+  el.textContent = "";
+  setTimeout(() => { el.textContent = teks; }, 60);
+}

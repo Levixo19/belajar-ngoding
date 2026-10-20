@@ -195,7 +195,8 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
     SKRIP_WEB = (("banding-rasi.mjs", r"(\d+) perbandingan", 100),
                  ("banding-editor.mjs", r"(\d+) blok kode", 3000),
                  ("banding-pratinjau.mjs", r"(\d+) blok kode", 3000),
-                 ("banding-visual.mjs", r"(\d+) spesifikasi gambar", 1300))
+                 ("banding-visual.mjs", r"(\d+) spesifikasi gambar", 1300),
+                 ("banding-jejak.mjs", r"(\d+) blok kode", 2500))
 
     def test_keluaran_identik_dengan_python(self):
         import re
