@@ -6,7 +6,7 @@
  * ini cuma menampilkan dan mengirim tebakan. Bukan latihan: tidak ada definisi
  * "lulus" di sini, dan tidak menyentuh latihan_lulus. */
 
-import { api, h, isikan, rayakan, keadaan } from "./inti.js";
+import { api, h, isikan, rayakan, kosong } from "./inti.js";
 import { ikon } from "./ikon.js";
 import { praKode } from "./sorot.js";
 import { kepalaBersampul } from "./sampul.js";
@@ -32,7 +32,7 @@ export async function layarTebak({ key }, ctx) {
         ? "Belum ada contoh dari materi yang sudah kamu baca. Baca satu-dua materi dulu, "
           + "contohnya akan muncul di sini."
         : `Kurikulum ${bhs.label} tidak punya contoh program yang bisa ditebak keluarannya.`;
-    return { el: h("div", {}, kepala, keadaan("kosong", "Belum ada yang bisa ditebak", alasan,
+    return { el: h("div", {}, kepala, kosong("Belum ada yang bisa ditebak", alasan,
       h("a.tbl", { href: "#/bahasa/" + key }, "Ke halaman " + bhs.label))), judul: "Tebak keluarannya",
       konteks };
   }

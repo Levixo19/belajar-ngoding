@@ -177,7 +177,7 @@ function akhirString(
   const satuBaris = pembuka.length === 1 && pembuka !== "`";
 
   while (j < n) {
-    const c = kode[j];
+    const c = kode.charAt(j);
     if (!mentah && c === "\\") {
       j += 2;
       continue;
@@ -192,23 +192,23 @@ function akhirString(
 function akhirAngka(kode: string, i: number): number {
   const n = kode.length;
   let j = i;
-  if (kode[j] === "0" && j + 1 < n && "xXbBoO".includes(kode[j + 1])) {
+  if (kode.charAt(j) === "0" && j + 1 < n && "xXbBoO".includes(kode.charAt(j + 1))) {
     j += 2;
-    while (j < n && HURUF_LANJUT.test(kode[j])) j += 1;
+    while (j < n && HURUF_LANJUT.test(kode.charAt(j))) j += 1;
     return j;
   }
   let lihatTitik = false;
   while (j < n) {
-    const c = kode[j];
+    const c = kode.charAt(j);
     if (ANGKA.test(c) || c === "_") {
       j += 1;
-    } else if (c === "." && !lihatTitik && j + 1 < n && ANGKA.test(kode[j + 1])) {
+    } else if (c === "." && !lihatTitik && j + 1 < n && ANGKA.test(kode.charAt(j + 1))) {
       lihatTitik = true;
       j += 1;
     } else if (
       "eE".includes(c) &&
       j + 1 < n &&
-      (ANGKA.test(kode[j + 1]) || "+-".includes(kode[j + 1]))
+      (ANGKA.test(kode.charAt(j + 1)) || "+-".includes(kode.charAt(j + 1)))
     ) {
       j += 2;
     } else if ("fFlLdDuU".includes(c)) {
@@ -223,8 +223,8 @@ function akhirAngka(kode: string, i: number): number {
 
 function diAwalBaris(kode: string, i: number): boolean {
   let j = i - 1;
-  while (j >= 0 && (kode[j] === " " || kode[j] === "\t")) j -= 1;
-  return j < 0 || kode[j] === "\n";
+  while (j >= 0 && (kode.charAt(j) === " " || kode.charAt(j) === "\t")) j -= 1;
+  return j < 0 || kode.charAt(j) === "\n";
 }
 
 /** Satukan token berdampingan yang sejenis.
@@ -265,7 +265,7 @@ export function token(kode: string, bahasa: string): Token[] {
   };
 
   while (i < n) {
-    const c = kode[i];
+    const c = kode.charAt(i);
 
     // -- shebang -----------------------------------------------------------
     if (i === 0 && kode.startsWith("#!")) {
@@ -321,13 +321,13 @@ export function token(kode: string, bahasa: string): Token[] {
     // -- variabel shell ----------------------------------------------------
     if (aturan.variabelDolar && c === "$") {
       let j = i + 1;
-      if (j < n && kode[j] === "{") {
+      if (j < n && kode.charAt(j) === "{") {
         const tutup = kode.indexOf("}", j);
         j = tutup < 0 ? n : tutup + 1;
-      } else if (j < n && kode[j] === "(") {
+      } else if (j < n && kode.charAt(j) === "(") {
         j += 1;
       } else {
-        while (j < n && HURUF_LANJUT.test(kode[j])) j += 1;
+        while (j < n && HURUF_LANJUT.test(kode.charAt(j))) j += 1;
         if (j === i + 1 && j < n) j += 1; // $1, $@, $?, $#
       }
       buang();
@@ -348,7 +348,7 @@ export function token(kode: string, bahasa: string): Token[] {
     // -- pengenal ----------------------------------------------------------
     if (HURUF_AWAL.test(c)) {
       let j = i + 1;
-      while (j < n && HURUF_LANJUT.test(kode[j])) j += 1;
+      while (j < n && HURUF_LANJUT.test(kode.charAt(j))) j += 1;
       const kata = kode.slice(i, j);
       const banding = aturan.tanpaBedakanKapital ? kata.toUpperCase() : kata;
 
@@ -358,8 +358,8 @@ export function token(kode: string, bahasa: string): Token[] {
       else if (aturan.bawaan.has(banding)) jenis = "bawaan";
       else {
         let k = j;
-        while (k < n && (kode[k] === " " || kode[k] === "\t")) k += 1;
-        jenis = k < n && kode[k] === "(" ? "fungsi" : "teks";
+        while (k < n && (kode.charAt(k) === " " || kode.charAt(k) === "\t")) k += 1;
+        jenis = k < n && kode.charAt(k) === "(" ? "fungsi" : "teks";
       }
 
       if (jenis === "teks") {

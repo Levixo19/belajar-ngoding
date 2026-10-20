@@ -157,7 +157,7 @@ RUTE = {
 
 
 class Penangan(BaseHTTPRequestHandler):
-    server_version = "BelajarNgoding"
+    server_version = "belajar-codingV2"
     sys_version = ""
     protocol_version = "HTTP/1.1"
 

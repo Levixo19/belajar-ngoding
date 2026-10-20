@@ -22414,5 +22414,42 @@ class TestBlokKeluaranApaAdanya(unittest.TestCase):
         self.assertEqual(blok[1]["teks"], "Lulus\nB")
 
 
+class TestKeadaanDipanggilBenar(unittest.TestCase):
+    """`keadaan()` menerima satu OBJEK; `kosong()` yang posisional.
+
+    Kedua fungsi itu hidup berdampingan di `inti.js`, dan memanggil yang satu
+    dengan tanda tangan yang lain SAH BAGI JAVASCRIPT: mendestrukturisasi
+    sebuah string cuma memberi `undefined` untuk tiap medannya. Jadi tidak ada
+    error di mana pun -- yang digambar kotak keadaan tanpa judul, tanpa
+    penjelasan, dan tanpa tombol. Tepatnya ketiga hal yang jadi satu-satunya
+    alasan komponen itu ada.
+
+    Sudah pernah terjadi di `layar-tebak.js`, di jalur yang justru PERTAMA
+    dilihat pelajar baru: kartu tebak kosong sampai ia membaca materi
+    pertamanya. Bertahan sekian lama karena tidak ada yang rusak -- cuma
+    sebuah kotak kosong yang tidak seorang pun curigai sebagai bug.
+    """
+
+    AKAR_JS = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "webapp", "statik", "js")
+
+    def test_keadaan_tidak_dipanggil_dengan_argumen_posisional(self):
+        pola = re.compile(r"\bkeadaan\(\s*[\"'`]")
+        temuan = []
+        for nama in sorted(os.listdir(self.AKAR_JS)):
+            if not nama.endswith(".js"):
+                continue
+            with open(os.path.join(self.AKAR_JS, nama), encoding="utf-8") as f:
+                for n, baris in enumerate(f, 1):
+                    if pola.search(baris):
+                        temuan.append(f"{nama}:{n}: {baris.strip()[:70]}")
+        self.assertEqual(
+            temuan, [],
+            "keadaan() dipanggil dengan string sebagai argumen pertama. Ia "
+            "menerima satu objek {jenis, gambar, judul, ket, aksi}; yang "
+            "posisional kosong(judul, ket, aksi).")
+
+
 if __name__ == "__main__":
     unittest.main()

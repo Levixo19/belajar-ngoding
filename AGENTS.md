@@ -1324,10 +1324,52 @@ bersama 12 kurikulum tech stack. Menambah aturan untuk salah satunya sekarang
 terbaca sebagai perbaikan yang terukur di angka `cakupan`, bukan sebagai
 "golden bergeser".
 
-Yang BELUM: `galat` ke TS (rekamannya sudah ada, 9 pesan compiler), tes
-kontrak 19 endpoint, plugin token Vite, lalu React + TypeScript (Tahap 1) dan
-Express + MongoDB sebagai fitur baru berdampingan (Tahap 1,5). Rencana lengkap
-beserta angkanya ada di riwayat sesi. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
+**Tahap 1 — React + TypeScript DIMULAI.** `packages/web`: Vite 7 + React 19,
+di atas API Python yang sama. Satu layar sudah diport (`layar-tebak` ->
+`src/layar/Tebak.tsx`), beserta klien API bertipe, komponen `Kode`, dan
+komponen `Keadaan`. Antarmuka LAMA masih utuh dan masih yang dilayani
+`belajar-web.py`; React jalan di dev server terpisah. Yang mengikat:
+
+* **Server TIDAK diubah sama sekali untuk mengakomodasi dev server.** Setiap
+  `/api/*` tetap menuntut `X-Belajar-Token`. Plugin `belajar-token` di
+  `vite.config.ts` MENGAMBIL tokennya sendiri dari `GET /` server Python,
+  yang memang dilayani tanpa token. Melonggarkan pemeriksaannya "untuk mode
+  dev" berarti melepas pagar sungguhan di server yang mengeksekusi kode
+  pelajar; menyalin token ke `.env` berarti 403 sesekali yang selalu
+  disalahartikan sebagai bug aplikasi.
+* **`transformIndexHtml` TIDAK BISA mengubah isi skrip inline.** Vite
+  mengekstrak badan `<script>` sebagai modul lalu menyajikan yang ASLI, jadi
+  penggantian di dalamnya dipulihkan diam-diam. Diukur: pada SATU rantai
+  `.replace()`, penanda sebelum `</head>` mendarat sementara penggantian di
+  dalam `<script>` tidak -- padahal hook-nya terpanggil dan `html` yang masuk
+  memang memuat placeholder-nya. Nol peringatan di mana pun. Token karena itu
+  disuntik lewat `tags` + `injectTo: "head-prepend"`.
+* **Tiga jebakan saat MENGUJI dev server, semuanya menghasilkan
+  negatif-palsu.** (i) `curl` tanpa `Accept: text/html` membuat Vite melayani
+  `index.html` lewat jalur berkas statik, mentah, tanpa transform.
+  (ii) Tanpa `server.host: "127.0.0.1"`, Vite mengikat ke `localhost` yang di
+  mesin ini beresolusi ke `::1` lebih dulu, dan `curl` ke `127.0.0.1` gagal
+  konek. (iii) `( cmd ) &` lalu `kill $!` membunuh subshell dan
+  MENELANTARKAN Vite-nya; instance lama itu yang menjawab seluruh curl
+  berikutnya, dari konfigurasi yang sudah tidak ada lagi. Skrip
+  verifikasinya ada di riwayat sesi; ketiganya ditutup di sana.
+* **`gaya.css` TIDAK ditulis ulang.** 6.508 baris dan 112 token desain
+  diproksi dari server Python apa adanya, bersama `/huruf` dan `/vendor`.
+  Menyalinnya berarti dua lembar gaya untuk satu desain, dan yang kedua akan
+  ketinggalan tanpa ada yang menyadarinya.
+* **`noUncheckedIndexedAccess` menyala di KEDUA paket TS.** Menyalakannya di
+  `web` saja membuat `packages/bersama` gagal tipe saat diimpor, dan dua
+  tingkat kekakuan dalam satu workspace adalah bau yang akan menggigit nanti.
+  Akses indeks di pemindai diubah ke `charAt` (bukan `!`): di dalam jangkauan
+  perilakunya identik, dan rekaman golden yang MEMBUKTIKANNYA -- 3.315 blok
+  tetap cocok sesudah perubahan itu.
+
+Yang BELUM: enam layar sisanya (`layar-pustaka` 204 baris, `layar-langit` 219,
+`layar-karier` 601, `layar-lain` 867, `layar-kerja` 2.182, `layar-belajar`
+3.408), router penuh beserta strip konteks dan kelas ukuran layar, tes kontrak
+41 endpoint (sengaja ditunda: ia menjaga pergantian backend di Tahap 2, yang
+juga ditunda), lalu Express + MongoDB sebagai fitur baru berdampingan
+(Tahap 1,5). Rencana lengkap beserta angkanya ada di riwayat sesi. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
 `inti/runner.py` + `struktur.py` + `jejak.py` adalah satu sidecar Python.
 Diuji di mesin ini: `ulimit -v` merusak JVM ("Could not reserve enough space
 for object heap"), dan `bash -c` memakai string shell sementara

@@ -12,7 +12,34 @@ algoritma bersama diuji di luar Python.
 ```
 konten/     seluruh kurikulum sebagai JSON + tipe.ts     (DIHASILKAN)
 bersama/    sorot, beda, galat sebagai implementasi TS + rekaman golden
+web/        antarmuka React + TypeScript, di atas API Python yang sama
 ```
+
+## Menjalankan antarmuka React
+
+DUA proses: server Python menyediakan API, Vite menyajikan React.
+
+```bash
+# 1. Server Python, PROFIL TERPISAH supaya progres aslimu tidak tertulisi
+S=$(mktemp -d)
+BELAJAR_PROGRESS_FILE=$S/p.json BELAJAR_CONFIG_FILE=$S/k.json \
+BELAJAR_CATATAN_FILE=$S/c.json BELAJAR_WORKSPACE=$S/kerja \
+  python3 belajar-web.py --tanpa-browser --port 7788
+
+# 2. Vite, di terminal lain
+npm run dev --workspace @belajar/web     # http://127.0.0.1:5173/
+```
+
+Token API tidak perlu disalin: plugin `belajar-token` mengambilnya dari
+`GET /` server Python setiap kali halaman dimuat. Kalau servernya tidak hidup,
+layarnya mengatakannya beserta perintah yang harus dijalankan -- bukan 403 yang
+membingungkan.
+
+**Kalau menguji dev server dengan `curl`, tiga hal ini menghasilkan
+negatif-palsu yang sangat meyakinkan:** tanpa `Accept: text/html` Vite
+melayani `index.html` mentah tanpa transform; tanpa `server.host` ia mengikat
+ke `localhost` yang beresolusi ke `::1` lebih dulu; dan `( cmd ) &` + `kill $!`
+menelantarkan proses Vite-nya, sehingga instance lama yang menjawab.
 
 ## Apa yang DIHASILKAN dan apa yang ditulis tangan
 

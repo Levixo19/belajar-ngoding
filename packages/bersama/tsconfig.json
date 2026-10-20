@@ -18,6 +18,7 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,

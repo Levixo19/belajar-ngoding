@@ -1,0 +1,32 @@
+{
+  "//": [
+    "`noEmit` + `allowImportingTsExtensions`: Vite yang membundel, `tsc` cuma",
+    "memeriksa. Impor di paket ini menyebut akhiran `.ts`/`.tsx` karena berkas",
+    "di packages/bersama memang dijalankan Node secara langsung dengan akhiran",
+    "itu, dan satu gaya impor untuk seluruh workspace lebih murah daripada dua.",
+    "",
+    "`strict` plus `noUncheckedIndexedAccess`: mengakses `kartu[nomor]` pada",
+    "indeks yang di luar jangkauan memberi `undefined` di runtime, dan tanpa",
+    "opsi itu TypeScript berpura-pura ia selalu ada. Layar yang menggambar",
+    "kartu ke-6 dari lima kartu adalah bug yang tidak melempar error -- ia cuma",
+    "menggambar halaman yang medannya kosong."
+  ],
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+}
