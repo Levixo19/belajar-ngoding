@@ -1364,12 +1364,33 @@ komponen `Keadaan`. Antarmuka LAMA masih utuh dan masih yang dilayani
   perilakunya identik, dan rekaman golden yang MEMBUKTIKANNYA -- 3.315 blok
   tetap cocok sesudah perubahan itu.
 
-Yang BELUM: enam layar sisanya (`layar-pustaka` 204 baris, `layar-langit` 219,
-`layar-karier` 601, `layar-lain` 867, `layar-kerja` 2.182, `layar-belajar`
-3.408), router penuh beserta strip konteks dan kelas ukuran layar, tes kontrak
-41 endpoint (sengaja ditunda: ia menjaga pergantian backend di Tahap 2, yang
-juga ditunda), lalu Express + MongoDB sebagai fitur baru berdampingan
-(Tahap 1,5). Rencana lengkap beserta angkanya ada di riwayat sesi. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
+* **Pembanding `banding-rasi.mjs` jenisnya BEDA dari golden.** Ia mengadu
+  dengan implementasi JS yang masih hidup (`rasi.js`), bukan dengan rekaman,
+  karena keduanya JavaScript dan fungsinya murni -- tidak ada sisi Python yang
+  perlu direkam. Yang dijaganya: bentuk tiap rasi deterministik dari benih
+  (nama kurikulum), jadi satu bit yang meleset di `hash` atau `prng` mengubah
+  SETIAP rasi tanpa satu pun error. Ia menolak kalau potongan sumber yang
+  dicarinya tidak ketemu, alih-alih membandingkan nol fungsi.
+
+**Urutan port sisanya ditentukan KETERGANTUNGAN, bukan jumlah baris.** Diukur:
+`layar-karier` (601 baris) mengimpor `layar-belajar.js` yang 3.408 baris, jadi
+ia bukan "layar kecil berikutnya". `layar-langit` (219) satu-satunya yang cuma
+butuh `rasi.js` plus satu fungsi dari `gerak.js`.
+
+| Layar | Baris | Menarik |
+|---|---|---|
+| `layar-langit` | 219 | `rasi.js` (geometrinya SUDAH diport) |
+| `layar-lain` | 867 | `ikon`, `sampul`, `istirahat`, `gerak` |
+| `layar-karier` | 601 | **`layar-belajar.js`**, `sampul`, `ikon`, `gerak` |
+| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, **`layar-belajar`** |
+| `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` |
+
+Yang BELUM: penggambar SVG rasi (`Rasi.tsx`) lalu kelima layar di atas, router
+penuh beserta strip konteks dan kelas ukuran layar (`aplikasi.js` 1.570 +
+`inti.js` 803), tes kontrak 41 endpoint (sengaja ditunda: ia menjaga
+pergantian backend di Tahap 2, yang juga ditunda), lalu Express + MongoDB
+sebagai fitur baru berdampingan (Tahap 1,5). Sisanya sekitar 9.400 baris.
+Rencana lengkap beserta angkanya ada di riwayat sesi. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
 `inti/runner.py` + `struktur.py` + `jejak.py` adalah satu sidecar Python.
 Diuji di mesin ini: `ulimit -v` merusak JVM ("Could not reserve enough space
 for object heap"), dan `bash -c` memakai string shell sementara
