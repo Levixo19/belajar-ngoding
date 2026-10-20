@@ -22,7 +22,10 @@ import { ambil } from "./api.ts";
 import { Keadaan } from "./komponen/Keadaan.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
+import { Statistik } from "./layar/Statistik.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
+import { terapkanTampilan } from "./lokal.ts";
+import { Sorak } from "./sorak.tsx";
 
 interface Bahasa {
   key: string;
@@ -104,6 +107,10 @@ function Aplikasi() {
     return <Langit />;
   }
 
+  if (nama === "statistik") {
+    return <Statistik />;
+  }
+
   if (nama === "tebak" && arg) {
     const bhs = awal.bahasa.find((b) => b.key === arg);
     if (!bhs) {
@@ -133,9 +140,9 @@ function Aplikasi() {
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Baru tiga layar yang diport: Langit, Pustaka, dan Tebak keluarannya.
-          Sisanya masih di antarmuka lama, dan kedua-duanya memakai API serta
-          berkas gaya yang sama.
+          Baru empat layar yang diport: Langit, Pustaka, Statistik, dan Tebak
+          keluarannya. Sisanya masih di antarmuka lama, dan kedua-duanya
+          memakai API serta berkas gaya yang sama.
         </p>
         <div className="deret">
           <a className="tbl tbl-utama" href="#/langit">
@@ -143,6 +150,9 @@ function Aplikasi() {
           </a>
           <a className="tbl" href="#/pustaka">
             Pustaka
+          </a>
+          <a className="tbl" href="#/statistik">
+            Statistik
           </a>
         </div>
       </header>
@@ -161,6 +171,12 @@ function Aplikasi() {
 const akar = document.getElementById("akar");
 if (!akar) throw new Error("#akar tidak ada di index.html");
 
+/* Preferensi tampilan dipasang SEBELUM React menggambar apa pun. Kalau
+   dipasang di dalam sebuah efek, halaman sempat tergambar satu frame dengan
+   tema bawaan lebih dulu -- dan di tema terang itu berarti kilatan putih di
+   wajah orang yang justru memilih tema gelap. */
+terapkanTampilan();
+
 createRoot(akar).render(
   <StrictMode>
     <div id="panggung">
@@ -168,5 +184,6 @@ createRoot(akar).render(
         <Aplikasi />
       </main>
     </div>
+    <Sorak />
   </StrictMode>,
 );
