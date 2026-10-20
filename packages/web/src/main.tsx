@@ -19,6 +19,7 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { ambil } from "./api.ts";
+import { Cangkang, type Konteks } from "./Cangkang.tsx";
 import { Keadaan } from "./komponen/Keadaan.tsx";
 import { Atur } from "./layar/Atur.tsx";
 import { Karier } from "./layar/Karier.tsx";
@@ -64,6 +65,15 @@ function rute(): Rute {
   };
 }
 
+/**
+ * Pembungkus: mengambil `/api/awal` sekali, mendengarkan `hashchange`, lalu
+ * menyerahkan rute dan datanya ke cangkang beserta isinya.
+ *
+ * Dipisah dari `Isi` supaya kelas ukuran layar dan isi halaman berasal dari
+ * SATU render yang sama. Di versi JS keduanya dua langkah terpisah, dan
+ * menyetel kelasnya lebih dulu membuat layar lama yang masih terlihat melompat
+ * melebar tepat sebelum memudar.
+ */
 function Aplikasi() {
   const [awal, setAwal] = useState<Awal | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
@@ -81,24 +91,58 @@ function Aplikasi() {
       .catch((e: Error) => setGalat(e.message));
   }, []);
 
+  const nama = alamat.jalur[0] ?? "dasbor";
+
   if (galat) {
     return (
-      <Keadaan
-        jenis="salah"
-        judul="Tidak bisa menghubungi server"
-        ket={galat}
-      />
+      <Cangkang rute={nama}>
+        <Keadaan
+          jenis="salah"
+          judul="Tidak bisa menghubungi server"
+          ket={galat}
+        />
+      </Cangkang>
     );
   }
   if (!awal) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
-        <span>Memuat…</span>
-      </div>
+      <Cangkang rute={nama}>
+        <div className="deret">
+          <div className="pusaran" />
+          <span>Memuat…</span>
+        </div>
+      </Cangkang>
     );
   }
+  return (
+    <Cangkang rute={nama} konteks={konteksRute(alamat, awal)}>
+      <Isi alamat={alamat} awal={awal} />
+    </Cangkang>
+  );
+}
 
+/**
+ * Strip konteks untuk rute yang punya POSISI.
+ *
+ * Layar yang tidak punya posisi mengembalikan `undefined`, dan stripnya tidak
+ * dirender sama sekali -- 44 piksel itu kembali jadi milik isinya.
+ */
+function konteksRute(alamat: Rute, awal: Awal): Konteks | undefined {
+  const [nama, arg] = alamat.jalur;
+  if (nama === "tebak" && arg) {
+    const bhs = awal.bahasa.find((b) => b.key === arg);
+    if (bhs) {
+      return {
+        balik: { label: bhs.label, href: "#/bahasa/" + bhs.key },
+        bab: "Latih baca kode",
+        judul: "Tebak keluarannya",
+      };
+    }
+  }
+  return undefined;
+}
+
+function Isi({ alamat, awal }: { alamat: Rute; awal: Awal }) {
   const [nama, arg] = alamat.jalur;
 
   if (nama === "pustaka") {
@@ -196,11 +240,7 @@ terapkanTampilan();
 
 createRoot(akar).render(
   <StrictMode>
-    <div id="panggung">
-      <main id="layar">
-        <Aplikasi />
-      </main>
-    </div>
+    <Aplikasi />
     <Sorak />
   </StrictMode>,
 );
