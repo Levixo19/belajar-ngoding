@@ -1377,20 +1377,35 @@ komponen `Keadaan`. Antarmuka LAMA masih utuh dan masih yang dilayani
 ia bukan "layar kecil berikutnya". `layar-langit` (219) satu-satunya yang cuma
 butuh `rasi.js` plus satu fungsi dari `gerak.js`.
 
-| Layar | Baris | Menarik |
-|---|---|---|
-| `layar-langit` | 219 | `rasi.js` (geometrinya SUDAH diport) |
-| `layar-lain` | 867 | `ikon`, `sampul`, `istirahat`, `gerak` |
-| `layar-karier` | 601 | **`layar-belajar.js`**, `sampul`, `ikon`, `gerak` |
-| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, **`layar-belajar`** |
-| `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` |
+| Layar | Baris | Menarik | Keadaan |
+|---|---|---|---|
+| `layar-tebak` | 114 | `sorot`, `sampul`, `gerak` | **SUDAH** -> `layar/Tebak.tsx` |
+| `layar-pustaka` | 204 | `sampul`, `ikon` | **SUDAH** -> `layar/Pustaka.tsx` |
+| `layar-langit` | 219 | `rasi.js`, `gerak` | **SUDAH** -> `layar/Langit.tsx` |
+| `layar-lain` | 867 | `ikon`, `sampul`, `istirahat`, `gerak` | belum |
+| `layar-karier` | 601 | **`layar-belajar.js`**, `sampul`, `ikon`, `gerak` | belum |
+| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, **`layar-belajar`** | belum |
+| `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` | belum |
 
-Yang BELUM: penggambar SVG rasi (`Rasi.tsx`) lalu kelima layar di atas, router
-penuh beserta strip konteks dan kelas ukuran layar (`aplikasi.js` 1.570 +
-`inti.js` 803), tes kontrak 41 endpoint (sengaja ditunda: ia menjaga
-pergantian backend di Tahap 2, yang juga ditunda), lalu Express + MongoDB
-sebagai fitur baru berdampingan (Tahap 1,5). Sisanya sekitar 9.400 baris.
-Rencana lengkap beserta angkanya ada di riwayat sesi. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
+Yang sudah berdiri di `packages/web/src/`: `api.ts` (klien bertipe, satu-satunya
+yang tahu soal token), `gerak.ts` (`tingkatGerak()`, SATU-SATUNYA yang boleh
+membaca `data-gerak`), `util.tsx` (`angka`, `urlAman`, `tandai`, `tanpaNomor`),
+`komponen/Kode.tsx`, `komponen/Keadaan.tsx`, `komponen/Rasi.tsx` +
+`komponen/rasi-geometri.ts`.
+
+Yang BELUM: keempat layar di atas, router penuh beserta strip konteks dan kelas
+ukuran layar (`aplikasi.js` 1.570 + `inti.js` 803), tes kontrak 41 endpoint
+(sengaja ditunda: ia menjaga pergantian backend di Tahap 2, yang juga ditunda),
+lalu Express + MongoDB sebagai fitur baru berdampingan (Tahap 1,5). Sisanya
+sekitar 9.100 baris. Rencana lengkap beserta angkanya ada di riwayat sesi.
+
+**Satu catatan tentang bentuk komponen, dari tiga layar yang sudah diport:**
+apa pun yang di versi JS di-toggle lewat `classList` jadi TURUNAN state di
+React, bukan efek. Versi imperatif harus ingat membersihkan kelas yang
+dipasang sebelumnya; di `layar-langit` ada empat kelas semacam itu
+(`rasi-konsep`, `langit-terpilih`, `ada-profesi`, `ada-konsep`), dan satu
+cabang yang lupa membersihkannya meninggalkan bintang menyala untuk konsep
+yang sudah tidak dipilih -- tanpa satu pun error. Satu keputusan yang mengikat: **runner JANGAN diport ke Node.**
 `inti/runner.py` + `struktur.py` + `jejak.py` adalah satu sidecar Python.
 Diuji di mesin ini: `ulimit -v` merusak JVM ("Could not reserve enough space
 for object heap"), dan `bash -c` memakai string shell sementara
