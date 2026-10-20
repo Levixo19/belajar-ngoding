@@ -20,7 +20,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { tingkatGerak } from "./gerak.ts";
 
-export type JenisSorak = "" | "tumbuh" | "salah";
+/* Keempat varian ini SEMUANYA ada di gaya.css (`.sorak-tumbuh`,
+   `.sorak-salah`, `.sorak-nyala`); yang kosong berarti toast biasa.
+   `nyala` dipakai untuk XP -- kuningan berarti "sedang dikerjakan" di
+   bahasa bentuk aplikasi ini, dan XP memang penanda kemajuan, bukan
+   penanda selesai. */
+export type JenisSorak = "" | "tumbuh" | "salah" | "nyala";
 
 interface Pesan {
   id: number;
@@ -153,4 +158,58 @@ export function umumkan(teks: string): void {
   const el = pengumum;
   el.textContent = "";
   setTimeout(() => { el.textContent = teks; }, 60);
+}
+
+export interface Hadiah {
+  xp_tambah?: number;
+  xp?: number;
+  level?: number;
+  naik_level?: boolean;
+  gelar?: string;
+  gelar_baru?: boolean;
+  badge?: { nama?: string; judul?: string; ket?: string }[] | null;
+  simpan_gagal?: boolean;
+}
+
+/**
+ * Beri tahu pelajar apa yang baru ia dapat: XP, naik level, badge.
+ *
+ * BENTUK PENDEK dari `rayakan()` di `inti.js`, dan selisihnya disebutkan di
+ * sini supaya tidak terbaca sebagai port yang lengkap: versi JS menempelkan
+ * satu denyut plus tujuh partikel bara pada benda yang baru saja berhasil,
+ * lewat `denyut()` dan `percikBara()` di `gerak.js` -- modul 962 baris yang
+ * BELUM diport. Yang hilang lapisan partikelnya; yang tidak boleh hilang
+ * INFORMASINYA, dan itu semua masih di sini: XP, level, gelar, badge, dan
+ * peringatan gagal simpan.
+ *
+ * `simpan_gagal` diperiksa LEBIH DULU dan tanpa syarat. Progres yang tidak
+ * sampai ke disk adalah satu-satunya hal di jalur ini yang harus diketahui
+ * pelajar sekarang, bukan nanti -- dan ia bisa terjadi bersamaan dengan XP
+ * yang naik, jadi ia bukan cabang `else`.
+ */
+export function rayakan(hadiah: Hadiah | null | undefined,
+                        { diam = false } = {}): void {
+  if (!hadiah) return;
+  if (hadiah.simpan_gagal) {
+    sorak("Progres gagal disimpan ke disk. Cek ruang disk, lalu coba lagi.",
+          "salah", 8);
+  }
+
+  if (hadiah.naik_level) {
+    const gelar = hadiah.gelar_baru && hadiah.gelar ? ` - ${hadiah.gelar}` : "";
+    sorak(`Naik ke level ${hadiah.level}${gelar}`, "tumbuh", 4.5);
+    umumkan(`Naik ke level ${hadiah.level}${gelar}.`);
+  } else if ((hadiah.xp_tambah || 0) > 0 && !diam) {
+    sorak(`+${hadiah.xp_tambah} XP`, "nyala", 2.2);
+  }
+
+  /* Toast badge berdiri DI LUAR if/else di atas, persis seperti di `inti.js`:
+     sebuah hadiah yang membawa badge SEKALIGUS XP memunculkan keduanya.
+     Menjadikan naik level mematikan cabang badge akan menelan satu toast yang
+     hari ini muncul -- perubahan perilaku yang tidak diminta siapa pun. */
+  for (const b of hadiah.badge || []) {
+    const judul = b.judul || b.nama || "Badge baru";
+    sorak(`Badge baru: ${judul}`, "tumbuh", 5);
+    umumkan(`Badge baru: ${judul}.`);
+  }
 }

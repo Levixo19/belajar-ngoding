@@ -142,3 +142,38 @@ export function temaBerikutnya(): string {
   terapkanTampilan({ tema: berikut[0] });
   return berikut[1];
 }
+
+/**
+ * Ingatan sesaat per layar: draf kode Ruang Coba, bahasa terpilih, stdin.
+ *
+ * Kuncinya memakai awalan `belajar.ingat.` yang SAMA dengan `ctx.ingat` di
+ * `aplikasi.js`, dan itu syarat, bukan kebetulan: selama dua antarmuka masih
+ * hidup berdampingan, draf yang ditulis di salah satunya harus ditemukan oleh
+ * yang lain. Kalau prefiksnya berbeda, orang yang berpindah antarmuka
+ * menemukan Ruang Coba kembali ke contoh awal -- dan yang hilang kode yang
+ * baru saja ia tulis.
+ *
+ * Nilainya di-JSON-kan, juga sama dengan versi lama. `undefined` sebagai
+ * argumen kedua berarti BACA; `null` saat gagal urai, bukan melempar --
+ * localStorage yang penuh atau diblokir adalah keadaan normal di jendela
+ * pribadi, dan draf yang tidak tersimpan tidak boleh menjatuhkan layarnya.
+ */
+export function ingat(kunci: string, nilai?: string): string | undefined {
+  const k = AWALAN + "ingat." + kunci;
+  if (nilai === undefined) {
+    try {
+      const mentah = localStorage.getItem(k);
+      if (mentah === null) return undefined;
+      const v = JSON.parse(mentah);
+      return typeof v === "string" ? v : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  try {
+    localStorage.setItem(k, JSON.stringify(nilai));
+  } catch {
+    /* penuh atau diblokir; draf hilang, layarnya tidak */
+  }
+  return nilai;
+}

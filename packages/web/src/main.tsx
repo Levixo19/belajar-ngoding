@@ -26,13 +26,23 @@ import { Karier } from "./layar/Karier.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
 import { Statistik } from "./layar/Statistik.tsx";
+import { Coba, Latihan } from "./layar/Kerja.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
-import { terapkanTampilan } from "./lokal.ts";
+import { ingat, terapkanTampilan } from "./lokal.ts";
 import { Sorak } from "./sorak.tsx";
 
+/* Medan yang dipakai router ini dari `/api/awal -> bahasa`. Ia sengaja
+   TIDAK menyalin seluruh entri: yang ditambahkan di server tanpa dipakai
+   di sini tidak perlu disebut, dan daftar yang menyebut semuanya akan
+   memerahkan tipe setiap kali server menambah satu medan. Yang WAJIB ada
+   cuma yang benar-benar dibaca -- `runner`/`sorot`/`siap` oleh Ruang Coba
+   untuk menyaring toolchain yang terpasang. */
 interface Bahasa {
   key: string;
   label: string;
+  runner: string;
+  sorot: string;
+  siap: boolean;
 }
 
 interface Awal {
@@ -78,6 +88,22 @@ function Aplikasi() {
   const [awal, setAwal] = useState<Awal | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
   const [alamat, setAlamat] = useState<Rute>(rute);
+  /* Strip konteks punya DUA sumber, dan itu bukan kelalaian.
+     `konteksRute` menjawab dari ALAMATNYA -- sinkron, dan itu yang benar
+     untuk rute yang judulnya memang sudah ada di hash. Ruang kerja
+     latihan tidak: judul dan posisinya baru diketahui sesudah
+     `/api/latihan` menjawab, jadi layarnya yang MELAPORKAN lewat
+     `onKonteks`. Yang dilaporkan menang; yang dari alamat jadi jawaban
+     sementara selama permintaannya belum sampai -- bukan strip kosong
+     yang lalu melompat muncul. */
+  const [konteksLayar, setKonteksLayar] =
+    useState<Konteks | undefined>(undefined);
+
+  /* Dikosongkan tiap kali alamatnya berganti. Tanpa ini, strip dari layar
+     SEBELUMNYA masih terbaca di layar berikutnya sampai layar itu sempat
+     melapor -- dan untuk rute yang tidak punya strip sama sekali, ia
+     tidak pernah hilang. */
+  useEffect(() => { setKonteksLayar(undefined); }, [alamat]);
 
   useEffect(() => {
     const dengar = () => setAlamat(rute());
@@ -115,8 +141,9 @@ function Aplikasi() {
     );
   }
   return (
-    <Cangkang rute={nama} konteks={konteksRute(alamat, awal)}>
-      <Isi alamat={alamat} awal={awal} />
+    <Cangkang rute={nama}
+              konteks={konteksLayar ?? konteksRute(alamat, awal)}>
+      <Isi alamat={alamat} awal={awal} onKonteks={setKonteksLayar} />
     </Cangkang>
   );
 }
@@ -142,8 +169,14 @@ function konteksRute(alamat: Rute, awal: Awal): Konteks | undefined {
   return undefined;
 }
 
-function Isi({ alamat, awal }: { alamat: Rute; awal: Awal }) {
-  const [nama, arg] = alamat.jalur;
+function Isi({
+  alamat, awal, onKonteks,
+}: {
+  alamat: Rute;
+  awal: Awal;
+  onKonteks: (k: Konteks | undefined) => void;
+}) {
+  const [nama, arg, arg2] = alamat.jalur;
 
   if (nama === "pustaka") {
     return <Pustaka params={alamat.params} />;
@@ -163,6 +196,35 @@ function Isi({ alamat, awal }: { alamat: Rute; awal: Awal }) {
 
   if (nama === "karier") {
     return <Karier id={arg} />;
+  }
+
+  if (nama === "latihan" && arg) {
+    return (
+      <Latihan
+        kunciBahasa={arg}
+        indeks={Number(arg2 ?? 0) || 0}
+        onKonteks={onKonteks}
+      />
+    );
+  }
+
+  if (nama === "coba") {
+    return (
+      <Coba
+        bahasaAwal={awal.bahasa}
+        params={{
+          ...(alamat.params.get("bahasa")
+            ? { bahasa: alamat.params.get("bahasa") as string } : {}),
+          ...(alamat.params.get("key")
+            ? { key: alamat.params.get("key") as string } : {}),
+          ...(alamat.params.get("materi") !== null
+            ? { materi: alamat.params.get("materi") as string } : {}),
+          ...(alamat.params.get("bagian") !== null
+            ? { bagian: alamat.params.get("bagian") as string } : {}),
+        }}
+        ingat={ingat}
+      />
+    );
   }
 
   if (nama === "tebak" && arg) {
@@ -194,10 +256,10 @@ function Isi({ alamat, awal }: { alamat: Rute; awal: Awal }) {
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Baru enam layar yang diport: Langit, Peta Karier, Pustaka,
-          Statistik, Pengaturan, dan Tebak keluarannya. Sisanya masih di
-          antarmuka lama, dan kedua-duanya memakai API serta berkas gaya
-          yang sama.
+          Delapan layar sudah diport: Langit, Peta Karier, Pustaka,
+          Statistik, Pengaturan, Tebak keluarannya, Ruang Coba, dan ruang
+          kerja latihan. Yang tersisa pembaca materi. Kedua antarmuka
+          memakai API serta berkas gaya yang sama.
         </p>
         <div className="deret">
           <a className="tbl tbl-utama" href="#/langit">
@@ -211,6 +273,9 @@ function Isi({ alamat, awal }: { alamat: Rute; awal: Awal }) {
           </a>
           <a className="tbl" href="#/karier">
             Peta Karier
+          </a>
+          <a className="tbl" href="#/coba">
+            Ruang Coba
           </a>
           <a className="tbl" href="#/atur">
             Pengaturan
