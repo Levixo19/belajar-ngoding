@@ -20,6 +20,7 @@ import { createRoot } from "react-dom/client";
 
 import { ambil } from "./api.ts";
 import { Keadaan } from "./komponen/Keadaan.tsx";
+import { Pustaka } from "./layar/Pustaka.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 
 interface Bahasa {
@@ -32,22 +33,38 @@ interface Awal {
   versi: string;
 }
 
-/** Baca hash jadi `[nama rute, ...argumen]`. */
-function rute(): string[] {
+interface Rute {
+  /** Ruas jalur: `["bahasa", "python"]` dari `#/bahasa/python`. */
+  jalur: string[];
+  /** Parameter kueri di belakang hash. */
+  params: URLSearchParams;
+}
+
+/**
+ * Baca hash jadi jalur dan parameter.
+ *
+ * Parameter kueri ikut dibaca, dan itu bukan kelengkapan: layar Pustaka
+ * menyimpan SELURUH keadaan penyaringnya di alamat
+ * (`#/pustaka?kurikulum=python&jenis=buku`). Membuangnya di sini akan membuat
+ * tautan "Lihat semua bacaan Python", tombol mundur browser, dan tab yang
+ * dibuka ulang semuanya mendarat di saringan kosong -- tanpa satu pun error.
+ */
+function rute(): Rute {
   const hash = globalThis.location.hash.replace(/^#\/?/, "");
-  // Parameter kueri di belakang hash (`?ulang=...`) dibuang: versi lama
-  // memakainya cuma untuk memaksa router menggambar ulang, dan di React itu
-  // pekerjaan state, bukan pekerjaan alamat.
-  return hash.split("?")[0]!.split("/").filter(Boolean);
+  const [jalurMentah, kueri] = hash.split("?");
+  return {
+    jalur: (jalurMentah ?? "").split("/").filter(Boolean),
+    params: new URLSearchParams(kueri ?? ""),
+  };
 }
 
 function Aplikasi() {
   const [awal, setAwal] = useState<Awal | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
-  const [jalur, setJalur] = useState<string[]>(rute);
+  const [alamat, setAlamat] = useState<Rute>(rute);
 
   useEffect(() => {
-    const dengar = () => setJalur(rute());
+    const dengar = () => setAlamat(rute());
     globalThis.addEventListener("hashchange", dengar);
     return () => globalThis.removeEventListener("hashchange", dengar);
   }, []);
@@ -76,7 +93,11 @@ function Aplikasi() {
     );
   }
 
-  const [nama, arg] = jalur;
+  const [nama, arg] = alamat.jalur;
+
+  if (nama === "pustaka") {
+    return <Pustaka params={alamat.params} />;
+  }
 
   if (nama === "tebak" && arg) {
     const bhs = awal.bahasa.find((b) => b.key === arg);
@@ -107,10 +128,15 @@ function Aplikasi() {
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Baru satu layar yang diport: Tebak keluarannya. Sisanya masih di
-          antarmuka lama, dan kedua-duanya memakai API serta berkas gaya yang
-          sama.
+          Baru dua layar yang diport: Pustaka dan Tebak keluarannya. Sisanya
+          masih di antarmuka lama, dan kedua-duanya memakai API serta berkas
+          gaya yang sama.
         </p>
+        <div className="deret">
+          <a className="tbl tbl-utama" href="#/pustaka">
+            Pustaka
+          </a>
+        </div>
       </header>
       <div className="senarai">
         {awal.bahasa.map((b) => (
