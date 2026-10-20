@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from "react";
 import { ambil, kirim } from "../api.ts";
 import { adaGerak, tingkatGerak } from "../gerak.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import {
   bacaTampilan,
   GERAK,
@@ -90,34 +91,6 @@ function KartuPilihan({
         {aktif ? <span className="pil pil-nyala">dipakai</span> : null}
       </div>
       <span className="baris-sisi">{ket}</span>
-    </button>
-  );
-}
-
-function SakelarBaris({
-  judul,
-  ket,
-  nyala,
-  onUbah,
-}: {
-  judul: string;
-  ket: string;
-  nyala: boolean;
-  onUbah: (v: boolean) => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={"sakelar" + (nyala ? " on" : "")}
-      role="switch"
-      aria-checked={nyala}
-      onClick={() => onUbah(!nyala)}
-    >
-      <div className="isi">
-        <b>{judul}</b>
-        <span>{ket}</span>
-      </div>
-      <div className="knop" />
     </button>
   );
 }

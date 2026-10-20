@@ -84,3 +84,16 @@ export function jamRamah(iso: string | null | undefined): string {
     minute: "2-digit",
   });
 }
+
+/**
+ * Detik -> "MM:SS". Dipakai jam mundur mode timer kuis.
+ *
+ * Dijepit ke nol: `sisaDetik` di kuis boleh jatuh ke -1 satu tik sebelum
+ * jamnya dimatikan, dan "-1:59" di layar yang sedang menghitung sisa waktu
+ * terbaca sebagai aplikasi yang kacau, bukan sebagai waktu habis.
+ */
+export function jamMundur(detik: number): string {
+  const d = Math.max(0, Math.floor(detik));
+  return `${String(Math.floor(d / 60)).padStart(2, "0")}:`
+       + `${String(d % 60).padStart(2, "0")}`;
+}
