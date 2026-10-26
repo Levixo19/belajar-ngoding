@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "tipe": "tsc --noEmit",
-    "banding": "export NODE_OPTIONS=--experimental-strip-types && node uji/banding-ikon.mjs && node uji/banding-palet.mjs && node uji/banding-dasbor.mjs && node uji/banding-rasi.mjs && node uji/banding-editor.mjs && node uji/banding-pratinjau.mjs && node uji/banding-visual.mjs && node uji/banding-jejak.mjs && node uji/banding-kerja.mjs && node uji/banding-prosa.mjs && node uji/banding-belajar.mjs && node uji/banding-bahasa.mjs"
+    "banding": "export NODE_OPTIONS=--experimental-strip-types && node uji/banding-ikon.mjs && node uji/banding-palet.mjs && node uji/banding-dasbor.mjs && node uji/banding-rasi.mjs && node uji/banding-editor.mjs && node uji/banding-pratinjau.mjs && node uji/banding-visual.mjs && node uji/banding-jejak.mjs && node uji/banding-kerja.mjs && node uji/banding-prosa.mjs && node uji/banding-belajar.mjs && node uji/banding-bahasa.mjs && node uji/banding-langit.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

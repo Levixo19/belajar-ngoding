@@ -33,3 +33,18 @@ export function tingkatGerak(): TingkatGerak {
 
 export const adaGerak = (): boolean => tingkatGerak() !== "mati";
 export const gerakPenuh = (): boolean => tingkatGerak() === "penuh";
+
+/** Panggil `fn` saat `prefers-reduced-motion` SISTEM berubah.
+ *
+ *  Padanan fungsi bernama sama di `gerak.js`. Saklar `data-gerak` di aplikasi
+ *  TIDAK lewat sini -- yang mengamatinya `MutationObserver` di pemakainya,
+ *  karena ia atribut, bukan media query. Keduanya perlu: orang bisa mengubah
+ *  setelan sistemnya tanpa menyentuh aplikasi ini.
+ */
+export function saatGerakBerubah(fn: (tingkat: TingkatGerak) => void): () => void {
+  if (typeof matchMedia !== "function") return () => {};
+  const mq = matchMedia("(prefers-reduced-motion: reduce)");
+  const bungkus = () => fn(tingkatGerak());
+  mq.addEventListener("change", bungkus);
+  return () => mq.removeEventListener("change", bungkus);
+}

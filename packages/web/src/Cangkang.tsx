@@ -20,7 +20,9 @@
  *    kelas dan isi berasal dari satu render yang sama.
  */
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState,
+         type ReactNode } from "react";
+import { nyalakanLangit } from "./langit.ts";
 
 import { Ikon } from "./komponen/Ikon.tsx";
 import { Lencana, MajuBaca } from "./komponen/Lencana.tsx";
@@ -201,6 +203,18 @@ export function Cangkang({
     return () => globalThis.removeEventListener("keydown", dengar);
   }, [panelBuka]);
 
+  /* Langit dipasang SESUDAH `#latar` ada di DOM -- ia mencarinya lewat
+     `getElementById`, jadi memanggilnya di tingkat modul akan mendapat null
+     dan diam-diam tidak melakukan apa pun. Pelepasnya dipakai: `StrictMode`
+     menjalankan efek dua kali, dan tanpa melepas pendengar `pointermove`,
+     `resize`, dan kedua `MutationObserver`, setiap pemasangan menumpuk satu
+     langit lagi di belakang yang lama. */
+  const latarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!latarRef.current) return;
+    return nyalakanLangit();
+  }, []);
+
   const diPanel = MENU_LAIN.some(([nama]) => nama === rute);
 
   /* `<li><a>`, BUKAN `<a>` telanjang. `gaya.css` mendesain butir navigasi
@@ -251,7 +265,7 @@ export function Cangkang({
           elemen untuk dikenakan sampai sekarang, jadi kanvasnya rata gelap.
           Bintang dan garis rasi di atasnya datang dari `langit.js`, yang
           belum diport -- yang ini lapisan dasarnya, dan ia berdiri sendiri. */}
-      <div id="latar" aria-hidden="true" />
+      <div id="latar" ref={latarRef} aria-hidden="true" />
       <div id="cangkang" className={panelBuka ? "rel-buka" : undefined}>
       {/* `id="rel"`, dan itu bukan kosmetik: 25 aturan di `gaya.css` menunjuk
           `#rel`, termasuk SELURUH bentuk "pil melayang di tengah atas" di

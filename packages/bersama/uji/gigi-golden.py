@@ -570,6 +570,44 @@ BATERAI = {
                 "labelPeta",
             ),
         ]),
+    # Peta langit. Mutannya menyentuh tiga lapis berbeda: aritmetika PRNG,
+    # ambang magnitudo, dan kerapatan bintang. Ketiganya menghasilkan langit
+    # yang TETAP terlihat seperti langit -- itu sebabnya hanya pembanding yang
+    # bisa menangkapnya.
+    "banding-langit.mjs": (
+        "banding-langit.mjs", PAKET_WEB,
+        sumber_web("langit-bentuk.ts"), [
+            (
+                "satu konstanta mulberry32 digeser",
+                "    b = (b + 0x6d2b79f5) | 0;",
+                "    b = (b + 0x6d2b79f6) | 0;",
+                "prng",
+            ),
+            (
+                "ambang magnitudo paling terang digeser",
+                "    const mag = u < 0.02 ? 1",
+                "    const mag = u < 0.03 ? 1",
+                "bintang",
+            ),
+            (
+                "kerapatan bintang diubah",
+                "  const jumlah = Math.round((lebar * tinggi) / 5200);",
+                "  const jumlah = Math.round((lebar * tinggi) / 5000);",
+                "bintang",
+            ),
+            (
+                "rumus d3-celestial digeser",
+                "export const jariMag = (mag: number): number => 7 * Math.exp(-0.28 * (mag + 2));",
+                "export const jariMag = (mag: number): number => 7 * Math.exp(-0.27 * (mag + 2));",
+                "jariMag",
+            ),
+            (
+                "cacah bintang terang dinaikkan",
+                "  bintang.filter((b) => b.mag <= 2).slice(0, 30);",
+                "  bintang.filter((b) => b.mag <= 2).slice(0, 31);",
+                "terang",
+            ),
+        ]),
     "banding-palet.mjs": (
         "banding-palet.mjs", PAKET_WEB,
         sumber_web("komponen/palet-cari.ts"), [
