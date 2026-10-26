@@ -23,6 +23,7 @@ import { ambil, kirim } from "../api.ts";
 import { adaGerak, tingkatGerak } from "../gerak.ts";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { BlokBahaya, BlokData } from "../komponen/BlokData.tsx";
+import { bacaJedaMata, setelJedaMata } from "../istirahat.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import {
@@ -221,6 +222,10 @@ export function Atur() {
   const [awal, setAwal] = useState<Awal | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
   const [tampilan, setTampilan] = useState<Tampilan>(bacaTampilan);
+  // Dibaca SEKALI dari localStorage, lalu state yang memegangnya:
+  // membaca ulang di tiap render membuat saklar ini satu-satunya
+  // kendali di halaman yang tidak bergerak sampai halaman dimuat ulang.
+  const [jedaMata, setJedaMata] = useState<boolean>(bacaJedaMata);
 
   useEffect(() => {
     let dibatalkan = false;
@@ -399,17 +404,38 @@ export function Atur() {
           </div>
 
           <div className="medan">
-            {/* Suara, getar, dan pengingat istirahat mata pemiliknya
-                `suara.js` dan `istirahat.js`, dan keduanya belum diport.
-                Membuat pembaca KEDUA untuk kunci localStorage yang sama akan
-                membuat nilai rusak jatuh ke bawaan yang berbeda tergantung
-                siapa yang membacanya lebih dulu. */}
-            <Keadaan
-              judul="Suara, getar, dan istirahat mata masih di antarmuka lama"
+            {/* Kuncinya DIBAGI dengan antarmuka lama, jadi yang diport bukan
+                saklarnya melainkan pembacanya (`istirahat.ts`): bawaan
+                `!== false` yang sama, supaya nilai rusak jatuh ke keadaan
+                yang sama di kedua antarmuka. */}
+            <SakelarBaris
+              judul="Pengingat istirahat mata"
               ket={
-                "Ketiganya dikendalikan modul tersendiri yang belum diport. " +
-                "Setelannya tetap berlaku di antarmuka ini karena tersimpan di " +
-                "browser yang sama; yang belum ada cuma saklarnya di halaman ini."
+                "Setiap 20 menit waktu AKTIF, satu pemberitahuan tenang " +
+                "mengajak memandang sesuatu sejauh 6 meter selama 20 detik. " +
+                "Tab yang tidak terlihat dan diam panjang tidak dihitung."
+              }
+              nyala={jedaMata}
+              onUbah={(v) => { setJedaMata(v); setelJedaMata(v); }}
+            />
+            {/* Suara dan getar masih di antarmuka lama, dan itu DIKATAKAN di
+                layar alih-alih dihilangkan diam-diam. `suara.js` 16 KB dan
+                memegang satu konteks audio beserta peredam gandanya; pembaca
+                kedua untuk kunci yang sama akan membuat dua konteks audio
+                hidup bersamaan di tab yang sama.
+
+                Kalimatnya menyebut "alamat yang sama", bukan "browser yang
+                sama", dan itu bukan kehati-hatian berlebihan: `localStorage`
+                dipisah per ORIGIN, dan di pengembangan React dilayani 5173
+                sementara antarmuka lama 7788 -- dua kotak penyimpanan yang
+                berbeda. Keduanya baru benar-benar berbagi setelah cutover. */}
+            <Keadaan
+              judul="Suara dan getar masih di antarmuka lama"
+              ket={
+                "Keduanya dikendalikan `suara.js`, yang memegang satu konteks " +
+                "audio untuk seluruh aplikasi. Setelannya memakai kunci yang " +
+                "sama, jadi begitu antarmuka ini dilayani dari alamat yang " +
+                "sama, yang kamu pilih di sana langsung berlaku di sini."
               }
             />
           </div>

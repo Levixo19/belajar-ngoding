@@ -34,6 +34,7 @@ import { Coba, Latihan } from "./layar/Kerja.tsx";
 import { Kuis } from "./layar/Kuis.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 import { ingat, terapkanTampilan } from "./lokal.ts";
+import { pasangJedaMata } from "./istirahat.ts";
 import { PenyediaJendela } from "./komponen/Jendela.tsx";
 import { Sorak } from "./sorak.tsx";
 
@@ -332,6 +333,10 @@ if (!akar) throw new Error("#akar tidak ada di index.html");
    tema bawaan lebih dulu -- dan di tema terang itu berarti kilatan putih di
    wajah orang yang justru memilih tema gelap. */
 terapkanTampilan();
+
+/* Pengingat 20-20-20. Dipasang di luar React, sejajar dengan tampilan di
+   atas: ia satu interval global, bukan keadaan sebuah layar. */
+pasangJedaMata();
 
 createRoot(akar).render(
   <StrictMode>

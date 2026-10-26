@@ -1550,7 +1550,9 @@ export function Coba({
 
           {/* Kartunya `KartuJalan`, BUKAN `kartuKeluaran` yang dipakai versi
               JS di sini. Yang terakhir itu kartu dua-tab (Tampilan |
-              Struktur) milik pembaca materi, dan pembaca materi belum diport.
+              Struktur) milik pembaca materi. Komentar ini dulu menyebut pembaca
+              materi "belum diport"; ia SUDAH ada di `Belajar.tsx`, dan
+              pilihannya tetap `KartuJalan` karena alasan di bawah.
               Selisihnya bukan informasi yang hilang -- `KartuJalan` justru
               membawa pratinjaunya BESERTA pil lebar perangkat, yang tidak ada
               di kartu dua-tab itu. Yang berbeda cuma bentuknya: di sini
