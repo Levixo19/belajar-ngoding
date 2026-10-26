@@ -20,9 +20,11 @@
  *    kelas dan isi berasal dari satu render yang sama.
  */
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { Ikon } from "./komponen/Ikon.tsx";
+import { Lencana, MajuBaca } from "./komponen/Lencana.tsx";
+import { Bantuan, usePintasanCangkang } from "./komponen/Pintasan.tsx";
 import { temaBerikutnya } from "./lokal.ts";
 import { sorak } from "./sorak.tsx";
 
@@ -145,6 +147,23 @@ export function Cangkang({
   children: ReactNode;
 }) {
   const [panelBuka, setPanelBuka] = useState(false);
+  /* Lencana disegarkan pada setiap pergantian rute, dan itu memang kasar --
+     tapi pergantian rute adalah SATU-SATUNYA isyarat yang pasti tersedia di
+     cangkang: XP naik di dalam sebuah layar (materi tuntas, latihan lulus,
+     kuis dijawab), dan cangkang tidak pernah tahu kapan. Menyiarkannya dari
+     tiap layar berarti tiga tempat yang harus ingat memanggilnya. */
+  const putaranUkuran = useMemo(() => rute, [rute]);
+  const [bantuanBuka, setBantuanBuka] = useState(false);
+
+  /* Kedua callback DIBUNGKUS `useCallback`, dan itu bukan optimasi: keduanya
+     dependensi efek yang memasang pendengar `keydown` di `document`. Fungsi
+     literal baru pada setiap render berarti pendengar itu dilepas dan dipasang
+     ulang pada setiap render -- dan keadaan `g` yang tinggal di dalam efeknya
+     ikut hilang setiap kali, jadi rangkaian "G lalu D" tidak akan pernah
+     selesai. */
+  const bukaBantuan = useCallback(() => setBantuanBuka(true), []);
+  const alihPanel = useCallback(() => setPanelBuka((b) => !b), []);
+  usePintasanCangkang({ onBantuan: bukaBantuan, onAlihPanel: alihPanel });
   const [sempit, setSempit] = useState(
     () => globalThis.innerWidth <= AMBANG_PANEL,
   );
@@ -261,6 +280,13 @@ export function Cangkang({
         </a>
 
         <div id="ukuran">
+          {/* Lencana streak dan XP. Keduanya TAUTAN ke Statistik, bukan tombol
+              seperti di antarmuka lama: di sana keduanya `<button>` yang tidak
+              melakukan apa pun saat ditekan -- dan tombol yang tidak menjawab
+              tekanan adalah tombol yang membuat orang menekannya dua kali lalu
+              menyimpulkan aplikasinya macet. Yang dijanjikan judulnya (level,
+              gelar, rekor streak) memang ada di layar Statistik. */}
+          <Lencana putaran={putaranUkuran} />
           {/* Pengganti tombol tema di antarmuka lama (Ctrl+J di sana).
               Keempat tema tetap bisa dipilih satu per satu di Pengaturan;
               tombol ini cuma memutarnya, dan ia ada karena mengganti tema
@@ -275,7 +301,21 @@ export function Cangkang({
           >
             <Ikon nama="tema" ukuran={18} />
           </button>
+          <button
+            type="button"
+            className="ikon-tombol"
+            title="Pintasan papan ketik (?)"
+            aria-label="Bantuan pintasan"
+            onClick={bukaBantuan}
+          >
+            <Ikon nama="bantuan" ukuran={18} />
+          </button>
         </div>
+
+        {/* Bilah kemajuan baca menempel di KAKI bilah ini, bukan di bilah
+            kedua: bilah kedua cuma ada di layar yang punya konteks, sementara
+            halaman panjang bisa muncul di mana saja. */}
+        <MajuBaca rute={rute} />
       </nav>
 
       <div id="panggung" className={konteks ? "berkonteks" : undefined}>
@@ -284,6 +324,8 @@ export function Cangkang({
           {children}
         </main>
       </div>
+
+      {bantuanBuka ? <Bantuan onTutup={() => setBantuanBuka(false)} /> : null}
     </div>
   );
 }

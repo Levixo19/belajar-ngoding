@@ -912,7 +912,13 @@ BATERAI = {
 
 
 def jalankan(pembanding, akar):
-    hasil = subprocess.run(["node", os.path.join(akar, "uji", pembanding)],
+    # `--experimental-strip-types` eksplisit: di Node di bawah 22.18 seluruh
+    # pembanding gagal dengan `ERR_UNKNOWN_FILE_EXTENSION`, dan di baterai ini
+    # itu jauh lebih buruk daripada sekadar merah -- `pagar nol` akan gagal,
+    # setiap sel di bawahnya dilewati, dan yang terbaca "baterainya rusak"
+    # alih-alih "Node-nya terlalu tua". Flagnya diterima 22.11 maupun 24.21.
+    hasil = subprocess.run(["node", "--experimental-strip-types",
+                            os.path.join(akar, "uji", pembanding)],
                            cwd=akar, capture_output=True, text=True)
     return hasil.returncode, hasil.stdout + hasil.stderr
 

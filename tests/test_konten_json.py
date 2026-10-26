@@ -152,6 +152,14 @@ class TestGoldenBersama(unittest.TestCase):
 BERSAMA = os.path.join(AKAR, "packages", "bersama")
 
 
+# `--experimental-strip-types` DIBERIKAN eksplisit, dan ia bukan sisa dari masa
+# lalu. Pelucutan tipe baru tanpa-flag sejak Node 23.6 (dan 22.18 di jalur LTS);
+# di bawah itu SELURUH pembanding di bawah gagal dengan
+# `ERR_UNKNOWN_FILE_EXTENSION` -- empat belas tes merah karena alasan yang tidak
+# ada hubungannya dengan isinya, dan tes yang merah begitu adalah tes yang
+# berhenti dibaca. Terukur: flagnya diterima apa adanya oleh 22.11 maupun 24.21,
+# jadi memberikannya selalu lebih murah daripada mendeteksi versinya -- dan jauh
+# lebih murah daripada melewatkan tesnya diam-diam.
 def _ada_node():
     import shutil
     return shutil.which("node") is not None
@@ -214,7 +222,8 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
         for paket, skrip, pola, lantai in tugas:
             with self.subTest(skrip=skrip):
                 hasil = subprocess.run(
-                    ["node", os.path.join(paket, "uji", skrip)],
+                    ["node", "--experimental-strip-types",
+                     os.path.join(paket, "uji", skrip)],
                     cwd=paket, capture_output=True, text=True, timeout=300)
                 keluaran = (hasil.stdout + hasil.stderr).strip()
                 # Pesannya tidak menyebut "rekaman Python": dua dari pembanding

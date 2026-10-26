@@ -1385,16 +1385,25 @@ butuh `rasi.js` plus satu fungsi dari `gerak.js`.
 | `layar-karier` | 601 | `saatSiap` saja dari `layar-belajar` | **SUDAH** -> `layar/Karier.tsx` |
 | `layar-lain` | 867 | `ikon`, `sampul`, `istirahat`, `gerak` | **SUDAH** -> `Statistik.tsx` + `Atur.tsx` |
 | `aplikasi.js` cangkang | ~300 dari 1.570 | — | **SUDAH** -> `Cangkang.tsx` |
-| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, `layar-belajar` | belum |
-| `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` | belum |
+| `layar-kerja` | 2.182 | `editor`, `pratinjau`, `sorot`, `layar-belajar` | **SUDAH** -> `Kerja.tsx` + `Kuis.tsx` |
+| `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` | **SUDAH** -> `Belajar.tsx` + `Bahasa.tsx` + `Dasbor.tsx` + `Lain.tsx` |
+| `ikon.js` | 144 | — | **SUDAH** -> `komponen/Ikon.tsx` |
+| `rasi.js` `petaRasi` | 90 dari 265 | `gerak` | **SUDAH** -> `komponen/Rasi.tsx` |
+| `sampul.js` | 233 | — | belum, dan sengaja: `aria-hidden`, hiasan |
+| `aplikasi.js` palet perintah | ~495 | `ikon` | belum |
+| `aplikasi.js` pintasan + bantuan | ~266 | — | belum |
+| `aplikasi.js` lencana XP/streak | ~60 | `ikon` | belum |
+| `aplikasi.js` bilah maju baca | ~49 | — | belum |
 
 Yang sudah berdiri di `packages/web/src/`: `api.ts` (klien bertipe,
 satu-satunya yang tahu soal token), `gerak.ts` (`tingkatGerak()`,
 SATU-SATUNYA yang boleh membaca `data-gerak`), `lokal.ts` (preferensi
 tampilan; kuncinya DIBAGI dengan antarmuka lama), `waktu.ts` (`tanggalLokal()`
 satu-satunya pintu untuk ISO server), `sorak.tsx` (toast + `salin`),
-`util.tsx`, `Cangkang.tsx`, `komponen/{Kode,Keadaan,Bilah,Rasi}.tsx`,
-`komponen/rasi-geometri.ts`.
+`util.ts` + `util.tsx` (yang TANPA JSX di `.ts`, supaya pembanding `.mjs` bisa
+mengimpornya tanpa menyeret React; `util.tsx` meneruskannya), `Cangkang.tsx`,
+`komponen/{Kode,Keadaan,Bilah,Rasi,Ikon,Sakelar,Tanda}.tsx`,
+`komponen/{rasi-geometri,ikon-bentuk}.ts`.
 
 **Keempat modul peng-ukur DOM SUDAH diport** (2026-10-20), beserta ruang kerja
 latihan, Ruang Coba, dan pembaca materi. Polanya satu dan dipakai keenam
@@ -1413,10 +1422,22 @@ melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
 | `layar-kerja` | `layar/kerja-beda.ts` | `layar/Kerja.tsx` | 2.790 pasangan diff hasilan |
 | `layar-belajar` | `layar/belajar-teks.ts` | `layar/Belajar.tsx` | 135.620 baris prosa |
 | prosa bersama | `komponen/prosa-teks.ts` | `komponen/Prosa.tsx` | 153.959 baris prosa |
+| `ikon.js` | `komponen/ikon-bentuk.ts` | `komponen/Ikon.tsx` | 26 ikon x 4 ukuran, atribut demi atribut |
+| `rasi.js` tata peta | `komponen/rasi-geometri.ts` | `komponen/Rasi.tsx` | 201 peta utuh, 69 bentuk kurikulum |
+| `layarBahasa` | `layar/bahasa-teks.ts` | `layar/Bahasa.tsx` | 32 kurikulum x 7 profil progres |
+| `layarDasbor` | `layar/dasbor-teks.ts` | `layar/Dasbor.tsx` | 360 profil hasilan, benih 20261026 |
 
-Ketujuh pembanding ikut suite lewat `SKRIP_WEB` di
-`test_konten_json.TestAlgoritmaTypeScript`, dan **49 sel mutasi** di
+Kesebelas pembanding ikut suite lewat `SKRIP_WEB` di
+`test_konten_json.TestAlgoritmaTypeScript`, dan **89 sel mutasi** di
 `packages/bersama/uji/gigi-golden.py` membuktikan semuanya bisa MERAH.
+
+**`--experimental-strip-types` diberikan eksplisit** ke `node` di suite MAUPUN
+di baterai. Pelucutan tipe baru tanpa-flag sejak Node 23.6 (22.18 di jalur
+LTS); di bawah itu SELURUH pembanding gagal dengan
+`ERR_UNKNOWN_FILE_EXTENSION` -- empat belas tes merah karena alasan yang tidak
+ada hubungannya dengan isinya. Terukur: flagnya diterima apa adanya oleh 22.11
+maupun 24.21, jadi memberikannya selalu lebih murah daripada mendeteksi
+versinya.
 
 **Baterai itu menemukan empat hal yang tidak kelihatan saat dibaca**, dan
 keempatnya sekarang tertulis di komentar fungsinya masing-masing beserta
@@ -1437,24 +1458,56 @@ pembandingnya. Ia dicatat sebagai `CELAH_DIKETAHUI` di `banding-kerja.mjs`,
 dan runner BARU yang contohnya terlewat tetap memerahkan pagarnya. Layak
 ditambal di UI baru, di kedua sisi sekaligus.
 
-**Yang BELUM, dan ini sisa Tahap 1:** empat layar dari `layar-belajar.js` dan
-satu dari `layar-kerja.js` -- `layarKuis` (~460 baris), `layarBahasa` (~860),
-`layarDasbor` + `layarMulai` (~860), dan `layarCari`/`layarBookmark`/
-`layarCatatan` (~230), plus `tombolBookmark`/`tombolCatatan`/`bukaCatatan`
-(~75) yang dipakai empat layar sekaligus. Dua persiapan untuk kuis SUDAH ada:
-`komponen/Sakelar.tsx` (diangkat dari `Atur.tsx` begitu pemakai kedua muncul)
-dan `jamMundur()` di `waktu.ts`.
+**SELURUH LAYAR SUDAH DIPORT** (2026-10-26). Lima belas layar: Dasbor (dua
+keadaan), halaman bahasa, pembaca materi, kuis, ruang kerja latihan, Ruang
+Coba, Langit, Peta Karier, Pustaka, Statistik, Pengaturan, Tebak keluarannya,
+Bookmark, Catatanku, dan Cari. Tiga kuis invarian yang sudah ditelusuri dan
+jangan ditelusuri ulang: muatan soal dari `sesi.bersih()` TIDAK membawa kunci
+jawaban dan `penjelasan` datang dari respons `/api/kuis/jawab`; index jawaban
+SUDAH dipetakan ulang di `sesi._acak_soal`; dan jam mode timer BERHENTI saat
+tabnya di latar lalu melanjutkan dari sisa detik yang sama (WCAG 2.2.2).
 
-Untuk kuis, tiga hal yang mengikat sudah ditelusuri dan jangan ditelusuri
-ulang: muatan soal dari `sesi.bersih()` TIDAK membawa kunci jawaban dan
-`penjelasan` datang dari respons `/api/kuis/jawab` (memindahkannya ke muatan
-soal membocorkan jawaban ke tab Network sebelum dijawab); index jawaban SUDAH
-dipetakan ulang di `sesi._acak_soal`, jadi layarnya tidak menerjemahkan index
-apa pun; dan jam mode timer wajib BERHENTI saat tabnya di latar lalu
-melanjutkan dari sisa detik yang sama (WCAG 2.2.2).
+**Yang BELUM, dan semuanya di `aplikasi.js` -- cangkang, bukan layar:** palet
+perintah (~495 baris, Ctrl+K, punya ingatan kemutakhiran dan kontrak combobox
+yang dipagari `TestPaletCombobox`), pintasan papan ketik beserta dialog
+bantuannya (~266), lencana XP dan streak di navbar (~60), dan bilah kemajuan
+baca (~49). Keempatnya di luar ruang lingkup "cangkang ~300 baris" yang
+dicatat di serah-terima sebelumnya. Sampai palet diport, jalan ke layar Cari
+adalah tombol "Cari apa saja" di navbar React -- tempat yang sama, tapi ia
+membuka layar penuh alih-alih palet, dan petunjuk `Ctrl K` sengaja TIDAK
+dipasang karena pintasannya belum ada.
 
-Sesudah kelimanya: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian
-backend di Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).
+Sesudah itu: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian backend
+di Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).
+
+**Tiga cacat ikut ketemu di JALUR YANG SUDAH ADA selama ronde ini, dan
+ketiganya tidak menimbulkan satu pun error:**
+
+* **`--panas` tidak pernah terpasang di antarmuka LAMA.** `h()` menyalin medan
+  `gaya` dengan `Object.assign(el.style, v)`, dan `Object.assign` ke `style`
+  diam-diam membuang properti kustom `--*`. Jebakan itu sudah ditulis di
+  komentar `petakPekan()` -- yang karena itu memakai `setProperty` -- tapi
+  `cincinLevel()` masih memakai `gaya:`. Akibatnya pendar `.cincin::after`
+  menghitung `calc(var(--panas, 0) * 22%)` dengan cadangan nol, jadi "makin
+  dekat target, makin terang" punya alfa NOL selamanya. Sudah dibetulkan
+  (net-zero baris). Satu-satunya tempat `gaya: { "--` di seluruh
+  `webapp/statik/js`, jadi tidak ada korban kedua -- tapi pola itu TETAP
+  berbahaya: properti kustom baru WAJIB lewat `setProperty`.
+* **Kelas ukuran layar dipasang di `#panggung`, bukan `#layar`.** `gaya.css`
+  menulis selektornya `#layar.lebar`/`.kolom`/`.penuh`; cangkang React memasang
+  dua yang pertama di `#panggung` sejak 3aef198. Diukur pada jendela 1920 px:
+  halaman daftar 1240 lawan 1400 yang benar, dan ketiga layar lebar yang
+  seluruh gunanya `max-width: none` juga terjepit di 1240.
+* **`komponen/Tanda.tsx` tidak pernah disambungkan.** Tombol bookmark dan
+  catatan ditulis tapi tidak dipakai satu layar pun, jadi di React tidak ada
+  cara menandai apa pun -- dan layar Bookmark serta Catatanku akan selamanya
+  kosong tanpa penjelasan. Ikut ketemu: medan `catatan` ditipekan `string` di
+  `DataMateri` dan `DataLatihan` padahal servernya mengirim `{teks, diubah}`.
+
+Pelajarannya satu dan berlaku ke depan: **`tsc` hijau dan curl hijau tidak
+membuktikan sebuah layar terpasang.** Ketiga cacat di atas lolos keduanya, dan
+yang menemukan ketiganya mengukur halaman yang sama di KEDUA antarmuka lalu
+mengadu angkanya.
 
 **Empat catatan bentuk dari layar yang sudah diport.** Keempatnya berlaku
 untuk sisanya:
