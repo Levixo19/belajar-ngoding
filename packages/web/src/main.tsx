@@ -143,7 +143,7 @@ function Aplikasi() {
 
   if (galat) {
     return (
-      <Cangkang rute={nama}>
+      <Cangkang rute={nama} bahasa={[]}>
         <Keadaan
           jenis="salah"
           judul="Tidak bisa menghubungi server"
@@ -154,7 +154,7 @@ function Aplikasi() {
   }
   if (!awal) {
     return (
-      <Cangkang rute={nama}>
+      <Cangkang rute={nama} bahasa={[]}>
         <div className="deret">
           <div className="pusaran" />
           <span>Memuat…</span>
@@ -163,7 +163,7 @@ function Aplikasi() {
     );
   }
   return (
-    <Cangkang rute={nama}
+    <Cangkang rute={nama} bahasa={awal.bahasa}
               konteks={konteksLayar ?? konteksRute(alamat, awal)}>
       <Isi alamat={alamat} awal={awal} onKonteks={setKonteksLayar} />
     </Cangkang>

@@ -24,6 +24,8 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 
 import { Ikon } from "./komponen/Ikon.tsx";
 import { Lencana, MajuBaca } from "./komponen/Lencana.tsx";
+import { Palet } from "./komponen/Palet.tsx";
+import type { BahasaPalet } from "./komponen/palet-cari.ts";
 import { Bantuan, usePintasanCangkang } from "./komponen/Pintasan.tsx";
 import { temaBerikutnya } from "./lokal.ts";
 import { sorak } from "./sorak.tsx";
@@ -139,11 +141,14 @@ function StripKonteks({ k }: { k: Konteks }) {
 export function Cangkang({
   rute,
   konteks,
+  bahasa,
   children,
 }: {
   /** Nama rute aktif, untuk menandai navigasi dan memilih kelas ukuran. */
   rute: string;
   konteks?: Konteks;
+  /** Daftar kurikulum untuk palet perintah. Dari `/api/awal`. */
+  bahasa: BahasaPalet[];
   children: ReactNode;
 }) {
   const [panelBuka, setPanelBuka] = useState(false);
@@ -154,6 +159,7 @@ export function Cangkang({
      tiap layar berarti tiga tempat yang harus ingat memanggilnya. */
   const putaranUkuran = useMemo(() => rute, [rute]);
   const [bantuanBuka, setBantuanBuka] = useState(false);
+  const [paletBuka, setPaletBuka] = useState(false);
 
   /* Kedua callback DIBUNGKUS `useCallback`, dan itu bukan optimasi: keduanya
      dependensi efek yang memasang pendengar `keydown` di `document`. Fungsi
@@ -163,7 +169,10 @@ export function Cangkang({
      selesai. */
   const bukaBantuan = useCallback(() => setBantuanBuka(true), []);
   const alihPanel = useCallback(() => setPanelBuka((b) => !b), []);
-  usePintasanCangkang({ onBantuan: bukaBantuan, onAlihPanel: alihPanel });
+  const bukaPalet = useCallback(() => setPaletBuka(true), []);
+  usePintasanCangkang({
+    onBantuan: bukaBantuan, onAlihPanel: alihPanel, onPalet: bukaPalet,
+  });
   const [sempit, setSempit] = useState(
     () => globalThis.innerWidth <= AMBANG_PANEL,
   );
@@ -261,23 +270,25 @@ export function Cangkang({
           {MENU_LAIN.map(butir)}
         </div>
 
-        {/* Jalan ke pencarian, di tempat yang sama dengan antarmuka lama.
-            Bedanya satu dan sengaja disebut di sini: di sana tombol ini membuka
-            PALET perintah (Ctrl+K) yang menyaring sambil diketik; palet itu
-            belum diport, jadi untuk sekarang ia mengantar ke layar Cari.
-            Petunjuk `Ctrl K` karena itu TIDAK dipasang -- menjanjikan pintasan
-            yang tidak ada lebih buruk daripada tidak menjanjikan apa pun. */}
-        <a
-          className={"rel-tombol" + (rute === "cari" ? " kini" : "")}
-          href="#/cari"
-          aria-current={rute === "cari" ? "page" : undefined}
-          onClick={() => setPanelBuka(false)}
+        {/* Pembuka palet, di tempat yang sama dengan antarmuka lama. Petunjuk
+            `Ctrl K` ikut dipasang karena pintasannya memang ada -- dan ia
+            TOMBOL, bukan tautan: yang dibukanya dialog, dan tautan yang tidak
+            pernah berpindah halaman adalah tautan yang membohongi menu
+            konteks serta tombol tengah tetikus. */}
+        <button
+          type="button"
+          className="rel-tombol"
+          onClick={() => {
+            setPanelBuka(false);
+            setPaletBuka(true);
+          }}
         >
           <span className="ikon" aria-hidden="true">
             <Ikon nama="cari" ukuran={16} />
           </span>
           <span className="rel-label">Cari apa saja</span>
-        </a>
+          <kbd>Ctrl K</kbd>
+        </button>
 
         <div id="ukuran">
           {/* Lencana streak dan XP. Keduanya TAUTAN ke Statistik, bukan tombol
@@ -326,6 +337,9 @@ export function Cangkang({
       </div>
 
       {bantuanBuka ? <Bantuan onTutup={() => setBantuanBuka(false)} /> : null}
+      {paletBuka ? (
+        <Palet bahasa={bahasa} onTutup={() => setPaletBuka(false)} />
+      ) : null}
     </div>
   );
 }

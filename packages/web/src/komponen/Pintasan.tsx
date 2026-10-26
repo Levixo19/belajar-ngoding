@@ -3,34 +3,17 @@
  * Port `pasangPintasan()` + `PINTASAN_G` dari `webapp/statik/js/aplikasi.js`
  * dan `PINTASAN` + `tampilkanBantuan()` dari `layar-lain.js`.
  *
- * **`PINTASAN_G` adalah SATU definisi untuk dua pembaca:** penangan papan
- * ketik di bawah, dan label `<kbd>` di dialog bantuan. Di sisi JS huruf-huruf
- * itu pernah ditulis di TIGA tempat (penangan, palet, dan tabel prosa di
- * `layar-lain.js`), dan akibat rumusan yang melenceng bisa disebut: huruf yang
- * dipindah di satu tempat membuat tempat lain menjanjikan halaman yang
- * berbeda, tanpa satu pun tes gagal.
+ * Tabelnya tinggal di `pintasan-tabel.ts` -- SATU definisi untuk penangan di
+ * sini, dialog di bawah, dan palet perintah.
  *
- * Satu beda yang disengaja dari antarmuka lama, dan ia disebut di dialognya:
- * **Ctrl+K mengantar ke layar Cari**, bukan membuka palet perintah. Palet
- * (~495 baris, dengan ingatan kemutakhiran dan kontrak combobox-nya sendiri)
- * belum diport; mengantar ke tujuan terdekat yang benar lebih baik daripada
- * pintasan yang tidak melakukan apa pun.
  */
 
 import { useEffect } from "react";
 
 import { temaBerikutnya } from "../lokal.ts";
-import { sorak } from "../sorak.tsx";
+import { PINTASAN, PINTASAN_G } from "./pintasan-tabel.ts";
 
-/** Huruf `G lalu <huruf>` dan alamat yang dibukanya. SATU definisi. */
-export const PINTASAN_G: Record<string, string> = {
-  d: "#/dasbor",
-  c: "#/coba",
-  s: "#/statistik",
-  b: "#/bookmark",
-  n: "#/catatan",
-  p: "#/atur",
-};
+export { PINTASAN, PINTASAN_G } from "./pintasan-tabel.ts";
 
 /** Berapa lama keadaan "G baru ditekan" bertahan.
  *
@@ -38,33 +21,7 @@ export const PINTASAN_G: Record<string, string> = {
  *  rangkaian yang diketik santai, dan cukup pendek sehingga `g` yang ditekan
  *  lalu dilupakan tidak membajak huruf berikutnya semenit kemudian. */
 const UMUR_G_MS = 900;
-
-/** Daftar lengkap untuk dialog bantuan. */
-export const PINTASAN: Array<[string, string]> = [
-  ["Ctrl K", "Ke layar Cari (palet perintah belum diport)"],
-  ["Ctrl B", "Buka / tutup menu"],
-  ["Ctrl J", "Ganti tema"],
-  ["G lalu D", "Ke dasbor"],
-  ["G lalu C", "Ke ruang coba"],
-  ["G lalu S", "Ke statistik"],
-  ["G lalu B", "Ke bookmark"],
-  ["G lalu N", "Ke catatanku"],
-  ["G lalu P", "Ke pengaturan"],
-  ["?", "Tampilkan daftar ini"],
-  ["Esc", "Tutup dialog"],
-  ["1-9 atau A-J", "Menjawab soal kuis"],
-  ["Ctrl ⏎", "Jalankan kode di editor"],
-  ["Ctrl ⇧ ⏎", "Periksa jawaban latihan"],
-  ["Ctrl S", "Simpan kode"],
-  ["Ctrl /", "Komentari baris di editor"],
-  ["Tab atau ⇧ Tab", "Tambah atau kurangi indentasi"],
-  ["j", "Blok kode berikutnya (di halaman materi)"],
-  ["k", "Blok kode sebelumnya (di halaman materi)"],
-  ["]", "Bagian berikutnya (di halaman materi)"],
-  ["[", "Bagian sebelumnya (di halaman materi)"],
-  ["f", "Mode fokus (di halaman materi)"],
-  ["⏎", "Jalankan blok kode yang sedang difokus"],
-];
+import { sorak } from "../sorak.tsx";
 
 /** Apakah ADA dialog yang sedang terbuka.
  *
@@ -96,10 +53,11 @@ function jendelaTerbuka(): boolean {
  *    atas layar yang sudah bukan miliknya.
  */
 export function usePintasanCangkang({
-  onBantuan, onAlihPanel,
+  onBantuan, onAlihPanel, onPalet,
 }: {
   onBantuan: () => void;
   onAlihPanel: () => void;
+  onPalet: () => void;
 }) {
   useEffect(() => {
     // Keadaan `g` tinggal di dalam efek, bukan di `useState`: ia tidak pernah
@@ -115,7 +73,10 @@ export function usePintasanCangkang({
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        if (!jendelaTerbuka()) globalThis.location.hash = "#/cari";
+        // Dialog yang sedang terbuka menahannya: palet di atas dialog lain
+        // berarti dua tirai bertumpuk, dan Esc yang menutup salah satunya
+        // meninggalkan yang lain menggantung di atas layar yang bukan miliknya.
+        if (!jendelaTerbuka()) onPalet();
         return;
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b" && !diMedan) {
@@ -161,7 +122,7 @@ export function usePintasanCangkang({
       if (jam) clearTimeout(jam);
       document.removeEventListener("keydown", dengar);
     };
-  }, [onBantuan, onAlihPanel]);
+  }, [onBantuan, onAlihPanel, onPalet]);
 }
 
 /** Dialog daftar pintasan. Esc dan tombol Tutup sama-sama menutupnya. */

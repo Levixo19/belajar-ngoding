@@ -1390,10 +1390,10 @@ butuh `rasi.js` plus satu fungsi dari `gerak.js`.
 | `ikon.js` | 144 | — | **SUDAH** -> `komponen/Ikon.tsx` |
 | `rasi.js` `petaRasi` | 90 dari 265 | `gerak` | **SUDAH** -> `komponen/Rasi.tsx` |
 | `sampul.js` | 233 | — | belum, dan sengaja: `aria-hidden`, hiasan |
-| `aplikasi.js` palet perintah | ~495 | `ikon` | belum |
-| `aplikasi.js` pintasan + bantuan | ~266 | — | belum |
-| `aplikasi.js` lencana XP/streak | ~60 | `ikon` | belum |
-| `aplikasi.js` bilah maju baca | ~49 | — | belum |
+| `aplikasi.js` palet perintah | ~495 | `ikon` | **SUDAH** -> `komponen/Palet.tsx` |
+| `aplikasi.js` pintasan + bantuan | ~266 | — | **SUDAH** -> `komponen/Pintasan.tsx` |
+| `aplikasi.js` lencana XP/streak | ~60 | `ikon` | **SUDAH** -> `komponen/Lencana.tsx` |
+| `aplikasi.js` bilah maju baca | ~49 | — | **SUDAH** -> `komponen/Lencana.tsx` |
 
 Yang sudah berdiri di `packages/web/src/`: `api.ts` (klien bertipe,
 satu-satunya yang tahu soal token), `gerak.ts` (`tingkatGerak()`,
@@ -1402,8 +1402,8 @@ tampilan; kuncinya DIBAGI dengan antarmuka lama), `waktu.ts` (`tanggalLokal()`
 satu-satunya pintu untuk ISO server), `sorak.tsx` (toast + `salin`),
 `util.ts` + `util.tsx` (yang TANPA JSX di `.ts`, supaya pembanding `.mjs` bisa
 mengimpornya tanpa menyeret React; `util.tsx` meneruskannya), `Cangkang.tsx`,
-`komponen/{Kode,Keadaan,Bilah,Rasi,Ikon,Sakelar,Tanda}.tsx`,
-`komponen/{rasi-geometri,ikon-bentuk}.ts`.
+`komponen/{Kode,Keadaan,Bilah,Rasi,Ikon,Sakelar,Tanda,Lencana,Pintasan,Palet}.tsx`,
+`komponen/{rasi-geometri,ikon-bentuk,pintasan-tabel,palet-cari}.ts`.
 
 **Keempat modul peng-ukur DOM SUDAH diport** (2026-10-20), beserta ruang kerja
 latihan, Ruang Coba, dan pembaca materi. Polanya satu dan dipakai keenam
@@ -1426,9 +1426,10 @@ melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
 | `rasi.js` tata peta | `komponen/rasi-geometri.ts` | `komponen/Rasi.tsx` | 201 peta utuh, 69 bentuk kurikulum |
 | `layarBahasa` | `layar/bahasa-teks.ts` | `layar/Bahasa.tsx` | 32 kurikulum x 7 profil progres |
 | `layarDasbor` | `layar/dasbor-teks.ts` | `layar/Dasbor.tsx` | 360 profil hasilan, benih 20261026 |
+| palet perintah | `komponen/palet-cari.ts` | `komponen/Palet.tsx` | 247 teks x 35 kueri, urutan penuh |
 
-Kesebelas pembanding ikut suite lewat `SKRIP_WEB` di
-`test_konten_json.TestAlgoritmaTypeScript`, dan **89 sel mutasi** di
+Kedua belas pembanding ikut suite lewat `SKRIP_WEB` di
+`test_konten_json.TestAlgoritmaTypeScript`, dan **104 sel mutasi** di
 `packages/bersama/uji/gigi-golden.py` membuktikan semuanya bisa MERAH.
 
 **`--experimental-strip-types` diberikan eksplisit** ke `node` di suite MAUPUN
@@ -1467,15 +1468,34 @@ jawaban dan `penjelasan` datang dari respons `/api/kuis/jawab`; index jawaban
 SUDAH dipetakan ulang di `sesi._acak_soal`; dan jam mode timer BERHENTI saat
 tabnya di latar lalu melanjutkan dari sisa detik yang sama (WCAG 2.2.2).
 
-**Yang BELUM, dan semuanya di `aplikasi.js` -- cangkang, bukan layar:** palet
-perintah (~495 baris, Ctrl+K, punya ingatan kemutakhiran dan kontrak combobox
-yang dipagari `TestPaletCombobox`), pintasan papan ketik beserta dialog
-bantuannya (~266), lencana XP dan streak di navbar (~60), dan bilah kemajuan
-baca (~49). Keempatnya di luar ruang lingkup "cangkang ~300 baris" yang
-dicatat di serah-terima sebelumnya. Sampai palet diport, jalan ke layar Cari
-adalah tombol "Cari apa saja" di navbar React -- tempat yang sama, tapi ia
-membuka layar penuh alih-alih palet, dan petunjuk `Ctrl K` sengaja TIDAK
-dipasang karena pintasannya belum ada.
+**CANGKANGNYA JUGA SUDAH UTUH** (2026-10-26): palet perintah (Ctrl+K, combobox
+APG, ingatan kemutakhiran 14 hari), pintasan papan ketik beserta dialog
+bantuannya, lencana XP dan streak, dan bilah kemajuan baca. Dengan itu seluruh
+1.570 baris `aplikasi.js` dan 3.408 baris `layar-belajar.js` punya padanannya di
+React.
+
+Empat catatan yang mengikat untuk cangkang:
+
+* **`PINTASAN_G` dan `PINTASAN` tinggal di `komponen/pintasan-tabel.ts`**, satu
+  definisi untuk tiga pembaca (penangan papan ketik, dialog bantuan, label
+  `<kbd>` di palet). Di sisi JS huruf itu pernah ditulis di tiga tempat.
+* **Riwayat palet memakai `ingatJson()`, bukan `ingat()`.** Kuncinya DIBAGI
+  dengan antarmuka lama, dan `ingat()` menyandikan nilainya sekali lagi -- jadi
+  array yang dititipkan lewatnya tersimpan sebagai `"\"[{...}]\""`, dan
+  `ctx.ingat` di sisi lama mengurainya jadi STRING lalu memanggil `.filter()`
+  di atasnya. Terukur di Chrome sebelum diperbaiki; sesudahnya kedua arah
+  dibuktikan: React menulis, palet lama membacanya dan membuka 41 butir; lama
+  menulis, React membacanya dengan urutan yang identik.
+* **Palet punya satu perintah LEBIH daripada antarmuka lama: "Cari".** Ia
+  mengantar ke layar Cari yang punya saringan tipe, sesuatu yang paletnya
+  sendiri tidak punya. Urutan ENAM perintah pertama tetap kontrak
+  (`TestPaletCombobox` membaca indeksnya), jadi ia disisipkan di posisi
+  kesepuluh.
+* **`.tampak` di bilah kemajuan baca butuh pengamat ukuran**, dan ini beda
+  struktural dari versi JS: di sana router MENUNGGU datanya sebelum menempelkan
+  layarnya, jadi `pasangMajuBaca()` selalu mengukur halaman yang sudah penuh.
+  Di React cangkang digambar LEBIH DULU -- saat efeknya jalan, dasbor masih
+  sebuah pusaran setinggi seratus piksel.
 
 Sesudah itu: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian backend
 di Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).

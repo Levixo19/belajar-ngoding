@@ -158,6 +158,41 @@ export function temaBerikutnya(): string {
  * localStorage yang penuh atau diblokir adalah keadaan normal di jendela
  * pribadi, dan draf yang tidak tersimpan tidak boleh menjatuhkan layarnya.
  */
+/**
+ * Ingatan yang isinya BUKAN string: daftar, objek, angka.
+ *
+ * `ingat()` di bawah hanya menerima dan mengembalikan string, dan itu cukup
+ * untuk draf kode, tab terakhir, dan pilihan bahasa. Riwayat palet bukan salah
+ * satunya -- ia sebuah array -- dan menitipkannya lewat `ingat()` dengan
+ * `JSON.stringify` sendiri menghasilkan NILAI TERSANDI GANDA di localStorage:
+ * `"\"[{...}]\""` alih-alih `[{...}]`.
+ *
+ * Itu bukan cuma tidak rapi. Kuncinya DIBAGI dengan antarmuka lama
+ * (`ctx.ingat` di `aplikasi.js`), dan di sana nilainya diurai sekali lalu
+ * langsung dipakai sebagai array -- jadi `.filter()` atas sebuah string
+ * melempar, dan palet antarmuka lama berhenti bekerja karena sesuatu yang
+ * dituliskan antarmuka BARU. Terukur di Chrome sebelum diperbaiki.
+ *
+ * Bentuk fungsi ini karena itu dibuat sama persis dengan `ctx.ingat`: satu
+ * `JSON.stringify` saat menulis, satu `JSON.parse` saat membaca.
+ */
+export function ingatJson<T>(kunci: string, nilai?: T): T | null {
+  const k = AWALAN + "ingat." + kunci;
+  if (nilai === undefined) {
+    try {
+      return JSON.parse(localStorage.getItem(k) ?? "null") as T | null;
+    } catch {
+      return null;
+    }
+  }
+  try {
+    localStorage.setItem(k, JSON.stringify(nilai));
+  } catch {
+    /* penuh atau diblokir */
+  }
+  return nilai;
+}
+
 export function ingat(kunci: string, nilai?: string): string | undefined {
   const k = AWALAN + "ingat." + kunci;
   if (nilai === undefined) {

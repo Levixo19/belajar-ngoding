@@ -570,6 +570,140 @@ BATERAI = {
                 "labelPeta",
             ),
         ]),
+    "banding-palet.mjs": (
+        "banding-palet.mjs", PAKET_WEB,
+        sumber_web("komponen/palet-cari.ts"), [
+            (
+                # Huruf yang mendarat di AWAL kata jauh lebih mungkin yang
+                # dimaksud pengetiknya. Tanpa bonusnya, "stk" tidak lagi
+                # menaruh Statistik di atas.
+                "bonus batas kata dilepas",
+                "if (diBatasKata(teks, pos)) skor += BONUS_BATAS;",
+                "if (false) skor += BONUS_BATAS;",
+                "skorBerurutan",
+            ),
+            (
+                # Batas kata DIUKUR pada teks asli, bukan bentuk kecilnya:
+                # sebagian batas kata di aplikasi ini tidak punya pemisah sama
+                # sekali, ia cuma transisi kecil->besar (`scrollTop`).
+                "batas kata diukur pada teks yang sudah dikecilkan",
+                "if (diBatasKata(teks, pos)) skor += BONUS_BATAS;",
+                "if (diBatasKata(t, pos)) skor += BONUS_BATAS;",
+                "skorBerurutan",
+            ),
+            (
+                "bonus awal teks dilepas",
+                "if (mulai === 0) skor += BONUS_AWAL;",
+                "if (false) skor += BONUS_AWAL;",
+                "skorBerurutan",
+            ),
+            (
+                # Kursor tidak maju: huruf yang sama dipakai dua kali, jadi
+                # "aa" cocok dengan teks yang cuma punya satu "a".
+                "kursor pencarian huruf tidak maju",
+                "dari = pos + 1;",
+                "dari = pos;",
+                "skorBerurutan",
+            ),
+            (
+                # `>=` membuat transisi kecil->besar berhenti dihitung batas
+                # kata, dan dengan itu seluruh kelas `camelCase` kehilangan
+                # bonusnya.
+                "transisi kecil-besar bukan batas kata",
+                "    kini === kini.toUpperCase() &&\n    kini !== kini.toLowerCase()",
+                "    false",
+                "diBatasKata",
+            ),
+            (
+                # Bonus riwayat WAJIB lebih kecil daripada bonus awal. Kalau ia
+                # menang, satu kunjungan lama mengalahkan huruf yang SUNGGUH
+                # ada di awal kata, dan pencocoknya berhenti menjawab apa yang
+                # sedang diketik.
+                "bonus riwayat melampaui bonus awal",
+                "const BONUS_RIWAYAT = 3;",
+                "const BONUS_RIWAYAT = 9;",
+                "saringPerintah",
+            ),
+            (
+                # Menggabung dua medan jadi satu string membuat batas
+                # antar-medan jadi batas kata yang sah, sehingga huruf yang
+                # MELOMPAT dari judul ke keterangan terbaca sebagai kecocokan.
+                "dua medan digabung jadi satu string",
+                'Math.max(\n      skorBerurutan(d.label || "", kata),\n'
+                '      skorBerurutan(d.ket || "", kata),\n    )',
+                'skorBerurutan((d.label || "") + " " + (d.ket || ""), kata)',
+                "saringPerintah",
+            ),
+            (
+                # Kueri KOSONG mengembalikan daftar apa adanya. Mengurutkannya
+                # berarti palet menyambut orangnya dengan susunan berbeda tiap
+                # kali Ctrl+K ditekan, tepat di layar yang ia pakai untuk
+                # menghafal letak sesuatu.
+                "kueri kosong ikut diurut riwayat",
+                "if (!kata) return daftar;",
+                "if (false) return daftar;",
+                "saringPerintah",
+            ),
+            (
+                # Riwayat MENAIKKAN kecocokan yang sudah ada, ia tidak pernah
+                # menciptakannya. Kebalikannya membuat kueri berhenti berarti
+                # apa pun.
+                "riwayat menciptakan kecocokan",
+                "if (skor > SKOR_GAGAL) {",
+                "if (skor > SKOR_GAGAL || pernah.has(d.href)) {",
+                "saringPerintah",
+            ),
+            (
+                # `sort` dijamin stabil sejak ES2019, jadi baris berskor sama
+                # keluar dalam urutan daftar asalnya. Pemecah seri buatan
+                # justru satu-satunya cara urutan itu bisa rusak.
+                "pemecah seri buatan ditambahkan",
+                "bernilai.sort((a, b) => b.skor - a.skor);",
+                "bernilai.sort((a, b) => b.skor - a.skor || "
+                "a.d.href.localeCompare(b.d.href));",
+                "saringPerintah",
+            ),
+            (
+                "satu hari jadi sepersepuluh",
+                "const HARI_MS = 86400000;",
+                "const HARI_MS = 8640000;",
+                "riwayatPotong",
+            ),
+            (
+                "umur dibandingkan eksklusif",
+                "riwayat.filter((r) => r.u >= batas)",
+                "riwayat.filter((r) => r.u > batas)",
+                "riwayatPotong",
+            ),
+            (
+                # Satu alamat satu butir. Membiarkan yang lama membuat satu
+                # tujuan yang sering dibuka menumpuk jadi belasan butir yang
+                # isinya sama.
+                "riwayat tidak membuang duplikat",
+                "return [{ k, u: sekarang }, ...riwayat.filter((r) => r.k !== k)];",
+                "return [{ k, u: sekarang }, ...riwayat];",
+                "riwayatNaikkan",
+            ),
+            (
+                # Predikat terakhir `() => true` satu-satunya bentuk yang
+                # membuat butir MUSTAHIL hilang. Yang menyebut tipenya satu per
+                # satu akan menelan tipe KEEMPAT yang ditambahkan `/api/cari`
+                # suatu hari -- tanpa error, tanpa baris di layar.
+                "rombongan Isi menyebut tipe satu per satu",
+                '{ label: "Isi", punya: () => true },',
+                '{ label: "Isi", punya: (d) => d.tipe === "materi" || '
+                'd.tipe === "kuis" || d.tipe === "latihan" },',
+                "kelompokkan",
+            ),
+            (
+                # Label di atas nol butir menjanjikan sesuatu yang tidak ada di
+                # bawahnya.
+                "rombongan kosong tetap diberi penanda",
+                ").filter((r) => r.isi.length > 0);",
+                ");",
+                "kelompokkan",
+            ),
+        ]),
     "banding-dasbor.mjs": (
         "banding-dasbor.mjs", PAKET_WEB,
         sumber_web("layar/dasbor-teks.ts"), [
