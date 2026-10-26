@@ -22453,3 +22453,71 @@ class TestKeadaanDipanggilBenar(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestPortSuaraTypeScript(unittest.TestCase):
+    """`suara.ts` harus berperilaku IDENTIK dengan `suara.js`.
+
+    Bukan dengan dibaca berdampingan: driver `_SKRIP_SUARA` di atas sudah
+    menerima jalur modul lewat `process.argv[2]` dan sudah punya AudioContext
+    palsu beserta pencacahnya. Jadi yang dijalankan driver yang SAMA atas dua
+    modul, dan yang diadu keluarannya -- bukan harness kedua yang suatu hari
+    menstub hal yang berbeda dan membuat dua modul terlihat sepakat karena
+    keduanya diuji dengan dunia yang berbeda.
+
+    Ini pembanding ke-13 di repo ini, dan satu-satunya yang memakai ulang
+    harness tes alih-alih membangun yang baru -- bisa begitu justru karena
+    drivernya sudah berparameter sejak awal.
+
+    Cacat yang DITEMUKAN pembanding ini saat pertama dijalankan: port membaca
+    `globalThis.AudioContext` sementara aslinya `window.AudioContext`. Di
+    peramban keduanya objek yang sama, jadi selisihnya mustahil diamati di
+    sana; di bawah driver ini mesin audionya diam-diam tidak pernah menyala.
+    """
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node")
+    def test_suara_ts_sepadan_dengan_suara_js(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        js = os.path.join(akar, "webapp", "statik", "js", "suara.js")
+        ts = os.path.join(akar, "packages", "web", "src", "suara.ts")
+        if not os.path.exists(ts):
+            self.skipTest("packages/web/src/suara.ts tidak ada")
+
+        with tempfile.TemporaryDirectory() as d:
+            driver = os.path.join(d, "uji-suara.mjs")
+            with open(driver, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_SUARA)
+            hasil = {}
+            for nama, modul in (("js", js), ("ts", ts)):
+                # Pelucut tipe diberikan EKSPLISIT: tanpa flag ini node di
+                # bawah 23.6 mati dengan ERR_UNKNOWN_FILE_EXTENSION, dan yang
+                # terbaca adalah "port suara gagal" alih-alih "node terlalu
+                # tua".
+                r = subprocess.run(
+                    ["node", "--experimental-strip-types", driver, modul],
+                    capture_output=True, text=True, timeout=120)
+                self.assertEqual(r.returncode, 0,
+                                 f"{nama}: {r.stderr[-1200:]}")
+                hasil[nama] = json.loads(r.stdout)
+
+        self.assertEqual(hasil["ts"]["langkah"]["ekspor"], [],
+                         "suara.ts kehilangan ekspor yang dipakai drivernya")
+
+        # Diadu per LANGKAH, bukan sebagai satu objek: pesan "dua objek besar
+        # berbeda" tidak memberi tahu langkah mana yang bergeser.
+        kiri, kanan = hasil["js"]["langkah"], hasil["ts"]["langkah"]
+        self.assertEqual(sorted(kiri), sorted(kanan),
+                         "daftar langkah drivernya sendiri berbeda")
+        beda = [k for k in sorted(kiri) if kiri[k] != kanan[k]]
+        self.assertEqual(
+            beda, [],
+            "suara.ts berperilaku beda dari suara.js di langkah: "
+            + ", ".join(f"{k} (js={kiri[k]!r}, ts={kanan[k]!r})" for k in beda))
+        # Lantai populasi: driver yang mencetak objek kosong membuat
+        # perbandingan di atas hijau tanpa menguji apa pun.
+        self.assertGreaterEqual(len(kiri), 25,
+                                f"cuma {len(kiri)} langkah yang diadu")
+        # Dan pencacah mesinnya juga harus sepadan -- angka inilah yang
+        # membuktikan kedua modul benar-benar MENYENTUH mesin audio sama
+        # banyak, bukan cuma menjawab sama.
+        self.assertEqual(hasil["js"]["cacah"], hasil["ts"]["cacah"],
+                         "jumlah konstruksi konteks/osilator/vibrate berbeda")

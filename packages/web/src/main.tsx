@@ -35,6 +35,7 @@ import { Kuis } from "./layar/Kuis.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 import { ingat, terapkanTampilan } from "./lokal.ts";
 import { pasangJedaMata } from "./istirahat.ts";
+import { tandaiPreferensi } from "./suara.ts";
 import { PenyediaJendela } from "./komponen/Jendela.tsx";
 import { Sorak } from "./sorak.tsx";
 
@@ -337,6 +338,12 @@ terapkanTampilan();
 /* Pengingat 20-20-20. Dipasang di luar React, sejajar dengan tampilan di
    atas: ia satu interval global, bukan keadaan sebuah layar. */
 pasangJedaMata();
+
+/* Preferensi non-visual DICATAT ke akar dokumen, dan itu satu-satunya
+   yang boleh jalan di sini: apa pun yang membangun AudioContext sebelum
+   ada gestur asli membangunnya dalam keadaan ditolak -- dan konteks yang
+   ditolak itu satu-satunya konteks yang akan pernah ada. */
+tandaiPreferensi(document.documentElement);
 
 createRoot(akar).render(
   <StrictMode>

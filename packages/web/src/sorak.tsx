@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { rasakanPerayaan } from "./suara.ts";
 
 import { tingkatGerak } from "./gerak.ts";
 
@@ -187,6 +188,19 @@ export interface Hadiah {
  * pelajar sekarang, bukan nanti -- dan ia bisa terjadi bersamaan dengan XP
  * yang naik, jadi ia bukan cabang `else`.
  */
+/** Tingkat perayaan, DISIMPULKAN dari isi hadiah -- satu kali, di satu
+ *  tempat. Padanan `tingkatRayakan()` di `inti.js`, dan urutannya sama:
+ *  badge atau naik level mengalahkan XP. Kalau tiap pemanggil menyimpulkan
+ *  ulang "ini peristiwa sebesar apa", suatu hari dua di antaranya akan
+ *  menyimpulkan beda. */
+export function tingkatRayakan(hadiah: Hadiah | null | undefined,
+                               { diam = false } = {}): "acara" | "capai" | "sentuh" {
+  if (!hadiah) return "sentuh";
+  if (hadiah.naik_level || (hadiah.badge || []).length) return "acara";
+  if ((hadiah.xp_tambah || 0) > 0 && !diam) return "capai";
+  return "sentuh";
+}
+
 export function rayakan(hadiah: Hadiah | null | undefined,
                         { diam = false } = {}): void {
   if (!hadiah) return;
@@ -212,4 +226,12 @@ export function rayakan(hadiah: Hadiah | null | undefined,
     sorak(`Badge baru: ${judul}`, "tumbuh", 5);
     umumkan(`Badge baru: ${judul}.`);
   }
+
+  /* Saluran NON-VISUAL menempel DI SINI, bukan di tiap layar, karena
+     `tingkatRayakan()` di atas sudah memutuskan tingkatnya. Ia memagari
+     dirinya sendiri lewat `bacaSuara()`/`bacaGetar()` -- bawaannya mati, jadi
+     pemanggilan tanpa syarat di sini tetap berujung diam sampai orangnya
+     memilih sebaliknya. */
+  const tingkat = tingkatRayakan(hadiah, { diam });
+  if (tingkat !== "sentuh") rasakanPerayaan(tingkat);
 }

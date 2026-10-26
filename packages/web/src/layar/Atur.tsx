@@ -24,6 +24,9 @@ import { adaGerak, tingkatGerak } from "../gerak.ts";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { BlokBahaya, BlokData } from "../komponen/BlokData.tsx";
 import { bacaJedaMata, setelJedaMata } from "../istirahat.ts";
+import { adaHaptik, bacaGetar, bacaSuara, mainkanContoh, setelSuara,
+         SUARA, tandaiPreferensi, type TingkatSuara }
+  from "../suara.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import {
@@ -226,6 +229,8 @@ export function Atur() {
   // membaca ulang di tiap render membuat saklar ini satu-satunya
   // kendali di halaman yang tidak bergerak sampai halaman dimuat ulang.
   const [jedaMata, setJedaMata] = useState<boolean>(bacaJedaMata);
+  const [suara, setSuara] = useState<TingkatSuara>(bacaSuara);
+  const [getar, setGetar] = useState<boolean>(bacaGetar);
 
   useEffect(() => {
     let dibatalkan = false;
@@ -418,26 +423,63 @@ export function Atur() {
               nyala={jedaMata}
               onUbah={(v) => { setJedaMata(v); setelJedaMata(v); }}
             />
-            {/* Suara dan getar masih di antarmuka lama, dan itu DIKATAKAN di
-                layar alih-alih dihilangkan diam-diam. `suara.js` 16 KB dan
-                memegang satu konteks audio beserta peredam gandanya; pembaca
-                kedua untuk kunci yang sama akan membuat dua konteks audio
-                hidup bersamaan di tab yang sama.
+            <div className="medan-judul">Bunyi</div>
+            <div className="medan-ket">
+              Bawaannya MATI, dan bunyi di sini tidak pernah jadi satu-satunya
+              cara mengetahui sesuatu -- semua yang berbunyi juga terlihat.
+            </div>
+            <div className="petak petak-3">
+              {SUARA.map(([nilai, nama, ket]) => (
+                <KartuPilihan
+                  key={nilai}
+                  nama={nama}
+                  ket={ket}
+                  aktif={suara === nilai}
+                  onPilih={() => {
+                    // Peragaan dijalankan SESUDAH tingkatnya dipasang, jadi
+                    // yang didengar memang tingkat yang barusan dipilih.
+                    // Kartu yang memperagakan tingkat yang belum berlaku
+                    // memperagakan sesuatu yang bohong.
+                    setSuara(setelSuara({ suara: nilai }).suara);
+                    tandaiPreferensi(document.documentElement);
+                    if (nilai === "mati") {
+                      // "Mati" memang hening, dan hening tidak bisa dibedakan
+                      // dari rusak -- jadi ia dikatakan dengan kata.
+                      sorak("Bunyi dimatikan.", "", 1.6);
+                    } else {
+                      mainkanContoh("suara");
+                    }
+                  }}
+                />
+              ))}
+            </div>
 
-                Kalimatnya menyebut "alamat yang sama", bukan "browser yang
-                sama", dan itu bukan kehati-hatian berlebihan: `localStorage`
-                dipisah per ORIGIN, dan di pengembangan React dilayani 5173
-                sementara antarmuka lama 7788 -- dua kotak penyimpanan yang
-                berbeda. Keduanya baru benar-benar berbagi setelah cutover. */}
-            <Keadaan
-              judul="Suara dan getar masih di antarmuka lama"
-              ket={
-                "Keduanya dikendalikan `suara.js`, yang memegang satu konteks " +
-                "audio untuk seluruh aplikasi. Setelannya memakai kunci yang " +
-                "sama, jadi begitu antarmuka ini dilayani dari alamat yang " +
-                "sama, yang kamu pilih di sana langsung berlaku di sini."
-              }
-            />
+            {adaHaptik() ? (
+              <SakelarBaris
+                judul="Getar perangkat"
+                ket={
+                  "Satu sentakan pendek untuk peristiwa yang jarang saja: " +
+                  "naik level dan badge baru. Tidak pernah untuk jawaban yang " +
+                  "salah."
+                }
+                nyala={getar}
+                onUbah={(v) => {
+                  setGetar(setelSuara({ getarPerangkat: v }).getarPerangkat);
+                  tandaiPreferensi(document.documentElement);
+                  if (v) mainkanContoh("getar");
+                }}
+              />
+            ) : (
+              /* Saklar yang pasti berujung "perangkatmu tidak bisa" adalah
+                 tombol yang berujung penolakan, dan aturan itu berlaku untuk
+                 saklar juga. Hampir seluruh desktop mendarat di sini, jadi
+                 yang ditampilkan keadaannya -- bukan saklar yang mati. */
+              <Keadaan
+                jenis="kunci"
+                judul="Perangkat ini tidak punya motor getar"
+                ket="Saklarnya muncul sendiri di perangkat yang punya."
+              />
+            )}
           </div>
         </div>
       </section>

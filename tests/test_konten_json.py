@@ -388,6 +388,52 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                          "jalur api berawalan ganda: `ambil`/`kirim` sudah "
                          "menambahkan `/api/` sendiri")
 
+    def test_layar_tidak_memanggil_isyarat_langsung(self):
+        """`isyarat()` diekspor, tapi bukan untuk layar.
+
+        Di antarmuka lama `inti.js` berdiri di tengah dan sengaja TIDAK
+        meneruskan fungsi ini: layar yang bisa memanggilnya langsung adalah
+        layar yang bisa mengarang bunyi barunya sendiri, dan pada saat itu
+        "tiga tingkat" berhenti menggambarkan apa yang sebenarnya terdengar.
+        Di React tidak ada perantara semacam itu, jadi kebijakannya dijaga di
+        sini -- bukan oleh ketiadaan ekspornya, karena ekspornya DITUNTUT
+        driver uji yang menagih permukaan modul ini sama dengan `suara.js`.
+
+        Pintu yang sah dua: `mainkanContoh()` untuk peragaan di Pengaturan,
+        dan `rasakanPerayaan()` yang menempel pada satu keputusan di
+        `rayakan()`.
+        """
+        import re
+        src = os.path.join(AKAR, "packages", "web", "src")
+        if not os.path.isdir(src):
+            self.skipTest("packages/web/src tidak ada")
+        pola = re.compile(r"\bisyarat\s*\(")
+        salah, diperiksa = [], 0
+        for akar, _dir, berkas in os.walk(src):
+            for n in sorted(berkas):
+                if not n.endswith((".ts", ".tsx")):
+                    continue
+                jalur = os.path.join(akar, n)
+                rel = os.path.relpath(jalur, src)
+                with open(jalur, encoding="utf-8") as f:
+                    isi = f.read()
+                diperiksa += 1
+                if rel == "suara.ts":
+                    continue          # pemiliknya
+                # Komentar dibuang lebih dulu: paragraf yang MENJELASKAN
+                # kebijakan ini menyebut `isyarat()` beberapa kali, dan sapuan
+                # yang menghitungnya memaksa penjelasannya dihapus supaya
+                # pagarnya hijau -- persis kebalikan dari yang diinginkan.
+                tanpa_komentar = re.sub(r"/\*.*?\*/", "", isi, flags=re.S)
+                tanpa_komentar = re.sub(r"//[^\n]*", "", tanpa_komentar)
+                if pola.search(tanpa_komentar):
+                    salah.append(rel)
+        self.assertGreaterEqual(diperiksa, 20,
+                                f"cuma {diperiksa} berkas TS yang disapu")
+        self.assertEqual(salah, [],
+                         "layar/komponen memanggil `isyarat()` langsung; "
+                         "pintunya `mainkanContoh()` atau `rasakanPerayaan()`")
+
     def test_keluaran_identik_dengan_python(self):
         import re
         import subprocess
