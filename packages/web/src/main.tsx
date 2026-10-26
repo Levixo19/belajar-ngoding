@@ -28,6 +28,7 @@ import { Pustaka } from "./layar/Pustaka.tsx";
 import { Statistik } from "./layar/Statistik.tsx";
 import { Belajar } from "./layar/Belajar.tsx";
 import { Coba, Latihan } from "./layar/Kerja.tsx";
+import { Kuis } from "./layar/Kuis.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 import { ingat, terapkanTampilan } from "./lokal.ts";
 import { Sorak } from "./sorak.tsx";
@@ -46,9 +47,14 @@ interface Bahasa {
   siap: boolean;
 }
 
+/* Hanya medan `/api/awal` yang benar-benar DIBACA router ini. Setelan
+   dibawa sebagai peta opsi; yang dipakai di sini cuma `acak_bawaan`,
+   yang diteruskan ke layar kuis. Layar itu dulu memakunya ke `true`,
+   jadi mematikan setelannya mengubah persis nol hal di browser. */
 interface Awal {
   bahasa: Bahasa[];
   versi: string;
+  konfigurasi?: Record<string, { nilai?: unknown }>;
 }
 
 interface Rute {
@@ -199,6 +205,17 @@ function Isi({
     return <Karier id={arg} />;
   }
 
+  if (nama === "kuis" && arg) {
+    return (
+      <Kuis
+        kunciBahasa={arg}
+        indeks={Number(arg2 ?? 0) || 0}
+        acakBawaan={awal.konfigurasi?.acak_bawaan?.nilai !== false}
+        onKonteks={onKonteks}
+      />
+    );
+  }
+
   if (nama === "materi" && arg) {
     return (
       <Belajar
@@ -267,11 +284,11 @@ function Isi({
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Sembilan layar sudah diport: Langit, Peta Karier, Pustaka,
+          Sepuluh layar sudah diport: Langit, Peta Karier, Pustaka,
           Statistik, Pengaturan, Tebak keluarannya, Ruang Coba, ruang
-          kerja latihan, dan pembaca materi. Yang tersisa dasbor, halaman
-          bahasa, kuis, bookmark, catatan, dan pencarian. Kedua antarmuka
-          memakai API serta berkas gaya yang sama.
+          kerja latihan, pembaca materi, dan kuis. Yang tersisa dasbor,
+          halaman bahasa, bookmark, catatan, dan pencarian. Kedua
+          antarmuka memakai API serta berkas gaya yang sama.
         </p>
         <div className="deret">
           <a className="tbl tbl-utama" href="#/langit">
