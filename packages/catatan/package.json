@@ -1,0 +1,19 @@
+{
+  "name": "@belajar/catatan",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Layanan pencarian catatan: Express + MongoDB. TAMBAHAN, bukan pengganti -- aplikasinya jalan penuh tanpa ini.",
+  "scripts": {
+    "mulai": "node --experimental-strip-types src/indeks.ts",
+    "tipe": "tsc --noEmit",
+    "uji": "node --experimental-strip-types uji/uji-cari.ts"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongodb": "^6.21.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}

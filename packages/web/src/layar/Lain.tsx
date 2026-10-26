@@ -157,6 +157,130 @@ export function Bookmark() {
 
 /* =============================================================== catatan */
 
+/* Alamat layanan pencarian catatan (Express + MongoDB, `packages/catatan`).
+ *
+ * Ia TAMBAHAN: aplikasinya jalan penuh tanpa layanan ini, dan layar di bawah
+ * menampilkan seluruh catatan apa adanya seperti sebelumnya. Yang hilang kalau
+ * ia tidak jalan cuma kotak pencarian -- dan layar MENGATAKAN itu beserta
+ * perintah untuk menyalakannya, bukan membiarkan kotaknya diam tanpa sebab. */
+const LAYANAN_CARI = "http://127.0.0.1:7799";
+
+interface HasilCariCatatan {
+  kunci: string;
+  teks: string;
+  diubah: string;
+  skor: number;
+}
+
+type KeadaanLayanan = "belum" | "mencari" | "ada" | "mati" | "takjalan";
+
+/**
+ * Kotak pencarian catatan, dengan tiga keadaan yang masing-masing mengatakan
+ * sesuatu yang berbeda:
+ *
+ * * **`takjalan`** -- `fetch` sendiri gagal: layanannya tidak menyala. Yang
+ *   ditampilkan perintah untuk menyalakannya.
+ * * **`mati`** -- layanannya menjawab 503: ia hidup, MongoDB-nya tidak.
+ *   Kalimatnya datang dari layanan itu, bukan dikarang di sini.
+ * * **`ada`** -- hasil berperingkat dari indeks teks Mongo.
+ *
+ * Ketiganya dipisah karena jalan keluarnya berbeda, dan "pencarian gagal" yang
+ * menyatukan keduanya mengirim orang menyalakan hal yang salah.
+ */
+function CariCatatan({ onHasil }: { onHasil: (k: string[] | null) => void }) {
+  const [kata, setKata] = useState("");
+  const [keadaan, setKeadaan] = useState<KeadaanLayanan>("belum");
+  const [pesan, setPesan] = useState("");
+  const [jumlah, setJumlah] = useState(0);
+
+  const cari = async (q: string) => {
+    if (q.trim().length < 2) {
+      setKeadaan("belum");
+      onHasil(null);
+      return;
+    }
+    setKeadaan("mencari");
+    try {
+      const r = await fetch(
+        LAYANAN_CARI + "/cari?q=" + encodeURIComponent(q.trim()),
+      );
+      const d = (await r.json()) as
+        { hasil?: HasilCariCatatan[]; galat?: string };
+      if (!r.ok) {
+        setKeadaan("mati");
+        setPesan(d.galat ?? "Pencarian tidak tersedia.");
+        onHasil(null);
+        return;
+      }
+      const hasil = d.hasil ?? [];
+      setKeadaan("ada");
+      setJumlah(hasil.length);
+      onHasil(hasil.map((h) => h.kunci));
+    } catch {
+      setKeadaan("takjalan");
+      onHasil(null);
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: "var(--s4)" }}>
+      <div className="deret deret-rapat">
+        <input
+          type="text"
+          value={kata}
+          placeholder="Cari di dalam catatanmu…"
+          aria-label="Kata yang dicari di dalam catatan"
+          onChange={(e) => setKata(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") void cari(kata);
+          }}
+        />
+        <button type="button" className="tbl tbl-utama"
+                onClick={() => { void cari(kata); }}>
+          <Ikon nama="cari" ukuran={16} />
+          Cari
+        </button>
+        {keadaan === "ada" ? (
+          <button type="button" className="tbl tbl-hantu"
+                  onClick={() => { setKata(""); setKeadaan("belum"); onHasil(null); }}>
+            Tampilkan semua
+          </button>
+        ) : null}
+      </div>
+
+      {keadaan === "ada" ? (
+        <div className="baris-sisi" style={{ marginTop: "var(--s2)" }}>
+          {`${jumlah} catatan cocok, paling relevan dulu.`}
+        </div>
+      ) : null}
+      {keadaan === "mati" ? (
+        <div style={{ marginTop: "var(--s3)" }}>
+          <Keadaan jenis="kunci" gambar="belum"
+                   judul="Pencarian catatan tidak tersedia" ket={pesan} />
+        </div>
+      ) : null}
+      {keadaan === "takjalan" ? (
+        <div style={{ marginTop: "var(--s3)" }}>
+          <Keadaan
+            jenis="kunci"
+            gambar="bantuan"
+            judul="Layanan pencarian catatan belum jalan"
+            ket={
+              "Catatanmu tetap utuh dan tetap tampil lengkap di bawah -- yang " +
+              "belum ada cuma pencariannya. Nyalakan dengan dua perintah:"
+            }
+            aksi={
+              <code className="berkas-jalur">
+                podman start belajar-mongo && npm run mulai --workspace @belajar/catatan
+              </code>
+            }
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 interface EntriCatatan {
   kunci: string;
   tipe: string;
@@ -174,6 +298,10 @@ export function Catatan() {
   const [galat, setGalat] = useState("");
   const [putaran, setPutaran] = useState(0);
   const [ubah, setUbah] = useState<EntriCatatan | null>(null);
+  // `null` berarti "tidak sedang menyaring". Daftar kunci, bukan daftar
+  // catatan: isi dan urutan tampilannya tetap milik `/api/catatan/semua` --
+  // layanan pencarian cuma memberi tahu MANA yang cocok dan dalam urutan apa.
+  const [saring, setSaring] = useState<string[] | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -219,13 +347,23 @@ export function Catatan() {
         </div>
       </header>
 
+      {d && d.daftar.length ? <CariCatatan onHasil={setSaring} /> : null}
+
       {galat ? (
         <Keadaan jenis="salah" gambar="belum" judul="Catatan tidak terbaca" ket={galat} />
       ) : !d ? (
         <div className="pusaran" aria-label="Memuat" />
       ) : d.daftar.length ? (
         <div className="senarai">
-          {d.daftar.map((x) => (
+          {(saring === null
+            ? d.daftar
+            : // Diurut mengikuti PERINGKAT layanan, bukan urutan berkasnya:
+              // yang paling relevan harus berdiri di atas, dan itu seluruh
+              // alasan indeks teks dipakai alih-alih `Array.filter`.
+              saring
+                .map((k) => d.daftar.find((x) => x.kunci === k))
+                .filter((x): x is EntriCatatan => Boolean(x))
+          ).map((x) => (
             <div className="kartu" key={x.kunci}>
               <div className="deret" style={{ marginBottom: "var(--s3)" }}>
                 {/* Catatan yang halamannya hilang tetap DITAMPILKAN, cuma

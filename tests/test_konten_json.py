@@ -213,6 +213,43 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                  ("banding-dasbor.mjs", r"(\d+) perbandingan", 2000),
                  ("banding-palet.mjs", r"(\d+) perbandingan", 10000))
 
+    def test_layanan_catatan(self):
+        """Uji `packages/catatan` -- lapisan murninya selalu, Mongo kalau ada.
+
+        Dijalankan dari suite ini supaya ia tidak jadi tes yang cuma diingat
+        orang yang menulisnya. Lapisan MongoDB-nya MELEWATI diri sendiri kalau
+        containernya tidak jalan, dan pesannya menyebut perintah untuk
+        menyalakannya -- jadi "dilewati" di sini tidak pernah berarti "lulus
+        diam-diam", dan suite tidak pernah merah cuma karena sebuah container
+        sedang dimatikan.
+
+        Paketnya juga dilewati kalau `node_modules`-nya belum ada: `express`
+        dan `mongodb` adalah SATU-SATUNYA dependensi runtime di seluruh repo
+        ini, dan aplikasi utamanya memang harus tetap jalan tanpa `npm
+        install`.
+        """
+        import re
+        import subprocess
+        paket = os.path.join(AKAR, "packages", "catatan")
+        if not os.path.isdir(paket):
+            self.skipTest("packages/catatan tidak ada")
+        if not os.path.isdir(os.path.join(AKAR, "node_modules", "mongodb")):
+            self.skipTest("dependensi @belajar/catatan belum dipasang "
+                          "(npm install --workspace @belajar/catatan)")
+        hasil = subprocess.run(
+            ["node", "--experimental-strip-types",
+             os.path.join(paket, "uji", "uji-cari.ts")],
+            cwd=paket, capture_output=True, text=True, timeout=300)
+        keluaran = (hasil.stdout + hasil.stderr).strip()
+        self.assertEqual(hasil.returncode, 0,
+                         "uji layanan catatan gagal.\n" + keluaran[:4000])
+        # Lantai populasi: lapisan murninya lima pemeriksaan dan ia TIDAK
+        # pernah dilewati. Tanpa tagihan ini, berkas uji yang jadi kosong
+        # tetap melapor kode keluar nol.
+        cocok = re.search(r"(\d+) pemeriksaan lulus", keluaran)
+        self.assertIsNotNone(cocok, f"keluaran tak terbaca:\n{keluaran[:800]}")
+        self.assertGreaterEqual(int(cocok.group(1)), 5, keluaran[:800])
+
     def test_keluaran_identik_dengan_python(self):
         import re
         import subprocess

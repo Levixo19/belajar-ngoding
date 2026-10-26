@@ -62,8 +62,10 @@ BELAJAR_SKIP_LAMBAT=1 python3 -m unittest discover -s tests -t .  # ~50 detik
 python3 alat/ekspor_konten.py --tulis    # perbarui packages/konten/ sesudah data/ berubah
 BELAJAR_BAHASA=go python3 -m unittest tests.test_solutions        # satu bahasa
 
-npm install          # SATU perkakas (@types/node). Aplikasinya tidak butuh ini
-npm run tipe         # tsc --noEmit atas packages/bersama
+npm install          # perkakas + dependensi @belajar/catatan (express, mongodb).
+                     # Aplikasi utamanya tidak butuh satu pun dari ini
+npm run tipe         # tsc --noEmit atas ketiga paket TypeScript
+npm run catatan      # layanan pencarian catatan (butuh container MongoDB)
 npm run golden       # adu port TypeScript (sorot, beda) dengan rekaman Python
 npm run gigi --workspace @belajar/bersama   # baterai mutasi: pagarnya bisa merah?
 python3 alat/golden_bersama.py --tulis   # perbarui rekaman sesudah sorot/galat/beda berubah
@@ -164,10 +166,12 @@ belajar sendiri — semuanya dipinjam.
 
 ### Paket TypeScript (`packages/`)
 
-Workspace npm. Tidak ada langkah build: Node 24 menjalankan `.ts` langsung.
+Workspace npm. Tidak ada langkah build untuk `bersama` dan `catatan`: Node
+menjalankan `.ts` langsung. `web` dibundel Vite.
 
 | Modul | Tanggung jawab |
 |---|---|
+| `packages/catatan/` | Layanan pencarian catatan (Express + MongoDB). TAMBAHAN; aplikasinya jalan penuh tanpanya |
 | `packages/konten/` | Seluruh kurikulum sebagai JSON + `tipe.ts`. DIHASILKAN `alat/ekspor_konten.py` |
 | `packages/bersama/src/sorot.ts` | Pemindai sintaks, port `inti/sorot.py`. NOL rujukan ke `document` |
 | `packages/bersama/src/beda.ts` | Penjelas beda keluaran, port `inti/beda.py` + `difflib.SequenceMatcher` |
@@ -1497,8 +1501,60 @@ Empat catatan yang mengikat untuk cangkang:
   Di React cangkang digambar LEBIH DULU -- saat efeknya jalan, dasbor masih
   sebuah pusaran setinggi seratus piksel.
 
+## Tahap 1,5 -- Express + MongoDB (2026-10-26)
+
+`packages/catatan`: layanan pencarian catatan. **TAMBAHAN, bukan pengganti** --
+aplikasinya jalan penuh tanpa paket ini, dan yang ditambahkan satu kemampuan
+yang versi JSON memang tidak punya: pencarian teks BERPERINGKAT di dalam isi
+catatan. Dengan itu keempat huruf MERN terpakai di pekerjaan nyata, bukan di
+demo.
+
+```bash
+podman run -d --name belajar-mongo \
+  -p 127.0.0.1:27017:27017 -v belajar-mongo:/data/db docker.io/library/mongo:8
+npm run catatan        # http://127.0.0.1:7799
+npm run uji --workspace @belajar/catatan
+```
+
+Yang mengikat (rincian beserta angkanya di `packages/catatan/README.md`):
+
+* **Berkas JSON tetap SUMBER KEBENARAN; Mongo cuma INDEKS.** Arah datanya satu:
+  `~/.belajar_ngoding_catatan.json` -> Mongo. NOL jalur tulis ke berkas itu di
+  seluruh paket. Pengaman yang melindunginya -- karantina, `.bak`, tulis
+  atomik -- hidup di `pelajar/simpanan.py`, dan tidak satu pun dari itu ada di
+  container yang bisa dibuang dengan satu perintah. Konsekuensinya: Mongo yang
+  mati tidak pernah berarti catatan yang hilang, ia cuma berarti pencarian yang
+  tidak tersedia -- dan layarnya MENGATAKAN itu beserta perintah untuk
+  menyalakannya.
+* **Progres pelajar tidak pernah menyentuh Mongo.** Untuk 899 byte progres satu
+  pengguna, Mongo tidak memberi keuntungan teknis apa pun.
+* **Bind loopback, dan `HOST` KONSTANTA** -- sengaja tidak dibaca dari
+  lingkungan. Variabel yang bisa menaikkannya ke `0.0.0.0` adalah pagar yang
+  bisa dilepas tanpa menyentuh satu baris kode, dan pagar seperti itu selalu
+  dilepas "sebentar saja" lebih dulu. Mongo tanpa autentikasi SAH hanya selama
+  syarat itu berlaku.
+* **CORS daftar putih, bukan `*`.** Hanya asal loopback. `*` di layanan yang
+  membacakan catatan pribadi berarti halaman mana pun di internet yang dibuka
+  di peramban ini bisa membacanya -- bind loopback tidak menolong, karena yang
+  memanggil justru peramban milik pemiliknya.
+* **`default_language: "none"`** di indeks teksnya: MongoDB tidak punya stemmer
+  Indonesia, dan `"english"` memotong yang bukan akhiran ("sedang" kehilangan
+  "ing"-nya). Harganya pencarian per kata utuh, dan itu jujur.
+* **Penyelarasan dipicu `mtimeMs`.** Indeks yang ditulis ulang pada setiap
+  huruf adalah indeks yang suatu hari ditulis ulang saat seseorang sedang
+  membacanya.
+* **Database uji `belajar_uji`**, bukan `belajar`.
+
+Ujinya ikut suite lewat `test_konten_json.TestAlgoritmaTypeScript.
+test_layanan_catatan`: lima pemeriksaan lapisan murni SELALU jalan, tujuh
+lapisan Mongo MELEWATI diri sendiri kalau containernya mati -- dengan pesan
+yang menyebut perintah penyalaannya, jadi "dilewati" tidak pernah berarti
+"lulus diam-diam". Lima dari enam mutan memerah; yang keenam batasnya diukur
+dan ditulis (urutan `find()` tanpa `sort` implementation-defined di MongoDB,
+terukur kedua arah).
+
 Sesudah itu: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian backend
-di Tahap 2 yang juga ditunda), lalu Express + MongoDB (Tahap 1,5).
+di Tahap 2 yang juga ditunda).
 
 **Tiga cacat ikut ketemu di JALUR YANG SUDAH ADA selama ronde ini, dan
 ketiganya tidak menimbulkan satu pun error:**
