@@ -2136,6 +2136,19 @@ function contohAwal(bahasa) {
     typescript: 'const nama: string = "dunia";\nconsole.log(`Halo, ${nama}!`);\n',
     fedora: '#!/usr/bin/env bash\n\nset -euo pipefail\n\n'
           + 'nama="dunia"\nprintf \'Halo, %s!\\n\' "$nama"\n',
+    git: '#!/usr/bin/env bash\n\nset -euo pipefail\n\n'
+       + '# Bekerja di direktori sementara supaya repositorimu sendiri\n'
+       + '# tidak pernah tersentuh -- idiom yang sama dengan kerangka\n'
+       + '# editor latihan Git.\n'
+       + 'kerja="$(mktemp -d)"\ntrap \'rm -rf "$kerja"\' EXIT\n'
+       + 'cd "$kerja"\n\n'
+       + 'git init -q\ngit config user.name "Andi"\n'
+       + 'git config user.email "andi@contoh.id"\n\n'
+       + 'echo "Halo, dunia!" > catatan.txt\ngit add catatan.txt\n'
+       + 'git commit -qm "Catatan pertama"\n\n'
+       + '# Hash dan tanggal berbeda di tiap mesin, jadi yang dicetak\n'
+       + '# subjeknya saja.\n'
+       + 'git log --pretty=format:\'- %s\' | cat\n',
     css: '/* Coba ubah warnanya, lalu Jalankan lagi. */\nbody {\n'
        + '  background-color: #f5f5f5;\n  font-family: sans-serif;\n'
        + '  margin: 0;\n}\n\nh1 {\n  color: #333;\n'

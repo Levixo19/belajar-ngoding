@@ -293,7 +293,11 @@ for (const b of [...RUNNER, "bahasa-yang-tidak-ada", ""]) {
  *
  * Yang dijaga daftar ini tetap bergigi: runner BARU yang contohnya lupa
  * ditambahkan tidak ada di sini, jadi ia tetap memerahkan pagarnya. */
-const CELAH_DIKETAHUI = new Set(["git"]);
+// Kosong lagi: celah `git` (editor Ruang Coba terbuka KOSONG karena
+// `contohAwal` tidak punya entrinya) sudah ditambal di KEDUA sisi
+// sekaligus, yang memang satu-satunya cara menambalnya tanpa
+// memerahkan pembanding ini.
+const CELAH_DIKETAHUI = new Set([]);
 const tanpaContoh = RUNNER.filter(
   (b) => !contohAwal(b) && !CELAH_DIKETAHUI.has(b),
 );
