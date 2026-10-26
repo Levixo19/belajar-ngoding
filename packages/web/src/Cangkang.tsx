@@ -23,6 +23,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState,
          type ReactNode } from "react";
 import { arahkanLangit, nyalakanLangit } from "./langit.ts";
+import { nyalakanKursor } from "./kursor.ts";
+import { pasangSorot } from "./permukaan.ts";
+import { ungkapJudulSaatTiba } from "./sinema.ts";
 import { lepas, masuk, tekan } from "./gerak.ts";
 
 import { Ikon } from "./komponen/Ikon.tsx";
@@ -57,6 +60,11 @@ const LAYAR_KOLOM = new Set([
 const AMBANG_PANEL = 860;
 
 type Butir = [nama: string, label: string, href: string];
+
+/* Layar "pintu": yang dibuka untuk MEMILIH, bukan untuk dikerjakan. Sama
+   persis dengan `LAYAR_PINTU` di `aplikasi.js`. */
+const LAYAR_PINTU = new Set(["dasbor", "bahasa", "statistik", "bookmark",
+                             "catatan", "atur", "pustaka", "karier"]);
 
 const MENU_UTAMA: Butir[] = [
   ["dasbor", "Dasbor", "#/dasbor"],
@@ -242,6 +250,16 @@ export function Cangkang({
     arahkanLangit();
   }, [rute, alamat]);
 
+  /* Judul kata demi kata, HANYA di layar "pintu". Materi, latihan, kuis, dan
+     Ruang Coba sengaja tidak ikut: ketiganya dibuka ratusan kali dalam satu
+     sesi panjang, dan gerak yang menyenangkan di kunjungan pertama jadi
+     penghalang di kunjungan keempat puluh. Daftarnya sama persis dengan
+     `LAYAR_PINTU` di `aplikasi.js`. */
+  useEffect(() => {
+    if (!LAYAR_PINTU.has(rute) || !layarRef.current) return;
+    return ungkapJudulSaatTiba(layarRef.current);
+  }, [rute, alamat]);
+
   /* ------------------------------------------------ umpan balik tekan ---
      Dipasang SEKALI di tingkat dokumen, bukan per tombol. Dua sebabnya:
      tombol lahir dan mati terus-menerus di aplikasi ber-rute, dan satu
@@ -281,6 +299,14 @@ export function Cangkang({
     if (!latarRef.current) return;
     return nyalakanLangit();
   }, []);
+
+  /* Reticle teleskop dan sorot permukaan. Keduanya memasang pendengar di
+     tingkat DOKUMEN, jadi keduanya WAJIB mengembalikan pelepas: `StrictMode`
+     menjalankan efek dua kali, dan reticle yang dipasang dua kali berarti dua
+     set braket yang saling menimpa. Versi JS-nya tidak pernah melepas apa pun
+     karena di sana modulnya memang dimuat sekali seumur halaman. */
+  useEffect(() => nyalakanKursor(), []);
+  useEffect(() => pasangSorot(), []);
 
   const diPanel = MENU_LAIN.some(([nama]) => nama === rute);
 

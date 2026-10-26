@@ -22636,3 +22636,185 @@ class TestBundelReactDilayani(BasisWeb):
                         "pernah keluar dari pohon, jadi pemeriksaannya tidak "
                         "pernah dievaluasi dan tes ini tidak membuktikan apa "
                         "pun")
+
+
+class TestSinemaKursorPermukaan(unittest.TestCase):
+    """Tiga modul gerak yang hidup di luar React: judul kata-demi-kata (GSAP),
+    reticle teleskop, dan sorot di bawah kursor.
+
+    Ketiganya tidak punya pembanding `.mjs`, dan alasannya bisa disebut:
+    `sinema` menuntut GSAP yang cuma ada di peramban, sementara `kursor` dan
+    `permukaan` seluruh isinya efek samping atas DOM sungguhan -- tidak ada
+    bagian murni yang bisa diadu. Yang membuktikan keduanya bekerja adalah
+    pengukuran di Chrome (judul terpecah 4 kata lalu kembali utuh, reticle
+    empat sudut, `--kx`/`--ky` tertulis). Yang dijaga DI SINI justru yang
+    tidak terlihat saat diukur: cacat-cacatnya DIAM.
+    """
+
+    AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _baca(self, *bagian):
+        with open(os.path.join(self.AKAR, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    def test_gsap_lokal_dan_di_atas_modulnya(self):
+        """GSAP dimuat dari `/vendor/` dan BERDIRI DI ATAS modul React.
+
+        Tiga kegagalan diam, dan ketiganya diperiksa TERPISAH karena asersi
+        yang saling menaungi tidak membuktikan apa yang namanya janjikan:
+        versi pertama tes ini mencari `src="/vendor/..."` di dalam kepala
+        lebih dulu, sehingga sel yang menukar jalurnya jadi CDN memerah
+        dengan keluhan "tidak ada di <head>" dan asersi CDN-nya sendiri tidak
+        pernah dievaluasi.
+
+        * **LOKAL.** Aplikasi ini wajib utuh tanpa internet, dan satu
+          `<script src="https://...">` membuat judulnya diam di mesin tanpa
+          jaringan -- tanpa galat, karena `sinema.ts` memang sengaja diam
+          tanpa `window.gsap`.
+        * **ADA.** Jalur yang salah ketik menjawab 404, dan yang terlihat
+          bukan berkas hilang melainkan "gerak judulnya memang begitu".
+        * **URUTAN.** Skrip `defer` dan `type="module"` sama-sama dieksekusi
+          menurut urutan dokumen, dan `vite build` menempelkan modulnya di
+          kaki `<head>`. Versi pertama halaman ini menaruh kedua tag GSAP di
+          kaki `<body>`, jadi keduanya jalan SESUDAH bundel React; yang
+          terlihat bukan galat melainkan judul pertama yang sesekali tiba
+          tanpa gerak, tergantung mana yang lebih dulu selesai antara berkas
+          vendor dan permintaan API pertama.
+        """
+        html = self._baca("packages", "web", "index.html")
+        # Komentar DIBUANG sebelum dipotong, dan ini bukan kerapian: versi
+        # pertama tes ini memotong di kecocokan `<body` pertama, yang kebetulan
+        # ada DI DALAM komentar beberapa baris di atas yang memang menyebut
+        # "di kaki <body>". Jadi tesnya memerah atas halaman yang sudah benar.
+        # Itu kerabat dekat jebakan yang sudah ditulis di halamannya sendiri:
+        # `vite build` pun menyuntik di kecocokan teks penutup kepala PERTAMA,
+        # termasuk yang di dalam komentar.
+        telanjang = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+        kepala = telanjang.split("<body", 1)[0]
+
+        pola = re.compile(r'<script[^>]*\bsrc="([^"]*(?:gsap|SplitText|'
+                          r'ScrollTrigger)[^"]*)"', re.I)
+        di_kepala = pola.findall(kepala)
+        semua = pola.findall(telanjang)
+
+        self.assertGreaterEqual(
+            len(semua), 2,
+            "Halaman React tidak memuat GSAP + SplitText. Tanpa keduanya "
+            "sinema.ts diam, dan judulnya tiba tanpa gerak")
+        self.assertEqual(
+            sorted(di_kepala), sorted(semua),
+            f"GSAP dimuat di luar <head>: {sorted(set(semua) - set(di_kepala))}. "
+            "Di kaki <body> ia jalan sesudah modul React (urutan dokumen), "
+            "dan layar pertama kehilangan geraknya tanpa satu pun galat")
+
+        for src in semua:
+            self.assertTrue(
+                src.startswith("/vendor/gsap/"),
+                f"{src} bukan berkas lokal. Pustaka front-end DISIMPAN di "
+                "webapp/statik/vendor/ beserta lisensinya -- aplikasi ini "
+                "wajib utuh tanpa internet, jadi tidak ada CDN")
+            self.assertTrue(
+                os.path.exists(os.path.join(
+                    self.AKAR, "webapp", "statik", "vendor",
+                    src.split("/vendor/", 1)[1])),
+                f"{src} ditunjuk halaman tapi berkasnya tidak ada -- 404 yang "
+                "terbaca sebagai 'gerak judulnya memang begitu'")
+
+    def test_layar_pintu_sama_di_kedua_antarmuka(self):
+        """Daftar layar "pintu" cuma boleh satu, walau ia tinggal di dua tempat.
+
+        Judul kata-demi-kata sengaja TIDAK dipasang di materi, latihan, dan
+        kuis: ketiganya dibuka ratusan kali dalam satu sesi panjang, dan gerak
+        yang menyenangkan di kunjungan pertama jadi penghalang di kunjungan
+        keempat puluh. Daftar itu ada di `aplikasi.js` (antarmuka lama) dan di
+        `Cangkang.tsx` (React), dan dua daftar yang melenceng satu nama tidak
+        memerahkan apa pun: yang terjadi cuma satu layar yang berperilaku
+        berbeda tergantung antarmuka mana yang dibuka.
+        """
+        pola = re.compile(r"LAYAR_PINTU\s*=\s*new Set\(\[(.*?)\]\)", re.S)
+
+        def himpunan(teks, nama):
+            m = pola.search(teks)
+            self.assertIsNotNone(m, f"LAYAR_PINTU tidak ketemu di {nama}")
+            isi = set(re.findall(r'"([^"]+)"', m.group(1)))
+            self.assertTrue(isi, f"LAYAR_PINTU kosong di {nama}")
+            return isi
+
+        lama = himpunan(
+            self._baca("webapp", "statik", "js", "aplikasi.js"), "aplikasi.js")
+        baru = himpunan(
+            self._baca("packages", "web", "src", "Cangkang.tsx"),
+            "Cangkang.tsx")
+        self.assertEqual(
+            lama, baru,
+            "Daftar layar pintu berbeda antara antarmuka lama dan React. "
+            f"Cuma di lama: {sorted(lama - baru)}; cuma di React: "
+            f"{sorted(baru - lama)}")
+
+    def test_sinema_berpagar_gerak_dan_mengembalikan_teksnya(self):
+        """`gerakPenuh()` yang memutuskan, dan `revert()` WAJIB dipanggil.
+
+        Tanpa `revert()` setiap judul yang pernah dianimasikan tinggal sebagai
+        deretan `<span>` satu kata -- dan yang membayarnya pembaca layar, yang
+        membacakannya kata per kata dengan jeda di tiap batas span. Tidak ada
+        galat, dan tidak terlihat sama sekali oleh mata.
+        """
+        ts = self._baca("packages", "web", "src", "sinema.ts")
+        self.assertIn(
+            "gerakPenuh()", ts,
+            "sinema.ts tidak menanyakan tingkat gerak. `tingkatGerak()` "
+            "SATU-SATUNYA yang berhak memutuskan itu, dan "
+            "prefers-reduced-motion selalu menang di sana")
+        self.assertNotIn(
+            'dataset.gerak', ts,
+            "sinema.ts membaca data-gerak sendiri. Hanya gerak.ts yang boleh")
+        # Komentar DIBUANG lebih dulu, dan selnya yang menagihnya: docstring
+        # modul itu SENDIRI menyebut `split.revert()` sebagai kalimat
+        # penjelas, jadi cacah mentah berhenti di tiga dan mutasi yang
+        # mencabut satu panggilan sungguhan tetap menyisakan dua. Selnya
+        # hijau, pagarnya tidak membuktikan apa pun.
+        kode = re.sub(r"/\*.*?\*/", "", ts, flags=re.S)
+        kode = re.sub(r"^\s*//.*$", "", kode, flags=re.M)
+        self.assertGreaterEqual(
+            kode.count(".revert()"), 2,
+            "revert() harus dipanggil di onComplete DAN di pembersihnya -- "
+            "layar yang ditinggalkan di tengah animasi meninggalkan span "
+            "satu-kata yang dibacakan pembaca layar satu per satu")
+
+    def test_kursor_tidak_menyembunyikan_kursor_asli(self):
+        """Reticle itu TAMBAHAN; kursor sistem tetap milik penggunanya.
+
+        Ukuran dan kontras kursor yang dipilih orang di pengaturan sistemnya
+        sering merupakan akomodasi penglihatan. `cursor: none` menggantinya
+        dengan empat braket yang tidak pernah ia minta, dan di tingkat gerak
+        "mati" reticle-nya memang tidak digambar -- jadi yang tertinggal
+        halaman tanpa penunjuk sama sekali.
+        """
+        ts = self._baca("packages", "web", "src", "kursor.ts")
+        self.assertNotIn(
+            "cursor: none", ts,
+            "kursor.ts menyembunyikan kursor asli")
+        self.assertNotIn(
+            'cursor", "none', ts,
+            "kursor.ts menyembunyikan kursor asli lewat setProperty")
+
+    def test_ketiganya_mengembalikan_pembersih(self):
+        """Efek React dipasang DUA KALI di StrictMode.
+
+        Modul yang memasang pendengar dokumen tanpa mengembalikan pembersih
+        menyisakan satu set pendengar (dan satu reticle) untuk setiap
+        pemasangan. Gejalanya bukan galat melainkan jejak meteor yang
+        digambar dua kali dan `--kx` yang ditulis dua elemen sekaligus. Ini
+        beda dari sisi JS, yang memasang pendengarnya sekali dan selamanya.
+        """
+        for berkas, fungsi in (("kursor.ts", "nyalakanKursor"),
+                               ("permukaan.ts", "pasangSorot"),
+                               ("sinema.ts", "ungkapJudul")):
+            ts = self._baca("packages", "web", "src", berkas)
+            m = re.search(
+                r"export function " + fungsi + r"\([^)]*\)\s*:\s*([^{]+)\{",
+                ts, re.S)
+            self.assertIsNotNone(m, f"{fungsi} tidak ketemu di {berkas}")
+            self.assertIn(
+                "() => void", " ".join(m.group(1).split()),
+                f"{fungsi} di {berkas} tidak mengembalikan pembersih")
