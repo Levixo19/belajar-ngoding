@@ -254,6 +254,79 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
         # hijau untuk berkas uji yang kehilangan seluruh lapisan HTTP-nya.
         self.assertGreaterEqual(int(cocok.group(1)), 12, keluaran[:800])
 
+    def test_setiap_pembanding_terdaftar_di_tiga_tempat(self):
+        """Pembanding yang ditulis tapi tidak didaftarkan = pembanding yang mati.
+
+        Ia kelas cacat yang sudah terjadi di repo ini dengan bentuk lain:
+        `komponen/Tanda.tsx` selesai ditulis satu ronde penuh lebih awal dan
+        tidak pernah disambung ke satu layar pun, jadi dua layar yang
+        bergantung padanya mustahil terisi -- tanpa satu pun error yang
+        menjelaskannya.
+
+        Sebuah berkas `banding-*.mjs` punya TIGA pendaftaran, dan masing-masing
+        membeli hal yang berbeda:
+
+        * `SKRIP_WEB` di bawah -- ia ikut suite, jadi ia benar-benar dijalankan;
+        * skrip `banding` di `packages/web/package.json` -- ia bisa dijalankan
+          sekaligus tanpa menghafal dua belas nama;
+        * `BATERAI` di `gigi-golden.py` -- ada bukti ia bisa MERAH.
+
+        Yang paling mahal kalau terlupa yang ketiga: pembanding tanpa sel
+        mutasi adalah pembanding yang hijaunya tidak berarti apa pun.
+        """
+        import json
+        import re
+        WEB = os.path.join(AKAR, "packages", "web")
+        dir_uji = os.path.join(WEB, "uji")
+        if not os.path.isdir(dir_uji):
+            self.skipTest("packages/web/uji tidak ada")
+        ada = {n for n in os.listdir(dir_uji)
+               if n.startswith("banding-") and n.endswith(".mjs")}
+        self.assertGreaterEqual(len(ada), 12, f"cuma {len(ada)} pembanding?")
+
+        di_suite = {s for s, _p, _l in self.SKRIP_WEB}
+        self.assertEqual(sorted(ada - di_suite), [],
+                         "pembanding tidak ikut suite")
+
+        with open(os.path.join(WEB, "package.json"), encoding="utf-8") as f:
+            skrip = json.load(f)["scripts"].get("banding", "")
+        di_npm = set(re.findall(r"banding-[a-z]+\.mjs", skrip))
+        self.assertEqual(sorted(ada - di_npm), [],
+                         "pembanding tidak ada di skrip npm `banding`")
+        # Dan skrip itu harus benar-benar BISA DIJALANKAN. Versi pertamanya
+        # memanggil `node uji/banding-*.mjs` telanjang, dan karena tiap
+        # pembanding mengimpor `.ts`, kedua belasnya mati dengan
+        # ERR_UNKNOWN_FILE_EXTENSION di Node < 23.6 -- termasuk node 22.11 di
+        # PATH mesin ini. Daftar yang lengkap tapi tidak bisa dijalankan
+        # adalah daftar yang tidak pernah dijalankan siapa pun.
+        self.assertIn("--experimental-strip-types", skrip,
+                      "skrip npm `banding` memanggil node tanpa pelucut "
+                      "tipe -- seluruh pembandingnya mengimpor `.ts`")
+
+        # Tabel baterainya DIIMPOR, tidak di-grep. Versi pertama memakai
+        # `re.findall` atas teks berkasnya, dan mutan yang membuktikannya
+        # lemah: mengganti nama entri jadi `"banding-palet-X.mjs"` sekaligus
+        # merusak pembandingnya jadi `"banding-palet.mjs-X"` TETAP lolos,
+        # karena regexnya menemukan `banding-palet.mjs` di dalam string yang
+        # sudah rusak itu. Nama di sebuah KOMENTAR pun akan memuaskannya.
+        # Yang diimpor pendaftaran yang sungguhan dipakai.
+        import importlib.util
+        jalur_baterai = os.path.join(AKAR, "packages", "bersama", "uji",
+                                     "gigi-golden.py")
+        spek = importlib.util.spec_from_file_location("gigi_golden",
+                                                      jalur_baterai)
+        modul = importlib.util.module_from_spec(spek)
+        spek.loader.exec_module(modul)
+        di_baterai = {p for p, _akar, _sumber, _mutan in modul.BATERAI.values()}
+        self.assertEqual(sorted(ada - di_baterai), [],
+                         "pembanding tanpa satu pun sel mutasi -- hijaunya "
+                         "tidak membuktikan apa pun")
+        # Dan tiap entri wajib punya mutan: entri berdaftar KOSONG mendaftarkan
+        # sebuah pembanding tanpa membuktikan apa pun tentangnya.
+        kosong = sorted(label for label, (_p, _a, _s, mutan)
+                        in modul.BATERAI.items() if not mutan)
+        self.assertEqual(kosong, [], "entri baterai tanpa satu pun mutan")
+
     def test_keluaran_identik_dengan_python(self):
         import re
         import subprocess
