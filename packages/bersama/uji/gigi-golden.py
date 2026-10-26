@@ -617,6 +617,96 @@ BATERAI = {
                 "ikon(tidak-ada",
             ),
         ]),
+    # `banding-rasi.mjs` sebelumnya TIDAK punya sel sama sekali -- ia pembanding
+    # pertama yang ditulis di paket web, dan baterai ini lahir sesudahnya. Jadi
+    # tiga sel pertama di bawah membuktikan bagian yang sudah lama ada
+    # (`hash`/`jariBintang`/`bentukRasi`), bukan cuma tata letak yang baru.
+    "banding-rasi.mjs": (
+        "banding-rasi.mjs", PAKET_WEB,
+        sumber_web("komponen/rasi-geometri.ts"), [
+            (
+                # Satu bit di `hash` menggeser SETIAP rasi. `Math.imul`
+                # mengalikan sebagai int32; perkalian biasa memakai float 64
+                # dan kehilangan presisi di atas 2^53.
+                "hash tanpa imul",
+                "x = Math.imul(x ^ (c.codePointAt(0) ?? 0), 16777619);",
+                "x = (x ^ (c.codePointAt(0) ?? 0)) * 16777619;",
+                "hash",
+            ),
+            (
+                "lantai jari bintang diturunkan",
+                "Math.max(1.1, 7 * Math.exp",
+                "Math.max(1.0, 7 * Math.exp",
+                "jariBintang",
+            ),
+            (
+                "belokan rasi dilebarkan",
+                "sudut += (acak() - 0.5) * 2.7;",
+                "sudut += (acak() - 0.5) * 2.8;",
+                "bentukRasi",
+            ),
+            (
+                # Pusat tiap rasi naik-turun mengikuti sinus. Menggesernya
+                # memindahkan SELURUH peta tanpa satu pun error.
+                "pusat rasi digeser",
+                "H * 0.46 + Math.sin",
+                "H * 0.5 + Math.sin",
+                "petaRasi",
+            ),
+            (
+                # Label boleh selebar DUA rasi karena ia bergantian atas-bawah.
+                # Menghitungnya dari satu rail memangkas judul bab jauh lebih
+                # awal daripada yang perlu.
+                "batas label dihitung dari satu rail",
+                "Math.floor((lebarRasi * 2) / 6.8)",
+                "Math.floor((lebarRasi * 1) / 6.8)",
+                "petaRasi",
+            ),
+            (
+                # Garis ke-j berbagi `--i` dengan bintang ke-j. Menggesernya
+                # satu membuat koreografi garis-tergambar mendahului
+                # bintangnya -- gerak yang salah, tanpa geometri yang salah.
+                "--i garis bergeser satu",
+                "            urut: urutan,",
+                "            urut: urutan + 1,",
+                "petaRasi",
+            ),
+            (
+                # Jangkar label di ujung. Sel ini butuh kurikulum berBAB DUA,
+                # dan kurikulum terkecil di repo ini punya enam -- jadi korpus
+                # pembandingnya sengaja memuat bentuk dua dan tiga bab. Tanpa
+                # keduanya sel ini hijau bukan karena tidak berakibat.
+                "jangkar label berlaku untuk dua bab",
+                "      bab.length > 2 && i === 0",
+                "      bab.length > 1 && i === 0",
+                "petaRasi",
+            ),
+            (
+                "skala bintang peta",
+                "jariBintang(magStatus(m), 0.9)",
+                "jariBintang(magStatus(m), 1)",
+                "petaRasi",
+            ),
+            (
+                # Garis terang menandai "dua materi ini SAMA-SAMA sudah
+                # dibaca". Dengan ATAU, separuh langit menyala untuk jalur yang
+                # baru setengah ditempuh.
+                "garis terang jadi ATAU",
+                'terang: kiri.status === "selesai" && m.status === "selesai",',
+                'terang: kiri.status === "selesai" || m.status === "selesai",',
+                "petaRasi",
+            ),
+            (
+                # Benih bentuk rasi menggabungkan kunci dan judul bab dengan
+                # pemisah. Tanpa pemisah, "python" + "Bab" bisa bertabrakan
+                # dengan "pytho" + "nBab" -- dan dua bab berbeda mendapat
+                # bentuk yang sama.
+                "benih bentuk rasi tanpa pemisah",
+                'data.key + "\u00b7" + b.judul,',
+                "data.key + b.judul,",
+                "petaRasi",
+            ),
+        ]),
 }
 
 

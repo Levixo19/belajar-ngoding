@@ -148,3 +148,222 @@ export function ruasAntara(
     y2: b[1] - uy * (rb + 3),
   };
 }
+
+/* ------------------------------------------------- tata letak peta rasi */
+
+/** Satu bab seperti yang dikirim `/api/bahasa`: nomor, judul, indeks materi. */
+export interface BabRasi {
+  nomor: number;
+  judul: string;
+  materi: number[];
+}
+
+/** Masukan `tataPetaRasi`. Padanan `dariBahasa()` di `rasi.js`. */
+export interface DataPeta {
+  key: string;
+  label: string;
+  materi: MateriBintang[];
+  bab?: BabRasi[];
+}
+
+/**
+ * Satu anak sebuah rasi, dalam URUTAN GAMBAR.
+ *
+ * Urutannya bagian dari kontrak, bukan kebetulan: versi JS menempelkan garis
+ * ke-j SEBELUM bintang ke-j, jadi garisnya tergambar di atas bintang
+ * sebelumnya dan di bawah bintang sesudahnya. Mengurutkan ulang jadi "semua
+ * garis dulu, lalu semua bintang" tidak menimbulkan error dan hampir tidak
+ * terlihat -- tapi `--i` (penunda animasi per anak) ikut bergeser, dan
+ * koreografi garis-tergambar yang tadinya mengalir dari bintang pertama ke
+ * terakhir berubah jadi dua gelombang.
+ */
+export type ItemPeta =
+  | {
+      jenis: "garis";
+      a: Titik;
+      b: Titik;
+      ra: number;
+      rb: number;
+      terang: boolean;
+      urut: number;
+    }
+  | { jenis: "bintang"; indeks: number; x: number; y: number; r: number; urut: number };
+
+/** Label satu bab di tepi petanya. */
+export interface LabelPeta {
+  x: number;
+  y: number;
+  jangkar: "start" | "middle" | "end";
+  /** Angka Romawi plus DUA spasi, persis seperti versi JS-nya. */
+  nomor: string;
+  judul: string;
+}
+
+/** Jalur putus-putus antara bintang terakhir sebuah bab dan bintang pertama
+ *  bab berikutnya. */
+export interface JalurPeta {
+  a: Titik;
+  b: Titik;
+  ra: number;
+  rb: number;
+}
+
+export interface TataPeta {
+  W: number;
+  H: number;
+  kelompok: ItemPeta[][];
+  label: LabelPeta[];
+  jalur: JalurPeta[];
+  reticle: { x: number; y: number; r: number } | null;
+  ringkasan: string;
+}
+
+/**
+ * Tata letak peta rasi satu kurikulum. Port bagian murni `petaRasi()`.
+ *
+ * Satu bab = satu rasi, diletakkan berderet dari kiri ke kanan dengan pusat
+ * yang naik-turun mengikuti sinus berbenih `hash(key)`. Benih itulah yang
+ * membuat peta Python selalu berbentuk sama, dan kenapa fungsi ini diadu
+ * dengan `rasi.js` alih-alih dipercaya: satu bit yang meleset menggeser
+ * SELURUH peta tanpa satu pun error.
+ *
+ * Bahasa tanpa pembagian bab tetap dapat petanya -- satu rasi berisi semua
+ * materinya, dilabeli nama bahasanya. Itu jalur cadangan yang sengaja ada,
+ * sama dengan jalur cadangan `data/bab.py`.
+ */
+export function tataPetaRasi(data: DataPeta, tinggi = 250): TataPeta {
+  const W = 1000;
+  const H = tinggi;
+  const bab: BabRasi[] =
+    data.bab && data.bab.length
+      ? data.bab
+      : [{ nomor: 1, judul: data.label, materi: data.materi.map((_m, i) => i) }];
+  const berikut = berikutDari(data.materi);
+  const lebarRasi = W / bab.length;
+  // Label bergantian atas-bawah, jadi tiap label boleh selebar DUA rasi.
+  const batasLabel = Math.max(10, Math.min(30, Math.floor((lebarRasi * 2) / 6.8)));
+
+  const posisi: Array<{ p: Titik; r: number } | undefined> = [];
+  const pasangan: Array<[number, number]> = [];
+  const kelompok: ItemPeta[][] = [];
+  const label: LabelPeta[] = [];
+  let urutan = 0;
+
+  bab.forEach((b, i) => {
+    const cx = (i + 0.5) * lebarRasi;
+    const cy = H * 0.46 + Math.sin(i * 1.7 + (hash(data.key) % 7)) * H * 0.13;
+    const kotakW = Math.min(lebarRasi * 0.74, 150);
+    const kotakH = H * 0.42;
+    const titik = bentukRasi(
+      b.materi.length,
+      data.key + "·" + b.judul,
+      kotakW,
+      kotakH,
+    ).map(([x, y]) => [cx + x, cy + y] as Titik);
+
+    const isi: ItemPeta[] = [];
+    b.materi.forEach((idx, j) => {
+      const m = data.materi[idx];
+      if (!m) return;
+      const p = titik[j] as Titik;
+      const r = jariBintang(magStatus(m), 0.9);
+      posisi[idx] = { p, r };
+      const sebelum = j > 0 ? posisi[b.materi[j - 1] as number] : undefined;
+      if (sebelum) {
+        const kiri = data.materi[b.materi[j - 1] as number] as MateriBintang;
+        // Garis yang terlalu pendek DIBUANG, dan `urut` tidak ikut terpakai --
+        // itu yang dilakukan `ruas()` yang mengembalikan null di versi JS.
+        if (ruasAntara(sebelum.p, p, sebelum.r, r)) {
+          isi.push({
+            jenis: "garis",
+            a: sebelum.p,
+            b: p,
+            ra: sebelum.r,
+            rb: r,
+            terang: kiri.status === "selesai" && m.status === "selesai",
+            urut: urutan,
+          });
+        }
+      }
+      isi.push({ jenis: "bintang", indeks: idx, x: p[0], y: p[1], r, urut: urutan++ });
+    });
+    kelompok.push(isi);
+
+    const bawah = i % 2 === 0;
+    // Label di ujung kiri/kanan dijangkarkan ke dalam supaya tidak terpotong.
+    const jangkar: LabelPeta["jangkar"] =
+      bab.length > 2 && i === 0
+        ? "start"
+        : bab.length > 2 && i === bab.length - 1
+          ? "end"
+          : "middle";
+    label.push({
+      x: jangkar === "start" ? 6 : jangkar === "end" ? W - 6 : cx,
+      y: bawah ? cy + kotakH / 2 + 24 : cy - kotakH / 2 - 14,
+      jangkar,
+      nomor: (ROMAWI[b.nomor] || String(b.nomor)) + "  ",
+      judul:
+        b.judul.length > batasLabel
+          ? b.judul.slice(0, batasLabel - 1) + "…"
+          : b.judul,
+    });
+
+    const lanjut = bab[i + 1];
+    if (lanjut && b.materi.length && lanjut.materi.length) {
+      pasangan.push([
+        b.materi[b.materi.length - 1] as number,
+        lanjut.materi[0] as number,
+      ]);
+    }
+  });
+
+  const jalur: JalurPeta[] = [];
+  for (const [a, b] of pasangan) {
+    const pa = posisi[a];
+    const pb = posisi[b];
+    if (!pa || !pb) continue;
+    if (!ruasAntara(pa.p, pb.p, pa.r, pb.r)) continue;
+    jalur.push({ a: pa.p, b: pb.p, ra: pa.r, rb: pb.r });
+  }
+
+  const sasaran = berikut !== null ? posisi[berikut] : undefined;
+  const selesai = data.materi.filter((m) => m.status === "selesai").length;
+
+  return {
+    W,
+    H,
+    kelompok,
+    label,
+    jalur,
+    reticle: sasaran ? { x: sasaran.p[0], y: sasaran.p[1], r: sasaran.r } : null,
+    ringkasan:
+      `Peta langit ${data.label}: ${selesai} dari ${data.materi.length} ` +
+      "bintang menyala." +
+      (berikut !== null
+        ? ` Berikutnya: ${(data.materi[berikut] as MateriBintang).judul}.`
+        : ""),
+  };
+}
+
+/** `/api/bahasa` -> masukan `tataPetaRasi`. Port `dariBahasa()`. */
+export function dariBahasa(b: {
+  key: string;
+  label: string;
+  materi: Array<{ judul: string; status: string; terkunci?: boolean }>;
+  bab?: Array<{ nomor: number; judul: string; materi: number[] }>;
+}): DataPeta {
+  return {
+    key: b.key,
+    label: b.label,
+    materi: b.materi.map((m) => ({
+      judul: m.judul,
+      status: m.status,
+      terkunci: m.terkunci,
+    })),
+    bab: (b.bab || []).map((x) => ({
+      nomor: x.nomor,
+      judul: x.judul,
+      materi: x.materi,
+    })),
+  };
+}

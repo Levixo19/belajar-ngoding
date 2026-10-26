@@ -11,14 +11,18 @@
  * mengganti namanya berarti menulis ulang gaya yang sudah bekerja.
  */
 
-import { useCallback, useRef, useState, type CSSProperties, type PointerEvent, type RefObject } from "react";
+import { useCallback, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type RefObject } from "react";
 
+import { tingkatGerak } from "../gerak.ts";
 import {
   jariBintang,
+  KATA_STATUS,
   kelasBintang,
   labelBintang,
   magStatus,
   ruasAntara,
+  tataPetaRasi,
+  type DataPeta,
   type MateriBintang,
   type Titik,
 } from "./rasi-geometri.ts";
@@ -139,24 +143,37 @@ export function GarisRasi({
   ra,
   rb,
   terang,
+  jalur,
+  urut,
 }: {
   a: Titik;
   b: Titik;
   ra: number;
   rb: number;
   terang?: boolean;
+  /** Garis antar-BAB: putus-putus, dan tanpa `pathLength`. */
+  jalur?: boolean;
+  /** Mengisi `--i`, penunda animasi per anak. */
+  urut?: number;
 }) {
   const u = ruasAntara(a, b, ra, rb);
   if (!u) return null;
   return (
     <line
-      className={"rasi-garis" + (terang ? " rasi-garis-terang" : "")}
+      className={
+        "rasi-garis" +
+        (terang ? " rasi-garis-terang" : "") +
+        (jalur ? " rasi-garis-jalur" : "")
+      }
       x1={u.x1.toFixed(1)}
       y1={u.y1.toFixed(1)}
       x2={u.x2.toFixed(1)}
       y2={u.y2.toFixed(1)}
       // Garis jalur putus-putus tidak memakai pathLength; lihat visual.js.
-      pathLength={1}
+      // Ia digambar DASHED oleh CSS, dan `pathLength: 1` menormalkan panjang
+      // jalurnya jadi satu satuan -- yang membuat pola putus-putusnya hilang.
+      pathLength={jalur ? undefined : 1}
+      style={urut === undefined ? undefined : ({ "--i": urut } as CSSProperties)}
     />
   );
 }
@@ -224,4 +241,116 @@ export function jariSemua(materi: MateriBintang[], skala: number): number[] {
 /** Ref wadah peta, untuk `useTip`. Sekadar gula supaya tipenya tidak diulang. */
 export function useWadahPeta() {
   return useRef<HTMLDivElement>(null);
+}
+
+/**
+ * Peta rasi satu kurikulum. Port `petaRasi()` dari `rasi.js`.
+ *
+ * Tata letaknya tinggal di `tataPetaRasi()` dan sudah diadu dengan `rasi.js`
+ * (`uji/banding-rasi.mjs`), jadi tidak ada koordinat yang bisa bergeser dari
+ * berkas ini.
+ *
+ * Sorot kelompok jadi TURUNAN state, bukan `classList.add` seperti versi JS.
+ * Bedanya nyata: versi imperatif harus ingat melepas `.rasi-sorot` dari
+ * kelompok sebelumnya pada setiap `pointerover`, dan satu cabang yang lupa
+ * melakukannya meninggalkan dua rasi menyala bersamaan -- tanpa satu pun
+ * error. Di sini keadaan itu cuma satu angka.
+ *
+ * Peta ini PELENGKAP: daftar materi di bawahnya tetap jalan utama, bintangnya
+ * ber-`tabindex -1`, dan ringkasan teksnya menyampaikan isi yang sama.
+ */
+export function PetaRasi({ data, tinggi = 250 }: { data: DataPeta; tinggi?: number }) {
+  const wadahRef = useWadahPeta();
+  const tip = useTip(wadahRef);
+  const [sorot, setSorot] = useState<number | null>(null);
+  const tata = useMemo(() => tataPetaRasi(data, tinggi), [data, tinggi]);
+
+  const lepas = () => {
+    tip.sembunyi();
+    setSorot(null);
+  };
+
+  return (
+    <div
+      ref={wadahRef}
+      className={"rasi" + (tingkatGerak() === "penuh" ? " rasi-hidup" : "")}
+    >
+      <p className="rasi-ringkasan">{tata.ringkasan}</p>
+      <svg
+        viewBox={`0 0 ${tata.W} ${tata.H}`}
+        className="rasi-svg"
+        preserveAspectRatio="xMidYMid meet"
+        onPointerLeave={lepas}
+      >
+        {/* Jalur antar rasi digambar PALING DULU supaya ia di bawah
+            bintangnya -- urutan lapis yang sama dengan versi JS. */}
+        <g>
+          {tata.jalur.map((j, i) => (
+            <GarisRasi key={i} a={j.a} b={j.b} ra={j.ra} rb={j.rb} jalur />
+          ))}
+        </g>
+
+        <g>
+          {tata.kelompok.map((isi, ik) => (
+            <g
+              key={ik}
+              className={"rasi-kelompok" + (sorot === ik ? " rasi-sorot" : "")}
+            >
+              {isi.map((x, i) =>
+                x.jenis === "garis" ? (
+                  <GarisRasi
+                    key={i}
+                    a={x.a}
+                    b={x.b}
+                    ra={x.ra}
+                    rb={x.rb}
+                    terang={x.terang}
+                    urut={x.urut}
+                  />
+                ) : (
+                  <Bintang
+                    key={i}
+                    materi={data.materi[x.indeks] as MateriBintang}
+                    x={x.x}
+                    y={x.y}
+                    r={x.r}
+                    href={`#/materi/${data.key}/${x.indeks}`}
+                    indeks={x.indeks}
+                    urut={x.urut}
+                    onTunjuk={(el, m) => {
+                      setSorot(ik);
+                      tip.tunjuk(
+                        el,
+                        m.judul,
+                        m.terkunci ? "Masih terkunci" : (KATA_STATUS[m.status] ?? ""),
+                      );
+                    }}
+                  />
+                ),
+              )}
+            </g>
+          ))}
+        </g>
+
+        <g>
+          {tata.label.map((l, i) => (
+            <text
+              key={i}
+              className="rasi-label-bab"
+              x={l.x.toFixed(1)}
+              y={l.y.toFixed(1)}
+              textAnchor={l.jangkar}
+            >
+              <tspan className="rasi-nomor">{l.nomor}</tspan>
+              {l.judul}
+            </text>
+          ))}
+          {tata.reticle ? (
+            <Reticle x={tata.reticle.x} y={tata.reticle.y} r={tata.reticle.r} />
+          ) : null}
+        </g>
+      </svg>
+      {tip.elemen}
+    </div>
+  );
 }
