@@ -1443,7 +1443,21 @@ LTS); di bawah itu SELURUH pembanding gagal dengan
 `ERR_UNKNOWN_FILE_EXTENSION` -- empat belas tes merah karena alasan yang tidak
 ada hubungannya dengan isinya. Terukur: flagnya diterima apa adanya oleh 22.11
 maupun 24.21, jadi memberikannya selalu lebih murah daripada mendeteksi
-versinya.
+versinya. Skrip `banding` di `packages/web/package.json` memasangnya sekali
+lewat `export NODE_OPTIONS=`; sebelum itu ia memanggil `node` telanjang, jadi
+daftar dua belas pembanding yang lengkap itu **tidak bisa dijalankan sama
+sekali** -- dan tidak ada yang menyadarinya karena suite memakai jalurnya
+sendiri.
+
+**Pembanding baru wajib terdaftar di TIGA tempat**, dan `test_konten_json
+.test_setiap_pembanding_terdaftar_di_tiga_tempat` menagihnya dari isi direktori
+`packages/web/uji`: `SKRIP_WEB` (ikut suite), skrip npm `banding` (bisa
+dijalankan sekaligus, beserta pelucut tipenya), dan `BATERAI` di
+`gigi-golden.py` (ada bukti ia bisa MERAH, dan daftar mutannya tidak kosong).
+Yang paling mahal kalau terlupa yang ketiga: pembanding tanpa sel mutasi adalah
+pembanding yang hijaunya tidak berarti apa pun. Pagar itu MENGIMPOR tabel
+baterainya, tidak meng-grepnya -- versi yang meng-grep diloloskan oleh nama
+yang utuh di dalam string yang sudah rusak, dan oleh nama di sebuah komentar.
 
 **Baterai itu menemukan empat hal yang tidak kelihatan saat dibaca**, dan
 keempatnya sekarang tertulis di komentar fungsinya masing-masing beserta
