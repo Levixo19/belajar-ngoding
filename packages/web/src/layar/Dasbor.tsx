@@ -36,6 +36,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Sampul } from "../komponen/Sampul.tsx";
 
 import { ambil } from "../api.ts";
 import { tingkatGerak } from "../gerak.ts";
@@ -403,6 +404,19 @@ function BlokBara({ d }: { d: DataDasbor }) {
 function KartuLanjutkan({ s }: { s: Langkah }) {
   return (
     <a className="lanjutkan" href={tautanLangkah(s)}>
+      {/* Sampul generatif, persis benih yang sama dengan antarmuka lama:
+          `<bahasa>/<tipe>/<indeks>`. Benihnya bagian dari kontrak -- benih
+          yang berbeda memberi gambar yang berbeda untuk langkah yang sama,
+          dan yang hilang bukan keindahan melainkan sifat "kartu ini punya
+          wajahnya sendiri yang tidak berubah-ubah". */}
+      <span className="lanjutkan-sampul">
+        <Sampul
+          teks={`${s.bahasa}/${s.tipe}/${s.indeks}`}
+          bahasa={s.bahasa}
+          lebar={640}
+          tinggi={260}
+        />
+      </span>
       <span className="lanjutkan-nomor">{s.indeks + 1}</span>
       <div className="lanjutkan-isi">
         <span className="mata">

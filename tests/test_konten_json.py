@@ -213,7 +213,8 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                  ("banding-bahasa.mjs", r"(\d+) perbandingan", 1000),
                  ("banding-dasbor.mjs", r"(\d+) perbandingan", 2000),
                  ("banding-palet.mjs", r"(\d+) perbandingan", 10000),
-                 ("banding-langit.mjs", r"(\d+) perbandingan", 30))
+                 ("banding-langit.mjs", r"(\d+) perbandingan", 30),
+                 ("banding-sampul.mjs", r"(\d+) perbandingan", 700))
 
     def test_layanan_catatan(self):
         """Uji `packages/catatan` -- lapisan murninya selalu, Mongo kalau ada.

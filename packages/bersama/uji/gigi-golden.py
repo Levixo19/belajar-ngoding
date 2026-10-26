@@ -574,6 +574,49 @@ BATERAI = {
     # ambang magnitudo, dan kerapatan bintang. Ketiganya menghasilkan langit
     # yang TETAP terlihat seperti langit -- itu sebabnya hanya pembanding yang
     # bisa menangkapnya.
+    # Sampul generatif. Mutannya menyentuh hash, PRNG, tabel rona, dan
+    # pemilih ragam -- empat jalan berbeda menuju "gambar yang berbeda untuk
+    # nama yang sama", dan tidak satu pun menimbulkan error.
+    "banding-sampul.mjs": (
+        "banding-sampul.mjs", PAKET_WEB,
+        sumber_web("komponen/sampul-bentuk.ts"), [
+            (
+                "prima FNV digeser",
+                "    h = Math.imul(h, 16777619);",
+                "    h = Math.imul(h, 16777617);",
+                "benih",
+            ),
+            (
+                "benih awal FNV digeser",
+                "  let h = 2166136261;",
+                "  let h = 2166136260;",
+                "benih",
+            ),
+            (
+                "rona Python diubah",
+                "  html: 16, css: 205, javascript: 46, typescript: 212, python: 52, java: 14,",
+                "  html: 16, css: 205, javascript: 46, typescript: 212, python: 53, java: 14,",
+                "bentuk",
+            ),
+            (
+                "pemilih ragam dibalik",
+                "    : NAMA_RAGAM[s % NAMA_RAGAM.length]!;",
+                "    : NAMA_RAGAM[(s + 1) % NAMA_RAGAM.length]!;",
+                "ragam",
+            ),
+            (
+                "ambang kisi digeser",
+                "        if (p < 0.55) continue;",
+                "        if (p < 0.56) continue;",
+                "bentuk",
+            ),
+            (
+                "tanda bahasa dilepas",
+                "  const teksTanda = tanda && bahasa ? (TANDA[bahasa] ?? null) : null;",
+                "  const teksTanda = null;",
+                "tanda",
+            ),
+        ]),
     "banding-langit.mjs": (
         "banding-langit.mjs", PAKET_WEB,
         sumber_web("langit-bentuk.ts"), [
