@@ -23,6 +23,7 @@ import { Cangkang, type Konteks } from "./Cangkang.tsx";
 import { Keadaan } from "./komponen/Keadaan.tsx";
 import { Atur } from "./layar/Atur.tsx";
 import { Bahasa, type Tingkat } from "./layar/Bahasa.tsx";
+import { Dasbor, type BahasaAwal } from "./layar/Dasbor.tsx";
 import { Karier } from "./layar/Karier.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
@@ -40,12 +41,15 @@ import { Sorak } from "./sorak.tsx";
    memerahkan tipe setiap kali server menambah satu medan. Yang WAJIB ada
    cuma yang benar-benar dibaca -- `runner`/`sorot`/`siap` oleh Ruang Coba
    untuk menyaring toolchain yang terpasang. */
-interface BahasaRingkas {
-  key: string;
-  label: string;
+/* `BahasaAwal` (dari layar Dasbor) memuat medan yang dibaca layar MULAI --
+   cacah materi/kuis/latihan, `tematik`, `hilang`, `pasang`. Router menambahkan
+   `runner` dan `sorot`, yang dipakai Ruang Coba untuk menyaring toolchain yang
+   terpasang. Daftarnya tetap TIDAK menyebut seluruh entri: yang ditambahkan di
+   server tanpa dipakai di sini tidak perlu disebut, dan daftar yang menyebut
+   semuanya akan memerahkan tipe setiap kali server menambah satu medan. */
+interface BahasaRingkas extends BahasaAwal {
   runner: string;
   sorot: string;
-  siap: boolean;
 }
 
 /* Hanya medan `/api/awal` yang benar-benar DIBACA router ini. Setelan
@@ -60,7 +64,11 @@ interface Awal {
      sini, bukan ditulis ulang di JavaScript -- aturan yang sama dengan kalimat
      penguncian bab. Halaman bahasa membacanya untuk peta bab dan chip
      penyaringnya. */
-  aturan_bab?: { tingkat?: Tingkat[] };
+  aturan_bab?: {
+    aturan?: string;
+    pintu_darurat?: string;
+    tingkat?: Tingkat[];
+  };
 }
 
 interface Rute {
@@ -211,6 +219,10 @@ function Isi({
     return <Karier id={arg} />;
   }
 
+  if (!nama || nama === "dasbor") {
+    return <Dasbor bahasa={awal.bahasa} aturan={awal.aturan_bab ?? {}} />;
+  }
+
   if (nama === "bahasa" && arg) {
     return (
       <Bahasa
@@ -290,53 +302,12 @@ function Isi({
     return <Tebak bahasaKey={bhs.key} label={bhs.label} />;
   }
 
-  // Beranda sementara: daftar kurikulum. Ia akan digantikan dasbor saat layar
-  // itu diport; sampai itu terjadi, halaman ini tetap harus bisa mengantar ke
-  // SESUATU -- halaman kosong yang cuma berisi judul adalah halaman yang
-  // membuat orang mengira aplikasinya rusak.
-  return (
-    <div>
-      <header className="kepala">
-        <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
-        <h1>Antarmuka React</h1>
-        <p className="kepala-sub">
-          Sebelas layar sudah diport: Langit, Peta Karier, Pustaka,
-          Statistik, Pengaturan, Tebak keluarannya, Ruang Coba, ruang
-          kerja latihan, pembaca materi, kuis, dan halaman bahasa. Yang
-          tersisa dasbor, bookmark, catatan, dan pencarian. Kedua
-          antarmuka memakai API serta berkas gaya yang sama.
-        </p>
-        <div className="deret">
-          <a className="tbl tbl-utama" href="#/langit">
-            Langit
-          </a>
-          <a className="tbl" href="#/pustaka">
-            Pustaka
-          </a>
-          <a className="tbl" href="#/statistik">
-            Statistik
-          </a>
-          <a className="tbl" href="#/karier">
-            Peta Karier
-          </a>
-          <a className="tbl" href="#/coba">
-            Ruang Coba
-          </a>
-          <a className="tbl" href="#/atur">
-            Pengaturan
-          </a>
-        </div>
-      </header>
-      <div className="senarai">
-        {awal.bahasa.map((b) => (
-          <a key={b.key} className="baris" href={`#/bahasa/${b.key}`}>
-            <span className="baris-judul">{b.label}</span>
-            <span className="mata">Buka kurikulum</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
+  /* Alamat yang tidak dikenali mendarat di dasbor, bukan di halaman kosong.
+     Beranda sementara yang dulu berdiri di sini -- daftar kurikulum plus
+     daftar layar yang sudah diport -- sudah selesai tugasnya: `#/` dan
+     `#/dasbor` kini ditangani layar Dasbor di atas, dan yang tersisa untuk
+     cabang ini cuma alamat yang salah ketik. */
+  return <Dasbor bahasa={awal.bahasa} aturan={awal.aturan_bab ?? {}} />;
 }
 
 const akar = document.getElementById("akar");

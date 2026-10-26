@@ -570,6 +570,149 @@ BATERAI = {
                 "labelPeta",
             ),
         ]),
+    "banding-dasbor.mjs": (
+        "banding-dasbor.mjs", PAKET_WEB,
+        sumber_web("layar/dasbor-teks.ts"), [
+            (
+                # `>= 100%` jadi `> 100%`: orang yang sudah menutup target hari
+                # ini tetap dikejar angka.
+                "target tercapai jadi eksklusif",
+                "if (d.xp_hari_ini >= d.target_harian) {",
+                "if (d.xp_hari_ini > d.target_harian) {",
+                "kalimatPembuka",
+            ),
+            (
+                # Hari PERTAMA disebut "sudah 1 hari berturut-turut".
+                "streak diakui dari satu hari",
+                "if (d.streak >= 2) {",
+                "if (d.streak >= 1) {",
+                "kalimatPembuka",
+            ),
+            (
+                "tanda penurunan tidak dibalik",
+                "? `turun ${angka(-beda)}`",
+                "? `turun ${angka(beda)}`",
+                "bandingHarian",
+            ),
+            (
+                # `selisihHari` menghitung dari HARI INI ke DEPAN, jadi masa
+                # lalu negatif. Tanpa pembalikan tandanya, "12 hari lalu"
+                # menjadi "-12" dan penjaga `selisih <= 0` membuang seluruh
+                # celahnya -- streak yang putus berhenti diberi tahu.
+                "tanda selisih celah tidak dibalik",
+                "const selisih = beda === null ? 0 : -beda;",
+                "const selisih = beda === null ? 0 : beda;",
+                "celahBelajar",
+            ),
+            (
+                # Butuh jeda yang panjangnya PAS tujuh hari; pola korpus
+                # lainnya menghasilkan jeda nol atau ratusan hari, jadi pola
+                # "jeda-tujuh" dan "jeda-enam" ada khusus untuk sel ini.
+                "ambang jeda sepekan dinaikkan",
+                "if (panjang < 7) return null;",
+                "if (panjang < 8) return null;",
+                "jedaBara",
+            ),
+            (
+                # Tanpa pengecualian "belum mulai", setiap profil baru
+                # dilaporkan punya jeda enam bulan.
+                "hari sebelum mulai ikut dihitung",
+                "if (mulai < 0 || i < mulai) return;",
+                "if (mulai < 0) return;",
+                "jedaBara",
+            ),
+            (
+                # `>=` membuat jeda PERTAMA yang sepanjang itu menang, jadi
+                # "berakhir <tanggal>" menunjuk jeda yang salah.
+                "jeda pertama menang atas yang terakhir",
+                "if (jalan > panjang) {",
+                "if (jalan >= panjang) {",
+                "jedaBara",
+            ),
+            (
+                # Tanpa target di dalam `Math.max`, garis target keluar dari
+                # kotak di minggu yang buruk.
+                "puncak pekan dihitung tanpa target",
+                "Math.max(d.target_harian || 1, ...tujuh.map((x) => x.xp))",
+                "Math.max(1, ...tujuh.map((x) => x.xp))",
+                "pekanAngka",
+            ),
+            (
+                # Tujuh hari PERTAMA, bukan tujuh terakhir: "minggu ini"
+                # menampilkan minggu enam bulan lalu.
+                "tujuh hari diambil dari depan",
+                "(d.heatmap || []).slice(-7)",
+                "(d.heatmap || []).slice(0, 7)",
+                "pekanAngka",
+            ),
+            (
+                # `getDay()` menaruh Minggu di indeks 0; kisinya Senin..Minggu.
+                # Tanpa pemindahan itu SELURUH kisi bergeser satu baris dan
+                # barisnya berhenti berarti "Senin".
+                "hari Minggu tidak dipindah ke ujung",
+                "(awal.getDay() + 6) % 7",
+                "awal.getDay() % 7",
+                "baraPetak",
+            ),
+            (
+                "ambang tingkat bara digeser",
+                "s.xp < target * 0.5 ? 1",
+                "s.xp < target * 0.6 ? 1",
+                "baraPetak",
+            ),
+            (
+                # Butuh `di_level` di luar [0, butuh_level]; korpusnya memuat
+                # tiga profil seperti itu khusus untuk sel ini.
+                "rasio cincin tanpa jepit",
+                "rasio: jepit(d.di_level / Math.max(1, d.butuh_level)),",
+                "rasio: d.di_level / Math.max(1, d.butuh_level),",
+                "cincinAngka",
+            ),
+            (
+                "paket tiga puluh menit jadi inklusif",
+                "if (!x.menit || total + x.menit > 30) continue;",
+                "if (!x.menit || total + x.menit >= 30) continue;",
+                "paketTigaPuluh",
+            ),
+            (
+                # `break` alih-alih `continue`: satu langkah tanpa perkiraan
+                # menit memotong seluruh sisa paketnya.
+                "langkah tanpa menit menghentikan paket",
+                "if (!x.menit || total + x.menit > 30) continue;\n    total += x.menit;",
+                "if (!x.menit || total + x.menit > 30) break;\n    total += x.menit;",
+                "paketTigaPuluh",
+            ),
+            (
+                # Urutan kedua cabangnya berarti: "butuh go" menang atas
+                # "tanpa pasang apa pun". Menyebut sesuatu bebas pasang padahal
+                # ia tidak bisa dijalankan adalah janji yang langsung dibantah
+                # layar berikutnya. Butuh ubin yang `!siap` DAN tanpa `pasang`.
+                "urutan cabang tanda ubin dibalik",
+                'if (!b.siap) return ["ubin-butuh", `butuh ${(b.hilang || []).join(", ")}`];\n'
+                '  if (!b.pasang) return ["ubin-bebas", "tanpa pasang apa pun"];',
+                'if (!b.pasang) return ["ubin-bebas", "tanpa pasang apa pun"];\n'
+                '  if (!b.siap) return ["ubin-butuh", `butuh ${(b.hilang || []).join(", ")}`];',
+                "tandaUbin",
+            ),
+            (
+                "bahasa yang dijalani diurut naik",
+                ".sort((a, b) => b.persen - a.persen)",
+                ".sort((a, b) => a.persen - b.persen)",
+                "dijalaniDasbor",
+            ),
+            (
+                "ambang pagi jadi tengah hari",
+                "return jam < 11",
+                "return jam < 12",
+                "sapaJam",
+            ),
+            (
+                "cadangan label lanjut jadi 'Mulai'",
+                '?? "Lanjutkan"',
+                '?? "Mulai"',
+                "labelLanjut",
+            ),
+        ]),
     "banding-ikon.mjs": (
         "banding-ikon.mjs", PAKET_WEB,
         sumber_web("komponen/ikon-bentuk.ts"), [

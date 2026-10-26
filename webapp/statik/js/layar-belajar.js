@@ -578,11 +578,11 @@ function cincinLevel(d) {
   isi.setAttribute("stroke-dashoffset", String(akhir));
 
   const cincin = h("div.cincin", {
-    gaya: { "--panas": String(panas) },
     title: `${d.di_level} dari ${d.butuh_level} XP menuju level ${d.level + 1}`,
   }, svg, h("div.cincin-isi", {},
     h("div.cincin-angka", {}, String(d.level)),
     h("div.cincin-label", {}, "level")));
+  cincin.style.setProperty("--panas", String(panas));  // lihat petakPekan()
 
   // Busurnya baru digambar saat cincinnya benar-benar terlihat. Kalau dasbor
   // dibuka sudah dalam keadaan tergulir, mengisi busur di luar layar berarti

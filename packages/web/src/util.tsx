@@ -3,26 +3,15 @@
  * Yang masuk ke sini cuma yang sudah dipakai LEBIH DARI SATU layar, atau yang
  * memuat sebuah aturan. `inti.js` 803 baris sebagian karena ia jadi tempat
  * singgah apa pun yang belum punya rumah; folder ini tidak perlu mengulanginya.
+ *
+ * Yang TIDAK memakai JSX tinggal di `util.ts` dan diteruskan dari sini, supaya
+ * pembanding `.mjs` bisa mengimpornya tanpa menyeret React. Alasan lengkapnya
+ * ada di kepala berkas itu.
  */
 
 import type { ReactNode } from "react";
 
-/** Angka dengan pemisah ribuan Indonesia. */
-export function angka(n: number | string | null | undefined): string {
-  return (Number(n) || 0).toLocaleString("id-ID");
-}
-
-/**
- * URL yang boleh dipasang sebagai `href`. `null` kalau tidak.
- *
- * Ini PAGAR, bukan pembersih kosmetik, dan harus tetap seketat versi JS-nya.
- * Tautan Pustaka datang dari berkas data hasil panen, dan satu `javascript:`
- * yang lolos ke `href` berarti kode asing berjalan di halaman yang memegang
- * token API aplikasi ini. Yang diizinkan hanya http dan https.
- */
-export function urlAman(u: unknown): string | null {
-  return typeof u === "string" && /^https?:\/\//i.test(u.trim()) ? u : null;
-}
+export { angka, tanpaNomor, urlAman } from "./util.ts";
 
 /**
  * Tandai kemunculan `kata` di dalam `teks` dengan `<mark>`.
@@ -49,7 +38,3 @@ export function tandai(teks: string, kata?: string): ReactNode {
   return bagian;
 }
 
-/** Buang awalan nomor dari judul materi ("12. Variabel" -> "Variabel"). */
-export function tanpaNomor(t: string): string {
-  return t.replace(/^\s*\d+\.\s*/, "");
-}

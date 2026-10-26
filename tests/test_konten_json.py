@@ -201,7 +201,8 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                  ("banding-kerja.mjs", r"(\d+) solusi", 500),
                  ("banding-prosa.mjs", r"(\d+) baris prosa", 100000),
                  ("banding-belajar.mjs", r"(\d+) baris prosa", 100000),
-                 ("banding-bahasa.mjs", r"(\d+) perbandingan", 1000))
+                 ("banding-bahasa.mjs", r"(\d+) perbandingan", 1000),
+                 ("banding-dasbor.mjs", r"(\d+) perbandingan", 2000))
 
     def test_keluaran_identik_dengan_python(self):
         import re
