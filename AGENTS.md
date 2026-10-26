@@ -1394,7 +1394,12 @@ butuh `rasi.js` plus satu fungsi dari `gerak.js`.
 | `layar-belajar` | 3.408 | sepuluh modul, termasuk `visual` dan `jejak` | **SUDAH** -> `Belajar.tsx` + `Bahasa.tsx` + `Dasbor.tsx` + `Lain.tsx` |
 | `ikon.js` | 144 | — | **SUDAH** -> `komponen/Ikon.tsx` |
 | `rasi.js` `petaRasi` | 90 dari 265 | `gerak` | **SUDAH** -> `komponen/Rasi.tsx` |
-| `sampul.js` | 233 | — | belum, dan sengaja: `aria-hidden`, hiasan |
+| `sampul.js` | 233 | — | **SUDAH** -> `komponen/Sampul.tsx` |
+| `langit.js` | 332 | `gerak` | **SUDAH** -> `langit.ts` |
+| `kursor.js` | 194 | `gerak` | **SUDAH** -> `kursor.ts` |
+| `permukaan.js` | 67 | — | **SUDAH** -> `permukaan.ts` |
+| `sinema.js` | 89 | `gerak`, GSAP | **SUDAH** -> `sinema.ts` |
+| `beranda.js` | 124 | GSAP ScrollTrigger | **TIDAK**, dan sengaja: nol pemanggil |
 | `aplikasi.js` palet perintah | ~495 | `ikon` | **SUDAH** -> `komponen/Palet.tsx` |
 | `aplikasi.js` pintasan + bantuan | ~266 | — | **SUDAH** -> `komponen/Pintasan.tsx` |
 | `aplikasi.js` lencana XP/streak | ~60 | `ikon` | **SUDAH** -> `komponen/Lencana.tsx` |
@@ -1486,6 +1491,53 @@ jangan ditelusuri ulang: muatan soal dari `sesi.bersih()` TIDAK membawa kunci
 jawaban dan `penjelasan` datang dari respons `/api/kuis/jawab`; index jawaban
 SUDAH dipetakan ulang di `sesi._acak_soal`; dan jam mode timer BERHENTI saat
 tabnya di latar lalu melanjutkan dari sisa detik yang sama (WCAG 2.2.2).
+
+**TIGA MODUL GERAK DI LUAR LAYAR IKUT KEMBALI** (2026-10-26): reticle
+teleskop (`kursor.ts`), sorot samar di bawah kursor (`permukaan.ts`), dan judul
+yang tiba kata demi kata (`sinema.ts`). Ketiganya ada di antarmuka lama dan
+hilang tanpa jejak di React -- tidak ada galat, cuma aplikasi yang terasa lebih
+datar daripada versi yang digantikannya. Yang mengikat:
+
+* **`beranda.js` TIDAK diport, dan itu bukan kelalaian.** Sejak dasbor jadi
+  meja kerja, `gerakBeranda()` tidak menemukan `.beranda-hero` maupun
+  `.beranda-kalimat-isi`, jadi ia memang tidak menggerakkan apa pun -- dan itu
+  sudah tertulis di `layar-belajar.js` sendiri. ScrollTrigger karena itu juga
+  tidak dimuat halaman React: 70 KB untuk nol pemanggil.
+* **Kedua tag GSAP WAJIB berdiri di atas modul React, di dalam `<head>`.**
+  Skrip `defer` dan `type="module"` sama-sama dieksekusi menurut URUTAN
+  DOKUMEN, dan `vite build` menempelkan modulnya di KAKI `<head>`. Di kaki
+  `<body>` -- tempat keduanya mula-mula ditaruh -- GSAP jalan SESUDAH bundel,
+  dan `gsapSiap()` mengembalikan null untuk layar pertama. Yang terlihat bukan
+  galat melainkan judul pertama yang SESEKALI tiba tanpa gerak, tergantung mana
+  yang lebih dulu selesai antara berkas vendor dan permintaan API pertama.
+* **`ungkapJudulSaatTiba()` ada karena React menggambar cangkang LEBIH DULU.**
+  Di `aplikasi.js` router MENUNGGU data layarnya, jadi `ungkapJudul()` selalu
+  mengukur halaman yang sudah penuh. Di React `#layar` masih sebuah pusaran
+  saat efeknya jalan: terukur NOL kata terpecah di seluruh delapan layar pintu,
+  tanpa satu pun galat. Kembaran dari pengamat ukuran di bilah kemajuan baca,
+  dan pengamatnya WAJIB lepas -- pada kedatangan `h1` atau pada batas 4 detik.
+* **Daftar `LAYAR_PINTU` tinggal di DUA tempat dan diadu tes.** Judul
+  kata-demi-kata sengaja tidak dipasang di materi, latihan, dan kuis: ketiganya
+  dibuka ratusan kali dalam satu sesi panjang. Dua daftar yang melenceng satu
+  nama tidak memerahkan apa pun dengan sendirinya, jadi
+  `TestSinemaKursorPermukaan` mengadu keduanya.
+* **Ketiganya mengembalikan PEMBERSIH**, beda dari sisi JS yang memasang
+  pendengarnya sekali dan selamanya. Efek React dipasang dua kali di
+  StrictMode; tanpa pembersih yang tertinggal satu set pendengar dan satu
+  reticle per pemasangan.
+* **Kursor ASLI tidak pernah disembunyikan.** Ukuran dan kontras kursor yang
+  dipilih orang di sistemnya sering merupakan akomodasi penglihatan, dan di
+  tingkat gerak "mati" reticle-nya memang tidak digambar -- `cursor: none` akan
+  meninggalkan halaman tanpa penunjuk sama sekali.
+
+Tidak ada pembanding `.mjs` untuk ketiganya, dan alasannya bisa disebut:
+`sinema` menuntut GSAP yang cuma ada di peramban, sementara `kursor` dan
+`permukaan` seluruh isinya efek samping atas DOM sungguhan -- tidak ada bagian
+murni yang bisa diadu. Yang membuktikannya pengukuran di Chrome, dan yang
+dijaga tes justru cacat-cacatnya yang DIAM. Baterai enam sel menemukan dua
+pagar yang tidak menggigit: `count(".revert()") >= 2` dikalahkan oleh DOCSTRING
+modul itu sendiri yang menyebut `split.revert()` sebagai kalimat penjelas, dan
+asersi CDN ternaungi asersi "ada di `<head>`" yang menyala lebih dulu.
 
 **CANGKANGNYA JUGA SUDAH UTUH** (2026-10-26): palet perintah (Ctrl+K, combobox
 APG, ingatan kemutakhiran 14 hari), pintasan papan ketik beserta dialog
