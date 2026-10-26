@@ -22521,3 +22521,118 @@ class TestPortSuaraTypeScript(unittest.TestCase):
         # banyak, bukan cuma menjawab sama.
         self.assertEqual(hasil["js"]["cacah"], hasil["ts"]["cacah"],
                          "jumlah konstruksi konteks/osilator/vibrate berbeda")
+
+class TestBundelReactDilayani(BasisWeb):
+    """`/` melayani bundel React kalau ada, antarmuka lama kalau tidak.
+
+    Cutover di repo ini BERSYARAT dengan sengaja. Janji paling dasar aplikasi
+    ini "Python 3.8+ dan stdlib saja", jadi server yang MENUNTUT
+    `packages/web/dist` akan membuat kloning segar tidak punya aplikasi sama
+    sekali sampai npm dijalankan. Yang ada dilayani; yang tidak ada jatuh ke
+    antarmuka lama.
+
+    Tiga klaim yang diuji, dan ketiganya bisa salah tanpa menimbulkan error:
+
+      (a) bundel yang ADA memang yang dilayani di `/`, bukan antarmuka lama
+          yang kebetulan juga menjawab 200;
+      (b) sentinel tokennya DIGANTI. Sentinel yang lolos apa adanya membuat
+          `api.ts` memperlakukannya sebagai "tidak ada token", dan yang
+          terlihat pelajar aplikasi yang memuat penuh lalu setiap
+          permintaannya 403;
+      (c) tanpa bundel, `/` tetap memberi antarmuka lama -- invarian
+          stdlib-saja itu.
+
+    Plus `/lama`, yang harus tetap mengantar ke antarmuka lama sesudah React
+    dilayani di `/`: 379 tes di berkas ini menguji halaman itu, dan permukaan
+    yang tidak bisa dibuka lagi adalah permukaan yang pagarnya berhenti
+    berarti.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.server, cls.url = modul_server.buat(port=7803)
+        cls.utas = threading.Thread(target=cls.server.serve_forever, daemon=True)
+        cls.utas.start()
+        cls.token = cls.server.token
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+
+    def _html(self, jalur="/"):
+        req = urllib.request.Request(self.url.rstrip("/") + jalur)
+        with urllib.request.urlopen(req, timeout=30) as f:
+            return f.status, f.read().decode("utf-8")
+
+    def test_bundel_dilayani_di_akar_kalau_ada(self):
+        if not modul_server.dist_siap():
+            self.skipTest("packages/web/dist belum dibangun "
+                          "(`npm run build --workspace @belajar/web`)")
+        kode, html = self._html("/")
+        self.assertEqual(kode, 200)
+        # (a) Bundel, bukan antarmuka lama. Penandanya skrip aset ber-hash:
+        # antarmuka lama memuat modulnya dari `/js/`, bukan `/assets/`.
+        self.assertRegex(html, r'src="/assets/index-[A-Za-z0-9_-]+\.js"',
+                         "`/` tidak melayani bundel React")
+        # (b) Sentinel DIGANTI, dan tokennya benar-benar ada.
+        self.assertNotIn("__TOKEN_BELAJAR__", html,
+                         "sentinel token lolos apa adanya -- aplikasinya akan "
+                         "memuat penuh lalu menjawab 403 di setiap permintaan")
+        self.assertIn(self.server.token, html)
+
+    def test_lama_tetap_bisa_dibuka(self):
+        kode, html = self._html("/lama")
+        self.assertEqual(kode, 200)
+        self.assertIn('id="panggung"', html,
+                      "`/lama` tidak mengantar ke antarmuka lama")
+        self.assertNotIn("{{TOKEN}}", html)
+        self.assertIn(self.server.token, html)
+
+    def test_tanpa_bundel_jatuh_ke_antarmuka_lama(self):
+        """Invarian stdlib-saja: tanpa npm, aplikasinya tetap utuh."""
+        asli = modul_server.DIST
+        modul_server.DIST = os.path.join(asli, "tidak-pernah-ada")
+        try:
+            self.assertFalse(modul_server.dist_siap())
+            kode, html = self._html("/")
+        finally:
+            modul_server.DIST = asli
+        self.assertEqual(kode, 200)
+        self.assertIn('id="panggung"', html,
+                      "tanpa bundel, `/` harus memberi antarmuka lama")
+
+    def test_dua_akar_statik_tidak_membuka_traversal(self):
+        """Pemeriksaan traversal dilakukan PER AKAR, dan ia benar-benar FIRE.
+
+        Yang ditagih **403**, bukan "403 atau 404", dan itu bedanya antara
+        pagar yang terbukti jalan dan pagar yang kebetulan hijau. Versi
+        pertama tes ini menerima keduanya dengan jalur `../` yang terlalu
+        pendek untuk keluar dari pohon -- yang menolaknya "berkas tidak ada",
+        bukan pemeriksaannya, dan sel mutasi yang MENCABUT pemeriksaan itu
+        tetap hijau. Terukur: dengan `../` sebanyak ini `normpath` mendarat
+        tepat di `/etc/passwd`, yang MEMANG ada, jadi pemeriksaan yang dicabut
+        berarti berkas itu benar-benar terkirim 200.
+
+        Dua akar diuji terpisah karena satu pemeriksaan yang dipakai untuk
+        dua akar adalah pemeriksaan yang salah untuk salah satunya.
+        """
+        naik = "../" * 12
+        for jalur in (f"/assets/{naik}etc/passwd",
+                      f"/js/{naik}etc/passwd",
+                      f"/{naik}etc/passwd"):
+            with self.subTest(jalur=jalur):
+                req = urllib.request.Request(self.url.rstrip("/") + jalur)
+                try:
+                    with urllib.request.urlopen(req, timeout=30) as f:
+                        isi = f.read(64)
+                        self.fail(f"{jalur} dijawab {f.status} dan mengirim "
+                                  f"{isi[:40]!r} -- traversal TERBUKA")
+                except urllib.error.HTTPError as e:
+                    e.close()
+                    self.assertEqual(
+                        e.code, 403,
+                        f"{jalur} -> {e.code}. 404 berarti jalurnya tidak "
+                        "pernah keluar dari pohon, jadi pemeriksaannya tidak "
+                        "pernah dievaluasi dan tes ini tidak membuktikan apa "
+                        "pun")

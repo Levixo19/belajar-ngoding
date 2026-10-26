@@ -1706,6 +1706,55 @@ for object heap"), dan `bash -c` memakai string shell sementara
 `runner.py` menurunkan nama kelas Java DARI KODE PELAJAR -- itu menukar pagar
 yang ada dengan lubang injeksi.
 
+## Cutover: React dilayani server Python (2026-10-26)
+
+`belajar-web.py` sekarang melayani bundel React di `/`. Antarmuka lama TETAP
+ada di `/lama`.
+
+**Cutover-nya BERSYARAT, dan itu tunduk pada janji paling dasar repo ini.**
+`webapp/server.py` memeriksa `dist_siap()` per permintaan: kalau
+`packages/web/dist/index.html` ada, itu yang dilayani; kalau tidak, `/` jatuh
+ke antarmuka lama. Server yang MENUNTUT direktori itu akan membuat kloning
+segar tidak punya aplikasi sama sekali sampai npm dijalankan, sementara
+AGENTS ini berjanji "Python 3.8+ dan stdlib saja". Jadi:
+
+```bash
+npm install && npm run build --workspace @belajar/web   # sekali
+python3 belajar-web.py                                  # React di /
+```
+
+Tanpa dua perintah pertama, aplikasinya tetap utuh -- cuma antarmuka lama.
+`dist/` ada di `.gitignore`: ia produk, bukan sumber.
+
+Yang mengikat:
+
+* **Token disuntik server, bukan dipanggang ke bundel.** Ia lahir per JALANNYA
+  server. `packages/web/index.html` memuat
+  `window.TOKEN_BELAJAR = window.TOKEN_BELAJAR || "__TOKEN_BELAJAR__"`, dan
+  `server._halaman()` mengganti sentinel itu seperti ia mengganti `{{TOKEN}}`
+  di halaman lama. **`|| ` itu WAJIB**: di mode dev plugin `belajar-token`
+  menyuntikkan token sungguhan lewat `head-prepend` sehingga ia jalan LEBIH
+  DULU, dan tanpa `||` baris ini menimpanya dengan sentinel -- yang oleh
+  `api.ts` dibaca sebagai "tidak ada token", jadi seluruh API menjawab 403.
+  Sentinelnya tidak boleh berbentuk `{{...}}`: ia harus tetap JavaScript yang
+  sah supaya `vite build` bisa mengurainya.
+* **Berkas statik punya DUA akar, dan traversal diperiksa PER AKAR.**
+  `webapp/statik` lebih dulu (`gaya.css`, `/huruf`, `/vendor` tetap satu
+  sumber), lalu `dist` untuk `/assets/*`. Satu pemeriksaan untuk dua akar
+  adalah pemeriksaan yang salah untuk salah satunya.
+* **Ketiga lapis penjagaan TIDAK disentuh.** Diukur sesudah cutover: `/api`
+  tanpa token 403, Origin asing 403, Host asing 403, traversal 403.
+* **`/lama` wajib tetap bisa dibuka.** 379 tes di `tests/test_web.py` menguji
+  halaman itu; permukaan yang tidak bisa dibuka lagi adalah permukaan yang
+  pagarnya berhenti berarti.
+
+Pagarnya `test_web.TestBundelReactDilayani` (4 tes). Satu pelajaran dari
+mengukurnya: tes traversal versi pertama menerima **403 ATAU 404** dengan
+jalur `../` yang terlalu pendek untuk keluar dari pohon -- yang menolaknya
+"berkas tidak ada", bukan pemeriksaannya, dan sel yang MENCABUT pemeriksaan
+itu tetap hijau. Sekarang ia menagih 403 dengan `../` yang benar-benar
+mendarat di `/etc/passwd`, dan selnya merah dengan pesan "traversal TERBUKA".
+
 ## Gaya bahasa materi
 
 Pemilik menilai materi lama "masih AI banget" dan membingungkan, sampai

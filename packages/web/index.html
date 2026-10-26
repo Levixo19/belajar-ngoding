@@ -9,6 +9,7 @@
      Menyalinnya ke sini berarti dua lembar gaya untuk satu desain, dan yang
      kedua akan ketinggalan tanpa ada yang menyadarinya. 6.508 baris dan 112
      token desain tidak ditulis ulang. -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f1012'/><rect x='9' y='9' width='14' height='14' rx='4' fill='%236b97ff'/></svg>">
 <link rel="stylesheet" href="/gaya.css">
 
 <!-- Token API TIDAK ditanam di sini, dan itu bukan pilihan gaya.
@@ -31,6 +32,16 @@
 </head>
 <body>
 <div id="akar"></div>
+<!-- Token untuk produksi. Server Python menggantikan sentinel ini saat
+     halaman diminta, persis seperti `{{TOKEN}}` di antarmuka lama -- tokennya
+     lahir per JALANNYA server, jadi ia tidak bisa dipanggang ke dalam bundel.
+
+     `|| ` itu wajib, bukan kehati-hatian. Di mode dev plugin `belajar-token`
+     menyuntikkan token SUNGGUHAN lewat `head-prepend`, jadi ia jalan LEBIH
+     DULU; baris ini jalan sesudahnya dan tanpa `||` ia akan menimpa token
+     yang benar dengan sentinelnya -- dan `api.ts` memperlakukan sentinel
+     sebagai "tidak ada token", jadi seluruh API menjawab 403 di mode dev. -->
+<script>window.TOKEN_BELAJAR = window.TOKEN_BELAJAR || "__TOKEN_BELAJAR__";</script>
 <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

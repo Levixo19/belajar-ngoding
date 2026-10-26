@@ -42,6 +42,25 @@ from inti import pustaka
 from webapp import api
 
 STATIK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "statik")
+# Bundel antarmuka React, kalau sudah dibangun (`npm run build` di
+# packages/web). Ia OPSIONAL dengan sengaja: janji repo ini "Python 3.8+ dan
+# stdlib saja", jadi server yang MENUNTUT direktori ini akan membuat kloning
+# segar tidak punya aplikasi sama sekali sampai npm dijalankan. Yang ada
+# dilayani; yang tidak ada jatuh ke antarmuka lama, dan keduanya memakai
+# berkas progres serta token yang sama.
+DIST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    "packages", "web", "dist")
+
+
+def dist_siap():
+    """Bundel React sudah dibangun?
+
+    Dibaca per permintaan, bukan sekali saat impor: `npm run build` yang
+    dijalankan sementara server hidup harus langsung berlaku, dan server yang
+    harus dinyalakan ulang untuk melihat hasil build adalah server yang
+    membuat orang mengira build-nya gagal.
+    """
+    return os.path.isfile(os.path.join(DIST, "index.html"))
 
 # Muatan JSON dibatasi supaya permintaan rusak tidak menyedot memori. Kode
 # pelajar paling panjang pun jauh di bawah ini.
@@ -226,11 +245,24 @@ class Penangan(BaseHTTPRequestHandler):
 
     def _berkas_statik(self, path):
         """Sajikan berkas dari webapp/statik, tanpa bisa keluar dari sana."""
-        penuh = os.path.normpath(os.path.join(STATIK, path.lstrip("/")))
-        # normpath meratakan "..", jadi pemeriksaan ini menutup path traversal.
-        if not penuh.startswith(STATIK + os.sep):
-            return self._galat(403, "Akses ditolak.")
-        if not os.path.isfile(penuh):
+        # DUA akar, dicoba berurutan: `webapp/statik` lebih dulu supaya
+        # `gaya.css`, `/huruf`, dan `/vendor` tetap milik satu sumber, lalu
+        # `dist` untuk `/assets/*` milik bundel React. Pemeriksaan traversal
+        # dilakukan PER AKAR -- satu pemeriksaan yang dipakai untuk dua akar
+        # adalah pemeriksaan yang salah untuk salah satunya.
+        penuh = None
+        for akar in (STATIK, DIST):
+            if akar is DIST and not dist_siap():
+                continue
+            calon = os.path.normpath(os.path.join(akar, path.lstrip("/")))
+            # normpath meratakan "..", jadi pemeriksaan ini menutup path
+            # traversal.
+            if not calon.startswith(akar + os.sep):
+                return self._galat(403, "Akses ditolak.")
+            if os.path.isfile(calon):
+                penuh = calon
+                break
+        if penuh is None:
             return self._galat(404, "Berkas tidak ditemukan.")
 
         ext = os.path.splitext(penuh)[1].lower()
@@ -256,15 +288,21 @@ class Penangan(BaseHTTPRequestHandler):
         kepala["_kunci_mampat"] = (penuh, etag)
         self._kirim(200, isi, tipe, kepala, ambang=_MAMPAT_MIN)
 
-    def _halaman(self):
+    def _halaman(self, paksa_lama=False):
+        akar = STATIK if (paksa_lama or not dist_siap()) else DIST
         try:
-            with open(os.path.join(STATIK, "index.html"), "r", encoding="utf-8") as f:
+            with open(os.path.join(akar, "index.html"), "r", encoding="utf-8") as f:
                 html = f.read()
         except OSError:
             return self._galat(500, "index.html tidak ditemukan.")
         # Token ditanam ke dalam halaman, bukan diletakkan di URL: URL tersimpan
         # di riwayat browser dan ikut terkirim lewat Referer.
         html = html.replace("{{TOKEN}}", self.server.token)
+        # Sentinel milik antarmuka React. Namanya berbeda dari `{{TOKEN}}`
+        # karena ia harus tetap berupa JavaScript yang sah di dalam bundel yang
+        # sudah dibangun -- `{{TOKEN}}` telanjang akan membuat `vite build`
+        # gagal mengurainya.
+        html = html.replace("__TOKEN_BELAJAR__", self.server.token)
         # Nonce baru untuk SETIAP respons: skrip inline yang dikenal server
         # saja yang boleh jalan. Dipasang di sini (bukan di index.html) supaya
         # markup-nya tetap bisa dibuka apa adanya.
@@ -286,6 +324,12 @@ class Penangan(BaseHTTPRequestHandler):
 
         if metode == "GET" and path in ("/", "/index.html"):
             return self._halaman()
+        # Antarmuka lama tetap punya alamatnya sendiri sesudah React dilayani
+        # di `/`. Bukan demi nostalgia: 379 tes di `tests/test_web.py` menguji
+        # halaman itu, dan permukaan yang tidak bisa dibuka lagi adalah
+        # permukaan yang pagarnya berhenti berarti.
+        if metode == "GET" and path == "/lama":
+            return self._halaman(paksa_lama=True)
 
         if not path.startswith("/api/"):
             if metode != "GET":
