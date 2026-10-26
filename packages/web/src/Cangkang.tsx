@@ -23,6 +23,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState,
          type ReactNode } from "react";
 import { nyalakanLangit } from "./langit.ts";
+import { lepas, masuk, tekan } from "./gerak.ts";
 
 import { Ikon } from "./komponen/Ikon.tsx";
 import { Lencana, MajuBaca } from "./komponen/Lencana.tsx";
@@ -209,6 +210,57 @@ export function Cangkang({
      menjalankan efek dua kali, dan tanpa melepas pendengar `pointermove`,
      `resize`, dan kedua `MutationObserver`, setiap pemasangan menumpuk satu
      langit lagi di belakang yang lama. */
+  /* ---------------------------------------------------- transisi rute ---
+     Isi `#layar` dianimasikan MASUK tiap kali rutenya berganti. Di React
+     tidak ada "DOM lama" untuk dianimasikan keluar seperti di `aplikasi.js`
+     -- React sudah menukarnya sebelum efek ini jalan -- jadi yang tersisa
+     setengah geraknya, dan itu yang benar: `keluar()` di sisi JS ada supaya
+     halaman lama tidak lenyap mendadak, sementara di sini ia memang tidak
+     pernah sempat terlihat lenyap.
+
+     `masuk()` memakai `fill: "backwards"`, jadi keadaan AKHIR-nya keadaan
+     alami elemennya. Gerak yang dimatikan berarti layarnya langsung berdiri
+     di tempatnya -- bukan tak terlihat selamanya. */
+  const layarRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!layarRef.current) return;
+    masuk(layarRef.current, { geser: 8, zum: 0.995, pegas: "halus" });
+  }, [rute]);
+
+  /* ------------------------------------------------ umpan balik tekan ---
+     Dipasang SEKALI di tingkat dokumen, bukan per tombol. Dua sebabnya:
+     tombol lahir dan mati terus-menerus di aplikasi ber-rute, dan satu
+     pendengar jauh lebih murah daripada dua pendengar kali jumlah tombol.
+
+     Ini bukan paritas -- di antarmuka lama `tekan()`/`lepas()` ADA di
+     `gerak.js` tapi NOL pemanggil. Padahal aturan di AGENTS.md menyebut umpan
+     balik sentuhan sebagai satu-satunya alasan tingkat gerak "halus" ada:
+     kalau ia ikut padam di situ, "halus" tidak ada bedanya dengan "mati".
+     Jadi yang dikerjakan di sini menepati maksud yang sudah tertulis, bukan
+     menambah hiasan baru. */
+  useEffect(() => {
+    const BISA = "button, a, .sakelar, [role=\"button\"], .kartu-pilihan";
+    const sasaran = (e: Event) =>
+      (e.target as Element | null)?.closest?.(BISA) ?? null;
+    const turun = (e: PointerEvent) => {
+      // Tombol kanan dan tengah tidak "menekan" apa pun yang terlihat.
+      if (e.button !== 0) return;
+      tekan(sasaran(e));
+    };
+    const naik = (e: PointerEvent) => lepas(sasaran(e));
+    // `pointercancel` ikut didengar: tanpa itu, gestur yang dibatalkan sistem
+    // (gulir yang mengambil alih sentuhan) meninggalkan tombol MENGECIL
+    // selamanya, karena yang menekan memakai fill "forwards".
+    document.addEventListener("pointerdown", turun, true);
+    document.addEventListener("pointerup", naik, true);
+    document.addEventListener("pointercancel", naik, true);
+    return () => {
+      document.removeEventListener("pointerdown", turun, true);
+      document.removeEventListener("pointerup", naik, true);
+      document.removeEventListener("pointercancel", naik, true);
+    };
+  }, []);
+
   const latarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!latarRef.current) return;
@@ -377,7 +429,11 @@ export function Cangkang({
 
       <div id="panggung" className={konteks ? "berkonteks" : undefined}>
         {konteks ? <StripKonteks k={konteks} /> : null}
-        <main id="layar" className={kelasLayar.trim() || undefined}>
+        <main
+          id="layar"
+          ref={layarRef}
+          className={kelasLayar.trim() || undefined}
+        >
           {children}
         </main>
       </div>

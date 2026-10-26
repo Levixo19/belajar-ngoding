@@ -577,6 +577,54 @@ BATERAI = {
     # Sampul generatif. Mutannya menyentuh hash, PRNG, tabel rona, dan
     # pemilih ragam -- empat jalan berbeda menuju "gambar yang berbeda untuk
     # nama yang sama", dan tidak satu pun menimbulkan error.
+    # Mesin pegas. Tiap mutan menggeser BENTUK setiap gerakan di aplikasi
+    # tanpa melempar apa pun: yang terasa cuma "entah kenapa sekarang berat".
+    "banding-gerak.mjs": (
+        "banding-gerak.mjs", PAKET_WEB,
+        sumber_web("gerak.ts"), [
+            (
+                "ambang 'terlihat selesai' digeser",
+                "export function tauSampai(zeta: number, ambang = 0.99): number {",
+                "export function tauSampai(zeta: number, ambang = 0.98): number {",
+                "tauSampai",
+            ),
+            (
+                "langkah pencarian tau diperbesar",
+                "  const langkah = 0.002;",
+                "  const langkah = 0.004;",
+                "tauSampai",
+            ),
+            (
+                "pantul bawaan diubah",
+                "const PANTUL_BAWAAN = 0.06;",
+                "const PANTUL_BAWAAN = 0.08;",
+                "paramPegas",
+            ),
+            (
+                "ambang diam kurva dilonggarkan",
+                "const DIAM = 0.005;",
+                "const DIAM = 0.01;",
+                "kurvaPegas",
+            ),
+            (
+                "kerapatan sampel easing diubah",
+                "  const titik = Math.min(140, Math.max(8, Math.round(akhir * 60)));",
+                "  const titik = Math.min(140, Math.max(8, Math.round(akhir * 50)));",
+                "kurvaPegas",
+            ),
+            (
+                "solver teredam-kurang kehilangan sukunya",
+                "      * (Math.cos(omegaD * t) + b * Math.sin(omegaD * t));",
+                "      * (Math.cos(omegaD * t));",
+                "jalurPegas",
+            ),
+            (
+                "atap urutan dilepas",
+                "  const langkah = Math.min(per, maks / jarakMaks);",
+                "  const langkah = per;",
+                "berurut",
+            ),
+        ]),
     "banding-sampul.mjs": (
         "banding-sampul.mjs", PAKET_WEB,
         sumber_web("komponen/sampul-bentuk.ts"), [
