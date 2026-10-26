@@ -36,6 +36,21 @@ Empat hal yang membuat tes ini pagar, bukan daftar keinginan:
    sementara sisanya tetap dilayani Python.
 
 Yang TIDAK diuji di sini: kode galat, pesan galat, dan penjagaan token.
+
+Dan satu batas yang terukur: **daftar kosong memuaskan `[apa pun]`.** Disapu
+atas seluruh 41 endpoint, 119 posisi daftar diperiksa, 81 benar-benar berisi,
+dan 38 di antaranya (7 medan berbeda) selalu kosong di profil uji -- jadi
+kontrak ELEMENNYA tidak pernah diuji. Dua dari tujuh ternyata SALAH:
+`karantina` ditulis `[dict]` padahal isinya jalur berkas, dan `token_setup`
+ditulis `[dict]` padahal `isi.token_kode` mengembalikan `[[jenis, teks]]`.
+Yang pertama ketahuan karena tes lain di suite mengotori `simpanan.KARANTINA`
+(lulus sendirian, gagal di dalam suite); yang kedua karena sapuan ini.
+`token_setup` dan `stdin_list` sekarang ditutup `test_latihan_bermuatan_penuh`.
+Yang MASIH belum teruji elemennya: `badge`, `kuis_siap`, `karantina`, dan
+`bahasa[*].hilang` -- keempatnya butuh keadaan yang disemai (badge butuh XP,
+kuis_siap butuh bacaan, karantina butuh berkas rusak, hilang butuh toolchain
+yang tidak terpasang). Menambah salah satunya berarti mengubah tebakan jadi
+fakta; sampai itu terjadi, keempatnya tebakan.
 Ketiganya sudah punya tempatnya di `test_web.TestPenjagaanServer`, dan dua
 pagar untuk satu hal adalah dua pagar yang suatu hari berbeda pendapat.
 
@@ -157,7 +172,7 @@ RINGKAS_DIRI = {"xp": int, "level": int, "gelar": str, "di_level": int,
 
 KONTRAK = {
     ("GET", "/api/awal"): ({}, {
-        "versi": str, "versi_web": str, "karantina": [dict],
+        "versi": str, "versi_web": str, "karantina": [str],   # jalur berkas, bukan objek
         "bahasa": [{"key": str, "label": str, "runner": str, "sorot": str,
                     "siap": bool, "materi": int, "kuis": int, "latihan": int,
                     "hilang": [str], "tematik": bool}],
@@ -255,7 +270,7 @@ KONTRAK = {
         "indeks": int, "jumlah": int, "judul": str, "tingkat": str,
         "proyek": bool, "soal": [str], "soal_blok": [{"jenis": str}],
         "hint": [str], "solusi": str, "token_solusi": [list], "setup": str,
-        "token_setup": [dict], "stdin": str, "stdin_list": [str], "mode": str,
+        "token_setup": [list], "stdin": str, "stdin_list": [str], "mode": str,
         "dinilai": bool, "alasan": str, "status": str, "kunci": str,
         "catatan": {"teks": str, "diubah": str}, "bookmark": bool}),
 
@@ -612,6 +627,55 @@ class TestKontrakApi(unittest.TestCase):
         self.assertGreaterEqual(diperiksa, 41,
                                 f"cuma {diperiksa} endpoint yang benar-benar "
                                 "diperiksa")
+
+    def test_latihan_bermuatan_penuh(self):
+        """`/api/latihan` diuji lagi pada latihan yang medannya TERISI.
+
+        Daftar kosong memuaskan `[apa pun]`, jadi sebuah entri `[dict]` yang
+        salah total tetap hijau selama contohnya tidak pernah punya isi. Dua
+        entri di kontrak ini memang begitu, dan SATU di antaranya salah:
+        `token_setup` ditulis `[dict]` padahal `isi.token_kode` mengembalikan
+        `[[jenis, teks]]` -- tetangganya sebaris di atas (`token_solusi`)
+        sudah benar sejak awal. Yang membedakan keduanya cuma satu hal:
+        `token_solusi` selalu berisi, `token_setup` tidak.
+
+        Latihan python 0 -- yang dipakai perulangan utama -- tidak punya
+        `setup` maupun `stdin_list`. Dua belas latihan punya `setup`, 187
+        punya `stdin_list`, dan NOL punya keduanya, jadi sampelnya memang
+        harus dua. Keduanya DICARI lewat API, dan masing-masing menuntut
+        medannya tidak kosong: sampel yang ikut kosong tidak memperbaiki
+        apa pun.
+        """
+        bentuk = KONTRAK[("GET", "/api/latihan")][1]
+        for medan, bahasa in (("setup", ("sql", "database")),
+                              ("stdin_list", ("python", "java"))):
+            with self.subTest(medan=medan):
+                temu = None
+                for kb in bahasa:
+                    b = self._wajib("GET", "/api/bahasa", {"key": kb})
+                    for e in b["latihan"][:12]:
+                        kode, isi_ = self.minta("GET", "/api/latihan",
+                                                {"key": kb,
+                                                 "indeks": e["indeks"]})
+                        if kode == 200 and isi_.get(medan):
+                            temu = (kb, e["indeks"], isi_)
+                            break
+                    if temu:
+                        break
+                self.assertIsNotNone(
+                    temu, f"tidak ada latihan ber-{medan} di dua belas "
+                          f"latihan pertama {bahasa} -- penyiapan salah, "
+                          "bukan kontrak yang bergeser")
+                kb, indeks, isi_ = temu
+                self.assertTrue(isi_[medan],
+                                f"{kb} latihan {indeks}: {medan} kosong, "
+                                "sampelnya tidak menguji apa pun")
+                try:
+                    periksa(bentuk, isi_)
+                except Salah as e:
+                    self.fail(f"GET /api/latihan ({kb} {indeks}, ber-{medan}) "
+                              f"bentuknya bergeser -- {e}")
+
 
 
 if __name__ == "__main__":
