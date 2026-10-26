@@ -1628,10 +1628,39 @@ ketiganya tidak menimbulkan satu pun error:**
   kosong tanpa penjelasan. Ikut ketemu: medan `catatan` ditipekan `string` di
   `DataMateri` dan `DataLatihan` padahal servernya mengirim `{teks, diubah}`.
 
+* **`KuisLemah` ditipekan dengan TIGA nama medan yang tidak ada**
+  (`key`, `skor`, `maks`; yang benar `bahasa`/`indeks`/`terbaik`/`total`).
+  `tsc` tidak bisa menangkapnya -- tipe yang salah tetap tipe yang sah -- dan
+  yang digambar di layar Statistik: pil bertuliskan `undefined/undefined`,
+  tautan ke `#/kuis/undefined`, dan kunci kurikulum mentah ("python") di tempat
+  labelnya. Nol galat di konsol. Blok itu juga kehilangan baris rinciannya dan
+  bilah skornya, dan labelnya memakai "Di mana aku lemah?" -- nama fitur di
+  DOCSTRING `blokKuisLemah`, bukan teks yang digambar ("Paling perlu diulang").
+
 Pelajarannya satu dan berlaku ke depan: **`tsc` hijau dan curl hijau tidak
-membuktikan sebuah layar terpasang.** Ketiga cacat di atas lolos keduanya, dan
-yang menemukan ketiganya mengukur halaman yang sama di KEDUA antarmuka lalu
+membuktikan sebuah layar terpasang.** Keempat cacat di atas lolos keduanya, dan
+yang menemukan semuanya mengukur halaman yang sama di KEDUA antarmuka lalu
 mengadu angkanya.
+
+**Dua sapuan yang murah dan terbukti berguna, ulangi keduanya tiap kali sebuah
+layar diport:**
+
+1. **Adu kamus ukuran di kedua antarmuka**, per kunci, dengan
+   `JSON.stringify`: lebar `#layar`, `gridTemplateColumns`, cacah
+   `.baris`/`.kartu`/`.pil`/`.tbl`/`.bilah`/`svg`, teks `.mata` dan `aria-label`.
+   Selisih yang keluar ada dua macam dan KEDUANYA berguna: yang salah, dan
+   yang benar karena sesuatu memang sengaja belum diport. Yang kedua wajib bisa
+   disebut alasannya -- sampul membuat `svg` dan tinggi halaman berbeda, blok
+   data Statistik membuat `tbl` 0 lawan 4. Yang tidak bisa disebut alasannya
+   adalah cacat.
+2. **Sapu teks tiap layar untuk `undefined`, `NaN`, `[object Object]`, dan
+   `null`.** Diukur atas 16 alamat: lima belas bersih, dan satu-satunya
+   kecocokan sisa positif-palsu (teks kurikulumnya sendiri menyebut "null
+   pointer"). Dua jebakan saat menulis sapuannya: regex ber-`/g/` yang dipakai
+   ulang dengan `.test()` MAJU `lastIndex`-nya, jadi satu objek regex untuk
+   banyak simpul melewatkan separuhnya dan melapor "tidak ketemu di mana pun"
+   padahal ada; dan simpul yang punya anak harus dilewati, kalau tidak setiap
+   leluhur ikut terdaftar.
 
 **Empat catatan bentuk dari layar yang sudah diport.** Keempatnya berlaku
 untuk sisanya:

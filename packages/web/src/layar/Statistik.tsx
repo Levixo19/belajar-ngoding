@@ -57,12 +57,26 @@ interface Gelar {
   nama: string;
 }
 
+/* Bentuknya dari `saran.kuis_perlu_diulang` lewat `/api/statistik`.
+ *
+ * Versi pertama tipe ini menyebut `key`, `skor`, dan `maks` -- tiga nama yang
+ * TIDAK ADA satu pun di muatannya. `tsc` tidak bisa menangkapnya (tipe yang
+ * salah tetap tipe yang sah), dan yang digambar di layar: pil bertuliskan
+ * `undefined/undefined`, tautan ke `#/kuis/undefined`, dan kunci kurikulum
+ * mentah ("python") di tempat labelnya ("Python"). Nol galat di konsol.
+ *
+ * `riwayat` triplet `[tanggal, benar, total]`, dan ia dipakai apa adanya
+ * untuk menggambar jejak "3/8 → 6/8". */
 interface KuisLemah {
-  key: string;
   bahasa: string;
+  label_bahasa: string;
+  indeks: number;
   judul: string;
-  skor: number;
-  maks: number;
+  terbaik: number;
+  total: number;
+  salah_tersisa: number;
+  jadwal: string | null;
+  riwayat: Array<[string, number, number]>;
 }
 
 interface Statistik {
@@ -306,23 +320,53 @@ export function Statistik() {
         </div>
       </section>
 
+      {/* "Paling perlu diulang", label yang SAMA dengan antarmuka lama.
+          Versi pertama memakai "Di mana aku lemah?" -- itu nama fiturnya di
+          docstring `blokKuisLemah`, bukan teks yang digambar, dan dua
+          antarmuka yang menamai satu bagian dengan dua kalimat adalah dua
+          antarmuka yang isinya berbeda.
+
+          Urutan dan isinya dari server (`saran.kuis_perlu_diulang`); bilahnya
+          skor TERBAIK dengan garis dasar nol, dan riwayat ditulis sebagai
+          angka ("3/8 → 6/8") bukan grafik -- paling banyak dua belas titik per
+          kuis, dan yang ingin dilihat cuma arahnya. */}
       {s.kuis_lemah && s.kuis_lemah.length ? (
         <section>
-          <span className="mata">Di mana aku lemah?</span>
+          <span className="mata">Paling perlu diulang</span>
           <div className="senarai">
-            {s.kuis_lemah.map((k) => (
-              <a
-                key={`${k.key}-${k.judul}`}
-                className="baris"
-                href={`#/kuis/${k.key}`}
-              >
-                <div className="isi">
-                  <div className="judul">{k.judul}</div>
-                  <div className="ket">{k.bahasa}</div>
-                </div>
-                <span className="pil pil-tenang">{`${k.skor}/${k.maks}`}</span>
-              </a>
-            ))}
+            {s.kuis_lemah.map((k) => {
+              const persen = k.total ? (k.terbaik / k.total) * 100 : 0;
+              const jejak = k.riwayat
+                .slice(-4)
+                .map((r) => `${r[1]}/${r[2]}`)
+                .join(" → ");
+              const ket = [
+                k.label_bahasa,
+                k.salah_tersisa ? `${k.salah_tersisa} soal masih salah` : null,
+                k.jadwal ? `ulang ${tanggalRamah(k.jadwal)}` : null,
+                k.riwayat.length > 1 ? `riwayat ${jejak}` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ");
+              return (
+                <a
+                  key={`${k.bahasa}-${k.indeks}`}
+                  className="baris"
+                  href={`#/kuis/${k.bahasa}/${k.indeks}`}
+                >
+                  <div className="isi">
+                    <div className="judul">{k.judul}</div>
+                    <div className="ket">{ket}</div>
+                  </div>
+                  <span className="kuis-lemah-angka">
+                    {`terbaik ${k.terbaik}/${k.total}`}
+                  </span>
+                  <span className="kuis-lemah-bilah">
+                    <Bilah persen={persen} kelas={persen >= 70 ? "tumbuh" : ""} />
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </section>
       ) : null}
