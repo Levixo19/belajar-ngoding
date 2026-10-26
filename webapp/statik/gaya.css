@@ -6484,7 +6484,7 @@ html.lingkar-tema::view-transition-new(root) {
                   border-radius: 10px; padding: .35em .7em; }
   .langit-konsep[aria-pressed="true"] { color: var(--di-atas-aksen); background: var(--nyala); border-color: var(--nyala); }
   .langit-keterangan { margin: 0; min-height: 1.5em; color: var(--teks); font-family: var(--f-ui); }
-  .langit-svg { max-height: calc(100vh - 220px); }
+  .langit-svg { width: 100%; max-width: 1800px; margin-inline: auto; } /* skala dari LEBAR, bukan tinggi layar */
   .langit-peta {
     border: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 16%, var(--garis)); border-radius: 22px;
     padding: var(--s3);
