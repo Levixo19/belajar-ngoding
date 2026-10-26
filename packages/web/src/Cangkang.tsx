@@ -203,20 +203,26 @@ export function Cangkang({
 
   const diPanel = MENU_LAIN.some(([nama]) => nama === rute);
 
+  /* `<li><a>`, BUKAN `<a>` telanjang. `gaya.css` mendesain butir navigasi
+     lewat `.rel-menu a` (21 aturan), dan `.rel-menu` itu sebuah `<ul>`.
+     Versi pertama cangkang ini mengarang `.rel-butir` di dalam `.rel-deret`
+     -- dua kelas yang NOL kali muncul di stylesheet, jadi nol aturan berlaku
+     dan navigasinya tampil sebagai teks telanjang berdempetan. */
   const butir = ([nama, label, href]: Butir) => {
     const ini = nama === rute;
     return (
+      <li key={nama}>
       <a
-        key={nama}
-        className={"rel-butir" + (ini ? " kini" : "")}
+        className={ini ? "kini" : undefined}
         href={href}
         // `aria-current` WAJIB ikut dipasang DAN dilepas: warna tidak
         // dibacakan pembaca layar, jadi kelas `.kini` saja tidak pernah cukup.
         aria-current={ini ? "page" : undefined}
         onClick={() => setPanelBuka(false)}
       >
-        {label}
+        <span className="nama">{label}</span>
       </a>
+      </li>
     );
   };
 
@@ -239,35 +245,61 @@ export function Cangkang({
     (LAYAR_PENUH.has(rute) ? "penuh" : "");
 
   return (
-    <div id="cangkang" className={panelBuka ? "rel-buka" : undefined}>
-      <nav className="pil-atas" aria-label="Navigasi utama">
+    <>
+      {/* Lapisan latar: grain fraktal plus satu cahaya lebar dari atas layar,
+          keduanya DIAM. Lima aturan `#latar` di `gaya.css` tidak pernah punya
+          elemen untuk dikenakan sampai sekarang, jadi kanvasnya rata gelap.
+          Bintang dan garis rasi di atasnya datang dari `langit.js`, yang
+          belum diport -- yang ini lapisan dasarnya, dan ia berdiri sendiri. */}
+      <div id="latar" aria-hidden="true" />
+      <div id="cangkang" className={panelBuka ? "rel-buka" : undefined}>
+      {/* `id="rel"`, dan itu bukan kosmetik: 25 aturan di `gaya.css` menunjuk
+          `#rel`, termasuk SELURUH bentuk "pil melayang di tengah atas" di
+          blok `@media (min-width: 861px)`. Versi pertama memberinya
+          `className="pil-atas"` -- nama yang dipakai KOMENTAR blok itu, bukan
+          selektornya -- jadi nol dari 25 aturan berlaku dan yang tersisa
+          bilah lengket telanjang. Komentar CSS-nya sendiri sudah menuliskan
+          kontraknya: "DOM-nya SAMA dengan bilah atas lebar sempit -- yang
+          berubah cuma bentuknya."
+
+          `pakai-tanda` sengaja TIDAK dipasang: ia menyalakan penanda meluncur
+          yang posisinya dihitung `tandaiRel()` di antarmuka lama, dan penanda
+          tanpa penghitungnya akan berdiri di koordinat nol. Tanpa kelas itu,
+          yang menandai butir aktif `.rel-menu a.kini::before` -- yang memang
+          sudah ada di stylesheet. */}
+      <nav id="rel" aria-label="Navigasi utama">
         <a className="merek" href="#/dasbor">
+          <span className="merek-bara" aria-hidden="true" />
           <span className="merek-teks">
             <b>belajar</b>
             <i>codingV2</i>
           </span>
         </a>
 
-        <div id="rel-alih" className="rel-deret">
-          {MENU_UTAMA.map(butir)}
+        <div id="rel-lipat" className="rel-lipat" hidden={sempit && !panelBuka}>
+          <ul id="rel-utama" className="rel-menu">
+            {MENU_UTAMA.map(butir)}
+          </ul>
 
           {/* Pemicu panel ikut ditandai `.kini` kalau butir yang aktif tinggal
               DI DALAM panel. Tanpa itu, membuka Statistik atau Pengaturan
               membuat navigasi tidak menyalakan apa pun sama sekali -- butir di
               panel tertutup ber-`offsetWidth` nol. */}
-          <button
-            type="button"
-            className={"rel-pemicu" + (diPanel ? " kini" : "")}
-            aria-expanded={panelBuka}
-            aria-current={diPanel ? "true" : undefined}
-            onClick={() => setPanelBuka((b) => !b)}
-          >
-            Lainnya
-          </button>
-        </div>
-
-        <div className="rel-lipat" hidden={sempit && !panelBuka}>
-          {MENU_LAIN.map(butir)}
+          <div className={"rel-turun rel-turun-kanan" + (panelBuka ? " buka" : "")}>
+            <button
+              type="button"
+              className={"rel-pemicu" + (diPanel ? " kini" : "")}
+              aria-expanded={panelBuka}
+              aria-current={diPanel ? "true" : undefined}
+              onClick={() => setPanelBuka((b) => !b)}
+            >
+              Lainnya
+              <span className="rel-panah" aria-hidden="true">▾</span>
+            </button>
+            <div className="rel-panel">
+              <ul className="rel-menu">{MENU_LAIN.map(butir)}</ul>
+            </div>
+          </div>
         </div>
 
         {/* Pembuka palet, di tempat yang sama dengan antarmuka lama. Petunjuk
@@ -340,6 +372,7 @@ export function Cangkang({
       {paletBuka ? (
         <Palet bahasa={bahasa} onTutup={() => setPaletBuka(false)} />
       ) : null}
-    </div>
+      </div>
+    </>
   );
 }

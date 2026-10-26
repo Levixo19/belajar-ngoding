@@ -346,6 +346,89 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                         in modul.BATERAI.items() if not mutan)
         self.assertEqual(kosong, [], "entri baterai tanpa satu pun mutan")
 
+    def test_kelas_css_react_ada_di_gaya_css(self):
+        """Kelas yang dipakai React harus benar-benar ADA di `gaya.css`.
+
+        Kelas karangan tidak menimbulkan error apa pun: elemennya tetap
+        tergambar, `tsc` tetap hijau, dan yang hilang cuma gayanya. Sudah
+        terjadi DUA kali, dan yang kedua merusak seluruh cangkang --
+        `nav` diberi `className="pil-atas"`, nama yang dipakai KOMENTAR blok
+        di `gaya.css`, bukan selektornya; selektornya `#rel`. Dua puluh lima
+        aturan tidak pernah berlaku, dan navigasinya tampil sebagai teks
+        telanjang berdempetan di pojok. Bersama `.rel-deret` dan `.rel-butir`
+        yang juga karangan, sekitar lima puluh aturan diam.
+
+        Yang diperiksa cuma kelas yang `gaya.css` memang PUNYA pendapat
+        tentangnya. Kelas yang tidak muncul di sana belum tentu salah -- ia
+        bisa penanda untuk JS atau untuk tes -- tapi kelas yang dipakai untuk
+        MENATA dan tidak ada di stylesheet selalu salah, dan satu-satunya cara
+        membedakannya adalah daftar putih yang ditulis sadar.
+        """
+        import re
+        src = os.path.join(AKAR, "packages", "web", "src")
+        css = os.path.join(AKAR, "webapp", "statik", "gaya.css")
+        if not os.path.isdir(src) or not os.path.isfile(css):
+            self.skipTest("sumber React atau gaya.css tidak ada")
+        with open(css, encoding="utf-8") as f:
+            teks_css = f.read()
+        ada_di_css = set(re.findall(r"\.(-?[_a-zA-Z][\w-]*)", teks_css))
+
+        # Penanda yang memang BUKAN urusan gaya. Tiap entri harus bisa
+        # disebutkan alasannya; daftar yang tumbuh tanpa alasan adalah daftar
+        # yang membatalkan pagarnya sendiri.
+        DIKECUALIKAN = {
+            "kini",            # keadaan, dipakai sebagai `a.kini`
+            "buka", "tampak", "menyala", "mati",   # keadaan, dirangkai induk
+        }
+
+        # DAFTAR DASAR. Kelas di bawah dipakai React dan nol aturan di
+        # `gaya.css`, dan masing-masing sudah DIPERIKSA: semuanya kait tanpa
+        # gaya -- penanda untuk JS, untuk tes, atau sisa yang berdiri di
+        # samping kelas yang memang bergaya (`bab-saring` dipakai bersama
+        # `tbl` + `tbl-pilih`/`tbl-hantu`, dan ketiganya ada). Tata letaknya
+        # terbukti benar di browser pada 1440 px.
+        #
+        # Daftar ini RATCHET: ia tidak boleh tumbuh. Kelas BARU yang tidak
+        # punya aturan memerahkan tes ini, dan itu tujuannya -- `pil-atas`,
+        # `rel-deret`, dan `rel-butir` lolos justru karena pagar ini belum
+        # ada, dan ketiganya mematikan sekitar lima puluh aturan sekaligus.
+        # Menambah entri di sini berarti menyatakan "sudah diperiksa, memang
+        # bukan urusan gaya", bukan "biar hijau".
+        DASAR = {
+            "bab-judul", "bab-saring", "diff-kata", "keluaran-isi",
+            "kr-lapis-garis", "medan-judul", "medan-ket", "mulai-pilih",
+            "pratinjau-lebar", "tanda-angka", "tbl-pintu",
+        }
+
+        dipakai = {}
+        for akar, _dir, berkas in os.walk(src):
+            for n in sorted(berkas):
+                if not n.endswith(".tsx"):
+                    continue
+                jalur = os.path.join(akar, n)
+                with open(jalur, encoding="utf-8") as f:
+                    isi = f.read()
+                isi = re.sub(r"/\*.*?\*/", "", isi, flags=re.S)
+                for m in re.finditer(r'className=(?:"([^"]*)"|\{"([^"]*)")', isi):
+                    for k in (m.group(1) or m.group(2) or "").split():
+                        # Potongan yang diakhiri `-` itu AWALAN rangkaian
+                        # string (`"tk-" + jenis`), bukan kelas. Menghitungnya
+                        # sebagai kelas memberi sebelas positif-palsu yang
+                        # memaksa daftar dasar ini jadi tempat sampah.
+                        if k.endswith("-"):
+                            continue
+                        if k and k not in DIKECUALIKAN and k not in DASAR:
+                            dipakai.setdefault(k, os.path.relpath(jalur, src))
+
+        karangan = sorted((k, v) for k, v in dipakai.items()
+                          if k not in ada_di_css)
+        self.assertGreaterEqual(
+            len(dipakai), 60,
+            f"cuma {len(dipakai)} kelas yang terbaca -- polanya yang salah")
+        self.assertEqual(
+            [f"{k} ({v})" for k, v in karangan], [],
+            "kelas dipakai React tapi NOL aturan di gaya.css")
+
     def test_jalur_api_tanpa_awalan_ganda(self):
         """`ambil`/`kirim` menambahkan `/api/`, jadi jalurnya telanjang.
 
