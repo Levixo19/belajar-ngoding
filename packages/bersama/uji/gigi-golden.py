@@ -707,6 +707,64 @@ BATERAI = {
                 "petaRasi",
             ),
         ]),
+    "banding-bahasa.mjs": (
+        "banding-bahasa.mjs", PAKET_WEB,
+        sumber_web("layar/bahasa-teks.ts"), [
+            (
+                # `>= 100` jadi `> 100`: kurikulum yang tepat tuntas menyapa
+                # dengan "Sudah 100% jalan. Lanjutkan dari tempat kamu
+                # berhenti." -- padahal tidak ada lagi yang bisa dilanjutkan.
+                "ambang tuntas jadi eksklusif",
+                "if (s.persen >= 100) {",
+                "if (s.persen > 100) {",
+                "kalimatBahasa",
+            ),
+            (
+                # `<= 0` jadi `< 0`: kurikulum yang belum disentuh menyapa
+                # dengan "Sudah 0% jalan".
+                "ambang belum mulai jadi eksklusif",
+                "if (s.persen <= 0) {",
+                "if (s.persen < 0) {",
+                "kalimatBahasa",
+            ),
+            (
+                # Tombol paling terang di halaman berujung di layar penolakan.
+                "materi terkunci ikut ditawarkan",
+                'b.materi.find((m) => m.status !== "selesai" && !m.terkunci)',
+                'b.materi.find((m) => m.status !== "selesai")',
+                "pilihLanjut",
+            ),
+            (
+                # Urutan belajarnya terbalik: orang yang berhenti di tengah
+                # kalimat diantar ke kuis, dan orang yang baru menuntaskan satu
+                # blok diantar membaca blok berikutnya.
+                "syarat berhenti-di-tengah dibalik",
+                'materi.status !== "sebagian")',
+                'materi.status === "sebagian")',
+                "pilihLanjut",
+            ),
+            (
+                "kuis jatuh tempo tidak diprioritaskan",
+                "b.kuis.find((q) => q.jatuh_tempo || (!q.pernah && q.siap))",
+                "b.kuis.find((q) => !q.pernah && q.siap)",
+                "pilihLanjut",
+            ),
+            (
+                # Butir keempat berhenti ditandai `.fakta-kurang`, jadi kabar
+                # "toolchain belum terpasang" tampil setenang tiga angka di
+                # sebelahnya.
+                "penanda toolchain kurang dilepas",
+                "kurang: !siap,",
+                "kurang: false,",
+                "faktaBahasa",
+            ),
+            (
+                "kuis hanya ditawarkan kalau ada latihan",
+                '  if (kuis) {\n    return {\n      tipe: "kuis",',
+                '  if (latihan && !kuis) {\n    return {\n      tipe: "kuis",',
+                "pilihLanjut",
+            ),
+        ]),
 }
 
 

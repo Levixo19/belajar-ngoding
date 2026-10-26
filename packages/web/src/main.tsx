@@ -22,6 +22,7 @@ import { ambil } from "./api.ts";
 import { Cangkang, type Konteks } from "./Cangkang.tsx";
 import { Keadaan } from "./komponen/Keadaan.tsx";
 import { Atur } from "./layar/Atur.tsx";
+import { Bahasa, type Tingkat } from "./layar/Bahasa.tsx";
 import { Karier } from "./layar/Karier.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
@@ -39,7 +40,7 @@ import { Sorak } from "./sorak.tsx";
    memerahkan tipe setiap kali server menambah satu medan. Yang WAJIB ada
    cuma yang benar-benar dibaca -- `runner`/`sorot`/`siap` oleh Ruang Coba
    untuk menyaring toolchain yang terpasang. */
-interface Bahasa {
+interface BahasaRingkas {
   key: string;
   label: string;
   runner: string;
@@ -52,9 +53,14 @@ interface Bahasa {
    yang diteruskan ke layar kuis. Layar itu dulu memakunya ke `true`,
    jadi mematikan setelannya mengubah persis nol hal di browser. */
 interface Awal {
-  bahasa: Bahasa[];
+  bahasa: BahasaRingkas[];
   versi: string;
   konfigurasi?: Record<string, { nilai?: unknown }>;
+  /* Label dan keterangan tiap tingkat bab datang dari `pelajar/bab.py` lewat
+     sini, bukan ditulis ulang di JavaScript -- aturan yang sama dengan kalimat
+     penguncian bab. Halaman bahasa membacanya untuk peta bab dan chip
+     penyaringnya. */
+  aturan_bab?: { tingkat?: Tingkat[] };
 }
 
 interface Rute {
@@ -205,6 +211,16 @@ function Isi({
     return <Karier id={arg} />;
   }
 
+  if (nama === "bahasa" && arg) {
+    return (
+      <Bahasa
+        kunciBahasa={arg}
+        tingkat={awal.aturan_bab?.tingkat ?? []}
+        onKonteks={onKonteks}
+      />
+    );
+  }
+
   if (nama === "kuis" && arg) {
     return (
       <Kuis
@@ -274,20 +290,20 @@ function Isi({
     return <Tebak bahasaKey={bhs.key} label={bhs.label} />;
   }
 
-  // Beranda sementara: daftar kurikulum yang punya layar Tebak. Ia akan
-  // digantikan dasbor saat layar itu diport; sampai itu terjadi, halaman ini
-  // tetap harus bisa mengantar ke SESUATU -- halaman kosong yang cuma berisi
-  // judul adalah halaman yang membuat orang mengira aplikasinya rusak.
+  // Beranda sementara: daftar kurikulum. Ia akan digantikan dasbor saat layar
+  // itu diport; sampai itu terjadi, halaman ini tetap harus bisa mengantar ke
+  // SESUATU -- halaman kosong yang cuma berisi judul adalah halaman yang
+  // membuat orang mengira aplikasinya rusak.
   return (
     <div>
       <header className="kepala">
         <span className="mata">belajar-codingV2 · versi {awal.versi}</span>
         <h1>Antarmuka React</h1>
         <p className="kepala-sub">
-          Sepuluh layar sudah diport: Langit, Peta Karier, Pustaka,
+          Sebelas layar sudah diport: Langit, Peta Karier, Pustaka,
           Statistik, Pengaturan, Tebak keluarannya, Ruang Coba, ruang
-          kerja latihan, pembaca materi, dan kuis. Yang tersisa dasbor,
-          halaman bahasa, bookmark, catatan, dan pencarian. Kedua
+          kerja latihan, pembaca materi, kuis, dan halaman bahasa. Yang
+          tersisa dasbor, bookmark, catatan, dan pencarian. Kedua
           antarmuka memakai API serta berkas gaya yang sama.
         </p>
         <div className="deret">
@@ -313,9 +329,9 @@ function Isi({
       </header>
       <div className="senarai">
         {awal.bahasa.map((b) => (
-          <a key={b.key} className="baris" href={`#/tebak/${b.key}`}>
+          <a key={b.key} className="baris" href={`#/bahasa/${b.key}`}>
             <span className="baris-judul">{b.label}</span>
-            <span className="mata">Tebak keluarannya</span>
+            <span className="mata">Buka kurikulum</span>
           </a>
         ))}
       </div>
