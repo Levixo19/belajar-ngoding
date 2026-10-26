@@ -23,6 +23,7 @@ import { ambil, kirim } from "../api.ts";
 import { rayakan, sorak, umumkan, type Hadiah } from "../sorak.tsx";
 import { jamMundur } from "../waktu.ts";
 import { Bilah } from "../komponen/Bilah.tsx";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { Berkode } from "../komponen/Prosa.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
@@ -140,7 +141,10 @@ function Persiapan({
         </p>
         <div className="kepala-aksi">
           <div className="deret deret-rapat">
-            <span className="pil">{`${q.soal} soal`}</span>
+            <span className="pil">
+              <Ikon nama="kuis" ukuran={14} tebal={1.9} />
+              {`${q.soal} soal`}
+            </span>
             {q.pernah ? (
               <span className="pil">{`${q.percobaan}× dikerjakan`}</span>
             ) : null}
@@ -196,6 +200,7 @@ function Persiapan({
 
       <details className="bantuan" style={{ marginTop: "var(--s5)" }}>
         <summary className="bantuan-kepala">
+          <Ikon nama="atur" ukuran={18} />
           <b>Setelan kuis</b>
           <span>{acak ? "soal diacak" : "urutan asli"}</span>
         </summary>
@@ -406,7 +411,8 @@ function SesiKuis({
             <div className="deret" style={{ marginTop: "var(--s3)" }}>
               <button ref={lanjutRef} type="button" className="tbl tbl-utama"
                       onClick={berikutnya}>
-                {nomor + 1 >= sesi.total ? "Lihat hasil" : "Soal berikutnya →"}
+                {nomor + 1 >= sesi.total ? "Lihat hasil" : "Soal berikutnya"}
+                <Ikon nama="lanjut" ukuran={16} />
               </button>
             </div>
           </div>
@@ -514,6 +520,7 @@ function Hasil({
           </button>
         ) : null}
         <a className="tbl tbl-hantu" href={"#/bahasa/" + kunciBahasa}>
+          <Ikon nama="kembali" ukuran={17} />
           {"Kembali ke " + b.label}
         </a>
       </div>

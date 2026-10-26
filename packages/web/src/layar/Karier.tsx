@@ -36,6 +36,7 @@ import {
 
 import { ambil, kirim } from "../api.ts";
 import { gerakPenuh } from "../gerak.ts";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { urlAman } from "../util.tsx";
 
@@ -1154,7 +1155,7 @@ function Perencana({
           </select>
         </label>
         <span className="kr-panah" aria-hidden="true">
-          →
+          <Ikon nama="lanjut" ukuran={20} />
         </span>
         <label>
           <span>Ingin menjadi</span>

@@ -570,6 +570,53 @@ BATERAI = {
                 "labelPeta",
             ),
         ]),
+    "banding-ikon.mjs": (
+        "banding-ikon.mjs", PAKET_WEB,
+        sumber_web("komponen/ikon-bentuk.ts"), [
+            (
+                # Tabel jalurnya DISALIN dari `ikon.js`, dan salinan adalah hal
+                # yang paling mudah melenceng tanpa tanda: satu koordinat yang
+                # salah ketik menghasilkan ikon yang tetap tergambar, tetap
+                # tanpa error, dan cuma terlihat sedikit aneh.
+                "satu koordinat ikon materi",
+                '"M12 6.5v15"',
+                '"M12 6.5v14"',
+                "ikon(materi",
+            ),
+            (
+                # Penjaga `fill` berbasis INDEKS. Penjaga lama di sisi JS
+                # memeriksa `d.endsWith("18Z")`, dan KEDUA jalur ikon "sedang"
+                # kebetulan berakhir begitu -- jadi separuh lingkarannya tidak
+                # pernah terisi dan "sedang dikerjakan" tak bisa dibedakan dari
+                # "belum". Sel ini menagih keadaan sesudah perbaikan itu.
+                "isi 'sedang' dari jalur pertama",
+                'nama === "sedang" && i > 0',
+                'nama === "sedang" && i >= 0',
+                "ikon(sedang",
+            ),
+            (
+                "tangga tingkat berhenti diisi",
+                'return nama === "tingkat" || ',
+                "return false || ",
+                "ikon(tingkat",
+            ),
+            (
+                "ikonTipe jatuh ke materi, bukan bagian",
+                'Record<string, string>)[tipe] ?? "bagian";',
+                'Record<string, string>)[tipe] ?? "materi";',
+                "ikonTipe",
+            ),
+            (
+                # `null` untuk nama tak dikenal, BUKAN daftar kosong: komponennya
+                # mengembalikan `null` (tidak menggambar apa pun) hanya kalau
+                # jalurnya `null`. Dengan `[]` ia menggambar `<svg>` kosong, dan
+                # yang terlihat kotak 20x20 tak terjelaskan di tengah baris.
+                "ikon tak dikenal jadi daftar kosong",
+                "return BENTUK[nama] ?? null;",
+                "return BENTUK[nama] ?? [];",
+                "ikon(tidak-ada",
+            ),
+        ]),
 }
 
 

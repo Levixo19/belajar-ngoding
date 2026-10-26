@@ -25,6 +25,7 @@ import { ambil, kirim } from "../api.ts";
 import { adaGerak } from "../gerak.ts";
 import { rayakan, salin, sorak, umumkan, type Hadiah } from "../sorak.tsx";
 import { Editor, type PeganganEditor } from "../komponen/Editor.tsx";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { Kode } from "../komponen/Kode.tsx";
 import { Pratinjau } from "../komponen/Pratinjau.tsx";
@@ -882,9 +883,17 @@ export function Latihan({
         <div className="kepala-aksi">
           <div className="deret deret-rapat">
             {x.proyek ? <span className="pil pil-nyala">PROYEK AKHIR</span> : null}
-            <span className={"pil t-" + x.tingkat}>{x.tingkat}</span>
+            <span className={"pil t-" + x.tingkat}>
+              <Ikon nama="tingkat" ukuran={14} tebal={1.9} />
+              {x.tingkat}
+            </span>
             <span>
-              {status === "lulus" ? <span className="pil pil-tumbuh">LULUS</span>
+              {status === "lulus" ? (
+                <span className="pil pil-tumbuh">
+                  <Ikon nama="selesai" ukuran={13} tebal={2} />
+                  LULUS
+                </span>
+              )
                 : status === "manual"
                   ? <span className="pil pil-tumbuh">ditandai selesai</span>
                   : <span className="pil">belum selesai</span>}
@@ -1006,12 +1015,14 @@ export function Latihan({
                     className={"tbl" + (x.dinilai ? "" : " tbl-utama")}
                     onClick={() => { void jalankan(); }}
                   >
+                    <Ikon nama="jalankan" ukuran={17} />
                     Jalankan<kbd>Ctrl ⏎</kbd>
                   </button>
                 ) : null}
                 {x.dinilai ? (
                   <button type="button" className="tbl tbl-utama"
                           onClick={() => { void periksa(); }}>
+                    <Ikon nama="selesai" ukuran={17} />
                     Periksa jawaban<kbd>Ctrl ⇧ ⏎</kbd>
                   </button>
                 ) : null}
@@ -1059,10 +1070,14 @@ export function Latihan({
                 jalan termudah dan jalan terburuk tidak boleh berjarak sama. */}
             <details className="bantuan">
               <summary className="bantuan-kepala">
+                <Ikon nama="bantuan" ukuran={18} />
                 <b>Buntu?</b>
                 <span>
                   {x.hint.length ? `${x.hint.length} petunjuk tersedia`
                     : "lihat contoh solusi"}
+                </span>
+                <span className="bantuan-lipat">
+                  <Ikon nama="lanjut" ukuran={18} />
                 </span>
               </summary>
               <div className="bantuan-isi">
@@ -1179,6 +1194,7 @@ export function Latihan({
                     <a className="tbl tbl-utama"
                        href={`#/latihan/${kunciBahasa}/${x.indeks + 1}`}>
                       Latihan berikutnya
+                      <Ikon nama="lanjut" ukuran={16} />
                     </a>
                   </div>
                 ) : null}
@@ -1491,7 +1507,8 @@ export function Coba({
               <div className="kerja-utama">
                 <button type="button" className="tbl tbl-utama"
                         onClick={() => { void jalankan(); }}>
-                  Jalankan<kbd>Ctrl ⏎</kbd>
+                  <Ikon nama="jalankan" ukuran={17} />
+                    Jalankan<kbd>Ctrl ⏎</kbd>
                 </button>
               </div>
               <span className="deret-kanan" />

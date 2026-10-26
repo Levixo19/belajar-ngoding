@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ambil, kirim } from "../api.ts";
 import { adaGerak, tingkatGerak } from "../gerak.ts";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import {
@@ -88,7 +89,12 @@ function KartuPilihan({
     >
       <div className="deret deret-rapat" style={{ marginBottom: "var(--s1)" }}>
         <b>{nama}</b>
-        {aktif ? <span className="pil pil-nyala">dipakai</span> : null}
+        {aktif ? (
+          <span className="pil pil-nyala">
+            <Ikon nama="selesai" ukuran={13} tebal={2} />
+            dipakai
+          </span>
+        ) : null}
       </div>
       <span className="baris-sisi">{ket}</span>
     </button>

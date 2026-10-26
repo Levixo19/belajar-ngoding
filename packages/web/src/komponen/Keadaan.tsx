@@ -21,11 +21,26 @@
 
 import type { ReactNode } from "react";
 
-/** Jenis keadaan. Menentukan warna garis kiri dan ikonnya, bukan isinya. */
-export type JenisKeadaan = "kosong" | "benar" | "salah" | "kunci";
+import { Ikon } from "./Ikon.tsx";
+
+/**
+ * Jenis keadaan. Menentukan warna garis kiri dan ikonnya, bukan isinya.
+ *
+ * Keempat nilainya adalah KELAS YANG BENAR-BENAR ADA di `gaya.css`
+ * (`.keadaan-tuntas`, `.keadaan-salah`, `.keadaan-kunci`, `.keadaan-kosong`).
+ * Versi pertama tipe ini menawarkan `"benar"` -- nama yang terdengar wajar dan
+ * tidak punya satu pun aturan gaya, jadi `jenis="benar"` menggambar keadaan
+ * tanpa warna maupun ikon berwarna, lolos `tsc`, dan tidak menimbulkan error
+ * di mana pun. Itu kelas bug yang sama dengan kelas tata letak karangan yang
+ * sudah pernah lolos ke ruang kerja latihan: yang menangkapnya bukan pemeriksa
+ * tipe melainkan membaca `gaya.css`.
+ */
+export type JenisKeadaan = "kosong" | "tuntas" | "salah" | "kunci";
 
 interface Props {
   jenis?: JenisKeadaan;
+  /** Nama ikon di sebelah kiri. Hiasan: artinya sudah dibawa `judul`. */
+  gambar?: string;
   /** WAJIB. Satu kalimat: apa yang tidak ada di sini. */
   judul: string;
   /** Kenapa ia tidak ada, dan apa yang bisa dilakukan. */
@@ -34,7 +49,7 @@ interface Props {
   aksi?: ReactNode;
 }
 
-export function Keadaan({ jenis, judul, ket, aksi }: Props) {
+export function Keadaan({ jenis, gambar, judul, ket, aksi }: Props) {
   // `.masuk-mandiri` util entrance yang sudah ada di gaya.css, bukan mesin
   // gerak baru: keempat keadaan datang dengan satu bahasa yang sama, dan
   // bentuk geraknya diatur CSS -- yang lahir dari proses async memudar TANPA
@@ -42,6 +57,7 @@ export function Keadaan({ jenis, judul, ket, aksi }: Props) {
   const kelas = "keadaan masuk-mandiri" + (jenis ? " keadaan-" + jenis : "");
   return (
     <div className={kelas}>
+      {gambar ? <Ikon nama={gambar} ukuran={22} /> : null}
       <div className="keadaan-isi">
         <b>{judul}</b>
         {ket ? <p>{ket}</p> : null}

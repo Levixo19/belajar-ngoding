@@ -192,7 +192,8 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
     # Pembanding di `packages/web`: geometri peta rasi diadu dengan `rasi.js`,
     # bukan dengan rekaman. Bisa begitu karena keduanya JavaScript dan
     # fungsinya murni -- tidak ada sisi Python yang perlu direkam.
-    SKRIP_WEB = (("banding-rasi.mjs", r"(\d+) perbandingan", 100),
+    SKRIP_WEB = (("banding-ikon.mjs", r"(\d+) perbandingan", 100),
+                 ("banding-rasi.mjs", r"(\d+) perbandingan", 100),
                  ("banding-editor.mjs", r"(\d+) blok kode", 3000),
                  ("banding-pratinjau.mjs", r"(\d+) blok kode", 3000),
                  ("banding-visual.mjs", r"(\d+) spesifikasi gambar", 1300),

@@ -22,6 +22,8 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import { Ikon } from "./komponen/Ikon.tsx";
+
 /* Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
    lebih enak tanpa batas lebar. */
 const LAYAR_LEBAR = new Set(["latihan", "coba", "materi", "langit"]);
@@ -95,7 +97,7 @@ function StripKonteks({ k }: { k: Konteks }) {
      materi, dan pergeseran sepuluh piksel di bilah yang menempel terbaca
      sebagai halaman yang goyang -- bukan sebagai tombol yang tidak ada. */
   const langkah = (arah: "sebelum" | "sesudah", href?: string, judul?: string) => {
-    const tanda = arah === "sebelum" ? "‹" : "›";
+    const tanda = <Ikon nama={arah === "sebelum" ? "kembali" : "lanjut"} ukuran={18} />;
     return href ? (
       <a href={href} title={judul ?? ""} aria-label={judul ?? arah}>
         {tanda}
@@ -108,6 +110,7 @@ function StripKonteks({ k }: { k: Konteks }) {
   return (
     <div id="konteks">
       <a className="konteks-balik" href={k.balik.href}>
+        <Ikon nama="kembali" ukuran={16} />
         {k.balik.label}
       </a>
       <div className="konteks-tengah">
@@ -187,10 +190,23 @@ export function Cangkang({
     );
   };
 
-  const kelasPanggung =
+  /* KETIGA kelas ukuran menempel di `#layar`, BUKAN di `#panggung`, dan itu
+     bukan selera: `gaya.css` menulis selektornya `#layar.lebar`,
+     `#layar.kolom`, `#layar.penuh`. Versi pertama cangkang ini memasang `lebar`
+     dan `kolom` di `#panggung` -- lolos `tsc`, lolos pembacaan sepintas (nama
+     variabel `panggung` di `aplikasi.js` justru menunjuk `$("#layar")`), dan
+     tidak menimbulkan satu pun error. Yang terjadi: tidak ada satu pun dari
+     kedua aturan itu yang pernah berlaku, jadi SELURUH halaman daftar berhenti
+     di 1240 px alih-alih 1400 (diukur: 1240 lawan 1400 pada jendela 1440), dan
+     SELURUH layar lebar -- pembaca materi, ruang kerja, Langit -- yang
+     seharusnya `max-width: none` juga terjepit di 1240.
+
+     `berkonteks` tetap di `#panggung`: ia memang ditulis `#panggung.berkonteks`
+     dan ia yang mengatur ruang untuk strip tempel di atasnya. */
+  const kelasLayar =
     (LAYAR_LEBAR.has(rute) ? "lebar " : "") +
     (LAYAR_KOLOM.has(rute) ? "kolom " : "") +
-    (konteks ? "berkonteks" : "");
+    (LAYAR_PENUH.has(rute) ? "penuh" : "");
 
   return (
     <div id="cangkang" className={panelBuka ? "rel-buka" : undefined}>
@@ -225,9 +241,9 @@ export function Cangkang({
         </div>
       </nav>
 
-      <div id="panggung" className={kelasPanggung.trim() || undefined}>
+      <div id="panggung" className={konteks ? "berkonteks" : undefined}>
         {konteks ? <StripKonteks k={konteks} /> : null}
-        <main id="layar" className={LAYAR_PENUH.has(rute) ? "penuh" : undefined}>
+        <main id="layar" className={kelasLayar.trim() || undefined}>
           {children}
         </main>
       </div>

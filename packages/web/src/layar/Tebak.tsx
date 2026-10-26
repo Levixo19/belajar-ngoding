@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ambil, kirim } from "../api.ts";
 import { Kode } from "../komponen/Kode.tsx";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import type { Token } from "../../../bersama/src/sorot.ts";
 
@@ -325,6 +326,7 @@ function KartuTebak({
                 onClick={onLanjut}
               >
                 {nomor + 1 < total ? "Kartu berikutnya" : "Lihat hasil"}
+                <Ikon nama="lanjut" ukuran={16} />
               </button>
             </div>
           </>

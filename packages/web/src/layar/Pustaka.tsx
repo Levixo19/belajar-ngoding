@@ -22,6 +22,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { ambil } from "../api.ts";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { angka, tandai, urlAman } from "../util.tsx";
 
@@ -108,6 +109,9 @@ export function BarisTautan({
       {entri.bahasa === "id" ? (
         <span className="pil pil-tumbuh">Indonesia</span>
       ) : null}
+      <span className="baris-panah" aria-hidden="true">
+        <Ikon nama="lanjut" ukuran={16} />
+      </span>
     </Tag>
   );
 }
@@ -326,6 +330,7 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
           className="tbl tbl-utama"
           onClick={() => ganti({ q: ketikan.trim() })}
         >
+          <Ikon nama="cari" ukuran={16} />
           Cari
         </button>
         <Pilihan

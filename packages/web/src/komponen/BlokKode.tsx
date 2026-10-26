@@ -21,6 +21,7 @@ import { useRef, useState } from "react";
 import { kirim } from "../api.ts";
 import { salin } from "../sorak.tsx";
 import { Editor, type PeganganEditor } from "./Editor.tsx";
+import { Ikon } from "./Ikon.tsx";
 import { Jejak } from "./Jejak.tsx";
 import { Kode } from "./Kode.tsx";
 import { Pratinjau } from "./Pratinjau.tsx";
@@ -228,6 +229,7 @@ export function BlokKode({
               disabled={hasil.jenis === "sibuk"}
               onClick={() => { void jalankan(); }}
             >
+              <Ikon nama="jalankan" ukuran={14} tebal={2} />
               Jalankan
             </button>
           ) : null}

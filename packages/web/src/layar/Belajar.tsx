@@ -31,6 +31,7 @@ import { ambilLokal, simpanLokal } from "../lokal.ts";
 import { rayakan, type Hadiah } from "../sorak.tsx";
 import { tanpaNomor } from "../util.tsx";
 import { BlokKode, type BagianKode } from "../komponen/BlokKode.tsx";
+import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { BlokProsa, type Blok } from "../komponen/Prosa.tsx";
 import { Visual } from "../komponen/Visual.tsx";
@@ -203,6 +204,15 @@ function KolomMateri({
         >
           <span className="materi-rel-nomor">{String(x.indeks + 1)}</span>
           <span className="materi-rel-judul">{tanpaNomor(x.judul)}</span>
+          {/* Penanda status, dan ia BUKAN hiasan: di jalur yang menyimpan dua
+              puluh judul, ini satu-satunya yang membedakan "sudah dibaca" dari
+              "dibaca sebagian". Artinya tetap ikut dibacakan pembaca layar lewat
+              `aria-label` tautannya, bukan lewat ikon ini. */}
+          {x.status === "selesai" ? (
+            <Ikon nama="selesai" ukuran={16} kelas="materi-rel-tanda" />
+          ) : x.status === "sebagian" ? (
+            <Ikon nama="sedang" ukuran={16} kelas="materi-rel-tanda" />
+          ) : null}
         </a>
       </li>,
     );
@@ -738,7 +748,14 @@ export function Belajar({
                aria-label="Tindakan untuk materi ini">
           <button type="button" className="tbl"
                   onClick={() => { void tandaiSelesai(false); }}>
-            {status === "selesai" ? "Sudah selesai ✓" : "Tandai selesai"}
+            {status === "selesai" ? (
+              <>
+                <Ikon nama="selesai" ukuran={15} tebal={2} />
+                Sudah selesai
+              </>
+            ) : (
+              "Tandai selesai"
+            )}
           </button>
           <button
             type="button"
@@ -748,7 +765,7 @@ export function Belajar({
             aria-label={fokus ? "Keluar dari mode fokus (F)" : "Mode fokus (F)"}
             onClick={alihFokus}
           >
-            ▤
+            <Ikon nama="panel" ukuran={19} />
           </button>
         </aside>
 
@@ -824,9 +841,15 @@ export function Belajar({
           <span className={"pil" + (status === "selesai" ? " pil-tumbuh" : "")}>
             {status === "selesai" ? "sudah dibaca tuntas" : "belum tuntas"}
           </span>
-          <span className="pil">{`${m.bagian.length} bagian`}</span>
+          <span className="pil">
+            <Ikon nama="bagian" ukuran={14} tebal={1.9} />
+            {`${m.bagian.length} bagian`}
+          </span>
           {jumlahKode ? (
-            <span className="pil">{`${jumlahKode} contoh kode`}</span>
+            <span className="pil">
+              <Ikon nama="latihan" ukuran={14} tebal={1.9} />
+              {`${jumlahKode} contoh kode`}
+            </span>
           ) : null}
         </div>
 
@@ -839,10 +862,12 @@ export function Belajar({
           {m.indeks > 0 && m.sebelum ? (
             <a className="tbl tbl-hantu"
                href={`#/materi/${kunciBahasa}/${m.indeks - 1}`}>
+              <Ikon nama="kembali" ukuran={17} />
               {potong(m.sebelum, 26)}
             </a>
           ) : (
             <a className="tbl tbl-hantu" href={"#/bahasa/" + kunciBahasa}>
+              <Ikon nama="kembali" ukuran={17} />
               Daftar materi
             </a>
           )}
@@ -856,6 +881,7 @@ export function Belajar({
           {pintuBaru ? (
             <a className="tbl tbl-utama tbl-pintu" href={pintuBaru.href}>
               {pintuBaru.label}
+              <Ikon nama="lanjut" ukuran={17} />
             </a>
           ) : null}
         </nav>
