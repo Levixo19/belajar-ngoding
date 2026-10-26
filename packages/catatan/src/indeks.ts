@@ -66,12 +66,62 @@ const ASAL_LOOPBACK = /^https?:\/\/(127\.0\.0\.1|\[::1\]|localhost)(:\d+)?$/;
 
 app.use((req, res, lanjut) => {
   const asal = req.headers.origin;
-  if (asal && ASAL_LOOPBACK.test(asal)) {
-    res.setHeader("Access-Control-Allow-Origin", asal);
-    res.setHeader("Vary", "Origin");
+  res.setHeader("Vary", "Origin");
+  if (asal && !ASAL_LOOPBACK.test(asal)) {
+    // DITOLAK, bukan cuma "tidak diberi header CORS". Bedanya nyata dan ia
+    // CSRF: tanpa header balasan, halaman asing memang tidak bisa MEMBACA
+    // jawabannya -- tapi permintaannya tetap SAMPAI dan efek sampingnya tetap
+    // terjadi. Untuk `POST /selaras` itu berarti halaman mana pun di internet
+    // bisa memaksa penyelarasan ulang indeks berkali-kali. Ongkosnya kecil di
+    // sini; polanya tidak, dan pola yang dibiarkan di satu endpoint adalah
+    // pola yang disalin ke endpoint berikutnya.
+    res.status(403).json({
+      galat: "Asal tidak diizinkan. Layanan ini hanya melayani loopback.",
+    });
+    return;
   }
+  if (asal) res.setHeader("Access-Control-Allow-Origin", asal);
   lanjut();
 });
+
+/* Preflight DIJAWAB eksplisit, dan `Access-Control-Allow-Headers` sengaja
+   TIDAK memuat apa pun selain `Content-Type`.
+   
+   Itu separuh kedua dari penjagaan CSRF di atas: `POST` di bawah menuntut
+   `Content-Type: application/json`, dan content-type itu BUKAN "simple
+   request" -- jadi peramban wajib mengirim preflight lebih dulu. Permintaan
+   dari asal asing karena itu mati di preflight, sebelum satu byte pun sampai
+   ke penanganannya. Formulir HTML -- satu-satunya cara mengirim POST
+   lintas-asal tanpa preflight -- cuma bisa mengirim tiga content-type, dan
+   `application/json` bukan salah satunya. */
+app.options("*splat", (req, res) => {
+  const asal = req.headers.origin;
+  if (!asal || !ASAL_LOOPBACK.test(asal)) {
+    res.status(403).end();
+    return;
+  }
+  res.setHeader("Access-Control-Allow-Origin", asal);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Vary", "Origin");
+  res.status(204).end();
+});
+
+/** Tolak POST yang content-type-nya tidak `application/json`.
+ *
+ *  Lihat alasannya di komentar preflight di atas: ini yang MEMAKSA preflight
+ *  ada, dan tanpa itu formulir HTML lintas-asal bisa memicu `POST /selaras`
+ *  tanpa satu pun permintaan pendahuluan. */
+function wajibJson(req: express.Request, res: express.Response,
+                   lanjut: express.NextFunction) {
+  if (!req.is("application/json")) {
+    res.status(415).json({
+      galat: "POST ke layanan ini wajib `Content-Type: application/json`.",
+    });
+    return;
+  }
+  lanjut();
+}
 
 /** Terakhir kali koleksi diselaraskan dengan berkasnya, dari `mtimeMs`. */
 let diselaraskan = -1;
@@ -147,7 +197,7 @@ app.get("/cari", async (req, res) => {
   }
 });
 
-app.post("/selaras", async (_req, res) => {
+app.post("/selaras", wajibJson, async (_req, res) => {
   try {
     const db = klienMongo().db(NAMA_DB);
     await pasangIndeks(db);

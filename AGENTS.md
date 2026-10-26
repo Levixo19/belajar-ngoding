@@ -1553,8 +1553,39 @@ yang menyebut perintah penyalaannya, jadi "dilewati" tidak pernah berarti
 dan ditulis (urutan `find()` tanpa `sort` implementation-defined di MongoDB,
 terukur kedua arah).
 
-Sesudah itu: tes kontrak 41 endpoint (ditunda; ia menjaga pergantian backend
-di Tahap 2 yang juga ditunda).
+**Tes kontrak 41 endpoint SUDAH ADA** (`tests/test_kontrak.py`). Yang
+ditagihnya BENTUK jawaban -- nama medan dan tipenya -- bukan nilainya:
+`{"xp": 7}` dan `{"xp": 1200}` sama-sama sah, `{"xp": "7"}` tidak. Empat hal
+yang membuatnya pagar:
+
+* **Daftar endpointnya diturunkan dari `server.RUTE`, tidak diketik.** Endpoint
+  baru tanpa entri kontrak MERAH dengan menyebut jalurnya, dan jumlahnya (41)
+  ditagih terpisah supaya pertumbuhannya terlihat di riwayat.
+* **Kontraknya disusun dari jawaban server SUNGGUHAN**, bukan dari ingatan.
+  Versi pertamanya ditulis dari dugaan dan sembilan entri langsung memerah:
+  `/api/kuis/mulai` memakai medan `sesi` (bukan `token`) dan mengirim SELURUH
+  soal sekaligus dengan medan `options` (satu-satunya nama Inggris di muatan
+  kuis), `/api/konfigurasi` menerima `{<kunci>: <nilai>}` langsung,
+  `/api/data/impor` menuntut `{"progres": ...}`, `/api/latihan/manual`
+  menaburkan hadiahnya di tingkat atas sementara `/api/latihan/periksa`
+  membungkusnya di `hadiah`, bagian materi punya DUA bentuk (prosa ber-`blok`,
+  kode ber-`kode`/`token`/`sorot`), dan `terkunci` di hasil `/api/cari` cuma
+  ada untuk tipe materi.
+* **Argumen yang butuh id nyata DICARI lewat API-nya sendiri**: materi mana
+  yang punya blok kode, latihan mana yang tidak bisa dinilai otomatis, contoh
+  mana yang layak ditebak (dan satu materi dibaca TUNTAS lebih dulu, karena
+  `pelajar/tebak.py` cuma menawarkan contoh dari materi yang selesai -- tanpa
+  itu `/api/tebak` dilewati tanpa pernah diperiksa).
+* **Ia bisa diarahkan ke implementasi LAIN** lewat `BELAJAR_KONTRAK_URL` +
+  `BELAJAR_KONTRAK_TOKEN`, dan itu seluruh gunanya untuk Tahap 2: endpoint yang
+  dipindahkan ke Express bisa diadu dengan kontrak yang sama, satu per satu,
+  sementara sisanya tetap dilayani Python.
+
+Lima mutan membuktikan ia bisa merah: medan yang diganti nama, angka yang jadi
+string, daftar yang jadi objek, rute yang dihapus, dan rute baru tanpa kontrak.
+`/api/data/impor` dan `/api/data/reset` dijalankan PALING AKHIR (`_urut()`):
+keduanya mengganti seluruh progres yang dibaca endpoint lain, dan tanpa
+pengurutan itu hasilnya bergantung pada urutan iterasi dict.
 
 **Tiga cacat ikut ketemu di JALUR YANG SUDAH ADA selama ronde ini, dan
 ketiganya tidak menimbulkan satu pun error:**
