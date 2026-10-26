@@ -5417,7 +5417,11 @@
     "  Aku sedang belajar C++.",
     "",
     "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
-    "membandingkan outputmu huruf demi huruf."
+    "membandingkan outputmu huruf demi huruf.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar C++."
    ],
    "hints": [
     "Baca materi \"Input/Output Modern (cin & cout)\": cout mencetak teks, dan endl memindah ke baris baru.",
@@ -5455,7 +5459,10 @@
     "jika nilai >= 75 tampilkan 'Lulus', selain itu 'Tidak Lulus'.",
     "",
     "Jangan cetak teks ajakan apa pun. Program hanya boleh mengeluarkan",
-    "satu baris berisi Lulus atau Tidak Lulus."
+    "satu baris berisi Lulus atau Tidak Lulus.",
+    "",
+    "Untuk input 80, keluarannya:",
+    "    Lulus"
    ],
    "hints": [
     "Baca materi \"Input/Output Modern (cin & cout)\" untuk membaca angka dengan cin, lalu satu if-else dengan kondisi nilai >= 75.",
@@ -5495,7 +5502,14 @@
     "  **",
     "  ***",
     "  ****",
-    "  *****"
+    "  *****",
+    "",
+    "Keluaran yang diharapkan:",
+    "    *",
+    "    **",
+    "    ***",
+    "    ****",
+    "    *****"
    ],
    "hints": [
     "Cara paling langsung sama seperti di C: nested loop, loop luar untuk baris dan loop dalam untuk bintang. Dasar string C++ ada di materi \"String C++ Lebih Dalam & stringstream\".",

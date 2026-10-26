@@ -3816,7 +3816,12 @@
     "Buat program PHP yang menampilkan tepat tiga baris:",
     "  Halo, namaku Andi!",
     "  Aku sedang belajar PHP.",
-    "  PHP 8 jauh berbeda dari PHP 5."
+    "  PHP 8 jauh berbeda dari PHP 5.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar PHP.",
+    "    PHP 8 jauh berbeda dari PHP 5."
    ],
    "hints": [
     "Latihan ini cuma butuh perintah cetak, tiga kali. Baca ulang materi \"Pengenalan PHP & Instalasi\" kalau lupa bentuk berkas PHP.",
@@ -3838,7 +3843,16 @@
     "  17 / 5 = 3.4",
     "  17 % 5 = 2",
     "  intdiv(17, 5) = 3",
-    "  17 ** 2 = 289"
+    "  17 ** 2 = 289",
+    "",
+    "Keluaran yang diharapkan:",
+    "    17 + 5 = 22",
+    "    17 - 5 = 12",
+    "    17 * 5 = 85",
+    "    17 / 5 = 3.4",
+    "    17 % 5 = 2",
+    "    intdiv(17, 5) = 3",
+    "    17 ** 2 = 289"
    ],
    "hints": [
     "Ini latihan operator aritmetika dan menyusun teks keluaran. Baca ulang materi \"Operator & Perbandingan\" dan \"String & Interpolasi\".",

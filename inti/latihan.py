@@ -11,6 +11,7 @@ Yang ada di sini tidak mencetak apa pun. Kelulusan tetap ditentukan
 solusi contoh -- satu definisi "lulus", seperti sebelumnya.
 """
 
+import re
 import os
 import re
 
@@ -225,3 +226,57 @@ def bangun_tests(ex, bahasa):
     return tests, ""
 
 
+# --- Janji keluaran di soal --------------------------------------------------
+#
+# Latihan yang dinilai `persis` WAJIB menuliskan keluarannya di soal: tanpa
+# itu pelajar diminta mencocokkan sesuatu yang tidak pernah disebutkan.
+# Pengurai di bawah tinggal di sini, bukan di tes, karena DUA pembaca
+# memakainya: `tests/test_solutions` yang mengadu janji itu dengan keluaran
+# sungguhan, dan `alat/tambah_keluaran.py` yang menuliskannya. Dua pengurai
+# untuk satu bentuk berarti blok yang ditulis rapi oleh alatnya lalu tidak
+# pernah dibaca pagarnya -- janji yang terlihat ada di layar dan nol di
+# antaranya teruji.
+
+# Kepala blok keluaran yang dipakai di seluruh kurikulum. Bentuknya beragam
+# karena ditulis lintas bertahun-tahun: "Keluaran yang diharapkan:",
+# "Output yang benar:", dan varian ber-input "Untuk input 80, outputnya:".
+KEPALA_KELUARAN = re.compile(
+    r"^(?:untuk input\s+(.+?),\s*)?"
+    r"(?:keluaran|output)(?:nya)?"
+    r"(?:\s+yang\s+(?:benar|diharapkan))?"
+    r"\s*(?:\([^)]*\))?\s*:$",
+    re.I,
+)
+
+
+def blok_janji(ex):
+    """[(petunjuk_input_atau_None, teks_yang_dijanjikan), ...] dari soal."""
+    hasil = []
+    soal = ex["question"]
+    for i, baris in enumerate(soal):
+        cocok = KEPALA_KELUARAN.match(baris.strip())
+        if not cocok:
+            continue
+        keluar, mulai = [], False
+        for b in soal[i + 1:]:
+            if not b.strip():
+                if mulai:
+                    break
+                continue          # baris kosong SEBELUM bloknya, lewati
+            mulai = True
+            keluar.append(b.rstrip())
+        if keluar:
+            hasil.append((cocok.group(1), "\n".join(keluar)))
+    return hasil
+
+
+def input_untuk(ex, petunjuk):
+    """Input mana yang dimaksud sebuah blok janji. None kalau tidak ketemu."""
+    daftar = ex.get("stdin_list") or ([ex["stdin"]] if ex.get("stdin") else [""])
+    if petunjuk is None:
+        return daftar[0]
+    inti_petunjuk = petunjuk.strip().strip("'\"")
+    for masukan in daftar:
+        if masukan.strip().split("\n")[0] == inti_petunjuk:
+            return masukan
+    return None

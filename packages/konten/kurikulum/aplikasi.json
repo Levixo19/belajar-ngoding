@@ -6464,7 +6464,13 @@
     "Menipis: true",
     "",
     "Item pertama stoknya 20 dengan minimum 5.",
-    "Item kedua stoknya 8 dengan minimum 10."
+    "Item kedua stoknya 8 dengan minimum 10.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    FS-2608-001 - APAR Powder 6kg (20 tabung)",
+    "    Menipis: false",
+    "    FS-2608-002 - Selang 2.5 inci (8 roll)",
+    "    Menipis: true"
    ],
    "hints": [
     "Entitas adalah kelas yang mewakili satu benda nyata: field-nya privat, dan method-nya menjawab pertanyaan tentang dirinya sendiri. Baca ulang materi 'Entitas: Benda Menjadi Kelas'.",
@@ -6499,7 +6505,13 @@
     "FS-2608-001",
     "FS-2608-042",
     "FS-2601-999",
-    "FS-2712-007"
+    "FS-2712-007",
+    "",
+    "Keluaran yang diharapkan:",
+    "    FS-2608-001",
+    "    FS-2608-042",
+    "    FS-2601-999",
+    "    FS-2712-007"
    ],
    "hints": [
     "Kodenya dirakit dari tiga angka yang masing-masing punya lebar tetap, dengan nol di depan kalau kurang. Tahun dan bulan dikirim dari luar dengan alasan yang sama seperti di materi 'Menulis Uji Otomatis: Mock, MockMvc, dan Uji Integrasi': uji harus bisa memilih sendiri nilai yang dipakai kode.",
@@ -6542,7 +6554,15 @@
     "DITOLAK: diminta 1 tetapi stok hanya 0",
     "stok tetap 0",
     "DITOLAK: jumlah -3 tidak masuk akal",
-    "stok tetap 0"
+    "stok tetap 0",
+    "",
+    "Keluaran yang diharapkan:",
+    "    keluar 5 -> sisa 15",
+    "    keluar 15 -> sisa 0",
+    "    DITOLAK: diminta 1 tetapi stok hanya 0",
+    "    stok tetap 0",
+    "    DITOLAK: jumlah -3 tidak masuk akal",
+    "    stok tetap 0"
    ],
    "hints": [
     "Ini aturan bisnis paling dasar, dan tempatnya di service. Baca ulang materi 'Service: Tempat Aturan Bisnis Hidup', terutama soal memeriksa sebelum mengubah.",
@@ -6580,7 +6600,12 @@
     "",
     "ADJUSTMENT -3 -> stok jadi 22",
     "ADJUSTMENT +8 -> stok jadi 30",
-    "ADJUSTMENT 0 -> stok jadi 30"
+    "ADJUSTMENT 0 -> stok jadi 30",
+    "",
+    "Keluaran yang diharapkan:",
+    "    ADJUSTMENT -3 -> stok jadi 22",
+    "    ADJUSTMENT +8 -> stok jadi 30",
+    "    ADJUSTMENT 0 -> stok jadi 30"
    ],
    "hints": [
     "Opname artinya menghitung fisik barang di rak, lalu sistem yang mencari selisihnya dengan angka di database. Contoh kenapa opname dibutuhkan ada di materi 'Dua Pengguna Bersamaan: Race Condition dan Penguncian'.",
@@ -6621,7 +6646,13 @@
     "IN +20 sisa=20 | Stok awal",
     "OUT -5 sisa=15 | Dipakai latihan",
     "JUNK -3 sisa=12 | Segel bocor",
-    "RETURN +2 sisa=14 | Pengembalian"
+    "RETURN +2 sisa=14 | Pengembalian",
+    "",
+    "Keluaran yang diharapkan:",
+    "    IN +20 sisa=20 | Stok awal",
+    "    OUT -5 sisa=15 | Dipakai latihan",
+    "    JUNK -3 sisa=12 | Segel bocor",
+    "    RETURN +2 sisa=14 | Pengembalian"
    ],
    "hints": [
     "Buku besar adalah daftar jejak: tiap perubahan stok jadi satu baris mutasi yang nggak diubah lagi. Baca ulang materi 'Model Data: dari Benda Nyata ke Tabel' bagian mutasi.",
@@ -6661,7 +6692,14 @@
     "APPROVED --kembalikan--> RETURNED",
     "DITOLAK: dari RETURNED tidak bisa kembalikan",
     "DITOLAK: dari PENDING tidak bisa kembalikan",
-    "PENDING --tolak--> REJECTED"
+    "PENDING --tolak--> REJECTED",
+    "",
+    "Keluaran yang diharapkan:",
+    "    PENDING --setujui--> APPROVED",
+    "    APPROVED --kembalikan--> RETURNED",
+    "    DITOLAK: dari RETURNED tidak bisa kembalikan",
+    "    DITOLAK: dari PENDING tidak bisa kembalikan",
+    "    PENDING --tolak--> REJECTED"
    ],
    "hints": [
     "Status peminjaman berpindah lewat aturan yang tetap. Baca ulang materi 'Enum dan Exception Buatan Sendiri' untuk keempat statusnya, dan 'Service: Tempat Aturan Bisnis Hidup' untuk cara menolak perpindahan yang nggak sah.",
@@ -6707,7 +6745,20 @@
     "Percobaan 2: APAR 5, Selang 3",
     "DISETUJUI",
     "  APAR = 15",
-    "  Selang = 0"
+    "  Selang = 0",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Stok awal:",
+    "      APAR = 20",
+    "      Selang = 3",
+    "    Percobaan 1: APAR 5, Selang 10",
+    "    DITOLAK: stok Selang tidak cukup (tersedia 3, diminta 10)",
+    "      APAR = 20",
+    "      Selang = 3",
+    "    Percobaan 2: APAR 5, Selang 3",
+    "    DISETUJUI",
+    "      APAR = 15",
+    "      Selang = 0"
    ],
    "hints": [
     "Kebiasaan yang dilatih: periksa semuanya dulu, baru ubah. Data yang rusak separuh jalan lebih buruk daripada permintaan yang ditolak utuh. Baca ulang materi 'Service: Tempat Aturan Bisnis Hidup'.",
@@ -6758,7 +6809,25 @@
     "REQUESTER lihatItem -> BOLEH",
     "REQUESTER lihatKategori -> BOLEH",
     "REQUESTER ajukanPermintaan -> BOLEH",
-    "REQUESTER aksiAsing -> DITOLAK"
+    "REQUESTER aksiAsing -> DITOLAK",
+    "",
+    "Keluaran yang diharapkan:",
+    "    ADMIN tambahItem -> BOLEH",
+    "    ADMIN ubahStok -> BOLEH",
+    "    ADMIN setujuiPermintaan -> BOLEH",
+    "    ADMIN hapusKategori -> BOLEH",
+    "    ADMIN lihatItem -> BOLEH",
+    "    ADMIN lihatKategori -> BOLEH",
+    "    ADMIN ajukanPermintaan -> BOLEH",
+    "    ADMIN aksiAsing -> DITOLAK",
+    "    REQUESTER tambahItem -> DITOLAK",
+    "    REQUESTER ubahStok -> DITOLAK",
+    "    REQUESTER setujuiPermintaan -> DITOLAK",
+    "    REQUESTER hapusKategori -> DITOLAK",
+    "    REQUESTER lihatItem -> BOLEH",
+    "    REQUESTER lihatKategori -> BOLEH",
+    "    REQUESTER ajukanPermintaan -> BOLEH",
+    "    REQUESTER aksiAsing -> DITOLAK"
    ],
    "hints": [
     "Ini soal otorisasi: orangnya sudah login, pertanyaannya tinggal dia boleh apa. Baca ulang materi 'Keamanan: Autentikasi vs Otorisasi'.",

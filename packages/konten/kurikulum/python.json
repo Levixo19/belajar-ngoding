@@ -7261,7 +7261,11 @@
     "  Aku sedang belajar Python.",
     "",
     "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
-    "membandingkan outputmu huruf demi huruf."
+    "membandingkan outputmu huruf demi huruf.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar Python."
    ],
    "hints": [
     "Baca ulang materi \"Pengenalan Python & Instalasi\". Satu baris teks di layar berarti satu kali memanggil fungsi untuk mencetak.",
@@ -7301,7 +7305,10 @@
     "tampilkan 'Lulus', selain itu tampilkan 'Tidak Lulus'.",
     "",
     "Jangan cetak teks prompt apa pun. Program hanya boleh mengeluarkan",
-    "satu baris berisi Lulus atau Tidak Lulus."
+    "satu baris berisi Lulus atau Tidak Lulus.",
+    "",
+    "Untuk input 80, keluarannya:",
+    "    Lulus"
    ],
    "hints": [
     "Ini soal percabangan. Baca ulang \"Percabangan (if / elif / else)\" dan bagian input() di \"Masukan, Keluaran & Modul Bawaan\".",
@@ -7320,7 +7327,11 @@
    "question": [
     "Tampilkan semua bilangan genap dari 1 sampai 20",
     "beserta total jumlahnya.",
-    "Contoh output: 2 4 6 8 10 12 14 16 18 20, Total: 110"
+    "Contoh output: 2 4 6 8 10 12 14 16 18 20, Total: 110",
+    "",
+    "Keluaran yang diharapkan:",
+    "    2 4 6 8 10 12 14 16 18 20",
+    "    Total: 110"
    ],
    "hints": [
     "Kamu butuh perulangan, cek genap dengan operator %, dan penjumlahan. Lihat \"Perulangan (for & while)\" dan \"Fungsi Bawaan untuk Koleksi\".",
@@ -7338,7 +7349,14 @@
     "  **",
     "  ***",
     "  ****",
-    "  *****"
+    "  *****",
+    "",
+    "Keluaran yang diharapkan:",
+    "    *",
+    "    **",
+    "    ***",
+    "    ****",
+    "    *****"
    ],
    "hints": [
     "Baris ke-i berisi i bintang. Baca ulang \"Perulangan (for & while)\", lalu bagian operator * untuk string di \"String & Formatting\".",

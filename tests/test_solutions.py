@@ -27,7 +27,8 @@ import unittest
 
 from inti import runner
 from inti.berkas import PROGRAM, jenis_kode
-from inti.latihan import bangun_tests, bisa_dinilai, gabung_setup
+from inti.latihan import (bangun_tests, bisa_dinilai, blok_janji,
+                          gabung_setup, input_untuk)
 from inti.kurikulum import LANGUAGES
 
 LEWATI_LAMBAT = os.environ.get("BELAJAR_SKIP_LAMBAT") == "1"
@@ -51,51 +52,6 @@ def latihan_bahasa(lang):
 def _jalankan(bahasa, ex):
     return runner.jalankan(bahasa, gabung_setup(ex, ex["solution"]),
                            stdin=_stdin_pertama(ex), timeout=TIMEOUT)
-
-
-# Kepala blok keluaran yang dipakai di seluruh kurikulum. Bentuknya beragam
-# karena ditulis lintas bertahun-tahun: "Keluaran yang diharapkan:",
-# "Output yang benar:", dan varian ber-input "Untuk input 80, outputnya:".
-_KEPALA_KELUARAN = re.compile(
-    r"^(?:untuk input\s+(.+?),\s*)?"
-    r"(?:keluaran|output)(?:nya)?"
-    r"(?:\s+yang\s+(?:benar|diharapkan))?"
-    r"\s*(?:\([^)]*\))?\s*:$",
-    re.I,
-)
-
-
-def blok_janji(ex):
-    """[(petunjuk_input_atau_None, teks_yang_dijanjikan), ...] dari soal."""
-    hasil = []
-    soal = ex["question"]
-    for i, baris in enumerate(soal):
-        cocok = _KEPALA_KELUARAN.match(baris.strip())
-        if not cocok:
-            continue
-        keluar, mulai = [], False
-        for b in soal[i + 1:]:
-            if not b.strip():
-                if mulai:
-                    break
-                continue          # baris kosong SEBELUM bloknya, lewati
-            mulai = True
-            keluar.append(b.rstrip())
-        if keluar:
-            hasil.append((cocok.group(1), "\n".join(keluar)))
-    return hasil
-
-
-def _input_untuk(ex, petunjuk):
-    """Input mana yang dimaksud sebuah blok janji. None kalau tidak ketemu."""
-    daftar = ex.get("stdin_list") or ([ex["stdin"]] if ex.get("stdin") else [""])
-    if petunjuk is None:
-        return daftar[0]
-    inti_petunjuk = petunjuk.strip().strip("'\"")
-    for masukan in daftar:
-        if masukan.strip().split("\n")[0] == inti_petunjuk:
-            return masukan
-    return None
 
 
 _KEPALA_MATERI = re.compile(r"^keluaran(?:nya)?(?:\s*\([^)]*\))?\s*:?$", re.I)
@@ -221,7 +177,7 @@ class BasisSolusi:
         """
         for ex in latihan_bahasa(self.lang):
             for petunjuk, harap in blok_janji(ex):
-                masukan = _input_untuk(ex, petunjuk)
+                masukan = input_untuk(ex, petunjuk)
                 if masukan is None:
                     continue
                 with self.subTest(latihan=ex["title"], input=petunjuk):

@@ -5747,7 +5747,11 @@
    "question": [
     "Buat program Go yang menampilkan tepat dua baris:",
     "  Halo, namaku Andi!",
-    "  Aku sedang belajar Go."
+    "  Aku sedang belajar Go.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar Go."
    ],
    "hints": [
     "Program Go yang bisa dijalankan selalu punya kerangka yang sama: nama package khusus, import untuk mencetak, lalu fungsi utama. Baca ulang materi \"Pengenalan Go & Instalasi\".",
@@ -5767,7 +5771,15 @@
     "  15 * 4 = 60",
     "  15 / 4 = 3",
     "  15 % 4 = 3",
-    "  15 / 4 = 3.75 (desimal)"
+    "  15 / 4 = 3.75 (desimal)",
+    "",
+    "Keluaran yang diharapkan:",
+    "    15 + 4 = 19",
+    "    15 - 4 = 11",
+    "    15 * 4 = 60",
+    "    15 / 4 = 3",
+    "    15 % 4 = 3",
+    "    15 / 4 = 3.75 (desimal)"
    ],
    "hints": [
     "Ada dua hal yang diuji: aturan pembagian bilangan bulat dan konversi tipe yang wajib ditulis sendiri. Baca ulang materi \"Operator\" dan \"Input & Output dengan fmt\".",
@@ -5877,7 +5889,16 @@
     "  Terendah: 45",
     "  Terurut: [45 65 75 80 90]",
     "",
-    "Pengurutan tidak boleh mengubah slice aslinya."
+    "Pengurutan tidak boleh mengubah slice aslinya.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Data: [80 65 90 45 75]",
+    "    Jumlah data: 5",
+    "    Total: 355",
+    "    Rata-rata: 71.00",
+    "    Tertinggi: 90",
+    "    Terendah: 45",
+    "    Terurut: [45 65 75 80 90]"
    ],
    "hints": [
     "Latihan ini soal menelusuri slice, lalu mengurutkan salinannya tanpa menyentuh aslinya. Baca ulang materi \"Array & Slice\".",
@@ -5900,7 +5921,15 @@
     "  sederhana : 1",
     "  Total kata unik: 5",
     "",
-    "Nama kata dicetak rata kiri selebar 9 karakter."
+    "Nama kata dicetak rata kiri selebar 9 karakter.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    cepat     : 1",
+    "    go        : 3",
+    "    itu       : 3",
+    "    kuat      : 1",
+    "    sederhana : 1",
+    "    Total kata unik: 5"
    ],
    "hints": [
     "Menghitung kemunculan adalah pekerjaan map, dan mencetaknya urut abjad butuh langkah tambahan karena urutan map acak. Baca ulang materi \"Map\" dan \"String, Rune & Package strings\".",
@@ -5922,7 +5951,12 @@
     "Uji keduanya sehingga outputnya:",
     "  10 / 4 = 2.50",
     "  Error: pembagi tidak boleh nol",
-    "  Min: 3 Maks: 9 Total: 17"
+    "  Min: 3 Maks: 9 Total: 17",
+    "",
+    "Keluaran yang diharapkan:",
+    "    10 / 4 = 2.50",
+    "    Error: pembagi tidak boleh nol",
+    "    Min: 3 Maks: 9 Total: 17"
    ],
    "hints": [
     "Dua hal di sini: fungsi yang mengembalikan hasil plus error, dan named return values. Baca ulang materi \"Fungsi\" dan \"Error Handling\".",
@@ -5946,7 +5980,15 @@
     "  Sebelum naikkan: 10",
     "  Sesudah naikkan: 35",
     "  Sebelum gandakan: [1 2 3]",
-    "  Sesudah gandakan: [2 4 6]"
+    "  Sesudah gandakan: [2 4 6]",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Sebelum tukar: a=1 b=2",
+    "    Sesudah tukar: a=2 b=1",
+    "    Sebelum naikkan: 10",
+    "    Sesudah naikkan: 35",
+    "    Sebelum gandakan: [1 2 3]",
+    "    Sesudah gandakan: [2 4 6]"
    ],
    "hints": [
     "Fungsi di Go menerima salinan argumen, jadi untuk mengubah variabel milik pemanggil kamu perlu alamatnya. Baca ulang materi \"Pointer\".",

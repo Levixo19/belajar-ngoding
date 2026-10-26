@@ -4104,7 +4104,12 @@
     "Buat program C# yang menampilkan tepat tiga baris:",
     "  Halo, namaku Andi!",
     "  Aku sedang belajar C#.",
-    "  Bahasa ini berjalan di atas .NET."
+    "  Bahasa ini berjalan di atas .NET.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar C#.",
+    "    Bahasa ini berjalan di atas .NET."
    ],
    "hints": [
     "Program C# terdiri dari sebuah class dengan satu titik masuk, tempat eksekusi dimulai. Baca ulang materi Pengenalan C# & .NET kalau lupa kerangkanya.",
@@ -4124,7 +4129,15 @@
     "  17 * 5 = 85",
     "  17 / 5 = 3",
     "  17 % 5 = 2",
-    "  17 / 5 = 3.40 (desimal)"
+    "  17 / 5 = 3.40 (desimal)",
+    "",
+    "Keluaran yang diharapkan:",
+    "    17 + 5 = 22",
+    "    17 - 5 = 12",
+    "    17 * 5 = 85",
+    "    17 / 5 = 3",
+    "    17 % 5 = 2",
+    "    17 / 5 = 3.40 (desimal)"
    ],
    "hints": [
     "Pembagian dua int membuang sisanya, sedangkan pembagian yang melibatkan double menyimpan pecahannya. Baca ulang materi Operator & Ekspresi.",
@@ -4205,7 +4218,14 @@
     "  5 x 1 =  5   5 x 2 = 10   5 x 3 = 15   5 x 4 = 20   5 x 5 = 25",
     "",
     "Tiap baris diawali dua spasi. Hasil perkaliannya rata kanan",
-    "selebar 2 karakter, dan tiap sel dipisah tiga spasi."
+    "selebar 2 karakter, dan tiap sel dipisah tiga spasi.",
+    "",
+    "Keluaran yang diharapkan:",
+    "      1 x 1 =  1   1 x 2 =  2   1 x 3 =  3   1 x 4 =  4   1 x 5 =  5",
+    "      2 x 1 =  2   2 x 2 =  4   2 x 3 =  6   2 x 4 =  8   2 x 5 = 10",
+    "      3 x 1 =  3   3 x 2 =  6   3 x 3 =  9   3 x 4 = 12   3 x 5 = 15",
+    "      4 x 1 =  4   4 x 2 =  8   4 x 3 = 12   4 x 4 = 16   4 x 5 = 20",
+    "      5 x 1 =  5   5 x 2 = 10   5 x 3 = 15   5 x 4 = 20   5 x 5 = 25"
    ],
    "hints": [
     "Tabel berarti dua perulangan bersarang: perulangan luar untuk baris, perulangan dalam untuk kolom. Baca ulang materi Perulangan: for, while, foreach.",
@@ -4229,7 +4249,17 @@
     "  Rata-rata : 78.88",
     "  Tertinggi : 95",
     "  Terendah  : 59",
-    "  Di atas rata-rata: 4"
+    "  Di atas rata-rata: 4",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Data      : 78, 92, 65, 88, 71, 95, 59, 83",
+    "    Terurut   : 59, 65, 71, 78, 83, 88, 92, 95",
+    "    Jumlah    : 8",
+    "    Total     : 631",
+    "    Rata-rata : 78.88",
+    "    Tertinggi : 95",
+    "    Terendah  : 59",
+    "    Di atas rata-rata: 4"
    ],
    "hints": [
     "Kamu perlu menelusuri array untuk total, nilai tertinggi, dan terendah, lalu menelusurinya lagi untuk menghitung yang di atas rata-rata. Baca ulang materi Array & Indeks.",

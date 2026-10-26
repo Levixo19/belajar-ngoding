@@ -5334,7 +5334,11 @@
     "  Aku sedang belajar JavaScript.",
     "",
     "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
-    "membandingkan outputmu huruf demi huruf."
+    "membandingkan outputmu huruf demi huruf.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar JavaScript."
    ],
    "hints": [
     "Tiap baris keluaran butuh satu perintah cetak. Baca ulang materi \"Pengenalan JavaScript & Cara Menjalankan\".",
@@ -5371,7 +5375,11 @@
    "question": [
     "Buat fungsi cekKelulusan(nilai) yang mengembalikan 'Lulus'",
     "jika nilai >= 75, selain itu 'Tidak Lulus'.",
-    "Uji dengan beberapa nilai berbeda."
+    "Uji dengan beberapa nilai berbeda.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Lulus",
+    "    Tidak Lulus"
    ],
    "hints": [
     "Fungsinya menerima satu nilai dan mengembalikan salah satu dari dua teks. Baca ulang materi \"Percabangan (if / else / switch)\" dan \"Function: Declaration, Expression & Arrow Function\".",
@@ -5407,7 +5415,14 @@
     "  **",
     "  ***",
     "  ****",
-    "  *****"
+    "  *****",
+    "",
+    "Keluaran yang diharapkan:",
+    "    *",
+    "    **",
+    "    ***",
+    "    ****",
+    "    *****"
    ],
    "hints": [
     "Baris ke-i berisi i bintang, jadi kamu butuh perulangan dari 1 sampai 5. Baca ulang materi \"Perulangan (for, while, for...of, for...in)\".",

@@ -7738,7 +7738,11 @@
     "  Aku sedang belajar Java.",
     "",
     "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
-    "membandingkan outputmu huruf demi huruf."
+    "membandingkan outputmu huruf demi huruf.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar Java."
    ],
    "hints": [
     "Satu baris keluaran butuh satu perintah cetak. Baca ulang materi 'Pengenalan Java & Persiapan' bagian program pertamamu.",
@@ -7777,7 +7781,10 @@
     "Jika nilai >= 75 tampilkan 'Lulus', selain itu 'Tidak Lulus'.",
     "",
     "Jangan cetak teks prompt apa pun. Program hanya boleh mengeluarkan",
-    "satu baris berisi Lulus atau Tidak Lulus."
+    "satu baris berisi Lulus atau Tidak Lulus.",
+    "",
+    "Untuk input 80, keluarannya:",
+    "    Lulus"
    ],
    "hints": [
     "Kamu perlu membaca satu angka lalu memilih satu dari dua keluaran. Baca ulang 'String & Scanner (Input)' untuk membaca input dan 'Percabangan (if / switch)' untuk if-else.",
@@ -7818,7 +7825,14 @@
     "  **",
     "  ***",
     "  ****",
-    "  *****"
+    "  *****",
+    "",
+    "Keluaran yang diharapkan:",
+    "    *",
+    "    **",
+    "    ***",
+    "    ****",
+    "    *****"
    ],
    "hints": [
     "Pola bertingkat seperti ini dibuat dengan perulangan di dalam perulangan. Baca ulang bagian perulangan bersarang (nested loop) di materi 'Perulangan (Loop)'.",

@@ -6455,7 +6455,11 @@
     "  Aku sedang belajar C.",
     "",
     "Tulis PERSIS seperti di atas, termasuk nama Andi -- penilaian",
-    "membandingkan outputmu huruf demi huruf."
+    "membandingkan outputmu huruf demi huruf.",
+    "",
+    "Keluaran yang diharapkan:",
+    "    Halo, namaku Andi!",
+    "    Aku sedang belajar C."
    ],
    "hints": [
     "Baca ulang materi \"Input & Output (printf & scanf)\": tiap baris keluaran cukup dicetak dengan satu printf().",
@@ -6493,7 +6497,10 @@
     "jika nilai >= 75 tampilkan 'Lulus', selain itu 'Tidak Lulus'.",
     "",
     "Jangan cetak teks ajakan apa pun. Program hanya boleh mengeluarkan",
-    "satu baris berisi Lulus atau Tidak Lulus."
+    "satu baris berisi Lulus atau Tidak Lulus.",
+    "",
+    "Untuk input 80, keluarannya:",
+    "    Lulus"
    ],
    "hints": [
     "Bekalnya materi \"Input & Output (printf & scanf)\" untuk membaca angka dan \"Percabangan (if / else / switch)\" untuk memilih satu dari dua kalimat.",
@@ -6533,7 +6540,14 @@
     "  **",
     "  ***",
     "  ****",
-    "  *****"
+    "  *****",
+    "",
+    "Keluaran yang diharapkan:",
+    "    *",
+    "    **",
+    "    ***",
+    "    ****",
+    "    *****"
    ],
    "hints": [
     "Ini soal nested loop (loop di dalam loop) dari materi \"Perulangan (for, while, do-while)\". Loop luar mengatur baris, loop dalam mengatur banyak bintang di baris itu.",
@@ -6654,7 +6668,10 @@
     "tampilkan semua isinya, lalu bebaskan (free) memorinya.",
     "",
     "Jangan cetak teks ajakan. Untuk input 5, outputnya:",
-    "  Isi array: 5 10 15 20 25"
+    "  Isi array: 5 10 15 20 25",
+    "",
+    "Untuk input 5, keluarannya:",
+    "    Isi array: 5 10 15 20 25"
    ],
    "hints": [
     "Baca materi \"Dynamic Memory Allocation (malloc, calloc, free)\": ukuran yang diminta adalah n kali ukuran satu int, dan hasil malloc selalu dicek sebelum dipakai.",
