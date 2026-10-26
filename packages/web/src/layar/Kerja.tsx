@@ -1556,8 +1556,10 @@ export function Coba({
               Selisihnya bukan informasi yang hilang -- `KartuJalan` justru
               membawa pratinjaunya BESERTA pil lebar perangkat, yang tidak ada
               di kartu dua-tab itu. Yang berbeda cuma bentuknya: di sini
-              pratinjau dan pohon strukturnya bertumpuk, di sana bertab. Begitu
-              pembaca materi diport, keduanya pakai satu kartu lagi. */}
+              pratinjau dan pohon strukturnya bertumpuk, di sana bertab -- dan
+              itu memang dipertahankan: di ruang kerja keduanya dibaca
+              bersamaan saat menyetel markup, sementara di materi yang dicari
+              cuma salah satunya. */}
           <div ref={panelRef} className="kerja-hasil">
             {hasil.jenis === "kosong" ? (
               <Keadaan jenis="kosong" judul="Keluaran muncul di sini"

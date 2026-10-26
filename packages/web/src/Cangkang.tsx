@@ -356,8 +356,9 @@ export function Cangkang({
       {/* Lapisan latar: grain fraktal plus satu cahaya lebar dari atas layar,
           keduanya DIAM. Lima aturan `#latar` di `gaya.css` tidak pernah punya
           elemen untuk dikenakan sampai sekarang, jadi kanvasnya rata gelap.
-          Bintang dan garis rasi di atasnya datang dari `langit.js`, yang
-          belum diport -- yang ini lapisan dasarnya, dan ia berdiri sendiri. */}
+          Bintang dan garis rasi di atasnya digambar `langit.ts` ke dalam
+          elemen ini; yang di sini lapisan dasarnya, dan ia berdiri sendiri
+          kalau kanvas langitnya tidak pernah menyala. */}
       <div id="latar" ref={latarRef} aria-hidden="true" />
       <div id="cangkang" className={panelBuka ? "rel-buka" : undefined}>
       {/* `id="rel"`, dan itu bukan kosmetik: 25 aturan di `gaya.css` menunjuk

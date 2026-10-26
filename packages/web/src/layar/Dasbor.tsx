@@ -943,10 +943,26 @@ function MejaKerja({ d, bahasa }: { d: DataDasbor; bahasa: BahasaAwal[] }) {
               year: "numeric",
             })}
           </span>
-          {/* Satu pil gambar di dalam judulnya belum diport bersama
-              `sampul.js`; judulnya tetap terbaca utuh karena pil itu memang
-              `aria-hidden` dan kosong teks. */}
-          <h1>{awal + " " + sisa}</h1>
+          {/* Pil gambar DI DALAM sapaannya ("Selamat [pil] malam."), dengan
+              benih dari bahasa langkah pertama -- jadi gambar pertama yang
+              dilihat orang pagi itu adalah pelajaran yang menunggunya.
+              Judulnya tetap terbaca utuh: pilnya `aria-hidden` dan kosong
+              teks, jadi pembaca layar mendengar "Selamat malam." apa adanya,
+              dan `pecahSapa()` memang mengembalikan dua potongan khusus
+              supaya ada celah untuk menaruhnya. */}
+          <h1>
+            {awal}{" "}
+            <span className="judul-pil" aria-hidden="true">
+              <Sampul
+                teks={utama ? `${utama.bahasa}/sapa` : "sapa"}
+                bahasa={utama ? utama.bahasa : undefined}
+                ragam="gelombang"
+                lebar={240}
+                tinggi={110}
+              />
+            </span>{" "}
+            {sisa}
+          </h1>
           {p ? (
             <p className="meja-posisi">
               <a href={"#/bahasa/" + p.key}>
