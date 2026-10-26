@@ -1,8 +1,8 @@
 {
-  "name": "belajar-ngoding",
+  "name": "belajar-codingv2",
   "version": "0.1.0",
   "private": true,
-  "description": "Aplikasi belajar pemrograman berbahasa Indonesia. Server dan runner Python; algoritma bersama dan antarmuka dalam TypeScript.",
+  "description": "Aplikasi belajar pemrograman berbahasa Indonesia. Server dan runner Python; algoritma bersama, antarmuka, dan layanan pencarian catatan dalam TypeScript.",
   "workspaces": [
     "packages/*"
   ],

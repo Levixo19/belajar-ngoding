@@ -1,7 +1,8 @@
 # Catatan untuk agen
 
 Nama proyeknya **`belajar-codingV2`** (2026-10-20, dari `VERSI = "2.0"` di
-`inti/kurikulum.py`). Nama lamanya "Belajar Ngoding", dan masih ada di EMPAT
+`inti/kurikulum.py`; paket npm akarnya `belajar-codingv2`, huruf kecil karena
+npm menuntutnya). Nama lamanya "Belajar Ngoding", dan masih ada di EMPAT
 tempat yang **sengaja tidak diganti**: `~/.belajar_ngoding_progress.json`
 (`pelajar/progress.py`), `~/.belajar_ngoding_config.json`
 (`pelajar/konfigurasi.py`), `~/.belajar_ngoding_catatan.json`
