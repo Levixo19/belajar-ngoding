@@ -46,8 +46,28 @@ BELAJAR_CATATAN_FILE=$S/c.json BELAJAR_WORKSPACE=$S/kerja \
 npm run dev --workspace @belajar/web     # http://127.0.0.1:5173/
 ```
 
-Token API tidak perlu disalin: plugin `belajar-token` mengambilnya dari
-`GET /` server Python setiap kali halaman dimuat. Kalau servernya tidak hidup,
+```bash
+npm run build --workspace @belajar/web   # tsc --noEmit && vite build
+```
+
+Bundelnya bukan untuk dilayani -- yang dilayani `belajar-web.py` tetap
+`webapp/statik/`. Gunanya SATU: membuktikan port React benar-benar bisa
+dibangun. Dua hal yang dikatakan keluarannya dan keduanya benar:
+`/gaya.css doesn't exist at build time` (ia memang diproksi, bukan disalin),
+dan plugin tokennya `apply: "serve"` -- jadi bundel produksi tidak punya token
+dan `api.ts` mengatakannya dengan kalimat yang menyebut perintahnya, bukan
+membiarkan 403 yang membingungkan.
+
+**`index.html` tidak boleh memuat teks tag penutup kepala, bahkan di dalam
+komentar.** `vite build` menyuntikkan `<script src=...>` tepat sebelum
+kecocokan PERTAMA teks itu, termasuk kecocokan di dalam komentar. Terukur:
+dengan tag itu tertulis di sebuah komentar penjelas, skripnya mendarat DI DALAM
+komentar dan bundel produksinya memuat nol JavaScript -- halaman kosong, tanpa
+satu pun galat di konsol maupun di keluaran build. `vite build` yang ada tapi
+tidak pernah dijalankan menyembunyikan tepat kelas cacat ini.
+
+Token API tidak perlu disalin saat `npm run dev`: plugin `belajar-token`
+mengambilnya dari `GET /` server Python setiap kali halaman dimuat. Kalau servernya tidak hidup,
 layarnya mengatakannya beserta perintah yang harus dijalankan -- bukan 403 yang
 membingungkan.
 

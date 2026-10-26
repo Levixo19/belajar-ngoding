@@ -15,8 +15,15 @@
      `transformIndexHtml` di Vite TIDAK BISA mengubah isi skrip inline: Vite
      mengekstrak badannya sebagai modul lalu menyajikan yang ASLI, jadi
      penggantian di dalam <script> dipulihkan diam-diam. Diukur: pada satu
-     rantai `.replace()` yang sama, penanda sebelum </head> mendarat sementara
-     penggantian di dalam skrip tidak.
+     rantai `.replace()` yang sama, penanda sebelum tag penutup kepala
+     mendarat sementara penggantian di dalam skrip tidak.
+
+     Tag penutup itu DISEBUT, bukan dituliskan, dan itu bukan kerewelan:
+     `vite build` menyuntikkan <script src=...> tepat sebelum kecocokan
+     PERTAMA teks penutup kepala -- termasuk kecocokan di dalam komentar.
+     Terukur: dengan tag itu tertulis di sini, skripnya mendarat DI DALAM
+     komentar ini, dan bundel produksinya memuat nol JavaScript. Halamannya
+     kosong, tanpa satu pun galat di konsol maupun di keluaran build.
      Jadi plugin `belajar-token` menyuntikkannya lewat `tags`, yang ditempel
      Vite sendiri. Kalau server Python tidak hidup, tag itu tidak ada sama
      sekali -- dan `api.ts` mengatakannya dengan kalimat yang menyebut

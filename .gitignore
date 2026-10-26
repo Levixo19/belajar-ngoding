@@ -54,3 +54,8 @@ node_modules/
 
 # Tangkapan layar sekali pakai
 ringkasan.png
+
+# Hasil bundel Vite. Yang dilayani `belajar-web.py` tetap webapp/statik/;
+# bundel ini cuma dipakai untuk membuktikan port React bisa dibangun, dan
+# isinya diturunkan sepenuhnya dari src/.
+packages/web/dist/
