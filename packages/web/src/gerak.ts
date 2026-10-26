@@ -588,7 +588,41 @@ export function tata(
 const BISA_TUNJUK = ADA_DOM && typeof matchMedia === "function"
   && matchMedia("(hover: hover) and (pointer: fine)").matches;
 
+/* Permukaan yang menjawab saat ditekan. Semuanya elemen yang memang bisa
+   diklik — menganimasikan yang lain cuma menjanjikan sesuatu yang tidak
+   terjadi. */
+export const BISA_DITEKAN =
+  ".tbl, .baris, .opsi button, .kartu[href], .palet-item, .sakelar,"
+  + " .rel-menu a, .tanda, .ikon-tombol, .medali.punya,"
+  // Dua permukaan navbar yang sebelumnya diam saat ditekan padahal semua
+  // tetangganya menjawab. Ditambahkan di sini, bukan dengan memanggil WAAPI
+  // dari komponennya: pasangIsyarat() yang memegang pasangan tekan/lepas,
+  // dan hanya lewat jalur itu pembatalannya dijamin.
+  + " .rel-tombol, .rel-pemicu,"
+  // `.pil[href]`, bukan `.pil`. Dari 58 pil di aplikasi ini, 56 adalah LABEL
+  // statis ("dinilai otomatis", "terkunci", "5x dikerjakan") dan hanya 2 yang
+  // berupa tautan. Memberi fisika tekan pada seluruh `.pil` membuat lima
+  // puluh enam penanda mengecil saat disentuh lalu tidak melakukan apa-apa --
+  // kebalikan dari janji bahwa yang menjawab sentuhan itu bisa ditekan.
+  + " .pil[href], .ubin,"
+  // Kepala bab adalah `<summary>`, dan ia satu-satunya permukaan besar di
+  // halaman bahasa yang diam saat ditekan padahal seluruh tetangganya
+  // menjawab. Didaftarkan di sini, BUKAN dengan memanggil tekan() dari
+  // komponennya: `pasangIsyarat()` yang memegang pasangan tekan/lepas, dan
+  // hanya lewat jalur itu pembatalannya dijamin (invarian #1).
+  //
+  // Aman untuk papan ketik tanpa syarat tambahan: jalur ini cuma menumpang
+  // pointerdown/pointerup/pointercancel, jadi Enter pada `<summary>` — yang
+  // memang cara membukanya dengan papan ketik — tidak pernah memicu tekan()
+  // dan tidak ada animasi mengecil yang bisa tertinggal tanpa pasangannya.
+  + " .bab-kepala";
+
 const _tekanan = new WeakMap<Element, Kendali>();
+
+/** Elemen di dalam sebuah `<svg>`. Ruang nama, bukan `instanceof SVGElement`:
+ *  berkas ini diimpor juga oleh pembanding Node yang tidak punya kelas itu. */
+const SVG_NS = "http://www.w3.org/2000/svg";
+const elemenSvg = (el: Element): boolean => el.namespaceURI === SVG_NS;
 
 function skalaTekan(opsi: { skala?: number }): number {
   const dasar = opsi.skala === undefined ? 0.975 : opsi.skala;
@@ -600,9 +634,19 @@ function skalaTekan(opsi: { skala?: number }): number {
  *
  *  Hidup di tingkat "halus" juga, dan itu bukan kelonggaran: umpan balik
  *  sentuhan justru SATU-SATUNYA alasan tingkat tengah itu ada. Kalau ia ikut
- *  padam di situ, "halus" tidak ada bedanya dengan "mati". */
+ *  padam di situ, "halus" tidak ada bedanya dengan "mati".
+ *
+ *  TIDAK PERNAH menyentuh elemen SVG. Properti CSS `transform` menimpa atribut
+ *  `transform` bawaannya, jadi sebuah `<g transform="translate(x,y)">` yang
+ *  ditekan kehilangan `translate`-nya dan melompat ke titik asal `viewBox` --
+ *  dengan `fill: "forwards"` ia TERPARKIR di sana. Terukur di Peta Karier:
+ *  node berpindah dari (184, 60) ke (-13, -13) saat tombol ditekan, dan
+ *  `pointerup` lalu mendarat di elemen LAIN karena node itu sudah tidak ada di
+ *  bawah kursor -- jadi pelepasnya tidak pernah menemukannya. Klik mouse tidak
+ *  bisa memilih node sama sekali. Daftar `BISA_DITEKAN` memang tidak memuat
+ *  elemen SVG; pagar ini lapis kedua, untuk kelas yang ditambahkan belakangan. */
 export function tekan(el: Element | null, opsi: { skala?: number } = {}): void {
-  if (!adaGerak() || !el) return;
+  if (!adaGerak() || !el || elemenSvg(el)) return;
   const kecil = skalaTekan(opsi);
   // fill "forwards" WAJIB: selama jarinya masih menempel, tombolnya harus
   // tetap kecil, bukan memantul balik sendiri setelah 90 md.
@@ -623,10 +667,66 @@ export function lepas(el: Element | null, opsi: { skala?: number } = {}): void {
   // di antara menekan dan melepas, yang menekan tetap harus dilepaskan.
   const menekan = _tekanan.get(el);
   if (menekan) { menekan.batal(); _tekanan.delete(el); }
-  if (!adaGerak()) return;
+  if (!adaGerak() || elemenSvg(el)) return;
 
   animasi(el, { transform: [`scale(${skalaTekan(opsi)})`, "none"] },
           { pegas: "lentur" });
+}
+
+/** Pasang isyarat tekan untuk SELURUH aplikasi lewat satu pendengar.
+ *
+ *  Port `pasangIsyarat()` dari `gerak.js`, dan inilah yang dulu terlewat:
+ *  versi pertama cangkang React memasang penangan sendiri yang memilih sasaran
+ *  dengan `button, a, [role="button"]` lalu melepas `closest(target)` saat
+ *  `pointerup`. Dua-duanya salah. Daftar putih `BISA_DITEKAN` adalah janji
+ *  bahwa yang menjawab sentuhan memang bisa ditekan, dan yang dilepas harus
+ *  elemen yang DITEKAN -- bukan elemen yang kebetulan ada di bawah kursor saat
+ *  jari diangkat, yang bisa saja bukan elemen yang sama.
+ *
+ *  Mengembalikan pelepas, beda dari versi JS yang memasang pendengarnya
+ *  sekali dan selamanya: efek React dijalankan dua kali di StrictMode. */
+export function pasangIsyarat(): () => void {
+  if (!ADA_DOM) return () => {};
+
+  let ditekan: Element | null = null;
+
+  const turun = (e: PointerEvent) => {
+    if (!adaGerak()) return;
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest(BISA_DITEKAN);
+    if (!el || el.hasAttribute("disabled")) return;
+    if (el.closest("[data-gerak-lewat]")) return;
+    ditekan = el;
+    tekan(el);
+  };
+
+  const selesaikan = () => {
+    if (!ditekan) return;
+    lepas(ditekan);
+    ditekan = null;
+  };
+
+  const opsi = { passive: true } as const;
+  document.addEventListener("pointerdown", turun, opsi);
+  document.addEventListener("pointerup", selesaikan, opsi);
+  document.addEventListener("pointercancel", selesaikan, opsi);
+  // Kursor yang keluar dari tombol sambil ditekan tidak memicu pointerup di
+  // atas tombol itu. `selesaikan` melepas elemen yang DITEKAN di mana pun
+  // jarinya diangkat, jadi tombolnya tidak tertinggal mengecil.
+  document.addEventListener("pointerleave", selesaikan, opsi);
+
+  // Pelepasan dicocokkan lewat `capture` saja (bawaan false, sama dengan
+  // pemasangan), jadi `passive` tidak perlu -- dan tipenya memang menolaknya.
+  return () => {
+    document.removeEventListener("pointerdown", turun);
+    document.removeEventListener("pointerup", selesaikan);
+    document.removeEventListener("pointercancel", selesaikan);
+    document.removeEventListener("pointerleave", selesaikan);
+    // Pelepas yang meninggalkan tombol dalam keadaan ditekan adalah pelepas
+    // yang membuat tombol itu mengecil selamanya.
+    selesaikan();
+  };
 }
 
 /** Getar mendatar -- untuk jawaban salah dan penolakan. Amplitudonya kecil

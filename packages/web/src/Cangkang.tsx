@@ -26,7 +26,7 @@ import { arahkanLangit, nyalakanLangit } from "./langit.ts";
 import { nyalakanKursor } from "./kursor.ts";
 import { pasangSorot } from "./permukaan.ts";
 import { ungkapJudulSaatTiba } from "./sinema.ts";
-import { lepas, masuk, tekan } from "./gerak.ts";
+import { masuk, pasangIsyarat } from "./gerak.ts";
 
 import { Ikon } from "./komponen/Ikon.tsx";
 import { Lencana, MajuBaca } from "./komponen/Lencana.tsx";
@@ -261,38 +261,20 @@ export function Cangkang({
   }, [rute, alamat]);
 
   /* ------------------------------------------------ umpan balik tekan ---
-     Dipasang SEKALI di tingkat dokumen, bukan per tombol. Dua sebabnya:
-     tombol lahir dan mati terus-menerus di aplikasi ber-rute, dan satu
-     pendengar jauh lebih murah daripada dua pendengar kali jumlah tombol.
+     Seluruhnya di `pasangIsyarat()` (gerak.ts), port dari `gerak.js`: satu
+     pendengar di tingkat dokumen, daftar putih `BISA_DITEKAN`, dan elemen yang
+     DITEKAN-lah yang dilepas -- di mana pun jari diangkat.
 
-     Ini bukan paritas -- di antarmuka lama `tekan()`/`lepas()` ADA di
-     `gerak.js` tapi NOL pemanggil. Padahal aturan di AGENTS.md menyebut umpan
-     balik sentuhan sebagai satu-satunya alasan tingkat gerak "halus" ada:
-     kalau ia ikut padam di situ, "halus" tidak ada bedanya dengan "mati".
-     Jadi yang dikerjakan di sini menepati maksud yang sudah tertulis, bukan
-     menambah hiasan baru. */
-  useEffect(() => {
-    const BISA = "button, a, .sakelar, [role=\"button\"], .kartu-pilihan";
-    const sasaran = (e: Event) =>
-      (e.target as Element | null)?.closest?.(BISA) ?? null;
-    const turun = (e: PointerEvent) => {
-      // Tombol kanan dan tengah tidak "menekan" apa pun yang terlihat.
-      if (e.button !== 0) return;
-      tekan(sasaran(e));
-    };
-    const naik = (e: PointerEvent) => lepas(sasaran(e));
-    // `pointercancel` ikut didengar: tanpa itu, gestur yang dibatalkan sistem
-    // (gulir yang mengambil alih sentuhan) meninggalkan tombol MENGECIL
-    // selamanya, karena yang menekan memakai fill "forwards".
-    document.addEventListener("pointerdown", turun, true);
-    document.addEventListener("pointerup", naik, true);
-    document.addEventListener("pointercancel", naik, true);
-    return () => {
-      document.removeEventListener("pointerdown", turun, true);
-      document.removeEventListener("pointerup", naik, true);
-      document.removeEventListener("pointercancel", naik, true);
-    };
-  }, []);
+     Versi pertama di sini menulis penangannya sendiri, dengan komentar yang
+     menyebut antarmuka lama "NOL pemanggil" `tekan()`. Itu keliru: pemanggilnya
+     `pasangIsyarat()` di dalam `gerak.js` sendiri, dan tes lamanya malah
+     melarang komponen memanggil `tekan()` langsung. Penangan buatan sendiri itu
+     memilih sasaran dengan `button, a, [role="button"]` (termasuk node SVG
+     Peta Karier) dan melepas `closest(target)` saat `pointerup`. Akibatnya node
+     yang ditekan melompat ke titik asal SVG, `pointerup` mendarat di elemen
+     lain, dan node itu terparkir di pojok kiri atas selamanya -- sampai klik
+     mouse tidak bisa memilih node sama sekali. */
+  useEffect(() => pasangIsyarat(), []);
 
   const latarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

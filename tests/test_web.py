@@ -22818,3 +22818,315 @@ class TestSinemaKursorPermukaan(unittest.TestCase):
             self.assertIn(
                 "() => void", " ".join(m.group(1).split()),
                 f"{fungsi} di {berkas} tidak mengembalikan pembersih")
+
+
+_SKRIP_ISYARAT = r"""
+// Driver pasangIsyarat(): `node uji-isyarat.mjs <jalur modul gerak>`.
+// DOM palsu yang CUKUP untuk satu pendengar dokumen: pendengar dicatat per
+// jenis, elemen palsu mencatat tiap animate() dan bisa dibatalkan.
+const dengar = {};
+const catatDengar = () => Object.fromEntries(
+  Object.entries(dengar).map(([j, d]) => [j, d.length]));
+
+class Element {}
+globalThis.Element = Element;
+const dataset = {};
+globalThis.document = {
+  documentElement: { dataset },
+  addEventListener(j, f) { (dengar[j] ||= []).push(f); },
+  removeEventListener(j, f) { dengar[j] = (dengar[j] || []).filter((x) => x !== f); },
+};
+globalThis.window = globalThis;
+globalThis.matchMedia = () => ({
+  matches: false, addEventListener() {}, removeEventListener() {},
+});
+globalThis.CSS = { supports: () => true };
+
+const SVG = "http://www.w3.org/2000/svg";
+const HTML = "http://www.w3.org/1999/xhtml";
+
+class El extends Element {
+  constructor(nama, o = {}) {
+    super();
+    this.nama = nama;
+    this.bisa = !!o.bisa;
+    this.lewat = !!o.lewat;
+    this.mati = !!o.mati;
+    this.namespaceURI = o.svg ? SVG : HTML;
+    this.panggilan = [];
+    this.aktif = [];
+  }
+  // Selektor DAFTAR PUTIH dijawab oleh bendera `bisa`; yang diuji di sini
+  // MEKANISMENYA, bukan mesin selektor. Isi daftarnya diadu terpisah.
+  closest(sel) {
+    if (sel === "[data-gerak-lewat]") return this.lewat ? this : null;
+    return this.bisa ? this : null;
+  }
+  hasAttribute(a) { return a === "disabled" && this.mati; }
+  animate(bingkai, opsi) {
+    const a = {
+      dibatalkan: false,
+      cancel() { this.dibatalkan = true; },
+      finish() {},
+      finished: new Promise(() => {}),
+    };
+    this.panggilan.push({ properti: Object.keys(bingkai), fill: opsi.fill });
+    this.aktif.push(a);
+    return a;
+  }
+}
+
+const kirim = (jenis, o = {}) => {
+  for (const f of [...(dengar[jenis] || [])]) {
+    f({ button: 0, pointerType: "mouse", ...o });
+  }
+};
+const ringkas = (el) => ({
+  animate: el.panggilan.length,
+  properti: [...new Set(el.panggilan.flatMap((p) => p.properti))],
+  fill: el.panggilan.map((p) => p.fill),
+  dibatalkan: el.aktif.map((a) => a.dibatalkan),
+});
+
+import { pathToFileURL } from "node:url";
+const modul = await import(pathToFileURL(process.argv[2]).href);
+const langkah = {};
+langkah.ekspor = ["pasangIsyarat", "tekan", "lepas"].filter((n) => typeof modul[n] !== "function");
+
+const lepasPasang = modul.pasangIsyarat();
+langkah.pendengar_terpasang = catatDengar();
+
+// 1. Tekan lalu lepas di elemen YANG SAMA.
+{
+  const a = new El("a", { bisa: true });
+  kirim("pointerdown", { target: a });
+  langkah.tekan_biasa_saat_ditekan = ringkas(a);
+  kirim("pointerup", { target: a });
+  langkah.tekan_biasa_sesudah = ringkas(a);
+}
+
+// 2. Regresi Peta Karier: pointerup mendarat di elemen LAIN. Yang dilepas harus
+//    tetap elemen yang DITEKAN.
+{
+  const a = new El("a", { bisa: true });
+  const lain = new El("lain", { bisa: false });
+  kirim("pointerdown", { target: a });
+  kirim("pointerup", { target: lain });
+  langkah.lepas_di_elemen_lain = { a: ringkas(a), lain: ringkas(lain) };
+}
+
+// 3. pointercancel dan pointerleave juga melepas.
+for (const jenis of ["pointercancel", "pointerleave"]) {
+  const a = new El("a", { bisa: true });
+  kirim("pointerdown", { target: a });
+  kirim(jenis, { target: a });
+  langkah["lepas_lewat_" + jenis] = ringkas(a);
+}
+
+// 4. Yang BUKAN di daftar putih, yang disabled, yang ber-data-gerak-lewat,
+//    dan tombol kanan mouse: tidak ada yang bergerak.
+{
+  const x = new El("x", { bisa: false });
+  const y = new El("y", { bisa: true, mati: true });
+  const z = new El("z", { bisa: true, lewat: true });
+  const k = new El("k", { bisa: true });
+  kirim("pointerdown", { target: x });
+  kirim("pointerdown", { target: y });
+  kirim("pointerdown", { target: z });
+  kirim("pointerdown", { target: k, button: 2 });
+  kirim("pointerup", { target: k });
+  langkah.tidak_menjawab = {
+    bukan_daftar: x.panggilan.length, disabled: y.panggilan.length,
+    lewat: z.panggilan.length, tombol_kanan: k.panggilan.length,
+  };
+}
+
+// 5. Gerak dimatikan DI ANTARA tekan dan lepas: yang menekan tetap dibatalkan,
+//    dan pegas pelepasnya tidak berjalan.
+{
+  const a = new El("a", { bisa: true });
+  kirim("pointerdown", { target: a });
+  dataset.gerak = "mati";
+  kirim("pointerup", { target: a });
+  langkah.dimatikan_di_antara = ringkas(a);
+  const b = new El("b", { bisa: true });
+  kirim("pointerdown", { target: b });
+  langkah.dimatikan_tekan_baru = ringkas(b);
+  delete dataset.gerak;
+}
+
+// 6. Elemen SVG. Versi lama TIDAK punya pagar ini (daftar putihnya tidak
+//    pernah memuat elemen SVG); port punya, sebagai lapis kedua.
+{
+  const s = new El("s", { bisa: true, svg: true });
+  kirim("pointerdown", { target: s });
+  kirim("pointerup", { target: s });
+  langkah.svg_lewat_isyarat = ringkas(s);
+  const t = new El("t", { svg: true });
+  modul.tekan(t);
+  modul.lepas(t);
+  langkah.svg_langsung = ringkas(t);
+}
+
+// 7. Pelepas (hanya port): pendengar lepas semua, dan tombol yang sedang
+//    ditekan ikut dilepas.
+if (typeof lepasPasang === "function") {
+  const a = new El("a", { bisa: true });
+  kirim("pointerdown", { target: a });
+  lepasPasang();
+  langkah.pelepas = { pendengar: catatDengar(), a: ringkas(a) };
+}
+
+console.log(JSON.stringify({ langkah }));
+"""
+
+
+class TestIsyaratTekan(unittest.TestCase):
+    """Umpan tekan global: yang DITEKAN yang dilepas, dan SVG tidak disentuh.
+
+    Cacat yang ditutup tes ini terukur di Peta Karier: node `<g role="button"
+    transform="translate(x,y)">` melompat ke titik asal SVG begitu ditekan,
+    karena properti CSS `transform` dari animasi WAAPI menimpa atribut
+    `transform` bawaannya. Node itu lalu tidak lagi berada di bawah kursor,
+    jadi `pointerup` mendarat di elemen LAIN -- dan penangan lama, yang
+    melepas `closest(target)`, tidak pernah menemukan node tadi. Animasinya
+    ber-`fill: "forwards"`, jadi node TERPARKIR di pojok kiri atas
+    selamanya. Klik mouse tidak bisa memilih node sama sekali, dan gejalanya
+    di layar cuma "gumpalan teks bertumpuk di pojok kartu tangga".
+
+    Akar yang sebenarnya lebih dangkal: port cangkang React menulis
+    penangannya sendiri alih-alih membawa `pasangIsyarat()` dari `gerak.js`
+    (daftar putih `BISA_DITEKAN`, dan satu variabel `ditekan` yang dilepas di
+    mana pun jari diangkat). Versi lama TIDAK terkena karena daftar putihnya
+    tidak pernah memuat elemen SVG.
+    """
+
+    AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def _baca(self, *bagian):
+        with open(os.path.join(self.AKAR, *bagian), encoding="utf-8") as f:
+            return f.read()
+
+    def _jalankan_driver(self):
+        js = os.path.join(self.AKAR, "webapp", "statik", "js", "gerak.js")
+        ts = os.path.join(self.AKAR, "packages", "web", "src", "gerak.ts")
+        hasil = {}
+        with tempfile.TemporaryDirectory() as d:
+            driver = os.path.join(d, "uji-isyarat.mjs")
+            with open(driver, "w", encoding="utf-8") as f:
+                f.write(_SKRIP_ISYARAT)
+            for nama, modul in (("js", js), ("ts", ts)):
+                # Pelucut tipe diberikan EKSPLISIT, sama dengan pembanding lain.
+                r = subprocess.run(
+                    ["node", "--experimental-strip-types", driver, modul],
+                    capture_output=True, text=True, timeout=120)
+                self.assertEqual(r.returncode, 0, f"{nama}: {r.stderr[-1200:]}")
+                hasil[nama] = json.loads(r.stdout)["langkah"]
+        return hasil
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node")
+    def test_port_sepadan_dengan_gerak_js_kecuali_svg(self):
+        h = self._jalankan_driver()
+        for nama in ("js", "ts"):
+            self.assertEqual(h[nama]["ekspor"], [],
+                             f"gerak.{nama} kehilangan ekspor yang dipakai driver")
+        # Yang SENGAJA beda: versi lama menganimasikan elemen SVG (itulah
+        # cacatnya), port tidak. `pelepas` cuma ada di port.
+        kecuali = {"svg_lewat_isyarat", "svg_langsung", "pelepas"}
+        kiri = {k: v for k, v in h["js"].items() if k not in kecuali}
+        kanan = {k: v for k, v in h["ts"].items() if k not in kecuali}
+        self.assertEqual(sorted(kiri), sorted(kanan))
+        beda = [k for k in sorted(kiri) if kiri[k] != kanan[k]]
+        self.assertEqual(
+            beda, [],
+            "pasangIsyarat di gerak.ts berperilaku beda dari gerak.js di: "
+            + ", ".join(f"{k} (js={kiri[k]!r}, ts={kanan[k]!r})" for k in beda))
+        # Lantai populasi: driver yang mencetak sedikit membuat adu di atas
+        # hijau tanpa menguji apa pun.
+        self.assertGreaterEqual(len(kiri), 8)
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node")
+    def test_yang_ditekan_dilepas_meski_jari_diangkat_di_tempat_lain(self):
+        """Pemicu cacat Peta Karier. Dicek di port, bukan cuma diadu dengan
+        versi lama: dua-duanya salah dengan cara yang sama akan lolos adu."""
+        h = self._jalankan_driver()["ts"]["lepas_di_elemen_lain"]
+        self.assertEqual(
+            h["a"]["dibatalkan"][0], True,
+            "animasi tekan TIDAK dibatalkan saat pointerup mendarat di elemen "
+            "lain: elemen yang ditekan tertinggal dalam keadaan ditekan "
+            "selamanya (fill forwards)")
+        self.assertEqual(
+            h["lain"]["animate"], 0,
+            "elemen tempat jari diangkat ikut dianimasikan padahal bukan yang "
+            "ditekan")
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node")
+    def test_elemen_svg_tidak_pernah_ditekan(self):
+        h = self._jalankan_driver()["ts"]
+        for kunci in ("svg_lewat_isyarat", "svg_langsung"):
+            self.assertEqual(
+                h[kunci]["animate"], 0,
+                f"{kunci}: elemen SVG dianimasikan. transform CSS menimpa "
+                "atribut transform node, dan node melompat ke titik asal")
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node")
+    def test_pelepas_melepas_pendengar_dan_tombol_yang_masih_ditekan(self):
+        """StrictMode menjalankan efek dua kali; tanpa pelepas yang benar
+        tiap pemasangan menyisakan satu set pendengar dan satu tombol
+        mengecil."""
+        h = self._jalankan_driver()["ts"]["pelepas"]
+        self.assertEqual(
+            sum(h["pendengar"].values()), 0,
+            f"pelepas meninggalkan pendengar: {h['pendengar']}")
+        self.assertEqual(h["a"]["dibatalkan"][0], True,
+                         "tombol yang sedang ditekan tidak ikut dilepas")
+
+    def test_daftar_putih_sama_dengan_gerak_js(self):
+        """`BISA_DITEKAN` cuma boleh satu, walau tinggal di dua berkas."""
+
+        def daftar(teks, nama):
+            m = re.search(r"BISA_DITEKAN =(.*?);\n", teks, re.S)
+            self.assertIsNotNone(m, f"BISA_DITEKAN tidak ketemu di {nama}")
+            blok = re.sub(r"//[^\n]*", "", m.group(1))
+            return " ".join("".join(re.findall(r'"([^"]*)"', blok)).split())
+
+        lama = daftar(self._baca("webapp", "statik", "js", "gerak.js"), "gerak.js")
+        baru = daftar(self._baca("packages", "web", "src", "gerak.ts"), "gerak.ts")
+        self.assertTrue(lama, "daftar putih lama kosong")
+        self.assertEqual(
+            lama, baru,
+            "BISA_DITEKAN di gerak.ts melenceng dari gerak.js. Daftar itu janji "
+            "bahwa yang menjawab sentuhan memang bisa ditekan")
+        # Tidak ada selektor yang menunjuk SVG atau peran umum: itu persis
+        # selektor yang menghasilkan cacat Peta Karier.
+        for umum in ('[role="button"]', "[role=button]", "svg", " g ", "g["):
+            self.assertNotIn(umum, lama, f"daftar putih memuat {umum!r}")
+
+    def test_cangkang_memakai_pasangIsyarat_dan_komponen_tidak_memanggil_tekan(self):
+        cangkang = self._baca("packages", "web", "src", "Cangkang.tsx")
+        self.assertRegex(
+            cangkang, r"useEffect\(\(\) => pasangIsyarat\(\), \[\]\)",
+            "Cangkang tidak memasang pasangIsyarat() dengan pelepasnya. "
+            "Penangan buatan sendiri adalah yang menimbulkan cacat Peta Karier")
+        self.assertNotRegex(
+            cangkang, r'closest\?\.?\(\s*BISA\b',
+            "Cangkang memilih sasaran tekan sendiri, tidak lewat BISA_DITEKAN")
+        # Parit yang sama dengan antarmuka lama: `tekan()` memakai fill
+        # "forwards", jadi siapa pun yang memanggilnya langsung bertanggung
+        # jawab membatalkannya -- dan hanya pasangIsyarat() yang menjamin itu.
+        salah = []
+        akar_src = os.path.join(self.AKAR, "packages", "web", "src")
+        for dirpath, _dirs, berkas in os.walk(akar_src):
+            for nama in sorted(berkas):
+                if not nama.endswith((".ts", ".tsx")) or nama == "gerak.ts":
+                    continue
+                src = self._baca(os.path.relpath(
+                    os.path.join(dirpath, nama), self.AKAR))
+                src = re.sub(r"/\*.*?\*/", "", src, flags=re.S)
+                src = re.sub(r"^\s*//.*$", "", src, flags=re.M)
+                if re.search(r"(?<![\w.])tekan\s*\(", src):
+                    salah.append(nama)
+        self.assertEqual(
+            salah, [],
+            f"{salah} memanggil tekan() langsung; daftarkan selektornya di "
+            "BISA_DITEKAN sebagai gantinya")

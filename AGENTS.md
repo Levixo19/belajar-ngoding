@@ -1568,6 +1568,55 @@ Empat catatan yang mengikat untuk cangkang:
   Di React cangkang digambar LEBIH DULU -- saat efeknya jalan, dasbor masih
   sebuah pusaran setinggi seratus piksel.
 
+**UMPAN TEKAN ADALAH `pasangIsyarat()`, DAN ELEMEN SVG TIDAK PERNAH IKUT**
+(2026-10-26). Dilaporkan pemilik: layar Peta Karier "rusak" -- gumpalan teks
+bertumpuk di pojok kiri atas kartu tangga, dan baris Web serta Mobile nyaris
+kosong. Terukur: node `<g role="button" transform="translate(x,y)">` melompat
+dari (184, 60) ke (-13, -13) begitu ditekan dan TERPARKIR di sana, bahkan pada
+klik biasa. Mekanismenya tiga lapis, dan ketiganya diam:
+
+* Properti CSS `transform` dari animasi WAAPI menimpa atribut `transform`
+  node, jadi `translate`-nya hilang selama ditekan.
+* Node itu lalu tidak lagi berada di bawah kursor, sehingga `pointerup`
+  mendarat di elemen LAIN. Penangan yang melepas `closest(target)` tidak pernah
+  menemukannya, dan animasi `fill: "forwards"`-nya tidak dibatalkan.
+* Akibatnya klik mouse tidak bisa memilih node sama sekali: peristiwa `click`
+  pun tidak sampai ke node.
+
+Akar yang sebenarnya dangkal dan salah saya: port cangkang React TIDAK membawa
+`pasangIsyarat()` dari `gerak.js`, melainkan menulis penangan sendiri
+(`button, a, [role="button"]` + `closest(target)`), lalu komentarnya keliru
+menyebut antarmuka lama "NOL pemanggil" `tekan()`. Pemanggilnya ada, di dalam
+`gerak.js` sendiri, dan tes lamanya malah melarang komponen memanggil `tekan()`
+langsung. Aturan yang mengikat sekarang:
+
+* **Umpan tekan hanya lewat `pasangIsyarat()`** (gerak.ts), dengan daftar putih
+  `BISA_DITEKAN` -- janji bahwa yang menjawab sentuhan memang bisa ditekan,
+  bukan selektor umum. Daftarnya diadu dengan `gerak.js` oleh tes, dan tidak
+  boleh memuat `[role="button"]`, `svg`, atau `g`.
+* **Yang dilepas adalah elemen yang DITEKAN**, dilacak di satu variabel, di
+  mana pun jari diangkat. Bukan `closest(target)` saat `pointerup`.
+* **`tekan()`/`lepas()` melewati elemen SVG** (lapis kedua, untuk kelas yang
+  ditambahkan belakangan). Dicek lewat `namespaceURI`, bukan `instanceof
+  SVGElement`: berkas ini diimpor juga oleh pembanding Node.
+* **Pelepasnya melepas tombol yang SEDANG ditekan juga.** StrictMode menjalankan
+  efek dua kali; tanpa itu tiap pemasangan menyisakan satu tombol mengecil.
+
+`TestIsyaratTekan` (6 tes) menjalankan satu driver Node atas `gerak.js` DAN
+`gerak.ts` lalu mengadu langkah demi langkah, dengan dua pengecualian yang
+disengaja: versi lama menganimasikan elemen SVG (itu cacatnya), dan pelepas cuma
+ada di port. Cacat utamanya juga dicek LANGSUNG di port, bukan hanya diadu:
+dua versi yang salah dengan cara yang sama lolos adu. Baterai sepuluh sel
+membuktikan tiap pagar bisa merah dengan alasan yang tepat; satu sel sempat
+salah-kunci karena yang kena duluan jalur isyarat, bukan jalur langsung.
+
+Pelajaran yang bisa dipakai ulang: **port yang "setia" ke fungsi tapi mengarang
+pemanggilnya tidak setia.** `tekan` dan `lepas` disalin byte demi byte, dan
+justru `pasangIsyarat` -- satu-satunya yang memutuskan SIAPA yang ditekan dan
+KAPAN dilepas -- yang dilewati karena terikat DOM dan tidak ada pembandingnya.
+Sebelum menulis penangan pengganti untuk sebuah mekanisme global, baca seluruh
+berkas aslinya untuk pemanggil di dalamnya, bukan cuma daftar ekspornya.
+
 ## Tahap 1,5 -- Express + MongoDB (2026-10-26)
 
 `packages/catatan`: layanan pencarian catatan. **TAMBAHAN, bukan pengganti** --
