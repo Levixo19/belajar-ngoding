@@ -195,6 +195,151 @@ ATURAN = {
             readarray true false
         """),
     ),
+    # Delapan bahasa di bawah lahir bersama 12 kurikulum tech stack dan
+    # selama ini tampil TANPA warna sama sekali (94 blok). Kata kuncinya
+    # DITURUNKAN dari kata yang benar-benar muncul di bloknya, bukan dari
+    # daftar reserved word yang lengkap tapi tidak relevan -- itu sebabnya
+    # `bawaan` Groovy berisi DSL Jenkins, dan `data.frame` (R) serta
+    # `@import` (Zig) TIDAK didaftarkan: keduanya memuat karakter di luar
+    # pola kata, jadi entrinya tidak akan pernah cocok.
+    "swift": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        kutip=('"""', '"'),
+        kunci=_kata("""
+            actor as associatedtype async await break case catch class
+            continue convenience default defer deinit do else enum extension
+            fallthrough false fileprivate final for func guard if import in
+            indirect init inout internal is lazy let mutating nil open
+            operator override private protocol public repeat required rethrows
+            return self Self some static struct subscript super switch throw
+            throws true try typealias unowned var weak where while
+        """),
+        tipe=_kata("""
+            Any AnyObject Array Bool Character Data Date Dictionary Double
+            Error Float Int Int8 Int16 Int32 Int64 Never Optional Result Set
+            String Text UInt URL View Void
+        """),
+        bawaan=_kata("""
+            append compactMap count filter first insert isEmpty last map
+            print reduce removeAll sorted
+        """),
+    ),
+    "dart": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        kutip=("'''", '"""', '"', "'"),
+        kunci=_kata("""
+            abstract as assert async await break case catch class const
+            continue covariant default deferred do dynamic else enum export
+            extends extension external factory false final finally for get
+            hide if implements import in interface is late library mixin new
+            null on operator part required rethrow return set show static
+            super switch sync this throw true try typedef var void while with
+            yield
+        """),
+        tipe=_kata("""
+            bool double Future int Iterable List Map num Object Set
+            StatefulWidget StatelessWidget Stream String Text Widget
+        """),
+        bawaan=_kata("add forEach isEmpty length map print then toList where"),
+    ),
+    "lua": Aturan(
+        komentar_baris=("--",), komentar_blok=(("--[[", "]]"),),
+        kunci=_kata("""
+            and break do else elseif end false for function goto if in local
+            nil not or repeat return then true until while
+        """),
+        bawaan=_kata("""
+            error getmetatable io ipairs math next os pairs pcall print
+            rawget rawset require select setmetatable string table tonumber
+            tostring type unpack
+        """),
+    ),
+    "r": Aturan(
+        komentar_baris=("#",),
+        kunci=_kata("""
+            break else FALSE for function if in Inf NA NaN next NULL repeat
+            TRUE while
+        """),
+        tipe=_kata("""
+            array character complex double factor integer list logical matrix
+            numeric vector
+        """),
+        bawaan=_kata("""
+            apply c cat colnames head lapply length library max mean min
+            names ncol nrow order paste paste0 print rep require rownames
+            round sapply seq sort str sum summary tail which
+        """),
+    ),
+    "elixir": Aturan(
+        komentar_baris=("#",),
+        kutip=('"""', '"'),
+        kunci=_kata("""
+            after alias and case catch cond def defimpl defmacro defmodule
+            defp defprotocol defstruct do else end false fn for if import in
+            nil not or quote raise receive require rescue true try unless
+            unquote use when with
+        """),
+        bawaan=_kata("""
+            Agent apply Enum GenServer inspect IO Kernel List Map Process
+            puts self send spawn String Task
+        """),
+    ),
+    "haskell": Aturan(
+        komentar_baris=("--",), komentar_blok=(("{-", "-}"),),
+        kunci=_kata("""
+            case class data default deriving do else foreign if import in
+            infix infixl infixr instance let module newtype of then type
+            where
+        """),
+        tipe=_kata("""
+            Bool Char Double Either Float Int Integer IO Maybe Ordering
+            String Word
+        """),
+        bawaan=_kata("""
+            concat drop filter fmap foldl foldr getLine head Just Left length
+            map mapM_ Nothing otherwise print product pure putStr putStrLn
+            read return reverse Right show sum tail take zip
+        """),
+    ),
+    "zig": Aturan(
+        komentar_baris=("//",),
+        kutip=('"',),
+        kunci=_kata("""
+            align and anytype asm async await break callconv catch comptime
+            const continue defer else enum errdefer error export extern fn
+            for if inline noalias nosuspend null opaque or orelse packed pub
+            resume return struct suspend switch test threadlocal try union
+            undefined unreachable usingnamespace var volatile while
+        """),
+        tipe=_kata("""
+            anyerror bool c_int comptime_float comptime_int f16 f32 f64 f128
+            i8 i16 i32 i64 i128 isize noreturn type u8 u16 u32 u64 u128 usize
+            void
+        """),
+        bawaan=_kata("alloc append debug deinit free init len print std"),
+    ),
+    # Kelima blok "groovy" di kurikulum ini sebenarnya Jenkinsfile, jadi
+    # DSL-nya ikut jadi bawaan -- tanpa itu yang tersorot cuma `def` dan
+    # tanda kutipnya. Kutip tiga didaftarkan walau korpusnya belum memakainya:
+    # ia STRUKTURAL, dan salah menebaknya membuat `sh '''...'''` terbaca
+    # sebagai string kosong lalu string yang tidak pernah ditutup.
+    "groovy": Aturan(
+        komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+        kutip=("'''", '"""', '"', "'"),
+        kunci=_kata("""
+            as assert break case catch class const continue def default do
+            else enum extends false final finally for goto if implements
+            import in instanceof interface new null package return super
+            switch this throw throws trait true try var while
+        """),
+        tipe=_kata("Boolean Integer List Map Object String"),
+        bawaan=_kata("""
+            agent always any archiveArtifacts bat checkout docker echo
+            environment failure input junit label node none options parallel
+            parameters pipeline post script sh stage stages steps success
+            tools triggers when withCredentials
+        """),
+    ),
     "go": Aturan(
         komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
         kutip=('"', "'", "`"),

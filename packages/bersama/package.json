@@ -10,7 +10,7 @@
     "./galat": "./src/galat.ts"
   },
   "scripts": {
-    "golden": "node uji/golden-sorot.ts && node uji/golden-beda.ts && node uji/golden-galat.ts",
+    "golden": "export NODE_OPTIONS=--experimental-strip-types && node uji/golden-sorot.ts && node uji/golden-beda.ts && node uji/golden-galat.ts",
     "gigi": "python3 uji/gigi-golden.py",
     "tipe": "tsc --noEmit"
   }

@@ -19,6 +19,7 @@ Tiga hal yang dijaga, masing-masing karena pernah bisa lolos:
 """
 
 import hashlib
+import glob
 import json
 import os
 import unittest
@@ -293,15 +294,33 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
         di_npm = set(re.findall(r"banding-[a-z]+\.mjs", skrip))
         self.assertEqual(sorted(ada - di_npm), [],
                          "pembanding tidak ada di skrip npm `banding`")
-        # Dan skrip itu harus benar-benar BISA DIJALANKAN. Versi pertamanya
-        # memanggil `node uji/banding-*.mjs` telanjang, dan karena tiap
-        # pembanding mengimpor `.ts`, kedua belasnya mati dengan
+        # Dan skripnya harus benar-benar BISA DIJALANKAN. Versi pertama
+        # `banding` memanggil `node uji/banding-*.mjs` telanjang, dan karena
+        # tiap pembanding mengimpor `.ts`, kedua belasnya mati dengan
         # ERR_UNKNOWN_FILE_EXTENSION di Node < 23.6 -- termasuk node 22.11 di
         # PATH mesin ini. Daftar yang lengkap tapi tidak bisa dijalankan
         # adalah daftar yang tidak pernah dijalankan siapa pun.
-        self.assertIn("--experimental-strip-types", skrip,
-                      "skrip npm `banding` memanggil node tanpa pelucut "
-                      "tipe -- seluruh pembandingnya mengimpor `.ts`")
+        #
+        # Diperiksa untuk SELURUH paket, bukan cuma `web`: cacat yang sama
+        # ternyata juga ada di skrip `golden` milik `packages/bersama`, satu
+        # paket di sebelahnya, dan ia luput justru karena pagar pertama
+        # menyebut satu skrip dengan namanya. Yang menular bukan skripnya
+        # melainkan kebiasaan memanggil `node` begitu saja.
+        tanpa_flag = []
+        for pkg in sorted(glob.glob(os.path.join(AKAR, "packages", "*",
+                                                 "package.json"))):
+            with open(pkg, encoding="utf-8") as f:
+                skrip_pkg = json.load(f).get("scripts") or {}
+            paket = os.path.basename(os.path.dirname(pkg))
+            for nama, perintah in skrip_pkg.items():
+                if not re.search(r"\bnode\s+\S+\.(ts|mjs)", perintah):
+                    continue
+                if "--experimental-strip-types" not in perintah:
+                    tanpa_flag.append(f"{paket}:{nama}")
+        self.assertEqual(tanpa_flag, [],
+                         "skrip npm memanggil node tanpa pelucut tipe -- "
+                         "yang dijalankannya mengimpor `.ts`, jadi ia mati "
+                         "dengan ERR_UNKNOWN_FILE_EXTENSION di Node < 23.6")
 
         # Tabel baterainya DIIMPOR, tidak di-grep. Versi pertama memakai
         # `re.findall` atas teks berkasnya, dan mutan yang membuktikannya

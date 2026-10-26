@@ -7,24 +7,32 @@
   "cpp",
   "csharp",
   "css",
+  "dart",
+  "elixir",
   "fedora",
   "git",
   "go",
+  "groovy",
+  "haskell",
   "html",
   "java",
   "javascript",
   "kotlin",
+  "lua",
   "php",
   "python",
+  "r",
   "ruby",
   "rust",
   "sql",
+  "swift",
   "typescript",
-  "vb"
+  "vb",
+  "zig"
  ],
  "cakupan": {
-  "tersorot": 2894,
-  "polos": 421,
+  "tersorot": 2988,
+  "polos": 327,
   "bahasa_polos": {
    "abap": 2,
    "ada": 1,
@@ -38,8 +46,6 @@
    "cobol": 3,
    "coffeescript": 1,
    "cypher": 1,
-   "dart": 17,
-   "elixir": 8,
    "elm": 2,
    "erlang": 2,
    "forth": 1,
@@ -48,8 +54,6 @@
    "fsharp": 3,
    "gleam": 1,
    "graphql": 2,
-   "groovy": 5,
-   "haskell": 8,
    "haxe": 1,
    "hcl": 8,
    "http": 13,
@@ -58,7 +62,6 @@
    "julia": 2,
    "lean": 1,
    "lisp": 2,
-   "lua": 13,
    "luau": 2,
    "markdown": 3,
    "matlab": 4,
@@ -78,7 +81,6 @@
    "protobuf": 2,
    "purescript": 1,
    "q": 1,
-   "r": 13,
    "racket": 1,
    "raku": 1,
    "redis": 8,
@@ -92,7 +94,6 @@
    "smalltalk": 1,
    "solidity": 3,
    "st": 1,
-   "swift": 24,
    "tcl": 1,
    "teks": 118,
    "toml": 2,
@@ -101,8 +102,7 @@
    "vhdl": 1,
    "wat": 1,
    "wolfram": 1,
-   "yaml": 59,
-   "zig": 6
+   "yaml": 59
   }
  },
  "kasus": [
@@ -7734,7 +7734,7 @@
   {
    "nama": "techstack/materi/14. Stack HTML over the Wire: Hotwire, PETAL, GOTH, BETH/7",
    "bahasa": "elixir",
-   "sha256": "b61c57be6b00bfc2998e13eb4da16fd34595b97c82262ff28d4b94e571a176a7"
+   "sha256": "25683341b6c583e90fcbc29f0d26ac6c12d376c24aaee041b3e67e2a52897e64"
   },
   {
    "nama": "techstack/materi/14. Stack HTML over the Wire: Hotwire, PETAL, GOTH, BETH/9",
@@ -10069,7 +10069,7 @@
   {
    "nama": "database/materi/2. Database Tertanam: di Aplikasi, di Ponsel, dan di Browser/8",
    "bahasa": "swift",
-   "sha256": "a7dfb383aa373495032caa31da3c95864b4db9a00a04b7e61e2a57fabd581517"
+   "sha256": "167c2eb7dd7921217d7ae2e0fd8538860a4befa45330dc3318c9c0ad99d0d688"
   },
   {
    "nama": "database/materi/2. Database Tertanam: di Aplikasi, di Ponsel, dan di Browser/10",
@@ -11044,17 +11044,17 @@
   {
    "nama": "mobile/materi/17. Swift Sekilas untuk Pelajar Kotlin/1",
    "bahasa": "swift",
-   "sha256": "81fde2cd7bcd009df9dbc42168a1fcb380a464c9a39b28a7afe7d3382e4e5e71"
+   "sha256": "73e1bbeec6bc2bd44b7580ba0a45f728280948ee364c2a9054091cd17058ad37"
   },
   {
    "nama": "mobile/materi/17. Swift Sekilas untuk Pelajar Kotlin/3",
    "bahasa": "swift",
-   "sha256": "bd27d767ebc77ef6f5e6224d80ac2eb0b1e8ef0b7c2fac42fc653f10aaebb528"
+   "sha256": "ef8ae12d26f2d772b950034764c1e4212bed827db922244e97991c6be7475e39"
   },
   {
    "nama": "mobile/materi/17. Swift Sekilas untuk Pelajar Kotlin/5",
    "bahasa": "swift",
-   "sha256": "e0b6ae4f8f8b7764bb345fba89432b4a41facf768e40f281bb0b77b7c06da076"
+   "sha256": "90afa35c0d56a39b941b7a5f3d8eba464962af2ca0a0a7d352db99ced5b7c126"
   },
   {
    "nama": "mobile/materi/17. Swift Sekilas untuk Pelajar Kotlin/6",
@@ -11069,17 +11069,17 @@
   {
    "nama": "mobile/materi/18. SwiftUI dan UIKit: Dua Cara Membangun Layar iOS/1",
    "bahasa": "swift",
-   "sha256": "6748baca4a9dea9bfdd31a081e37d9c531ac05c3221f89caad19a6225301664e"
+   "sha256": "93c5a6e2c2c832d83cdaf84b1d8bbcf21c55e8f75248c0a29d08ec184f2a9cb7"
   },
   {
    "nama": "mobile/materi/18. SwiftUI dan UIKit: Dua Cara Membangun Layar iOS/3",
    "bahasa": "swift",
-   "sha256": "65963c952ed8e9f272707fc7727e3c4abc35a0f6949394c0346611c420a8ef58"
+   "sha256": "71d358e2b5388a3f9b41f66db4f985b079ce14f8aa3e34dce4e1e56c531849f7"
   },
   {
    "nama": "mobile/materi/19. Xcode, Simulator, dan Pengelola Paket Swift/2",
    "bahasa": "swift",
-   "sha256": "010856cb10de5804e36bc1abe1d378b22549ff42609dbe6a1c201dea61cb4f10"
+   "sha256": "353a3f2abc44c044d6db53cc1a55c244d6cb81420be877a6145155d89106cf60"
   },
   {
    "nama": "mobile/materi/19. Xcode, Simulator, dan Pengelola Paket Swift/4",
@@ -11094,17 +11094,17 @@
   {
    "nama": "mobile/materi/20. Peta Framework Apple/1",
    "bahasa": "swift",
-   "sha256": "9e83b4a341fc23f111985f9f8aab6d0f599c9dd4774f2827eb54f8ab97c7b6e0"
+   "sha256": "236edff9386fb509a63b6dca1b892e8f80d16b9f82741f683050957c7fb67c4c"
   },
   {
    "nama": "mobile/materi/20. Peta Framework Apple/3",
    "bahasa": "swift",
-   "sha256": "d7644c30d7ec4985d028896b252955d71d6c5fdc6e63d97a00c53237e945f7ec"
+   "sha256": "fa4b3bae859ccbdc9c12f7dbdea1cf1387edf7f955ed2e2557aa3d1bab43d0fb"
   },
   {
    "nama": "mobile/materi/20. Peta Framework Apple/5",
    "bahasa": "swift",
-   "sha256": "be35697ac163d5180dc414fd7393eb79693f81424c957d0bec1269c02fcda694"
+   "sha256": "5f7405456c6d18db81c9653268025b32aa43befb8b4f2d91c755e49d45283a04"
   },
   {
    "nama": "mobile/materi/20. Peta Framework Apple/7",
@@ -11114,7 +11114,7 @@
   {
    "nama": "mobile/materi/21. Dart untuk Pemrogram JavaScript/1",
    "bahasa": "dart",
-   "sha256": "0e4c7c14707a65dd624177c96f928de0a0a0ac53f01d1b2237171c32ba8ef020"
+   "sha256": "fb8359ca03ca9a671b68540276a625de3c0151a56404354c5012a2bdcefb9578"
   },
   {
    "nama": "mobile/materi/21. Dart untuk Pemrogram JavaScript/2",
@@ -11124,12 +11124,12 @@
   {
    "nama": "mobile/materi/21. Dart untuk Pemrogram JavaScript/4",
    "bahasa": "dart",
-   "sha256": "bcd6272e6509b6e098e253e16ad44f71e000ad34938df35eeb011496d7651a84"
+   "sha256": "c90b0956ea148d8d1f576d242029f1868d7698e74ceaa63164eb58c6bb7fffb6"
   },
   {
    "nama": "mobile/materi/21. Dart untuk Pemrogram JavaScript/6",
    "bahasa": "dart",
-   "sha256": "46524e180e3f83772fc889493dd461fe4e8b86344a04cdfdc8b6c05ccd265023"
+   "sha256": "e6e9c7f6e8e7728d323db5e20e32805eb9c4e566fc39118b492918d5b5edae50"
   },
   {
    "nama": "mobile/materi/21. Dart untuk Pemrogram JavaScript/7",
@@ -11139,17 +11139,17 @@
   {
    "nama": "mobile/materi/21. Dart untuk Pemrogram JavaScript/9",
    "bahasa": "dart",
-   "sha256": "dd9a5a4eb43d302d3330fc218036b19fe5260c8fccab20f1e9bc62cedbb37e5a"
+   "sha256": "bb3d4761cd0b18b664d6356fd4d2745c1096848df9b8c892602852dc71ecbf3e"
   },
   {
    "nama": "mobile/materi/22. Widget, Element, dan Cara Flutter Menggambar/1",
    "bahasa": "dart",
-   "sha256": "667a4cdd9561fb8813ab7b91e2e6d689a89eee12d2d72f5bebb27781f44b5070"
+   "sha256": "59f6f34904a0ea334b6b9620693d9604b3f7ef12a75539be723897fa141ba783"
   },
   {
    "nama": "mobile/materi/22. Widget, Element, dan Cara Flutter Menggambar/4",
    "bahasa": "dart",
-   "sha256": "86cf657eca9987df5eb8bb0dd0fb6742e11a6eba68dbebe8e4a61f565440ca7d"
+   "sha256": "8c7c126416f7936a2804dcdb3ea5191bb94e693e1b95f4fbaeb17a0f87b14e9c"
   },
   {
    "nama": "mobile/materi/22. Widget, Element, dan Cara Flutter Menggambar/7",
@@ -11159,12 +11159,12 @@
   {
    "nama": "mobile/materi/23. State Management Flutter: setState, Riverpod, dan Bloc/1",
    "bahasa": "dart",
-   "sha256": "60b64435a65ca2090b6c6fd4bc49982d3302a5ef9de00ccab80e4a961e059816"
+   "sha256": "225fc63edb505988967aba2f93826834953d7277d1157def319930266c5ef8b9"
   },
   {
    "nama": "mobile/materi/23. State Management Flutter: setState, Riverpod, dan Bloc/3",
    "bahasa": "dart",
-   "sha256": "342c60ef5555fa7427e37d2f85248720859b6a5d9128a23c3c0ea4739848275b"
+   "sha256": "d5ceea888908a67e2af0caf0bc1e23415ff06d605ec01a1ad2558414928c21f8"
   },
   {
    "nama": "mobile/materi/24. React Native: Komponen Native dari JavaScript/1",
@@ -11344,7 +11344,7 @@
   {
    "nama": "mobile/materi/34. Menguji Aplikasi Mobile: Unit, UI, dan Instrumentasi/10",
    "bahasa": "swift",
-   "sha256": "7e54a233a924fb1e8dad265301d3c2d99a91beb66c30d11408a3cb9e5a96d272"
+   "sha256": "263e02a9fc82dcfe919b168965e6bc0809f890173a31d067204b3b5252293ac3"
   },
   {
    "nama": "mobile/materi/35. Firebase untuk Aplikasi Mobile/1",
@@ -11739,7 +11739,7 @@
   {
    "nama": "game/materi/18. Peta Engine dan Framework Game/2",
    "bahasa": "lua",
-   "sha256": "2ce135feb6c9e40a083f319d906e04550ed1e1b37e63480b2494761a5d3e4dde"
+   "sha256": "aaaae90268958bfc5fcafbe706d5af43a6752c953ea53563c38ab967d359af6d"
   },
   {
    "nama": "game/materi/18. Peta Engine dan Framework Game/3",
@@ -11864,7 +11864,7 @@
   {
    "nama": "game/materi/28. ARCore, ARKit, dan RealityKit/4",
    "bahasa": "swift",
-   "sha256": "83672e042cb3d6a731b50ec4ca82d517a38dcb6235dba927c782fac7ed32c6e5"
+   "sha256": "907bd6be343ad0d61093118ee34f000cc012e00d990db19b4cfb336bc0d99aee"
   },
   {
    "nama": "game/materi/28. ARCore, ARKit, dan RealityKit/7",
@@ -11884,7 +11884,7 @@
   {
    "nama": "game/materi/30. visionOS dan WebXR/2",
    "bahasa": "swift",
-   "sha256": "2172da6ea381799b5a55875c429cf91a1ccbda62029e338716bb3899be641971"
+   "sha256": "d9414a05a62fc01a1374ec1b945e297594bf093c4d347a9badf3adcc14840dbb"
   },
   {
    "nama": "game/materi/30. visionOS dan WebXR/5",
@@ -12679,7 +12679,7 @@
   {
    "nama": "devops/materi/19. GitLab CI dan Jenkins/3",
    "bahasa": "groovy",
-   "sha256": "1582ae525cb8a393f008dcaf1dadaaf0cb18bdb3ca1a1fa9591418ef57c21893"
+   "sha256": "6f774be7e9383dd812936216db5bb3c7a59b7c8e89466ec521edef85c4321fab"
   },
   {
    "nama": "devops/materi/20. Peta CI/CD Lain dan Repositori Artefak/1",
@@ -14049,17 +14049,17 @@
   {
    "nama": "data/materi/24. R untuk Pengguna Python/2",
    "bahasa": "r",
-   "sha256": "3edf2a0ce52b7f6fffa1354efd32098753997b865ed50377d4e0b4782a6568d0"
+   "sha256": "a414d6fc0dc2323742b5f09ad2de0a8989eb5834ab0cb249d3c88ace87378b42"
   },
   {
    "nama": "data/materi/24. R untuk Pengguna Python/4",
    "bahasa": "r",
-   "sha256": "d03d92de47b43ea827a96cdd8b4664c61405a3a5817ab630a2e02906db4bacf6"
+   "sha256": "e70619881f69253999af640e80e69c4a4a1e370a219f6f9480db0067c4e81331"
   },
   {
    "nama": "data/materi/25. Tidyverse: dplyr dan ggplot2/2",
    "bahasa": "r",
-   "sha256": "7e910d878d5526664ba3ed35e7c4ed70266c75abf547729b2fe8087aa932d2dd"
+   "sha256": "bd77697c57774cff88c900e40822f84891f6d5f29abf9f3478e45006b15825da"
   },
   {
    "nama": "data/materi/25. Tidyverse: dplyr dan ggplot2/4",
@@ -14069,12 +14069,12 @@
   {
    "nama": "data/materi/25. Tidyverse: dplyr dan ggplot2/6",
    "bahasa": "r",
-   "sha256": "fdd053908fc0ca2dcdc9b471985048396cf09a4d90b2796d501f487ede5ca2fc"
+   "sha256": "4d864c3acd2f28afc95cc3b68653360e83ee23ecb1650aaa6e39890a104ff2b7"
   },
   {
    "nama": "data/materi/26. Peta Ekosistem R: Shiny, Quarto, tidymodels/1",
    "bahasa": "r",
-   "sha256": "12bb6d370c24608ce7de587233816c27957bcc3651b27ef3270981cf6fe6e2b4"
+   "sha256": "78098232079c3a897b1503604256aa6042a8f8acd6f0cc240afec3c0870a7996"
   },
   {
    "nama": "data/materi/26. Peta Ekosistem R: Shiny, Quarto, tidymodels/2",
@@ -14089,12 +14089,12 @@
   {
    "nama": "data/materi/26. Peta Ekosistem R: Shiny, Quarto, tidymodels/4",
    "bahasa": "r",
-   "sha256": "a2905d9614d87b12b7b0ce3284b2a89d776b118c097f3d9c9af3a1468a3cdf9f"
+   "sha256": "2a838a81360afad0334eb2f08c488ec4dd5a1fd611ecb3c31941d93b8f708d31"
   },
   {
    "nama": "data/materi/26. Peta Ekosistem R: Shiny, Quarto, tidymodels/5",
    "bahasa": "r",
-   "sha256": "be5d58e73f355412523257483cfddc08ba0a1875e857aaef8f1e684f761128fc"
+   "sha256": "59b23c99160e85be513b12d3a7dd4be24aa91768e758f264a2d7b0c0e6499b3b"
   },
   {
    "nama": "data/materi/27. Peta Alat Statistik Lain: Julia, MATLAB, SAS, SPSS/1",
@@ -15364,7 +15364,7 @@
   {
    "nama": "bahasalain/materi/2. Sistem Tipe: Statis, Dinamis, Kuat, dan Bertahap/7",
    "bahasa": "swift",
-   "sha256": "b39b390a2fdb164b52e461521377aa1bd786e039f47d59e40fb483a8b070ce8d"
+   "sha256": "24f7be112be6ba6709d25691ecd7d2d745f28cada7f6806be9363e1fe18c6ea2"
   },
   {
    "nama": "bahasalain/materi/2. Sistem Tipe: Statis, Dinamis, Kuat, dan Bertahap/9",
@@ -15389,7 +15389,7 @@
   {
    "nama": "bahasalain/materi/3. Model Memori dan Mesin yang Menjalankan Kode/6",
    "bahasa": "swift",
-   "sha256": "8d64da467ae180800b7d670ad02f2291ee073d79b3dca78f43edba1a28e2b122"
+   "sha256": "edf0022fdb1d69caa8b69d9fd007295c16ed3cb18344de8f7494aca1ced71f7a"
   },
   {
    "nama": "bahasalain/materi/3. Model Memori dan Mesin yang Menjalankan Kode/8",
@@ -15419,7 +15419,7 @@
   {
    "nama": "bahasalain/materi/4. Belajar Bahasa ke-N dengan Cepat/6",
    "bahasa": "lua",
-   "sha256": "dbb9f1b26fbecf168c70c4ea656fdb31d9aaf10c488a6775c1feebbb17102eb1"
+   "sha256": "6729924abf19f9770b93f35ba1ba7d30a538989cdc3736120b88b45b3b07b042"
   },
   {
    "nama": "bahasalain/materi/4. Belajar Bahasa ke-N dengan Cepat/8",
@@ -15544,7 +15544,7 @@
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/1",
    "bahasa": "lua",
-   "sha256": "47a5551ce339c6fbcbb5633e55ea3f965c8afe555b0027fa927f1ea7ac7b6c85"
+   "sha256": "467828b1ad11ba941be4bc23b73ea56808463d632c6a0a470b21ac639a6ddcee"
   },
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/2",
@@ -15554,27 +15554,27 @@
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/4",
    "bahasa": "lua",
-   "sha256": "263e929b2bf870868da0d090672d072627438b077073623d4bfb298e759bc2e5"
+   "sha256": "aa7970a0ae1d245ab73b8567a22e2113b496cb6a9fe8b676b7a95ac55f88b272"
   },
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/6",
    "bahasa": "lua",
-   "sha256": "e98e4a7e2969fda761572429917b55e0c61419e2bd9f2f69139a38eaeca5e122"
+   "sha256": "1300444987fd272736f4bf8df61c5bc5e7731cc30c08324a0cb87d6fb93b45f1"
   },
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/8",
    "bahasa": "lua",
-   "sha256": "be6a72a2f985f7e749f2b860e691f3bc4f109f47ce30ecab6771cf4d535e0684"
+   "sha256": "7cb318d2db062e8ba5735fd4a0b81a3545aafb62e42ffe0214bb2d8da608b446"
   },
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/10",
    "bahasa": "lua",
-   "sha256": "141162ec20e116298d987ff5fbcf5d2380a7e00b5050d309404effb355a845be"
+   "sha256": "cf5a7cb099db5e5864a61b4ff83ebf8b4a8f96f3abf72d87ac613827cc1ed862"
   },
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/12",
    "bahasa": "lua",
-   "sha256": "3414bd9f63e1265b530d6c65cef8b71ed47a42d99f98eebfd28d928295c30ef7"
+   "sha256": "73fef3cc5ee67de05a2644820f96fe0c55134d62df8c4cdfa834a79a40a8af00"
   },
   {
    "nama": "bahasalain/materi/9. Lua: Table, Fungsi, dan Indeks dari Satu/14",
@@ -15589,22 +15589,22 @@
   {
    "nama": "bahasalain/materi/10. Lua Lanjut: Metatable, Closure, dan Coroutine/1",
    "bahasa": "lua",
-   "sha256": "ebcf749888d9a3bed91723648060e758fcf2c8338da9806ac6f7f11e4006da78"
+   "sha256": "ad1247451fa38e801de584a1bbe66f672c7b08b443b14ea145af6d6900162bb0"
   },
   {
    "nama": "bahasalain/materi/10. Lua Lanjut: Metatable, Closure, dan Coroutine/3",
    "bahasa": "lua",
-   "sha256": "8e18509eed53d9fa6637772306cba977e978555eb7e59eb5e0bc3443c0384a24"
+   "sha256": "58da4029d1587353b997e0e6ac32ead7f828a39da7fa641adb1c3b099568a475"
   },
   {
    "nama": "bahasalain/materi/10. Lua Lanjut: Metatable, Closure, dan Coroutine/5",
    "bahasa": "lua",
-   "sha256": "6cef8bf8ebec0073572b6820497319c3d8aecec8cf9fbe8ccfc33d1ad2fbd8b1"
+   "sha256": "b2c208f3a522a6468c0b1dcf31da52396255f4b468ce100b17b1b534f8faec0e"
   },
   {
    "nama": "bahasalain/materi/10. Lua Lanjut: Metatable, Closure, dan Coroutine/7",
    "bahasa": "lua",
-   "sha256": "7aff40c61f6a34b0bd683cd143304fb30fa73ee2334ab1998ed05c7d76a80429"
+   "sha256": "5ca6a17988bbb739835e1b6800c61a8178ed026fb2e36ca9cf888f1e1f1a0976"
   },
   {
    "nama": "bahasalain/materi/10. Lua Lanjut: Metatable, Closure, dan Coroutine/9",
@@ -15614,7 +15614,7 @@
   {
    "nama": "bahasalain/materi/10. Lua Lanjut: Metatable, Closure, dan Coroutine/11",
    "bahasa": "lua",
-   "sha256": "3802c8f936bb98990414411b7b0298a0d7bbcd68f0d641e0d6a45c1c54d7a35d"
+   "sha256": "5015880698a3c5c4d4d1607d4748fe61250c6e3528009eccbdc9f048338c0c6c"
   },
   {
    "nama": "bahasalain/materi/11. GDScript: Node, Signal, dan Game Loop di Godot/2",
@@ -15664,12 +15664,12 @@
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/1",
    "bahasa": "swift",
-   "sha256": "c800a4db146f4b0108621aedc88c58418b79512da02d571c37c8acbf1200c5ab"
+   "sha256": "25d39a00494fb66f2b6fc92cc4dc02436d6c074fe461df2338fc4de0db277a9a"
   },
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/3",
    "bahasa": "swift",
-   "sha256": "996c2fab7ebcbce16fa581b4af885c87728357277da54e274a1e6d0a3231ebdc"
+   "sha256": "6a9e8726d6bb679d19a154ec178050b5766a2de6a687c26bf6e4f7524c31fdcc"
   },
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/5",
@@ -15679,7 +15679,7 @@
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/7",
    "bahasa": "swift",
-   "sha256": "4d580327c2607c7373694cc89c5ff7f7f5118b9cae874ee6643a20fca4f10550"
+   "sha256": "fa0c04a443fbe32dc615ffd7566d182ae826d61806f3f7bd84291b75a2ca31a4"
   },
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/9",
@@ -15689,12 +15689,12 @@
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/11",
    "bahasa": "swift",
-   "sha256": "37402312513124670423c710e4908a8dacdbdb7cdd297e2b3dcb6596e58d14f7"
+   "sha256": "d89e5268a50282d71db4bd85e18bc1d2b57aff1a83a04a6600c8bf5d7ade3722"
   },
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/13",
    "bahasa": "swift",
-   "sha256": "d6d5c1d004f82cef172f2753cdcdfe6778402ab2bc7a0e459c8031e3a33c8d41"
+   "sha256": "6576a4c70651c77a0c7f3a87852ac9b56902e917fa753afb2475474934f5226b"
   },
   {
    "nama": "bahasalain/materi/13. Swift: Optional, Struct, dan Protokol/15",
@@ -15704,22 +15704,22 @@
   {
    "nama": "bahasalain/materi/14. Swift Lanjut: Konkurensi dan Warisan Objective-C/1",
    "bahasa": "swift",
-   "sha256": "ec9d484edac25b4e90b1d7eb03538f79579d8b0e084e28e3989188ec55737bed"
+   "sha256": "e4f57877652e2ff46c67bff2ac2c4736005b83bb4762ab56b6bbf6ef2155a421"
   },
   {
    "nama": "bahasalain/materi/14. Swift Lanjut: Konkurensi dan Warisan Objective-C/3",
    "bahasa": "swift",
-   "sha256": "a448287e787a5663d6602b2a48dfadc0f2f51a9bd8d1a546a8bb18f7f6d75b01"
+   "sha256": "139fe6a2c2b36e70098f1f8b4355bb4299e2cde568af51bd6f74fe6e233562f9"
   },
   {
    "nama": "bahasalain/materi/14. Swift Lanjut: Konkurensi dan Warisan Objective-C/5",
    "bahasa": "swift",
-   "sha256": "afbe9dc9adb239fa8ca508d44234dffdaa489d4bea9654dcab6ea3b7c1508997"
+   "sha256": "332a81580ea1d208bf0fd6b2989d999a0fd380cee22ea0db04305b7442bb471f"
   },
   {
    "nama": "bahasalain/materi/14. Swift Lanjut: Konkurensi dan Warisan Objective-C/7",
    "bahasa": "swift",
-   "sha256": "31abc6df973e060e8305da6a775eb40567540fd99e5caefab9b82bc24ef6e1a5"
+   "sha256": "a2c9b319103c6d256a307d27f680f2e51bf597f5f31c5022a78fdd85ee6eba09"
   },
   {
    "nama": "bahasalain/materi/14. Swift Lanjut: Konkurensi dan Warisan Objective-C/8",
@@ -15729,22 +15729,22 @@
   {
    "nama": "bahasalain/materi/15. Dart: Null Safety, Kelas, dan Async/1",
    "bahasa": "dart",
-   "sha256": "20dea70b37fa9f6d2ebbb9e3a4917870225a123dc99658cb687370a729c28ef0"
+   "sha256": "eef781e247a7a375b4e360fb4a655505bf1a45ff1f1807c6bb5918892fa60b9c"
   },
   {
    "nama": "bahasalain/materi/15. Dart: Null Safety, Kelas, dan Async/3",
    "bahasa": "dart",
-   "sha256": "1f06b5c0734db5b6b3fd107e589e5b7bbb52ef24720f475af6594ada404befe6"
+   "sha256": "a8a30969e489a027b4ae8a006746a5f6dd3db4c9b37dc7b946c8523834202b05"
   },
   {
    "nama": "bahasalain/materi/15. Dart: Null Safety, Kelas, dan Async/5",
    "bahasa": "dart",
-   "sha256": "f752ba97039341c062fe604ae0959a37e2073857769621981579798c9c685f87"
+   "sha256": "c0d8c6aa4baa5e98d014bb776ab7796f8777b6c9e5ba86460475224e8abd9464"
   },
   {
    "nama": "bahasalain/materi/15. Dart: Null Safety, Kelas, dan Async/7",
    "bahasa": "dart",
-   "sha256": "239aa52219781596a234cfe80f714d256859cb5f08fb37931a70271175590aec"
+   "sha256": "1e6e8f5087836ca2923d6394e58e65cbe877c893689290cf489a2f4349049b68"
   },
   {
    "nama": "bahasalain/materi/15. Dart: Null Safety, Kelas, dan Async/9",
@@ -15759,27 +15759,27 @@
   {
    "nama": "bahasalain/materi/16. Dart Lanjut: Event Loop, Stream, dan Isolate/1",
    "bahasa": "dart",
-   "sha256": "8247daa358093d11562ed5e18151cce79dab663f3b85ba131ecfef81d9fcebbe"
+   "sha256": "50ac480e326be6e32ee0d919309d7563c951f99548bfaac5deb107ebba85bb40"
   },
   {
    "nama": "bahasalain/materi/16. Dart Lanjut: Event Loop, Stream, dan Isolate/3",
    "bahasa": "dart",
-   "sha256": "9b00fcc026555b9dada2dbcf988c1782dc006d6c7bc2aab7716bba5430b62466"
+   "sha256": "8ecfec3b0c13aefc8303c1bea392a7fbf13fbe22590a243633a06bc9112b4a3e"
   },
   {
    "nama": "bahasalain/materi/16. Dart Lanjut: Event Loop, Stream, dan Isolate/5",
    "bahasa": "dart",
-   "sha256": "d026b97c43a8d95464c75ecd5ab27ebca04b49467fdf77fc5df63703df3b901b"
+   "sha256": "9d193bc7820da1633da17e8b3c7c8ce49cfc98c73ca42cba951fd85465c506bb"
   },
   {
    "nama": "bahasalain/materi/16. Dart Lanjut: Event Loop, Stream, dan Isolate/7",
    "bahasa": "dart",
-   "sha256": "09abc74e68e2b2a8d55c76cfc7637e764870aee5336bda2d7f3400a0c784c336"
+   "sha256": "390ec389b043124a77c75e3fb880e6e6168ab333cecdcbdfbc3b3031e7af25ff"
   },
   {
    "nama": "bahasalain/materi/16. Dart Lanjut: Event Loop, Stream, dan Isolate/9",
    "bahasa": "dart",
-   "sha256": "d6ce3d787a16b575d2429818edd8ced5998806cd5513fda7220e859f02c3e490"
+   "sha256": "64d1418e880f2293b949c4cd6dcba0ae51a4b20149aa9188b64fb83658f696a1"
   },
   {
    "nama": "bahasalain/materi/16. Dart Lanjut: Event Loop, Stream, dan Isolate/11",
@@ -15789,17 +15789,17 @@
   {
    "nama": "bahasalain/materi/17. R: Vektor, Data Frame, dan Statistik Dasar/1",
    "bahasa": "r",
-   "sha256": "ebf1d1ed1306f030b1d0742cb6862195a211409258dcbf87d1a106d104ec8013"
+   "sha256": "0dfdc315badb34e638b4c021bb3f91ecd3f832618d9568c0503d6ab1b65e74b6"
   },
   {
    "nama": "bahasalain/materi/17. R: Vektor, Data Frame, dan Statistik Dasar/3",
    "bahasa": "r",
-   "sha256": "effe6c0c90b85be2d0b83315501ab868ad9271e0879c9f96c2a1585cfd62b0eb"
+   "sha256": "4e24ff6b3f4b70c767843a6dd631f4443c53aa0d6d77ad9ec5a7360663dfd0f0"
   },
   {
    "nama": "bahasalain/materi/17. R: Vektor, Data Frame, dan Statistik Dasar/5",
    "bahasa": "r",
-   "sha256": "62dfcf141f91d7a90db5a0f25a78215174fb4bf22f20aef299648c84df6eeea5"
+   "sha256": "1b296f7d08bf45b8b98c05c79d3f0248dadbcae12edfeb1a1f6c248717300977"
   },
   {
    "nama": "bahasalain/materi/17. R: Vektor, Data Frame, dan Statistik Dasar/7",
@@ -15809,12 +15809,12 @@
   {
    "nama": "bahasalain/materi/18. R Lanjut: Pipe, Tidyverse, dan ggplot2/1",
    "bahasa": "r",
-   "sha256": "1efaeea72bbac190ead318ae591b9b6f638e6b0c82d231127078fab3277d58e1"
+   "sha256": "a4bc9eda8f6de7fe5d2a5ca898d562182e46187e4d14549843e85e3a6377666c"
   },
   {
    "nama": "bahasalain/materi/18. R Lanjut: Pipe, Tidyverse, dan ggplot2/3",
    "bahasa": "r",
-   "sha256": "b85a262b939f8902b4fc203ab96e91f8d9db32fa9c438fef74dae8c74f614620"
+   "sha256": "c75abcd03e14a78f8fbfb4fb280172853975baa66b4257fd9bd9e6d361454d06"
   },
   {
    "nama": "bahasalain/materi/18. R Lanjut: Pipe, Tidyverse, dan ggplot2/5",
@@ -15824,7 +15824,7 @@
   {
    "nama": "bahasalain/materi/18. R Lanjut: Pipe, Tidyverse, dan ggplot2/7",
    "bahasa": "r",
-   "sha256": "92de63ddb70b7a17eb5d6f7a7fc600b2484d3c40b213b584952e1fce7ffb35f2"
+   "sha256": "14b4624b11ab00882fabf95f3f594c58b7324b0e53191425f44d4da86f1c08b0"
   },
   {
    "nama": "bahasalain/materi/19. MATLAB dan GNU Octave: Berpikir dalam Matriks/1",
@@ -15904,22 +15904,22 @@
   {
    "nama": "bahasalain/materi/22. Groovy: Bahasa di Balik Jenkinsfile dan Gradle/1",
    "bahasa": "groovy",
-   "sha256": "b4cfd6b1af0367d1ca9f2eef0de6ea548ad73863ffe045ee6833b9cb738791ea"
+   "sha256": "4dc3faa152521dd94aa4f3988819159b37261433849b3273422faec4379e3668"
   },
   {
    "nama": "bahasalain/materi/22. Groovy: Bahasa di Balik Jenkinsfile dan Gradle/3",
    "bahasa": "groovy",
-   "sha256": "a3bbfd9f548c42d21836eb125ff5cb6a30737aa2286a553981e8a9873a66b755"
+   "sha256": "5218dc194a52446695eda6f4e835ea937dc41aa10c7cd9fb7e9499cf310b9bff"
   },
   {
    "nama": "bahasalain/materi/22. Groovy: Bahasa di Balik Jenkinsfile dan Gradle/5",
    "bahasa": "groovy",
-   "sha256": "5f07215235df7183d91c05c69862bef2ad0109df2e8584f67f4aa35a6429fd04"
+   "sha256": "0de7d7dab9e9a7706874388fcd0e44943c9a60d95e4fb96e3ae21562916f214c"
   },
   {
    "nama": "bahasalain/materi/22. Groovy: Bahasa di Balik Jenkinsfile dan Gradle/7",
    "bahasa": "groovy",
-   "sha256": "288d4a027c303ab87192b9793eba693635bbd4227a022cd20a36f07ff32ba2cd"
+   "sha256": "e7a2930e9f9a566feb9f0cd5c528af71c079d385b696af0cd630a7d25ae886b2"
   },
   {
    "nama": "bahasalain/materi/22. Groovy: Bahasa di Balik Jenkinsfile dan Gradle/8",
@@ -15954,22 +15954,22 @@
   {
    "nama": "bahasalain/materi/24. Elixir: Pattern Matching dan Operator Pipe/2",
    "bahasa": "elixir",
-   "sha256": "4bb4f19952d9e07c2756533a92430b0c23623c19218a183b021b75dfda579b2d"
+   "sha256": "315bcc4f14053487b7e9887a5630e94aebaa4a15bf6240345ed4e230a4af9107"
   },
   {
    "nama": "bahasalain/materi/24. Elixir: Pattern Matching dan Operator Pipe/4",
    "bahasa": "elixir",
-   "sha256": "704ac015e4672d963fbf080c94ad759ffadb0e8add3dc9830355578bfc93b4f9"
+   "sha256": "355f8798af67f8cb3f4f84de31ab52438f46a2d05823786e46ccc35a37a633d0"
   },
   {
    "nama": "bahasalain/materi/24. Elixir: Pattern Matching dan Operator Pipe/6",
    "bahasa": "elixir",
-   "sha256": "30a84161e7f7406c0292dd6b6a1ad3b02c4eea5447e3b1f666fb674875844889"
+   "sha256": "4a901a6da51168e531ef6b8aad286cd9473b3650d1cf5318f2d69e4bd0a1da99"
   },
   {
    "nama": "bahasalain/materi/24. Elixir: Pattern Matching dan Operator Pipe/8",
    "bahasa": "elixir",
-   "sha256": "ac6d5273690bd570a3aba2883975f543e22b1b8c77a438b2fd06647070b89cdb"
+   "sha256": "593b2deae6cb187efc47e5c91cdd67fdb449b2e0d421a3d66b36c7586318b98d"
   },
   {
    "nama": "bahasalain/materi/24. Elixir: Pattern Matching dan Operator Pipe/10",
@@ -15979,17 +15979,17 @@
   {
    "nama": "bahasalain/materi/25. Elixir dan OTP: Proses, Pesan, dan Supervisor/1",
    "bahasa": "elixir",
-   "sha256": "498040308810c8e7b0d4f382c9ce41671835124264c9ba77c77f5875db60b2b7"
+   "sha256": "a2db695ab29b1e1c0ebd6b9542c363e1d265d9b0d37ff7f61c2c071fd6f298ea"
   },
   {
    "nama": "bahasalain/materi/25. Elixir dan OTP: Proses, Pesan, dan Supervisor/3",
    "bahasa": "elixir",
-   "sha256": "144a592a58a95ed230e1f0d5264d2ce59c5c86912d053bb650edcfac061a3a5d"
+   "sha256": "b9ee360269a3b961c1a7f95095e5812016c8097460adcf42b6dae2fb35e8daa0"
   },
   {
    "nama": "bahasalain/materi/25. Elixir dan OTP: Proses, Pesan, dan Supervisor/5",
    "bahasa": "elixir",
-   "sha256": "733ac3b34a6caf6dfab23f6f56ff9279f5c2e4ef1998b6f0f2bb570fdc3413bc"
+   "sha256": "e20303d934e61766115be2ed51639cedf32bb5be689a0bef544d43da485b4b56"
   },
   {
    "nama": "bahasalain/materi/25. Elixir dan OTP: Proses, Pesan, dan Supervisor/7",
@@ -16024,17 +16024,17 @@
   {
    "nama": "bahasalain/materi/27. Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas/2",
    "bahasa": "haskell",
-   "sha256": "c936c9c6756a7215099ba15fbdf2fc7452c6276118120c25333789e656714686"
+   "sha256": "a6a183a2c2e3e5b83666fb2c89ffa58582ae8333814230a916f61c37618b8577"
   },
   {
    "nama": "bahasalain/materi/27. Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas/4",
    "bahasa": "haskell",
-   "sha256": "1be775078898666cc3c5d11684dae980c6b5e9cb4b52e12fd52291e421afee10"
+   "sha256": "627277e05ee5f6764806fe88eec387852413bcf2604c5c38139f8433c066cf13"
   },
   {
    "nama": "bahasalain/materi/27. Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas/6",
    "bahasa": "haskell",
-   "sha256": "b5a0560c35e4ca98a3f4a5898a1974eb31ad35c1efb9d3dcca8335400e9ff664"
+   "sha256": "b1e7dc84ba50f092e80f9ae7d1c1020c4f76672a685c6acc5061ddb57f01e04d"
   },
   {
    "nama": "bahasalain/materi/27. Haskell: Fungsi Murni, Tipe, dan Evaluasi Malas/8",
@@ -16044,27 +16044,27 @@
   {
    "nama": "bahasalain/materi/28. Haskell Lanjut: Maybe, Typeclass, dan Monad IO/1",
    "bahasa": "haskell",
-   "sha256": "cff0246bb5a85e81e88261b9082d39b1556776bdf19b6618507564ba1915a75f"
+   "sha256": "40f6a41d99493360f428c1de85934b940b2620cbec4c9be3648a673f7bb12fa4"
   },
   {
    "nama": "bahasalain/materi/28. Haskell Lanjut: Maybe, Typeclass, dan Monad IO/3",
    "bahasa": "haskell",
-   "sha256": "7854997d7e71c11274de6157bd445985574aeafe125b93c53f6fca4ea26c81f6"
+   "sha256": "440027c1408fbf9fe35590a242facd064ebb556595c67f8618beac12925d7869"
   },
   {
    "nama": "bahasalain/materi/28. Haskell Lanjut: Maybe, Typeclass, dan Monad IO/5",
    "bahasa": "haskell",
-   "sha256": "9a4833d4f484c47d82a44c7754c4bca5bc762c377cb102037319df99b06b484e"
+   "sha256": "2b77d1ef38bf0798d08ae75a39eafdfa64b8ff244d0482ad51d380fe9a8e1f33"
   },
   {
    "nama": "bahasalain/materi/28. Haskell Lanjut: Maybe, Typeclass, dan Monad IO/7",
    "bahasa": "haskell",
-   "sha256": "e7ee3046f3a2b12f93bfb55b85d75928b2dc7943d14dc9aef108408e0e096edf"
+   "sha256": "420547c9fc84534285582aac2847ff3a7b5d9a847a8757aa59eefdc9166238e9"
   },
   {
    "nama": "bahasalain/materi/28. Haskell Lanjut: Maybe, Typeclass, dan Monad IO/9",
    "bahasa": "haskell",
-   "sha256": "278ee3e5dec23c3b2d7cba6061b0009ba8ac30def406f960ca9edd7cd104e1a0"
+   "sha256": "2e565b68a5e270ba2aa0c8423448cf7a4bcafaf678c2ec90428702d42eb62564"
   },
   {
    "nama": "bahasalain/materi/28. Haskell Lanjut: Maybe, Typeclass, dan Monad IO/11",
@@ -16204,32 +16204,32 @@
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/1",
    "bahasa": "zig",
-   "sha256": "11e22240f1d8047e3eab18704b0dde4f35bff66b944c8f64bf9a33b01cf8d405"
+   "sha256": "69ae9cd2e4552c2da1a788e2d9c8da3fde6c92fbe41688325f0c5efd4ee199de"
   },
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/3",
    "bahasa": "zig",
-   "sha256": "0b5bc0c8ae5133e8597284cb9574a9c2f2a55d4b8584e51156c69e18f703e37b"
+   "sha256": "f161b2fce7bdbc7abbeb68af569fbfeecc652e67ee23856be15696fbaec9bc86"
   },
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/5",
    "bahasa": "zig",
-   "sha256": "227ceade3072fe701a7b8fa9c4862496d5ffdb2d5fd2fabfc7717d730c559c4a"
+   "sha256": "5ecf8e67b306ab11d6d1c1f92159165090a7323e22e338824743e766e62f2d59"
   },
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/7",
    "bahasa": "zig",
-   "sha256": "153c44400089d4cc61ace873a68a72131d641539547f2b7cd194626b56eef9ff"
+   "sha256": "3d441045197e6dc7c7ea8cccd76058065d01b930685e5180c9a8114307a97942"
   },
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/9",
    "bahasa": "zig",
-   "sha256": "c53d43cd64c4a235c00428290862100f0895efdad5215133ef729053acbdb081"
+   "sha256": "0cb214b6728fc59de487783f4eb0592a959f822c53e327c1e9a5775d0f7bbed8"
   },
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/11",
    "bahasa": "zig",
-   "sha256": "a9535bc20e09140b34f3c702ef3bcdf132f251068209c507c2bab8a1aa80222e"
+   "sha256": "ea572c7185e9b4f986100a3ce7569ac44c10cff29fc8890d94b67c820ec39671"
   },
   {
    "nama": "bahasalain/materi/34. Zig: Alokator Eksplisit dan comptime/13",
