@@ -22,9 +22,11 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { request } from "node:http";
+
 import { MongoClient } from "mongodb";
 
-import { alamatMongo, cari, pasangIndeks, selaraskan } from "../src/mongo.ts";
+import { alamatMongo, cari, pasangIndeks, selaraskan, tutupMongo } from "../src/mongo.ts";
 import { bacaCatatan, jalurCatatan } from "../src/sumber.ts";
 
 const DB_UJI = "belajar_uji";
@@ -96,6 +98,124 @@ await cek("BELAJAR_CATATAN_FILE dihormati", () => {
   if (sebelum === undefined) delete process.env["BELAJAR_CATATAN_FILE"];
   else process.env["BELAJAR_CATATAN_FILE"] = sebelum;
 });
+
+/* ------------------------------------- lapisan 1b: penjagaan HTTP, tanpa Mongo
+
+   Ketiga penjagaan di bawah menolak SEBELUM satu pun panggilan Mongo, jadi
+   mereka bisa diuji tanpa container -- dan itu memang tempatnya: penjagaan
+   keamanan yang cuma teruji saat sebuah container menyala adalah penjagaan
+   yang diam-diam berhenti teruji. */
+
+console.log("\npenjagaan HTTP (tanpa MongoDB)");
+
+const { app } = await import("../src/indeks.ts");
+const srv = app.listen(0, "127.0.0.1");
+await new Promise<void>((res) => srv.once("listening", () => res()));
+const port = (srv.address() as { port: number }).port;
+
+/* Permintaannya lewat `node:http` MENTAH, bukan `fetch`, dan itu bukan selera:
+   undici (fetch milik Node) MELARANG menyetel header `Host` -- ia
+   mengabaikannya tanpa suara. Jadi seluruh uji DNS rebinding di bawah akan
+   "lulus" dengan Host yang benar, membuktikan nol.
+   
+   `Connection: close` juga ikut, dan itu menutup jebakan kedua: fetch memakai
+   keep-alive, dan `srv.close()` menunggu setiap koneksi yang masih hidup --
+   jadi ujinya menggantung di akhir alih-alih selesai. */
+function minta(jalur: string, opsi: {
+  metode?: string; host?: string; asal?: string; tipe?: string; isi?: string;
+} = {}): Promise<{ kode: number; kepala: Record<string, string | string[] | undefined>; teks: string }> {
+  return new Promise((selesai, gagal) => {
+    const kepala: Record<string, string> = { Connection: "close" };
+    if (opsi.host !== undefined) kepala["Host"] = opsi.host;
+    if (opsi.asal) kepala["Origin"] = opsi.asal;
+    if (opsi.tipe) kepala["Content-Type"] = opsi.tipe;
+    const req = request(
+      { host: "127.0.0.1", port, path: jalur, method: opsi.metode ?? "GET", headers: kepala },
+      (res) => {
+        let teks = "";
+        res.on("data", (c) => { teks += c; });
+        res.on("end", () => selesai({
+          kode: res.statusCode ?? 0, kepala: res.headers, teks,
+        }));
+      },
+    );
+    req.on("error", gagal);
+    if (opsi.isi !== undefined) req.write(opsi.isi);
+    req.end();
+  });
+}
+
+await cek("Host asing DITOLAK 403 (DNS rebinding)", async () => {
+  // Nama domain penyerang yang DNS-nya diarahkan ke 127.0.0.1 membuat
+  // peramban menganggap permintaannya same-origin -- jadi `Origin` tidak
+  // dikirim sama sekali. Yang membedakannya cuma `Host`.
+  const r = await minta("/sehat", { host: "jahat.contoh" });
+  assert.equal(r.kode, 403);
+});
+
+await cek("Host loopback diterima", async () => {
+  for (const h of [`127.0.0.1:${port}`, `localhost:${port}`]) {
+    const r = await minta("/sehat", { host: h });
+    assert.equal(r.kode, 200, h);
+  }
+});
+
+await cek("asal asing DITOLAK 403, bukan cuma tanpa header CORS", async () => {
+  // Bedanya nyata dan ia CSRF: tanpa header balasan, halaman asing memang
+  // tidak bisa MEMBACA jawabannya -- tapi permintaannya tetap SAMPAI dan efek
+  // sampingnya tetap terjadi.
+  const r = await minta("/selaras", {
+    metode: "POST", asal: "https://jahat.contoh",
+    tipe: "application/json", isi: "{}",
+  });
+  assert.equal(r.kode, 403);
+});
+
+await cek("asal loopback mendapat header CORS yang menyebut dirinya", async () => {
+  const asal = "http://127.0.0.1:5173";
+  const r = await minta("/sehat", { asal });
+  assert.equal(r.kepala["access-control-allow-origin"], asal);
+  // `Vary: Origin` WAJIB ikut: tanpa itu, cache boleh melayani jawaban yang
+  // header CORS-nya menyebut asal lain.
+  assert.equal(r.kepala["vary"], "Origin");
+});
+
+await cek("POST tanpa Content-Type JSON ditolak 415", async () => {
+  // Ini yang MEMAKSA preflight ada: `application/json` bukan "simple
+  // request", jadi formulir HTML lintas-asal -- satu-satunya POST tanpa
+  // preflight -- tidak bisa mengirimnya.
+  const r = await minta("/selaras", {
+    metode: "POST", tipe: "text/plain", isi: "x",
+  });
+  assert.equal(r.kode, 415);
+});
+
+await cek("preflight: loopback diizinkan, asal asing 403", async () => {
+  const baik = await minta("/selaras", {
+    metode: "OPTIONS", asal: "http://localhost:5173",
+  });
+  assert.equal(baik.kode, 204);
+  assert.equal(baik.kepala["access-control-allow-headers"], "Content-Type");
+  const buruk = await minta("/selaras", {
+    metode: "OPTIONS", asal: "https://jahat.contoh",
+  });
+  assert.equal(buruk.kode, 403);
+});
+
+await cek("kueri satu huruf ditolak 400 dengan sebabnya", async () => {
+  const r = await minta("/cari?q=a");
+  assert.equal(r.kode, 400);
+  assert.match(r.teks, /minimal 2 huruf/);
+});
+
+srv.closeAllConnections();
+await new Promise<void>((res) => srv.close(() => res()));
+/* Klien Mongo yang dibuat oleh app DITUTUP di sini, dan ia terpisah dari klien
+   uji di bawah. Tanpa ini prosesnya tidak pernah keluar: kolam koneksi driver
+   memegang socket yang hidup, dan Node menunggu setiap handle terbuka --
+   gejalanya uji yang mencetak "lulus" lalu menggantung, yang jauh lebih
+   membingungkan daripada uji yang gagal. */
+await tutupMongo();
 
 /* --------------------------------------------- lapisan 2: dengan MongoDB */
 

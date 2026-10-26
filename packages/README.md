@@ -1,8 +1,15 @@
 # packages/
 
-Sisi TypeScript. Workspace npm (`"workspaces": ["packages/*"]` di akar), dan
-**tanpa langkah build**: Node 24 menjalankan `.ts` langsung lewat pelucutan
-tipe, jadi `tsc` di sini pemeriksa (`npm run tipe`, `noEmit`), bukan kompiler.
+Sisi TypeScript. Workspace npm (`"workspaces": ["packages/*"]` di akar).
+**Tanpa langkah build untuk `bersama` dan `catatan`**: Node menjalankan `.ts`
+langsung lewat pelucutan tipe, jadi `tsc` untuk keduanya pemeriksa
+(`npm run tipe`, `noEmit`), bukan kompiler. `web` dibundel Vite.
+
+`--experimental-strip-types` diberikan eksplisit di suite dan di baterai
+mutasi: pelucutan tipe baru tanpa-flag sejak Node 23.6 (22.18 di jalur LTS),
+dan di bawah itu SELURUH pembanding gagal dengan `ERR_UNKNOWN_FILE_EXTENSION`
+-- empat belas tes merah karena alasan yang tidak ada hubungannya dengan
+isinya. Flagnya diterima apa adanya oleh 22.11 maupun 24.21.
 
 Aplikasinya sendiri tidak membutuhkan folder ini: `python3 belajar-web.py`
 tetap jalan penuh tanpa `npm install`. Folder ini ada untuk perpindahan ke
@@ -13,7 +20,16 @@ algoritma bersama diuji di luar Python.
 konten/     seluruh kurikulum sebagai JSON + tipe.ts     (DIHASILKAN)
 bersama/    sorot, beda, galat sebagai implementasi TS + rekaman golden
 web/        antarmuka React + TypeScript, di atas API Python yang sama
+catatan/    layanan pencarian catatan (Express + MongoDB). TAMBAHAN:
+            aplikasinya jalan penuh tanpanya -- lihat catatan/README.md
 ```
+
+Satu koreksi atas kalimat di atas, dan ia penting karena menyangkut aturan
+"aplikasi ini wajib utuh tanpa internet": `catatan/` punya DUA dependensi
+runtime sungguhan (`express`, `mongodb`), dan keduanya satu-satunya di seluruh
+repo. Mereka milik paket itu saja -- `python3 belajar-web.py` tetap jalan penuh
+tanpa `npm install`, dan tanpa `catatan/` yang hilang cuma pencarian di dalam
+isi catatan.
 
 ## Menjalankan antarmuka React
 

@@ -1528,11 +1528,26 @@ Yang mengikat (rincian beserta angkanya di `packages/catatan/README.md`):
   menyalakannya.
 * **Progres pelajar tidak pernah menyentuh Mongo.** Untuk 899 byte progres satu
   pengguna, Mongo tidak memberi keuntungan teknis apa pun.
-* **Bind loopback, dan `HOST` KONSTANTA** -- sengaja tidak dibaca dari
-  lingkungan. Variabel yang bisa menaikkannya ke `0.0.0.0` adalah pagar yang
-  bisa dilepas tanpa menyentuh satu baris kode, dan pagar seperti itu selalu
-  dilepas "sebentar saja" lebih dulu. Mongo tanpa autentikasi SAH hanya selama
-  syarat itu berlaku.
+* **Bind loopback, `HOST` KONSTANTA, dan `Host` DIPERIKSA.** Variabel
+  lingkungan yang bisa menaikkan bind-nya ke `0.0.0.0` adalah pagar yang bisa
+  dilepas tanpa menyentuh satu baris kode, dan pagar seperti itu selalu dilepas
+  "sebentar saja" lebih dulu. Bind saja TIDAK cukup: DNS rebinding membelokkan
+  nama domain penyerang ke 127.0.0.1, dan peramban lalu menganggap
+  permintaannya same-origin sehingga `Origin` tidak dikirim sama sekali --
+  pemeriksaan asal yang cuma berlaku "kalau ada Origin" melewatkannya tanpa
+  suara. Yang menutupnya `Host`, bentuknya sama dengan `server._asal_sah()`.
+  Mongo tanpa autentikasi SAH hanya selama ketiganya berlaku.
+* **Asal asing DITOLAK 403, bukan cuma tidak diberi header CORS**, dan `POST`
+  menuntut `Content-Type: application/json` supaya peramban wajib preflight
+  lebih dulu. Keduanya temuan tinjauan keamanan otomatis, dan keduanya CSRF:
+  tanpa header balasan halaman asing memang tidak bisa MEMBACA jawabannya, tapi
+  permintaannya tetap sampai dan efek sampingnya tetap terjadi.
+* **Penjagaan HTTP diuji lewat `node:http` MENTAH, bukan `fetch`.** undici
+  MELARANG menyetel header `Host` dan mengabaikannya tanpa suara, jadi seluruh
+  uji DNS rebinding lewat `fetch` akan "lulus" dengan Host yang benar --
+  membuktikan nol. `Connection: close` ikut dipasang karena keep-alive membuat
+  `srv.close()` menunggu selamanya, dan gejalanya uji yang mencetak "lulus"
+  lalu menggantung.
 * **CORS daftar putih, bukan `*`.** Hanya asal loopback. `*` di layanan yang
   membacakan catatan pribadi berarti halaman mana pun di internet yang dibuka
   di peramban ini bisa membacanya -- bind loopback tidak menolong, karena yang
@@ -1546,8 +1561,9 @@ Yang mengikat (rincian beserta angkanya di `packages/catatan/README.md`):
 * **Database uji `belajar_uji`**, bukan `belajar`.
 
 Ujinya ikut suite lewat `test_konten_json.TestAlgoritmaTypeScript.
-test_layanan_catatan`: lima pemeriksaan lapisan murni SELALU jalan, tujuh
-lapisan Mongo MELEWATI diri sendiri kalau containernya mati -- dengan pesan
+test_layanan_catatan`: dua belas pemeriksaan (lima lapisan murni, tujuh
+penjagaan HTTP) SELALU jalan, tujuh lapisan Mongo MELEWATI diri sendiri kalau
+containernya mati -- dengan pesan
 yang menyebut perintah penyalaannya, jadi "dilewati" tidak pernah berarti
 "lulus diam-diam". Lima dari enam mutan memerah; yang keenam batasnya diukur
 dan ditulis (urutan `find()` tanpa `sort` implementation-defined di MongoDB,

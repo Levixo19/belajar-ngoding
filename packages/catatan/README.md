@@ -25,7 +25,7 @@ jalan, layar itu mengatakannya beserta kedua perintah di atas — catatannya
 tetap tampil lengkap.
 
 ```bash
-npm run uji   --workspace @belajar/catatan   # 12 pemeriksaan; 5 tanpa Mongo
+npm run uji   --workspace @belajar/catatan   # 19 pemeriksaan; 12 tanpa Mongo
 npm run tipe  --workspace @belajar/catatan
 ```
 
@@ -46,6 +46,29 @@ pencarian yang tidak tersedia.
 pengguna, Mongo tidak memberi keuntungan teknis apa pun — dan menaruhnya di
 sana berarti melepas tiga pengaman yang lahir dari audit nyata (XP 500 jadi 10,
 materi hilang, tanpa cadangan).
+
+**`Host` diperiksa, bukan cuma `Origin`.** Keduanya menutup lubang yang
+BERBEDA. DNS rebinding membelokkan nama domain penyerang ke `127.0.0.1`;
+peramban lalu menganggap permintaannya same-origin, jadi `Origin` tidak
+dikirim sama sekali — dan pemeriksaan asal yang cuma berlaku "kalau ada
+Origin" melewatkannya tanpa suara. Yang membedakannya `Host`: permintaan yang
+dibelokkan tetap membawa nama domain penyerang di situ. Bentuknya sama dengan
+`server._asal_sah()` di sisi Python, termasuk membolehkan `Host` KOSONG
+(HTTP/1.0 dan `curl --http1.0` tidak mengirimnya).
+
+**Asal asing DITOLAK 403, bukan cuma tidak diberi header CORS.** Bedanya nyata
+dan ia CSRF: tanpa header balasan, halaman asing memang tidak bisa MEMBACA
+jawabannya — tapi permintaannya tetap sampai dan efek sampingnya tetap terjadi.
+`POST` juga menuntut `Content-Type: application/json`, content-type yang bukan
+"simple request", jadi peramban wajib preflight lebih dulu dan formulir HTML
+lintas-asal — satu-satunya POST tanpa preflight — tidak bisa mengirimnya.
+
+Ketujuh penjagaan itu diuji TANPA container: ketiganya menolak sebelum satu pun
+panggilan Mongo, dan penjagaan keamanan yang cuma teruji saat sebuah container
+menyala adalah penjagaan yang diam-diam berhenti teruji. Permintaannya lewat
+`node:http` mentah, bukan `fetch`: undici MELARANG menyetel header `Host` dan
+mengabaikannya tanpa suara, jadi seluruh uji DNS rebinding lewat `fetch` akan
+"lulus" dengan Host yang benar — membuktikan nol.
 
 **Bind loopback, dan Mongo tanpa autentikasi punya syaratnya.** Container-nya
 dijalankan `-p 127.0.0.1:27017:27017`; `HOST` di `src/indeks.ts` konstanta

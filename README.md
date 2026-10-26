@@ -322,17 +322,29 @@ webapp/            antarmuka web di atas modul yang sama
   statik/js/pratinjau.js  bingkai pratinjau halaman HTML/CSS pelajar
   statik/js/ikon.js       24 ikon garis, satu keluarga, tanpa berkas gambar
 
-packages/          sisi TypeScript (workspace npm, tanpa langkah build)
+packages/          sisi TypeScript (workspace npm)
   konten/          seluruh kurikulum sebagai JSON + tipe TS (DIHASILKAN)
   bersama/         sorot, beda, galat sebagai satu implementasi TS + golden
+  web/             antarmuka React + TypeScript, di atas API Python yang sama
+  catatan/         pencarian catatan (Express + MongoDB). TAMBAHAN: aplikasinya
+                   jalan penuh tanpanya
 
 data/              konten kurikulum, 3 berkas per kurikulum
   bab.py           pembagian materi jadi bab bertingkat (dihasilkan, bukan diketik)
 
 alat/              alat baris perintah: ekspor, pemeriksa, penulis naskah
 contoh/            bukan bagian aplikasi; tidak ada yang mengimpornya
-tests/             suite Python; sisi TS diuji lewat packages/bersama/uji/
+tests/             suite Python; sisi TS diuji lewat uji/ di tiap paket
+  test_kontrak.py  41 endpoint: BENTUK jawabannya, bukan nilainya
 ```
+
+**DUA antarmuka hidup berdampingan.** Yang dilayani `belajar-web.py` tetap
+yang di `webapp/statik/` (JavaScript tanpa langkah build). Yang di
+`packages/web/` port React + TypeScript-nya: seluruh lima belas layar dan
+cangkangnya sudah diport, dan keduanya memakai API serta `gaya.css` yang SAMA
+-- berkas gaya itu diproksi apa adanya, tidak disalin, karena dua lembar gaya
+untuk satu desain berarti yang kedua ketinggalan tanpa ada yang menyadarinya.
+Cara menjalankannya di `packages/README.md`.
 
 `inti/struktur.py` sengaja duduk bersebelahan dengan `inti/runner.py`: runner
 memanggilnya sebagai subprocess lewat `dirname(__file__)`, jadi memisahkan

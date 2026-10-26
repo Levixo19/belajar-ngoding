@@ -8,10 +8,15 @@
  * Tiga batas yang mengikat, dan ketiganya sama dengan yang dipegang server
  * Python:
  *
- * 1. **Bind loopback.** `server.buat()` di Python menolak host selain
- *    127.0.0.1 dengan `ValueError`, dan alasannya sama di sini: ini mesin
- *    pribadi, dan satu-satunya alasan Mongo di balik layanan ini boleh tanpa
- *    autentikasi adalah karena tidak ada yang bisa menghubunginya dari luar.
+ * 1. **Bind loopback, DAN `Host` diperiksa.** `server.buat()` di Python
+ *    menolak host selain 127.0.0.1 dengan `ValueError`, dan alasannya sama di
+ *    sini: ini mesin pribadi, dan satu-satunya alasan Mongo di balik layanan
+ *    ini boleh tanpa autentikasi adalah karena tidak ada yang bisa
+ *    menghubunginya dari luar. Bind saja TIDAK cukup -- DNS rebinding
+ *    membelokkan nama domain penyerang ke 127.0.0.1, dan peramban lalu
+ *    menganggap permintaannya same-origin sehingga `Origin` tidak dikirim
+ *    sama sekali. Yang menutupnya pemeriksaan `Host`, persis seperti
+ *    `server._asal_sah()`.
  * 2. **Hanya BACA dari berkas pelajar.** Tidak ada satu pun jalur tulis ke
  *    `~/.belajar_ngoding_catatan.json` di paket ini. Pengaman yang
  *    melindunginya (karantina, `.bak`, tulis atomik) hidup di
@@ -64,7 +69,30 @@ app.use(express.json({ limit: "64kb" }));
  * diizinkan hanya asal http/https di 127.0.0.1, [::1], atau localhost. */
 const ASAL_LOOPBACK = /^https?:\/\/(127\.0\.0\.1|\[::1\]|localhost)(:\d+)?$/;
 
+/* Nama host yang boleh dipakai untuk MENGHUBUNGI layanan ini.
+ *
+ * Ini penutup DNS REBINDING, dan ia terpisah dari pemeriksaan Origin di bawah
+ * karena menutup lubang yang BERBEDA: sebuah nama domain milik penyerang yang
+ * DNS-nya diarahkan ke 127.0.0.1 membuat peramban menganggap permintaannya
+ * same-origin -- jadi `Origin` tidak dikirim sama sekali, dan pemeriksaan asal
+ * yang cuma berlaku "kalau ada Origin" melewatkannya tanpa suara. Yang
+ * membedakannya `Host`: permintaan yang dibelokkan tetap membawa nama domain
+ * penyerang di situ.
+ *
+ * Bentuknya sengaja sama dengan `server._asal_sah()` di sisi Python, termasuk
+ * membolehkan `Host` KOSONG -- klien HTTP/1.0 dan `curl --http1.0` tidak
+ * mengirimnya, dan menolak mereka berarti menolak alat yang dipakai untuk
+ * memeriksa layanan ini sendiri. */
+const HOST_LOOPBACK = /^(127\.0\.0\.1|localhost|\[::1\]|::1)(:\d+)?$/;
+
 app.use((req, res, lanjut) => {
+  const tuan = req.headers.host;
+  if (tuan && !HOST_LOOPBACK.test(tuan)) {
+    res.status(403).json({
+      galat: "Host tidak diizinkan. Layanan ini hanya melayani loopback.",
+    });
+    return;
+  }
   const asal = req.headers.origin;
   res.setHeader("Vary", "Origin");
   if (asal && !ASAL_LOOPBACK.test(asal)) {
@@ -96,6 +124,8 @@ app.use((req, res, lanjut) => {
    `application/json` bukan salah satunya. */
 app.options("*splat", (req, res) => {
   const asal = req.headers.origin;
+  // Preflight tanpa Origin tidak pernah datang dari peramban; kalau ia datang,
+  // ia bukan preflight. Host sudah diperiksa middleware di atas.
   if (!asal || !ASAL_LOOPBACK.test(asal)) {
     res.status(403).end();
     return;

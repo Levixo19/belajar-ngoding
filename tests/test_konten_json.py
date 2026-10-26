@@ -248,7 +248,11 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
         # tetap melapor kode keluar nol.
         cocok = re.search(r"(\d+) pemeriksaan lulus", keluaran)
         self.assertIsNotNone(cocok, f"keluaran tak terbaca:\n{keluaran[:800]}")
-        self.assertGreaterEqual(int(cocok.group(1)), 5, keluaran[:800])
+        # Lantainya 12: lima pemeriksaan lapisan murni plus tujuh penjagaan
+        # HTTP, dan KEDUANYA tidak pernah dilewati -- ketiga penjagaan itu
+        # menolak sebelum satu pun panggilan Mongo. Lantai 5 yang lama tetap
+        # hijau untuk berkas uji yang kehilangan seluruh lapisan HTTP-nya.
+        self.assertGreaterEqual(int(cocok.group(1)), 12, keluaran[:800])
 
     def test_keluaran_identik_dengan_python(self):
         import re
