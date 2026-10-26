@@ -23,6 +23,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Ikon } from "./komponen/Ikon.tsx";
+import { temaBerikutnya } from "./lokal.ts";
+import { sorak } from "./sorak.tsx";
 
 /* Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
    lebih enak tanpa batas lebar. */
@@ -238,6 +240,41 @@ export function Cangkang({
 
         <div className="rel-lipat" hidden={sempit && !panelBuka}>
           {MENU_LAIN.map(butir)}
+        </div>
+
+        {/* Jalan ke pencarian, di tempat yang sama dengan antarmuka lama.
+            Bedanya satu dan sengaja disebut di sini: di sana tombol ini membuka
+            PALET perintah (Ctrl+K) yang menyaring sambil diketik; palet itu
+            belum diport, jadi untuk sekarang ia mengantar ke layar Cari.
+            Petunjuk `Ctrl K` karena itu TIDAK dipasang -- menjanjikan pintasan
+            yang tidak ada lebih buruk daripada tidak menjanjikan apa pun. */}
+        <a
+          className={"rel-tombol" + (rute === "cari" ? " kini" : "")}
+          href="#/cari"
+          aria-current={rute === "cari" ? "page" : undefined}
+          onClick={() => setPanelBuka(false)}
+        >
+          <span className="ikon" aria-hidden="true">
+            <Ikon nama="cari" ukuran={16} />
+          </span>
+          <span className="rel-label">Cari apa saja</span>
+        </a>
+
+        <div id="ukuran">
+          {/* Pengganti tombol tema di antarmuka lama (Ctrl+J di sana).
+              Keempat tema tetap bisa dipilih satu per satu di Pengaturan;
+              tombol ini cuma memutarnya, dan ia ada karena mengganti tema
+              adalah hal yang dilakukan di tengah membaca -- bukan hal yang
+              pantas menuntut dua kali pindah layar. */}
+          <button
+            type="button"
+            className="ikon-tombol"
+            title="Ganti tema"
+            aria-label="Ganti tema"
+            onClick={() => sorak("Tema: " + temaBerikutnya(), "", 1.6)}
+          >
+            <Ikon nama="tema" ukuran={18} />
+          </button>
         </div>
       </nav>
 

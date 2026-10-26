@@ -33,6 +33,7 @@ import { tanpaNomor } from "../util.tsx";
 import { BlokKode, type BagianKode } from "../komponen/BlokKode.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { TombolBookmark, TombolCatatan } from "../komponen/Tanda.tsx";
 import { BlokProsa, type Blok } from "../komponen/Prosa.tsx";
 import { Visual } from "../komponen/Visual.tsx";
 import type { SpekUmum } from "../komponen/visual-bentuk.ts";
@@ -72,7 +73,10 @@ interface DataMateri {
   bab: BabMateri;
   bookmark: boolean;
   kunci: string;
-  catatan: string;
+  /* OBJEK, bukan string. `api.materi` mengirim `{teks, diubah}` -- tipe lama
+     di sini menyebutnya `string`, dan itu tidak pernah terlihat karena tidak
+     ada satu pun pemakainya sampai tombol catatan dipasang. */
+  catatan: { teks?: string; diubah?: string } | null;
 }
 
 interface ButirMateri {
@@ -757,6 +761,18 @@ export function Belajar({
               "Tandai selesai"
             )}
           </button>
+          {/* RELOKASI, bukan duplikasi: kedua tombol ini keluar dari
+              `div.materi-alat` yang karena itu bubar. Keduanya memakai
+              komponen bersama `Tanda.tsx`, yang sama dengan yang dipakai
+              kepala kuis dan kepala ruang kerja latihan -- bukan tiga salinan
+              yang suatu hari berbeda soal `aria-pressed`. */}
+          <TombolBookmark
+            kunciBahasa={kunciBahasa}
+            tipe="materi"
+            indeks={indeks}
+            awal={m.bookmark}
+          />
+          <TombolCatatan kunci={m.kunci} awal={m.catatan} judul={m.judul} />
           <button
             type="button"
             className={"ikon-tombol" + (fokus ? " aktif" : "")}

@@ -24,6 +24,7 @@ import { Keadaan } from "./komponen/Keadaan.tsx";
 import { Atur } from "./layar/Atur.tsx";
 import { Bahasa, type Tingkat } from "./layar/Bahasa.tsx";
 import { Dasbor, type BahasaAwal } from "./layar/Dasbor.tsx";
+import { Bookmark, Cari, Catatan } from "./layar/Lain.tsx";
 import { Karier } from "./layar/Karier.tsx";
 import { Langit } from "./layar/Langit.tsx";
 import { Pustaka } from "./layar/Pustaka.tsx";
@@ -217,6 +218,18 @@ function Isi({
 
   if (nama === "karier") {
     return <Karier id={arg} />;
+  }
+
+  if (nama === "bookmark") {
+    return <Bookmark />;
+  }
+
+  if (nama === "catatan") {
+    return <Catatan />;
+  }
+
+  if (nama === "cari") {
+    return <Cari params={alamat.params} jumlahBahasa={awal.bahasa.length} />;
   }
 
   if (!nama || nama === "dasbor") {

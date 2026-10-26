@@ -27,6 +27,7 @@ import { rayakan, salin, sorak, umumkan, type Hadiah } from "../sorak.tsx";
 import { Editor, type PeganganEditor } from "../komponen/Editor.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { TombolBookmark, TombolCatatan } from "../komponen/Tanda.tsx";
 import { Kode } from "../komponen/Kode.tsx";
 import { Pratinjau } from "../komponen/Pratinjau.tsx";
 import { BlokProsa, type Blok } from "../komponen/Prosa.tsx";
@@ -121,6 +122,9 @@ interface DataLatihan {
   kode: string;
   berkas: { nama: string; folder: string; perintah: string[] };
   batas_waktu: number;
+  bookmark: boolean;
+  /* OBJEK, bukan string: `api.latihan` mengirim `{teks, diubah}`. */
+  catatan: { teks?: string; diubah?: string } | null;
 }
 
 /* ============================================================== pratinjau */
@@ -900,6 +904,18 @@ export function Latihan({
             </span>
             {x.dinilai ? <span className="pil">dinilai otomatis</span>
               : <span className="pil pil-kunci">tanpa nilai otomatis</span>}
+          </div>
+          {/* Komponen bersama `Tanda.tsx`, sama dengan yang dipakai pembaca
+              materi dan kepala kuis. Tanpa keduanya, layar Bookmark dan
+              Catatanku tidak punya satu pun jalan untuk terisi. */}
+          <div className="materi-alat">
+            <TombolBookmark
+              kunciBahasa={kunciBahasa}
+              tipe="latihan"
+              indeks={x.indeks}
+              awal={x.bookmark}
+            />
+            <TombolCatatan kunci={x.kunci} awal={x.catatan} judul={x.judul} />
           </div>
         </div>
       </header>

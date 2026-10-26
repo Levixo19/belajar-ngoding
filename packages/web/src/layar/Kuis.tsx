@@ -25,6 +25,7 @@ import { jamMundur } from "../waktu.ts";
 import { Bilah } from "../komponen/Bilah.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { TombolBookmark } from "../komponen/Tanda.tsx";
 import { Berkode } from "../komponen/Prosa.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import { jadwalRamah } from "./kerja-beda.ts";
@@ -148,6 +149,14 @@ function Persiapan({
             {q.pernah ? (
               <span className="pil">{`${q.percobaan}× dikerjakan`}</span>
             ) : null}
+          </div>
+          <div className="materi-alat">
+            <TombolBookmark
+              kunciBahasa={b.key}
+              tipe="kuis"
+              indeks={nomorKuis}
+              awal={Boolean(q.bookmark)}
+            />
           </div>
         </div>
       </header>
