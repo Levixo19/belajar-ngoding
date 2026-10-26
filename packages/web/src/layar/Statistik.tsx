@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { ambil } from "../api.ts";
 import { adaGerak } from "../gerak.ts";
 import { Bilah } from "../komponen/Bilah.tsx";
+import { BlokData } from "../komponen/BlokData.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { salin } from "../sorak.tsx";
 import { angka } from "../util.tsx";
@@ -451,23 +452,7 @@ export function Statistik() {
         </div>
       </section>
 
-      <section>
-        <span className="mata">Data belajarmu</span>
-        {/* Blok ini BELUM diport, dan itu dikatakan di layar alih-alih
-            dihilangkan diam-diam. Laporan, ekspor, impor, cadangkan, dan reset
-            semuanya butuh lapisan dialog (`jendela`/`konfirmasi` di inti.js)
-            yang belum ada di sisi React. Tombol yang hilang tanpa penjelasan
-            membuat orang mengira fiturnya dibuang. */}
-        <Keadaan
-          judul="Masih di antarmuka lama"
-          ket={
-            "Laporan kemajuan, ekspor, impor, cadangkan, dan reset progres " +
-            "belum diport ke antarmuka ini karena semuanya butuh dialog " +
-            "konfirmasi. Semuanya masih lengkap di antarmuka lama, dan " +
-            "keduanya memakai berkas progres yang sama."
-          }
-        />
-      </section>
+      <BlokData />
     </div>
   );
 }

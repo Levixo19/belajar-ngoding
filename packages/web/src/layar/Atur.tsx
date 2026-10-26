@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from "react";
 import { ambil, kirim } from "../api.ts";
 import { adaGerak, tingkatGerak } from "../gerak.ts";
 import { Ikon } from "../komponen/Ikon.tsx";
+import { BlokBahaya, BlokData } from "../komponen/BlokData.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import {
@@ -62,6 +63,8 @@ interface Lokasi {
 
 interface Awal {
   versi: string;
+  // Dipakai pemilih bahasa di `BlokBahaya`; datang dari `/api/awal`.
+  bahasa: { key: string; label: string }[];
   versi_web: string;
   lokasi: Lokasi;
   batas: { waktu: number; memori_mb: number };
@@ -489,19 +492,9 @@ export function Atur() {
         </div>
       </section>
 
-      <section>
-        <span className="mata">Data belajarmu</span>
-        <Keadaan
-          judul="Masih di antarmuka lama"
-          ket={
-            "Laporan kemajuan, ekspor, impor, cadangkan, dan reset progres " +
-            "belum diport karena semuanya butuh dialog konfirmasi. Reset " +
-            "progres khususnya TIDAK akan dipasang tanpa dialognya: ia " +
-            "menghapus catatan belajar sungguhan, dan tombol semacam itu tidak " +
-            "boleh pernah bisa ditekan karena salah sasaran."
-          }
-        />
-      </section>
+      <BlokData />
+
+      <BlokBahaya bahasa={awal.bahasa} />
 
       <section>
         <span className="mata">Tentang</span>

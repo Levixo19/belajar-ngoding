@@ -60,13 +60,39 @@ async function urai(tanggapan: Response): Promise<unknown> {
   return muatan;
 }
 
+/** Jalur API tanpa awalan: `"konfigurasi"`, bukan `"/api/konfigurasi"`.
+ *
+ *  `ambil` dan `kirim` menambahkan `/api/` sendiri, jadi jalur yang sudah
+ *  membawanya menghasilkan `/api//api/...` -- 404 yang hanya browser bisa
+ *  memberitahu, karena bagi `tsc` ia cuma sebuah string yang sah. Itu sudah
+ *  terjadi DUA KALI di repo ini.
+ *
+ *  Pagar di tingkat TIPE sudah dicoba dan DIUKUR TUMPUL: dengan parameter
+ *  `<T, J extends string = string>`, pemanggil yang menulis `ambil<Hasil>(...)`
+ *  -- yaitu semuanya -- membuat `J` jatuh ke bawaannya `string` alih-alih
+ *  disimpulkan dari argumennya, dan `string` tidak diawali `/` sehingga apa
+ *  pun lolos. Membuat `J` wajib berarti memaksa SELURUH pemanggil menulis dua
+ *  argumen tipe. Jadi yang menjaga di sini dua hal yang benar-benar bisa
+ *  merah: pemeriksaan runtime di bawah, dan sapuan sumber di
+ *  `test_konten_json.test_jalur_api_tanpa_awalan_ganda`.
+ */
+function _jalurSah(jalur: string): string {
+  if (jalur.startsWith("/") || jalur.startsWith("api/")) {
+    throw new GalatApi(
+      `Jalur API tidak boleh berawalan "/" atau "api/": ${jalur}. `
+      + "`ambil`/`kirim` menambahkan `/api/` sendiri.", 0);
+  }
+  return jalur;
+}
+
 /** GET `/api/<jalur>` dengan parameter kueri. */
 export async function ambil<T>(
   jalur: string,
   kueri: Record<string, string | number | undefined> = {},
 ): Promise<T> {
   if (!TOKEN) throw new GalatApi(PESAN_TANPA_SERVER, 0);
-  const alamat = new URL(`/api/${jalur}`, globalThis.location.origin);
+  const alamat = new URL(`/api/${_jalurSah(jalur)}`,
+                         globalThis.location.origin);
   for (const [k, v] of Object.entries(kueri)) {
     if (v !== undefined) alamat.searchParams.set(k, String(v));
   }
@@ -77,9 +103,11 @@ export async function ambil<T>(
 }
 
 /** POST `/api/<jalur>` dengan muatan JSON. */
-export async function kirim<T>(jalur: string, muatan: unknown = {}): Promise<T> {
+export async function kirim<T>(
+  jalur: string, muatan: unknown = {},
+): Promise<T> {
   if (!TOKEN) throw new GalatApi(PESAN_TANPA_SERVER, 0);
-  const tanggapan = await fetch(`/api/${jalur}`, {
+  const tanggapan = await fetch(`/api/${_jalurSah(jalur)}`, {
     method: "POST",
     headers: {
       "X-Belajar-Token": TOKEN,

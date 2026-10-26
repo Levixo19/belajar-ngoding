@@ -34,6 +34,7 @@ import { Coba, Latihan } from "./layar/Kerja.tsx";
 import { Kuis } from "./layar/Kuis.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 import { ingat, terapkanTampilan } from "./lokal.ts";
+import { PenyediaJendela } from "./komponen/Jendela.tsx";
 import { Sorak } from "./sorak.tsx";
 
 /* Medan yang dipakai router ini dari `/api/awal -> bahasa`. Ia sengaja
@@ -334,7 +335,13 @@ terapkanTampilan();
 
 createRoot(akar).render(
   <StrictMode>
-    <Aplikasi />
+    {/* `PenyediaJendela` membungkus SELURUH aplikasi, bukan satu layar: dialog
+        dipakai blok data di Statistik maupun Pengaturan, dan nanti oleh "Lihat
+        jawaban" di ruang kerja. Tirai dirender lewat portal ke `document.body`
+        supaya ia tidak pernah terjebak di dalam `overflow` sebuah layar. */}
+    <PenyediaJendela>
+      <Aplikasi />
+    </PenyediaJendela>
     <Sorak />
   </StrictMode>,
 );

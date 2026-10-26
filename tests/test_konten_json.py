@@ -346,6 +346,48 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                         in modul.BATERAI.items() if not mutan)
         self.assertEqual(kosong, [], "entri baterai tanpa satu pun mutan")
 
+    def test_jalur_api_tanpa_awalan_ganda(self):
+        """`ambil`/`kirim` menambahkan `/api/`, jadi jalurnya telanjang.
+
+        Jalur yang sudah membawa awalannya menghasilkan `/api//api/...` -- 404
+        yang HANYA browser bisa memberitahu, karena bagi `tsc` ia cuma sebuah
+        string yang sah. Sudah terjadi dua kali: sekali di ronde port layar,
+        sekali lagi di `BlokData`.
+
+        Pagar di tingkat tipe sudah dicoba dan diukur TUMPUL -- dengan
+        `<T, J extends string = string>`, pemanggil yang menulis
+        `ambil<Hasil>(...)` membuat `J` jatuh ke bawaannya `string`, dan
+        `string` tidak diawali `/` sehingga apa pun lolos. Jadi yang menjaga
+        sapuan ini, plus pemeriksaan runtime di `api.ts`.
+        """
+        import re
+        src = os.path.join(AKAR, "packages", "web", "src")
+        if not os.path.isdir(src):
+            self.skipTest("packages/web/src tidak ada")
+        pola = re.compile(
+            r"\b(?:api\.)?(?:ambil|kirim)\s*(?:<[^()]*?>)?\s*\(\s*"
+            r"[\"'`]([^\"'`]+)")
+        salah, diperiksa = [], 0
+        for akar, _dir, berkas in os.walk(src):
+            for n in sorted(berkas):
+                if not n.endswith((".ts", ".tsx")):
+                    continue
+                jalur = os.path.join(akar, n)
+                with open(jalur, encoding="utf-8") as f:
+                    isi = f.read()
+                for m in pola.finditer(isi):
+                    diperiksa += 1
+                    j = m.group(1)
+                    if j.startswith("/") or j.startswith("api/"):
+                        salah.append(f"{os.path.relpath(jalur, AKAR)}: {j!r}")
+        # Lantai populasi: sapuan yang nol panggilan hijau tanpa arti.
+        self.assertGreaterEqual(diperiksa, 20,
+                                f"cuma {diperiksa} panggilan api yang terbaca "
+                                "-- polanya yang salah, bukan sumbernya")
+        self.assertEqual(salah, [],
+                         "jalur api berawalan ganda: `ambil`/`kirim` sudah "
+                         "menambahkan `/api/` sendiri")
+
     def test_keluaran_identik_dengan_python(self):
         import re
         import subprocess
