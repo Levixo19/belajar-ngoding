@@ -39,6 +39,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useUngkap } from "../gerak-react.ts";
 
 import { ambil } from "../api.ts";
 import type { Konteks } from "../Cangkang.tsx";
@@ -664,8 +665,13 @@ function DaftarMateri({ b, tingkat }: { b: DataBahasa; tingkat: Tingkat[] }) {
 }
 
 function DaftarKuis({ b }: { b: DataBahasa }) {
+  // Diungkap saat tergulir, berurutan. `kunci` berisi PANJANG daftarnya:
+  // kurikulum yang berganti berarti daftar baru yang pantas diungkap lagi,
+  // sementara render ulang dengan isi yang sama tidak boleh menyembunyikan
+  // lalu memunculkannya lagi di bawah mata orang yang sedang membaca.
+  const ref = useUngkap<HTMLDivElement>({ per: 46, geser: 10 }, [b.kuis.length]);
   return (
-    <div className="senarai">
+    <div className="senarai" ref={ref}>
       {b.kuis.map((q) => {
         const persen = q.total_soal ? (q.terbaik / q.total_soal) * 100 : 0;
         const hari = selisihHari(q.jadwal);
@@ -715,8 +721,13 @@ function DaftarKuis({ b }: { b: DataBahasa }) {
 }
 
 function DaftarLatihan({ b }: { b: DataBahasa }) {
+  // Diungkap saat tergulir, berurutan. `kunci` berisi PANJANG daftarnya:
+  // kurikulum yang berganti berarti daftar baru yang pantas diungkap lagi,
+  // sementara render ulang dengan isi yang sama tidak boleh menyembunyikan
+  // lalu memunculkannya lagi di bawah mata orang yang sedang membaca.
+  const ref = useUngkap<HTMLDivElement>({ per: 46, geser: 10 }, [b.latihan.length]);
   return (
-    <div className="senarai">
+    <div className="senarai" ref={ref}>
       {b.latihan.map((e) => (
         <a
           className={

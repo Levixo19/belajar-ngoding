@@ -22,7 +22,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState,
          type ReactNode } from "react";
-import { nyalakanLangit } from "./langit.ts";
+import { arahkanLangit, nyalakanLangit } from "./langit.ts";
 import { lepas, masuk, tekan } from "./gerak.ts";
 
 import { Ikon } from "./komponen/Ikon.tsx";
@@ -143,12 +143,22 @@ function StripKonteks({ k }: { k: Konteks }) {
 
 export function Cangkang({
   rute,
+  alamat,
   konteks,
   bahasa,
   children,
 }: {
   /** Nama rute aktif, untuk menandai navigasi dan memilih kelas ukuran. */
   rute: string;
+  /** Alamat LENGKAP, termasuk parameternya.
+   *
+   *  Dipisah dari `rute` karena transisi harus menyala saat berpindah dari
+   *  satu bahasa ke bahasa lain -- di situ nama rutenya SAMA (`bahasa`) dan
+   *  cuma parameternya berganti, padahal yang terjadi di layar pergantian
+   *  halaman seutuhnya. Menandainya dengan `rute` saja berarti perpindahan
+   *  yang paling sering dilakukan di aplikasi ini justru yang tidak pernah
+   *  dianimasikan. */
+  alamat?: string;
   konteks?: Konteks;
   /** Daftar kurikulum untuk palet perintah. Dari `/api/awal`. */
   bahasa: BahasaPalet[];
@@ -225,7 +235,12 @@ export function Cangkang({
   useEffect(() => {
     if (!layarRef.current) return;
     masuk(layarRef.current, { geser: 8, zum: 0.995, pegas: "halus" });
-  }, [rute]);
+    // Dan langitnya ikut diarahkan ulang: berpindah layar di aplikasi ini
+    // adalah instrumen yang diputar ke sasaran baru, bukan halaman yang
+    // ditukar. Ia memakai peredam paralaks yang sudah ada -- nol animasi
+    // baru, nol properti yang diperebutkan dua mesin.
+    arahkanLangit();
+  }, [rute, alamat]);
 
   /* ------------------------------------------------ umpan balik tekan ---
      Dipasang SEKALI di tingkat dokumen, bukan per tombol. Dua sebabnya:

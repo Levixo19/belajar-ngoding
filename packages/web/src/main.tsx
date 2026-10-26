@@ -166,7 +166,7 @@ function Aplikasi() {
     );
   }
   return (
-    <Cangkang rute={nama} bahasa={awal.bahasa}
+    <Cangkang rute={nama} alamat={alamat.jalur.join("/")} bahasa={awal.bahasa}
               konteks={konteksLayar ?? konteksRute(alamat, awal)}>
       <Isi alamat={alamat} awal={awal} onKonteks={setKonteksLayar} />
     </Cangkang>

@@ -27,6 +27,20 @@ const AMPLITUDO = 16; // px geser paralaks maksimum
 const KELIP_FPS = 12;
 const LAYAR_TENANG = /^#\/(materi|latihan|coba)\b/;
 
+/* Pendorong "arahkan ulang", dipasang oleh langit yang sedang hidup.
+   Bawaannya tidak melakukan apa-apa, jadi memanggilnya sebelum langitnya
+   menyala -- atau sesudah dilepas -- aman dan diam. */
+let arahkanUlang: () => void = () => {};
+
+/** Arahkan langit ulang, seperti instrumen yang diputar ke sasaran baru.
+ *
+ *  Dipanggil router saat rutenya berganti. Ia TIDAK menggambar ulang apa pun
+ *  dan tidak membuat animasi baru: ia cuma menggeser sasaran paralaks yang
+ *  sudah ada, jadi ongkosnya nol di luar peredam yang memang sudah jalan. */
+export function arahkanLangit(): void {
+  arahkanUlang();
+}
+
 function token(nama: string, cadangan: string): string {
   const v = getComputedStyle(document.body).getPropertyValue(nama).trim();
   return v || cadangan;
@@ -59,6 +73,7 @@ export function nyalakanLangit(): () => void {
   let tx = 0, ty = 0, sx = 0, sy = 0;
   let rafGeser = 0;
   let timerKelip: ReturnType<typeof setInterval> | 0 = 0;
+  let putaran = 1;
 
   function ukur() {
     dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -207,6 +222,28 @@ export function nyalakanLangit(): () => void {
     document.body.classList.toggle("langit-tenang", tenang);
   }
 
+  /* Arahkan ulang: dorong SASARAN paralaks, bukan transformnya.
+     Paralaks sudah memegang `transform` kedua kanvas lewat `pasangGeser()`,
+     dan menambahkan animasi WAAPI di properti yang sama berarti dua mesin
+     mengejar satu properti -- gerakan tersendat yang paling sulit
+     didiagnosis, dan aturan yang sudah tertulis di AGENTS.md. Jadi yang
+     didorong `tx`/`ty`, dan peredam di `langkahGeser()` yang mengendapkannya.
+
+     Gratis ikut tunduk pada tingkat gerak: `langkahGeser` cuma dipanggil
+     lewat jalur yang sudah dipagari, dan `aturKelip()` menolkan sasaran di
+     tingkat selain "penuh" maupun di layar baca. */
+  arahkanUlang = () => {
+    if (tingkatGerak() !== "penuh") return;
+    if (LAYAR_TENANG.test(location.hash)) return;
+    // Arahnya BERGANTIAN, bukan acak: dua perpindahan berurutan ke arah yang
+    // sama terbaca sebagai hanyut, sementara bergantian terbaca sebagai
+    // instrumen yang diputar lalu dikembalikan.
+    putaran = -putaran;
+    tx = putaran * AMPLITUDO * 0.75;
+    ty = putaran * AMPLITUDO * 0.3;
+    if (!rafGeser) rafGeser = requestAnimationFrame(langkahGeser);
+  };
+
   function semua() {
     ukur();
     bangkitkan();
@@ -237,6 +274,10 @@ export function nyalakanLangit(): () => void {
   semua();
 
   return () => {
+    // Pendorong dilepas LEBIH DULU: langit yang sudah dicabut dari DOM tapi
+    // pendorongnya masih hidup berarti rute berikutnya memanggil fungsi yang
+    // menulis ke kanvas yang tidak ada lagi.
+    arahkanUlang = () => {};
     window.removeEventListener("resize", saatUkuran);
     window.removeEventListener("pointermove", saatPenunjuk);
     window.removeEventListener("hashchange", aturKelip);
