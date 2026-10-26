@@ -628,6 +628,50 @@ class TestKontrakApi(unittest.TestCase):
                                 f"cuma {diperiksa} endpoint yang benar-benar "
                                 "diperiksa")
 
+    def test_karantina_bentuknya_diuji_saat_terisi(self):
+        """`karantina` diuji saat BERISI, bukan saat kosong.
+
+        Ini medan yang bentuknya pernah SALAH -- ditulis `[dict]` padahal
+        `simpanan.KARANTINA` berisi jalur berkas -- dan ia hijau berbulan-bulan
+        karena daftar kosong memuaskan `[apa pun]`. Yang akhirnya
+        membongkarnya kebetulan: tes lain di suite mengotori daftar global itu,
+        jadi tes kontraknya LULUS sendirian dan GAGAL di dalam suite. Pagar
+        yang hanya memerah saat tes lain mengotori keadaan global bukan pagar.
+
+        Daftarnya DIPULIHKAN di `finally` karena ia global per proses, dan
+        tes mana pun sesudahnya yang membaca `/api/awal` akan melihat entri
+        karangan ini -- persis pencemaran yang membongkar cacatnya dulu, cuma
+        kali ini dari tes yang seharusnya tahu lebih baik.
+
+        Pemulihan itu DIUKUR dan hari ini tidak bisa dibuktikan merah, dan
+        angkanya ditulis di sini supaya tidak dikira terbukti: mencabut
+        `finally`-nya membuat seluruh kelas ini TETAP hijau. Sebabnya unittest
+        menjalankan metode berurut alfabetis, jadi
+        `test_bentuk_jawaban_setiap_endpoint` -- satu-satunya tes lain di sini
+        yang membaca `/api/awal` -- sudah selesai sebelum baris di bawah
+        jalan. Jadi ia pagar untuk tes BERIKUTNYA yang ditambahkan, bukan
+        untuk yang sekarang. Dipertahankan dengan sengaja; yang dijaganya
+        bentuk kelas ini besok, bukan hari ini.
+        """
+        from pelajar import simpanan
+        asli = list(simpanan.KARANTINA)
+        simpanan.KARANTINA.append("/tmp/palsu/konfig.json.rusak-20261026-000000")
+        try:
+            kode, isi_ = self.minta("GET", "/api/awal", {})
+            self.assertEqual(kode, 200)
+            self.assertTrue(isi_["karantina"], "karantina tetap kosong")
+            bentuk = KONTRAK[("GET", "/api/awal")][1]
+            try:
+                periksa(bentuk, isi_)
+            except Salah as e:
+                self.fail(f"bentuk /api/awal bergeser saat karantina "
+                          f"berisi -- {e}")
+            for j in isi_["karantina"]:
+                self.assertIsInstance(
+                    j, str, "karantina berisi JALUR BERKAS, bukan objek")
+        finally:
+            simpanan.KARANTINA[:] = asli
+
     def test_latihan_bermuatan_penuh(self):
         """`/api/latihan` diuji lagi pada latihan yang medannya TERISI.
 
