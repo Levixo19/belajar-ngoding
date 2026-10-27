@@ -274,7 +274,7 @@ export function Lensa({
   }, [babList, n]);
   const awalBab = useMemo(() => babList.map((bb) => bb.materi[0] ?? -1), [babList]);
 
-  const { data: dataB } = useDataB(berkas, kunci);
+  const { data: dataB, galat: galatB } = useDataB(berkas, kunci);
   const mTerpilih = indeks !== null ? b.materi[indeks] : undefined;
   const { data: dataM, galat: galatM } = useDataM(berkas, kunci, indeks, !!mTerpilih?.terkunci);
 
@@ -730,6 +730,7 @@ export function Lensa({
               b={b}
               i={indeks}
               dataB={dataB}
+              galatB={galatB}
               deskripsi={dataM}
               galatDeskripsi={galatM}
               memuatDeskripsi={!mTerpilih.terkunci && dataM === null && galatM === null}

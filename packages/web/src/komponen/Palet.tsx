@@ -23,6 +23,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ambil } from "../api.ts";
 import { ingatJson } from "../lokal.ts";
+import { useFokusDialog } from "./fokus-dialog.ts";
 import {
   daftarPerintah, kelompokkan, riwayatNaikkan, riwayatPotong, saringPerintah,
   type BahasaPalet, type ButirPalet, type ButirRiwayat,
@@ -67,6 +68,8 @@ export function Palet({
   const [pilihan, setPilihan] = useState(0);
   const medanRef = useRef<HTMLInputElement>(null);
   const hasilRef = useRef<HTMLUListElement>(null);
+  const kotakRef = useRef<HTMLDivElement>(null);
+  useFokusDialog(kotakRef, onTutup);
   const butirRef = useRef<Array<HTMLLIElement | null>>([]);
 
   /* Jam dibaca SEKALI per palet yang dibuka, dan ingatannya dipotong sekali di
@@ -186,9 +189,6 @@ export function Palet({
         e.preventDefault();
         buka(d);
       }
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      onTutup();
     }
   };
 
@@ -196,6 +196,8 @@ export function Palet({
   return (
     <div
       className="jendela"
+      ref={kotakRef}
+      tabIndex={-1}
       role="dialog"
       aria-modal="true"
       // Tanpa nama, pembaca layar cuma mendengar "Dialog" -- dan palet ini

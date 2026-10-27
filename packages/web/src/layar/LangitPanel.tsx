@@ -171,12 +171,14 @@ export function PanelRasi({
 /* ----------------------------------------------------------- panel bintang */
 
 export function PanelBintang({
-  b, i, dataB, deskripsi, galatDeskripsi, memuatDeskripsi, profesi, berikut,
+  b, i, dataB, galatB, deskripsi, galatDeskripsi, memuatDeskripsi, profesi, berikut,
   onPilih, onKosong,
 }: {
   b: BahasaLangit;
   i: number;
   dataB: DataB | null;
+  /** `/api/bahasa` gagal: alasan terkunci dan keterangan bab tidak ada. */
+  galatB: string | null;
   deskripsi: DataM | null;
   galatDeskripsi: string | null;
   memuatDeskripsi: boolean;
@@ -253,6 +255,13 @@ export function PanelBintang({
       ) : null}
       {status === "terkunci" && babB?.ket ? (
         <p className="lt-panel-ringkas lt-panel-redup">{babB.ket}</p>
+      ) : null}
+      {/* Tanpa baris ini bintang terkunci tampil tanpa alasan dan tanpa tanda
+          bahwa ada yang gagal dimuat. */}
+      {galatB && !babB ? (
+        <p className="lt-panel-ringkas lt-panel-redup" role="status">
+          Alasan terkunci dan keterangan bab tidak bisa dimuat. Muat ulang halaman untuk mencoba lagi.
+        </p>
       ) : null}
 
       {bab && h ? (

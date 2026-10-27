@@ -1269,12 +1269,16 @@ ditunjuk). Yang mengikat:
   paling banyak 60 bintang. "Layar ini 83 sampai 96 persen sibuk saat diam"
   hanya benar bila beberapa kurikulum sudah selesai: satu reticle berputar per
   kurikulum, dan pada profil pemilik 13 persen.
-* **Risiko yang diketahui: latar `Cahaya` ikhtisar.** Ia 32 sampai 64
-  `radial-gradient` pada satu elemen 1536x1558 (1800x1826 di 1905), dan di
-  Chrome headless (raster perangkat lunak) tiap langkah ubah ukuran jendela
-  menahan thread utama 1,2 sampai 1,6 detik (layar Bahasa 63 ms). Chrome ber-GPU
-  belum diukur, jadi belum diutak-atik; kalau terbukti di GPU, jadikan kanvas
-  kecil atau tunda sampai ukuran berhenti berubah.
+* **Latar `Cahaya` ikhtisar dibatasi ke kotak tiap gradien** (2026-10-27). Ia 32
+  sampai 64 `radial-gradient` pada satu elemen 1800x1826 (di 1905), dan tiap
+  lapis dulu menggambar SELURUH kotak itu: satu langkah ubah ukuran jendela
+  menahan thread utama 2 sampai 6 detik di Chrome headless (median 2,3 detik
+  pada delapan langkah; layar Bahasa 63 ms), dan tanpa latar itu sekitar 60 ms.
+  Sekarang tiap lapis punya `background-size` dan `background-position`
+  sendiri (2 x jari-jari), dan satu langkah sekitar 60 ms. Tampilannya sama
+  dengan mata, tapi TIDAK identik byte demi byte (selisih paling besar 8 dari
+  255, hampir semuanya 1 sampai 2). Chrome ber-GPU belum diukur. Dijaga
+  `test_cahaya_ikhtisar_dibatasi_ke_kotaknya`.
 * **Kartu judul hover menangkap penunjuk** (dapat dilayangi, WCAG 1.4.13), dan
   itu dulu menutup 21 sampai 28 persen perpindahan alami dari bintang ke
   tetangganya (pusat tetangga di bawah kartu). Kartu meneruskan sorot dan klik
@@ -1300,14 +1304,30 @@ ditunjuk). Yang mengikat:
 * **Dua bahasa warna hidup berdampingan** sampai ada ronde CSS-saja untuk
   `PetaRasi`: Bahasa dan Dasbor masih memakai kuningan = selesai.
 * **Pengukuran di peramban tinggal di repo**: `packages/web/uji/manual/`
-  (sebelas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
-  `tangkap.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
+  (tiga belas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
+  `tangkap.mjs`, `fokus-dialog.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
   `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET, jalankan dengan profil
   terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
   ia menyunting berkas di tempat dan memulihkannya, jadi jalankan di salinan
   pohon dan ia gagal bila ada sel yang dilewati). Kriteria terima irisan
   menunjuk berkas-berkas itu, bukan skrip di direktori sesi yang suatu hari
   dibersihkan.
+* **Chip konsep dicocokkan dengan JUDUL, dan huruf di dalam kata lain tidak
+  boleh menyalakannya.** Pola lama menyalakan `oop` di "L-oop" (19 judul, hampir
+  semua Loop, jadi "Objek & class"), `race` di "T-race", `dict` di "pre-dict",
+  `teks` di "Kon-teks", `sub` di "Pub/Sub", dan `struct` di "Infrastructure".
+  Sekarang 22 judul lepas dan 3 masuk (judul Algoritma yang nyata),
+  semuanya diperiksa satu per satu; salah cocok karena MAKNA (CSS "Class, ID")
+  tetap ada dan tidak bisa ditutup pencocokan judul. Ukur dengan
+  `uji/manual/ukur-konsep.mjs` sebelum mengubah `KONSEP`; sifatnya ditagih
+  `banding-lensa.mjs` ([konsep]). Layar lama di `/lama` tetap memakai pola
+  lamanya. Tanpa lookbehind: modul yang gagal diurai mematikan seluruh aplikasi.
+* **Daftar punya tautan lewati sendiri** ("Lewati ke daftar rasi"), seperti peta.
+  Tanpa itu papan ketik melewati sekitar 16 kontrol saringan lebih dulu, di
+  layar yang justru dipakai orang yang paling bergantung pada Tab.
+* **`/api/bahasa` yang gagal disebut di panel**, bukan diam: bintang terkunci
+  tanpa alasan dan tanpa tanda ada yang gagal dulu terbaca seperti keadaan
+  biasa. Dijaga `alur-nyata.mjs` (500 disimulasikan, dengan kontrol normal).
 
 ## Kurikulum tech stack (2026-10-19)
 
@@ -1602,7 +1622,7 @@ Keenam belas pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
 `test_konten_json.TestAlgoritmaTypeScript`, dan **204 sel mutasi** di
 `packages/bersama/uji/gigi-golden.py` (192 untuk keenam belas pembanding web,
 12 untuk ketiga golden `bersama`) membuktikan semuanya bisa MERAH. Pagar CSS dan
-sumber layar Langit punya baterainya sendiri, `alat/uji_gigi_blok.py` (55 sel).
+sumber layar Langit punya baterainya sendiri, `alat/uji_gigi_blok.py` (58 sel).
 
 **`--experimental-strip-types` diberikan eksplisit** ke `node` di suite MAUPUN
 di baterai. Pelucutan tipe baru tanpa-flag sejak Node 23.6 (22.18 di jalur
@@ -1707,7 +1727,7 @@ bantuannya, lencana XP dan streak, dan bilah kemajuan baca. Dengan itu seluruh
 1.570 baris `aplikasi.js` dan 3.408 baris `layar-belajar.js` punya padanannya di
 React.
 
-Empat catatan yang mengikat untuk cangkang:
+Lima catatan yang mengikat untuk cangkang:
 
 * **`PINTASAN_G` dan `PINTASAN` tinggal di `komponen/pintasan-tabel.ts`**, satu
   definisi untuk tiga pembaca (penangan papan ketik, dialog bantuan, label
@@ -1729,6 +1749,14 @@ Empat catatan yang mengikat untuk cangkang:
   layarnya, jadi `pasangMajuBaca()` selalu mengukur halaman yang sudah penuh.
   Di React cangkang digambar LEBIH DULU -- saat efeknya jalan, dasbor masih
   sebuah pusaran setinggi seratus piksel.
+* **Dialog yang digambar sendiri wajib memakai `useFokusDialog`**
+  (`komponen/fokus-dialog.ts`): fokus awal masuk ke kotak, Tab terjerat, Esc
+  menutup, dan fokus kembali ke pemicunya. `Bantuan`, `Palet`, dan catatan di
+  `Tanda` dulu tidak punya satupun: menutupnya menjatuhkan fokus ke awal
+  halaman, Tab keluar ke halaman di belakang tirai, dan catatan tidak bisa
+  ditutup dengan Esc. Tanpa galat di mana pun. Dialog lewat `Jendela` sudah
+  punya semuanya dan berbagi `bisaFokus` dengan pengait itu. Dijaga
+  `TestFokusDialog`; perilakunya diukur di peramban.
 
 **UMPAN TEKAN ADALAH `pasangIsyarat()`, DAN ELEMEN SVG TIDAK PERNAH IKUT**
 (2026-10-26). Dilaporkan pemilik: layar Peta Karier "rusak" -- gumpalan teks

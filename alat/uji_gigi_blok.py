@@ -123,6 +123,9 @@ SEL = [
     ("garis penunjuk kembali di atas label", os.path.join(SRC, "layar", "LangitLensa.tsx"), pindah_penunjuk_ke_akhir, BLOK, "test_penunjuk_digambar_sebelum_label"),
     ("garis ikhtisar kembali ke ruasAntara", os.path.join(SRC, "layar", "LangitIkhtisar.tsx"), ganti("const u = ruasIkhtisar(", "const u = ruasAntara("), BLOK, "test_garis_ikhtisar_tepi_ke_tepi"),
     ("kata kapsul kembali dari XP", os.path.join(SRC, "layar", "LangitIkhtisar.tsx"), ganti("              {kataMulai(bintangSaran.status)}\n            </a>", "              {saran.mulai ? 'Mulai di sini' : 'Lanjutkan di sini'}\n            </a>"), BLOK, "test_kata_kapsul_dari_status_bintang"),
+    ("cahaya ikhtisar menggambar seluruh kotak (tanpa background-size)", os.path.join(SRC, "layar", "LangitIkhtisar.tsx"), ganti('        backgroundSize: ukuran.join(","),\n', ''), BLOK, "test_cahaya_ikhtisar_dibatasi_ke_kotaknya"),
+    ("Bantuan kembali tanpa pengait fokus", os.path.join(SRC, "komponen", "Pintasan.tsx"), ganti("  useFokusDialog(kotak, onTutup);\n", ""), "tests.test_web.TestFokusDialog", "test_dialog_tanpa_pengait_fokus"),
+    ("Jendela kembali punya bisaFokus sendiri", os.path.join(SRC, "komponen", "Jendela.tsx"), ganti('import { bisaFokus } from "./fokus-dialog.ts";\n', 'function bisaFokus(k: HTMLElement): HTMLElement[] { return [...k.querySelectorAll<HTMLElement>("button")]; }\n'), "tests.test_web.TestFokusDialog", "test_jendela_berbagi_bisa_fokus"),
 ]
 
 

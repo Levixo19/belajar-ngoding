@@ -813,6 +813,49 @@ aku("lensa", labelLebar.menimpa <= 0.015 * labelLebar.total,
   aku("kartu", bintangDiBawahKartu(rapat, 5, 160, 100) === null, "di luar semua glif: tidak ada yang dipilih");
 }
 
+/* ------------------------------------------------------------------ konsep */
+
+{
+  // Chip konsep mencocokkan JUDUL. Pola lama menyalakan konsep karena huruf yang
+  // kebetulan ada di dalam kata lain (`oop` di "Loop", `race` di "Trace", `dict`
+  // di "predict", `teks` di "Konteks", `sub` di "Pub/Sub", `struct` di
+  // "Infrastructure"). Daftar di bawah judul NYATA dari korpus, bukan karangan:
+  // yang pertama tidak boleh menyala, yang kedua harus tetap menyala.
+  const pola = (nama) => KONSEP.find(([x]) => x === nama)[1];
+  const SALAH = [
+    ["Objek & class", ["PyTorch: Loop Pelatihan Model", "Game Loop, Frame, dan Delta Time", "Memindai Infrastructure as Code: Checkov dan KICS"]],
+    ["Konkurensi", ["Membaca Error: Stack Trace, Throwable, dan Logging", "Dasar Observability: Metrik, Log, Trace, dan SLO"]],
+    ["Koleksi", ["scikit-learn: fit, predict, dan Pipeline", "Hash, Checksum, dan Integritas Data", "Class Object: toString, equals, dan hashCode"]],
+    ["Teks & regex", ["RAG yang Lebih Baik: Hibrida, Rerank, Konteks", "Log Keamanan dan SIEM: Mendeteksi Serangan"]],
+    ["Fungsi", ["Redis untuk Sesi, Pub/Sub, dan Antrean Tugas"]],
+    ["Algoritma", ["Embeddings dan Pencarian Semantik"]],
+  ];
+  const BENAR = [
+    ["Objek & class", ["OOP: Class & Object Dasar", "Object & Destructuring", "Constructor & Destructor", "Struct & Method"]],
+    ["Konkurensi", ["Dua Pengguna Bersamaan: Race Condition dan Penguncian"]],
+    ["Koleksi", ["Array & Hash", "Vec & HashMap", "List, Dictionary & Koleksi Generik"]],
+    ["Teks & regex", ["Teks, Regex & Format", "Operasi String"]],
+    ["Fungsi", ["Sub, Function & Parameter"]],
+    ["Algoritma", ["STL: Algorithm Library", "Mengurutkan Objek: Comparable & Comparator", "Rekursi"]],
+    ["Perulangan", ["PyTorch: Loop Pelatihan Model"]],
+  ];
+  const korpus = new Set(KURIKULUM.flatMap((k) => k.judul.map((j) => j.replace(/^\s*\d+\.\s*/, ""))));
+  for (const [nama, judul] of [...SALAH, ...BENAR]) {
+    for (const j of judul) aku("konsep", korpus.has(j), `judul tidak ada di korpus (daftar basi): "${j}"`);
+  }
+  for (const [nama, judul] of SALAH) {
+    for (const j of judul) aku("konsep", !pola(nama).test(j), `salah cocok: "${j}" menyalakan ${nama}`);
+  }
+  for (const [nama, judul] of BENAR) {
+    for (const j of judul) aku("konsep", pola(nama).test(j), `harus cocok: "${j}" tidak menyalakan ${nama}`);
+  }
+  // Tiap konsep masih menyala untuk sebagian korpus (pola yang mati tidak berguna).
+  for (const [nama, re] of KONSEP) {
+    const n = [...korpus].filter((j) => re.test(j)).length;
+    aku("konsep", n >= 5, `konsep ${nama} hanya menyala untuk ${n} judul`);
+  }
+}
+
 console.log(
   `${cacah} perbandingan atas ${KURIKULUM.length} kurikulum x ${PROFIL.length} profil ` +
     `x ${SKALA.length} skala (${totalBintang} bintang di ikhtisar) dan ${KANVAS.length} ukuran kanvas`,

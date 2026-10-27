@@ -190,11 +190,38 @@ await bagian("Daftar", async () => {
   await s.page.waitForTimeout(300);
   const r = await s.page.evaluate(() => { const e = document.querySelector('a.lt-daftar-baris[href="#/langit/sql"]'); const b = e.getBoundingClientRect(); return { fokus: document.activeElement === e, tampak: b.top >= 0 && b.bottom <= innerHeight }; });
   P.cek("Daftar: sesudah menutup lensa fokus di barisnya dan barisnya tampak", r.fokus && r.tampak, r);
+  // Tautan lewati: Enter memindahkan fokus ke daftar (dulu hanya ada di peta,
+  // jadi Daftar menuntut sekitar 16 Tab melewati saringan).
+  await s.page.evaluate(() => { location.hash = "#/langit"; }); await s.page.waitForTimeout(400);
+  const lewati = s.page.locator(".lt-krom .lt-lewati");
+  const adaLewat = (await lewati.count()) === 1;
+  P.cek("Daftar: ada tepat satu tautan lewati", adaLewat);
+  if (adaLewat) {
+    await lewati.focus(); await s.page.keyboard.press("Enter"); await s.page.waitForTimeout(150);
+    const di = await s.page.evaluate(() => { const a = document.activeElement; return !!a && !!a.closest(".lt-daftar"); });
+    P.cek("Daftar: tautan lewati memindahkan fokus ke daftar rasi", di);
+  }
   P.cek("Daftar: penanda 'Mulai di sini', bila ada, bertautan sah (ada-tidaknya pada profil xp = 0 diperiksa ukur-peta.mjs)", await s.page.evaluate(() => {
     const a = document.querySelector(".lt-daftar .lt-mulai");
     return !a || /^#\/langit\/[a-z0-9]+\/\d+$/.test(a.getAttribute("href") || "");
   }));
   await s.tutup();
+});
+
+/* ---- /api/bahasa gagal: bintang terkunci menyebut kegagalannya, bukan diam */
+await bagian("galat /api/bahasa", async () => {
+  const PESAN = "Alasan terkunci dan keterangan bab tidak bisa dimuat";
+  for (const gagal of [true, false]) {
+    const s = await mulai({ lebar: 1366, tinggi: 768, hash: "#/langit", tunggu: ".lt-ikhtisar" });
+    if (gagal) await s.page.route(/\/api\/bahasa\?/, (r) => r.fulfill({ status: 500, contentType: "application/json", body: '{"galat":"uji"}' }));
+    await s.page.evaluate(() => { location.hash = "#/langit/python/10"; });
+    await s.page.waitForSelector(".lt-panel-isi", { timeout: 15000 });
+    await s.page.waitForTimeout(800);
+    const teks = await s.page.evaluate(() => document.querySelector(".lt-panel-isi")?.innerText ?? "");
+    P.cek(gagal ? "API bahasa 500: panel bintang terkunci menyebut kegagalan" : "API bahasa normal: pesan kegagalan tidak muncul dan alasan tampil",
+      gagal ? teks.includes(PESAN) : !teks.includes(PESAN) && /Baca \d+ materi lagi/.test(teks));
+    await s.tutup();
+  }
 });
 
 /* ---- keadaan lintas navigasi: Kembali dari materi mendarat di lensa yang sama */

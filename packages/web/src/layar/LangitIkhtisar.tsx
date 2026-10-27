@@ -201,13 +201,29 @@ const Cahaya = memo(function Cahaya({
 }) {
   const jari = 112 * ik.skala;
   const lapis: string[] = [];
+  const ukuran: string[] = [];
+  const letak: string[] = [];
+  // Tiap gradien dibatasi ke kotaknya sendiri (2 x jari-jari). Tanpa itu
+  // 64 lapis menggambar seluruh kotak 1800x1826 padahal di luar jari-jarinya
+  // transparan, dan satu langkah ubah ukuran jendela menahan 2 sampai 6 detik
+  // di Chrome headless (sekitar 60 ms tanpa latar ini). Sekarang sekitar 60 ms
+  // dengan latar. Tampilannya sama dengan mata; piksel tidak identik byte demi
+  // byte (selisih paling besar 8 dari 255, hampir semuanya 1 sampai 2), karena
+  // gradien kini dirasterisasi per kotak kecil.
+  const tambah = (gradien: (pusat: string) => string, r: { cx: number; cy: number }) => {
+    const sisi = `${(2 * jari).toFixed(1)}px`;
+    lapis.push(gradien(`${jari.toFixed(1)}px ${jari.toFixed(1)}px`));
+    ukuran.push(`${sisi} ${sisi}`);
+    letak.push(`${(r.cx - jari).toFixed(1)}px ${(r.cy - jari).toFixed(1)}px`);
+  };
   for (const r of ik.rasi) {
     const frak = r.jumlah ? r.selesai / r.jumlah : 0;
-    const pos = `${r.cx.toFixed(1)}px ${r.cy.toFixed(1)}px`;
     if (frak > 0) {
       const f = (0.3 + 0.7 * frak).toFixed(3);
-      lapis.push(
-        `radial-gradient(circle ${jari.toFixed(1)}px at ${pos}, color-mix(in srgb, var(--lg-selesai) calc(var(--lt-maju) * ${f}${adaProfesi && !bekal.has(r.key) ? " * 0.34" : ""}), transparent), transparent)`,
+      tambah(
+        (pos) =>
+          `radial-gradient(circle ${jari.toFixed(1)}px at ${pos}, color-mix(in srgb, var(--lg-selesai) calc(var(--lt-maju) * ${f}${adaProfesi && !bekal.has(r.key) ? " * 0.34" : ""}), transparent), transparent)`,
+        r,
       );
     }
     // Rasi di luar bekal profesi: yang diredupkan CAHAYANYA (dekoratif),
@@ -215,11 +231,24 @@ const Cahaya = memo(function Cahaya({
     // teks dan glif menurunkan nama rasi ke 2,1-2,9:1 dan nomor bintang ke
     // 1,6:1, dan itu tautan dan bintang yang masih bisa dipakai.
     const redup = adaProfesi && !bekal.has(r.key) ? " * 0.34" : "";
-    lapis.push(
-      `radial-gradient(circle ${jari.toFixed(1)}px at ${pos}, color-mix(in srgb, var(--lt-kel-${r.keluarga}) calc(var(--lt-cahaya)${redup}), transparent), transparent)`,
+    tambah(
+      (pos) =>
+        `radial-gradient(circle ${jari.toFixed(1)}px at ${pos}, color-mix(in srgb, var(--lt-kel-${r.keluarga}) calc(var(--lt-cahaya)${redup}), transparent), transparent)`,
+      r,
     );
   }
-  return <div className="lt-ik-cahaya" aria-hidden="true" style={{ backgroundImage: lapis.join(",") }} />;
+  return (
+    <div
+      className="lt-ik-cahaya"
+      aria-hidden="true"
+      style={{
+        backgroundImage: lapis.join(","),
+        backgroundSize: ukuran.join(","),
+        backgroundPosition: letak.join(","),
+        backgroundRepeat: "no-repeat",
+      }}
+    />
+  );
 });
 
 /** Garis lintang dan bujur: kertas peta. Dekoratif, di bawah segalanya. */

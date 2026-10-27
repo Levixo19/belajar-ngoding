@@ -80,20 +80,28 @@ export const URUTAN_KELUARGA = ["web", "sistem", "jvm", "skrip", "perkakas", "te
 
 /** Konsep yang muncul di banyak kurikulum. Polanya mencocokkan JUDUL materi,
  *  bukan isinya: mencocokkan isi akan menyalakan hampir semua bintang untuk
- *  hampir semua konsep. Disalin apa adanya dari layar lama. */
+ *  hampir semua konsep. Asalnya layar lama (yang di `/lama` tetap memakai
+ *  pola lamanya), tapi di sini huruf yang kebetulan ada di dalam kata lain
+ *  tidak lagi menyalakan konsep: `oop` ada di "l-oop" (19 judul, hampir semua
+ *  Loop, jadi "Objek & class"), `race` di "t-race" dan "Stack Trace",
+ *  `dict` di "pre-dict", `teks` di "kon-teks", `sub` di "Pub/Sub", dan
+ *  `struct` di "Infrastructure" dan "Destructuring". Yang tersisa salah cocok
+ *  karena MAKNA (CSS "Class, ID" tetap menyalakan Objek & class) tidak bisa
+ *  dibedakan oleh pencocokan judul, dan itu batas yang disadari. Diukur atas
+ *  1.062 judul oleh `ukur-konsep` di `uji/manual`. */
 export const KONSEP: Array<[string, RegExp]> = [
   ["Variabel & tipe", /variabel|tipe data|\bval\b|\bvar\b|konstanta/i],
   ["Percabangan", /percabangan|kendali alur|\bif\b|switch|\bwhen\b|select case|\bcase\b/i],
   ["Perulangan", /perulangan|loop|\bfor\b|while|iterasi|iterator/i],
-  ["Fungsi", /fungsi|function|method|\bsub\b|prosedur|closure|lambda/i],
-  ["Koleksi", /array|\blist\b|slice|koleksi|collection|\bmap\b|dict|hash|\bset\b|\bvec\b|tuple|stl/i],
-  ["Teks & regex", /string|teks|regex|ekspresi reguler/i],
-  ["Objek & class", /class|objek|oop|struct|record|interface|trait|pewarisan|inheritance|polymorph/i],
+  ["Fungsi", /fungsi|function|method|(?:^|[^/\w])sub\b|prosedur|closure|lambda/i],
+  ["Koleksi", /array|\blist\b|slice|koleksi|collection|\bmap\b|\bdict|hash(?:map|set|table)|\bhash$|\bset\b|\bvec\b|tuple|stl/i],
+  ["Teks & regex", /string|\bteks|regex|ekspresi reguler/i],
+  ["Objek & class", /class|objek|\bobject\b|\boop\b|\bstruct|constructor|record|interface|trait|pewarisan|inheritance|polymorph/i],
   ["Galat", /exception|galat|error|panic|\bresult\b/i],
   ["Berkas & I/O", /berkas|\bfile\b|i\/o|input|output|json|csv/i],
   ["Pengujian", /pengujian|\btest|\buji|debug/i],
-  ["Konkurensi", /konkurensi|thread|goroutine|async|await|paralel|bersamaan|coroutine|race/i],
-  ["Algoritma", /rekursi|algoritma|big-o|sorting|pengurutan|pencarian|kompleksitas/i],
+  ["Konkurensi", /konkurensi|thread|goroutine|async|await|paralel|bersamaan|coroutine|\brace\b/i],
+  ["Algoritma", /rekursi|algoritma|algorithm|big-o|sorting|pengurutan|mengurutkan|qsort|kompleksitas/i],
   ["Modul & paket", /modul|paket|package|import|namespace|crate|dependensi|maven|gradle/i],
   ["Database", /database|\bsql\b|query|join|tabel|jdbc|pdo|transaksi/i],
 ];

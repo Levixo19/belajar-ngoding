@@ -23711,3 +23711,50 @@ class TestBlokLangit(unittest.TestCase):
         tidak ada yang mengubah opacity-nya) membuat klaim itu bohong."""
         ada = [k for k, b in self._aturan(self._blok()) if re.search(r"\btransition\s*:", b)]
         self.assertEqual(ada, [".lt-ln-terpilih"])
+
+    def test_cahaya_ikhtisar_dibatasi_ke_kotaknya(self):
+        """Tiap gradien latar `Cahaya` wajib punya `background-size` dan posisinya
+        sendiri. Tanpa itu 64 lapis menggambar seluruh kotak 1800x1826 padahal di
+        luar jari-jarinya transparan: satu langkah ubah ukuran jendela menahan 2
+        sampai 6 detik di Chrome headless, dan sekitar 60 ms sesudah dibatasi
+        (terukur dengan dan tanpa `.lt-ik-cahaya`)."""
+        sumber = self._baca_src("layar", "LangitIkhtisar.tsx")
+        self.assertIn('backgroundSize: ukuran.join(",")', sumber)
+        self.assertIn('backgroundPosition: letak.join(",")', sumber)
+        self.assertIn('backgroundRepeat: "no-repeat"', sumber)
+
+
+class TestFokusDialog(unittest.TestCase):
+    """Dialog yang digambar sendiri (bukan lewat `Jendela`) wajib memakai
+    `useFokusDialog`: pulihkan fokus ke pemicunya, jerat Tab, Escape menutup.
+    Dulu `Bantuan`, `Palet`, dan catatan di `Tanda` tidak punya satupun, dan
+    tidak ada galat di mana pun: menutup Bantuan menjatuhkan fokus ke awal
+    halaman, Tab keluar ke halaman di belakang tirai, dan dialog catatan tidak
+    bisa ditutup dengan Esc. Perilakunya diukur di peramban (18 pemeriksaan,
+    tiga dialog); pagar ini cuma menjaga agar dialog baru tidak lahir tanpanya."""
+
+    def _komponen(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        dir_ = os.path.join(akar, "packages", "web", "src", "komponen")
+        hasil = {}
+        for nama in sorted(os.listdir(dir_)):
+            if nama.endswith(".tsx"):
+                with open(os.path.join(dir_, nama), encoding="utf-8") as f:
+                    hasil[nama] = f.read()
+        return hasil
+
+    def test_dialog_tanpa_pengait_fokus(self):
+        # `Jendela.tsx` punya jerat fokusnya sendiri (Tirai) dan memakai
+        # `bisaFokus` dari modul yang sama.
+        dialog = [n for n, s in self._komponen().items() if 'role="dialog"' in s]
+        self.assertGreaterEqual(len(dialog), 4, dialog)
+        tanpa = [n for n in dialog
+                 if n != "Jendela.tsx" and "useFokusDialog(" not in self._komponen()[n]]
+        self.assertEqual(tanpa, [], "dialog digambar sendiri tanpa useFokusDialog")
+
+    def test_jendela_berbagi_bisa_fokus(self):
+        """Satu definisi `bisaFokus`: salinan kedua suatu hari berbeda tanpa
+        ada yang menyadarinya."""
+        semua = self._komponen()
+        self.assertIn('from "./fokus-dialog.ts"', semua["Jendela.tsx"])
+        self.assertNotIn("function bisaFokus", semua["Jendela.tsx"])

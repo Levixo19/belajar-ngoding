@@ -8,9 +8,10 @@
  *
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { temaBerikutnya } from "../lokal.ts";
+import { useFokusDialog } from "./fokus-dialog.ts";
 import { PINTASAN, PINTASAN_G } from "./pintasan-tabel.ts";
 
 export { PINTASAN, PINTASAN_G } from "./pintasan-tabel.ts";
@@ -125,19 +126,15 @@ export function usePintasanCangkang({
   }, [onBantuan, onAlihPanel, onPalet]);
 }
 
-/** Dialog daftar pintasan. Esc dan tombol Tutup sama-sama menutupnya. */
+/** Dialog daftar pintasan. Esc dan tombol Tutup sama-sama menutupnya, dan
+ *  fokus kembali ke tempat asalnya (`useFokusDialog`). */
 export function Bantuan({ onTutup }: { onTutup: () => void }) {
-  useEffect(() => {
-    const dengar = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onTutup();
-    };
-    globalThis.addEventListener("keydown", dengar);
-    return () => globalThis.removeEventListener("keydown", dengar);
-  }, [onTutup]);
+  const kotak = useRef<HTMLDivElement>(null);
+  useFokusDialog(kotak, onTutup);
 
   return (
     <div className="jendela" role="dialog" aria-modal="true"
-         aria-label="Pintasan papan ketik">
+         aria-label="Pintasan papan ketik" ref={kotak} tabIndex={-1}>
       <h2>Pintasan papan ketik</h2>
       <div style={{ display: "grid", gap: "var(--s2)" }}>
         {PINTASAN.map(([tombol, arti]) => (

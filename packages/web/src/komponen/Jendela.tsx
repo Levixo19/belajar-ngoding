@@ -22,6 +22,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo,
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { adaGerak } from "../gerak.ts";
+import { bisaFokus } from "./fokus-dialog.ts";
 
 export interface AksiJendela {
   label: string;
@@ -53,14 +54,6 @@ interface IsiKonteks {
 }
 
 const Konteks = createContext<IsiKonteks | null>(null);
-
-/** Elemen yang bisa menerima fokus di dalam sebuah dialog, urut tab. */
-function bisaFokus(kotak: HTMLElement): HTMLElement[] {
-  const pilih = 'a[href], button:not([disabled]), textarea, input, select,'
-    + ' [tabindex]:not([tabindex="-1"])';
-  return [...kotak.querySelectorAll<HTMLElement>(pilih)]
-    .filter((el) => el.offsetParent !== null);
-}
 
 function Tirai({ tugas, tutup }: { tugas: Tugas; tutup: Penjawab }) {
   const tirai = useRef<HTMLDivElement>(null);

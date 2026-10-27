@@ -372,15 +372,18 @@ export function Langit() {
   return (
     <div ref={setAkar} className="bimasakti lt-halaman">
       <div className="lt-krom" hidden={lensa !== null}>
-        {peta ? (
-          <button
-            type="button"
-            className="tbl tbl-kecil lt-lewati"
-            onClick={() => document.querySelector<HTMLElement>(".lt-ik-teks a")?.focus()}
-          >
-            Lewati ke peta bintang
-          </button>
-        ) : null}
+        {/* Lewati saringan (profesi dan 14 chip konsep) ke isi layar. Di Daftar
+            (akar sempit) tanpa ini papan ketik melewati sekitar 16 kontrol
+            lebih dulu, dan di sana justru orang yang paling bergantung pada Tab. */}
+        <button
+          type="button"
+          className="tbl tbl-kecil lt-lewati"
+          onClick={() =>
+            document.querySelector<HTMLElement>(peta ? ".lt-ik-teks a" : ".lt-daftar a")?.focus()
+          }
+        >
+          {peta ? "Lewati ke peta bintang" : "Lewati ke daftar rasi"}
+        </button>
         <header className="kepala-besar bimasakti-kepala">
           <span className="mata">Peta bintang</span>
           <h1>Langit</h1>

@@ -1683,6 +1683,19 @@ BATERAI = {
                 'label',
             ),
         ]),
+    "banding-lensa.mjs (konsep)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("layar/langit-data.ts"), [
+            ('konsep: oop kembali tanpa batas kata (Loop menyalakan Objek)', '|\\boop\\b|', '|oop|', 'konsep'),
+            ('konsep: race kembali tanpa batas kata (Trace menyalakan Konkurensi)', '|\\brace\\b/i', '|race/i', 'konsep'),
+            ('konsep: teks kembali tanpa batas kata (Konteks menyalakan Teks)', '|\\bteks|', '|teks|', 'konsep'),
+            ('konsep: dict kembali tanpa batas kata (predict menyalakan Koleksi)', '|\\bdict|', '|dict|', 'konsep'),
+            ('konsep: sub kembali menyala untuk Pub/Sub', '(?:^|[^/\\w])sub\\b', '\\bsub\\b', 'konsep'),
+            ('konsep: struct kembali tanpa batas kata (Infrastructure menyalakan Objek)', '|\\bstruct|constructor|', '|struct|constructor|', 'konsep'),
+            ('konsep: hash kembali menyala untuk Hash, Checksum', 'hash(?:map|set|table)|\\bhash$', 'hash', 'konsep'),
+            ('konsep: object hilang (Object & Destructuring tak lagi cocok)', '|\\bobject\\b|', '|', 'konsep'),
+            ('konsep: Algoritma tanpa qsort dan algorithm', '|algorithm|big-o|sorting|pengurutan|mengurutkan|qsort|', '|big-o|sorting|pengurutan|', 'konsep'),
+        ]),
     "banding-lensa.mjs (bentuk jawaban)": (
         "banding-lensa.mjs", PAKET_WEB,
         sumber_web("layar/langit-data.ts"), [

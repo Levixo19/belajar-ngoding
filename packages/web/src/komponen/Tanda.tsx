@@ -15,9 +15,10 @@
  * tidak pernah ada sama sekali untuk pembaca layar.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ambil, kirim } from "../api.ts";
+import { useFokusDialog } from "./fokus-dialog.ts";
 import { Ikon } from "./Ikon.tsx";
 import { sorak } from "../sorak.tsx";
 import { jamRamah } from "../waktu.ts";
@@ -87,6 +88,9 @@ export function TombolCatatan({
   const [buka, setBuka] = useState(false);
   const [isi, setIsi] = useState<IsiCatatan | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
+  const kotakRef = useRef<HTMLDivElement>(null);
+  const tutupDialog = useCallback(() => setBuka(false), []);
+  useFokusDialog(kotakRef, tutupDialog, buka && Boolean(isi));
 
   useEffect(() => { setPunya(Boolean(awal && awal.teks)); }, [awal, kunci]);
 
@@ -131,7 +135,7 @@ export function TombolCatatan({
 
       {buka && isi ? (
         <div className="jendela" role="dialog" aria-modal="true"
-             aria-label={"Catatan: " + judul}>
+             aria-label={"Catatan: " + judul} ref={kotakRef} tabIndex={-1}>
           <h2>{"Catatan: " + judul}</h2>
           <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
             Menuliskan ulang dengan bahasa sendiri adalah cara paling murah
