@@ -20,6 +20,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ambil, kirim } from "../api.ts";
 import { useFokusDialog } from "./fokus-dialog.ts";
 import { Ikon } from "./Ikon.tsx";
+import { PembungkusModal } from "./Jendela.tsx";
 import { sorak } from "../sorak.tsx";
 import { jamRamah } from "../waktu.ts";
 
@@ -91,6 +92,13 @@ export function TombolCatatan({
   const kotakRef = useRef<HTMLDivElement>(null);
   const tutupDialog = useCallback(() => setBuka(false), []);
   useFokusDialog(kotakRef, tutupDialog, buka && Boolean(isi));
+  // Orang membuka dialog ini untuk menulis, jadi kolomnya yang berfokus, bukan
+  // tombol Tutup di kepala. Harus sesudah `useFokusDialog`: efek itu mencatat
+  // tempat asal fokus lebih dulu, dan `autoFocus` bawaan React akan menjalankan
+  // fokus sebelum pencatatan itu, sehingga fokus tidak kembali ke tombol catatan.
+  useEffect(() => {
+    if (buka && isi) areaRef.current?.focus();
+  }, [buka, isi]);
 
   useEffect(() => { setPunya(Boolean(awal && awal.teks)); }, [awal, kunci]);
 
@@ -133,39 +141,52 @@ export function TombolCatatan({
         <Ikon nama="catatan" ukuran={19} tebal={punya ? 2.4 : 1.7} />
       </button>
 
+      {/* Dialognya modal: tirai menutup layar, jadi tidak ada yang bisa
+          diklik di belakangnya. Tanpa pembungkus ini ia tergambar inline di
+          tengah kepala halaman. Kepala, badan, dan kaki dipisah seperti
+          `Jendela.tsx`: badan yang menggulir, tombol kaki yang selalu terlihat. */}
       {buka && isi ? (
-        <div className="jendela" role="dialog" aria-modal="true"
-             aria-label={"Catatan: " + judul} ref={kotakRef} tabIndex={-1}>
-          <h2>{"Catatan: " + judul}</h2>
-          <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
-            Menuliskan ulang dengan bahasa sendiri adalah cara paling murah
-            untuk tahu apakah kamu benar-benar paham.
-          </p>
-          <textarea
-            ref={areaRef}
-            aria-label={"Catatan pribadimu untuk " + judul}
-            defaultValue={isi.teks}
-            placeholder={"Tulis dengan kalimatmu sendiri: apa inti halaman ini, "
-              + "dan bagian mana yang tadi sempat membingungkan."}
-            style={{ minHeight: "220px" }}
-          />
-          {isi.diubah ? (
-            <div className="baris-sisi" style={{ marginTop: "var(--s2)" }}>
-              {"Terakhir diubah " + jamRamah(isi.diubah)}
+        <PembungkusModal onTutup={tutupDialog}>
+          <div className="jendela" role="dialog" aria-modal="true"
+               aria-label={"Catatan: " + judul} ref={kotakRef} tabIndex={-1}>
+            <div className="jendela-kepala">
+              <h2>{"Catatan: " + judul}</h2>
+              <button type="button" className="ikon-tombol"
+                      onClick={tutupDialog} title="Tutup (Esc)"
+                      aria-label="Tutup">
+                ✕
+              </button>
             </div>
-          ) : null}
-          <div className="deret" style={{ marginTop: "var(--s3)" }}>
-            <span className="deret-kanan" />
-            <button type="button" className="tbl"
-                    onClick={() => setBuka(false)}>
-              Batal
-            </button>
-            <button type="button" className="tbl tbl-utama"
-                    onClick={() => { void simpan(); }}>
-              Simpan
-            </button>
+            <div className="jendela-badan">
+              <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
+                Menuliskan ulang dengan bahasa sendiri adalah cara paling murah
+                untuk tahu apakah kamu benar-benar paham.
+              </p>
+              <textarea
+                ref={areaRef}
+                aria-label={"Catatan pribadimu untuk " + judul}
+                defaultValue={isi.teks}
+                placeholder={"Tulis dengan kalimatmu sendiri: apa inti halaman "
+                  + "ini, dan bagian mana yang tadi sempat membingungkan."}
+                style={{ minHeight: "220px" }}
+              />
+              {isi.diubah ? (
+                <div className="baris-sisi" style={{ marginTop: "var(--s2)" }}>
+                  {"Terakhir diubah " + jamRamah(isi.diubah)}
+                </div>
+              ) : null}
+            </div>
+            <div className="jendela-kaki">
+              <button type="button" className="tbl" onClick={tutupDialog}>
+                Batal
+              </button>
+              <button type="button" className="tbl tbl-utama"
+                      onClick={() => { void simpan(); }}>
+                Simpan
+              </button>
+            </div>
           </div>
-        </div>
+        </PembungkusModal>
       ) : null}
     </>
   );

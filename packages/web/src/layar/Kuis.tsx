@@ -33,6 +33,12 @@ import type { Konteks } from "../Cangkang.tsx";
 
 const HURUF = "ABCDEFGHIJ";
 
+/** Umur "G tertunda" di lapisan papan ketik cangkang (`UMUR_G_MS` di
+ *  `komponen/Pintasan.tsx`; `TestKuisPintasan` menagih keduanya sama). Selama
+ *  itu huruf berikutnya milik rangkaian "G lalu huruf" (G lalu D = Dasbor),
+ *  bukan jawaban kuis. */
+const UMUR_G_MS = 900;
+
 /* ====================================================== bentuk jawaban API */
 
 interface ButirKuis {
@@ -247,6 +253,9 @@ function SesiKuis({
   const [sisaDetik, setSisaDetik] = useState(sesi.durasi);
   const lanjutRef = useRef<HTMLButtonElement>(null);
   const soalRef = useRef<HTMLDivElement>(null);
+  // Kapan `g` terakhir ditekan; ref, bukan variabel efek, karena efek
+  // pintasan di bawah dibangun ulang tiap `jawaban` atau `nomor` berganti.
+  const terakhirG = useRef(0);
   const selesaiRef = useRef(false);
 
   const selesai = useCallback(async (kehabisanWaktu: boolean) => {
@@ -340,10 +349,24 @@ function SesiKuis({
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA"
                 || t.tagName === "SELECT")) return;
+      // Dialog yang terbuka (bantuan pintasan, misalnya) menahan pintasan
+      // satu huruf: jawaban tidak boleh masuk di belakangnya.
+      if (document.querySelector(".jendela")) return;
       if (jawaban) {
         if (e.key === "Enter") { e.preventDefault(); berikutnya(); }
         return;
       }
+      // Huruf yang datang tepat sesudah `g` adalah separuh kedua rangkaian
+      // cangkang. Pendengar cangkang tidak tahu soal kuis dan pendengar ini
+      // tidak tahu soal G yang tertunda, jadi tanpa penjaga ini `g` lalu `d`
+      // MENJAWAB opsi D sekaligus pindah ke Dasbor. Waktu `g` dicatat di
+      // sini, bukan ditanyakan ke cangkang: `g` yang sah sebagai jawaban
+      // (soal beropsi tujuh atau lebih) tetap menjawab kalau belum ada G
+      // tertunda.
+      const sekarang = Date.now();
+      const gTertunda = sekarang - terakhirG.current < UMUR_G_MS;
+      if (e.key.toLowerCase() === "g") terakhirG.current = sekarang;
+      if (gTertunda) return;
       const angka = parseInt(e.key, 10);
       const huruf = HURUF.indexOf(e.key.toUpperCase());
       const i = Number.isInteger(angka) && angka >= 1 ? angka - 1
@@ -601,16 +624,36 @@ export function Kuis({
      buruk daripada setelan yang tidak ada. */
   const [acak, setAcak] = useState(acakBawaan);
   const [timer, setTimer] = useState(false);
+  /* `acakBawaan` dari router dibaca SEKALI saat aplikasi mulai, jadi mengubah
+     "Acak bawaan" di Pengaturan tidak sampai ke sini sampai muat ulang penuh.
+     Nilainya cuma cadangan; efek pemuat di bawah membaca `/api/konfigurasi`
+     setiap kuis dibuka. Disimpan di ref supaya efeknya tidak jalan ulang (dan
+     membongkar sesi) hanya karena prop-nya berganti. */
+  const acakCadangan = useRef(acakBawaan);
+  /* Naik saat layar ini dilepas atau berganti kuis. Penyegaran daftar bahasa
+     di bawah mencatat angkanya di awal dan tidak menulis state kalau sudah
+     lain: jawaban lama tidak boleh menimpa kuis atau bahasa yang lain. */
+  const generasi = useRef(0);
 
   useEffect(() => {
     let dibatalkan = false;
     setB(null); setGalat(""); setTahap({ t: "persiapan" });
     (async () => {
       try {
-        const d = await ambil<DataBahasa>("bahasa", { key: kunciBahasa });
+        const [d, konfigurasi] = await Promise.all([
+          ambil<DataBahasa>("bahasa", { key: kunciBahasa }),
+          // Gagal membaca setelan bukan alasan menolak membuka kuis: nilai
+          // cadangan dipakai.
+          ambil<Record<string, { nilai?: unknown }>>("konfigurasi")
+            .catch(() => null),
+        ]);
         if (dibatalkan) return;
         const q = d.kuis[indeks];
         if (!q) { setGalat("Kuis tidak ditemukan."); return; }
+        // Satu gelombang dengan `setB`: Persiapan baru tergambar sesudah `b`
+        // ada, jadi sakelar tidak sempat tampil dengan nilai lama.
+        setAcak(konfigurasi?.acak_bawaan
+          ? konfigurasi.acak_bawaan.nilai !== false : acakCadangan.current);
         setB(d);
         onKonteks({
           balik: { label: d.label, href: "#/bahasa/" + kunciBahasa },
@@ -626,8 +669,26 @@ export function Kuis({
         if (!dibatalkan) setGalat((e as Error).message);
       }
     })();
-    return () => { dibatalkan = true; };
+    return () => { dibatalkan = true; generasi.current += 1; };
   }, [kunciBahasa, indeks, onKonteks]);
+
+  /** Ambil ulang daftar bahasa tanpa membongkar tahap yang sedang tampil.
+   *
+   *  `b` dibaca sekali saat layar dibuka, jadi sesudah kuis selesai Persiapan
+   *  masih berlabel "Mulai kuis", tanpa kartu "Skor terbaikmu" dan tanpa
+   *  tombol "Ulangi N soal yang masih salah", padahal server sudah mencatat
+   *  semuanya. Diganti di tempat (bukan lewat efek pemuat di atas, yang
+   *  mengosongkan `b` dan menampilkan "Memuat kuis…" sesaat). Gagal mengambil
+   *  = data lama dipertahankan. */
+  const segarkan = useCallback(async () => {
+    const g = generasi.current;
+    try {
+      const d = await ambil<DataBahasa>("bahasa", { key: kunciBahasa });
+      if (g === generasi.current && d.kuis[indeks]) setB(d);
+    } catch {
+      // Persiapan tetap berfungsi dengan data yang lama.
+    }
+  }, [kunciBahasa, indeks]);
 
   const mulai = useCallback(async (mode: string) => {
     try {
@@ -644,7 +705,10 @@ export function Kuis({
     // dan toast kedua di atasnya cuma mengulang angka yang sama.
     rayakan(r, { diam: true });
     setTahap({ t: "hasil", r, kehabisanWaktu });
-  }, []);
+    // Server sudah menulis skornya saat sesi diselesaikan; "Kerjakan lagi"
+    // berikutnya harus membaca skor itu.
+    void segarkan();
+  }, [segarkan]);
 
   if (galat) {
     return <Keadaan jenis="salah" judul="Kuis tidak terbuka" ket={galat} />;

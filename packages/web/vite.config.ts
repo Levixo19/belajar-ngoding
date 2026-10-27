@@ -6,7 +6,10 @@
  * loopback, Host/Origin diperiksa, dan setiap `/api/*` menuntut header
  * `X-Belajar-Token` yang cocok dengan token acak per-jalannya server
  * (`webapp/server.py`). Token itu ditanam ke `index.html` saat halaman
- * dilayani -- `window.TOKEN_BELAJAR = "{{TOKEN}}"`.
+ * dilayani -- `window.TOKEN_BELAJAR = "{{TOKEN}}"` di halaman lama, dan
+ * `window.TOKEN_BELAJAR = window.TOKEN_BELAJAR || "<token>"` di halaman React
+ * (sejak server melayani `dist`; bentuk kedua memuat `||` supaya token yang
+ * sudah disuntik plugin ini tidak tertimpa).
  *
  * Dev server Vite menyajikan HTML-nya SENDIRI, jadi tidak ada yang menanam
  * token ke sana. Akibatnya setiap panggilan API dari React menerima 403 sejak
@@ -51,7 +54,8 @@ async function ambilToken(): Promise<string | null> {
     const tanggapan = await fetch(ASAL_PYTHON + "/");
     if (!tanggapan.ok) return null;
     const html = await tanggapan.text();
-    const cocok = html.match(/window\.TOKEN_BELAJAR\s*=\s*"([^"]+)"/);
+    const cocok = html.match(
+      /window\.TOKEN_BELAJAR\s*=\s*(?:window\.TOKEN_BELAJAR\s*\|\|\s*)?"([^"]+)"/);
     return cocok ? (cocok[1] as string) : null;
   } catch {
     return null;

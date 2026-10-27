@@ -1108,7 +1108,11 @@ mengikat:
 * **CSP** dipasang di halaman, tapi `script-src` masih `'unsafe-inline'`:
   iframe `srcdoc` pratinjau mewarisi CSP induk. Mode nonce ada di balik
   `CSP_KETAT` di server.py dan baru aman setelah pratinjau dilayani dari
-  rutenya sendiri.
+  rutenya sendiri. `connect-src` menambah SATU asal di luar `'self'`: layanan
+  pencarian catatan di `http://127.0.0.1:7799`. Layar Catatanku memanggilnya
+  dari browser; tanpa asal itu permintaannya diblokir dan layar melapor
+  "layanan belum jalan" walau layanannya hidup (hanya dev Vite yang lolos).
+  `test_performa` menagih tepat satu asal itu dan tidak ada `http` lain.
 * **Rujukan `berkas:NNN` di tests/test_web.py tetap pajak.** Tiap baris yang
   disisipkan di api.py, progress.py, atau layar-*.js menggeser rujukan.
   Suntingan di berkas yang dipatok dibuat net-zero baris atau di kaki berkas;
@@ -1304,11 +1308,12 @@ ditunjuk). Yang mengikat:
 * **Dua bahasa warna hidup berdampingan** sampai ada ronde CSS-saja untuk
   `PetaRasi`: Bahasa dan Dasbor masih memakai kuningan = selesai.
 * **Pengukuran di peramban tinggal di repo**: `packages/web/uji/manual/`
-  (empat belas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
-  `tangkap.mjs`, `fokus-dialog.mjs`, `data-dialog.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
-  `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET kecuali `data-dialog.mjs`,
-  yang MENULIS dan menolak jalan terhadap port 7777 atau berkas progres di
-  rumah; jalankan dengan profil terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
+  (lima belas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
+  `tangkap.mjs`, `fokus-dialog.mjs`, `data-dialog.mjs`, `sapuan-kontrol.mjs`,
+  `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
+  `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET kecuali `data-dialog.mjs` dan
+  `sapuan-kontrol.mjs`, yang MENULIS dan menolak jalan terhadap port 7777 atau
+  berkas progres di rumah; jalankan dengan profil terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
   ia menyunting berkas di tempat dan memulihkannya, jadi jalankan di salinan
   pohon dan ia gagal bila ada sel yang dilewati). Kriteria terima irisan
   menunjuk berkas-berkas itu, bukan skrip di direktori sesi yang suatu hari
@@ -1800,6 +1805,49 @@ Lima catatan yang mengikat untuk cangkang:
   isiannya lewat `onChange` ke objek biasa. Dijaga
   `TestIsiDialogTidakMemakaiRef`; alurnya diukur `uji/manual/data-dialog.mjs`
   (16 pemeriksaan, hasilnya dibaca dari berkas progres).
+* **Dialog yang digambar sendiri dibungkus `PembungkusModal`** (Jendela.tsx).
+  `.jendela` TIDAK punya posisi sendiri: `#tirai { position: fixed }` yang
+  menaruhnya di tengah. `<div className="jendela">` yang ditulis langsung
+  tergambar inline, menimpa konten di sekitarnya (Bantuan, Palet, catatan,
+  Catatanku Ubah, contoh solusi, banding: enam dialog dulu begitu), dan
+  halaman di belakangnya tetap bisa digulir. Pembungkus memberi tirai lewat
+  portal; fokus, Esc, dan Tab tetap `useFokusDialog`. Klik di luar menutup
+  HANYA bila tekanannya juga dimulai di tirai: seleksi teks yang diseret dari
+  dalam kotak catatan lalu dilepas di atas tirai dulu menutup dialog dan
+  membuang ketikan. Dijaga `TestDialogBertirai`.
+* **`useFokusDialog` memegang `onTutup` lewat ref**, bukan dependensi efek.
+  Pemanggil yang mengirim fungsi baru tiap render dulu membuat efeknya
+  dibersihkan dan dipasang ulang: pembersihnya mengembalikan fokus ke pemicu,
+  pemasangan berikutnya menariknya masuk lagi, dan di Palet itu bisa mencuri
+  fokus dari kotak ketik.
+* **Dua siaran dokumen menjaga layar tetap jujur.** `rayakan()` mengirim
+  `progres-berubah` (lencana XP/streak di bilah atas mengambil ulang; tanpanya
+  toast bilang "+10 XP" sementara angkanya baru berubah saat rute berganti),
+  dan `terapkanTampilan()` mengirim `tampilan-berubah` (kartu tema di
+  Pengaturan mengikuti Ctrl+J dan tombol di pil atas).
+* **Klik yang gagal tidak boleh diam.** `api.kirim` melempar `GalatApi`, dan
+  promise yang ditolak di penangan klik tanpa `try/catch` tidak terlihat
+  pengguna. Dua lapis: pesan khusus di tempat yang menghapus data
+  (`BlokData`), dan `pasangJaringGalat()` di cangkang untuk sisanya (hanya
+  `GalatApi`, tanpa `preventDefault`). Aksi yang mengubah state sebelum
+  `await` WAJIB memulihkannya bila gagal: "Tandai selesai" dulu mengaku
+  selesai padahal berkas tidak berubah. Jangan memakai `disabled` pada tombol
+  yang sedang berfokus untuk mencegah klik ganda: fokus jatuh ke `<body>`;
+  pakai penjaga ref.
+* **Layar yang menyimpan hasil async per-latihan dipasang dengan `key`.**
+  `<Latihan key={kunci/nomor}>`: tanpanya satu instans hidup lintas latihan,
+  dan "Benar" plus pil LULUS dari Periksa latihan A mendarat di latihan B.
+  Jawaban yang kalah balapan tidak digambar, tetapi lulus dan hadiahnya tetap
+  dicatat. Pola yang sama di Ruang Coba (`nomorJalan`).
+* **Latihan manual memberi XP SEKALI per kunci** (`latihan_manual_dihargai`
+  di progres): tandai, batalkan, tandai lagi dulu memanen XP tanpa batas.
+  Berkas lama tanpa daftar itu tetap termuat (`_migrasi` mengisi bawaannya).
+* **Sapuan peramban 2026-10-27 menemukan sekitar 40 cacat yang lolos tsc,
+  golden, dan seluruh tes.** Bukti dan skripnya tinggal di repo:
+  `uji/manual/sapuan-kontrol.mjs` (22 pemeriksaan lintas layar) dan
+  `data-dialog.mjs`. Pelajarannya: tsc hijau dan tes sumber hijau tidak
+  membuktikan sebuah tombol bekerja; yang membuktikan adalah mengkliknya dan
+  membaca HASILNYA dari berkas atau server, bukan dari layar.
 
 **UMPAN TEKAN ADALAH `pasangIsyarat()`, DAN ELEMEN SVG TIDAK PERNAH IKUT**
 (2026-10-26). Dilaporkan pemilik: layar Peta Karier "rusak" -- gumpalan teks

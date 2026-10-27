@@ -59,6 +59,8 @@ function Tirai({ tugas, tutup }: { tugas: Tugas; tutup: Penjawab }) {
   const tirai = useRef<HTMLDivElement>(null);
   const kotak = useRef<HTMLDivElement>(null);
   const sebelumnya = useRef<Element | null>(null);
+  // Lihat `PembungkusModal`: seretan dari dalam kotak tidak boleh menutupnya.
+  const mulaiDiTirai = useRef(false);
 
   // Fokus dikembalikan ke tempat asalnya. Tanpa ini pemakai papan ketik
   // mendarat di awal halaman setiap kali sebuah dialog ditutup.
@@ -117,7 +119,11 @@ function Tirai({ tugas, tutup }: { tugas: Tugas; tutup: Penjawab }) {
     <div
       id="tirai"
       ref={tirai}
-      onClick={(e) => { if (e.target === tirai.current) tutup(null); }}
+      onPointerDown={(e) => { mulaiDiTirai.current = e.target === tirai.current; }}
+      onClick={(e) => {
+        if (mulaiDiTirai.current && e.target === tirai.current) tutup(null);
+        mulaiDiTirai.current = false;
+      }}
     >
       <div
         className={"jendela" + (tugas.lebar ? " jendela-lebar" : "")}
@@ -156,6 +162,46 @@ function Tirai({ tugas, tutup }: { tugas: Tugas; tutup: Penjawab }) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+/** Tirai untuk dialog yang isinya digambar sendiri (Bantuan, Palet, catatan,
+ *  contoh solusi, banding, ubah catatan).
+ *
+ *  `.jendela` TIDAK punya posisi sendiri: yang menaruhnya di tengah layar
+ *  adalah `#tirai { position: fixed }`. Dialog yang menulis `<div className=
+ *  "jendela">` langsung tergambar inline (`position: static`) di tempat
+ *  pemanggilnya: menimpa konten, merusak tata letak induknya, dan halaman di
+ *  belakangnya tetap bisa digulir. Dibungkus di sini ia modal sungguhan,
+ *  lewat portal ke `document.body` supaya leluhur bertransform tidak
+ *  menjepit `position: fixed`; klik di luar kotak menutupnya.
+ *
+ *  Fokus, Escape, dan jerat Tab TIDAK diurus di sini: itu tugas
+ *  `useFokusDialog` milik dialognya sendiri. Dialog yang cuma butuh
+ *  pertanyaan dan tombol memakai `useJendela().tanya`. */
+export function PembungkusModal({ onTutup, children }: {
+  onTutup: () => void;
+  children: ReactNode;
+}) {
+  const tirai = useRef<HTMLDivElement>(null);
+  // Menutup hanya kalau tekanannya DIMULAI di tirai juga. Menyeret seleksi
+  // teks dari dalam kotak catatan lalu melepasnya di atas tirai menghasilkan
+  // `click` yang targetnya tirai, dan dulu itu menutup dialog serta membuang
+  // teks yang sedang diketik.
+  const mulaiDiTirai = useRef(false);
+  return createPortal(
+    <div
+      id="tirai"
+      ref={tirai}
+      onPointerDown={(e) => { mulaiDiTirai.current = e.target === tirai.current; }}
+      onClick={(e) => {
+        if (mulaiDiTirai.current && e.target === tirai.current) onTutup();
+        mulaiDiTirai.current = false;
+      }}
+    >
+      {children}
+    </div>,
+    document.body,
   );
 }
 

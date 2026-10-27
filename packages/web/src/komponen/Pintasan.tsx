@@ -12,6 +12,7 @@ import { useEffect, useRef } from "react";
 
 import { temaBerikutnya } from "../lokal.ts";
 import { useFokusDialog } from "./fokus-dialog.ts";
+import { PembungkusModal } from "./Jendela.tsx";
 import { PINTASAN, PINTASAN_G } from "./pintasan-tabel.ts";
 
 export { PINTASAN, PINTASAN_G } from "./pintasan-tabel.ts";
@@ -133,6 +134,7 @@ export function Bantuan({ onTutup }: { onTutup: () => void }) {
   useFokusDialog(kotak, onTutup);
 
   return (
+    <PembungkusModal onTutup={onTutup}>
     <div className="jendela" role="dialog" aria-modal="true"
          aria-label="Pintasan papan ketik" ref={kotak} tabIndex={-1}>
       <h2>Pintasan papan ketik</h2>
@@ -151,5 +153,6 @@ export function Bantuan({ onTutup }: { onTutup: () => void }) {
         </button>
       </div>
     </div>
+    </PembungkusModal>
   );
 }

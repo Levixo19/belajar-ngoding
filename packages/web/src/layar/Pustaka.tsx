@@ -212,6 +212,7 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
   const [lanjutan, setLanjutan] = useState<Entri[]>([]);
   const [halaman, setHalaman] = useState(1);
   const [memuat, setMemuat] = useState(false);
+  const [menyegarkan, setMenyegarkan] = useState(false);
   const medanRef = useRef<HTMLInputElement>(null);
   const [ketikan, setKetikan] = useState(saring.q);
 
@@ -221,7 +222,11 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
 
   useEffect(() => {
     let dibatalkan = false;
-    setData(null);
+    // `data` TIDAK dikosongkan saat saringan berubah: kotak cari hanya digambar
+    // kalau `data` ada, jadi mengosongkannya melepas input dari DOM dan fokus
+    // jatuh ke <body> tiap kali orang mencari atau menyaring. Hasil lama tetap
+    // tampil sampai yang baru tiba (`aria-busy` menandainya).
+    setMenyegarkan(true);
     setGalat(null);
     setLanjutan([]);
     setHalaman(1);
@@ -237,10 +242,14 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
         if (!dibatalkan) {
           setData(d);
           setHalaman(d.halaman);
+          setMenyegarkan(false);
         }
       })
       .catch((e: Error) => {
-        if (!dibatalkan) setGalat(e.message);
+        if (!dibatalkan) {
+          setGalat(e.message);
+          setMenyegarkan(false);
+        }
       });
     return () => {
       dibatalkan = true;
@@ -250,9 +259,13 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
     // berjalan tanpa henti.
   }, [kunciSaring]);
 
+  // Fokus masuk saat data PERTAMA tiba. Efek berjalan saat data masih null
+  // memfokuskan `null` (kotak cari belum digambar), jadi fokus tertinggal di
+  // <body>; dan mengosongkan data tiap saringan melepas input dari DOM lagi.
+  const adaData = data !== null;
   useEffect(() => {
-    if (!("ontouchstart" in globalThis)) medanRef.current?.focus();
-  }, []);
+    if (adaData && !("ontouchstart" in globalThis)) medanRef.current?.focus();
+  }, [adaData]);
 
   if (galat) {
     return <Keadaan jenis="salah" judul="Gagal memuat Pustaka" ket={galat} />;
@@ -297,7 +310,7 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
   }
 
   return (
-    <div className="masuk">
+    <div className="masuk" aria-busy={menyegarkan}>
       <header className="kepala">
         <span className="mata">Pustaka</span>
         <h1>Bacaan, kursus, dan proyek</h1>

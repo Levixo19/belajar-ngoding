@@ -384,8 +384,25 @@ function BarisMateri({ kunci, m }: { kunci: string; m: Materi }) {
   );
 }
 
+/** Gulir ke sebuah bab dan buka lipatannya. Elemennya harus sudah terlihat:
+ *  `scrollIntoView` pada elemen `hidden` (bab yang tersaring chip tingkat)
+ *  tidak berbuat apa-apa, jadi pemanggilnya melepas saringannya lebih dulu. */
+function gulirKeBab(nomor: number) {
+  const sasaran = document.getElementById("bab-" + nomor);
+  if (!sasaran) return;
+  (sasaran as HTMLDetailsElement).open = true;
+  sasaran.scrollIntoView({
+    behavior: tingkatGerak() === "mati" ? "auto" : "smooth",
+    block: "start",
+  });
+}
+
 /** Satu segmen di peta bab. */
-function SegmenBab({ bab, kini }: { bab: Bab; kini: boolean }) {
+function SegmenBab({
+  bab, kini, onBuka,
+}: {
+  bab: Bab; kini: boolean; onBuka: (bab: Bab) => void;
+}) {
   const kelas =
     bab.status === "tuntas"
       ? "peta-tuntas"
@@ -409,16 +426,11 @@ function SegmenBab({ bab, kini }: { bab: Bab; kini: boolean }) {
       // Tautan ini menunjuk id di halaman yang sama, BUKAN rute. Router membaca
       // fragmen sebagai alamat layar, jadi pemindahannya diurus di sini dan
       // hash-nya tidak pernah ikut berubah -- kalau tidak, mengeklik "Bab 5"
-      // akan mendarat di dasbor.
+      // akan mendarat di dasbor. Penggulirannya sendiri milik `DaftarMateri`,
+      // yang memegang saringan tingkat.
       onClick={(e) => {
         e.preventDefault();
-        const sasaran = document.getElementById("bab-" + bab.nomor);
-        if (!sasaran) return;
-        (sasaran as HTMLDetailsElement).open = true;
-        sasaran.scrollIntoView({
-          behavior: tingkatGerak() === "mati" ? "auto" : "smooth",
-          block: "start",
-        });
+        onBuka(bab);
       }}
     >
       <span>{bab.nomor}</span>
@@ -440,11 +452,12 @@ function SegmenBab({ bab, kini }: { bab: Bab; kini: boolean }) {
  * menjawab "ada berapa seluruhnya".
  */
 function PetaBab({
-  daftar, sedang, tingkat,
+  daftar, sedang, tingkat, onBuka,
 }: {
   daftar: Bab[];
   sedang?: Bab;
   tingkat: Tingkat[];
+  onBuka: (bab: Bab) => void;
 }) {
   const kelompok = tingkat.filter((t) => daftar.some((b) => b.tingkat === t.nama));
   return (
@@ -460,7 +473,8 @@ function PetaBab({
               </span>
               <div className="peta-rel">
                 {isi.map((bab) => (
-                  <SegmenBab key={bab.nomor} bab={bab} kini={bab === sedang} />
+                  <SegmenBab key={bab.nomor} bab={bab} kini={bab === sedang}
+                               onBuka={onBuka} />
                 ))}
               </div>
             </div>
@@ -472,7 +486,8 @@ function PetaBab({
         // dikarang di sini sebagai gantinya.
         <div className="peta-rel">
           {daftar.map((bab) => (
-            <SegmenBab key={bab.nomor} bab={bab} kini={bab === sedang} />
+            <SegmenBab key={bab.nomor} bab={bab} kini={bab === sedang}
+                               onBuka={onBuka} />
           ))}
         </div>
       )}
@@ -557,6 +572,29 @@ function DaftarMateri({ b, tingkat }: { b: DataBahasa; tingkat: Tingkat[] }) {
     () => new Map(b.materi.map((m) => [m.indeks, m])),
     [b.materi],
   );
+  // Bab yang baru saja dipilih lewat peta dan menunggu dilepasnya `hidden`.
+  const [tuju, setTuju] = useState<number | null>(null);
+  useEffect(() => {
+    if (tuju === null) return;
+    gulirKeBab(tuju);
+    setTuju(null);
+  }, [tuju]);
+
+  /* Peta bab sengaja TIDAK ikut tersaring, jadi segmen bab yang disaring chip
+     tingkat tetap tampak bisa diklik. Bab itu `hidden` (`display: none`), dan
+     menggulir ke elemen seperti itu tidak berbuat apa-apa: klik tampak mati.
+     Tingkat babnya ditambahkan ke saringan, bukan seluruh saringan dibuang:
+     pilihan orang tetap utuh dan chip yang menyala menjelaskan kenapa babnya
+     kini muncul. Penggulirannya menunggu render, karena `hidden` baru lepas
+     sesudah state diterapkan. */
+  const bukaBab = (bab: Bab) => {
+    if (pilih.size > 0 && !pilih.has(bab.tingkat)) {
+      setPilih(new Set([...pilih, bab.tingkat]));
+      setTuju(bab.nomor);
+      return;
+    }
+    gulirKeBab(bab.nomor);
+  };
 
   const ringkas =
     b.bab_kalimat || b.buka_semua_bab ? (
@@ -599,7 +637,8 @@ function DaftarMateri({ b, tingkat }: { b: DataBahasa; tingkat: Tingkat[] }) {
   return (
     <div>
       {ringkas}
-      <PetaBab daftar={daftar} sedang={sedang} tingkat={tingkat} />
+      <PetaBab daftar={daftar} sedang={sedang} tingkat={tingkat}
+               onBuka={bukaBab} />
       <SaringBab
         daftar={daftar}
         tingkat={tingkat}

@@ -24,6 +24,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ambil } from "../api.ts";
 import { ingatJson } from "../lokal.ts";
 import { useFokusDialog } from "./fokus-dialog.ts";
+import { PembungkusModal } from "./Jendela.tsx";
 import {
   daftarPerintah, kelompokkan, riwayatNaikkan, riwayatPotong, saringPerintah,
   type BahasaPalet, type ButirPalet, type ButirRiwayat,
@@ -54,6 +55,7 @@ interface HasilCari {
   indeks: number;
   judul: string;
   cuplikan?: string;
+  terkunci?: boolean;
 }
 
 export function Palet({
@@ -111,6 +113,7 @@ export function Palet({
               ...(x.cuplikan ? { ket: x.cuplikan } : {}),
               tipe: x.tipe,
               href: `#/${x.tipe}/${x.bahasa}/${x.indeks}`,
+              ...(x.terkunci ? { terkunci: true } : {}),
             })),
           );
         })
@@ -194,6 +197,7 @@ export function Palet({
 
   let nomor = -1;
   return (
+    <PembungkusModal onTutup={onTutup}>
     <div
       className="jendela"
       ref={kotakRef}
@@ -279,6 +283,7 @@ export function Palet({
                       >
                         {d.tipe || "buka"}
                       </span>
+                      {d.terkunci ? <span className="pil pil-kunci">terkunci</span> : null}
                       <div className="isi">
                         <div className="judul">{d.label}</div>
                         {d.ket ? <div className="cuplik">{d.ket}</div> : null}
@@ -311,5 +316,6 @@ export function Palet({
         </span>
       </div>
     </div>
+    </PembungkusModal>
   );
 }

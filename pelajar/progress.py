@@ -54,6 +54,10 @@ def _default():
         "latihan_dilihat": [],
         "latihan_lulus": [],
         "latihan_manual": [],
+        # Latihan manual yang SUDAH pernah diberi XP. Membatalkan tanda lalu
+        # menandai lagi tidak boleh memberi XP dua kali: batalkan_* menghapus
+        # kuncinya dari `latihan_manual`, jadi hanya daftar ini yang ingat.
+        "latihan_manual_dihargai": [],
         "bookmark": [],
         "salah_kuis": {},
         "jadwal_kuis": {},
@@ -120,7 +124,8 @@ def _migrasi(data):
     }
 
     for key in ("materi_dibaca", "materi_sebagian", "latihan_dilihat",
-                "latihan_lulus", "latihan_manual", "bookmark", "badge"):
+                "latihan_lulus", "latihan_manual", "latihan_manual_dihargai",
+                "bookmark", "badge"):
         data[key] = [x for x in data[key] if isinstance(x, str)]
 
     for key in ("beruntun", "terpanjang", "total_hari"):
@@ -549,8 +554,12 @@ def tandai_latihan_manual(kategori, judul):
         return []
     if k not in data["latihan_manual"]:
         data["latihan_manual"].append(k)
-        tambah_xp(data, XP_LATIHAN_MANUAL)
-        _catat_harian(data, "latihan")
+        # XP hanya untuk tanda PERTAMA. Tanpa daftar ini, tandai -> batalkan ->
+        # tandai memanen XP tanpa batas.
+        if k not in data["latihan_manual_dihargai"]:
+            data["latihan_manual_dihargai"].append(k)
+            tambah_xp(data, XP_LATIHAN_MANUAL)
+            _catat_harian(data, "latihan")
     return _selesaikan(data)
 
 

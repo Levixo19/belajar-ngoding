@@ -30,7 +30,7 @@
 // dilepas, jadi nilainya selalu hilang. Reset SEMUA dan Impor progres dulu
 // rusak persis begitu: "HAPUS" yang benar terbaca kosong, berkas yang dipilih
 // terbaca tidak ada. Pagarnya `TestIsiDialogTidakMemakaiRef`.
-import { useState } from "react";
+import { useRef, useState } from "react";
 import * as api from "../api.ts";
 import { adaGerak } from "../gerak.ts";
 import { salin, sorak } from "../sorak.tsx";
@@ -64,12 +64,22 @@ function getar(el: HTMLElement | null): void {
     { duration: 260, easing: "ease-out" });
 }
 
+/** Pesan untuk pengguna dari apa pun yang dilempar `api.*`. */
+function pesanGalat(e: unknown): string {
+  return e instanceof Error ? e.message : String(e);
+}
+
 export function BlokData() {
   const { tanya } = useJendela();
-  const [sibuk, setSibuk] = useState("");
+  // Penjaga klik ganda, BUKAN `disabled`: tombol yang sedang berfokus lalu
+  // dinonaktifkan membuat fokus papan ketik jatuh ke <body>, dan selama dialog
+  // Laporan terbuka tombolnya tetap mati sehingga `Jendela` tidak bisa
+  // mengembalikan fokus kepadanya.
+  const sedang = useRef("");
 
   async function lihatLaporan() {
-    setSibuk("laporan");
+    if (sedang.current === "laporan") return;
+    sedang.current = "laporan";
     try {
       const r = await api.ambil<{ markdown: string }>("laporan");
       const pilih = await tanya({
@@ -95,20 +105,25 @@ export function BlokData() {
       if (pilih === "unduh") {
         unduh(r.markdown, "laporan-belajar.md", "text/markdown");
       }
+    } catch (e) {
+      sorak("Gagal memuat laporan: " + pesanGalat(e), "salah", 6);
     } finally {
-      setSibuk("");
+      sedang.current = "";
     }
   }
 
   async function ekspor() {
-    setSibuk("ekspor");
+    if (sedang.current === "ekspor") return;
+    sedang.current = "ekspor";
     try {
       const r = await api.ambil<{ progres: unknown }>("data/ekspor");
       const nama = "progres-belajar-" + hariIniISO() + ".json";
       unduh(JSON.stringify(r.progres, null, 2), nama, "application/json");
       sorak("Progres diekspor ke " + nama, "tumbuh");
+    } catch (e) {
+      sorak("Gagal mengekspor: " + pesanGalat(e), "salah", 6);
     } finally {
-      setSibuk("");
+      sedang.current = "";
     }
   }
 
@@ -156,14 +171,17 @@ export function BlokData() {
   }
 
   async function cadangkan() {
-    setSibuk("cadangan");
+    if (sedang.current === "cadangan") return;
+    sedang.current = "cadangan";
     try {
       const r = await api.kirim<{ cadangan: string }>("data/cadangkan", {});
       sorak(r.cadangan ? "Cadangan dibuat: " + r.cadangan
                        : "Belum ada progres untuk dicadangkan.",
             r.cadangan ? "tumbuh" : "");
+    } catch (e) {
+      sorak("Gagal membuat cadangan: " + pesanGalat(e), "salah", 6);
     } finally {
-      setSibuk("");
+      sedang.current = "";
     }
   }
 
@@ -171,17 +189,14 @@ export function BlokData() {
     <section>
       <span className="mata">Data belajarmu</span>
       <div className="kartu deret">
-        <button className="tbl tbl-hantu" onClick={lihatLaporan}
-                disabled={sibuk === "laporan"}>
+        <button className="tbl tbl-hantu" onClick={lihatLaporan}>
           Laporan kemajuan (Markdown)
         </button>
-        <button className="tbl tbl-hantu" onClick={ekspor}
-                disabled={sibuk === "ekspor"}>
+        <button className="tbl tbl-hantu" onClick={ekspor}>
           Ekspor progres
         </button>
         <button className="tbl tbl-hantu" onClick={impor}>Impor progres</button>
-        <button className="tbl tbl-hantu" onClick={cadangkan}
-                disabled={sibuk === "cadangan"}>
+        <button className="tbl tbl-hantu" onClick={cadangkan}>
           Buat cadangan
         </button>
       </div>
@@ -202,8 +217,14 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
       { judul: "Reset " + nama, labelYa: "Hapus progres " + nama,
         bahaya: true });
     if (!ya) return;
-    const r = await api.kirim<{ cadangan: string }>(
-      "data/reset", { bagian: kunci, konfirmasi: "HAPUS" });
+    let r: { cadangan: string };
+    try {
+      r = await api.kirim<{ cadangan: string }>(
+        "data/reset", { bagian: kunci, konfirmasi: "HAPUS" });
+    } catch (e) {
+      sorak(`Gagal menghapus progres ${nama}: ${pesanGalat(e)}`, "salah", 8);
+      return;
+    }
     sorak(`Progres ${nama} dihapus. Cadangan: ${r.cadangan || "-"}`,
           "tumbuh", 6);
     setTimeout(() => location.reload(), 900);
@@ -249,8 +270,14 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
       sorak("Kata konfirmasi tidak cocok. Tidak ada yang dihapus.", "salah");
       return;
     }
-    const r = await api.kirim<{ cadangan: string }>(
-      "data/reset", { bagian: "semua", konfirmasi: "HAPUS" });
+    let r: { cadangan: string };
+    try {
+      r = await api.kirim<{ cadangan: string }>(
+        "data/reset", { bagian: "semua", konfirmasi: "HAPUS" });
+    } catch (e) {
+      sorak("Gagal menghapus progres: " + pesanGalat(e), "salah", 8);
+      return;
+    }
     sorak("Semua progres dihapus. Cadangan: " + (r.cadangan || "-"),
           "tumbuh", 6);
     setTimeout(() => location.reload(), 1200);

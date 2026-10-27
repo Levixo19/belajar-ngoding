@@ -104,7 +104,11 @@ class TestServerCacheDanCsp(BasisWeb):
                       "frame-src 'self' about: data:"):
             self.assertIn(wajib, csp)
         self.assertNotIn("unsafe-eval", csp)
-        self.assertNotIn("http", csp)
+        # Satu-satunya asal di luar 'self': layanan pencarian catatan di
+        # loopback (layar Catatanku memanggilnya dari browser). Selain itu
+        # tidak boleh ada asal http mana pun, apalagi CDN.
+        self.assertIn("connect-src 'self' http://127.0.0.1:7799;", csp)
+        self.assertNotIn("http", csp.replace("http://127.0.0.1:7799", ""))
         self.assertEqual(kepala["cache-control"], "no-store")
         self.assertIn(self.token.encode(), badan)
 

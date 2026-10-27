@@ -17,6 +17,9 @@ export interface ButirPalet {
   tipe?: string;
   /** Label `<kbd>` kalau tujuan ini punya pintasan `G lalu <huruf>`. */
   pintasan?: string | null;
+  /** Materi di bab yang belum terbuka: ditandai SEBELUM dipilih, bukan
+   *  sesudah mendarat di layar penjelasan. */
+  terkunci?: boolean;
 }
 
 /** Entri riwayat: alamat dan kapan ia dipakai. */

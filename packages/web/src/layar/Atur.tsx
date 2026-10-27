@@ -161,10 +161,25 @@ function MedanAngka({
   const awal = String(opsi.nilai ?? "");
   const [nilai, setNilai] = useState(awal);
   const terakhir = useRef(awal);
+  // Yang tersimpan adalah nilai yang SUDAH diklem server ke batasnya
+  // (5000 jadi 1000, 3 jadi batas bawah). Kotak mengikutinya begitu jawaban
+  // tiba; tanpa ini "5000" tetap tampil padahal yang tersimpan 1000.
+  useEffect(() => {
+    const dariServer = String(opsi.nilai ?? "");
+    terakhir.current = dariServer;
+    setNilai(dariServer);
+  }, [opsi]);
   const kirimKalauBeda = () => {
+    const angka = Number(nilai);
+    // Kotak kosong atau bukan angka dikembalikan ke nilai terakhir, TIDAK
+    // dikirim: `Number("")` adalah 0, dan 0 lolos server sebagai "otomatis".
+    if (nilai.trim() === "" || !Number.isFinite(angka)) {
+      setNilai(terakhir.current);
+      return;
+    }
     if (nilai !== terakhir.current) {
       terakhir.current = nilai;
-      onSimpan(Number(nilai));
+      onSimpan(angka);
     }
   };
   return (
@@ -178,6 +193,9 @@ function MedanAngka({
         max={opsi.maksimum ?? undefined}
         onChange={(e) => setNilai(e.target.value)}
         onBlur={kirimKalauBeda}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") kirimKalauBeda();
+        }}
       />
     </div>
   );
@@ -231,6 +249,12 @@ export function Atur() {
   const [jedaMata, setJedaMata] = useState<boolean>(bacaJedaMata);
   const [suara, setSuara] = useState<TingkatSuara>(bacaSuara);
   const [getar, setGetar] = useState<boolean>(bacaGetar);
+
+  useEffect(() => {
+    const segarkan = () => setTampilan(bacaTampilan());
+    document.addEventListener("tampilan-berubah", segarkan);
+    return () => document.removeEventListener("tampilan-berubah", segarkan);
+  }, []);
 
   useEffect(() => {
     let dibatalkan = false;

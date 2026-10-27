@@ -27,11 +27,13 @@
  *    tangan penggunanya. Progres bisa dikumpulkan lagi; catatan tidak.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ambil, kirim } from "../api.ts";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { PembungkusModal } from "../komponen/Jendela.tsx";
+import { useFokusDialog } from "../komponen/fokus-dialog.ts";
 import { sorak } from "../sorak.tsx";
 import { tandai } from "../util.tsx";
 import { jamRamah } from "../waktu.ts";
@@ -298,11 +300,16 @@ export function Catatan() {
   const [galat, setGalat] = useState("");
   const [putaran, setPutaran] = useState(0);
   const [ubah, setUbah] = useState<EntriCatatan | null>(null);
+  const areaRef = useRef<HTMLTextAreaElement>(null);
+  const kotakRef = useRef<HTMLDivElement>(null);
+  const tutupDialog = useCallback(() => setUbah(null), []);
+  // Esc menutup, Tab terjerat di dalam kotak, dan fokus kembali ke tombol
+  // "Ubah" yang membukanya. Tanpa ini fokus tertinggal di belakang dialog.
+  useFokusDialog(kotakRef, tutupDialog, ubah !== null);
   // `null` berarti "tidak sedang menyaring". Daftar kunci, bukan daftar
   // catatan: isi dan urutan tampilannya tetap milik `/api/catatan/semua` --
   // layanan pencarian cuma memberi tahu MANA yang cocok dan dalam urutan apa.
   const [saring, setSaring] = useState<string[] | null>(null);
-  const areaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     let dibatalkan = false;
@@ -329,6 +336,8 @@ export function Catatan() {
       setPutaran((n) => n + 1);
       sorak(hasil.teks ? "Catatan disimpan." : "Catatan dikosongkan.", "tumbuh", 2);
     } catch (e) {
+      // Dialognya TETAP terbuka: teks yang tadi diketik tidak boleh hilang
+      // karena penyimpanannya gagal.
       sorak((e as Error).message, "salah");
     }
   };
@@ -386,7 +395,13 @@ export function Catatan() {
                   Ubah
                 </button>
               </div>
-              <div className="par" style={{ margin: 0, color: "var(--teks-2)" }}>
+              {/* `.par` cuma bergaya di dalam `.prosa`, jadi di sini tidak ada
+                  yang menjaga baris barunya: catatan berbaris-baris tampil
+                  jadi satu paragraf tanpa `pre-wrap`. */}
+              <div className="par" style={{
+                margin: 0, color: "var(--teks-2)",
+                whiteSpace: "pre-wrap", overflowWrap: "anywhere",
+              }}>
                 {x.teks}
               </div>
             </div>
@@ -400,43 +415,65 @@ export function Catatan() {
         />
       )}
 
+      {/* Modal sungguhan: `.jendela` tanpa `#tirai` berposisi static, jadi
+          dialognya tergambar di ujung bawah daftar (di bawah 13 catatan, klik
+          "Ubah" tampak tidak berbuat apa-apa). `PembungkusModal` memasang
+          tirainya lewat portal; Esc, Tab, dan fokus diurus `useFokusDialog`.
+          Textarea-nya dibaca lewat `ref` di penangan Simpan SELAGI dialog
+          terbuka, jadi `ref` itu masih terpasang. */}
       {ubah ? (
-        <div
-          className="jendela"
-          role="dialog"
-          aria-modal="true"
-          aria-label={"Catatan: " + ubah.judul}
-        >
-          <h2>{"Catatan: " + ubah.judul}</h2>
-          <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
-            Menuliskan ulang dengan bahasa sendiri adalah cara paling murah
-            untuk tahu apakah kamu benar-benar paham.
-          </p>
-          <textarea
-            ref={areaRef}
-            aria-label={"Catatan pribadimu untuk " + ubah.judul}
-            defaultValue={ubah.teks}
-            style={{ minHeight: "220px" }}
-          />
-          <div className="baris-sisi" style={{ marginTop: "var(--s2)" }}>
-            {"Terakhir diubah " + jamRamah(ubah.diubah)}
+        <PembungkusModal onTutup={tutupDialog}>
+          <div
+            className="jendela"
+            ref={kotakRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={"Catatan: " + ubah.judul}
+            tabIndex={-1}
+          >
+            <div className="jendela-kepala">
+              <h2>{"Catatan: " + ubah.judul}</h2>
+              <button
+                type="button"
+                className="ikon-tombol"
+                onClick={tutupDialog}
+                title="Tutup (Esc)"
+                aria-label="Tutup"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="jendela-badan">
+              <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
+                Menuliskan ulang dengan bahasa sendiri adalah cara paling murah
+                untuk tahu apakah kamu benar-benar paham.
+              </p>
+              <textarea
+                ref={areaRef}
+                aria-label={"Catatan pribadimu untuk " + ubah.judul}
+                defaultValue={ubah.teks}
+                style={{ minHeight: "220px" }}
+              />
+              <div className="baris-sisi" style={{ marginTop: "var(--s2)" }}>
+                {"Terakhir diubah " + jamRamah(ubah.diubah)}
+              </div>
+            </div>
+            <div className="jendela-kaki">
+              <button type="button" className="tbl" onClick={tutupDialog}>
+                Batal
+              </button>
+              <button
+                type="button"
+                className="tbl tbl-utama"
+                onClick={() => {
+                  void simpan();
+                }}
+              >
+                Simpan
+              </button>
+            </div>
           </div>
-          <div className="deret" style={{ marginTop: "var(--s3)" }}>
-            <span className="deret-kanan" />
-            <button type="button" className="tbl" onClick={() => setUbah(null)}>
-              Batal
-            </button>
-            <button
-              type="button"
-              className="tbl tbl-utama"
-              onClick={() => {
-                void simpan();
-              }}
-            >
-              Simpan
-            </button>
-          </div>
-        </div>
+        </PembungkusModal>
       ) : null}
     </div>
   );

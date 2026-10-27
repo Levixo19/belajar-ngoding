@@ -35,7 +35,8 @@ import {
 } from "react";
 
 import { ambil, kirim } from "../api.ts";
-import { gerakPenuh } from "../gerak.ts";
+import { adaGerak, gerakPenuh } from "../gerak.ts";
+import { sorak } from "../sorak.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { urlAman } from "../util.tsx";
@@ -265,6 +266,10 @@ export function Karier({ id }: { id?: string }) {
   const [data, setData] = useState<DataKarier | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
   const [terpilihId, setTerpilihId] = useState<string | null>(id ?? null);
+  // Alamat bisa berubah selagi layar ini terbuka (`#/karier/a` ke
+  // `#/karier/b`). Tanpa ini panel tetap yang lama dan "Jadikan tujuanku"
+  // menyimpan profesi di panel, bukan yang ada di alamat.
+  useEffect(() => { setTerpilihId(id ?? null); }, [id]);
   const [sorotId, setSorotId] = useState<string | null>(null);
   const [saringRumpun, setSaringRumpun] = useState("semua");
   const [tujuan, setTujuan] = useState<string>("");
@@ -441,9 +446,18 @@ export function Karier({ id }: { id?: string }) {
             melihat ke mana ia terhubung, lalu pilih untuk membaca rinciannya.
           </p>
           <div className="kr-aksi">
-            <a className="tbl tbl-utama" href="#kr-cocok">
+            {/* Tombol, bukan tautan ke `#kr-cocok`: alamat di aplikasi ini
+                adalah rute, jadi `#kr-cocok` dibaca sebagai rute tak dikenal
+                dan melempar orangnya ke Dasbor. */}
+            <button
+              type="button"
+              className="tbl tbl-utama"
+              onClick={() => document.getElementById("kr-cocok")?.scrollIntoView({
+                behavior: adaGerak() ? "smooth" : "auto", block: "start",
+              })}
+            >
               Cari yang cocok
-            </a>
+            </button>
             {palingSiap && palingSiap.kesiapan > 0 ? (
               <button
                 type="button"
@@ -949,8 +963,10 @@ function TombolTujuan({
         try {
           await kirim("konfigurasi", { tujuan_karier: baru });
           onTujuan(baru);
-        } catch {
-          // Setelan yang sama ada di Pengaturan; tidak ada yang terkunci.
+        } catch (e) {
+          // Setelan yang sama ada di Pengaturan, jadi tidak ada yang terkunci;
+          // tetapi gagal diam-diam membuat tombolnya tampak mati.
+          sorak("Gagal menyimpan tujuan: " + (e as Error).message, "salah");
         }
       }}
     >
@@ -988,6 +1004,8 @@ function KuisCocok({
         { pilihan: jawaban.map((x) => (x === null ? "" : String(x))).join(",") },
       );
       setHasil(r.hasil);
+    } catch (e) {
+      sorak("Gagal memuat hasil kuis: " + (e as Error).message, "salah");
     } finally {
       setSedang(false);
     }

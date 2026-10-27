@@ -28,7 +28,7 @@ import {
 import { ambil, kirim, GalatApi } from "../api.ts";
 import { adaGerak } from "../gerak.ts";
 import { ambilLokal, simpanLokal } from "../lokal.ts";
-import { rayakan, type Hadiah } from "../sorak.tsx";
+import { rayakan, sorak, type Hadiah } from "../sorak.tsx";
 import { tanpaNomor } from "../util.tsx";
 import { BlokKode, type BagianKode } from "../komponen/BlokKode.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
@@ -78,6 +78,14 @@ interface DataMateri {
      ada satu pun pemakainya sampai tombol catatan dipasang. */
   catatan: { teks?: string; diubah?: string } | null;
 }
+
+/** Kuis yang BARU SAJA siap karena materi ini tuntas. Server yang memutuskan
+ *  kesiapannya (`pelajar/kuis_materi.py`); layar ini cuma membacakannya. */
+interface KuisSiap {
+  indeks: number;
+  judul: string;
+}
+type HasilSelesai = Hadiah & { kuis_siap?: KuisSiap[] };
 
 interface ButirMateri {
   indeks: number;
@@ -508,6 +516,11 @@ function usePintasanPembaca(
 
     const saatTombol = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
+      // Dialog yang terbuka menahan pintasan satu huruf, sama dengan lapisan
+      // papan ketik cangkang (`jendelaTerbuka()` di Pintasan.tsx, yang
+      // bertanya ke DOM juga). Tanpa ini `?` lalu `j` memindahkan fokus keluar
+      // dari dialog ke blok kode di belakangnya dan menggulir halamannya.
+      if (document.querySelector(".jendela")) return;
       // Pengetikan di editor sisipan tidak boleh ikut tertangkap: `j` di dalam
       // kode adalah huruf, bukan perintah.
       const t = e.target as HTMLElement | null;
@@ -547,9 +560,21 @@ export function Belajar({
   const [status, setStatus] = useState("");
   const [pintuBaru, setPintuBaru] = useState<
     { href: string; label: string } | null>(null);
+  const [kuisSiap, setKuisSiap] = useState<KuisSiap[]>([]);
   const artikelRef = useRef<HTMLElement>(null);
   const penandaRef = useRef<HTMLDivElement>(null);
   const [fokus, alihFokus] = useFokusBaca();
+  /* Naik tiap kali layar ini dilepas atau berganti materi. Pekerjaan async
+     yang dimulai di materi lama (tandai selesai, ambil ulang daftar bahasa)
+     mencatat angkanya di awal dan MENOLAK menulis state kalau angkanya sudah
+     lain: jawaban lama yang tiba belakangan tidak boleh menimpa materi lain,
+     apalagi bahasa lain. */
+  const generasi = useRef(0);
+  /* Penandaan otomatis (sampai di ujung halaman) yang gagal tidak diulang oleh
+     pengamat: status yang dipulihkan menyalakan ulang efeknya, penandanya masih
+     terlihat, dan hasilnya satu permintaan gagal tiap beberapa ratus milidetik.
+     Tombol "Tandai selesai" tetap bisa dipakai untuk mencoba lagi. */
+  const gagalOtomatis = useRef(false);
 
   /* Dua permintaan SEKALIGUS, bukan berurutan: daftar materi bahasa ini dipakai
      untuk kolom kiri, dan menunggunya setelah materinya sendiri selesai berarti
@@ -562,7 +587,9 @@ export function Belajar({
      dibutuhkan untuk menjelaskan apa yang sedang terkunci. */
   useEffect(() => {
     let dibatalkan = false;
+    gagalOtomatis.current = false;
     setM(null); setB(null); setTerkunci(""); setGalat(""); setPintuBaru(null);
+    setKuisSiap([]);
     (async () => {
       const [jm, jb] = await Promise.allSettled([
         ambil<DataMateri>("materi", { key: kunciBahasa, indeks }),
@@ -618,8 +645,26 @@ export function Belajar({
         setStatus("sebagian");
       }
     })();
-    return () => { dibatalkan = true; };
+    return () => { dibatalkan = true; generasi.current += 1; };
   }, [kunciBahasa, indeks, onKonteks]);
+
+  /** Ambil ulang daftar bahasa dan gambar ulang kolom kiri dari data BARU.
+   *
+   *  Kolom itu menyimpan hitungan "Materi 20/44", angka per bab, dan penanda
+   *  tiap baris; semuanya tertinggal satu materi sejak pembacaan ini dicatat
+   *  kalau tidak diambil ulang. `indeksKini` tidak berubah, jadi posisi gulir
+   *  jalurnya tidak direnggut. Gagal mengambil = data lama dipertahankan. */
+  const segarkanBahasa = useCallback(async (): Promise<DataBahasa | null> => {
+    const g = generasi.current;
+    try {
+      const baru = await ambil<DataBahasa>("bahasa", { key: kunciBahasa });
+      if (g !== generasi.current) return null;
+      setB(baru);
+      return baru;
+    } catch {
+      return null;
+    }
+  }, [kunciBahasa]);
 
   /** Tawarkan materi berikutnya kalau bab yang memuatnya BARU SAJA terbuka.
    *
@@ -636,13 +681,21 @@ export function Belajar({
    *  Gagal bertanya = tidak menawarkan apa-apa. Tombol yang muncul karena
    *  tebakan lebih buruk daripada tombol yang tidak muncul: yang pertama
    *  mengantar ke layar "belum terbuka" sesudah menjanjikan kebalikannya. */
-  const tawarkanPintuBaru = useCallback(async () => {
+  const tawarkanPintuBaru = useCallback(async (segar?: DataBahasa | null) => {
     if (!m || m.sesudah || m.indeks + 1 >= m.jumlah || pintuBaru) return;
-    let baru: DataBahasa;
-    try {
-      baru = await ambil<DataBahasa>("bahasa", { key: kunciBahasa });
-    } catch {
-      return;
+    const g = generasi.current;
+    // `segar` datang dari pemanggil yang baru saja mengambil ulang daftar
+    // bahasa; tanpa itu ditanyakan sendiri, dan hasilnya langsung dipakai
+    // menggambar ulang kolom kiri.
+    let baru = segar ?? null;
+    if (!baru) {
+      try {
+        baru = await ambil<DataBahasa>("bahasa", { key: kunciBahasa });
+      } catch {
+        return;
+      }
+      if (g !== generasi.current) return;
+      setB(baru);
     }
     const lanjut = baru.materi.find((x) => x.indeks === m.indeks + 1);
     if (!lanjut || lanjut.terkunci) return;
@@ -650,7 +703,6 @@ export function Belajar({
     // Membiarkannya berarti tombol di kaki halaman mengumumkan "Bab 3 terbuka"
     // sementara seluruh Bab 3 di sebelahnya masih tertulis "terkunci" -- dua
     // jawaban berbeda untuk pertanyaan yang sama, di satu layar.
-    setB(baru);
     const bb = baru.bab.find((x) => x.materi.includes(lanjut.indeks));
     setPintuBaru({
       href: `#/materi/${kunciBahasa}/${lanjut.indeks}`,
@@ -660,27 +712,60 @@ export function Belajar({
     });
   }, [m, kunciBahasa, pintuBaru]);
 
+  /** Catat materi ini tuntas, lewat dua pintu: tombol dan sampai di ujung
+   *  halaman. Keduanya lewat sini, jadi kuis yang baru siap dan kolom kiri yang
+   *  disegarkan tidak bisa ketinggalan di salah satunya.
+   *
+   *  Status "selesai" dipasang lebih dulu (tombol langsung menjawab dan
+   *  pengamat berhenti), dan DIPULIHKAN kalau server menolak: layar yang
+   *  mengaku "Sudah selesai" padahal berkasnya tidak berubah lebih buruk
+   *  daripada tombol yang diam. Yang gagal tidak dilanjutkan ke materi
+   *  berikutnya; orangnya tinggal di sini dan bisa mencoba lagi. */
   const tandaiSelesai = useCallback(async (pindah: boolean) => {
     if (!m) return;
+    // Dicatat di awal: sesudah tiap `await` di bawah, kalau angkanya sudah
+    // lain berarti orangnya sudah pindah materi, dan tidak ada lagi yang
+    // boleh ditulis atau dinavigasikan atas nama materi yang ditinggalkan.
+    const g = generasi.current;
+    let segar: DataBahasa | null = null;
     if (status !== "selesai") {
       setStatus("selesai");
-      const hasil = await kirim<Hadiah>("materi/selesai",
-        { key: kunciBahasa, indeks, tuntas: true });
+      let hasil: HasilSelesai;
+      try {
+        hasil = await kirim<HasilSelesai>("materi/selesai",
+          { key: kunciBahasa, indeks, tuntas: true });
+      } catch (e) {
+        if (g === generasi.current) {
+          setStatus(status);
+          gagalOtomatis.current = true;
+        }
+        sorak("Gagal menandai materi selesai: "
+          + (e instanceof Error ? e.message : String(e)), "salah", 6);
+        return;
+      }
       rayakan(hasil);
+      if (g !== generasi.current) return;
+      setKuisSiap(hasil.kuis_siap || []);
+      // Pindah ke materi berikutnya memuat daftar bahasanya sendiri, jadi
+      // menunggu satu permintaan lagi di sini cuma menunda perpindahannya.
+      if (!(pindah && m.sesudah)) {
+        segar = await segarkanBahasa();
+        if (g !== generasi.current) return;
+      }
     }
     if (pindah && m.sesudah) {
       globalThis.location.hash = `#/materi/${kunciBahasa}/${m.indeks + 1}`;
     } else {
-      await tawarkanPintuBaru();
+      await tawarkanPintuBaru(segar);
     }
-  }, [m, status, kunciBahasa, indeks, tawarkanPintuBaru]);
+  }, [m, status, kunciBahasa, indeks, segarkanBahasa, tawarkanPintuBaru]);
 
   /* Sampai di ujung halaman = benar-benar dibaca habis. Ini padanan web dari
      paginasi terminal, yang juga hanya menandai tuntas kalau halaman
      terakhirnya dilewati. */
   useEffect(() => {
     const penanda = penandaRef.current;
-    if (!penanda || !m || status === "selesai") return;
+    if (!penanda || !m || status === "selesai" || gagalOtomatis.current) return;
     if (typeof IntersectionObserver === "undefined") return;
     const pengamat = new IntersectionObserver((catatan) => {
       if (catatan.some((c) => c.isIntersecting)) void tandaiSelesai(false);
@@ -728,6 +813,11 @@ export function Belajar({
 
   const berbab = b.bab.length > 1;
   const jumlahKode = m.bagian.filter((x) => x.jenis === "kode").length;
+  const kuis = kuisSiap[0];
+  // Hitungan bab di tooltip ikut data bahasa yang disegarkan sesudah selesai;
+  // `m.bab` dibaca sekali saat materinya dibuka dan tertinggal satu materi.
+  const babKini = m.bab
+    ? (b.bab.find((x) => x.nomor === m.bab.nomor) ?? m.bab) : null;
 
   return (
     <div className="masuk materi-tata">
@@ -807,7 +897,8 @@ export function Belajar({
                 <span
                   className={"pil bab-tingkat bab-" + m.bab.tingkat}
                   title={`Tingkat ${m.bab.label_tingkat.toLowerCase()} · `
-                    + `${m.bab.selesai} dari ${m.bab.jumlah} materi bab ini `
+                    + `${(babKini ?? m.bab).selesai} dari `
+                    + `${(babKini ?? m.bab).jumlah} materi bab ini `
                     + "sudah dibaca tuntas"}
                 >
                   {m.bab.label_tingkat}
@@ -893,6 +984,15 @@ export function Belajar({
                     onClick={() => { void tandaiSelesai(true); }}>
               {potong(m.sesudah, 26)}
             </button>
+          ) : null}
+          {kuis ? (
+            // Bukan `tbl-utama`: kaki ini sudah punya tindakan utamanya
+            // (materi berikutnya), dan dua permukaan beraksen berarti nol.
+            <a className="tbl tbl-kuis-siap"
+               href={`#/kuis/${kunciBahasa}/${kuis.indeks}`}>
+              <Ikon nama="kuis" ukuran={17} />
+              {`${potong(kuis.judul, 30)} siap: semua materinya sudah kamu baca`}
+            </a>
           ) : null}
           {pintuBaru ? (
             <a className="tbl tbl-utama tbl-pintu" href={pintuBaru.href}>

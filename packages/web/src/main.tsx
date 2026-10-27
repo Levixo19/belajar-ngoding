@@ -271,10 +271,17 @@ function Isi({
   }
 
   if (nama === "latihan" && arg) {
+    const nomor = Number(arg2 ?? 0) || 0;
+    /* `key` per latihan: tanpanya React memakai ulang SATU instans untuk semua
+       `#/latihan/...`, dan state-nya hidup lintas latihan. Hasil Periksa yang
+       terlambat dari latihan A mendarat sebagai "Benar" plus pil LULUS di
+       latihan B, dan dialog solusi atau banding yang terbuka ikut terbawa ke
+       latihan berikutnya tanpa gerbang konfirmasi apa pun. */
     return (
       <Latihan
+        key={`${arg}/${nomor}`}
         kunciBahasa={arg}
-        indeks={Number(arg2 ?? 0) || 0}
+        indeks={nomor}
         onKonteks={onKonteks}
       />
     );

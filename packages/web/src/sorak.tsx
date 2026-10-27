@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { GalatApi } from "./api.ts";
 import { rasakanPerayaan } from "./suara.ts";
 
 import { tingkatGerak } from "./gerak.ts";
@@ -40,6 +41,29 @@ const pelanggan = new Set<(d: Pesan[]) => void>();
 
 function siarkan() {
   for (const f of pelanggan) f(daftar);
+}
+
+/** Jaring pengaman untuk permintaan API yang gagal di dalam penangan klik tanpa
+ *  `try/catch`: promise yang ditolak tanpa penangan tidak terlihat pengguna,
+ *  jadi tombolnya tampak "tidak berbuat apa-apa". Hanya `GalatApi` yang
+ *  ditampilkan; penolakan lain (animasi yang dibatalkan, dan sebagainya)
+ *  bukan urusan pengguna. Tidak memanggil `preventDefault`, jadi galatnya
+ *  tetap tercatat di konsol. Mengembalikan pembersih (StrictMode memasang
+ *  efek dua kali). */
+export function pasangJaringGalat(): () => void {
+  let terakhir = "";
+  let kapan = 0;
+  const saat = (e: PromiseRejectionEvent) => {
+    const sebab: unknown = e.reason;
+    if (!(sebab instanceof GalatApi)) return;
+    const sekarang = Date.now();
+    if (sebab.message === terakhir && sekarang - kapan < 1500) return;
+    terakhir = sebab.message;
+    kapan = sekarang;
+    sorak("Gagal: " + sebab.message, "salah", 6);
+  };
+  globalThis.addEventListener("unhandledrejection", saat);
+  return () => globalThis.removeEventListener("unhandledrejection", saat);
 }
 
 /** Tampilkan pemberitahuan singkat. Bisa dipanggil dari mana saja. */
@@ -234,4 +258,11 @@ export function rayakan(hadiah: Hadiah | null | undefined,
      memilih sebaliknya. */
   const tingkat = tingkatRayakan(hadiah, { diam });
   if (tingkat !== "sentuh") rasakanPerayaan(tingkat);
+
+  /* Siaran terakhir, persis seperti `inti.js`: angka XP dan streak di bilah
+     atas mendengarnya dan mengambil ulang. Tanpa ini lencana baru berubah
+     saat layar berganti -- toast bilang "+10 XP" sementara angka di atasnya
+     masih yang lama. */
+  document.dispatchEvent(new CustomEvent("progres-berubah",
+    { detail: { ...hadiah, tingkat } }));
 }

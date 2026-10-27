@@ -124,7 +124,7 @@ def _xp_dan_badge(sebelum, badge_baru):
                   for b, n, d in (badge_baru or [])],
         "streak": progress.streak_aktif(sesudah),
         "xp_hari_ini": progress.xp_hari_ini(sesudah),
-        "target_harian": konfigurasi.ambil("target_xp_harian", 60),
+        "target_harian": konfigurasi.ambil("target_xp_harian", 60) or 60,
         # Layar jangan merayakan XP yang tidak pernah sampai ke disk.
         "simpan_gagal": progress.PROGRESS_FILE in simpanan.GAGAL,
     }
@@ -390,7 +390,7 @@ def dasbor(_=None):
         # entri riwayat sama sekali.
         "hari_belajar_terakhir": (data.get("streak") or {}).get(
             "tanggal_terakhir", ""),
-        "target_harian": konfigurasi.ambil("target_xp_harian", 60),
+        "target_harian": konfigurasi.ambil("target_xp_harian", 60) or 60,
         "badge_dimiliki": len(dimiliki),
         "badge_total": len(progress.DAFTAR_BADGE),
         "heatmap": [{"tanggal": t, "xp": x}
@@ -639,16 +639,18 @@ def kuis_mulai(body):
     mode = body.get("mode") or "penuh"
     acak = bool(body.get("acak", konfigurasi.ambil("acak_bawaan", True)))
 
-    durasi = 0
-    if body.get("timer"):
-        per_soal = konfigurasi.ambil("detik_per_soal", 30) or 30
-        durasi = per_soal * len(q["questions"])
-
     hanya = None
     if mode == "salah":
         hanya = progress.soal_salah_terakhir(kat, q["title"])
         if not hanya:
             raise Galat("Tidak ada soal yang masih salah untuk kuis ini.", 409)
+
+    # Jatah waktu dihitung dari soal yang BENAR-BENAR dikerjakan: mengulang 2
+    # soal yang salah tidak boleh mendapat waktu untuk seluruh kuis.
+    durasi = 0
+    if body.get("timer"):
+        per_soal = konfigurasi.ambil("detik_per_soal", 30) or 30
+        durasi = per_soal * (len(hanya) if hanya else len(q["questions"]))
 
     s = sesi.buat(kat, q["title"], isi.bahasa_sorot(lang), q["questions"],
                   mode=mode, acak=acak, durasi=durasi, hanya=hanya)

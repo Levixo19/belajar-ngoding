@@ -26,6 +26,8 @@ import { adaGerak } from "../gerak.ts";
 import { rayakan, salin, sorak, umumkan, type Hadiah } from "../sorak.tsx";
 import { Editor, type PeganganEditor } from "../komponen/Editor.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
+import { useFokusDialog } from "../komponen/fokus-dialog.ts";
+import { PembungkusModal } from "../komponen/Jendela.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { TombolBookmark, TombolCatatan } from "../komponen/Tanda.tsx";
 import { Kode } from "../komponen/Kode.tsx";
@@ -518,6 +520,12 @@ function KartuPeriksa({
   );
 }
 
+/* Apakah blok galat dari server sudah memuat kalimat henti paksanya. */
+function galatMenyebutHenti(g: BlokGalatData | null): boolean {
+  return Boolean(g) && (g as BlokGalatData).baris.some(
+    (b) => b.includes("dihentikan"));
+}
+
 function KartuJalan({
   r, runner, kode, batasWaktu, tuju,
 }: {
@@ -569,7 +577,12 @@ function KartuJalan({
       {r.galat ? (
         <BlokGalatKartu g={r.galat} fase={r.fase} tuju={tuju} denganLebih />
       ) : null}
-      {r.timeout ? (
+      {/* Server menulis sendiri pesan henti paksanya di blok galat (angkanya
+          batas yang sebenarnya dipakai). Blok ini cuma cadangan untuk jawaban
+          yang tidak membawanya, dan ia diam kalau batasnya bukan angka
+          positif: Ruang Coba tidak punya `batas_waktu`, dan "setelah 0
+          detik" adalah kalimat yang salah. */}
+      {r.timeout && batasWaktu > 0 && !galatMenyebutHenti(r.galat) ? (
         <div className="diagnosa">
           <span className="panah">→</span>
           <div>
@@ -649,6 +662,20 @@ function usePinKeGalat(
       return dy;
     };
 
+    /* Luber akibat transform anak langsung panel. Kartu hasil berangkat dari
+     * `translateY(7px)` (`@keyframes masuk`), dan `scrollHeight` ikut
+     * menghitung geseran itu: pada frame pertama panel yang cukup dilaporkan
+     * lebih tinggi tujuh piksel dari `clientHeight`, dan chip "lebih panjang
+     * dari panel" menyala untuk keluaran yang utuh. */
+    const geserKonten = () => {
+      let dy = 0;
+      for (const anak of Array.from(panel.children)) {
+        const t = getComputedStyle(anak).transform;
+        if (t && t !== "none") dy = Math.max(dy, new DOMMatrixReadOnly(t).m42);
+      }
+      return dy;
+    };
+
     const kotak = () => {
       const kp = panel.getBoundingClientRect();
       const kb = (blok as HTMLElement).getBoundingClientRect();
@@ -672,7 +699,8 @@ function usePinKeGalat(
       // selisihnya.
       const cs = getComputedStyle(panel);
       const memotong = cs.overflowY === "auto" || cs.overflowY === "scroll";
-      const lebih = memotong && panel.scrollHeight > panel.clientHeight;
+      const lebih = memotong
+        && panel.scrollHeight - geserKonten() > panel.clientHeight;
       if (chipBawah) chipBawah.hidden = !lebih;
       if (!lebih || !blok) return;
 
@@ -702,9 +730,18 @@ function usePinKeGalat(
     for (const anak of Array.from(panel.children)) pengamat.observe(anak);
     const jam = setTimeout(() => lepas(), PIN_HASIL_MS);
 
+    // Animasi masuk tidak mengubah satu kotak layout pun, jadi pengamat ukuran
+    // tidak pernah tahu ia selesai. Tanpa pengukuran ulang di sini, keputusan
+    // yang diambil selama animasi (chip menyala atau padam) tinggal selamanya.
+    // `animationend` menggelembung dari anak panel.
+    panel.addEventListener("animationend", pasang);
+    panel.addEventListener("animationcancel", pasang);
+
     lepas = () => {
       clearTimeout(jam);
       pengamat.disconnect();
+      panel.removeEventListener("animationend", pasang);
+      panel.removeEventListener("animationcancel", pasang);
       for (const nama of SENTUHAN_HASIL) panel.removeEventListener(nama, lepas);
     };
     for (const nama of SENTUHAN_HASIL) {
@@ -723,6 +760,20 @@ type Hasil =
   | { jenis: "jalan"; r: HasilJalan; kode: string }
   | { jenis: "periksa"; r: HasilPeriksa; tadi: number | null };
 
+/* Setelan "Tanya dulu sebelum menampilkan jawaban" (`konfirmasi_jawaban`).
+   Dibaca saat gerbang solusi dibuka, bukan dari data awal: data awal diambil
+   sekali, dan basi begitu setelannya diubah di Pengaturan. Gagal membaca
+   berarti tetap bertanya, salah ke arah yang melindungi pelajar dari membuka
+   solusi tanpa sengaja. */
+async function perluKonfirmasiJawaban(): Promise<boolean> {
+  try {
+    const k = await ambil<Record<string, { nilai?: unknown }>>("konfigurasi");
+    return k.konfirmasi_jawaban?.nilai !== false;
+  } catch {
+    return true;
+  }
+}
+
 export function Latihan({
   kunciBahasa, indeks, onKonteks,
 }: {
@@ -739,13 +790,31 @@ export function Latihan({
   const [banding, setBanding] = useState<ButirBeda[] | null>(null);
   const pegangan = useRef<PeganganEditor | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  /* Nomor permintaan Jalankan/Periksa yang terakhir dikirim. Jawaban yang tiba
+     sesudah ada permintaan yang lebih baru tidak boleh menimpa panel: dua klik
+     berurutan bisa dijawab terbalik. `hidup` menjawab hal serupa untuk layar
+     yang sudah ditinggalkan (main.tsx memasang `key` per latihan, jadi layar
+     lama tidak pernah dipakai ulang untuk latihan lain). */
+  const nomorJalan = useRef(0);
+  const hidup = useRef(true);
+  useEffect(() => {
+    hidup.current = true;
+    return () => { hidup.current = false; };
+  }, []);
+  // Penutup dialog harus stabil: `useFokusDialog` memasang ulang efeknya (dan
+  // memindahkan fokus) setiap kali penutupnya berganti identitas.
+  const tutupRekor = useCallback(() => setRekorLangkah(-1), []);
+  const tutupBanding = useCallback(() => setBanding(null), []);
 
   useEffect(() => {
     let dibatalkan = false;
+    nomorJalan.current += 1;
     setX(null);
     setGalatMuat("");
     setHasil({ jenis: "kosong" });
     setHintTerbuka(0);
+    setRekorLangkah(-1);
+    setBanding(null);
     (async () => {
       try {
         const d = await ambil<DataLatihan>("latihan",
@@ -779,24 +848,31 @@ export function Latihan({
       pegangan.current?.catat("tersimpan");
       if (!diam && x) sorak("Tersimpan di " + x.berkas.nama, "tumbuh", 2);
     } catch (e) {
+      // Simpan otomatis jalan tiap jeda mengetik: toast di sini akan
+      // membanjiri layar, jadi kegagalannya cuma ditandai di kaki editor.
       if (!diam) sorak((e as Error).message, "salah");
+      else pegangan.current?.catat("gagal menyimpan ke berkas", true);
     }
   }, [kunciBahasa, indeks, x]);
 
   const jalankan = useCallback(async () => {
+    const saya = ++nomorJalan.current;
     setHasil({ jenis: "sibuk", pesan: "Menjalankan kodemu…" });
     const kode = pegangan.current?.nilai() ?? "";
     try {
       const r = await kirim<HasilJalan>("latihan/jalankan",
                                         { key: kunciBahasa, indeks, kode });
+      if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "jalan", r, kode });
     } catch (e) {
+      if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "galat", pesan: (e as Error).message });
     }
   }, [kunciBahasa, indeks]);
 
   const periksa = useCallback(async () => {
     if (!x) return;
+    const saya = ++nomorJalan.current;
     setHasil({
       jenis: "sibuk",
       pesan: "Menyiapkan kunci jawaban lalu menjalankan kodemu…",
@@ -806,6 +882,15 @@ export function Latihan({
         "latihan/periksa",
         { key: kunciBahasa, indeks, kode: pegangan.current?.nilai() ?? "" },
       );
+      if (saya !== nomorJalan.current || !hidup.current) {
+        // Panelnya sudah milik permintaan lain atau layar lain, tapi lulus dan
+        // hadiahnya fakta di server: tetap dicatat, hasilnya tidak digambar.
+        if (r.lulus) {
+          setStatus("lulus");
+          rayakan(r.hadiah);
+        }
+        return;
+      }
       const lulus = r.uji.filter((u) => u.lulus).length;
       setHasil({ jenis: "periksa", r, tadi: lulusTadi(x.kunci, lulus) });
       if (r.bisa_dinilai) {
@@ -825,6 +910,7 @@ export function Latihan({
         });
       }
     } catch (e) {
+      if (saya !== nomorJalan.current || !hidup.current) return;
       setHasil({ jenis: "galat", pesan: (e as Error).message });
     }
   }, [kunciBahasa, indeks, x]);
@@ -1068,10 +1154,15 @@ export function Latihan({
                     if (!globalThis.confirm(
                       "Kembalikan editor ke kerangka kosong? Kodemu yang "
                       + "sekarang hilang.")) return;
-                    const r = await ambil<{ kode: string }>(
-                      "latihan/kerangka", { key: kunciBahasa, indeks });
-                    pegangan.current?.setNilai(r.kode);
-                    void simpan(r.kode, true);
+                    try {
+                      const r = await ambil<{ kode: string }>(
+                        "latihan/kerangka", { key: kunciBahasa, indeks });
+                      if (!hidup.current) return;
+                      pegangan.current?.setNilai(r.kode);
+                      void simpan(r.kode, true);
+                    } catch (e) {
+                      sorak((e as Error).message, "salah");
+                    }
                   }}
                 >
                   Kerangka
@@ -1138,7 +1229,7 @@ export function Latihan({
                   <button
                     type="button"
                     className="tbl tbl-kecil tbl-hantu"
-                    onClick={() => {
+                    onClick={async () => {
                       if (!rekor.length) return;
                       /* Gerbangnya MENYATAKAN KEADAAN, tidak menghakimi, dan ia
                          memang DILEWATI begitu semua petunjuk terbuka: sesudah
@@ -1151,11 +1242,16 @@ export function Latihan({
                           + "cukup, dan yang tersisa tetap kamu yang kerjakan."
                         : `Kamu membuka ${hintTerbuka} dari ${x.hint.length} `
                           + "petunjuk, itu cara yang benar untuk buntu.";
-                      if (hintTerbuka < x.hint.length && !globalThis.confirm(
-                        `${tafsir} Solusinya dibuka dari ekornya: `
-                        + `${(rekor[0] as string[]).length} baris terakhir `
-                        + `dulu, bukan ${semuaBaris.length} baris sekaligus.`,
-                      )) return;
+                      if (hintTerbuka < x.hint.length
+                          && await perluKonfirmasiJawaban()) {
+                        if (!hidup.current) return;
+                        if (!globalThis.confirm(
+                          `${tafsir} Solusinya dibuka dari ekornya: `
+                          + `${(rekor[0] as string[]).length} baris terakhir `
+                          + `dulu, bukan ${semuaBaris.length} baris sekaligus.`,
+                        )) return;
+                      }
+                      if (!hidup.current) return;
                       setRekorLangkah(0);
                     }}
                   >
@@ -1235,12 +1331,12 @@ export function Latihan({
           sorot={x.sorot}
           solusi={x.solusi}
           onLangkah={setRekorLangkah}
-          onTutup={() => setRekorLangkah(-1)}
+          onTutup={tutupRekor}
         />
       ) : null}
 
       {banding ? (
-        <PanelBanding baris={banding} onTutup={() => setBanding(null)} />
+        <PanelBanding baris={banding} onTutup={tutupBanding} />
       ) : null}
     </div>
   );
@@ -1249,6 +1345,13 @@ export function Latihan({
 /* Satu solusi, satu panel. Tangganya hidup DI DALAM panelnya, bukan sebagai
    aksi kaki: tiap aksi kaki menutup panelnya, jadi "Lihat lebih banyak" sebagai
    aksi berarti tiga panel untuk satu solusi.
+
+   Dialognya modal: `PembungkusModal` memasang tirai yang menutup layar, dan
+   `useFokusDialog` mengurus Esc, jerat Tab, dan pemulihan fokus ke tombol
+   pemicunya. Tanpa pembungkus itu `.jendela` tergambar inline, menimpa panel
+   soal, dan tombol Tutupnya bisa tertutup kartu petunjuk. Kepala, badan, dan
+   kaki dipisah seperti `Jendela.tsx`: solusi yang panjang menggulir di badan,
+   sementara Tutup dan "Lihat lebih banyak" tetap terlihat di kaki.
 
    Keadaan akhir tiap langkah = keadaan alami DOM-nya. Nol animasi dan nol
    `fill: "forwards"` di sini: apa yang sudah terbuka wajib tetap terbuka pada
@@ -1261,52 +1364,75 @@ function RekorSolusi({
   sorot: string; solusi: string;
   onLangkah: (n: number) => void; onTutup: () => void;
 }) {
+  const kotak = useRef<HTMLDivElement>(null);
+  useFokusDialog(kotak, onTutup);
   const potongan = rekor[langkah] as string[];
   const penuh = langkah >= rekor.length - 1;
+
+  // "Lihat lebih banyak" lenyap pada langkah terakhir, dan fokus yang ikut
+  // lenyap jatuh ke body: jerat Tab tidak lagi memegangnya. Fokusnya dipindah
+  // ke tombol Tutup, yang selalu ada.
+  useEffect(() => {
+    const el = kotak.current;
+    if (el && !el.contains(document.activeElement)) {
+      (el.querySelector<HTMLElement>("button.tbl-utama") ?? el).focus();
+    }
+  }, [langkah]);
+
   return (
-    <div className="jendela jendela-lebar" role="dialog" aria-modal="true"
-         aria-label={"Contoh solusi: " + judul}>
-      <h2>{"Contoh solusi: " + judul}</h2>
-      <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
-        Ini cuma SATU cara. Kode yang berbeda belum tentu salah, selama
-        outputnya sama. Yang terbuka lebih dulu baris-baris TERAKHIR: di situlah
-        hasilnya dicetak, dan sering itu saja sudah cukup.
-      </p>
-      {/* Ditokenkan ULANG per potongan, bukan diraut dari `token_solusi`: token
-          bawaan server adalah token seluruh program, dan memotong deretnya di
-          tengah bisa membelah satu string atau satu komentar jadi dua -- yang
-          terlihat pelajar kemudian warna yang terasa acak. */}
-      <div className="blok-kode">
-        <Kode kode={potongan.join("\n")} bahasa={sorot} />
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center",
-                    gap: "var(--s2)", marginTop: "var(--s3)" }}>
-        <span className="pil">
-          {penuh ? `seluruh ${semua.length} baris`
-            : `${potongan.length} baris terakhir dari ${semua.length}`}
-        </span>
-        {penuh ? null : (
-          <button type="button" className="tbl tbl-kecil"
-                  onClick={() => onLangkah(langkah + 1)}>
-            Lihat lebih banyak
+    <PembungkusModal onTutup={onTutup}>
+      <div className="jendela jendela-lebar" role="dialog" aria-modal="true"
+           aria-label={"Contoh solusi: " + judul} ref={kotak} tabIndex={-1}>
+        <div className="jendela-kepala">
+          <h2>{"Contoh solusi: " + judul}</h2>
+          <button type="button" className="ikon-tombol" onClick={onTutup}
+                  title="Tutup (Esc)" aria-label="Tutup">
+            ✕
           </button>
-        )}
-        {/* Salin baru ADA saat seluruhnya terbuka. Menyalin separuh solusi
-            adalah cara tercepat membuat jawaban yang salah terlihat sah: yang
-            tertempel jalan, outputnya cuma sebagian, dan yang disalahkan
-            pelajar adalah pemahamannya sendiri. */}
-        {penuh ? (
-          <button type="button" className="tbl tbl-kecil tbl-hantu"
-                  onClick={() => { void salin(solusi); }}>
-            Salin seluruhnya
+        </div>
+        <div className="jendela-badan">
+          <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
+            Ini cuma SATU cara. Kode yang berbeda belum tentu salah, selama
+            outputnya sama. Yang terbuka lebih dulu baris-baris TERAKHIR: di
+            situlah hasilnya dicetak, dan sering itu saja sudah cukup.
+          </p>
+          {/* Ditokenkan ULANG per potongan, bukan diraut dari `token_solusi`:
+              token bawaan server adalah token seluruh program, dan memotong
+              deretnya di tengah bisa membelah satu string atau satu komentar
+              jadi dua -- yang terlihat pelajar kemudian warna yang terasa
+              acak. */}
+          <div className="blok-kode">
+            <Kode kode={potongan.join("\n")} bahasa={sorot} />
+          </div>
+        </div>
+        <div className="jendela-kaki" style={{ alignItems: "center" }}>
+          <span className="pil">
+            {penuh ? `seluruh ${semua.length} baris`
+              : `${potongan.length} baris terakhir dari ${semua.length}`}
+          </span>
+          <span className="deret-kanan" />
+          {penuh ? null : (
+            <button type="button" className="tbl tbl-kecil"
+                    onClick={() => onLangkah(langkah + 1)}>
+              Lihat lebih banyak
+            </button>
+          )}
+          {/* Salin baru ADA saat seluruhnya terbuka. Menyalin separuh solusi
+              adalah cara tercepat membuat jawaban yang salah terlihat sah: yang
+              tertempel jalan, outputnya cuma sebagian, dan yang disalahkan
+              pelajar adalah pemahamannya sendiri. */}
+          {penuh ? (
+            <button type="button" className="tbl tbl-kecil tbl-hantu"
+                    onClick={() => { void salin(solusi); }}>
+              Salin seluruhnya
+            </button>
+          ) : null}
+          <button type="button" className="tbl tbl-utama" onClick={onTutup}>
+            Tutup
           </button>
-        ) : null}
-        <span className="deret-kanan" />
-        <button type="button" className="tbl tbl-utama" onClick={onTutup}>
-          Tutup
-        </button>
+        </div>
       </div>
-    </div>
+    </PembungkusModal>
   );
 }
 
@@ -1315,39 +1441,51 @@ function PanelBanding({
 }: {
   baris: ButirBeda[]; onTutup: () => void;
 }) {
+  const kotak = useRef<HTMLDivElement>(null);
+  useFokusDialog(kotak, onTutup);
   return (
-    <div className="jendela jendela-lebar" role="dialog" aria-modal="true"
-         aria-label="Kodemu dibanding contoh solusi">
-      <h2>Kodemu dibanding contoh solusi</h2>
-      <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
-        Baris hijau dari contoh solusi, baris merah dari kodemu. Yang dicoret
-        hilang dari kodemu, yang bergaris bawah kamu tambahkan. Beda tulisan itu
-        wajar. Yang menentukan lulus cuma outputnya.
-      </p>
-      <div className="diff">
-        {baris.length ? baris.map((d, i) => (
-          <BarisDiff
-            key={i}
-            nomor={d.nomor}
-            tanda={d.tanda === "=" ? "│" : d.tanda}
-            teks={d.teks}
-            kelas={d.tanda === "=" ? "diff-sama"
-              : d.tanda === "-" ? "diff-kurang" : "diff-tambah"}
-            segmen={d.segmen}
-          />
-        )) : (
-          <div className="diff-baris">
-            <span className="diff-isi">Sama persis.</span>
+    <PembungkusModal onTutup={onTutup}>
+      <div className="jendela jendela-lebar" role="dialog" aria-modal="true"
+           aria-label="Kodemu dibanding contoh solusi" ref={kotak}
+           tabIndex={-1}>
+        <div className="jendela-kepala">
+          <h2>Kodemu dibanding contoh solusi</h2>
+          <button type="button" className="ikon-tombol" onClick={onTutup}
+                  title="Tutup (Esc)" aria-label="Tutup">
+            ✕
+          </button>
+        </div>
+        <div className="jendela-badan">
+          <p className="kepala-sub" style={{ margin: "0 0 var(--s3)" }}>
+            Baris hijau dari contoh solusi, baris merah dari kodemu. Yang
+            dicoret hilang dari kodemu, yang bergaris bawah kamu tambahkan.
+            Beda tulisan itu wajar. Yang menentukan lulus cuma outputnya.
+          </p>
+          <div className="diff">
+            {baris.length ? baris.map((d, i) => (
+              <BarisDiff
+                key={i}
+                nomor={d.nomor}
+                tanda={d.tanda === "=" ? "│" : d.tanda}
+                teks={d.teks}
+                kelas={d.tanda === "=" ? "diff-sama"
+                  : d.tanda === "-" ? "diff-kurang" : "diff-tambah"}
+                segmen={d.segmen}
+              />
+            )) : (
+              <div className="diff-baris">
+                <span className="diff-isi">Sama persis.</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+        <div className="jendela-kaki">
+          <button type="button" className="tbl tbl-utama" onClick={onTutup}>
+            Tutup
+          </button>
+        </div>
       </div>
-      <div className="deret" style={{ marginTop: "var(--s3)" }}>
-        <span className="deret-kanan" />
-        <button type="button" className="tbl tbl-utama" onClick={onTutup}>
-          Tutup
-        </button>
-      </div>
-    </div>
+    </PembungkusModal>
   );
 }
 
@@ -1390,6 +1528,10 @@ export function Coba({
   const [hasil, setHasil] = useState<Hasil>({ jenis: "kosong" });
   const pegangan = useRef<PeganganEditor | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  /* Nomor permintaan Jalankan yang terakhir, dinaikkan juga saat bahasa atau
+     contohnya diganti: jawaban dari bahasa yang sudah ditinggalkan tidak boleh
+     digambar di bawah editor bahasa yang baru. */
+  const nomorJalan = useRef(0);
 
   usePinKeGalat(panelRef, hasil);
 
@@ -1404,9 +1546,11 @@ export function Coba({
           { key: params.key, indeks: params.materi, bagian: params.bagian || 0 },
         );
         if (dibatalkan) return;
+        nomorJalan.current += 1;
         setBahasa(c.bahasa);
         setKodeAwal(c.kode);
         setJudulContoh(c.judul);
+        setHasil({ jenis: "kosong" });
         pegangan.current?.setNilai(c.kode);
       } catch (e) {
         if (!dibatalkan) sorak((e as Error).message, "salah");
@@ -1421,17 +1565,21 @@ export function Coba({
   };
 
   const jalankan = useCallback(async () => {
+    const saya = ++nomorJalan.current;
     setHasil({ jenis: "sibuk", pesan: "Menjalankan kodemu…" });
     const kode = pegangan.current?.nilai() ?? "";
     try {
       const r = await kirim<HasilJalan>("coba", { bahasa, kode, stdin });
+      if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "jalan", r, kode });
     } catch (e) {
+      if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "galat", pesan: (e as Error).message });
     }
   }, [bahasa, stdin]);
 
   const gantiBahasa = (b: string) => {
+    nomorJalan.current += 1;
     ingat("coba.bahasa", b);
     setBahasa(b);
     const kode = ingat("coba.kode." + b) || contohAwal(b);

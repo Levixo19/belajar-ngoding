@@ -91,12 +91,17 @@ _TIPE = {
 #     pembatas lain tetap (default-src/connect-src/object-src/base-uri/
 #     form-action), jadi tidak ada skrip atau permintaan keluar dari asal
 #     sendiri; yang hilang hanya perlindungan terhadap injeksi skrip inline.
+#   connect-src menambah SATU asal di luar 'self': layanan pencarian catatan
+#     (packages/catatan, loopback, port 7799). Layar Catatanku memanggilnya
+#     dari browser; tanpa asal ini permintaannya diblokir dan layar
+#     melaporkan "layanan belum jalan" walau layanannya hidup. Layanannya
+#     sendiri menolak asal bukan-loopback dan Host asing.
 #   CSP_KETAT = True: nonce per respons. Hanya aman dinyalakan setelah
 #     pratinjau disajikan dari rute sendiri berkebijakan longgar (bukan srcdoc).
 CSP_KETAT = False
 _CSP_DASAR = ("default-src 'self'; script-src 'self' {skrip}; "
               "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
-              "connect-src 'self'; frame-src 'self' about: data:; "
+              "connect-src 'self' http://127.0.0.1:7799; frame-src 'self' about: data:; "
               "object-src 'none'; base-uri 'none'; form-action 'none'")
 
 

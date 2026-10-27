@@ -6,12 +6,21 @@
  * (`uji/banding-editor.mjs`).
  *
  * SATU keputusan rancangan yang mengikat: **textarea-nya TIDAK terkontrol
- * React.** Seluruh penyuntingan lewat `setRangeText`, yang menjaga riwayat
- * undo peramban tetap utuh. Menulis ulang `value` dari state membuang seluruh
- * riwayat itu, dan `Ctrl+Z` yang tidak berfungsi adalah cara tercepat
- * kehilangan kepercayaan pada sebuah editor. Jadi nilainya hidup di DOM,
- * induknya diberi tahu lewat callback, dan satu-satunya state React di sini
- * hal yang memang milik tampilan: token, nomor baris, posisi kursor.
+ * React.** Menulis ulang `value` dari state membuang seluruh riwayat undo
+ * peramban, dan `Ctrl+Z` yang tidak berfungsi adalah cara tercepat kehilangan
+ * kepercayaan pada sebuah editor. Jadi nilainya hidup di DOM, induknya
+ * diberi tahu lewat callback, dan satu-satunya state React di sini hal yang
+ * memang milik tampilan: token, nomor baris, posisi kursor.
+ *
+ * Penyuntingan oleh editor sendiri (Enter, kurung otomatis, Tab, komentar)
+ * lewat `document.execCommand("insertText")`, bukan `setRangeText`. Komentar
+ * lama menyebut `setRangeText` menjaga riwayat undo; di Chrome ia tidak
+ * mencatat apa pun ke riwayat itu. Terukur: sesudah satu Enter, `Ctrl+Z`
+ * berhenti bekerja, dan beberapa langkah kemudian menempelkan kembali contoh
+ * awal yang sudah dihapus ke ujung kode. `setRangeText` tinggal sebagai
+ * cadangan untuk textarea yang tidak berfokus. Penggantian seluruh isi dari
+ * luar (`setNilai`) memang membuang riwayat, dan itu aman: undo sesudahnya
+ * tidak berbuat apa-apa, tidak merusak teks.
  *
  * AMBANG_RUANG 1100 WAJIB cocok dengan `@container panggung (min-width: 1100px)`
  * di `gaya.css`. Kalau meleset, ada pita lebar tempat editor berhenti mengukur
@@ -53,8 +62,9 @@ export interface PeganganEditor {
   /** Ganti isinya. Dipakai "Kerangka kosong", contoh materi, pindah bahasa. */
   setNilai(v: string): void;
   fokus(): void;
-  /** Pesan singkat di kaki editor ("tersimpan"). */
-  catat(pesan: string): void;
+  /** Pesan singkat di kaki editor ("tersimpan"). `galat` mewarnainya sebagai
+   *  kegagalan dan menahannya lebih lama. */
+  catat(pesan: string, galat?: boolean): void;
   /**
    * Antar caret ke baris `n` (1-basis). `false` kalau barisnya tidak ada.
    *
@@ -63,6 +73,30 @@ export interface PeganganEditor {
    * berakhir "baris itu tidak ada" lebih buruk daripada tidak ada tombol.
    */
   keBaris(n: number): boolean;
+}
+
+/** Ganti rentang [awal, akhir) dengan `teks` lewat jalur penyuntingan
+ *  peramban supaya tercatat di riwayat undo. Caret mendarat di ujung teks
+ *  yang disisipkan, sama dengan `setRangeText(..., "end")`.
+ *
+ *  `execCommand` hanya dipakai kalau textarea-nya yang berfokus: tanpa itu ia
+ *  menulis ke elemen berfokus yang lain. Untuk menghapus (`teks` kosong) yang
+ *  dipakai `delete`, karena `insertText` kosong tidak menghapus apa pun. */
+function gantiRentang(
+  t: HTMLTextAreaElement,
+  awal: number,
+  akhir: number,
+  teks: string,
+): void {
+  t.setSelectionRange(awal, akhir);
+  if (document.activeElement === t) {
+    if (teks === "") {
+      if (awal === akhir || document.execCommand("delete")) return;
+    } else if (document.execCommand("insertText", false, teks)) {
+      return;
+    }
+  }
+  t.setRangeText(teks, awal, akhir, "end");
 }
 
 export function Editor({
@@ -97,8 +131,14 @@ export function Editor({
   const [kolomKini, setKolomKini] = useState(1);
   const [tujuBaris, setTujuBaris] = useState(0);
   const [pesan, setPesan] = useState("");
+  const [pesanGalat, setPesanGalat] = useState(false);
 
   const tundaUbah = useRef<number | null>(null);
+  /** Penyimpan milik ketikan terakhir yang belum terkirim. Dipegang bersama
+   *  timernya, bukan dibaca dari prop saat timer menyala: sesudah bahasa
+   *  atau latihannya berganti, prop itu sudah milik orang lain, dan isi
+   *  editor pun sudah isi yang baru. */
+  const menunggu = useRef<((kode: string) => void) | null>(null);
   const tundaCatat = useRef<number | null>(null);
   const tundaTuju = useRef<number | null>(null);
   /** Esc lalu Tab = keluar editor (WCAG 2.1.2). */
@@ -217,6 +257,18 @@ export function Editor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Prop `bahasa` yang berganti tidak menyentuh isi, jadi tidak ada yang
+  // menokenkan ulang: `setNilai` yang dipanggil induk di tik yang sama masih
+  // menutup bahasa LAMA, dan sesudahnya penyorotan tetap mengikuti bahasa itu
+  // sampai orangnya mengetik. Dilewati pada render pertama (efek isi awal di
+  // atas sudah menokenkan).
+  const bahasaTergambar = useRef(bahasa);
+  useEffect(() => {
+    if (bahasaTergambar.current === bahasa) return;
+    bahasaTergambar.current = bahasa;
+    gambar();
+  }, [bahasa, gambar]);
+
   useEffect(() => {
     let id: number | null = null;
     const tunda = () => {
@@ -241,26 +293,42 @@ export function Editor({
     [],
   );
 
+  const batalkanTunda = useCallback(() => {
+    if (tundaUbah.current !== null) clearTimeout(tundaUbah.current);
+    tundaUbah.current = null;
+    menunggu.current = null;
+  }, []);
+
   const beritahuTunda = useCallback(() => {
     if (!onUbah) return;
     if (tundaUbah.current !== null) clearTimeout(tundaUbah.current);
+    menunggu.current = onUbah;
     tundaUbah.current = setTimeout(() => {
-      if (teksRef.current) onUbah(teksRef.current.value);
+      const kirim = menunggu.current;
+      tundaUbah.current = null;
+      menunggu.current = null;
+      if (kirim && teksRef.current) kirim(teksRef.current.value);
     }, 420) as unknown as number;
   }, [onUbah]);
 
   const sesudahUbah = useCallback(() => {
     gambar();
     perbaruiPosisi();
-    if (onUbah && teksRef.current) onUbah(teksRef.current.value);
-  }, [gambar, perbaruiPosisi, onUbah]);
+    if (onUbah && teksRef.current) {
+      // Penyuntingan lewat `execCommand` ikut memicu `input`, yang sudah
+      // menjadwalkan simpan tertunda. Yang langsung ini membawa isi terbaru,
+      // jadi jadwal itu dibatalkan supaya satu suntingan menulis satu kali.
+      batalkanTunda();
+      onUbah(teksRef.current.value);
+    }
+  }, [gambar, perbaruiPosisi, onUbah, batalkanTunda]);
 
-  /** Sisip teks di posisi kursor. `setRangeText` MENJAGA riwayat undo. */
+  /** Sisip teks di posisi kursor lewat `gantiRentang`, jadi riwayat undo utuh. */
   const sisip = useCallback(
     (teks: string, pilihMulai?: number, pilihAkhir?: number) => {
       const t = teksRef.current;
       if (!t) return;
-      t.setRangeText(teks, t.selectionStart, t.selectionEnd, "end");
+      gantiRentang(t, t.selectionStart, t.selectionEnd, teks);
       if (pilihMulai !== undefined) {
         t.setSelectionRange(
           pilihMulai,
@@ -276,7 +344,7 @@ export function Editor({
     (teks: string, awal: number, akhir: number, kursor: number) => {
       const t = teksRef.current;
       if (!t) return;
-      t.setRangeText(teks, awal, akhir, "end");
+      gantiRentang(t, awal, akhir, teks);
       t.setSelectionRange(kursor, kursor);
       sesudahUbah();
     },
@@ -331,15 +399,14 @@ export function Editor({
 
       const mulaiLama = t.selectionStart;
       const akhirLama = t.selectionEnd;
-      t.setRangeText(baru, awal, akhir, "preserve");
+      if (baru !== blok) gantiRentang(t, awal, akhir, baru);
       t.setSelectionRange(
         Math.max(awal, mulaiLama + geser),
         akhirLama + (baru.length - blok.length),
       );
-      gambar();
-      if (onUbah) onUbah(t.value);
+      sesudahUbah();
     },
-    [batasBaris, sisip, gambar, onUbah],
+    [batasBaris, sisip, sesudahUbah],
   );
 
   const enter = useCallback(() => {
@@ -442,10 +509,10 @@ export function Editor({
     if (!t) return;
     const [awal, akhir] = batasBaris();
     const baru = alihKomentar(t.value.slice(awal, akhir), bahasa);
-    t.setRangeText(baru, awal, akhir, "select");
-    gambar();
-    if (onUbah) onUbah(t.value);
-  }, [batasBaris, bahasa, gambar, onUbah]);
+    gantiRentang(t, awal, akhir, baru);
+    t.setSelectionRange(awal, awal + baru.length);
+    sesudahUbah();
+  }, [batasBaris, bahasa, sesudahUbah]);
 
   const saatTombol = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -522,6 +589,13 @@ export function Editor({
       setNilai: (v: string) => {
         const t = teksRef.current;
         if (!t) return;
+        // Ketikan yang belum sempat tersimpan dikirim lebih dulu, dengan
+        // penyimpan milik ketikan itu dan isi yang ditulis orangnya. Tanpanya
+        // timer menyala sesudah penggantian dan menulis isi yang baru ke
+        // kunci yang lama (draf Python tertimpa kode C).
+        const tertunda = menunggu.current;
+        batalkanTunda();
+        if (tertunda) tertunda(t.value);
         const berubah = t.value !== v;
         t.value = v;
         gambar();
@@ -534,13 +608,14 @@ export function Editor({
         }
       },
       fokus: () => teksRef.current?.focus(),
-      catat: (p: string) => {
+      catat: (p: string, galat = false) => {
         setPesan(p || "");
+        setPesanGalat(Boolean(p) && galat);
         if (!p) return;
         if (tundaCatat.current !== null) clearTimeout(tundaCatat.current);
         tundaCatat.current = setTimeout(
           () => setPesan(""),
-          2600,
+          galat ? 6000 : 2600,
         ) as unknown as number;
       },
       keBaris: (n: number) => {
@@ -590,7 +665,7 @@ export function Editor({
         return true;
       },
     }),
-    [gambar, perbaruiPosisi, selaraskan],
+    [gambar, perbaruiPosisi, selaraskan, batalkanTunda],
   );
 
   const nomor = [];
@@ -655,7 +730,12 @@ export function Editor({
       <div className="editor-kaki">
         <span>{`Brs ${barisKini}, Kol ${kolomKini}`}</span>
         <span>{`${jumlahBaris} baris`}</span>
-        <span className="tersimpan">{pesan}</span>
+        <span
+          className="tersimpan"
+          style={pesanGalat ? { color: "var(--salah)" } : undefined}
+        >
+          {pesan}
+        </span>
         <span className="sembunyi-hp" style={{ marginLeft: "auto" }}>
           Tab menambah indentasi · Esc lalu Tab untuk keluar · Ctrl+/ komentari
         </span>

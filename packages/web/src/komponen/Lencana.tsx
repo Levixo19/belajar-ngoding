@@ -92,6 +92,14 @@ export function Lencana({ putaran }: { putaran: string }) {
 
   useEffect(segarkan, [segarkan, putaran]);
 
+  // `rayakan()` menyiarkan `progres-berubah` setiap kali sebuah aksi memberi
+  // XP, badge, atau menulis progres; tanpa pendengar ini angkanya baru
+  // menyusul saat rute berganti.
+  useEffect(() => {
+    document.addEventListener("progres-berubah", segarkan);
+    return () => document.removeEventListener("progres-berubah", segarkan);
+  }, [segarkan]);
+
   const streakTeks = useAngkaJalan(d?.streak ?? 0, (n) => String(Math.round(n)));
   const xpTeks = useAngkaJalan(d?.xp ?? 0, (n) => String(Math.round(n)));
 

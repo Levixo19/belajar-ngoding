@@ -538,9 +538,9 @@ class TestSesiKuis(BasisWeb):
         0/10" -- kalimat yang terbaca sebagai penghukuman.
 
         Dijalankan lewat `api`, bukan dibaca dari teks: yang diuji di sini
-        bahwa potret `sebelum` (`api.py:674`, di dalam `_KUNCI_PROGRES`)
+        bahwa potret `sebelum` (`api.py:676`, di dalam `_KUNCI_PROGRES`)
         benar-benar diambil SEBELUM `record_quiz_score` menimpa
-        `terakhir_skor` (`pelajar/progress.py:595`). Mengikuti preseden
+        `terakhir_skor` (`pelajar/progress.py:604`). Mengikuti preseden
         `TestFieldPembandingDasbor` (`tests/test_web.py:369`), yang
         mengunci nilai netral sebuah field pembanding di sisi endpoint.
 
@@ -627,7 +627,7 @@ class TestSesiKuis(BasisWeb):
         pola yang sudah dipakai kelas-kelas lain di berkas ini. Semua tulisan
         progres jatuh ke sandbox `BasisWeb`, jadi berkas pelajar sungguhan
         tidak tersentuh -- dan sesi penuh MENIMPA daftar soal salah
-        (`_simpan_salah`, `pelajar/progress.py:571`), jadi varian kedua tidak
+        (`_simpan_salah`, `pelajar/progress.py:580`), jadi varian kedua tidak
         mewarisi sisa varian pertama.
         """
         for acak in (False, True):
@@ -5013,7 +5013,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
     tiap kuis di `main.LANGUAGES` (ruang: seluruh kurikulum, pembaca: impor
     modul, satuan: cacah kuis) memberi NOL dari 116 kuis pada 2026-09-30 —
     tidak satu pun kuis membawa durasi. `sesi.durasi` baru bernyawa kalau badan
-    permintaan mengirim `timer` (`api.py:642-639`, `per_soal` dari
+    permintaan mengirim `timer` (`api.py:650-653`, `per_soal` dari
     `konfigurasi.detik_per_soal`, bawaan 30 detik, setelannya di
     `layar-lain.js:490`), dan `if (sesi.durasi)` (`layar-kerja.js:196`) adalah
     SATU-SATUNYA jalan masuk ke `jalankanJam()` dan pendengar
@@ -5673,10 +5673,10 @@ class TestKuisUmpanBalik(unittest.TestCase):
         """Angka pembandingnya datang dari `sebelum`, dan hanya dirender penuh.
 
         `kuis_selesai` memuat DUA potret progres: `sebelum` di dalam
-        `_KUNCI_PROGRES` (`api.py:674`, sebelum `record_quiz_score`
+        `_KUNCI_PROGRES` (`api.py:676`, sebelum `record_quiz_score`
         `:556-558`) dan `sesudah` di `:570`. `terakhir_skor` ditimpa di sisi
-        penyimpan (`pelajar/progress.py:595`, di dalam `riwayat` yang diambil
-        `:590`), jadi tepat saat `api.py:674` dijalankan nilainya masih
+        penyimpan (`pelajar/progress.py:604`, di dalam `riwayat` yang diambil
+        `:590`), jadi tepat saat `api.py:676` dijalankan nilainya masih
         milik
         percobaan SEBELUMNYA. Membacanya dari `sesudah` memulangkan skor
         percobaan yang baru saja selesai -- dan pembandingnya berubah jadi
@@ -5898,7 +5898,7 @@ class TestKuisUmpanBalik(unittest.TestCase):
         bukan lewat `document.activeElement`.
 
         YANG TIDAK DIPASANG, dan itu keputusan: `Backspace` sebagai jalan
-        keluar. `kuis_batal` ada (`api.py:680`), tapi memanggilnya dari sebuah
+        keluar. `kuis_batal` ada (`api.py:682`), tapi memanggilnya dari sebuah
         tombol yang sering ditekan tanpa sengaja adalah cara tercepat membuat
         orang kehilangan lima belas jawaban tanpa satu pun jejak visual.
         """
@@ -23895,3 +23895,528 @@ class TestIsiDialogTidakMemakaiRef(unittest.TestCase):
         sumber = self._semua()[os.path.join("packages", "web", "src", "komponen", "BlokData.tsx")]
         self.assertIn("dipilih.berkas = e.target.files", sumber)
         self.assertIn("diketik.nilai = e.target.value", sumber)
+
+
+# ------------------------------------------------ klik yang gagal tidak boleh diam
+
+class TestJaringGalat(unittest.TestCase):
+    """Permintaan API yang ditolak server tidak boleh membuat tombol tampak mati.
+
+    `api.kirim` melempar `GalatApi`; di penangan klik tanpa `try/catch` itu
+    jadi promise yang ditolak tanpa penangan, dan pengguna tidak melihat apa
+    pun. Reset progres yang gagal menulis berkas dulu berujung begitu. Dua
+    lapis: pesan khusus di tempat yang menghapus data, dan satu jaring global
+    di cangkang untuk sisanya. Perilakunya diukur di peramban dengan jawaban
+    500 yang disimulasikan.
+    """
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", *jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def test_cangkang_memasang_jaring_dan_pembersihnya(self):
+        self.assertIn("useEffect(() => pasangJaringGalat(), [])", self._baca("Cangkang.tsx"))
+        sorak = self._baca("sorak.tsx")
+        # Pembersih dikembalikan (StrictMode memasang efek dua kali), dan hanya
+        # galat API yang ditampilkan.
+        self.assertIn('removeEventListener("unhandledrejection"', sorak)
+        self.assertIn("instanceof GalatApi", sorak)
+
+    def test_reset_dan_data_menyebut_kegagalannya(self):
+        sumber = self._baca("komponen", "BlokData.tsx")
+        for pesan in ("Gagal menghapus progres", "Gagal mengekspor",
+                      "Gagal membuat cadangan", "Gagal memuat laporan"):
+            self.assertIn(pesan, sumber, pesan)
+
+
+# ------------------------------------------------ timer kuis mode "ulangi yang salah"
+
+class TestTimerKuisUlangiYangSalah(BasisWeb):
+    """Jatah waktu mode "Ulangi N soal" dihitung dari N, bukan dari seluruh kuis.
+
+    `kuis_mulai` dulu menghitung `durasi` sebelum tahu soal mana yang diulang,
+    jadi mengulang 2 soal mendapat waktu untuk semua soal kuisnya.
+    """
+
+    def _siapkan(self, salah):
+        lang = _bahasa("python")
+        q = lang["quizzes"][0]
+        data = progress.load_progress()
+        data["salah_kuis"][progress.kunci("python_kuis", q["title"])] = salah
+        progress.save_progress(data)
+        return q
+
+    def test_durasi_mengikuti_jumlah_soal_yang_diulang(self):
+        q = self._siapkan([0, 2])
+        self.assertGreater(len(q["questions"]), 2)
+        per_soal = konfigurasi.ambil("detik_per_soal", 30) or 30
+        r = api.kuis_mulai({"key": "python", "indeks": 0, "mode": "salah",
+                            "timer": True})
+        self.assertEqual(r["durasi"], per_soal * 2)
+
+    def test_mode_penuh_tetap_seluruh_soal(self):
+        q = self._siapkan([0, 2])
+        per_soal = konfigurasi.ambil("detik_per_soal", 30) or 30
+        r = api.kuis_mulai({"key": "python", "indeks": 0, "timer": True})
+        self.assertEqual(r["durasi"], per_soal * len(q["questions"]))
+
+
+# ------------------------------------------------ Pengaturan: angka dan tema
+
+class TestPengaturanAngkaDanTema(BasisWeb):
+    """Kotak angka Pengaturan dan kartu tema, dua cacat dari sapuan peramban.
+
+    Target XP harian 0 lolos `Opsi.bersihkan` sebagai "otomatis" dan sampai ke
+    dasbor apa adanya: "Target hari ini: tercapai" selamanya dan label
+    "167 dari 0 XP". Kotak angkanya dulu mengirim `Number("")` (yaitu 0) bila
+    dikosongkan, tidak menyimpan dengan Enter, dan terus menampilkan "5000"
+    padahal server menyimpan 1000.
+    """
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", *jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def test_target_harian_nol_kembali_ke_bawaan(self):
+        api.konfigurasi_tulis({"target_xp_harian": 0})
+        self.assertEqual(api.dasbor({})["target_harian"], 60)
+
+    def test_target_harian_sah_dipakai_apa_adanya(self):
+        api.konfigurasi_tulis({"target_xp_harian": 90})
+        self.assertEqual(api.dasbor({})["target_harian"], 90)
+
+    def test_kotak_angka_tidak_mengirim_kosong_dan_menyimpan_dengan_enter(self):
+        sumber = self._baca("layar", "Atur.tsx")
+        awal = sumber.index("function MedanAngka(")
+        badan = sumber[awal:sumber.index("function MedanPilihan(")]
+        self.assertIn('nilai.trim() === ""', badan)
+        self.assertIn('e.key === "Enter"', badan)
+        # Kotak mengikuti nilai yang sudah diklem server.
+        self.assertIn("}, [opsi]);", badan)
+
+    def test_kartu_tema_mendengar_siaran_dan_lokal_menyiarkannya(self):
+        self.assertIn('"tampilan-berubah"', self._baca("lokal.ts"))
+        self.assertIn('addEventListener("tampilan-berubah"', self._baca("layar", "Atur.tsx"))
+
+
+# ------------------------------------------------ sapuan peramban: dialog dan fokus
+
+class TestDialogBertirai(unittest.TestCase):
+    """Dialog yang digambar sendiri harus modal sungguhan.
+
+    `.jendela` tidak punya posisi sendiri: yang menaruhnya di tengah layar
+    adalah `#tirai { position: fixed }`. `<div className="jendela">` yang ditulis
+    langsung tergambar inline, menimpa konten di sekitarnya, tanpa tirai, dengan
+    halaman di belakangnya tetap bisa digulir. Dalam sapuan peramban enam
+    dialog (Bantuan, Palet, catatan di materi dan latihan, Catatanku Ubah,
+    contoh solusi, banding) ternyata begitu. `PembungkusModal` di Jendela.tsx
+    memberi tirainya; fokus, Esc, dan Tab tetap urusan `useFokusDialog`.
+    """
+
+    def _tsx(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        keluar = {}
+        for dasar, _d, berkas in os.walk(os.path.join(akar, "packages", "web", "src")):
+            for nama in berkas:
+                if nama.endswith(".tsx"):
+                    jalur = os.path.join(dasar, nama)
+                    with open(jalur, encoding="utf-8") as f:
+                        keluar[os.path.relpath(jalur, akar)] = f.read()
+        return keluar
+
+    def test_jendela_yang_digambar_sendiri_dibungkus_tirai(self):
+        diperiksa = 0
+        for jalur, sumber in self._tsx().items():
+            if jalur.endswith("Jendela.tsx"):
+                continue
+            if 'className="jendela"' in sumber or "className={\"jendela\"" in sumber:
+                diperiksa += 1
+                self.assertIn("PembungkusModal", sumber,
+                              f"{jalur}: .jendela digambar tanpa tirai (inline, tidak modal)")
+        self.assertGreaterEqual(diperiksa, 4, "tidak ada dialog yang ditemukan")
+
+    def test_pagar_menangkap_bentuk_yang_dulu_rusak(self):
+        lama = '<div className="jendela" role="dialog"><h2>Bantuan</h2></div>'
+        self.assertTrue('className="jendela"' in lama and "PembungkusModal" not in lama)
+
+
+class TestSapuanFokusDanGalat(unittest.TestCase):
+    """Cacat kecil dari sapuan peramban yang dijaga secara sintaksis."""
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", *jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def test_blok_data_tidak_menonaktifkan_tombol_yang_berfokus(self):
+        # `disabled` pada tombol yang sedang berfokus menjatuhkan fokus ke
+        # <body>, dan selama dialog Laporan terbuka tombolnya tetap mati
+        # sehingga fokus tidak bisa dikembalikan kepadanya.
+        self.assertNotIn("disabled={", self._baca("komponen", "BlokData.tsx"))
+
+    def test_karier_cari_yang_cocok_bukan_tautan_hash(self):
+        # Tautan `#kr-cocok` dibaca router sebagai rute tak dikenal (Dasbor).
+        self.assertIsNone(re.search(r'<a\b[^>]*href="#kr-cocok"',
+                                    self._baca("layar", "Karier.tsx")))
+
+    def test_karier_tidak_menelan_galat_dan_mengikuti_alamat(self):
+        s = self._baca("layar", "Karier.tsx")
+        # Dua aksi pengguna yang dulu gagal diam-diam: tombol tujuan (catch
+        # kosong) dan kuis kecocokan (try/finally tanpa catch).
+        self.assertIn("Gagal menyimpan tujuan", s)
+        self.assertIn("Gagal memuat hasil kuis", s)
+        self.assertIn("setTerpilihId(id ?? null)", s)
+
+    def test_pustaka_tidak_mengosongkan_data_saat_menyaring(self):
+        # Kotak cari hanya digambar kalau `data` ada; `setData(null)` melepas
+        # input dan fokus jatuh ke <body> tiap pencarian.
+        s = self._baca("layar", "Pustaka.tsx")
+        self.assertNotIn("setData(null)", s)
+        self.assertIn("[adaData]", s)
+
+    def test_panel_lainnya_menutup_saat_klik_di_luar(self):
+        self.assertIn('document.addEventListener("pointerdown"', self._baca("Cangkang.tsx"))
+
+    def test_palet_menandai_hasil_terkunci(self):
+        self.assertIn("pil pil-kunci", self._baca("komponen", "Palet.tsx"))
+
+
+
+# ------------------------------------------- sapuan klik: materi, kuis, Tebak, Catatanku
+
+class TestSapuanLayarBelajar(unittest.TestCase):
+    """Cacat yang lolos tsc, golden, dan curl dan baru terlihat saat diklik.
+
+    Semuanya diukur di peramban (dev server Vite di atas server uji berprofil
+    terpisah) dan pagar di sini menjaga BENTUK sumbernya: yang rusak tidak
+    melempar galat apa pun, jadi bentuk lama harus bisa ditolak dari sumber.
+
+    * Kuis yang baru siap dibuang `tandaiSelesai` (server mengirim `kuis_siap`).
+    * "Sudah selesai" tertulis walau server menolak.
+    * Kolom kiri materi tertinggal satu materi sesudah dibaca habis.
+    * Tebakan benar tanpa toast XP; "Sesi lagi" memutar daftar kartu yang sama.
+    * Persiapan kuis basi sesudah selesai; setelan acak membeku sejak aplikasi mulai.
+    * Dialog Ubah di Catatanku tergambar inline tanpa tirai, fokus, dan Esc.
+    * Segmen peta bab yang tersaring chip tingkat tidak berbuat apa-apa.
+    * Pintasan huruf kuis bentrok dengan rangkaian G, dan pintasan pembaca
+      materi tetap hidup di belakang dialog.
+    """
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", *jalur),
+                  encoding="utf-8") as f:
+            return f.read()
+
+    @staticmethod
+    def _antara(sumber, awal, akhir):
+        i = sumber.index(awal)
+        return sumber[i: sumber.index(akhir, i)]
+
+    def _tandai(self):
+        return self._antara(self._baca("layar", "Belajar.tsx"),
+                            "const tandaiSelesai = useCallback(",
+                            "}, [m, status, kunciBahasa, indeks,")
+
+    # Predikat murni: dipakai pada sumber sungguhan DAN pada bentuk lama.
+    @staticmethod
+    def _menyimpan_kuis_siap(badan):
+        return "hasil.kuis_siap" in badan and "setKuisSiap(" in badan
+
+    @staticmethod
+    def _memulihkan_status(badan):
+        i_try, i_kirim = badan.find("try {"), badan.find("await kirim")
+        i_catch = badan.find("catch")
+        if not 0 <= i_try < i_kirim < i_catch:
+            return False
+        sisa = badan[i_catch:]
+        return "setStatus(status)" in sisa and "sorak(" in sisa
+
+    @staticmethod
+    def _menyegarkan_kolom(badan):
+        return "segarkanBahasa()" in badan
+
+    LAMA_TANDAI = (
+        'const tandaiSelesai = useCallback(async (pindah: boolean) => {\n'
+        '    if (!m) return;\n'
+        '    if (status !== "selesai") {\n'
+        '      setStatus("selesai");\n'
+        '      const hasil = await kirim<Hadiah>("materi/selesai",\n'
+        '        { key: kunciBahasa, indeks, tuntas: true });\n'
+        '      rayakan(hasil);\n'
+        '    }\n'
+        '    await tawarkanPintuBaru();\n')
+
+    def test_tandai_selesai_menawarkan_kuis_siap(self):
+        self.assertTrue(self._menyimpan_kuis_siap(self._tandai()))
+        s = self._baca("layar", "Belajar.tsx")
+        self.assertIn("tbl tbl-kuis-siap", s)
+        self.assertIn("#/kuis/${kunciBahasa}/${kuis.indeks}", s)
+        self.assertFalse(self._menyimpan_kuis_siap(self.LAMA_TANDAI))
+
+    def test_tandai_selesai_memulihkan_status_saat_ditolak(self):
+        self.assertTrue(self._memulihkan_status(self._tandai()))
+        self.assertFalse(self._memulihkan_status(self.LAMA_TANDAI))
+        # Pengamat tidak boleh mengulang penandaan yang baru gagal.
+        s = self._baca("layar", "Belajar.tsx")
+        self.assertIn("gagalOtomatis.current", s)
+
+    def test_tandai_selesai_menyegarkan_kolom_kiri(self):
+        self.assertTrue(self._menyegarkan_kolom(self._tandai()))
+        self.assertFalse(self._menyegarkan_kolom(self.LAMA_TANDAI))
+
+    def test_tandai_selesai_tidak_menulis_state_materi_lain(self):
+        # Dicatat di awal dan dicek sesudah tiap await.
+        badan = self._tandai()
+        self.assertIn("const g = generasi.current", badan)
+        self.assertGreaterEqual(badan.count("g !== generasi.current"), 2)
+
+    def test_pintasan_pembaca_menahan_diri_di_belakang_dialog(self):
+        s = self._baca("layar", "Belajar.tsx")
+        badan = self._antara(s, "const saatTombol = (e: KeyboardEvent) => {",
+                             'else if (e.key === "f")')
+        self.assertIn('document.querySelector(".jendela")', badan)
+        self.assertLess(badan.index('document.querySelector(".jendela")'),
+                        badan.index('e.key === "j"'))
+
+    def test_tebak_merayakan_hadiah_dan_memuat_ulang_kartu(self):
+        s = self._baca("layar", "Tebak.tsx")
+        self.assertIn("interface JawabanTebak extends Hadiah", s)
+        self.assertIn("rayakan(r, { diam: !r.benar })", s)
+        # Penghitung putaran jadi dependensi efek pemuat, dan "Sesi lagi"
+        # hanya menaikkannya (tidak memutar ulang daftar yang sama).
+        self.assertIn("}, [bahasaKey, putaran]);", s)
+        tombol = self._antara(s, "onClick={() => setPutaran", "Sesi lagi")
+        self.assertNotIn("setNomor(0)", tombol)
+        lama = "onClick={() => {\n setNomor(0);\n setBenar(0);\n }}\n>\nSesi lagi"
+        self.assertNotIn("setPutaran", lama)
+
+    def test_kuis_menyegarkan_persiapan_dan_setelan_acak(self):
+        s = self._baca("layar", "Kuis.tsx")
+        selesai = self._antara(s, "const saatSelesai = useCallback(",
+                               "}, [segarkan]);")
+        self.assertIn("void segarkan()", selesai)
+        self.assertIn('ambil<Record<string, { nilai?: unknown }>>("konfigurasi")', s)
+        self.assertIn("setAcak(konfigurasi?.acak_bawaan", s)
+
+    def test_huruf_kuis_tidak_bentrok_dengan_rangkaian_g(self):
+        kuis = self._baca("layar", "Kuis.tsx")
+        pintasan = self._baca("komponen", "Pintasan.tsx")
+        angka = lambda t: re.search(r"const UMUR_G_MS = (\d+);", t).group(1)
+        self.assertEqual(angka(kuis), angka(pintasan),
+                         "umur G di Kuis.tsx menyimpang dari Pintasan.tsx")
+        self.assertIn("terakhirG.current", kuis)
+        self.assertIn("if (gTertunda) return;", kuis)
+        # Dialog yang terbuka menahan jawaban lewat papan ketik.
+        self.assertIn('document.querySelector(".jendela")', kuis)
+
+    def test_dialog_ubah_catatan_modal_dan_berfokus(self):
+        s = self._baca("layar", "Lain.tsx")
+        self.assertIn("useFokusDialog(kotakRef, tutupDialog,", s)
+        # Tiap `.jendela` yang digambar di sini berdiri di dalam tirainya.
+        jumlah = s.count('className="jendela"')
+        self.assertGreaterEqual(jumlah, 1)
+        self.assertEqual(s.count("<PembungkusModal"), jumlah)
+        for m in re.finditer(r'className="jendela"', s):
+            self.assertIn("<PembungkusModal", s[max(0, m.start() - 160): m.start()])
+        # `.par` di luar `.prosa` tidak bergaya, jadi baris barunya dijaga di sini.
+        self.assertIn('whiteSpace: "pre-wrap"', s)
+
+    def test_segmen_peta_bab_melepas_saringan_sebelum_menggulir(self):
+        s = self._baca("layar", "Bahasa.tsx")
+        segmen = self._antara(s, "function SegmenBab(", "/**\n * Peta bab:")
+        self.assertNotIn("scrollIntoView", segmen)
+        self.assertIn("onBuka(bab)", segmen)
+        buka = self._antara(s, "const bukaBab = (bab: Bab) => {",
+                            "gulirKeBab(bab.nomor);\n  };")
+        self.assertIn("setPilih(", buka)
+        self.assertIn("setTuju(bab.nomor)", buka)
+        # Menggulir ke elemen `hidden` tidak berbuat apa-apa: gulirnya menunggu render.
+        self.assertIn("gulirKeBab(tuju);", s)
+
+
+
+# ---------------------------------------------- ruang kerja latihan dan Ruang Coba
+
+def _src_web(*bagian):
+    akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(akar, "packages", "web", "src", *bagian),
+              encoding="utf-8") as f:
+        return f.read()
+
+
+def _jendela_tanpa_tirai(s):
+    """Posisi tiap `className="jendela` yang tidak berdiri di dalam
+    `<PembungkusModal` (dicari 400 karakter ke belakang)."""
+    return [m.start() for m in re.finditer(r'className="jendela[ "]', s)
+            if "<PembungkusModal" not in s[max(0, m.start() - 400): m.start()]]
+
+
+def _latihan_tanpa_key(s):
+    """Elemen `<Latihan ...>` di router yang tidak memasang `key=`."""
+    return [m.group(0) for m in re.finditer(r"<Latihan\b[^>]*?/?>", s, re.S)
+            if "key=" not in m.group(0)]
+
+
+def _setstate_tanpa_nomor(s):
+    """`setHasil` sesudah `await kirim` yang tidak didahului pembanding
+    `saya !== nomorJalan.current` dalam 700 karakter."""
+    hasil = []
+    for pola in (r'setHasil\(\{ jenis: "jalan"', r'setHasil\(\{ jenis: "periksa"',
+                 r'setHasil\(\{ jenis: "galat", pesan: \(e as Error\)'):
+        for m in re.finditer(pola, s):
+            if "!== nomorJalan.current" not in s[max(0, m.start() - 700): m.start()]:
+                hasil.append(m.group(0))
+    return hasil
+
+
+class TestRuangKerjaDialogDanBalapan(unittest.TestCase):
+    """Cacat yang ditemukan penyapu dengan mengeklik tiap kontrol di Chrome, dan
+    lolos `tsc`, golden, serta seluruh tes lain. Perilakunya diukur di peramban
+    (bundel lama gagal 14 dari 22 pemeriksaan, kode baru lulus semuanya); pagar
+    ini cuma menjaga bentuk sumbernya supaya tiap kelas cacat tidak lahir lagi.
+    Tiap pagar ditulis sebagai fungsi atas teks sumber, dan satu tes memberinya
+    bentuk lama dari memori: pagar yang tidak bisa merah bukan pagar."""
+
+    def test_dialog_tidak_digambar_tanpa_tirai(self):
+        # `.jendela` hanya diberi posisi lewat `#tirai { position: fixed }`.
+        # Tanpa pembungkus modalnya ia tergambar inline: menimpa panel soal,
+        # Esc tidak menutup, Tab tidak terjerat, dan tombol Tutup bisa
+        # tertutup kartu petunjuk.
+        for nama in (("layar", "Kerja.tsx"), ("komponen", "Tanda.tsx")):
+            s = _src_web(*nama)
+            self.assertGreaterEqual(s.count('className="jendela'), 1, nama)
+            self.assertEqual(_jendela_tanpa_tirai(s), [], nama)
+            self.assertIn("useFokusDialog(", s, nama)
+
+    def test_pagar_dialog_bisa_merah(self):
+        lama = ('<div className="jendela jendela-lebar" role="dialog" '
+                'aria-modal="true" aria-label={"Contoh solusi: " + judul}>')
+        self.assertEqual(len(_jendela_tanpa_tirai(lama)), 1)
+        baru = "<PembungkusModal onTutup={onTutup}>\n  " + lama
+        self.assertEqual(_jendela_tanpa_tirai(baru), [])
+
+    def test_penutup_dialog_tidak_dibuat_ulang_tiap_render(self):
+        # `useFokusDialog` memasang ulang efeknya (dan memindahkan fokus ke
+        # elemen pertama dialog) setiap kali `onTutup` berganti identitas.
+        s = _src_web("layar", "Kerja.tsx")
+        self.assertNotRegex(s, r"onTutup=\{\(\) =>")
+        self.assertIn("const tutupRekor = useCallback(", s)
+        self.assertIn("const tutupBanding = useCallback(", s)
+        self.assertRegex(r"onTutup={() => setBanding(null)}", r"onTutup=\{\(\) =>")
+
+    def test_latihan_dipasang_dengan_key(self):
+        # Tanpa `key`, React memakai ulang satu instans untuk semua
+        # `#/latihan/...`: hasil Periksa A yang terlambat mendarat sebagai
+        # "Benar" plus LULUS di B, dan dialog solusi ikut terbawa.
+        s = _src_web("main.tsx")
+        self.assertGreaterEqual(s.count("<Latihan"), 1)
+        self.assertEqual(_latihan_tanpa_key(s), [])
+        lama = ('<Latihan kunciBahasa={arg} indeks={Number(arg2 ?? 0) || 0} '
+                'onKonteks={onKonteks} />')
+        self.assertEqual(len(_latihan_tanpa_key(lama)), 1)
+
+    def test_jawaban_terlambat_tidak_menimpa_panel(self):
+        s = _src_web("layar", "Kerja.tsx")
+        self.assertEqual(_setstate_tanpa_nomor(s), [])
+        # Dua layar, dua penghitung: Latihan (+ penanda layar hidup) dan Coba.
+        self.assertGreaterEqual(s.count("const nomorJalan = useRef(0)"), 2)
+        self.assertIn("hidup.current", s)
+        lama = ('const r = await kirim<HasilJalan>("coba", { bahasa, kode, stdin });\n'
+                '      setHasil({ jenis: "jalan", r, kode });')
+        self.assertEqual(len(_setstate_tanpa_nomor(lama)), 1)
+
+    def test_kerangka_dan_simpan_otomatis_tidak_gagal_diam(self):
+        s = _src_web("layar", "Kerja.tsx")
+        kerangka = s[s.index('"latihan/kerangka"') - 220: s.index('"latihan/kerangka"')]
+        self.assertIn("try {", kerangka)
+        self.assertIn('pegangan.current?.catat("gagal menyimpan', s)
+        e = _src_web("komponen", "Editor.tsx")
+        self.assertIn("catat(pesan: string, galat?: boolean)", e)
+
+    def test_pesan_timeout_tampil_sekali(self):
+        s = _src_web("layar", "Kerja.tsx")
+        self.assertIn("r.timeout && batasWaktu > 0 && !galatMenyebutHenti(r.galat)", s)
+        self.assertNotIn("{r.timeout ? (", s)
+
+    def test_chip_luber_diukur_ulang_dan_tidak_menghitung_transform(self):
+        s = _src_web("layar", "Kerja.tsx")
+        pin = s[s.index("function usePinKeGalat("): s.index("export function Latihan(")]
+        self.assertIn("panel.scrollHeight - geserKonten() > panel.clientHeight", pin)
+        self.assertIn('addEventListener("animationend", pasang)', pin)
+        self.assertIn('removeEventListener("animationend", pasang)', pin)
+        self.assertNotIn("requestAnimationFrame", s)
+
+    def test_setelan_konfirmasi_jawaban_dibaca(self):
+        s = _src_web("layar", "Kerja.tsx")
+        self.assertIn("konfirmasi_jawaban", s)
+        self.assertIn("&& await perluKonfirmasiJawaban()", s)
+        # Gerbang tetap dilewati begitu semua petunjuk terbuka.
+        self.assertIn("hintTerbuka < x.hint.length", s)
+
+    def test_editor_menyunting_lewat_riwayat_undo(self):
+        # `setRangeText` tidak mencatat apa pun ke riwayat undo Chrome: sesudah
+        # satu Enter Ctrl+Z berhenti bekerja, lalu menempelkan contoh awal ke
+        # ujung kode. Satu-satunya `setRangeText` yang tersisa adalah cadangan
+        # di `gantiRentang`.
+        s = _src_web("komponen", "Editor.tsx")
+        self.assertEqual(s.count(".setRangeText("), 1)
+        self.assertIn('document.execCommand("insertText", false, teks)', s)
+        self.assertIn('document.execCommand("delete")', s)
+        self.assertIn("document.activeElement === t", s)
+        gantiRentang = s[s.index("function gantiRentang("): s.index("export function Editor(")]
+        self.assertIn(".setRangeText(", gantiRentang)
+        # Bentuk lama (setiap penyunting memanggil `setRangeText` sendiri)
+        # tertangkap oleh hitungan yang sama.
+        lama = s + 't.setRangeText(teks, t.selectionStart, t.selectionEnd, "end");\n' * 4
+        self.assertEqual(lama.count(".setRangeText("), 5)
+        self.assertNotEqual(lama.count(".setRangeText("), 1)
+
+    def test_simpan_tertunda_membawa_penyimpannya_sendiri(self):
+        # Timer yang membaca `onUbah` dari prop saat menyala menulis isi
+        # editor yang SUDAH berganti bahasa ke kunci bahasa yang lama.
+        s = _src_web("komponen", "Editor.tsx")
+        self.assertIn("menunggu.current = onUbah;", s)
+        self.assertNotIn("if (teksRef.current) onUbah(teksRef.current.value);", s)
+        setnilai = s[s.index("setNilai: (v: string) => {"):
+                     s.index("fokus: () => teksRef.current?.focus()")]
+        self.assertIn("batalkanTunda();", setnilai)
+        self.assertIn("tertunda(t.value)", setnilai)
+
+    def test_bahasa_berganti_menokenkan_ulang(self):
+        s = _src_web("komponen", "Editor.tsx")
+        self.assertIn("const bahasaTergambar = useRef(bahasa);", s)
+        self.assertRegex(
+            s, r"if \(bahasaTergambar\.current === bahasa\) return;\s+"
+               r"bahasaTergambar\.current = bahasa;\s+gambar\(\);")
+
+
+# ------------------------------------------------ plugin token Vite (mode dev)
+
+class TestPluginTokenVite(unittest.TestCase):
+    """Plugin `belajar-token` mengambil token dari `GET /` server Python.
+
+    Sejak server melayani bundel React, halamannya memuat
+    `window.TOKEN_BELAJAR = window.TOKEN_BELAJAR || "<token>"`; regex lama
+    hanya mengenal `= "<token>"`, jadi dev server mendapat token kosong dan
+    seluruh API ditolak selama `dist/` ada. Jalur dev saja, tapi ia satu-satunya
+    jalan menjalankan React dengan penyegaran cepat.
+    """
+
+    def _regex(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "vite.config.ts"), encoding="utf-8") as f:
+            sumber = f.read()
+        m = re.search(r"html\.match\(\s*/(.+?)/\s*\);", sumber, re.S)
+        self.assertIsNotNone(m, "regex token tidak ditemukan di vite.config.ts")
+        return re.compile(m.group(1))
+
+    def test_cocok_dengan_kedua_bentuk_halaman(self):
+        pola = self._regex()
+        for html in ('<script>window.TOKEN_BELAJAR = "abc123";</script>',
+                     '<script>window.TOKEN_BELAJAR = window.TOKEN_BELAJAR || "abc123";</script>'):
+            m = pola.search(html)
+            self.assertIsNotNone(m, html)
+            self.assertEqual(m.group(1), "abc123")

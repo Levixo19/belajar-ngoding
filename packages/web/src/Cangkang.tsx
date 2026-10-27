@@ -34,7 +34,7 @@ import { Palet } from "./komponen/Palet.tsx";
 import type { BahasaPalet } from "./komponen/palet-cari.ts";
 import { Bantuan, usePintasanCangkang } from "./komponen/Pintasan.tsx";
 import { temaBerikutnya } from "./lokal.ts";
-import { sorak } from "./sorak.tsx";
+import { pasangJaringGalat, sorak } from "./sorak.tsx";
 
 /* Layar yang butuh ruang penuh: pembaca materi memakai tiga kolom, dan editor
    lebih enak tanpa batas lebar. */
@@ -222,6 +222,22 @@ export function Cangkang({
     return () => globalThis.removeEventListener("keydown", dengar);
   }, [panelBuka]);
 
+  // Klik di luar menutup panel "Lainnya" (mode lebar). Antarmuka lama
+  // melakukannya lewat popover; tanpa ini panel menggantung sampai Esc atau
+  // sampai orangnya menemukan lagi pemicunya. Di layar sempit `panelBuka`
+  // membuka seluruh menu lipat, yang punya pemicunya sendiri, jadi diabaikan.
+  const turunRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!panelBuka || sempit) return;
+    const dengar = (e: PointerEvent) => {
+      const t = e.target;
+      if (t instanceof Node && turunRef.current?.contains(t)) return;
+      setPanelBuka(false);
+    };
+    document.addEventListener("pointerdown", dengar);
+    return () => document.removeEventListener("pointerdown", dengar);
+  }, [panelBuka, sempit]);
+
   /* Langit dipasang SESUDAH `#latar` ada di DOM -- ia mencarinya lewat
      `getElementById`, jadi memanggilnya di tingkat modul akan mendapat null
      dan diam-diam tidak melakukan apa pun. Pelepasnya dipakai: `StrictMode`
@@ -275,6 +291,7 @@ export function Cangkang({
      lain, dan node itu terparkir di pojok kiri atas selamanya -- sampai klik
      mouse tidak bisa memilih node sama sekali. */
   useEffect(() => pasangIsyarat(), []);
+  useEffect(() => pasangJaringGalat(), []);
 
   const latarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -375,7 +392,8 @@ export function Cangkang({
               DI DALAM panel. Tanpa itu, membuka Statistik atau Pengaturan
               membuat navigasi tidak menyalakan apa pun sama sekali -- butir di
               panel tertutup ber-`offsetWidth` nol. */}
-          <div className={"rel-turun rel-turun-kanan" + (panelBuka ? " buka" : "")}>
+          <div ref={turunRef}
+               className={"rel-turun rel-turun-kanan" + (panelBuka ? " buka" : "")}>
             <button
               type="button"
               className={"rel-pemicu" + (diPanel ? " kini" : "")}

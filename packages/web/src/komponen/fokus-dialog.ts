@@ -5,7 +5,7 @@
  *  halaman di belakang tirai, dan dialog catatan tidak bisa ditutup dengan Esc.
  *  Pemakai papan ketik dan pembaca layar membayar tiga-tiganya, dan tidak ada
  *  galat di mana pun. */
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 /** Elemen yang bisa menerima fokus di dalam sebuah dialog, urut tab. */
 export function bisaFokus(kotak: HTMLElement): HTMLElement[] {
@@ -26,6 +26,14 @@ export function useFokusDialog(
   onTutup: () => void,
   aktif = true,
 ): void {
+  // `onTutup` dipegang lewat ref, BUKAN jadi dependensi efek. Pemanggil yang
+  // mengirim fungsi baru tiap render (`onTutup={() => setBuka(false)}`) dulu
+  // membuat efek ini dibersihkan dan dipasang ulang pada setiap render
+  // induknya: pembersihnya mengembalikan fokus ke pemicu, lalu pemasangan
+  // berikutnya menariknya masuk lagi -- bisa mencuri fokus dari kotak ketik.
+  const tutupRef = useRef(onTutup);
+  useEffect(() => { tutupRef.current = onTutup; });
+
   useEffect(() => {
     if (!aktif) return;
     const asal = document.activeElement;
@@ -37,7 +45,7 @@ export function useFokusDialog(
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
-        onTutup();
+        tutupRef.current();
         return;
       }
       if (e.key !== "Tab" || !kotak.current) return;
@@ -58,5 +66,5 @@ export function useFokusDialog(
       document.removeEventListener("keydown", saatTombol, true);
       if (asal instanceof HTMLElement && asal.isConnected) asal.focus();
     };
-  }, [kotak, onTutup, aktif]);
+  }, [kotak, aktif]);
 }

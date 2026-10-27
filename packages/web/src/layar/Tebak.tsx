@@ -15,6 +15,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { ambil, kirim } from "../api.ts";
+import { rayakan, type Hadiah } from "../sorak.tsx";
 import { Kode } from "../komponen/Kode.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
@@ -42,7 +43,9 @@ interface BarisBeda {
   aktual: string | null;
 }
 
-interface JawabanTebak {
+/** Membawa hadiahnya (XP, badge, `simpan_gagal`): tebakan benar pertama per
+ *  blok memberi XP, dan yang menuliskannya ke berkas server, bukan layar ini. */
+interface JawabanTebak extends Hadiah {
   benar: boolean;
   keluaran: string;
   beda: { ringkas?: string; baris?: BarisBeda[] } | null;
@@ -60,6 +63,11 @@ export function Tebak({ bahasaKey, label }: Props) {
   const [galat, setGalat] = useState<string | null>(null);
   const [nomor, setNomor] = useState(0);
   const [benar, setBenar] = useState(0);
+  /* Naik tiap "Sesi lagi". Kartu dipilih server dari progres terkini (yang
+     tadi meleset muncul lebih dulu), jadi sesi berikutnya harus MENGAMBIL ULANG
+     `/api/tebak/kartu`; memutar ulang daftar yang sama berarti ringkasan di
+     akhir sesi menjanjikan sesuatu yang tidak terjadi. */
+  const [putaran, setPutaran] = useState(0);
 
   useEffect(() => {
     let dibatalkan = false;
@@ -81,7 +89,7 @@ export function Tebak({ bahasaKey, label }: Props) {
     return () => {
       dibatalkan = true;
     };
-  }, [bahasaKey]);
+  }, [bahasaKey, putaran]);
 
   const kepala = (
     <header className="kepala">
@@ -159,10 +167,7 @@ export function Tebak({ bahasaKey, label }: Props) {
               <button
                 type="button"
                 className="tbl tbl-utama"
-                onClick={() => {
-                  setNomor(0);
-                  setBenar(0);
-                }}
+                onClick={() => setPutaran((n) => n + 1)}
               >
                 Sesi lagi
               </button>
@@ -245,6 +250,9 @@ function KartuTebak({
       });
       setHasil(r);
       if (r.benar) onBenar();
+      // `diam` untuk tebakan yang meleset: server tidak memberi XP untuknya,
+      // tapi `simpan_gagal` dan badge tetap harus sampai ke layar.
+      rayakan(r, { diam: !r.benar });
     } catch (e) {
       setGalat((e as Error).message);
       setSedang(false);

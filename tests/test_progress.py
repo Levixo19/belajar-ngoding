@@ -480,6 +480,32 @@ class TestLatihanManual(BasisProgres):
         self.assertTrue(progress.batalkan_latihan_manual("cpp_latihan", "L1"))
         self.assertEqual(progress.load_progress()["latihan_manual"], [])
 
+    def test_menandai_ulang_sesudah_batal_tidak_memanen_xp(self):
+        """Tandai -> batalkan -> tandai dulu memberi XP tiap putaran."""
+        progress.tandai_latihan_manual("cpp_latihan", "L1")
+        for _ in range(3):
+            progress.batalkan_latihan_manual("cpp_latihan", "L1")
+            progress.tandai_latihan_manual("cpp_latihan", "L1")
+        data = progress.load_progress()
+        self.assertEqual(data["xp"], progress.XP_LATIHAN_MANUAL)
+        self.assertIn("cpp_latihan::L1", data["latihan_manual"])
+
+    def test_latihan_lain_tetap_memberi_xp_sendiri(self):
+        progress.tandai_latihan_manual("cpp_latihan", "L1")
+        progress.batalkan_latihan_manual("cpp_latihan", "L1")
+        progress.tandai_latihan_manual("cpp_latihan", "L2")
+        self.assertEqual(progress.load_progress()["xp"],
+                         2 * progress.XP_LATIHAN_MANUAL)
+
+    def test_berkas_lama_tanpa_daftar_dihargai_tetap_termuat(self):
+        """Progres yang ditulis sebelum kunci ini ada tidak boleh ditolak."""
+        lama = progress._default()
+        lama.pop("latihan_manual_dihargai")
+        lama["latihan_manual"] = ["cpp_latihan::L1"]
+        data = progress._migrasi(lama)
+        self.assertEqual(data["latihan_manual_dihargai"], [])
+        self.assertEqual(data["latihan_manual"], ["cpp_latihan::L1"])
+
     def test_ikut_terhitung_di_statistik(self):
         progress.tandai_latihan_manual("cpp_latihan", "L1")
         s = progress.statistik_bahasa(progress.load_progress(), "cpp", 0, 0, 2)

@@ -131,6 +131,10 @@ export function terapkanTampilan(ubah?: Partial<Tampilan>): Tampilan {
   const px = (UKURAN.find((u) => u[0] === t.ukuran) ?? UKURAN[1]!)[1];
   akar.style.setProperty("--ukuran-teks", px + "px");
   akar.style.setProperty("--baca", t.lebarBaca + "ch");
+  // Ctrl+J dan tombol tema di pil atas mengganti tema tanpa lewat layar
+  // Pengaturan; kartu tema di sana mendengar siaran ini, kalau tidak "dipakai"
+  // dan `aria-pressed`-nya tertinggal di tema lama.
+  document.dispatchEvent(new CustomEvent("tampilan-berubah"));
   return t;
 }
 
