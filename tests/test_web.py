@@ -23839,3 +23839,59 @@ class TestKunciAwalBarisDiTigaPemindai(unittest.TestCase):
                        os.path.join(akar, "packages", "bersama", "src", "sorot.ts"),
                        {"kasus": self._kasus()},
                        flag=("--experimental-strip-types",))
+
+
+# ---------------------------------------------- isian dialog tidak dibaca lewat ref
+
+class TestIsiDialogTidakMemakaiRef(unittest.TestCase):
+    """`isi` sebuah `tanya({...})` tidak boleh memakai `ref=`.
+
+    `await tanya(...)` baru selesai SESUDAH dialognya tertutup, dan saat itu
+    elemennya sudah dilepas: React memanggil callback `ref` dengan null, jadi
+    `medan.current` yang dibaca kemudian selalu kosong. Reset SEMUA ("HAPUS"
+    yang benar selalu dianggap salah) dan Impor progres (berkas yang dipilih
+    selalu hilang, tanpa pesan) rusak persis begitu sejak diport, dan tsc, golden,
+    serta curl sama-sama tidak melihatnya. Isiannya dicatat lewat `onChange`
+    ke objek biasa; alur ujung ke ujungnya diukur `uji/manual/data-dialog.mjs`.
+    """
+
+    @staticmethod
+    def _isi_tanya(sumber):
+        """Teks dari `tanya({` sampai `aksi:` berikutnya, untuk tiap pemanggilan."""
+        hasil = []
+        for m in re.finditer(r"await tanya\(\{", sumber):
+            potong = sumber[m.end():]
+            akhir = potong.find("aksi:")
+            hasil.append(potong[: akhir if akhir >= 0 else 4000])
+        return hasil
+
+    def _semua(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        keluar = {}
+        for dasar, _dirs, berkas in os.walk(os.path.join(akar, "packages", "web", "src")):
+            for nama in berkas:
+                if nama.endswith(".tsx"):
+                    jalur = os.path.join(dasar, nama)
+                    with open(jalur, encoding="utf-8") as f:
+                        keluar[os.path.relpath(jalur, akar)] = f.read()
+        return keluar
+
+    def test_isi_dialog_tidak_memakai_ref(self):
+        diperiksa = 0
+        for jalur, sumber in self._semua().items():
+            for isi_ in self._isi_tanya(sumber):
+                diperiksa += 1
+                self.assertNotIn("ref=", isi_,
+                                 f"{jalur}: isi tanya() memakai ref; nilainya null begitu dialog tertutup")
+        self.assertGreaterEqual(diperiksa, 3, "tidak ada pemanggilan tanya() yang ditemukan")
+
+    def test_pagar_menangkap_bentuk_yang_dulu_rusak(self):
+        """Pagarnya sendiri harus bisa merah: bentuk lama BlokData ditolaknya."""
+        lama = ('const lagi = await tanya({ judul: "x", isi: (<div><input '
+                'ref={(el) => { medan.current = el; }} /></div>), aksi: [] });')
+        self.assertTrue(any("ref=" in i for i in self._isi_tanya(lama)))
+
+    def test_isian_impor_dan_reset_dicatat_lewat_onchange(self):
+        sumber = self._semua()[os.path.join("packages", "web", "src", "komponen", "BlokData.tsx")]
+        self.assertIn("dipilih.berkas = e.target.files", sumber)
+        self.assertIn("diketik.nilai = e.target.value", sumber)

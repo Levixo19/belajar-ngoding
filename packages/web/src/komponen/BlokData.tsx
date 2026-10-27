@@ -8,8 +8,8 @@
  *  Yang mengikat, dan alasannya bukan selera:
  *
  *  * **Reset SEMUA menuntut dua dialog**, dan yang kedua menuntut kata `HAPUS`
- *    diketik. Ketikan yang tidak cocok menggetarkan medannya lalu menghapus
- *    NOL. Ia menghapus XP, level, streak, badge, dan seluruh riwayat di semua
+ *    diketik. Ketikan yang tidak cocok menggetarkan tombol pemicunya (kotaknya
+ *    sudah tertutup) lalu menghapus NOL. Ia menghapus XP, level, streak, badge, dan seluruh riwayat di semua
  *    bahasa; tombol semacam itu tidak boleh pernah bisa ditekan karena salah
  *    sasaran.
  *  * **Reset tidak menyentuh catatan pribadi.** Catatan tinggal di berkasnya
@@ -20,10 +20,16 @@
  *    menampilkan angka lama lebih buruk daripada satu kedipan muat ulang.
  */
 
-// `useState` saja: medan di dalam dialog dipegang objek `{current}` biasa
-// yang dibuat ULANG tiap kali dialognya dibuka, bukan `useRef` yang
+// `useState` saja: isian di dalam dialog dicatat lewat `onChange` ke objek
+// biasa yang dibuat ULANG tiap kali dialognya dibuka, bukan `useRef` yang
 // hidup selama komponennya hidup -- dua pembukaan berurutan tidak boleh
-// saling melihat medan satu sama lain.
+// saling melihat isian satu sama lain.
+//
+// JANGAN membaca elemen isian lewat `ref` SESUDAH `await tanya(...)`: React
+// memanggil callback `ref` dengan null begitu dialognya tertutup dan elemennya
+// dilepas, jadi nilainya selalu hilang. Reset SEMUA dan Impor progres dulu
+// rusak persis begitu: "HAPUS" yang benar terbaca kosong, berkas yang dipilih
+// terbaca tidak ada. Pagarnya `TestIsiDialogTidakMemakaiRef`.
 import { useState } from "react";
 import * as api from "../api.ts";
 import { adaGerak } from "../gerak.ts";
@@ -107,7 +113,10 @@ export function BlokData() {
   }
 
   async function impor() {
-    const medan = { current: null as HTMLInputElement | null };
+    // Berkasnya dicatat SAAT dipilih. Membaca `medan.current` sesudah dialog
+    // tertutup mengembalikan null: React memanggil callback `ref` dengan null
+    // begitu kotaknya dilepas, jadi berkas yang dipilih selalu hilang.
+    const dipilih = { berkas: null as File | null };
     const pilih = await tanya({
       judul: "Impor progres",
       isi: (
@@ -120,7 +129,7 @@ export function BlokData() {
             type="file"
             accept=".json,application/json"
             aria-label="Berkas progres untuk diimpor"
-            ref={(el) => { medan.current = el; }}
+            onChange={(e) => { dipilih.berkas = e.target.files?.[0] ?? null; }}
           />
         </div>
       ),
@@ -129,8 +138,12 @@ export function BlokData() {
         { label: "Impor", nilai: true, kelas: "tbl-bahaya" },
       ],
     });
-    const berkas = medan.current?.files?.[0];
-    if (pilih !== true || !berkas) return;
+    if (pilih !== true) return;
+    const berkas = dipilih.berkas;
+    if (!berkas) {
+      sorak("Pilih berkas progres lebih dulu. Tidak ada yang diimpor.", "salah");
+      return;
+    }
     try {
       const teks = await berkas.text();
       const r = await api.kirim<{ cadangan: string }>(
@@ -196,7 +209,7 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
     setTimeout(() => location.reload(), 900);
   }
 
-  async function resetSemua() {
+  async function resetSemua(pemicu: HTMLElement) {
     const ya = await konfirmasi(
       "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di SEMUA "
       + "bahasa sekaligus.",
@@ -205,8 +218,10 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
 
     // Dialog KEDUA, dan ia menuntut kata kuncinya diketik. Satu klik "Ya" yang
     // salah sasaran tidak boleh cukup untuk menghapus catatan belajar
-    // sungguhan.
-    const medan = { current: null as HTMLInputElement | null };
+    // sungguhan. Yang diketik dicatat SAAT diketik: sesudah dialog tertutup
+    // elemennya sudah dilepas dan `ref`-nya bernilai null, jadi membacanya
+    // belakangan membuat "HAPUS" yang benar pun selalu dianggap salah.
+    const diketik = { nilai: "" };
     const lagi = await tanya({
       judul: "Konfirmasi terakhir",
       isi: (
@@ -219,7 +234,7 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
             type="text"
             placeholder="HAPUS"
             aria-label="Ketik HAPUS untuk mengonfirmasi"
-            ref={(el) => { medan.current = el; }}
+            onChange={(e) => { diketik.nilai = e.target.value; }}
           />
         </div>
       ),
@@ -229,8 +244,8 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
       ],
     });
     if (lagi !== true) return;
-    if ((medan.current?.value ?? "").trim() !== "HAPUS") {
-      getar(medan.current);
+    if (diketik.nilai.trim() !== "HAPUS") {
+      getar(pemicu);
       sorak("Kata konfirmasi tidak cocok. Tidak ada yang dihapus.", "salah");
       return;
     }
@@ -270,7 +285,8 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
             Reset satu bahasa
           </button>
           <span className="deret-kanan" />
-          <button className="tbl tbl-bahaya" onClick={resetSemua}>
+          <button className="tbl tbl-bahaya"
+                  onClick={(e) => resetSemua(e.currentTarget)}>
             Reset SEMUA progres
           </button>
         </div>

@@ -1304,10 +1304,11 @@ ditunjuk). Yang mengikat:
 * **Dua bahasa warna hidup berdampingan** sampai ada ronde CSS-saja untuk
   `PetaRasi`: Bahasa dan Dasbor masih memakai kuningan = selesai.
 * **Pengukuran di peramban tinggal di repo**: `packages/web/uji/manual/`
-  (tiga belas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
-  `tangkap.mjs`, `fokus-dialog.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
-  `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET, jalankan dengan profil
-  terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
+  (empat belas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
+  `tangkap.mjs`, `fokus-dialog.mjs`, `data-dialog.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
+  `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET kecuali `data-dialog.mjs`,
+  yang MENULIS dan menolak jalan terhadap port 7777 atau berkas progres di
+  rumah; jalankan dengan profil terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
   ia menyunting berkas di tempat dan memulihkannya, jadi jalankan di salinan
   pohon dan ia gagal bila ada sel yang dilewati). Kriteria terima irisan
   menunjuk berkas-berkas itu, bukan skrip di direktori sesi yang suatu hari
@@ -1790,6 +1791,15 @@ Lima catatan yang mengikat untuk cangkang:
   ditutup dengan Esc. Tanpa galat di mana pun. Dialog lewat `Jendela` sudah
   punya semuanya dan berbagi `bisaFokus` dengan pengait itu. Dijaga
   `TestFokusDialog`; perilakunya diukur di peramban.
+* **Isian di dalam dialog JANGAN dibaca lewat `ref` sesudah `await tanya(...)`.**
+  Dialognya sudah tertutup dan elemennya dilepas, jadi React memanggil callback
+  `ref` dengan null dan `medan.current` kosong. Reset SEMUA ("HAPUS" yang benar
+  selalu dianggap salah) dan Impor progres (berkas yang dipilih selalu hilang,
+  tanpa pesan) rusak persis begitu sejak diport (56bef6b) dan baru ketahuan
+  hampir sebulan kemudian, karena tsc, golden, dan curl tidak melihatnya. Catat
+  isiannya lewat `onChange` ke objek biasa. Dijaga
+  `TestIsiDialogTidakMemakaiRef`; alurnya diukur `uji/manual/data-dialog.mjs`
+  (16 pemeriksaan, hasilnya dibaca dari berkas progres).
 
 **UMPAN TEKAN ADALAH `pasangIsyarat()`, DAN ELEMEN SVG TIDAK PERNAH IKUT**
 (2026-10-26). Dilaporkan pemilik: layar Peta Karier "rusak" -- gumpalan teks
