@@ -25,6 +25,9 @@ kerjaanku/
 # Artefak dari contoh kode file-I/O di materi (dibuat saat contohnya dijalankan)
 catatan.txt
 data.json
+# ... tetapi BUKAN kurikulum `data` di packages/konten: pola di atas pernah menyembunyikannya
+# dan klon segar kehilangan satu dari 32 kurikulum (tes konten merah, 31 != 32).
+!packages/konten/kurikulum/data.json
 test.txt
 besar.bin
 
