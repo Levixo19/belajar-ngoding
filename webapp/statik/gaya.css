@@ -6506,3 +6506,528 @@ html.lingkar-tema::view-transition-new(root) {
 @media (forced-colors: active) {
   .kursor, .kursor-jejak, .langit, .langit-kelip { display: none; }
 }
+
+/* ======================================================================
+   Layar Langit: ikhtisar + lensa.  Blok ini tinggal di kaki gaya.css,
+   sesudah seluruh blok lama: baris-baris sampai aturan `:root` terakhir ikut
+   dipatok alamatnya oleh tes lain (POPULASI), jadi menyisipkan di sana
+   menggeser rujukan mereka.
+
+   Aturan yang dipatuhi di sini (dijaga `TestBlokLangit`):
+   * Semua kelas BARU berawalan `lt-` (bukan `rasi-`: awalan itu dianggap
+     hidup oleh komposisi string di JS lama, sehingga kelas yatim `rasi-*`
+     lolos dari `TestKontrakKelasHidup`). `DIR_KORPUS` mencakup `.tsx`.
+     Kelas lama hanya ditimpa lewat induk `.lt-halaman`.
+   * Token WARNA dan intensitas baru dipasang di `body` (tidak pernah di
+     `:root`/`[data-tema]`), penimpa per tema berpemilih `[data-tema=...] body`.
+   * Ambang tata letak lewat `@container panggung`, dihitung; `@media` hanya
+     untuk soal perangkat (860 px = menu cangkang melipat).
+   * Tidak ada animasi tak berhingga, `will-change`, atau `forwards`. Dua
+     animasi masuk, keduanya berangkat dari keadaan alami (backwards), dan
+     hanya dipasang di tingkat gerak penuh.
+   * Teks >= 12 px di semua lebar; kontras token dihitung dari berkas oleh
+     tes yang sama.
+   ====================================================================== */
+
+/* ---- token */
+body {
+  --lg-selesai: var(--tumbuh);
+  --lg-sebagian: var(--nyala);
+  /* Baru = tinta paling tegas (bacaan yang SUDAH bisa dibuka); terkunci =
+     abu-abu menengah. Dulu keduanya --teks-2 dan abu 62-72 persen: selisih
+     luminans 1,08 di tema terang, jadi pasangan terpenting bagi profil kosong
+     (111 buka lawan 951 terkunci) hanya terbedakan oleh bentuk. */
+  --lg-baru: var(--teks);
+  --lg-cocok: var(--tenang);
+  --lg-sorot: var(--teks);
+  /* Terkunci dan garis rasi: 6,5:1 nominal di gelap (5,8-7,9 di keempat
+     tema), terender >= 3:1 untuk >= 95 persen komponen. 89,5 persen bintang
+     terkunci di profil kosong (951 dari 1.062), jadi dua angka inilah yang
+     menentukan apakah peta terbaca
+     "samar". Sebelumnya 2,0-2,7:1 dan 1,5-1,7:1. Intensitas cahaya di bawah
+     sengaja dibatasi: pada pusat cahaya terparah kontrasnya tidak boleh
+     turun di bawah 3,2:1 nominal. */
+  --lg-kunci: color-mix(in srgb, var(--teks) 62%, var(--dasar-dalam));
+  --lg-garis: color-mix(in srgb, var(--teks) 62%, var(--dasar-dalam));
+  --lg-lintang: color-mix(in srgb, var(--teks) 11%, transparent);
+  --lt-cahaya: 26%;
+  --lt-maju: 14%;
+  --lt-halo: .30;
+  --lt-kel-web: #d76797;
+  --lt-kel-sistem: #4c94ec;
+  --lt-kel-jvm: #a878db;
+  --lt-kel-skrip: #00a7cb;
+  --lt-kel-perkakas: #de6b4f;
+  --lt-kel-tech: #7c8fcd;
+}
+[data-tema="kontras"] body {
+  --lt-kel-web: #ff8cbc;
+  --lt-kel-sistem: #72baff;
+  --lt-kel-jvm: #ce9dff;
+  --lt-kel-skrip: #00cef3;
+  --lt-kel-perkakas: #ff9173;
+  --lt-kel-tech: #a0b6f2;
+}
+[data-tema="malam"] body {
+  --lt-cahaya: 24%;
+  --lt-maju: 12%;
+  --lg-kunci: color-mix(in srgb, var(--teks) 64%, var(--dasar-dalam));
+  --lg-garis: color-mix(in srgb, var(--teks) 64%, var(--dasar-dalam));
+  --lt-kel-web: #cf6e96;
+  --lt-kel-sistem: #5894e0;
+  --lt-kel-jvm: #a57cd2;
+  --lt-kel-skrip: #00a5c3;
+  --lt-kel-perkakas: #d5725a;
+  --lt-kel-tech: #7e90c7;
+}
+[data-tema="terang"] body {
+  --lt-cahaya: 22%;
+  --lt-maju: 12%;
+  --lt-halo: .18;
+  --lg-kunci: color-mix(in srgb, var(--teks) 72%, var(--dasar-dalam));
+  --lg-garis: color-mix(in srgb, var(--teks) 68%, var(--dasar-dalam));
+  --lt-kel-web: #c25485;
+  --lt-kel-sistem: #3a81d7;
+  --lt-kel-jvm: #9565c7;
+  --lt-kel-skrip: #0094b7;
+  --lt-kel-perkakas: #c9593d;
+  --lt-kel-tech: #6b7db9;
+}
+
+/* ---- glif bintang: bentuk + warna.  Satu kumpulan kelas untuk peta, lensa,
+   legenda, sketsa, dan kepala panel. */
+.lt-gl-selesai { color: var(--lg-selesai); }
+.lt-gl-sebagian { color: var(--lg-sebagian); }
+.lt-gl-baru { color: var(--lg-baru); }
+.lt-gl-terkunci { color: var(--lg-kunci); }
+.lt-gl-isi { fill: currentColor; stroke: none; }
+.lt-gl-tepi { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.lt-gl-tebal { stroke-width: 2; }
+.lt-glif { flex: none; display: block; overflow: visible; }
+.lt-sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ---- legenda */
+.lt-legenda {
+  display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); list-style: none;
+  margin: 0; padding: 0; font: .85rem var(--f-ui); color: var(--teks-2);
+}
+.lt-legenda li { display: inline-flex; align-items: center; gap: var(--s2); }
+
+/* ---- kemajuan: jalur + isi + angka */
+.lt-nama-prog { display: inline-flex; align-items: center; gap: .55em; }
+.lt-nama-prog b { font: 500 max(.75rem, .78em) var(--f-kode); color: var(--teks-2); }
+.lt-nama-jalur {
+  display: block; width: 3.6em; height: .3em; border-radius: 99px; overflow: hidden;
+  background: color-mix(in srgb, var(--teks) 16%, transparent);
+}
+.lt-nama-jalur i { display: block; height: 100%; border-radius: inherit; background: var(--lg-selesai); }
+.lt-bilah {
+  height: 6px; border-radius: 99px; overflow: hidden;
+  background: color-mix(in srgb, var(--teks) 14%, transparent);
+}
+.lt-bilah i { display: block; height: 100%; border-radius: inherit; background: var(--lg-selesai); }
+
+/* ---- ikhtisar */
+.lt-ikhtisar {
+  container-type: inline-size; position: relative; width: 100%; max-width: 1800px;
+  margin-inline: auto; aspect-ratio: 1400 / 1420; overflow: hidden;
+  background-color: var(--dasar-dalam); background-image: var(--lt-latar, none);
+  border-radius: var(--r-besar);
+  box-shadow: inset 0 0 0 var(--tebal-garis) var(--garis-kuat);
+}
+.lt-ik-svg { position: absolute; inset: 0; display: block; }
+.lt-ik-teks { position: absolute; inset: 0; pointer-events: none; font-size: clamp(.75rem, .95cqw, 1.125rem); }
+.lt-ik-lintang { fill: none; stroke: var(--lg-lintang); stroke-width: 1; }
+.lt-ik-sorot { pointer-events: none; }
+.lt-ik-svg[data-sorot] { cursor: pointer; }
+/* Cahaya rasi: satu elemen berlatar banyak gradien, di belakang svg. */
+.lt-ik-cahaya { position: absolute; inset: 0; pointer-events: none; }
+.lt-ik-garis { fill: none; stroke: var(--lg-garis); stroke-width: 1.5; stroke-linecap: round; }
+.lt-ik-garis-tuntas { stroke: var(--lg-selesai); stroke-width: 1.5; }
+.lt-ik-cocok { fill: none; stroke: var(--lg-cocok); stroke-width: 1.5; }
+.lt-ik-jalur { fill: none; stroke: var(--nyala); stroke-width: 1.6; stroke-dasharray: 7 6; opacity: .9; }
+.lt-ik-wilayah {
+  fill: color-mix(in srgb, var(--lg-sorot) 6%, transparent);
+  stroke: var(--lg-sorot); stroke-width: 1.25; stroke-dasharray: 4 4;
+}
+.lt-ik-cincin { fill: none; stroke: var(--lg-sorot); stroke-width: 1.6; }
+.lt-ik-cincin:not([data-aktif]) { display: none; }
+.lt-ik-braket { fill: none; stroke: var(--lg-sebagian); stroke-width: 2; stroke-linecap: square; }
+
+.lt-keluarga { position: absolute; transform: translateY(-100%); display: grid; gap: .1em; }
+.lt-keluarga h2 {
+  margin: 0; color: var(--teks); letter-spacing: .005em;
+  font: italic 600 clamp(1.25rem, 1.6cqw, 1.875rem)/1 var(--f-plakat, var(--f-judul));
+  font-variation-settings: "opsz" 28;
+}
+.lt-keluarga p { margin: 0; font: 500 max(.75rem, .82em) var(--f-ui); letter-spacing: .02em; color: var(--redup); }
+.lt-keluarga::after {
+  content: ""; display: block; height: 2px; width: 9em; margin-top: .45em;
+  background: var(--lt-kel-web);
+}
+.lt-keluarga[data-kel="sistem"]::after { background: var(--lt-kel-sistem); }
+.lt-keluarga[data-kel="jvm"]::after { background: var(--lt-kel-jvm); }
+.lt-keluarga[data-kel="skrip"]::after { background: var(--lt-kel-skrip); }
+.lt-keluarga[data-kel="perkakas"]::after { background: var(--lt-kel-perkakas); }
+.lt-keluarga[data-kel="tech"]::after { background: var(--lt-kel-tech); }
+
+
+.lt-nama {
+  position: absolute; transform: translateX(-50%); pointer-events: auto;
+  display: grid; justify-items: center; gap: .22em; padding: .3em .6em;
+  border-radius: var(--r-kecil); color: var(--teks); text-decoration: none; text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 0 .5em var(--dasar-dalam), 0 0 .15em var(--dasar-dalam);
+}
+.lt-nama-teks { font: 600 1em/1.15 var(--f-judul); letter-spacing: .01em; }
+/* Bekal profesi yang dipilih: garis bawah kuningan 2 px (sama dengan warna
+   jalur putus antar-rasi), ditambah ", bagian bekal X" di nama aksesibel.
+   Rasi di luar bekal TIDAK diredupkan. */
+.lt-nama[data-bekal] .lt-nama-teks, .lt-daftar-baris[data-bekal] .lt-daftar-nama {
+  text-decoration: underline; text-decoration-color: var(--nyala);
+  text-decoration-thickness: 2px; text-underline-offset: .22em;
+}
+.lt-nama:hover, .lt-nama[data-sorot] {
+  background: color-mix(in srgb, var(--lg-sorot) 7%, transparent);
+  box-shadow: 0 0 0 1px var(--lg-sorot);
+}
+.lt-nama:focus-visible { outline: 2px solid var(--lg-sorot); outline-offset: -2px; background: color-mix(in srgb, var(--lg-sorot) 7%, transparent); }
+
+.lt-mulai {
+  position: absolute; z-index: 2; white-space: nowrap; pointer-events: auto; text-decoration: none;
+  padding: .3em .85em; border-radius: 99px; font: 600 max(.75rem, .9em) var(--f-ui);
+  color: var(--teks); background: var(--kartu);
+  box-shadow: inset 0 0 0 1.5px var(--lg-sebagian), var(--bayang);
+}
+.lt-mulai:hover { background: color-mix(in srgb, var(--lg-sebagian) 14%, var(--kartu)); }
+.lt-mulai:focus-visible { outline: 2px solid var(--lg-sorot); outline-offset: 2px; }
+
+@keyframes rasi-ik-masuk { from { opacity: 0; } }
+.lt-ik-hidup .lt-ik-svg, .lt-ik-hidup .lt-ik-teks {
+  animation: rasi-ik-masuk 420ms var(--gaya-masuk) backwards;
+}
+
+/* ---- lensa */
+.lt-lensa {
+  /* Lensa mulai di puncak halaman (kepala dan perkakas disembunyikan), jadi
+     tinggi kanvas = layar - 226 px: pil atas, padding `#layar`, kepala lensa,
+     kaki, dan celah di antaranya (diukur: kanvas 678 px di layar 904). */
+  --lg-kv: clamp(420px, calc(100vh - 226px), 820px);
+  display: grid; gap: var(--s3); min-width: 0;
+}
+@keyframes rasi-lensa-masuk { from { opacity: 0; transform: scale(.985); } }
+.lt-lensa-hidup { animation: rasi-lensa-masuk 260ms var(--gaya-masuk) backwards; }
+.lt-krom { display: grid; gap: var(--s3); width: min(100%, 1800px); justify-self: center; }
+.lt-krom[hidden] { display: none; }
+/* Tautan lewati: tersembunyi sampai difokus, lalu muncul di pojok kiri atas. */
+.lt-lewati {
+  position: absolute; left: -9999px; top: auto; z-index: 3;
+}
+.lt-lewati:focus-visible { position: fixed; top: calc(var(--rel-tinggi) + var(--s2)); left: var(--s4); width: auto; }
+.lt-lensa-kepala { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); }
+.lt-lensa-balik { flex: none; }
+.lt-lensa-judul { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s4); min-width: 0; }
+.lt-lensa-judul .mata { margin: 0; }
+.lt-lensa-judul h2 {
+  margin: 0; color: var(--teks);
+  font: italic 700 clamp(1.9rem, 1rem + 1.8vw, 2.7rem)/1 var(--f-plakat, var(--f-judul));
+  font-variation-settings: "opsz" 11;
+}
+.lt-lensa-judul p { margin: 0; color: var(--teks-2); font-family: var(--f-ui); }
+.lt-lensa-alat { display: flex; flex-wrap: wrap; gap: var(--s2); margin-left: auto; align-items: center; }
+.lt-lensa-kaki { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); align-items: center; justify-content: space-between; }
+.lt-bantuan { margin: 0; font: .85rem var(--f-ui); color: var(--redup); }
+
+.lt-lensa-isi {
+  display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0;
+  background: var(--dasar-dalam); border-radius: var(--r-besar); overflow: hidden;
+  box-shadow: inset 0 0 0 var(--tebal-garis) var(--garis-kuat);
+}
+.lt-lensa-kanvas {
+  margin: 0; position: relative; height: var(--lg-kv); min-width: 0;
+  background-color: var(--dasar-dalam);
+  background-image: var(--lt-cahaya-kel, none), var(--lt-latar,
+    radial-gradient(75% 85% at 42% 48%, color-mix(in srgb, var(--teks) 3.5%, transparent), transparent 75%));
+}
+/* Cahaya keluarga di kanvas lensa: warna dan alfa yang sama dengan cahaya rasi
+   di ikhtisar (`--lt-cahaya`), jadi lensa terbaca sebagai rasi yang sama
+   diperbesar dan tidak berubah jadi diagram graf yang datar. Tanpa animasi,
+   dan teks serta glif tidak diredupkan: ia cuma latar. */
+.lt-lensa-kanvas[data-kel="web"] { --kel: var(--lt-kel-web); }
+.lt-lensa-kanvas[data-kel="sistem"] { --kel: var(--lt-kel-sistem); }
+.lt-lensa-kanvas[data-kel="jvm"] { --kel: var(--lt-kel-jvm); }
+.lt-lensa-kanvas[data-kel="skrip"] { --kel: var(--lt-kel-skrip); }
+.lt-lensa-kanvas[data-kel="perkakas"] { --kel: var(--lt-kel-perkakas); }
+.lt-lensa-kanvas[data-kel="tech"] { --kel: var(--lt-kel-tech); }
+.lt-lensa-kanvas[data-kel] {
+  --lt-cahaya-kel: radial-gradient(46% 64% at 50% 52%, color-mix(in srgb, var(--kel) var(--lt-cahaya), transparent), transparent 100%);
+}
+.lt-ln-svg { display: block; }
+.lt-ln-henti-a { stop-color: var(--lg-selesai); stop-opacity: var(--lt-halo); }
+.lt-ln-henti-b { stop-color: var(--lg-selesai); stop-opacity: 0; }
+.lt-ln-halo { fill: url(#rasi-ln-halo-gradien); pointer-events: none; }
+.lt-ln-garis { stroke: var(--lg-garis); stroke-width: 1.6; stroke-linecap: round; }
+.lt-ln-garis-tuntas { stroke: var(--lg-selesai); stroke-width: 2.4; }
+.lt-ln-garis-aktif { stroke: var(--lg-sorot); stroke-width: 2.4; }
+.lt-ln-bab rect { fill: var(--dasar-dalam); stroke: var(--lg-garis); stroke-width: 1; }
+.lt-ln-bab text { font: 600 calc(12px * var(--lt-skala, 1)) var(--f-ui); letter-spacing: .04em; fill: var(--teks-2); }
+.lt-ln-bab-aktif rect { fill: var(--lg-sorot); stroke: var(--lg-sorot); }
+.lt-ln-bab-aktif text { fill: var(--dasar-dalam); }
+.lt-ln-berikut rect { fill: var(--dasar-dalam); stroke: var(--lg-sebagian); stroke-width: 1.25; }
+.lt-ln-berikut text { font: 600 calc(12px * var(--lt-skala, 1)) var(--f-ui); letter-spacing: .03em; fill: var(--lg-sebagian); }
+.lt-ln-braket { fill: none; stroke: var(--lg-sebagian); stroke-width: 2; stroke-linecap: square; }
+.lt-ln-penunjuk { fill: none; stroke: var(--lg-sorot); stroke-width: 1.25; stroke-dasharray: 2 4; stroke-linecap: round; }
+.lt-ln-ujung { fill: var(--lg-sorot); }
+.lt-ln-terpilih { transition: transform var(--d-sedang) var(--gaya-masuk); }
+.lt-ln-terpilih-isi { fill: color-mix(in srgb, var(--lg-sorot) 10%, transparent); }
+.lt-ln-terpilih-cincin { fill: none; stroke: var(--lg-sorot); stroke-width: 2; }
+.lt-ln-sorot { fill: none; stroke: var(--lg-sorot); stroke-width: 1.5; opacity: .55; pointer-events: none; }
+.lt-opsi { outline: none; cursor: pointer; }
+.lt-fokus { fill: none; stroke: var(--lg-sorot); stroke-width: 2; stroke-dasharray: 4 3; opacity: 0; }
+.lt-opsi:focus-visible .lt-fokus { opacity: 1; }
+.lt-ln-nomor {
+  font: 600 calc(12px * var(--lt-skala, 1)) var(--f-ui); fill: var(--teks-2); pointer-events: none;
+  paint-order: stroke; stroke: var(--dasar-dalam); stroke-width: 3px; stroke-linejoin: round;
+}
+.lt-ln-tip {
+  position: absolute; z-index: 5; display: grid; gap: 2px; width: max-content; max-width: 260px;
+  padding: var(--s2) var(--s3); pointer-events: none;
+  background: var(--kartu-naik); border: var(--tebal-garis) solid var(--garis-kuat);
+  border-radius: 10px; box-shadow: var(--bayang); font: .86rem/1.35 var(--f-ui);
+}
+.lt-ln-tip[data-hover] { pointer-events: auto; }
+.lt-ln-tip[data-sisi="kiri"] { transform: translateX(calc(-100% + 260px)); }
+.lt-ln-tip b { font-weight: 600; color: var(--teks); }
+.lt-ln-tip span { color: var(--redup); }
+
+/* ---- panel */
+.lt-panel {
+  position: relative; background: var(--kartu); min-width: 0;
+  border-top: var(--tebal-garis) solid var(--garis-kuat);
+}
+.lt-panel-isi { padding: var(--s5); display: grid; gap: var(--s3); align-content: start; }
+.lt-panel-kepala { display: flex; gap: var(--s3); align-items: flex-start; }
+.lt-panel-kepala > div { flex: 1; min-width: 0; }
+.lt-panel-kepala .mata { margin: 0 0 var(--s1); }
+.lt-panel-kepala h3 {
+  margin: 0; color: var(--teks); text-wrap: balance;
+  font: 600 var(--t-judul-2)/1.15 var(--f-judul); letter-spacing: -.01em;
+}
+.lt-tutup { flex: none; font-size: 1.4rem; line-height: 1; }
+.lt-panel-meta { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; margin: 0; padding: 0; }
+.lt-panel-ringkas { margin: 0; color: var(--teks-2); line-height: var(--tinggi-badan); }
+.lt-panel-redup { color: var(--redup); font-size: var(--t-kecil); }
+.lt-panel-kecil { margin: 0; font-size: var(--t-kecil); color: var(--redup); }
+.lt-panel-blok { display: grid; gap: var(--s2); padding-top: var(--s3); border-top: var(--tebal-garis) solid var(--garis); }
+.lt-panel-blok h4 {
+  margin: 0; font: 700 .75rem var(--f-ui); letter-spacing: .08em;
+  text-transform: uppercase; color: var(--redup);
+}
+.lt-kunci { padding-left: var(--s3); border-left: 3px solid var(--garis-kuat); }
+.lt-kunci p { margin: 0; color: var(--teks); line-height: var(--tinggi-badan); }
+.lt-panel-aksi { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.lt-panel-nav { display: flex; gap: var(--s2); justify-content: space-between; }
+.lt-panel-nav .tbl[aria-disabled="true"], .lt-panel-nav .tbl[aria-disabled="true"]:hover {
+  color: var(--redup); background: none; border-color: var(--garis); cursor: default;
+}
+.lt-panel-tautan { margin: 0; padding-left: 1.1em; display: grid; gap: var(--s1); }
+.lt-panel-tautan a { color: var(--teks); display: inline-block; min-height: 24px; line-height: 24px; }
+.lt-panel .pil { font-size: .75rem; }
+.lt-bab-daftar { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.lt-bab-baris, .lt-berikut {
+  display: grid; align-items: baseline; width: 100%; text-align: left; cursor: pointer;
+  padding: .5em .6em; border-radius: var(--r-kecil); border: 0; background: none;
+  color: var(--teks); font: inherit;
+}
+.lt-bab-baris { grid-template-columns: 2.6em minmax(0, 1fr) auto; gap: var(--s2); }
+.lt-bab-baris:hover, .lt-bab-sorot { background: color-mix(in srgb, var(--lg-sorot) 8%, transparent); }
+.lt-bab-judul { min-width: 0; overflow-wrap: anywhere; }
+.lt-bab-nomor { font: 600 .8rem var(--f-ui); letter-spacing: .05em; color: var(--teks-2); }
+.lt-bab-hitung { font: .8rem var(--f-kode); color: var(--teks-2); }
+.lt-berikut {
+  grid-template-columns: auto minmax(0, 1fr); gap: var(--s3); align-items: center;
+  border: var(--tebal-garis) solid var(--garis-kuat);
+}
+.lt-berikut:hover { background: color-mix(in srgb, var(--lg-sorot) 6%, transparent); }
+.lt-bab-baris:focus-visible, .lt-berikut:focus-visible { outline: 2px solid var(--lg-sorot); outline-offset: 1px; }
+
+/* ---- ikhtisar sempit: daftar */
+.lt-daftar { display: grid; gap: var(--s5); }
+.lt-daftar-keluarga {
+  margin: 0 0 var(--s2); color: var(--teks);
+  font: italic 600 1.6rem/1 var(--f-plakat, var(--f-judul));
+}
+.lt-daftar ul {
+  list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2);
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+}
+.lt-daftar-baris {
+  display: grid; grid-template-columns: 56px minmax(0, 1fr); grid-template-areas: "sk nm" "sk pr";
+  column-gap: var(--s3); align-items: center; min-height: 52px; padding: var(--s2) var(--s3);
+  border: var(--tebal-garis) solid var(--garis-kuat); border-radius: var(--r);
+  background: var(--dasar-dalam); color: var(--teks); text-decoration: none;
+}
+.lt-sketsa { grid-area: sk; }
+.lt-daftar-nama { grid-area: nm; font: 600 1rem/1.2 var(--f-judul); }
+.lt-daftar-baris .lt-nama-prog { grid-area: pr; font-size: .9rem; }
+.lt-daftar-cocok {
+  font: 600 .75rem var(--f-ui); color: var(--lg-cocok); padding: 0 .55em;
+  border-radius: 99px; box-shadow: inset 0 0 0 1.5px currentColor;
+}
+.lt-daftar .lt-mulai-daftar {
+  position: static; justify-self: start; display: inline-block; white-space: normal;
+  font-size: .95rem; padding: var(--s2) var(--s4);
+}
+
+/* ---- pelat langit di tema terang. Satu kesatuan: menghapus semuanya, dari
+   komentar ini sampai penanda "akhir pelat langit", mengembalikan peta dan
+   kanvas lensa ke kertas terang.
+   Pemilik menilai peta di tema terang "kertas dengan noda pastel": hanya 3,1
+   persen piksel di dalam bingkainya yang berwarna, dan bintang terbaca sebagai
+   manik abu-abu, bukan sumber cahaya. Di sini peta dan kanvas lensa menjadi
+   langit malam indigo, jendela gelap di halaman terang (planetarium), dengan
+   tepi kuningan yang sama dengan penanda "berikutnya". Panel lensa, legenda,
+   dan kepala halaman tetap terang. Tema gelap, malam, dan kontras tidak
+   tersentuh: pemilihnya hanya `[data-tema="terang"]` sebagai induk, dan
+   `.lt-ikhtisar`/`.lt-lensa-kanvas` sendiri (bukan `html`).
+
+   Palet gelap dipasang ulang di dua elemen ini karena token tema diwarisi
+   dari `html`. Yang berbeda dari tema gelap: `--dasar-dalam`, `--redup`,
+   `--lg-kunci` (70 persen) dan `--lg-garis` (74) dinaikkan, dan `--lt-cahaya`
+   serta `--lt-halo` diturunkan, supaya gerbang kontras tetap hijau di atas
+   gradasi yang lebih terang daripada `--dasar-dalam` (baru dan terkunci tetap
+   berselisih >= 1,8). Satu-satunya tempat token `--lg-`/`--lt-` boleh
+   berdiri di luar `body`; dijaga `TestBlokLangit` (tokennya dibaca dari sini,
+   bukan disalin, dan titik paling terang gradasinya ikut diukur). */
+[data-tema="terang"] .lt-ikhtisar,
+[data-tema="terang"] .lt-lensa-kanvas {
+  --dasar-dalam: #0d1330; --kartu: #10162a; --kartu-naik: #151c33;
+  --garis: #232c47; --garis-kuat: #36415f;
+  --teks: #ece9df; --teks-2: #b4b7c7; --redup: #a6abc0;
+  --nyala: #e4b96b; --nyala-lembut: #f1d39d; --tumbuh: #63bfa5; --tenang: #94b6d8;
+  --di-atas-aksen: #1b1407;
+  --bayang: 0 1px 2px rgba(0,0,0,.28), 0 12px 28px -18px rgba(0,0,0,.6);
+  --lg-selesai: var(--tumbuh);
+  --lg-sebagian: var(--nyala);
+  --lg-baru: var(--teks);
+  --lg-cocok: var(--tenang);
+  --lg-sorot: var(--teks);
+  --lg-kunci: color-mix(in srgb, var(--teks) 70%, var(--dasar-dalam));
+  --lg-garis: color-mix(in srgb, var(--teks) 74%, var(--dasar-dalam));
+  --lg-lintang: color-mix(in srgb, var(--teks) 11%, transparent);
+  --lt-cahaya: 22%;
+  --lt-maju: 14%;
+  --lt-halo: .22;
+  --lt-kel-web: #d76797;
+  --lt-kel-sistem: #4c94ec;
+  --lt-kel-jvm: #a878db;
+  --lt-kel-skrip: #00a7cb;
+  --lt-kel-perkakas: #de6b4f;
+  --lt-kel-tech: #7c8fcd;
+  --lt-latar: radial-gradient(85% 70% at 50% 28%, #1c2858 0%, #111a3d 52%, #0b1129 100%);
+  color: var(--teks);
+}
+[data-tema="terang"] .lt-ikhtisar {
+  box-shadow: inset 0 0 0 1px rgba(228,185,107,.42), inset 0 1px 0 rgba(255,255,255,.07),
+    0 26px 56px -28px rgba(28,40,88,.62);
+}
+[data-tema="terang"] .lt-lensa-kanvas { box-shadow: inset 0 0 0 1px rgba(228,185,107,.30); }
+[data-tema="terang"] .lt-lensa-isi {
+  box-shadow: inset 0 0 0 var(--tebal-garis) var(--garis-kuat), 0 26px 56px -30px rgba(28,40,88,.55);
+}
+/* ---- akhir pelat langit */
+
+/* ---- lebar: dua kolom bila ruang cukup. 1030 = panel 400 + kanvas minimal
+   560 + padding #layar 64 + 6 cadangan; kanvas 560 masih memberi median
+   jarak tetangga 24 px (lensa 1366 x 768 memberi 32 px). Dihitung dari
+   `#panggung`, bukan dari jendela. */
+@container panggung (min-width: 1030px) {
+  .lt-lensa-isi { grid-template-columns: minmax(0, 1fr) 400px; }
+  .lt-panel { border-top: 0; border-left: var(--tebal-garis) solid var(--garis-kuat); }
+  .lt-panel-isi { max-height: var(--lg-kv); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .lt-panel[data-ada-ujung]::before {
+    content: ""; position: absolute; left: -8px; width: 14px; height: 14px; z-index: 1;
+    top: calc(clamp(26px, var(--ujung-y, 40px), calc(var(--lg-kv) - 26px)) - 7px);
+    transform: rotate(45deg); background: var(--kartu);
+    border-left: var(--tebal-garis) solid var(--garis-kuat);
+    border-bottom: var(--tebal-garis) solid var(--garis-kuat);
+  }
+}
+@container panggung (max-width: 1029px) {
+  .lt-lensa-kanvas { height: clamp(380px, 62vh, 620px); }
+  .lt-panel[data-ada-ujung]::before {
+    content: ""; position: absolute; top: -8px; width: 14px; height: 14px; z-index: 1;
+    left: calc(clamp(26px, var(--ujung-x, 40px), calc(100% - 26px)) - 7px);
+    transform: rotate(45deg); background: var(--kartu);
+    border-left: var(--tebal-garis) solid var(--garis-kuat);
+    border-top: var(--tebal-garis) solid var(--garis-kuat);
+  }
+}
+
+/* ---- laptop: kepala halaman dipadatkan. Judul, penanda, dan kalimat
+   keterangannya tetap ada; hanya ditata dua kolom supaya peta mulai ~140 px
+   lebih awal. Hanya berlaku untuk halaman ini (`.lt-halaman`). */
+@media (min-width: 861px) {
+  .lt-halaman { gap: var(--s3); }
+  .lt-halaman .bimasakti-kepala {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--s6);
+    align-items: end; margin-bottom: 0;
+  }
+  .lt-halaman .bimasakti-kepala .mata { grid-column: 1 / -1; margin-bottom: var(--s1); }
+  .lt-halaman .bimasakti-kepala h1 { font-size: clamp(2.6rem, 1.4rem + 2.2vw, 3.8rem); }
+  .lt-halaman .bimasakti-kepala .kepala-sub { margin: 0 0 .5em; max-width: none; }
+  .lt-halaman .langit-alat { justify-content: flex-start; }
+  .lt-halaman .langit-alat .lt-legenda { margin-left: auto; }
+  /* Satu baris disisihkan terus: kalimat keterangan yang muncul sesudah chip
+     dipilih tidak boleh mendorong peta 25 px ke bawah di bawah kursor. */
+  .lt-halaman .langit-keterangan { min-height: 1lh; }
+}
+
+/* Petunjuk papan ketik tidak berarti di layar sentuh. */
+@media (pointer: coarse) {
+  .lt-bantuan { display: none; }
+}
+
+/* ---- sempit (menu cangkang melipat): gaya halaman yang di lebar laptop
+   hidup di blok @media (min-width: 861px) di atas. */
+@media (max-width: 860px) {
+  .lt-halaman { display: grid; gap: var(--s3); padding-bottom: var(--s7); }
+  .lt-halaman .langit-alat, .lt-halaman .langit-konsep-deret {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3);
+  }
+  .lt-halaman .langit-label { display: inline-flex; align-items: center; gap: var(--s2); font: 600 .85rem var(--f-ui); color: var(--teks-2); }
+  .lt-halaman .langit-pilih { font: inherit; color: var(--teks); background: var(--kartu); border: var(--tebal-garis) solid var(--garis-kuat); border-radius: 10px; padding: .35em .7em; }
+  .lt-halaman .langit-konsep[aria-pressed="true"] { color: var(--di-atas-aksen); background: var(--nyala); border-color: var(--nyala); }
+  .lt-halaman .langit-keterangan { margin: 0; min-height: 1.5em; font-family: var(--f-ui); }
+  .lt-lensa-alat { margin-left: 0; }
+}
+
+@media (forced-colors: active) {
+  .lt-gl-isi { fill: CanvasText; }
+  .lt-gl-tepi { stroke: CanvasText; }
+  .lt-gl-terkunci { color: GrayText; }
+  .lt-gl-terkunci.lt-gl-isi { fill: GrayText; }
+  .lt-ik-garis, .lt-ln-garis { stroke: GrayText; }
+  .lt-ik-garis-tuntas, .lt-ln-garis-tuntas { stroke: CanvasText; }
+  .lt-ik-cahaya, .lt-ik-lintang, .lt-ln-halo, .lt-ln-terpilih-isi { display: none; }
+  .lt-ln-terpilih-cincin, .lt-fokus, .lt-ln-penunjuk, .lt-ik-cincin, .lt-ik-wilayah { stroke: Highlight; }
+  .lt-ln-ujung { fill: Highlight; }
+  .lt-ik-braket, .lt-ln-braket { stroke: Mark; }
+  .lt-ln-nomor { fill: CanvasText; stroke: Canvas; }
+  /* Pil bab dan lencana "berikutnya": warna sistem, supaya yang aktif tetap
+     berbeda dari yang tidak (peramban memaksa `fill` SVG ke satu warna). */
+  .lt-ln-bab rect { fill: Canvas; stroke: CanvasText; }
+  .lt-ln-bab text { fill: CanvasText; }
+  .lt-ln-bab-aktif rect { fill: Highlight; stroke: Highlight; }
+  .lt-ln-bab-aktif text { fill: HighlightText; }
+  .lt-ln-berikut rect { fill: Canvas; stroke: Mark; }
+  .lt-ln-berikut text { fill: CanvasText; }
+  /* Kapsul penanda mulai: box-shadow dibuang peramban di mode ini, jadi batasnya
+     ditulis ulang sebagai `border` warna sistem. */
+  .lt-mulai { border: 2px solid Mark; }
+}
+
+/* Akhir blok layar Langit. */

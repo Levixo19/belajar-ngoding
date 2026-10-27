@@ -19328,7 +19328,9 @@ class TestKontrakKelasHidup(unittest.TestCase):
     TEMPLAT = r"([A-Za-z][\w-]*-)\$\{"
 
     DIR_KORPUS = (("webapp/statik/js", ".js"), ("webapp", ".py"),
-                  ("inti", ".py"), ("pelajar", ".py"))
+                  ("inti", ".py"), ("pelajar", ".py"),
+                  ("packages/web/src/layar", ".tsx"),
+                  ("packages/web/src/komponen", ".tsx"))
     BERKAS_KORPUS = ("webapp/statik/index.html", "belajar-web.py")
     LUAR_KORPUS = ("tests", "data")
 
@@ -23130,3 +23132,582 @@ class TestIsyaratTekan(unittest.TestCase):
             salah, [],
             f"{salah} memanggil tekan() langsung; daftarkan selektornya di "
             "BISA_DITEKAN sebagai gantinya")
+
+
+class TestBlokLangit(unittest.TestCase):
+    """Pagar BENTUK untuk blok CSS layar Langit (ikhtisar + lensa) di kaki
+    `gaya.css`, dan pagar KONTRAS untuk token-tokennya.
+
+    Blok itu satu-satunya tempat gaya `lt-*` hidup, dan hampir semua yang
+    membuatnya aman tidak dijaga tes lain: `TestKontrakKelasHidup` cuma
+    bertanya "adakah produser", bukan "apakah blok ini menyalakan kembali
+    animasi tak berhingga yang dulu membuat layar ini 83 sampai 96 persen
+    sibuk" atau "apakah aturan ini bocor ke `/lama`". Blok = semua yang
+    ditulis sesudah komentar penandanya; komentarnya dibuang lebih dulu
+    (`TestHamparanBara._telanjang`), jadi prosa penjelasnya tidak dihukum.
+
+    Kontras dihitung dari TOKEN yang ditulis di berkas (rumus WCAG 2.x,
+    `color-mix(in srgb, A p%, B)` diinterpolasi per kanal seperti peramban),
+    bukan dari tangkapan layar: nilai nominalnya sudah menyisakan ruang
+    untuk antialias garis tipis (terukur: garis 1,5 px terender sekitar 0,75
+    sampai 0,85 kali nominal). Pagar piksel sungguhan tetap pengukuran
+    manual di peramban; yang di sini mencegah token diturunkan diam-diam.
+    """
+
+    PENANDA = "Layar Langit: ikhtisar + lensa."
+    PENUTUP = "Akhir blok layar Langit."
+    AWALAN_LAMA = ("rasi-", "langit-", "bimasakti", "meja-langit", "kepala-rasi")
+    TEMA = ("gelap", "malam", "terang", "kontras")
+    # Pelat langit di tema terang (blok "pelat langit" di kaki gaya.css): peta dan
+    # kanvas lensa menjadi jendela indigo di halaman terang. Itu satu-satunya
+    # tempat token --lg-/--lt- boleh berdiri di luar `body`, karena token tema
+    # diwarisi dari `html` dan palet gelap harus dipasang ulang di elemennya.
+    # Pengecualiannya sempit: kepala aturan harus persis kedua pemilih ini, dan
+    # `test_pelat_sempit_dan_hanya_tema_terang` menjaga tidak ada pemilih
+    # bertema lain di luar `[data-tema=...] body` kecuali ketiga wadah di sana.
+    PELAT = ('[data-tema="terang"] .lt-ikhtisar', '[data-tema="terang"] .lt-lensa-kanvas')
+    WADAH_TERANG = ('.lt-ikhtisar', '.lt-lensa-kanvas', '.lt-lensa-isi')
+    NAMA_PELAT = "terang-pelat"
+    # Diuji kontrasnya: keempat tema, plus pelat sebagai "tema" kelima. Tokennya
+    # dibaca dari aturan pelat, tidak disalin.
+    TEMA_UJI = TEMA + (NAMA_PELAT,)
+    TOKEN_PELAT_WAJIB = ("dasar-dalam", "kartu", "teks", "teks-2", "redup",
+                         "tumbuh", "nyala", "tenang")
+    KEPALA_TOKEN = r"(?:\[data-tema=\"[a-z]+\"\]\s+)?body"
+    MEDIA_SAH = ("(min-width: 861px)", "(max-width: 860px)", "(pointer: coarse)",
+                 "(forced-colors: active)")
+    # Ambang kontras NOMINAL terhadap --dasar-dalam (grafik bermakna >= 3:1
+    # setelah antialias, jadi nominalnya dipatok lebih tinggi), dan terhadap
+    # pusat cahaya keluarga (latar terburuk yang dilewati sebuah bintang).
+    AMBANG_BIDANG = {"kunci": 5.0, "garis": 5.0, "selesai": 4.5,
+                     "sebagian": 4.5, "baru": 4.5, "konsep": 4.5}
+    # Latar terburuk = pusat cahaya keluarga ditimpa inti kemajuan penuh
+    # (`--lt-maju`, rasi selesai 100 persen). Nominal 3,2 menyisakan rendering
+    # >= 3:1 untuk sekitar 95 persen komponen (terukur di peramban).
+    AMBANG_DI_CAHAYA = {"kunci": 3.2, "garis": 3.2, "selesai": 3.2,
+                        "sebagian": 3.2, "baru": 3.2}
+    AMBANG_DI_HALO = 4.0   # glif selesai di pusat halo lensa
+
+    @classmethod
+    def _akar(cls):
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    @classmethod
+    def _mentah(cls):
+        with open(os.path.join(cls._akar(), "webapp", "statik", "gaya.css"),
+                  encoding="utf-8") as f:
+            return f.read()
+
+    @classmethod
+    def _blok(cls):
+        mentah = cls._mentah()
+        awal = mentah.find(cls.PENANDA)
+        if awal < 0:
+            return ""
+        # Penandanya ada DI DALAM komentar pembuka; blok mulai dari `/*`-nya,
+        # kalau tidak `_telanjang` menyisakan prosa komentar sebagai "aturan".
+        # Dan berakhir di komentar PENUTUP: kaki gaya.css adalah satu-satunya
+        # zona bebas pajak alamat, jadi CSS lain yang kelak ditambahkan di
+        # sana tidak boleh ikut diadili oleh aturan khusus layar Langit.
+        akhir = mentah.find(cls.PENUTUP, awal)
+        assert akhir > awal, "komentar penutup blok Langit hilang"
+        return TestHamparanBara._telanjang(mentah[mentah.rfind("/*", 0, awal):akhir])
+
+    @classmethod
+    def _aturan(cls, css):
+        """[(kepala, badan)] untuk aturan datar, termasuk yang bersarang di
+        dalam @media/@container selama kepalanya di awal baris."""
+        return [(k.strip(), b) for k, b in
+                re.findall(r"(?m)^\s*([^{}/@][^{}]*?)\{([^{}]*)\}", css)]
+
+    # ---- bentuk -----------------------------------------------------------
+
+    def test_blok_ada_dan_di_kaki(self):
+        mentah = self._mentah()
+        awal = mentah.find(self.PENANDA)
+        self.assertGreaterEqual(awal, 0, "komentar penanda blok Langit hilang")
+        baris = mentah.count("\n", 0, awal) + 1
+        akar_terakhir = max(TestTokenTemaTidakDimatikanBlokAkar.POPULASI)
+        self.assertGreater(
+            baris, akar_terakhir,
+            f"blok Langit ada di atas aturan akar terakhir yang dipatok POPULASI "
+            f"(baris {akar_terakhir}); di zona itu tiap baris yang disisipkan "
+            f"menggeser alamat berbentuk berkas-titik-dua-nomor yang dipatok tes lain")
+        self.assertLess(mentah.find("@media (forced-colors: active)"), awal,
+                        "blok Langit harus SESUDAH seluruh blok lama")
+
+    def test_tanpa_animasi_tak_berhingga_dan_properti_berat(self):
+        blok = self._blok()
+        for pola, alasan in (
+            (r"\binfinite\b", "satu reticle berputar per kurikulum selesai "
+             "adalah hampir seluruh ongkos layar yang digantikan"),
+            (r"\bwill-change\b", "terukur LEBIH BURUK pada layar ini"),
+            (r"\bbackdrop-filter\b", "kaca buram sudah dibuang dari desain"),
+            (r"\bmix-blend-mode\b", "blend mode membuat gambar ulang mahal"),
+            (r"\bforwards\b|\bboth\b\s*;", "fill: forwards tidak pernah "
+             "berhenti sendiri; yang memasangnya wajib membatalkannya"),
+        ):
+            self.assertNotRegex(blok, pola, alasan)
+
+    def test_tidak_ada_pemilih_yang_menunjuk_html(self):
+        salah = [k for k, _ in self._aturan(self._blok())
+                 for s in k.split(",")
+                 if re.fullmatch(r"\s*(html|:root|\[data-tema=\"[a-z]+\"\])\s*", s)]
+        self.assertEqual(salah, [])
+
+    def test_kelas_lama_hanya_lewat_induk_kelas_baru(self):
+        # `/lama` memakai kelas `.rasi-*`/`.langit-*`/`.bimasakti` yang sama
+        # dan lembar gaya yang sama. Selektor di blok ini yang menyebut
+        # kelas lama TANPA kelas induk `lt-*` mengubah `/lama` diam-diam
+        # (terukur pada salah satu usul: h1 65,92 menjadi 51,2 px).
+        bocor = []
+        for kepala, _ in self._aturan(self._blok()):
+            for s in kepala.split(","):
+                kelas = re.findall(r"\.(-?[A-Za-z_][\w-]*)", s)
+                if any(k.startswith(self.AWALAN_LAMA) for k in kelas) and \
+                   not any(k.startswith("lt-") for k in kelas):
+                    bocor.append(s.strip())
+        self.assertEqual(bocor, [])
+
+    @classmethod
+    def _kepala_pelat(cls, kepala):
+        """Kepala aturan persis kedua pemilih pelat (urutan bebas, tanpa tambahan)."""
+        return {h.strip() for h in kepala.split(",")} == set(cls.PELAT)
+
+    @classmethod
+    def _badan_pelat(cls):
+        badan = [b for k, b in cls._aturan(cls._blok()) if cls._kepala_pelat(k)]
+        assert len(badan) == 1, f"aturan pelat langit: harus tepat satu, ketemu {len(badan)}"
+        return badan[0]
+
+    @classmethod
+    def _latar_pelat(cls):
+        """Titik-titik warna gradasi pelat, dibaca dari `--lt-latar`: yang paling
+        terang menentukan latar terburuk bagi glif dan teks di atasnya."""
+        m = re.search(r"--lt-latar\s*:\s*radial-gradient\(([^;]*)\)\s*;", cls._badan_pelat())
+        assert m, "--lt-latar pelat tidak ketemu atau bukan radial-gradient"
+        titik = [cls._hex(h) for h in re.findall(r"#[0-9a-fA-F]{6}", m.group(1))]
+        assert len(titik) >= 2, "gradasi pelat harus bertitik warna heksa"
+        return titik
+
+    def test_token_baru_hanya_di_body(self):
+        salah = []
+        for kepala, badan in self._aturan(self._blok()):
+            if self._kepala_pelat(kepala):
+                continue  # pengecualian tertulis dan sempit, lihat PELAT
+            # Token WARNA dan intensitas milik tema. `--lg-kv` (tinggi kanvas)
+            # adalah ukuran komponen dan sah berdiri di `.lt-lensa`.
+            if re.search(r"(?m)^\s*--(lg-(selesai|sebagian|baru|cocok|sorot|kunci|"
+                         r"garis|lintang)|lt-(kel-[a-z]+|cahaya|maju|halo))\s*:", badan) and \
+               not re.fullmatch(self.KEPALA_TOKEN, kepala):
+                salah.append(kepala)
+        self.assertEqual(salah, [], "token --lg-/--lt- harus di `body` atau "
+                         "`[data-tema=...] body`, tidak di `:root`/`[data-tema]`; "
+                         "satu-satunya pengecualian adalah aturan pelat (PELAT)")
+
+    def test_pelat_sempit_dan_hanya_tema_terang(self):
+        """Pengecualian token di luar `body` hanya sah untuk satu aturan, dan
+        pemilih bertema di blok ini hanya `[data-tema=...] body` atau turunan
+        `[data-tema="terang"]` dari tiga wadah. Pelat yang bocor ke malam,
+        kontras, atau gelap (atau menunjuk `html`) mengubah tema yang tidak
+        diminta siapa pun."""
+        aturan = self._aturan(self._blok())
+        self.assertEqual(len([k for k, _ in aturan if self._kepala_pelat(k)]), 1,
+                         "aturan pelat harus tepat satu")
+        salah = []
+        for kepala, _ in aturan:
+            for s in kepala.split(","):
+                s = s.strip()
+                if "[data-tema" not in s:
+                    continue
+                if re.fullmatch(r'\[data-tema="[a-z]+"\]\s+body', s):
+                    continue
+                if any(s == f'[data-tema="terang"] {w}' for w in self.WADAH_TERANG):
+                    continue
+                salah.append(s)
+        self.assertEqual(salah, [], "pemilih bertema di luar `[data-tema=...] body` "
+                         "dan wadah pelat tema terang")
+
+    # Pengganti fokus yang BUKAN `outline` hanya sah kalau berupa elemen SVG
+    # yang di blok forced-colors diberi `stroke` warna sistem. `box-shadow`
+    # dibuang peramban di mode warna paksa, jadi ia tidak pernah pengganti.
+    PENGGANTI_SVG = {".lt-opsi": ".lt-fokus"}
+
+    def test_fokus_papan_ketik_tidak_dipadamkan(self):
+        aturan = self._aturan(self._blok())
+        gundul = []
+        for k, badan in aturan:
+            if not re.search(r"\boutline\s*:\s*(none|0)\b", badan):
+                continue
+            dasar = k.split(",")[0].strip()
+            ok = False
+            for h, b in aturan:
+                if not h.startswith(dasar + ":focus-visible"):
+                    continue
+                if re.search(r"\boutline\s*:\s*(?!none|0\b)\S", b):
+                    ok = True
+                elif dasar in self.PENGGANTI_SVG and self.PENGGANTI_SVG[dasar] in h:
+                    ok = True
+            if not ok:
+                gundul.append(k)
+        self.assertEqual(gundul, [], "outline dipadamkan tanpa pengganti "
+                         ":focus-visible berupa `outline` di blok yang sama")
+
+    def test_forced_colors_dan_ambang_resmi(self):
+        blok = self._blok()
+        self.assertIn("@media (forced-colors: active)", blok)
+        kondisi = re.findall(r"@media\s+([^{]+)\{", blok)
+        self.assertEqual([c.strip() for c in kondisi
+                          if c.strip() not in self.MEDIA_SAH], [],
+                         "@media hanya untuk soal perangkat")
+        for c in re.findall(r"@container\s+([^{]+)\{", blok):
+            self.assertTrue(c.strip().startswith("panggung "),
+                            "ambang tata letak lewat @container panggung")
+
+    # ---- kontras token ----------------------------------------------------
+
+    @staticmethod
+    def _hex(h):
+        h = h.strip().lstrip("#")
+        if len(h) == 3:
+            h = "".join(c * 2 for c in h)
+        return [int(h[i:i + 2], 16) for i in (0, 2, 4)]
+
+    @staticmethod
+    def _lum(c):
+        def lin(v):
+            v /= 255.0
+            return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+        return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
+
+    @classmethod
+    def _rasio(cls, a, b):
+        la, lb = cls._lum(a), cls._lum(b)
+        return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+
+    @classmethod
+    def _token_tema(cls):
+        """{tema: {token: [r,g,b]}} dari blok :root / [data-tema=...] gaya.css."""
+        css = TestHamparanBara._telanjang(cls._mentah())
+        kepala = {"gelap": r":root", "malam": r"\[data-tema=\"malam\"\]",
+                  "terang": r"\[data-tema=\"terang\"\]",
+                  "kontras": r"\[data-tema=\"kontras\"\]"}
+        hasil = {}
+        for tema, k in kepala.items():
+            m = re.search(r"(?m)^" + k + r"\s*\{([^{}]*)\}", css)
+            assert m, "blok tema " + tema + " tidak ketemu"
+            hasil[tema] = {n: cls._hex(v) for n, v in re.findall(
+                r"--([a-z0-9-]+)\s*:\s*(#[0-9a-fA-F]{3,6})\s*;", m.group(1))}
+        # Pelat: palet yang dipasang ulang di dua wadah, dibaca dari aturannya
+        # sendiri. Token yang hilang di sana tidak jatuh ke tema terang (di
+        # peramban memang jatuh ke sana, tetapi tes ini tak boleh menebak).
+        pelat = {n: cls._hex(v) for n, v in re.findall(
+            r"--([a-z0-9-]+)\s*:\s*(#[0-9a-fA-F]{3,6})\s*;", cls._badan_pelat())}
+        hilang = [n for n in cls.TOKEN_PELAT_WAJIB if n not in pelat]
+        assert not hilang, f"aturan pelat tidak memasang {hilang}"
+        hasil[cls.NAMA_PELAT] = pelat
+        return hasil
+
+    @classmethod
+    def _token_langit(cls):
+        """{tema: {nama: (persen, dari, ke)}} untuk --lg-kunci/--lg-garis,
+        dan {tema: {--lt-kel-*: rgb}} + alfa cahaya. Warisan: tema yang tak
+        menimpa memakai `body` polos (gelap)."""
+        blok = cls._blok()
+        per = {t: {} for t in cls.TEMA_UJI}
+        kel = {t: {} for t in cls.TEMA_UJI}
+        cahaya = {t: {} for t in cls.TEMA_UJI}
+        cls._alias = {t: {} for t in cls.TEMA_UJI}
+        for kepala, badan in cls._aturan(blok):
+            if cls._kepala_pelat(kepala):
+                tema = cls.NAMA_PELAT
+            else:
+                m = re.fullmatch(r"(?:\[data-tema=\"([a-z]+)\"\]\s+)?body", kepala)
+                if not m:
+                    continue
+                tema = m.group(1) or "gelap"
+            for n, v in re.findall(r"--lg-(selesai|sebagian|baru|cocok)\s*:\s*var\(--([\w-]+)\)\s*;", badan):
+                cls._alias[tema][n] = v
+            for n, v in re.findall(r"--(lg-kunci|lg-garis)\s*:\s*([^;]+);", badan):
+                mm = re.fullmatch(r"color-mix\(in srgb,\s*var\(--([\w-]+)\)\s+(\d+(?:\.\d+)?)%,"
+                                  r"\s*var\(--([\w-]+)\)\)", v.strip())
+                assert mm, "bentuk " + n + " tidak dikenali: " + v
+                per[tema][n] = (float(mm.group(2)), mm.group(1), mm.group(3))
+            for n, v in re.findall(r"--(lt-kel-[a-z]+)\s*:\s*(#[0-9a-fA-F]{6})\s*;", badan):
+                kel[tema][n] = cls._hex(v)
+            for n, v in re.findall(r"--(lt-cahaya|lt-maju)\s*:\s*(\d+(?:\.\d+)?)%\s*;", badan):
+                cahaya[tema][n] = float(v)
+            for n, v in re.findall(r"--(lt-halo)\s*:\s*(0?\.\d+)\s*;", badan):
+                cahaya[tema][n] = float(v) * 100.0
+        # Pelat tidak mewarisi dari `body` polos: ia memasang semuanya sendiri.
+        lengkap = set(kel["gelap"])
+        assert set(kel[cls.NAMA_PELAT]) == lengkap, (
+            f"warna keluarga pelat {sorted(kel[cls.NAMA_PELAT])} != {sorted(lengkap)}")
+        assert set(per[cls.NAMA_PELAT]) == {"lg-kunci", "lg-garis"}, per[cls.NAMA_PELAT]
+        assert set(cahaya[cls.NAMA_PELAT]) == {"lt-cahaya", "lt-maju", "lt-halo"}, cahaya[cls.NAMA_PELAT]
+        assert set(cls._alias[cls.NAMA_PELAT]) == {"selesai", "sebagian", "baru", "cocok"}, \
+            cls._alias[cls.NAMA_PELAT]
+        # pewarisan dari `body` polos
+        for t in cls.TEMA:
+            for n, v in cls._alias["gelap"].items():
+                cls._alias[t].setdefault(n, v)
+            for dasar, tujuan in ((per, per), (kel, kel), (cahaya, cahaya)):
+                for n, v in dasar["gelap"].items():
+                    tujuan[t].setdefault(n, v)
+        return per, kel, cahaya
+
+    def test_kontras_token_glif_dan_garis_di_empat_tema(self):
+        tema = self._token_tema()
+        per, kel, cahaya = self._token_langit()
+        kurang = []
+        for t in self.TEMA_UJI:
+            tk = tema[t]
+            # Latar terburuk: `--dasar-dalam`; di pelat, titik gradasi yang
+            # paling terang juga (pusat pelat lebih terang daripada tepinya).
+            dasars = [("dasar-dalam", tk["dasar-dalam"])]
+            if t == self.NAMA_PELAT:
+                dasars += [(f"titik pelat {i}", c) for i, c in enumerate(self._latar_pelat())]
+            nilai = {}
+            for n, k in (("kunci", "lg-kunci"), ("garis", "lg-garis")):
+                persen, dari, ke = per[t][k]
+                a, b = tk[dari], tk[ke]
+                nilai[n] = [x * persen / 100 + y * (1 - persen / 100)
+                            for x, y in zip(a, b)]
+            # Warna status dibaca dari ALIAS di CSS (`--lg-baru: var(--teks)`),
+            # bukan ditulis ulang di sini: tes yang menyalin nama tokennya tidak
+            # menangkap alias yang diganti diam-diam.
+            nilai["selesai"] = tk[self._alias[t]["selesai"]]
+            nilai["sebagian"] = tk[self._alias[t]["sebagian"]]
+            nilai["baru"] = tk[self._alias[t]["baru"]]
+            nilai["konsep"] = tk[self._alias[t]["cocok"]]
+            a = cahaya[t]["lt-cahaya"] / 100.0
+            m = cahaya[t]["lt-maju"] / 100.0
+            h = cahaya[t]["lt-halo"] / 100.0
+            for nama_dasar, dasar in dasars:
+                for n, ambang in self.AMBANG_BIDANG.items():
+                    r = self._rasio(nilai[n], dasar)
+                    if r < ambang:
+                        kurang.append(f"{t}/{n} di {nama_dasar}: {r:.2f} < {ambang}")
+                # terhadap pusat cahaya keluarga terburuk (alfa pusat = lt-cahaya),
+                # di kanvas lensa dengan alfa yang sama (`--lt-cahaya`)
+                for kk, w in kel[t].items():
+                    b1 = [x * a + y * (1 - a) for x, y in zip(w, dasar)]
+                    b2 = [x * m + y * (1 - m) for x, y in zip(tk["tumbuh"], b1)]
+                    for n, ambang in self.AMBANG_DI_CAHAYA.items():
+                        for nama_latar, latar in (("cahaya", b1), ("cahaya+maju", b2)):
+                            r = self._rasio(nilai[n], latar)
+                            if r < ambang:
+                                kurang.append(f"{t}/{n} di {nama_latar} {kk} ({nama_dasar}): {r:.2f} < {ambang}")
+                halo = [x * h + y * (1 - h) for x, y in zip(tk["tumbuh"], dasar)]
+                r = self._rasio(tk["tumbuh"], halo)
+                if r < self.AMBANG_DI_HALO:
+                    kurang.append(f"{t}/selesai di halo lensa ({nama_dasar}): {r:.2f} < {self.AMBANG_DI_HALO}")
+        self.assertEqual(kurang, [], "token Langit di bawah ambang kontras")
+
+    def test_kontras_token_teks_di_empat_tema(self):
+        tema = self._token_tema()
+        kurang = []
+        for t in self.TEMA_UJI:
+            tk = tema[t]
+            latar = [(lat, tk[lat]) for lat in ("dasar-dalam", "kartu")]
+            if t == self.NAMA_PELAT:
+                latar += [(f"titik pelat {i}", c) for i, c in enumerate(self._latar_pelat())]
+            for n, ambang in (("teks", 7.0), ("teks-2", 4.5), ("redup", 4.5)):
+                for nama, lat in latar:
+                    r = self._rasio(tk[n], lat)
+                    if r < ambang:
+                        kurang.append(f"{t}: {n} di {nama} {r:.2f} < {ambang}")
+        self.assertEqual(kurang, [])
+
+
+    def test_baru_terbedakan_dari_terkunci_oleh_terang_gelap(self):
+        """Pasangan terpenting bagi profil kosong (111 bintang terbuka lawan 951
+        terkunci) dulu hanya terbedakan oleh bentuk: `--lg-baru` dan
+        `--lg-kunci` berselisih luminans 1,08 di tema terang. Sekarang baru =
+        tinta paling tegas, terkunci = abu menengah."""
+        tema = self._token_tema()
+        per, _kel, _cahaya = self._token_langit()
+        kurang = []
+        for t in self.TEMA_UJI:
+            tk = tema[t]
+            persen, dari, ke = per[t]["lg-kunci"]
+            kunci = [x * persen / 100 + y * (1 - persen / 100) for x, y in zip(tk[dari], tk[ke])]
+            r = self._rasio(tk[self._alias[t]["baru"]], kunci)
+            if r < 1.8:
+                kurang.append(f"{t}: baru lawan terkunci {r:.2f} < 1.8")
+        self.assertEqual(kurang, [])
+
+    # ---- opasitas dan aksesibilitas bentuk -------------------------------
+
+    # `opacity` di bawah 1 yang sah, beserta nilainya: cincin fokus papan ketik
+    # (tersembunyi sampai elemennya `:focus-visible`, lalu 1), jalur putus profesi
+    # dan cincin sorot hover (keduanya garis dekoratif, bukan teks atau glif).
+    # Yang lain dilarang berapa pun nilainya: `.lt-gl-baru { opacity: .6 }` dulu
+    # lolos karena ambangnya 0,5.
+    OPASITAS_SAH = {".lt-fokus": 0.0, ".lt-ik-jalur": 0.9, ".lt-ln-sorot": 0.55}
+
+    def test_tidak_ada_peredupan_opacity(self):
+        """Peredupan lewat `opacity` pada induk menghabiskan teks dan cincin
+        fokus anak-anaknya: nomor bintang 1,6:1, cincin fokus 1,0-1,9:1, nama
+        rasi 2,1-2,9:1 (empat tema), padahal semuanya masih bisa dipakai. Saringan
+        konsep dan profesi menandai dengan MENAMBAH (cincin, garis bawah,
+        nama aksesibel), tidak dengan mengurangi."""
+        salah = []
+        for kepala, badan in self._aturan(self._blok()):
+            for nilai in re.findall(r"(?<![\w-])opacity\s*:\s*([0-9.]+)", badan):
+                v = float(nilai)
+                if v < 1 and self.OPASITAS_SAH.get(kepala) != v:
+                    salah.append(f"{kepala}: opacity {nilai}")
+        self.assertEqual(salah, [])
+
+    def _baca_src(self, *jalur):
+        with open(os.path.join(self._akar(), "packages", "web", "src", *jalur),
+                  encoding="utf-8") as f:
+            return f.read()
+
+    def test_opsi_lensa_tanpa_aria_disabled(self):
+        """Bintang terkunci TETAP bisa difokus dan dipilih (alasannya harus bisa
+        dibaca). `aria-disabled` menyuruh pembaca layar mengumumkan "tidak
+        tersedia" pada 89,5 persen bintang di profil kosong."""
+        self.assertNotRegex(self._baca_src("layar", "LangitLensa.tsx"), r"aria-disabled\s*=")
+
+    def test_kelas_glif_ditulis_literal(self):
+        """`lt-gl-${status}` membuat `TestKontrakKelasHidup` menganggap SETIAP
+        `.lt-gl-*` hidup (kelas yatim lolos); tabel literal `KELAS_GLIF` tidak.
+        Dan `rasi-gl` tanpa satu pun aturan CSS sudah dibuang."""
+        # Semua berkas pemakai harus ada: berkas yang dihapus atau diganti nama
+        # membuat `_baca_src` gagal, bukan membuat tes ini lolos diam-diam.
+        for berkas in (("komponen", "Glif.tsx"), ("layar", "LangitLensa.tsx"),
+                       ("layar", "LangitIkhtisar.tsx"), ("layar", "LangitDaftar.tsx")):
+            sumber = self._baca_src(*berkas)
+            self.assertNotRegex(sumber, r"lt-gl-\$\{", berkas[-1])
+            self.assertNotIn("rasi-gl", sumber, berkas[-1])
+
+    def test_lensa_tidak_membongkar_fokus_dan_esc_didengar_di_dokumen(self):
+        """Dua cacat yang hanya tertangkap di peramban: panel yang diberi kunci
+        per BINTANG membuang tombol berfokus (Sebelumnya, Sesudahnya) ke BODY,
+        dan `onKeyDown` pada <section> tidak pernah menerima Esc bila fokus di
+        BODY (alamat yang baru dimuat, klik ruang kosong)."""
+        sumber = self._baca_src("layar", "LangitLensa.tsx")
+        self.assertNotRegex(sumber, r"<PanelBintang[^>]*key=\{`", "kunci PanelBintang per bintang")
+        self.assertIn('document.addEventListener("keydown"', sumber)
+        self.assertNotRegex(sumber, r'<section[^>]*onKeyDown', "Esc dipasang di <section>")
+
+    def test_alamat_lensa_tidak_didekode_telanjang(self):
+        """`decodeURIComponent` melempar `URIError` untuk `#/langit/%`, dan
+        tidak ada error boundary: seluruh pohon React kosong. Satu-satunya
+        pembaca alamat Langit hidup di `lensa-teks.ts` (diuji pembanding)."""
+        sumber = self._baca_src("layar", "Langit.tsx")
+        self.assertNotIn("decodeURIComponent", sumber)
+        self.assertIn("bacaAlamat", sumber)
+
+    def test_ukuran_huruf_peta_mengikuti_rem(self):
+        """Setelan "Ukuran huruf" menggeser `rem`, bukan piksel. Teks peta yang
+        ditulis `px` tidak berubah satu piksel pun, padahal legenda dan panel
+        di sebelahnya ikut membesar."""
+        salah = [f"{k}: {v.strip()}" for k, b in self._aturan(self._blok())
+                 for v in re.findall(r"font(?:-size)?\s*:\s*([^;]+);", b)
+                 if re.search(r"\bclamp\(\s*\d+px|\bmax\(\s*\d+px", v)]
+        self.assertEqual(salah, [])
+
+    def test_garis_ikhtisar_tepi_ke_tepi(self):
+        """`ruasAntara` (milik peta lama dan Bahasa) menolak ruas bila celah
+        tepinya < 4 satuan; di ikhtisar jari-jarinya piksel dan jarak tetangga
+        cuma 6 sampai 9 px, jadi garis rasi tergambar 35, 53, dan 69 persen di
+        akar 1156, 1440, dan 1905 px. Ikhtisar memakai `ruasIkhtisar`; sifatnya
+        ditagih `uji/banding-lensa.mjs` ([garis])."""
+        sumber = self._baca_src("layar", "LangitIkhtisar.tsx")
+        self.assertIn("ruasIkhtisar(", sumber)
+        self.assertNotIn("ruasAntara", sumber)
+
+    def test_kata_kapsul_dari_status_bintang(self):
+        """Kata kapsul "mulai di sini" datang dari status bintang sasarannya
+        (`kataMulai`), tidak dari XP: pelajar ber-XP yang saran berikutnya sebuah
+        materi baru dulu melihat "Lanjutkan di sini"."""
+        for berkas in ("LangitIkhtisar.tsx", "LangitDaftar.tsx"):
+            sumber = self._baca_src("layar", berkas)
+            self.assertIn("kataMulai(", sumber, berkas)
+            self.assertNotIn("Mulai di sini", sumber, berkas)
+            self.assertNotIn("saran.mulai", sumber, berkas)
+        self.assertNotRegex(self._baca_src("layar", "Langit.tsx"), r"\bmulai\s*:")
+
+    def test_kanvas_lensa_membawa_keluarga(self):
+        """Kanvas lensa menerima `data-kel` dan CSS punya cahaya untuk setiap
+        keluarga yang ada di `URUTAN_KELUARGA`: keluarga baru tanpa aturannya
+        membuat kanvas lensanya datar sendirian."""
+        self.assertRegex(self._baca_src("layar", "LangitLensa.tsx"),
+                         r'className="lt-lensa-kanvas"[^>]*data-kel=')
+        m = re.search(r"URUTAN_KELUARGA\s*=\s*\[([^\]]*)\]", self._baca_src("layar", "langit-data.ts"))
+        self.assertTrue(m, "URUTAN_KELUARGA tidak ketemu")
+        keluarga = re.findall(r'"([a-z]+)"', m.group(1))
+        self.assertGreaterEqual(len(keluarga), 6)
+        blok = self._blok()
+        hilang = [k for k in keluarga
+                  if not re.search(r'\.lt-lensa-kanvas\[data-kel="' + k + r'"\]\s*\{\s*--kel\s*:', blok)]
+        self.assertEqual(hilang, [], "keluarga tanpa cahaya di kanvas lensa")
+
+    def test_keterangan_tidak_menggeser_peta(self):
+        """Kalimat keterangan muncul sesudah chip konsep atau profesi dipilih.
+        Kalau barisnya baru ada saat terisi (`:empty { min-height: 0 }`), peta
+        melompat 25 px ke bawah di bawah kursor, pada tindakan yang paling
+        sering dilakukan di layar ini. Satu baris disisihkan terus."""
+        aturan = self._aturan(self._blok())
+        self.assertEqual([k for k, _ in aturan if "langit-keterangan:empty" in k], [])
+        tinggi = [b for k, b in aturan if k == ".lt-halaman .langit-keterangan"
+                  and re.search(r"\bmin-height\s*:\s*1lh\b", b)]
+        self.assertEqual(len(tinggi), 1, "tinggi satu baris tetap untuk .langit-keterangan di laptop")
+
+    def test_kepala_dan_peta_selebar_sama(self):
+        """Di jendela >= 1832 px peta dipatok 1800 px; kepala dan legenda
+        (`.lt-krom`) memakai patokan yang sama, kalau tidak bingkai peta 21 px
+        lebih sempit per sisi daripada kepalanya."""
+        aturan = dict((k, b) for k, b in self._aturan(self._blok()))
+        peta = re.search(r"max-width\s*:\s*(\d+)px", aturan[".lt-ikhtisar"])
+        krom = re.search(r"width\s*:\s*min\(100%,\s*(\d+)px\)", aturan[".lt-krom"])
+        self.assertTrue(peta and krom)
+        self.assertEqual(peta.group(1), krom.group(1))
+
+    def test_esc_lensa_tidak_bentrok_dengan_menu_dan_kartu(self):
+        """Dua cacat Esc yang hanya terukur di peramban (`alur-nyata.mjs`), dijaga
+        juga di sumber: pendengar dokumen lensa jalan lebih dulu daripada pendengar
+        jendela milik menu "Lainnya", jadi satu tekan menutup menu DAN melepas
+        pilihan kalau menu yang terbuka tidak diperiksa; dan Esc yang melepas
+        pilihan mengembalikan fokus ke bintangnya, yang memunculkan kartu fokus
+        lagi (tiga tekan untuk keluar, padahal kaki lensa menjanjikan satu)."""
+        sumber = self._baca_src("layar", "LangitLensa.tsx")
+        self.assertIn("rel-buka", self._baca_src("Cangkang.tsx"),
+                      "kelas menu terbuka berganti nama; Esc lensa harus ikut")
+        self.assertRegex(sumber, r'document\.querySelector\("[^"]*#cangkang\.rel-buka[^"]*"\)')
+        self.assertRegex(sumber, r"onPilih\(null\);(?:(?!onTutup)[\s\S]){0,500}setTipTutup\(true\);")
+
+    def test_tujuan_karier_diturunkan_tidak_disalin_ke_state(self):
+        """Profesi tujuan dari server yang disalin ke state ikut tertulis ke
+        `history.state` seolah pilihan pelajar, dan basi begitu tujuannya diganti
+        di Peta Karier (Kembali menampilkan tujuan lama)."""
+        sumber = self._baca_src("layar", "Langit.tsx")
+        self.assertNotRegex(sumber, r"setProfesi\w*\([^;]*\?\?[^;]*tujuan")
+        self.assertIn("profesiPilihan ?? data?.tujuan", sumber)
+
+    def test_profesi_dipakai_tidak_dipangkas_diam_diam(self):
+        """`slice` tanpa penanda sisa membuat git (18 profesi) tampak dipakai
+        empat profesi saja."""
+        sumber = self._baca_src("layar", "LangitPanel.tsx")
+        self.assertIn(".slice(0, MAKS_PROFESI)", sumber)
+        self.assertIn("dipakai.length - MAKS_PROFESI", sumber)
+
+    def test_penunjuk_digambar_sebelum_label(self):
+        """Garis penunjuk dari bintang terpilih ke panel digambar SEBELUM lencana
+        bab dan lencana "berikutnya": di atasnya ia mencoret teks "berikutnya" dan
+        menimpa nomor bintang yang sejajar dengannya (terukur di
+        `#/langit/html/12`)."""
+        sumber = self._baca_src("layar", "LangitLensa.tsx")
+        penunjuk = sumber.index('className="lt-ln-penunjuk"')
+        self.assertLess(penunjuk, sumber.index('"lt-ln-bab"'))
+        self.assertLess(penunjuk, sumber.index('className="lt-ln-berikut"'))
+
+    def test_hanya_satu_transisi(self):
+        """Anggaran gerak: satu transisi pada satu elemen (cincin terpilih).
+        Transisi yang mati (dulu `.lt-ik-rasi { transition: opacity }`, padahal
+        tidak ada yang mengubah opacity-nya) membuat klaim itu bohong."""
+        ada = [k for k, b in self._aturan(self._blok()) if re.search(r"\btransition\s*:", b)]
+        self.assertEqual(ada, [".lt-ln-terpilih"])

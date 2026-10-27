@@ -69,11 +69,13 @@ npm run tipe         # tsc --noEmit atas ketiga paket TypeScript
 npm run catatan      # layanan pencarian catatan (butuh container MongoDB)
 npm run golden       # adu port TypeScript (sorot, beda) dengan rekaman Python
 npm run gigi --workspace @belajar/bersama   # baterai mutasi: pagarnya bisa merah?
+python3 alat/uji_gigi_blok.py            # baterai mutasi pagar layar Langit (jalankan di salinan pohon)
 python3 alat/golden_bersama.py --tulis   # perbarui rekaman sesudah sorot/galat/beda berubah
 python3 alat/ekspor_bersama.py --tulis   # perbarui tabel kata kunci untuk sisi TS
+python3 alat/golden_pembuka.py --tulis   # perbarui rekaman paragraf pembuka panel Langit
 ```
 
-Dua alat ekspor di atas WAJIB dijalankan ulang setiap kali sumbernya berubah,
+Ketiga alat ekspor di atas WAJIB dijalankan ulang setiap kali sumbernya berubah,
 dan lupa melakukannya bukan kelalaian yang diam: `test_konten_json` mengadu
 JSON dengan sumber Python setiap suite jalan, jadi menyunting `data/` tanpa
 mengekspor ulang langsung memerah.
@@ -1156,6 +1158,157 @@ sebuah OBSERVATORIUM. Yang dibangun dan sekarang mengikat:
 * **Pemilih yang menunjuk `<html>` dilarang di lapisan baru** (pagar POPULASI
   menghitungnya, termasuk di dalam `@media`). Token baru dipasang di `body`.
 
+## Layar Langit: ikhtisar bertinta + lensa (2026-10-27)
+
+Pemilik menilai peta Langit "terlalu kecil" lalu "masih bland". Layar itu
+sekarang dua tampilan atas data yang SAMA (`/api/langit`): ikhtisar 32 rasi
+(dibaca dari jauh) dan lensa satu rasi (diperbesar sampai tiap bintang bisa
+ditunjuk). Yang mengikat:
+
+* **Klik di peta TIDAK PERNAH menavigasi.** Membuka layar materi menulis
+  progres (materi baru ditandai "sebagian" dan menggerakkan kartu Lanjutkan),
+  dan 66 persen klik tepat di pusat bintang pada peta lama mengenai
+  TETANGGANYA. Hanya tautan "Mulai/Lanjutkan membaca/Baca lagi" di panel yang
+  membuka materi. Terukur di aplikasi penuh: memilih bintang menulis nol
+  permintaan, membuka materi menulis satu.
+* **Bentuk status**: percik (selesai), cakram setengah (sebagian), cincin
+  (baru), belah ketupat (terkunci), braket (berikutnya). Semuanya `<path>`
+  berkoordinat MUTLAK: `<g transform>` memarkir simpul di titik asal begitu
+  `transform` CSS dipasang (cacat Peta Karier, 1f49b99). Satu pengecualian
+  yang disadari: cincin terpilih lensa (`.lt-ln-terpilih`) adalah `<g>` yang
+  digeser lewat `transform` CSS, dan itu aman karena ia tidak punya atribut
+  `transform`, tidak ikut `BISA_DITEKAN`, dan transisinya mati di gerak
+  "mati" serta `prefers-reduced-motion`. Baru dan terkunci
+  juga berbeda terang-gelapnya (`--lg-baru` = `--teks`, terkunci abu
+  menengah, selisih luminans >= 1,8): pasangan terpenting bagi profil kosong
+  (111 bintang terbuka lawan 951 terkunci) tidak boleh hanya terbedakan oleh
+  bentuk.
+* **Cahaya rasi mengodekan KELUARGA**, bukan hiasan, dan mengikuti tema. Ia satu
+  elemen berlatar banyak gradien di belakang svg: lingkaran bergradien DI DALAM
+  svg digambar ulang tiap hover. Kanvas lensa memakai warna dan alfa yang sama
+  (`data-kel` pada kanvas, `--lt-cahaya`), jadi lensa terbaca sebagai rasi yang
+  sama diperbesar dan bukan diagram graf yang datar. Rona keluarga tidak
+  sepenuhnya jauh dari rona status (OKLCH, empat tema): dari kuningan (72-81)
+  hanya Perkakas yang dekat (36-46 derajat), dari verdigris (153-173) paling
+  dekat Skrip (48-64), dan dari biru-baja `--tenang` (228-249, warna cincin
+  konsep) Sistem cuma 6-22 derajat, Skrip 12-28, Tech 22-40. Pembedanya
+  bentuk (cincin konsep melingkari glif, bukan menggantikannya), bukan rona.
+  Tech stack dulu abu-abu (kroma 0,046 lawan 0,12-0,15 keluarga lain) dan
+  menutup sepertiga bawah peta terang; sekarang 0,085-0,095 dengan rona 270 dan
+  terang-gelap yang sama, jadi gerbang kontras tidak bergeser. Inti hijau
+  kemajuan dibatasi (`--lt-maju`): pada 42 persen ia membuat bintang selesai
+  2,6:1 dan melenyapkan rona keluarga.
+* **Tema terang memakai pelat langit malam** (blok "pelat langit" di kaki
+  gaya.css, keputusan ronde perbaikan 2026-10-27): di tema terang cuma 3,1
+  persen piksel di dalam bingkai peta yang berwarna dan bintang terbaca
+  sebagai manik abu-abu, jadi peta dan kanvas lensa menjadi jendela indigo
+  dengan tepi kuningan di halaman terang. Panel lensa, legenda, dan kepala tetap
+  terang; tema gelap, malam, dan kontras tidak tersentuh (ikhtisar 0 piksel
+  berbeda dengan dan tanpa blok itu). Palet gelap dipasang ulang di dua elemen
+  itu, satu-satunya tempat token `--lg-`/`--lt-` boleh berdiri di luar
+  `body` (pengecualiannya sempit dan dijaga: kepala aturan persis dua pemilih
+  itu, dan tidak ada pemilih bertema lain di blok kecuali `[data-tema=...]
+  body`). Tokennya dibaca tes kontras sebagai "tema" kelima, termasuk titik
+  gradasi yang paling terang. Menghapus blok itu mengembalikan kertas terang.
+* **Saringan MENAMBAH penanda, tidak mengurangi.** Konsep = cincin pada
+  bintang yang cocok; profesi = garis bawah kuningan pada nama rasi bekal
+  (sama dengan warna jalur putus); keduanya juga masuk NAMA AKSESIBEL
+  (`labelRasi`: ", N materi cocok dengan X", ", bagian bekal Y"; dulu 0 dari 32
+  nama berubah). Peredupan `opacity` pada teks atau glif DILARANG: nomor bintang
+  jatuh ke 1,6:1, cincin fokus 1,0-1,9:1, nama rasi 2,1-2,9:1 (empat tema),
+  padahal semuanya masih bisa dipakai. Satu-satunya yang diredupkan adalah
+  CAHAYA rasi di luar bekal (dekoratif). Dijaga `test_tidak_ada_peredupan_opacity`.
+* **Kontras dijaga dari TOKEN** oleh `TestBlokLangit` (alias status dibaca
+  dari CSS, bukan disalin): terkunci dan garis nominal >= 5:1, glif status
+  >= 4,5:1, dan >= 3,2:1 di pusat cahaya yang paling terang; teks >= 12 px di
+  semua lebar. Pagar piksel sungguhan tetap pengukuran di peramban.
+* **Fokus papan ketik tidak boleh jatuh ke BODY.** Panel dikunci per RASI, bukan
+  per bintang (kunci per bintang membongkar tombol yang sedang berfokus), dan
+  tombol yang memang mengganti jenis panel (Tutup, Berikutnya, baris bab)
+  mengembalikan fokus ke bintangnya. Fokus BODY keadaan yang sah (alamat yang
+  baru dimuat, klik ruang kosong), jadi Esc didengar di tingkat DOKUMEN, tidak
+  di `<section>`. Berlapis: kartu judul, lalu pilihan, lalu lensa; Esc yang
+  melepas pilihan juga menutup kartu fokus yang muncul lagi di bintangnya,
+  jadi sesudah Enter cukup dua tekan. Dialog global dan menu "Lainnya"
+  cangkang yang terbuka memenangkan Esc (pendengar dokumen jalan lebih dulu
+  daripada pendengar jendela milik menu). Tombol yang
+  dipegang bersama Alt, Ctrl, atau Meta bukan milik daftar bintang (Alt+Panah =
+  Mundur/Maju peramban). Opsi terkunci TIDAK `aria-disabled`: ia bisa dipilih
+  (membaca alasannya adalah gunanya), dan atribut itu menyuruh pembaca layar
+  mengumumkan "tidak tersedia" pada 89,5 persen bintang di profil kosong.
+* **Fokus yang dipindah program wajib terlihat.** Semua `focus()` memakai
+  `preventScroll`, jadi `deltaGulirTampak` (murni, diuji) yang menggulir jendela
+  (bukan `scrollIntoView`) pada zum 125 persen ke atas; di mode panel-di-bawah
+  `deltaGulirPanel` menggulir ke judul panel sesudah bintang dipilih, dibatasi
+  `bintangAtas` supaya bintang di bagian atas kanvas (yang ada di atas panel)
+  tidak terdorong ke bawah pil atas tepat saat dipilih (dulu 4 dari 12 klik
+  di 320x568 sampai 952x600). Dasar
+  ukur lulus-gagal adalah TINGGI PAKAI (544, 592, 650 px), bukan tinggi layar
+  (layar 1080 memberi viewport 904): aksi utama panel ("Mulai membaca") ada tepat
+  di bawah pil status karena di bawah paragraf pembuka ia terpotong pada tinggi
+  < 656 px.
+* **Alamat Langit dibaca satu pintu: `bacaAlamat` (lensa-teks.ts).** Persen-sandi
+  rusak (`#/langit/%`) melempar `URIError` di dalam `useEffect`, dan tidak ada
+  error boundary: SELURUH pohon React kosong sampai muat ulang. Jangan memanggil
+  `decodeURIComponent` di tempat lain.
+* **Huruf peta mengikuti `rem`**, dan ambang peta/Daftar dikalikan faktor ukuran
+  huruf aplikasi (`AMBANG_PETA` 1.156 px pada 16 px, 1.445 pada 20 px). Lensa
+  meneruskan faktor itu ke penata label (`skalaTeks`). Tulis `px` di teks peta
+  dan setelan "Ukuran huruf" berhenti mengubahnya (dijaga
+  `test_ukuran_huruf_peta_mengikuti_rem`).
+* **Daftar (akar < 1.156 px) bukan tepi dan tidak boleh dibuang**: ia yang
+  tampil pada zum 125 persen di laptop 1366 dan 1440, jendela setengah layar,
+  dan reflow WCAG 1.4.10. Ia membawa penanda "mulai di sini" yang sama dengan
+  peta, dan lencana "N cocok" bila konsep menyala.
+* **Anggaran gerak**: nol animasi tak berhingga di SVG, entri <= 2 elemen,
+  satu transisi pada satu elemen (cincin terpilih; dijaga
+  `test_hanya_satu_transisi`), `tingkatGerak()` dibaca saat render. Sorot hover
+  di ikhtisar ditulis ke DOM lewat ref, satu kali per bingkai; di sana jangan
+  menjadikannya state React (selisih 6 sampai 8 ms per gerakan pada CPU 4x
+  terisolasi; mesin berderau). Di lensa sorot (`hov`) memang state React:
+  paling banyak 60 bintang. "Layar ini 83 sampai 96 persen sibuk saat diam"
+  hanya benar bila beberapa kurikulum sudah selesai: satu reticle berputar per
+  kurikulum, dan pada profil pemilik 13 persen.
+* **Risiko yang diketahui: latar `Cahaya` ikhtisar.** Ia 32 sampai 64
+  `radial-gradient` pada satu elemen 1536x1558 (1800x1826 di 1905), dan di
+  Chrome headless (raster perangkat lunak) tiap langkah ubah ukuran jendela
+  menahan thread utama 1,2 sampai 1,6 detik (layar Bahasa 63 ms). Chrome ber-GPU
+  belum diukur, jadi belum diutak-atik; kalau terbukti di GPU, jadikan kanvas
+  kecil atau tunda sampai ukuran berhenti berubah.
+* **Kartu judul hover menangkap penunjuk** (dapat dilayangi, WCAG 1.4.13), dan
+  itu dulu menutup 21 sampai 28 persen perpindahan alami dari bintang ke
+  tetangganya (pusat tetangga di bawah kartu). Kartu meneruskan sorot dan klik
+  ke bintang yang glifnya ada di bawah penunjuk (`bintangDiBawahKartu`); yang
+  diukur `alur-nyata.mjs` (python, 1366x768 dan 1905x904, nol salah).
+* **Garis rasi ikhtisar dari tepi glif ke tepi glif** (`ruasIkhtisar`), bukan
+  `ruasAntara`: yang kedua dibuat untuk satuan viewBox dan menolak ruas
+  berselisih tepi < 4, jadi di piksel garisnya tergambar 35, 53, dan 69 persen
+  di akar 1156, 1440, dan 1905 px. Sekarang >= 98 persen (ditagih
+  `banding-lensa.mjs`, [garis]).
+* **Kata kapsul "mulai di sini" dari status bintang sasarannya** (`kataMulai`:
+  sebagian = "Lanjutkan di sini", lainnya "Mulai di sini"), bukan dari XP.
+  Jawaban `/api/langit` divalidasi bentuknya sebelum dipakai
+  (`bentukJawabanSah`): `200 {}` dulu mengosongkan seluruh pohon React. Nomor
+  bintang di alamat hanya bilangan bulat utuh (`/1.5` dan `/1e3` diabaikan).
+* **Keadaan perkakas** (konsep, profesi) di `history.state`, bukan
+  localStorage: Kembali dari materi memulihkannya, kunjungan besok tidak
+  membuka peta yang sudah meredup. Profesi tujuan dari server diturunkan
+  (`profesiPilihan ?? d.tujuan`), tidak disalin ke state: yang disalin tertulis
+  ke `history.state` seolah pilihan pelajar dan basi begitu tujuannya diganti
+  di Peta Karier. Alamat lensa ditulis `replaceState`, jadi
+  Kembali peramban melompati lensa (keputusan sadar, sama dengan Peta Karier).
+* **Dua bahasa warna hidup berdampingan** sampai ada ronde CSS-saja untuk
+  `PetaRasi`: Bahasa dan Dasbor masih memakai kuningan = selesai.
+* **Pengukuran di peramban tinggal di repo**: `packages/web/uji/manual/`
+  (sebelas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
+  `tangkap.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
+  `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET, jalankan dengan profil
+  terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
+  ia menyunting berkas di tempat dan memulihkannya, jadi jalankan di salinan
+  pohon dan ia gagal bila ada sel yang dilewati). Kriteria terima irisan
+  menunjuk berkas-berkas itu, bukan skrip di direktori sesi yang suatu hari
+  dibersihkan.
+
 ## Kurikulum tech stack (2026-10-19)
 
 Pemilik minta materi "semua tech stack yang ada sekarang tanpa terkecuali".
@@ -1414,6 +1567,12 @@ satu-satunya pintu untuk ISO server), `sorak.tsx` (toast + `salin`),
 mengimpornya tanpa menyeret React; `util.tsx` meneruskannya), `Cangkang.tsx`,
 `komponen/{Kode,Keadaan,Bilah,Rasi,Ikon,Sakelar,Tanda,Lencana,Pintasan,Palet}.tsx`,
 `komponen/{rasi-geometri,ikon-bentuk,pintasan-tabel,palet-cari}.ts`.
+Layar Langit (ikhtisar 32 rasi + lensa satu rasi): `layar/Langit.tsx` (data,
+alamat, keadaan perkakas), `layar/LangitIkhtisar.tsx` (peta),
+`layar/LangitLensa.tsx` (rasi diperbesar), `layar/LangitPanel.tsx` (detail
+bintang), `layar/LangitDaftar.tsx` (layar sempit), `layar/langit-data.ts`
+(bentuk jawaban `/api/langit` beserta validatornya, `TATA`, `KONSEP`),
+`komponen/Glif.tsx`, `komponen/{lensa-geometri,lensa-teks}.ts`.
 
 **Keempat modul peng-ukur DOM SUDAH diport** (2026-10-20), beserta ruang kerja
 latihan, Ruang Coba, dan pembaca materi. Polanya satu dan dipakai keenam
@@ -1437,10 +1596,13 @@ melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
 | `layarBahasa` | `layar/bahasa-teks.ts` | `layar/Bahasa.tsx` | 32 kurikulum x 7 profil progres |
 | `layarDasbor` | `layar/dasbor-teks.ts` | `layar/Dasbor.tsx` | 360 profil hasilan, benih 20261026 |
 | palet perintah | `komponen/palet-cari.ts` | `komponen/Palet.tsx` | 247 teks x 35 kueri, urutan penuh |
+| layar Langit | `komponen/lensa-geometri.ts`, `komponen/lensa-teks.ts`, `layar/langit-data.ts` | `layar/Langit*.tsx`, `komponen/Glif.tsx` | 440.982 sifat (`banding-lensa.mjs`: tidak ada JS lama untuk diadu), `ringkasPembuka` diadu `golden-pembuka.json` (110 kasus, dibangkitkan `alat/golden_pembuka.py`) |
 
-Kedua belas pembanding ikut suite lewat `SKRIP_WEB` di
-`test_konten_json.TestAlgoritmaTypeScript`, dan **104 sel mutasi** di
-`packages/bersama/uji/gigi-golden.py` membuktikan semuanya bisa MERAH.
+Keenam belas pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
+`test_konten_json.TestAlgoritmaTypeScript`, dan **204 sel mutasi** di
+`packages/bersama/uji/gigi-golden.py` (192 untuk keenam belas pembanding web,
+12 untuk ketiga golden `bersama`) membuktikan semuanya bisa MERAH. Pagar CSS dan
+sumber layar Langit punya baterainya sendiri, `alat/uji_gigi_blok.py` (55 sel).
 
 **`--experimental-strip-types` diberikan eksplisit** ke `node` di suite MAUPUN
 di baterai. Pelucutan tipe baru tanpa-flag sejak Node 23.6 (22.18 di jalur

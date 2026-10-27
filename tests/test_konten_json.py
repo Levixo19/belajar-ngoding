@@ -215,7 +215,8 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                  ("banding-palet.mjs", r"(\d+) perbandingan", 10000),
                  ("banding-langit.mjs", r"(\d+) perbandingan", 30),
                  ("banding-sampul.mjs", r"(\d+) perbandingan", 700),
-                 ("banding-gerak.mjs", r"(\d+) perbandingan", 150))
+                 ("banding-gerak.mjs", r"(\d+) perbandingan", 150),
+                 ("banding-lensa.mjs", r"(\d+) perbandingan", 100000))
 
     def test_layanan_catatan(self):
         """Uji `packages/catatan` -- lapisan murninya selalu, Mongo kalau ada.
@@ -549,6 +550,31 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                     cacah, f"keluaran tak terbaca:\n{keluaran[:800]}")
                 self.assertGreater(int(cacah.group(1)), lantai,
                                    "korpusnya menyusut; pagarnya jadi tumpul")
+
+
+class TestGoldenPembuka(unittest.TestCase):
+    """Rekaman acuan `ringkasPembuka` harus bisa dibangkitkan ULANG dari repo.
+
+    Panel layar Langit memenggal paragraf pembuka sebuah materi di dua tempat:
+    `alat/golden_pembuka.py` (acuan) dan `komponen/lensa-teks.ts`. Pembanding
+    TypeScript menagih keluarannya terhadap `golden-pembuka.json`; tanpa tes
+    ini rekaman itu cuma angka yang pernah benar, dan materi baru yang
+    mengubah salah satu cabang aturan tidak akan terlihat sebagai selisih.
+    """
+
+    def test_rekaman_sama_dengan_pembangkitnya(self):
+        import sys
+        sys.path.insert(0, os.path.join(AKAR, "alat"))
+        import golden_pembuka
+
+        teks, kasus, total = golden_pembuka.bangun()
+        self.assertGreaterEqual(total, 1062, "korpus materi menyusut")
+        self.assertGreaterEqual(kasus, 100, "rekaman menyusut; pagarnya tumpul")
+        with open(golden_pembuka.BERKAS, encoding="utf-8") as f:
+            self.assertEqual(
+                f.read(), teks,
+                "golden-pembuka.json bergeser. Kalau disengaja, jalankan "
+                "`python3 alat/golden_pembuka.py --tulis`")
 
 
 if __name__ == "__main__":

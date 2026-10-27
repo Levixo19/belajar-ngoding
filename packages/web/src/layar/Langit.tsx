@@ -1,167 +1,324 @@
 /* Layar Langit: 32 kurikulum sebagai rasi, 1.062 materi sebagai bintang.
  *
- * Port `webapp/statik/js/layar-langit.js`. Perbedaan terbesar saat diport:
- * versi JS men-TOGGLE kelas (`rasi-konsep`, `langit-terpilih`, `ada-profesi`,
- * `ada-konsep`) langsung pada elemen lewat `classList`. Di sini semuanya
- * TURUNAN dari state. Itu bukan selera: versi imperatif harus ingat
- * membersihkan kelas yang dipasang sebelumnya, dan satu cabang yang lupa
- * membersihkannya meninggalkan bintang yang menyala untuk konsep yang sudah
- * tidak dipilih lagi -- tanpa satu pun error.
+ * Dua tampilan atas data yang SAMA (`/api/langit`):
  *
- * Yang TIDAK berubah: peta ini tidak memutuskan apa pun. Status dan "terkunci"
- * datang dari `bab.status` lewat `/api/langit`, dan garis profesi dari
- * `data/karier.py`. Layar ini menautkan ke Peta Karier, bukan menghitung
- * kesiapan kedua.
+ *   ikhtisar  peta 32 rasi, dibaca dari jauh. Memilih sebuah rasi membuka
+ *   lensa     satu rasi diperbesar; bintangnya berbentuk per status, berlabel
+ *             nomor, bisa dipilih, dan panel di sampingnya menampilkan detail
+ *             bintang yang dipilih.
+ *
+ * Yang TIDAK berubah: peta ini tidak memutuskan apa pun. Status dan
+ * "terkunci" datang dari `bab.status` lewat `/api/langit`, garis profesi dari
+ * `data/karier.py`, alasan terkunci dari `pelajar/bab.py`. Layar ini menautkan
+ * ke Peta Karier, bukan menghitung kesiapan kedua.
+ *
+ * Keadaan lensa ada di ALAMAT (`#/langit/<kurikulum>/<nomor>`), ditulis lewat
+ * `history.replaceState` seperti Peta Karier: router tidak perlu menggambar
+ * ulang layar hanya karena sebuah bintang dipilih, dan "Kembali" dari layar
+ * materi mendarat di lensa yang sama dengan bintang yang sama, bukan di puncak
+ * peta setinggi dua layar. Router sendiri TIDAK berubah: ia membaca ruas
+ * pertama saja, dan `hashchange` didengarkan di sini.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { ambil } from "../api.ts";
-import { tingkatGerak } from "../gerak.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
-import {
-  Bintang,
-  GarisRasi,
-  jariSemua,
-  Reticle,
-  useTip,
-  useWadahPeta,
-} from "../komponen/Rasi.tsx";
-import {
-  berikutDari,
-  bentukRasi,
-  KATA_STATUS,
-  type MateriBintang,
-  type Titik,
-} from "../komponen/rasi-geometri.ts";
+import { bacaAlamat } from "../komponen/lensa-teks.ts";
+import type { MateriBintang } from "../komponen/rasi-geometri.ts";
 import { tanpaNomor } from "../util.tsx";
+import { Daftar } from "./LangitDaftar.tsx";
+import { Ikhtisar, Legenda } from "./LangitIkhtisar.tsx";
+import { Lensa, skalaTeksAplikasi } from "./LangitLensa.tsx";
+import {
+  bentukJawabanSah,
+  KELUARGA,
+  KONSEP,
+  TATA,
+  Tembolok,
+  type DataB,
+  type DataM,
+  type Jawaban,
+  type Langkah,
+  type Saran,
+} from "./langit-data.ts";
 
-const W = 1400;
-const H = 1420;
+/** Lebar `.lt-halaman` (px) di bawah ini memakai DAFTAR rasi, bukan peta.
+ *
+ *  Angkanya diukur, bukan diperkirakan: pada peta selebar 1.126 px masih ada
+ *  satu nama rasi yang menimpa bintang dan penanda "mulai di sini" menimpa
+ *  label; 1.141 px masih satu nama~bintang; dari 1.156 px nol tabrakan nama,
+ *  judul keluarga, bintang, dan penanda (diukur dengan teks 12 px sebagai
+ *  lantai). Diukur pada ELEMEN AKAR layar, bukan pada jendela: lebar yang
+ *  tersedia = jendela - padding `#layar` (64 px) - lebar bilah gulir, dan
+ *  zoom peramban serta setelan lebar kolom ikut terhitung dengan sendirinya.
+ *  Hanya JS yang memutuskannya (CSS cuma menata masing-masing tampilan),
+ *  jadi tidak ada angka kedua yang bisa meleset darinya.
+ *
+ *  Angkanya berlaku pada ukuran huruf 16 px dan DIKALIKAN faktor ukuran huruf
+ *  aplikasi (`skalaTeksAplikasi`): teks peta mengikuti `rem`, jadi pada 20 px
+ *  (faktor 1,25) petanya baru bebas tabrakan dari 1.445 px. Di bawah itu yang
+ *  tampil Daftar, yang tumbuh bersama hurufnya. */
+export const AMBANG_PETA = 1156;
 
-/* Letak tiap kurikulum (pusat rasi) dan keluarganya. Kurikulum baru yang
-   belum terdaftar di sini tetap muncul, di baris cadangan paling bawah --
-   jalur itu sengaja ada supaya menambah kurikulum tidak pernah membuat sebuah
-   kurikulum hilang dari peta. */
-const TATA: Record<string, [number, number, string]> = {
-  html: [170, 200, "web"], css: [330, 140, "web"], javascript: [300, 330, "web"],
-  typescript: [470, 260, "web"], php: [150, 420, "web"],
-  c: [700, 150, "sistem"], cpp: [860, 210, "sistem"], rust: [760, 350, "sistem"],
-  go: [930, 380, "sistem"],
-  java: [1090, 150, "jvm"], kotlin: [1270, 220, "jvm"], aplikasi: [1060, 350, "jvm"],
-  csharp: [1270, 420, "jvm"], vb: [1120, 540, "jvm"],
-  python: [430, 560, "skrip"], ruby: [250, 640, "skrip"], bash: [570, 700, "skrip"],
-  git: [790, 600, "perkakas"], fedora: [980, 680, "perkakas"], sql: [1290, 680, "perkakas"],
-  techstack: [150, 980, "tech"], frontend: [390, 1055, "tech"], backend: [630, 975, "tech"],
-  database: [870, 1050, "tech"], devops: [1110, 975, "tech"], keamanan: [1310, 1065, "tech"],
-  mobile: [150, 1235, "tech"], game: [390, 1300, "tech"], iot: [630, 1230, "tech"],
-  data: [870, 1300, "tech"], ai: [1110, 1230, "tech"], bahasalain: [1310, 1310, "tech"],
-};
-
-const KELUARGA: Record<string, [string, number, number]> = {
-  web: ["Web", 60, 60], sistem: ["Sistem", 640, 50], jvm: ["JVM & .NET", 1080, 50],
-  skrip: ["Skrip", 60, 835], perkakas: ["Perkakas & data", 1110, 835],
-  tech: ["Tech stack", 60, 1405],
-};
-
-/* Konsep yang muncul di banyak kurikulum sekaligus. Polanya mencocokkan JUDUL
-   materi, bukan isinya: judul di kurikulum ini memang menyebut konsepnya, dan
-   mencocokkan isi akan menyalakan hampir semua bintang untuk hampir semua
-   konsep. */
-const KONSEP: Array<[string, RegExp]> = [
-  ["Variabel & tipe", /variabel|tipe data|\bval\b|\bvar\b|konstanta/i],
-  ["Percabangan", /percabangan|kendali alur|\bif\b|switch|\bwhen\b|select case|\bcase\b/i],
-  ["Perulangan", /perulangan|loop|\bfor\b|while|iterasi|iterator/i],
-  ["Fungsi", /fungsi|function|method|\bsub\b|prosedur|closure|lambda/i],
-  ["Koleksi", /array|\blist\b|slice|koleksi|collection|\bmap\b|dict|hash|\bset\b|\bvec\b|tuple|stl/i],
-  ["Teks & regex", /string|teks|regex|ekspresi reguler/i],
-  ["Objek & class", /class|objek|oop|struct|record|interface|trait|pewarisan|inheritance|polymorph/i],
-  ["Galat", /exception|galat|error|panic|\bresult\b/i],
-  ["Berkas & I/O", /berkas|\bfile\b|i\/o|input|output|json|csv/i],
-  ["Pengujian", /pengujian|\btest|\buji|debug/i],
-  ["Konkurensi", /konkurensi|thread|goroutine|async|await|paralel|bersamaan|coroutine|race/i],
-  ["Algoritma", /rekursi|algoritma|big-o|sorting|pengurutan|pencarian|kompleksitas/i],
-  ["Modul & paket", /modul|paket|package|import|namespace|crate|dependensi|maven|gradle/i],
-  ["Database", /database|\bsql\b|query|join|tabel|jdbc|pdo|transaksi/i],
-];
-
-interface Bab {
-  materi: number[];
-}
-
-interface BahasaLangit {
+interface PilihanLensa {
   key: string;
-  label: string;
-  materi: MateriBintang[];
-  bab?: Bab[];
+  indeks: number | null;
 }
 
-interface Profesi {
-  id: string;
-  nama: string;
-  /** Tiap kelompok = "salah satu dari". */
-  bekal: string[][];
+/** Pilihan perkakas (konsep, profesi) disimpan di `history.state` entri ini,
+ *  BUKAN di localStorage: "buka materi lalu Kembali" harus memulihkannya, tetapi
+ *  kunjungan besok tidak boleh membuka peta yang sudah meredup oleh saringan
+ *  yang dipilih minggu lalu. `profesi === ""` = sengaja memilih "Tanpa
+ *  profesi"; `null` = belum memilih (tujuan karier dari server berlaku). */
+interface KeadaanPerkakas {
+  konsep: string | null;
+  profesi: string | null;
 }
 
-interface Jawaban {
-  bahasa: BahasaLangit[];
-  profesi: Profesi[];
-  tujuan?: string;
+function bacaKeadaan(): KeadaanPerkakas | null {
+  const st = history.state as { lt?: Partial<KeadaanPerkakas> } | null;
+  const k = st?.lt;
+  if (!k || typeof k !== "object") return null;
+  return {
+    konsep: typeof k.konsep === "string" ? k.konsep : null,
+    profesi: typeof k.profesi === "string" ? k.profesi : null,
+  };
+}
+
+function tulisKeadaan(k: KeadaanPerkakas) {
+  try {
+    history.replaceState({ ...(history.state as object | null), lt: k }, "", location.href);
+  } catch {
+    // Browser membatasi laju replaceState; keadaan yang tak tersimpan cuma
+    // berarti Kembali memulihkan tanpa saringan.
+  }
+}
+
+function tulisAlamat(p: PilihanLensa | null) {
+  try {
+    history.replaceState(
+      history.state,
+      "",
+      "#/langit" + (p ? "/" + p.key + (p.indeks !== null ? "/" + p.indeks : "") : ""),
+    );
+  } catch {
+    // Browser membatasi laju replaceState. Alamat yang tidak ikut berubah
+    // bukan alasan menggagalkan pilihannya.
+  }
+}
+
+/** Pemuatan dokumen pertama tidak boleh merebut fokus (pelajar yang baru
+ *  menempel alamat belum memilih apa pun). Kunjungan berikutnya di dokumen
+ *  yang sama (Kembali dari materi, menu) memindahkan fokus ke bintangnya. */
+let pemuatanPertama = true;
+
+/** Lebar elemen akar layar; 0 sampai diukur (sebelum gambar pertama). Memakai
+ *  ref-panggilan, bukan `useRef`: akarnya baru ada SESUDAH data tiba (sebelum
+ *  itu layar menggambar pusaran), dan efek berbasis `useRef` sudah berjalan
+ *  dengan elemen yang belum ada -- pengamatnya tidak pernah terpasang. */
+function useLebarAkar(): [(el: HTMLDivElement | null) => void, number] {
+  const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const [lebar, setLebar] = useState(0);
+  useLayoutEffect(() => {
+    if (!el) return;
+    setLebar(el.clientWidth);
+    const amat = new ResizeObserver((e) => {
+      const w = e[0]?.contentRect.width ?? 0;
+      if (w === 0) return;
+      setLebar((lama) => (Math.abs(lama - w) < 0.5 ? lama : w));
+    });
+    amat.observe(el);
+    return () => amat.disconnect();
+  }, [el]);
+  return [setEl, lebar];
 }
 
 export function Langit() {
   const [data, setData] = useState<Jawaban | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
-  const [profesiId, setProfesiId] = useState("");
-  const [konsep, setKonsep] = useState<string | null>(null);
-  const wadahRef = useWadahPeta();
-  const tip = useTip(wadahRef);
+  const [saran, setSaran] = useState<Saran | null>(null);
+  /* Pilihan perkakas dipulihkan dari `history.state` (lihat `KeadaanPerkakas`),
+     karena "buka materi lalu Kembali" adalah pola pemakaian yang paling umum
+     di layar ini dan dulu menghapus keduanya. `profesiPilihan` null = pelajar
+     belum memilih di layar ini: profesi tujuan karier dari server berlaku, dan
+     ia diturunkan (`profesiId`), tidak disalin ke state. Yang disalin akan
+     ikut tertulis ke `history.state` seolah pilihan pelajar dan basi begitu
+     tujuannya diganti di Peta Karier. */
+  const [profesiPilihan, setProfesiPilihan] = useState<string | null>(() => bacaKeadaan()?.profesi ?? null);
+  const [konsep, setKonsep] = useState<string | null>(() => bacaKeadaan()?.konsep ?? null);
+  // `true` bila Langit ini adalah mount PERTAMA di dokumen ini: lensa yang
+  // dibuka oleh alamat yang sedang dimuat (bukan oleh tindakan pelajar) tidak
+  // memindahkan fokus. Tindakan pelajar (`buka`) dan navigasi riwayat
+  // sesudahnya (Kembali, menu) memindahkannya.
+  const dokumenBaru = useRef(pemuatanPertama);
+  const fokusLensa = useRef(false);
+  useEffect(() => {
+    pemuatanPertama = false;
+  }, []);
+  const [lensa, setLensa] = useState<PilihanLensa | null>(null);
+  const lensaRef = useRef<PilihanLensa | null>(null);
+  lensaRef.current = lensa;
+  const [setAkar, lebarAkar] = useLebarAkar();
+  const [skalaTeks] = useState(skalaTeksAplikasi);
+  const peta = lebarAkar >= AMBANG_PETA * skalaTeks;
+  const berkas = useRef({ b: new Tembolok<DataB>(), m: new Tembolok<DataM>() }).current;
+  const terakhir = useRef<string | null>(null);
 
   useEffect(() => {
     let dibatalkan = false;
-    ambil<Jawaban>("langit")
+    ambil<unknown>("langit")
       .then((d) => {
         if (dibatalkan) return;
+        if (!bentukJawabanSah(d)) {
+          setGalat("Jawaban server untuk peta langit tidak berbentuk yang dikenal.");
+          return;
+        }
         setData(d);
-        // Tujuan karier yang sudah dipilih pelajar langsung ditandai, sama
-        // seperti versi JS-nya.
-        if (d.tujuan) setProfesiId(d.tujuan);
       })
       .catch((e: Error) => {
         if (!dibatalkan) setGalat(e.message);
       });
+    // Satu penanda "mulai di sini": langkah materi pertama dari saran yang
+    // SAMA dengan kartu utama Dasbor. Gagal memuatnya tidak mengganggu apa
+    // pun; petanya cuma tanpa penanda itu.
+    ambil<{ xp: number; langkah: Langkah[] }>("dasbor")
+      .then((d) => {
+        if (dibatalkan) return;
+        const l = d.langkah.find((x) => x.tipe === "materi");
+        if (l) setSaran({ bahasa: l.bahasa, indeks: l.indeks, alasan: l.alasan });
+      })
+      .catch(() => {});
     return () => {
       dibatalkan = true;
     };
   }, []);
 
-  /* Letak seluruh bintang dihitung SEKALI per muatan data. Tanpa `useMemo`, ia
-     dihitung ulang setiap kali tip bergerak atau konsep diklik -- 1.062 bintang
-     kali tiap gerakan mouse. */
-  const tataLetak = useMemo(() => {
-    if (!data) return null;
-    let cadangan = 0;
-    const pusat: Record<string, Titik> = {};
-    const rasi = data.bahasa.map((b, urut) => {
-      const letak = TATA[b.key] ?? [140 + cadangan++ * 180, 820];
-      const cx = letak[0] as number;
-      const cy = letak[1] as number;
-      pusat[b.key] = [cx, cy];
-      const titik = bentukRasi(b.materi.length, "langit·" + b.key, 150, 112).map(
-        ([x, y]) => [cx + x, cy + y] as Titik,
-      );
-      const r = jariSemua(b.materi, 0.62);
-      const awalBab = new Set((b.bab ?? []).map((x) => x.materi[0]));
-      const selesai = b.materi.filter((m) => m.status === "selesai").length;
-      return { b, urut, cx, cy, titik, r, awalBab, selesai };
-    });
-    return { pusat, rasi };
+  // Lensa mengikuti alamat: saat data tiba, dan setiap `hashchange` (Kembali
+  // dari layar materi, tautan "Langit" di menu).
+  useEffect(() => {
+    if (!data) return;
+    const sinkron = (awal: boolean) => {
+      fokusLensa.current = !(awal && dokumenBaru.current);
+      const p = bacaAlamat(globalThis.location.hash);
+      const b = p ? data.bahasa.find((x) => x.key === p.key) : undefined;
+      if (!p || !b) {
+        setLensa(null);
+        // Kunci yang tidak dikenal (tautan lama, salah ketik) dibersihkan dari
+        // alamat; tanpa ini "Kembali" mendarat lagi di alamat yang kosong.
+        if (p) tulisAlamat(null);
+        return;
+      }
+      setLensa({ key: p.key, indeks: p.indeks !== null && p.indeks < b.materi.length ? p.indeks : null });
+    };
+    sinkron(true);
+    const ubah = () => sinkron(false);
+    globalThis.addEventListener("hashchange", ubah);
+    return () => globalThis.removeEventListener("hashchange", ubah);
   }, [data]);
 
-  if (galat) {
-    return <Keadaan jenis="salah" judul="Gagal memuat Langit" ket={galat} />;
-  }
-  if (!data || !tataLetak) {
+  const buka = useCallback((key: string, indeks: number | null) => {
+    const p = { key, indeks };
+    terakhir.current = key;
+    fokusLensa.current = true;
+    setLensa(p);
+    tulisAlamat(p);
+  }, []);
+
+  const pilihBintang = useCallback((i: number | null) => {
+    const l = lensaRef.current;
+    if (!l) return;
+    const p = { key: l.key, indeks: i };
+    setLensa(p);
+    tulisAlamat(p);
+  }, []);
+
+  const tutup = useCallback(() => {
+    setLensa(null);
+    tulisAlamat(null);
+  }, []);
+
+  // Sesudah lensa tertutup: kembalikan pembaca ke rasi yang baru ditinggalkan
+  // (gulir + fokus). Hanya menyentuh `scrollTop` jendela; `scrollIntoView`
+  // menggulir SEMUA leluhur yang bisa digulir.
+  useLayoutEffect(() => {
+    if (lensa || !terakhir.current) return;
+    const key = terakhir.current;
+    terakhir.current = null;
+    const el = document.querySelector<HTMLElement>(
+      `.lt-nama[data-key="${key}"], .lt-daftar-baris[data-key="${key}"]`,
+    );
+    if (!el) return;
+    const k = el.getBoundingClientRect();
+    globalThis.scrollTo({ top: globalThis.scrollY + k.top - globalThis.innerHeight * 0.4 });
+    el.focus({ preventScroll: true });
+  }, [lensa]);
+
+  // Lensa menggantikan kepala, perkakas, dan peta (semuanya `hidden`, bukan
+  // dilepas: peta yang dilepas harus dihitung ulang tiap kali lensa ditutup),
+  // jadi ia mulai di puncak halaman dan tidak ada yang mengintip di atasnya.
+  const kunciLensa = lensa?.key ?? null;
+  useLayoutEffect(() => {
+    if (!kunciLensa) return;
+    terakhir.current = kunciLensa;
+    globalThis.scrollTo({ top: 0 });
+  }, [kunciLensa]);
+
+  useEffect(() => {
+    tulisKeadaan({ konsep, profesi: profesiPilihan });
+  }, [konsep, profesiPilihan]);
+
+  const polaKonsep = konsep ? (KONSEP.find(([n]) => n === konsep)?.[1] ?? null) : null;
+  const cocok = useCallback(
+    (m: MateriBintang) => polaKonsep !== null && polaKonsep.test(tanpaNomor(m.judul)),
+    [polaKonsep],
+  );
+
+  // Cacah materi yang cocok per kurikulum: masuk nama aksesibel rasi, supaya
+  // hasil saringan konsep tidak hanya ada di cincin yang digambar.
+  const cocokPer = useMemo(() => {
+    const o: Record<string, number> = {};
+    if (polaKonsep && data) for (const b of data.bahasa) o[b.key] = b.materi.filter((m) => cocok(m)).length;
+    return o;
+  }, [data, polaKonsep, cocok]);
+
+  // Pilihan pelajar menang; tanpa itu tujuan karier dari server. Memilih nilai
+  // yang sama dengan tujuan disimpan sebagai null, supaya tujuan yang diganti
+  // sesudahnya tetap diikuti.
+  const profesiId = profesiPilihan ?? data?.tujuan ?? null;
+  const pilihProfesi = useCallback(
+    (id: string) => setProfesiPilihan(id === (data?.tujuan ?? "") ? null : id),
+    [data],
+  );
+  const profesi = useMemo(
+    () => data?.profesi.find((p) => p.id === (profesiId ?? "")) ?? null,
+    [data, profesiId],
+  );
+  const pusat = useMemo(() => new Set(data?.bahasa.map((b) => b.key) ?? []), [data]);
+  // Kelompok bekal yang kurikulumnya benar-benar ada di peta. Yang tidak ada
+  // dibuang di sini, bukan saat menggambar: kelompok kosong menghasilkan garis
+  // dari dan ke tempat yang tidak ada.
+  const kelompok = useMemo(
+    () =>
+      profesi
+        ? profesi.bekal.map((g) => g.filter((k) => pusat.has(k))).filter((g) => g.length)
+        : [],
+    [profesi, pusat],
+  );
+  const bekal = useMemo(() => new Set(kelompok.flat()), [kelompok]);
+
+  // Urutan baca antar-rasi: keluarga lebih dulu, lalu urutan peta.
+  const urutan = useMemo(() => {
+    const k = Object.keys(TATA);
+    const di = (key: string) => {
+      const x = k.indexOf(key);
+      return x < 0 ? k.length : x;
+    };
+    return (data?.bahasa ?? []).map((b) => b.key).sort((a, b) => di(a) - di(b));
+  }, [data]);
+
+  if (galat) return <Keadaan jenis="salah" judul="Gagal memuat Langit" ket={galat} />;
+  if (!data) {
     return (
       <div className="deret">
         <div className="pusaran" />
@@ -175,45 +332,25 @@ export function Langit() {
     (a, b) => a + b.materi.filter((m) => m.status === "selesai").length,
     0,
   );
-
-  const profesi = data.profesi.find((p) => p.id === profesiId) ?? null;
-  // Kelompok bekal yang kurikulumnya benar-benar ada di peta. Yang tidak ada
-  // dibuang di sini, bukan saat menggambar: kelompok kosong akan menghasilkan
-  // garis dari dan ke tempat yang tidak ada.
-  const kelompok = profesi
-    ? profesi.bekal
-        .map((g) => g.filter((k) => tataLetak.pusat[k]))
-        .filter((g) => g.length)
-    : [];
-  const terpilih = new Set(kelompok.flat());
-
-  const polaKonsep = konsep
-    ? (KONSEP.find(([n]) => n === konsep)?.[1] ?? null)
-    : null;
-  const cocokKonsep = (m: MateriBintang) =>
-    polaKonsep !== null && polaKonsep.test(tanpaNomor(m.judul));
+  const labelKurikulum = (k: string) => data.bahasa.find((b) => b.key === k)?.label ?? k;
 
   let jumlahKonsep = 0;
   const kurikulumKonsep = new Set<string>();
   if (polaKonsep) {
     for (const b of data.bahasa) {
       for (const m of b.materi) {
-        if (cocokKonsep(m)) {
+        if (cocok(m)) {
           jumlahKonsep += 1;
           kurikulumKonsep.add(b.label);
         }
       }
     }
   }
-
-  const labelKurikulum = (k: string) =>
-    data.bahasa.find((b) => b.key === k)?.label ?? k;
-
   let keterangan = "";
   if (konsep) {
     keterangan =
-      `${konsep}: ${jumlahKonsep} materi di ${kurikulumKonsep.size} ` +
-      `kurikulum. Konsepnya sama, cara menulisnya yang berbeda.`;
+      `${konsep}: ${jumlahKonsep} materi di ${kurikulumKonsep.size} kurikulum. ` +
+      "Konsepnya sama, cara menulisnya yang berbeda.";
   } else if (profesi) {
     const bagian = kelompok.map((g) =>
       g.length > 1
@@ -223,258 +360,138 @@ export function Langit() {
     keterangan = `${profesi.nama} berbekal ${bagian.join("; lalu ")}.`;
   }
 
-  const kelasSvg =
-    "rasi-svg langit-svg" +
-    (profesi ? " ada-profesi" : "") +
-    (konsep ? " ada-konsep" : "");
+  const idxLensa = lensa ? urutan.indexOf(lensa.key) : -1;
+  const tetangga = (i: number) => {
+    const key = urutan[i];
+    return key ? { key, label: labelKurikulum(key) } : null;
+  };
+  const keluargaLensa = lensa
+    ? (KELUARGA[TATA[lensa.key]?.[2] ?? "tech"]?.[0] ?? "Tech stack")
+    : "";
 
   return (
-    <div className="bimasakti">
-      <header className="kepala-besar bimasakti-kepala">
-        <span className="mata">Peta bintang</span>
-        <h1>Langit</h1>
-        <p className="kepala-sub">
-          {`${data.bahasa.length} kurikulum, ${totalMateri} materi. Tiap materi satu bintang; `}
-          {menyala
-            ? `${menyala} sudah menyala karena sudah kamu baca.`
-            : "belum ada yang menyala. Baca satu materi untuk menyalakan yang pertama."}
-        </p>
-      </header>
-
-      <div className="langit-alat">
-        <label className="langit-label">
-          Hubungkan lewat profesi
-          <select
-            className="langit-pilih"
-            aria-label="Hubungkan rasi lewat profesi"
-            value={profesiId}
-            onChange={(e) => setProfesiId(e.target.value)}
-          >
-            <option value="">Tanpa profesi</option>
-            {data.profesi.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nama}
-              </option>
-            ))}
-          </select>
-        </label>
-        <a className="tbl tbl-kecil tbl-hantu" href="#/karier">
-          Buka Peta Karier
-        </a>
-      </div>
-
-      <div
-        className="langit-konsep-deret"
-        role="group"
-        aria-label="Nyalakan konsep yang sama di semua kurikulum"
-      >
-        <span className="langit-label">Konsep yang sama</span>
-        {KONSEP.map(([nama]) => (
+    <div ref={setAkar} className="bimasakti lt-halaman">
+      <div className="lt-krom" hidden={lensa !== null}>
+        {peta ? (
           <button
-            key={nama}
             type="button"
-            className="tbl tbl-kecil tbl-hantu langit-konsep"
-            aria-pressed={konsep === nama}
-            onClick={() => setKonsep((k) => (k === nama ? null : nama))}
+            className="tbl tbl-kecil lt-lewati"
+            onClick={() => document.querySelector<HTMLElement>(".lt-ik-teks a")?.focus()}
           >
-            {nama}
+            Lewati ke peta bintang
           </button>
-        ))}
-      </div>
+        ) : null}
+        <header className="kepala-besar bimasakti-kepala">
+          <span className="mata">Peta bintang</span>
+          <h1>Langit</h1>
+          <p className="kepala-sub">
+            {`${data.bahasa.length} kurikulum, ${totalMateri} materi. Tiap materi satu bintang; `}
+            {menyala
+              ? `${menyala} sudah menyala karena sudah kamu baca.`
+              : "belum ada yang menyala. Baca satu materi untuk menyalakan yang pertama."}
+          </p>
+        </header>
 
-      <p className="langit-keterangan" aria-live="polite">
-        {keterangan}
-      </p>
+        <div className="langit-alat">
+          <label className="langit-label">
+            Hubungkan lewat profesi
+            <select
+              className="langit-pilih"
+              aria-label="Hubungkan rasi lewat profesi"
+              value={profesiId ?? ""}
+              onChange={(e) => pilihProfesi(e.target.value)}
+            >
+              <option value="">Tanpa profesi</option>
+              {data.profesi.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nama}
+                </option>
+              ))}
+            </select>
+          </label>
+          <a className="tbl tbl-kecil tbl-hantu" href="#/karier">
+            Buka Peta Karier
+          </a>
+          <Legenda />
+        </div>
 
-      <div
-        ref={wadahRef}
-        className={
-          "rasi langit-peta" + (tingkatGerak() === "penuh" ? " rasi-hidup" : "")
-        }
-      >
-        <p className="rasi-ringkasan">
-          {`Peta langit seluruh kurikulum: ${menyala} dari ${totalMateri} bintang menyala.`}
-        </p>
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className={kelasSvg}
-          preserveAspectRatio="xMidYMid meet"
-          onPointerLeave={tip.sembunyi}
+        <div
+          className="langit-konsep-deret"
+          role="group"
+          aria-label="Nyalakan konsep yang sama di semua kurikulum"
         >
-          {/* Lapis jalur profesi digambar PALING DULU supaya ia di bawah
-              bintangnya. Garisnya melengkung ke atas (kontrol Q di -40) supaya
-              dua rasi yang bertetangga tidak dihubungkan garis lurus yang
-              menembus rasi di antaranya. */}
-          <g>
-            {kelompok.slice(1).map((gb, i) => {
-              const ga = kelompok[i] as string[];
-              return gb.flatMap((kb) =>
-                ga.map((ka) => {
-                  const a = tataLetak.pusat[ka] as Titik;
-                  const b = tataLetak.pusat[kb] as Titik;
-                  const mx = (a[0] + b[0]) / 2;
-                  const my = (a[1] + b[1]) / 2 - 40;
-                  return (
-                    <path
-                      key={`${ka}-${kb}`}
-                      className="langit-profesi-garis"
-                      fill="none"
-                      d={`M${a[0]},${a[1]} Q${mx},${my} ${b[0]},${b[1]}`}
-                    />
-                  );
-                }),
-              );
-            })}
-          </g>
+          <span className="langit-label">Konsep yang sama</span>
+          {KONSEP.map(([nama]) => (
+            <button
+              key={nama}
+              type="button"
+              className="tbl tbl-kecil tbl-hantu langit-konsep"
+              aria-pressed={konsep === nama}
+              onClick={() => setKonsep((k) => (k === nama ? null : nama))}
+            >
+              {nama}
+            </button>
+          ))}
+        </div>
 
-          <g>
-            {tataLetak.rasi.map(({ b, urut, titik, r, awalBab }) => (
-              <g
-                key={b.key}
-                className={
-                  "rasi-kelompok langit-rasi" +
-                  (terpilih.has(b.key) ? " langit-terpilih" : "")
-                }
-                data-key={b.key}
-              >
-                {b.materi.map((m, i) =>
-                  // Garis putus di batas bab: tiap bab jadi rasi kecil di
-                  // dalam rasi besar.
-                  i > 0 && !awalBab.has(i) ? (
-                    <GarisRasi
-                      key={`g${i}`}
-                      a={titik[i - 1] as Titik}
-                      b={titik[i] as Titik}
-                      ra={r[i - 1] as number}
-                      rb={r[i] as number}
-                      terang={
-                        (b.materi[i - 1] as MateriBintang).status === "selesai" &&
-                        m.status === "selesai"
-                      }
-                    />
-                  ) : null,
-                )}
-                {b.materi.map((m, i) => (
-                  <Bintang
-                    key={`b${i}`}
-                    materi={m}
-                    x={(titik[i] as Titik)[0]}
-                    y={(titik[i] as Titik)[1]}
-                    r={r[i] as number}
-                    href={`#/materi/${b.key}/${i}`}
-                    dataKey={b.key}
-                    indeks={i}
-                    urut={urut * 3 + (i % 9)}
-                    kelasEkstra={
-                      (cocokKonsep(m) ? "rasi-konsep " : "") +
-                      (terpilih.has(b.key) ? "langit-terpilih" : "")
-                    }
-                    onTunjuk={(el, materi) =>
-                      tip.tunjuk(
-                        el,
-                        materi.judul,
-                        `${b.label} · ${
-                          materi.terkunci
-                            ? "masih terkunci"
-                            : (KATA_STATUS[materi.status] ?? "")
-                        }`,
-                      )
-                    }
-                  />
-                ))}
-              </g>
-            ))}
-          </g>
-
-          <g>
-            {Object.values(KELUARGA).map(([nama, x, y]) => (
-              <text key={nama} className="langit-keluarga" x={x} y={y}>
-                {nama}
-              </text>
-            ))}
-            {tataLetak.rasi.map(({ b, titik, r, selesai }) => {
-              const berikut = berikutDari(b.materi);
-              return selesai && berikut !== null ? (
-                <Reticle
-                  key={`r${b.key}`}
-                  x={(titik[berikut] as Titik)[0]}
-                  y={(titik[berikut] as Titik)[1]}
-                  r={r[berikut] as number}
-                />
-              ) : null;
-            })}
-            {tataLetak.rasi.map(({ b, cx, cy, selesai }) => (
-              <a
-                key={`n${b.key}`}
-                className={
-                  "langit-nama" + (terpilih.has(b.key) ? " langit-terpilih" : "")
-                }
-                href={`#/bahasa/${b.key}`}
-                data-key={b.key}
-                aria-label={`${b.label}: ${selesai} dari ${b.materi.length} materi sudah dibaca`}
-              >
-                <text
-                  x={cx}
-                  y={cy + 82}
-                  textAnchor="middle"
-                  className="langit-nama-teks"
-                >
-                  {b.label}
-                </text>
-                <text
-                  x={cx}
-                  y={cy + 100}
-                  textAnchor="middle"
-                  className="langit-nama-angka"
-                >
-                  {`${selesai}/${b.materi.length}`}
-                </text>
-              </a>
-            ))}
-          </g>
-        </svg>
-        {tip.elemen}
+        <p className="langit-keterangan" aria-live="polite">
+          {keterangan}
+        </p>
       </div>
 
-      <Legenda />
-    </div>
-  );
-}
+      <div hidden={lensa !== null}>
+        {lebarAkar === 0 ? null : !peta ? (
+          <Daftar
+            bahasa={data.bahasa}
+            bekal={bekal}
+            adaProfesi={!!profesi}
+            profesiNama={profesi?.nama ?? null}
+            konsepNama={konsep}
+            cocokPer={cocokPer}
+            saran={saran}
+            onBuka={buka}
+          />
+        ) : (
+          <Ikhtisar
+            data={data}
+            saran={saran}
+            cocok={cocok}
+            adaKonsep={konsep !== null}
+            konsepNama={konsep}
+            cocokPer={cocokPer}
+            bekal={bekal}
+            adaProfesi={!!profesi}
+            profesiNama={profesi?.nama ?? null}
+            kelompok={kelompok}
+            onBuka={buka}
+            lebarAkar={lebarAkar}
+          />
+        )}
+      </div>
 
-/** Keterangan warna bintang. `aria-hidden`: isinya sudah dibacakan tiap
- *  `aria-label` bintangnya sendiri, jadi membacakannya lagi di sini cuma
- *  menambah empat kalimat sebelum petanya. */
-function Legenda() {
-  const butir: Array<[string, string]> = [
-    ["selesai", "sudah dibaca"],
-    ["sebagian", "dibaca sebagian"],
-    ["baru", "belum dibaca"],
-    ["terkunci", "terkunci"],
-  ];
-  return (
-    <div className="langit-legenda" aria-hidden="true">
-      {butir.map(([st, kata]) => {
-        const m: MateriBintang = {
-          judul: "",
-          status: st === "terkunci" ? "baru" : st,
-          terkunci: st === "terkunci",
-        };
-        const jari = jariSemua([m], 0.9)[0] as number;
-        return (
-          <span key={st} className="langit-legenda-butir">
-            <svg viewBox="-10 -10 20 20" width={20} height={20}>
-              <circle r={jari.toFixed(2)} className={"rasi-titik rasi-" + st} />
-            </svg>
-            {kata}
-          </span>
-        );
-      })}
-      <span className="langit-legenda-butir">
-        <svg viewBox="-16 -16 32 32" width={24} height={24}>
-          <Reticle x={0} y={0} r={2} />
-        </svg>
-        berikutnya
-      </span>
+      {lensa ? <h1 className="lt-sr">Langit</h1> : null}
+      {lensa ? (
+        <Lensa
+          key={lensa.key}
+          fokusAwal={fokusLensa.current}
+          data={data}
+          kunci={lensa.key}
+          indeks={lensa.indeks}
+          berkas={berkas}
+          keluarga={keluargaLensa}
+          cocok={cocok}
+          adaKonsep={konsep !== null}
+          konsepNama={konsep}
+          profesiNama={profesi?.nama ?? null}
+          sebelum={tetangga(idxLensa - 1)}
+          sesudah={tetangga(idxLensa + 1)}
+          onPilih={pilihBintang}
+          onTutup={tutup}
+          onKeRasi={(key) => buka(key, null)}
+          onLepasKonsep={() => setKonsep(null)}
+          onLepasProfesi={() => pilihProfesi("")}
+        />
+      ) : null}
     </div>
   );
 }

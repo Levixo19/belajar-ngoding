@@ -11,7 +11,9 @@ apa pun soal pembandingnya. Jadi tiap sel menagih KATEGORI keluhan yang
 diharapkan muncul di keluaran, dan mutan yang cuma bikin Node gagal memuat
 berkasnya dihitung sebagai sel yang GAGAL.
 
-    python3 packages/bersama/uji/gigi-golden.py
+    python3 packages/bersama/uji/gigi-golden.py                      # semua baterai (lama)
+    python3 packages/bersama/uji/gigi-golden.py banding-lensa        # hanya label yang memuat kata itu
+    python3 packages/bersama/uji/gigi-golden.py "(keluarga)" "(alamat"
 """
 
 import os
@@ -1171,6 +1173,538 @@ BATERAI = {
                 "pilihLanjut",
             ),
         ]),
+    "banding-lensa.mjs (geometri)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-geometri.ts"), [
+            (
+                'grid: sel dibulatkan ke atas',
+                'const c = jepit(Math.floor(t.x / sel), 0, kolom - 1);',
+                'const c = jepit(Math.ceil(t.x / sel), 0, kolom - 1);',
+                'grid',
+            ),
+            (
+                'grid: cincin pencarian dibulatkan ke bawah',
+                'const cincin = Math.ceil((maks + lewat) / g.sel);',
+                'const cincin = Math.floor((maks + lewat) / g.sel);',
+                'grid',
+            ),
+            (
+                'grid: jangkauan dilonggarkan dua kali',
+                'let d2 = maks * maks;',
+                'let d2 = maks * maks * 4;',
+                'grid',
+            ),
+            (
+                'jari: batas tetangga 46 menjadi 60 persen',
+                'Math.min(JARI_PX[status], Math.max(1.25, 0.46 * nnPx))',
+                'Math.min(JARI_PX[status], Math.max(1.25, 0.6 * nnPx))',
+                'jari',
+            ),
+            (
+                'jari: bintang baru lebih besar daripada sebagian',
+                '  baru: 3.7,',
+                '  baru: 4.4,',
+                'jari',
+            ),
+            (
+                'jari: lantai diturunkan',
+                'Math.max(1.25, 0.46 * nnPx)',
+                'Math.max(0.5, 0.46 * nnPx)',
+                'jari',
+            ),
+            (
+                'wilayah: pengembangan dibuang',
+                'export const padWilayah = (skala: number): number => 16 + 8 * skala;',
+                'export const padWilayah = (skala: number): number => 0 * skala;',
+                'wilayah',
+            ),
+            (
+                'wilayah: persilangan tidak membalik status',
+                'x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) dalam = !dalam;',
+                'x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) dalam = true;',
+                'wilayah',
+            ),
+            (
+                'wilayah: selubung tidak membuang titik ujung atas',
+                '  bawah.pop();\n  atas.pop();',
+                '  bawah.pop();',
+                'wilayah',
+            ),
+            (
+                "sasaran: jangkauan 'tepat' ditiadakan",
+                'if (h) return { bintang: h.t, jarak: h.jarak, tepat: h.jarak <= JANGKAU_BINTANG_PX };',
+                'if (h) return { bintang: h.t, jarak: h.jarak, tepat: h.jarak < 0 };',
+                'sasaran',
+            ),
+            (
+                'lensa: pelebaran 1,5 menjadi 3',
+                'const tarik = Math.max(1, opsi.tarik ?? 1.5);',
+                'const tarik = Math.max(1, opsi.tarik ?? 3);',
+                'lensa',
+            ),
+            (
+                'lensa: sumbu y dilebarkan sendiri',
+                'i, x: lebar / 2 + p[0], y: tinggi / 2 + p[1],',
+                'i, x: lebar / 2 + p[0], y: tinggi / 2 + p[1] * 1.3,',
+                'lensa',
+            ),
+            (
+                'lensa: garis melintasi batas bab',
+                'if (a.bab !== b.bab) continue;',
+                'if (false) continue;',
+                'lensa',
+            ),
+            (
+                'lensa: berikutnya selalu bintang pertama',
+                'const ib = berikutDari(materi as MateriBintang[]);',
+                'const ib = materi.length ? 0 : null;',
+                'lensa',
+            ),
+            (
+                'lensa: label boleh keluar kanvas',
+                'k.x0 >= 2 && k.y0 >= 2 && k.x1 <= lebar - 2 && k.y1 <= tinggi - 2',
+                'true',
+                'lensa',
+            ),
+            (
+                'lensa: penunjuk berakhir satu piksel dari tepi',
+                'ujungX: lebar, ujungY: b.y,',
+                'ujungX: lebar, ujungY: b.y + 1,',
+                'lensa',
+            ),
+            (
+                'lensa: lencana berikutnya tidak menghindari bintang lain',
+                'terisi.forEach((o, idx) => { if (idx !== abaikan && beririsan(k, o)) nb += 1; });',
+                'terisi.forEach((o, idx) => { if (idx === -1 && beririsan(k, o)) nb += 1; });',
+                'lensa',
+            ),
+            (
+                'tombol: PageDown melompat ke bab yang sama',
+                'const tujuan = awalBab.find((a, k) => k > b && a >= 0);',
+                'const tujuan = awalBab.find((a, k) => k >= b && a >= 0);',
+                'tombol',
+            ),
+            (
+                'tombol: End berhenti satu sebelum akhir',
+                '    case "End":\n      return jumlah - 1;',
+                '    case "End":\n      return jumlah - 2;',
+                'tombol',
+            ),
+            (
+                'tombol: Enter ikut diambil pohon',
+                '    default:\n      return null;\n  }\n}\n',
+                '    case "Enter":\n      return kini;\n    default:\n      return null;\n  }\n}\n',
+                'tombol',
+            ),
+            (
+                'glif: bintang baru digambar terisi',
+                'case "baru":\n      return { tepi: lingkaran(x, y, r) };',
+                'case "baru":\n      return { isi: lingkaran(x, y, r) };',
+                'glif',
+            ),
+            (
+                'glif: terkunci tidak lagi menang atas baru',
+                'if (m.terkunci) return "terkunci";',
+                'if (m.terkunci && m.status !== "baru") return "terkunci";',
+                'glif',
+            ),
+            (
+                'glif: percik kehilangan satu sudut',
+                '`L${f2(x - r)},${f2(y)}L${f2(x - k)},${f2(y - k)}Z`,',
+                '`L${f2(x - r)},${f2(y)}Z`,',
+                'glif',
+            ),
+        ]),
+    "banding-lensa.mjs (tip dan kontrak)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-geometri.ts"), [
+            (
+                'kontrak: jari terkunci ikhtisar kembali 1,9',
+                '  terkunci: 2.4,',
+                '  terkunci: 1.9,',
+                'kontrak',
+            ),
+            (
+                'kontrak: lencana bab 8 px per huruf, tinggi 20',
+                '    const w = (teks.length * 9 + 16) * sk;\n    const h = 22 * sk;',
+                '    const w = (teks.length * 8 + 14) * sk;\n    const h = 20 * sk;',
+                'kontrak',
+            ),
+            (
+                'kontrak: lencana berikutnya 70 x 18',
+                '    const w = 82 * sk;\n    const h = 22 * sk;',
+                '    const w = 70 * sk;\n    const h = 18 * sk;',
+                'kontrak',
+            ),
+            (
+                'kontrak: koridor kartu 8 menjadi 80 px',
+                'export const KORIDOR_TIP_PX = 8;',
+                'export const KORIDOR_TIP_PX = 80;',
+                'kontrak',
+            ),
+            (
+                'tip: celah kartu 4 menjadi 40 px',
+                'export const CELAH_TIP = 4;',
+                'export const CELAH_TIP = 40;',
+                'tip',
+            ),
+            (
+                'tip: tidak membalik ke kiri di tepi kanan',
+                'const muat = kanan + w <= lebar - 4;',
+                'const muat = true;',
+                'tip',
+            ),
+            (
+                'tip: kanvas sempit tetap membuat kartu',
+                '  if (lebar < LEBAR_KANVAS_TIP_MIN) return null;\n',
+                '',
+                'tip',
+            ),
+            (
+                'tip: kartu di bawah bintang, bukan sejajar',
+                'const atas = Math.min(Math.max(4, b.y - h / 2),',
+                'const atas = Math.min(Math.max(4, b.y + 8),',
+                'tip',
+            ),
+            (
+                'tip: koridor dibuang (sorot selalu pindah)',
+                'return px >= x0 && px <= x1 && Math.abs(py - lama.y) <= lebarKor ? lama : kini;',
+                'return kini;',
+                'tip',
+            ),
+            (
+                'tip: bintang terhimpit di koridor tidak terjangkau',
+                '  if (Math.hypot(kini.x - px, kini.y - py) <= kini.r + 3) return kini;\n',
+                '',
+                'tip',
+            ),
+        ]),
+    "banding-lensa.mjs (label)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-teks.ts"), [
+            (
+                'label: status dibuang dari nama bintang',
+                '`${o.indeks + 1}. ${tanpaNomor(o.judul)}, ${KATA_STATUS_BINTANG[o.status]}` +',
+                '`${o.indeks + 1}. ${tanpaNomor(o.judul)}` +',
+                'label',
+            ),
+            (
+                "label: 'berikutnya' di semua bintang",
+                '(o.berikutnya ? ", berikutnya" : "")',
+                '", berikutnya"',
+                'label',
+            ),
+            (
+                "label: 'cocok dengan' tanpa cincin",
+                '(o.konsepCocok ? `, cocok dengan ${o.konsepCocok}` : "")',
+                '`, cocok dengan ${o.konsepCocok}`',
+                'label',
+            ),
+            (
+                'label: nomor mulai dari nol',
+                '`${o.indeks + 1}. ${tanpaNomor(o.judul)}, ',
+                '`${o.indeks}. ${tanpaNomor(o.judul)}, ',
+                'label',
+            ),
+        ]),
+    "banding-lensa.mjs (teks)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-teks.ts"), [
+            (
+                'pembuka: maksimum kalimat tiga menjadi empat',
+                'const MAKS_KALIMAT = 3;',
+                'const MAKS_KALIMAT = 4;',
+                'pembuka',
+            ),
+            (
+                'pembuka: lanjutan tanpa batas panjang minimum',
+                'const MIN_LANJUTAN = 30;',
+                'const MIN_LANJUTAN = 0;',
+                'pembuka',
+            ),
+            (
+                'pembuka: paragraf jebakan ikut',
+                'if (x.jenis !== "teks" || x.peran === "jebakan") break;',
+                'if (x.jenis !== "teks") break;',
+                'pembuka',
+            ),
+            (
+                "pembuka: 'mis.' bukan lagi singkatan",
+                '|mis|',
+                '|',
+                'pembuka',
+            ),
+            (
+                'pembuka: kalimat pertama panjang tidak dipotong',
+                'if (hasil.length > MAKS_KARAKTER) {',
+                'if (hasil.length > MAKS_KARAKTER + 400) {',
+                'pembuka',
+            ),
+            (
+                "pembuka: pengantar ':' tidak dibuang",
+                'const utuh = kalimat.filter((k) => !k.endsWith(":"));',
+                'const utuh = kalimat;',
+                'pembuka',
+            ),
+            (
+                'pembuka: kata aksi selesai',
+                'return "Baca lagi";',
+                'return "Baca ulang";',
+                'pembuka',
+            ),
+            (
+                "pembuka: bab menghitung 'sebagian' sebagai selesai",
+                'materi[i]?.status === "selesai"',
+                'materi[i]?.status !== "baru"',
+                'pembuka',
+            ),
+        ]),
+    "banding-lensa.mjs (alamat dan label rasi)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-teks.ts"), [
+            (
+                'alamat: dekode tanpa penjaga (URIError mematikan seluruh pohon)',
+                '  try {\n    key = decodeURIComponent(key);\n  } catch {\n    return null;\n  }',
+                '  key = decodeURIComponent(key);',
+                'alamat',
+            ),
+            (
+                'alamat: persen-sandi tidak didekode',
+                '    key = decodeURIComponent(key);',
+                '    key = key;',
+                'alamat',
+            ),
+            (
+                'alamat: ekor non-angka dianggap indeks 0',
+                '(?:\\/(\\d+)(?![\\w.]))?',
+                '(?:\\/(\\d*))?',
+                'alamat',
+            ),
+            (
+                'label rasi: konsep tanpa kecocokan tetap disebut',
+                '(o.konsep && o.cocok > 0 ?',
+                '(o.konsep ?',
+                'label',
+            ),
+            (
+                'label rasi: profesi disebut untuk rasi di luar bekal',
+                '(o.profesi && o.bekal ?',
+                '(o.profesi ?',
+                'label',
+            ),
+            (
+                'label rasi: teks yang terlihat ("Python 0/44") hilang dari nama',
+                '`${o.label} ${o.selesai}/${o.jumlah}: ${o.selesai} dari',
+                '`${o.label}: ${o.selesai} dari',
+                'label',
+            ),
+            (
+                'dipilih: alasan ikut untuk bintang yang tidak terkunci',
+                '(o.status === "terkunci" && o.alasan ?',
+                '(o.alasan ?',
+                'label',
+            ),
+            (
+                'pecahKode: backtick tanpa pasangan jadi kode',
+                'const kode = i % 2 === 1 && i < bagian.length - 1;',
+                'const kode = i % 2 === 1;',
+                'label',
+            ),
+        ]),
+    "banding-lensa.mjs (gulir, modifier, skala, braket)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-geometri.ts"), [
+            (
+                'tombol: modifier tidak dikembalikan ke peramban',
+                '  if (mod && (mod.alt || mod.ctrl || mod.meta)) return null;\n',
+                '',
+                'tombol',
+            ),
+            (
+                'tombol: hanya Alt yang dikembalikan',
+                '(mod.alt || mod.ctrl || mod.meta)',
+                '(mod.alt)',
+                'tombol',
+            ),
+            (
+                'gulir: benda di bawah lipatan tidak digulir',
+                '  if (bawah > hi) return bawah - hi;',
+                '  if (bawah > hi) return 0;',
+                'gulir',
+            ),
+            (
+                'gulir: arah gulir ke atas terbalik',
+                '  if (atas < lo) return atas - lo;',
+                '  if (atas < lo) return lo - atas;',
+                'gulir',
+            ),
+            (
+                'kontrak: celah gulir dibuang',
+                'export const CELAH_GULIR = 8;',
+                'export const CELAH_GULIR = 0;',
+                'kontrak',
+            ),
+            (
+                'kontrak: panel digulir sampai tepi atas layar',
+                'export const LETAK_PANEL = 0.4;',
+                'export const LETAK_PANEL = 0.95;',
+                'kontrak',
+            ),
+            (
+                'gulir: judul panel yang sudah tampak tetap digulir',
+                '  const tampak = panelAtas >= batasAtas + celah && judulBawah <= tinggiLayar - celah;\n  if (tampak) return 0;\n',
+                '',
+                'gulir',
+            ),
+            (
+                'skala: ukuran huruf aplikasi diabaikan',
+                'const sk = Math.min(2, Math.max(1, opsi.skalaTeks ?? 1));',
+                'const sk = 1;',
+                'skala',
+            ),
+            (
+                'skala: faktor boleh mengecil di bawah 1',
+                'const sk = Math.min(2, Math.max(1, opsi.skalaTeks ?? 1));',
+                'const sk = Math.min(2, opsi.skalaTeks ?? 1);',
+                'skala',
+            ),
+            (
+                'braket: kotak terlarang braket dibuang',
+                '    terisi.push({ x0: sb.x - sb.r - 11, y0: sb.y - sb.r - 11, x1: sb.x + sb.r + 11, y1: sb.y + sb.r + 11 });\n',
+                '',
+                'lensa',
+            ),
+            (
+                'lencana: hanya tiga jarak penempatan',
+                'const JARAK_LENCANA = [0, 7, 15, 26, 40];',
+                'const JARAK_LENCANA = [0, 7, 15];',
+                'lensa',
+            ),
+        ]),
+    "banding-lensa.mjs (keluarga)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("layar/langit-data.ts"), [
+            (
+                'keluarga: judul Tech stack digeser ke atas rasi techstack',
+                'tech: ["Tech stack", 60, 921],',
+                'tech: ["Tech stack", 60, 1000],',
+                'keluarga',
+            ),
+            (
+                'keluarga: judul Web digeser ke atas rasi html',
+                'web: ["Web", 60, 72],',
+                'web: ["Web", 60, 215],',
+                'keluarga',
+            ),
+        ]),
+    "banding-lensa.mjs (garis ikhtisar, kartu, gulir ke bintang)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-geometri.ts"), [
+            (
+                'garis: celah 4 px aturan lama kembali',
+                '  if (d <= ra + rb) return null;',
+                '  if (d < ra + rb + 4) return null;',
+                'garis',
+            ),
+            (
+                'garis: ruas pendek ikut ditolak',
+                '  if (d <= ra + rb) return null;',
+                '  if (d <= (ra + rb) * 1.5) return null;',
+                'garis',
+            ),
+            (
+                'garis: ujung berhenti 3 px sebelum glif',
+                '    x1: a[0] + ux * ra,',
+                '    x1: a[0] + ux * (ra + 3),',
+                'garis',
+            ),
+            (
+                'garis: ujung kedua di pusat bintang',
+                '    x2: b[0] - ux * rb,',
+                '    x2: b[0],',
+                'garis',
+            ),
+            (
+                'kartu: bintang di bawah kartu tidak diteruskan',
+                '    if (d <= s.r + 3 && d < jarak) {',
+                '    if (d <= s.r - 100 && d < jarak) {',
+                'kartu',
+            ),
+            (
+                'kartu: yang terdekat tidak menang (yang terakhir)',
+                '    if (d <= s.r + 3 && d < jarak) {',
+                '    if (d <= s.r + 3) {',
+                'kartu',
+            ),
+            (
+                'kartu: bintang yang sedang disorot ikut dipilih',
+                '    if (s.i === lamaI) continue;\n',
+                '',
+                'kartu',
+            ),
+            (
+                'kartu: jangkauan glif tanpa 3 px napas',
+                '    if (d <= s.r + 3 && d < jarak) {',
+                '    if (d <= s.r - 3 && d < jarak) {',
+                'kartu',
+            ),
+            (
+                'gulir: bintang terpilih tidak membatasi gulir panel',
+                '  return bintangAtas === undefined ? ke : Math.min(ke, bintangAtas - (batasAtas + celah));',
+                '  return ke;',
+                'gulir',
+            ),
+            (
+                'gulir: batas bintang tanpa celah dan pil atas',
+                'Math.min(ke, bintangAtas - (batasAtas + celah))',
+                'Math.min(ke, bintangAtas)',
+                'gulir',
+            ),
+        ]),
+    "banding-lensa.mjs (alamat bulat, pembuka kosong, kata kapsul)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("komponen/lensa-teks.ts"), [
+            (
+                'alamat: 1.5 dan 1e3 kembali membuka bintang 2',
+                '(\\d+)(?![\\w.])',
+                '(\\d+)',
+                'alamat',
+            ),
+            (
+                'pembuka: teks kosong tidak ditolak (melempar di render)',
+                '  if (kalimat.length === 0) return null;\n',
+                '',
+                'pembuka',
+            ),
+            (
+                'kapsul: bintang baru ikut "Lanjutkan di sini"',
+                'return status === "sebagian" ? "Lanjutkan di sini" : "Mulai di sini";',
+                'return status !== "terkunci" ? "Lanjutkan di sini" : "Mulai di sini";',
+                'label',
+            ),
+        ]),
+    "banding-lensa.mjs (bentuk jawaban)": (
+        "banding-lensa.mjs", PAKET_WEB,
+        sumber_web("layar/langit-data.ts"), [
+            (
+                'bentuk: profesi tidak diperiksa (200 tanpa profesi lolos)',
+                ' || !adaDaftar(d.bahasa) || !adaDaftar(d.profesi)) return false;',
+                ' || !adaDaftar(d.bahasa)) return false;',
+                'bentuk',
+            ),
+            (
+                'bentuk: isi tiap materi tidak diperiksa',
+                'x.materi.every((m) => adaObjek(m) && adaTeks(m.judul) && adaTeks(m.status))',
+                'x.materi.every(() => true)',
+                'bentuk',
+            ),
+            (
+                'bentuk: tujuan tidak diperiksa',
+                '(d.tujuan === undefined || adaTeks(d.tujuan))',
+                'true',
+                'bentuk',
+            ),
+        ]),
 }
 
 
@@ -1209,9 +1743,14 @@ def sel(pembanding, akar, jalur, nama, dari, ke, kategori, asli):
     return ok
 
 
-def main():
+def main(argv=None):
+    saring = [a for a in (argv or []) if not a.startswith("-")]
+    baterai = {k: v for k, v in BATERAI.items() if not saring or any(a in k for a in saring)}
+    if not baterai:
+        print("tidak ada label baterai yang memuat:", saring)
+        return 2
     semua = []
-    for label, (pembanding, akar, jalur, mutan) in BATERAI.items():
+    for label, (pembanding, akar, jalur, mutan) in baterai.items():
         print(f"{label}  (mutasi di {os.path.basename(jalur)})")
         with open(jalur, encoding="utf-8") as f:
             asli = f.read()
@@ -1251,4 +1790,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
