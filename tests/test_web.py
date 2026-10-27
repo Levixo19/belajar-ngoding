@@ -10816,7 +10816,7 @@ class TestGayaPemanduIndentasi(unittest.TestCase):
         materi — permukaan yang sama sekali tidak meminta pemandu ini.
 
         Sisi Python dituntut lebih sempit daripada sisi JS, dan itu terukur,
-        bukan selera: `inti/sorot.py:843` memakai kata `indentasi` sebagai
+        bukan selera: `inti/sorot.py:1037` memakai kata `indentasi` sebagai
         PROSA di docstring `sorot_baris()` ("indentasi tampilan tanpa mengubah
         indentasi kode aslinya"), soal argumen `awalan` dan sama sekali bukan
         soal jenis token. Menuntut kata itu absen di sana berarti pagar yang
@@ -19727,7 +19727,7 @@ class TestKontrakKelasPakai(unittest.TestCase):
       baru menempel ke elemen satu lapis kemudian -- di PEMANGGILNYA, bukan
       di situs literalnya: `r.kelas` disambung ke argumen `h()` di
       `layar-lain.js:212`, `a.kelas` di `inti.js:428`, dan parameter `kelas`
-      di `inti.js:638` (`bilah`), `sorot.js:302` (`praKode`), serta
+      di `inti.js:638` (`bilah`), `sorot.js:336` (`praKode`), serta
       `ikon.js:118` yang memasangnya lewat `setAttribute`. Tanpa bentuk ini
       `.ruas-kuis` dan `.ruas-latihan` -- dua warna yang membedakan ketiga
       ruas bilah kemajuan per bahasa -- terbaca tidak pernah dipasang, dan
@@ -23758,3 +23758,84 @@ class TestFokusDialog(unittest.TestCase):
         semua = self._komponen()
         self.assertIn('from "./fokus-dialog.ts"', semua["Jendela.tsx"])
         self.assertNotIn("function bisaFokus", semua["Jendela.tsx"])
+
+
+# ------------------------------------------------ kunci di awal baris, 3 pemindai
+
+_PROBE_KUNCI = [
+    ("yaml", "services:\n  web:\n    image: nginx\n    ports:\n      - uses: a/b@v1\n"),
+    ("yaml", "runs-on: x\napp.kubernetes.io/name: y\n  depends_on: z\n"),
+    ("yaml", "- redis:7\nhttp://host/x\nurl: http://a:80/b\n"),
+    ("yaml", "nama yang panjang: nilai\na - b: c\n-name: x\n"),
+    ("yaml", "kunci:\r\n  isi: 1\r\n"),
+    ("yaml", "kunci:"),
+    ("ini", "spring.jpa.open-in-view=false\n[Unit]\nA=b=c\n"),
+    ("ini", "a == b\nc=\n"),
+    ("ini", "\tkunci\t= nilai\n"),
+    ("toml", 'agp = "9.4.0"\n[[kv]]\nid = 1\n'),
+    ("hcl", 'count == 1\nregion = "x"\n  var.env == "prod" ? 1 : 0\n'),
+    ("http", "GET /x HTTP/1.1\nHost: toko.example.com\nLocation: http://x/y\n"),
+    ("nginx", "index index.php;\nlocation / {\n  proxy_pass http://app;\n}\n"),
+    ("python", "x: int = 1\nfoo: bar\n"),
+    ("javascript", "const o = {\n  a: 1,\n};\n"),
+]
+
+_SKRIP_BANDING_TS = r"""
+const fs = await import("node:fs");
+const { token } = await import(process.argv[2]);
+const kasus = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
+const beda = [];
+for (const k of kasus.kasus) {
+  if (JSON.stringify(token(k.kode, k.bahasa)) !== JSON.stringify(k.harapan)) {
+    beda.push(k.label);
+  }
+}
+console.log(JSON.stringify({ total: kasus.kasus.length,
+                             jumlahBeda: beda.length, beda: beda.slice(0, 5) }));
+"""
+
+
+class TestKunciAwalBarisDiTigaPemindai(unittest.TestCase):
+    """`pemisah_kunci` ada di TIGA pemindai (Python, JS, TS), dan golden cuma
+    mengadu korpus kurikulum. Kasus tepinya (`http://` di nilai, `==`, `- redis:7`,
+    akhir berkas tanpa baris baru) tidak ada di sana, jadi diadu di sini lewat
+    probe yang jawabannya dihitung Python."""
+
+    def _kasus(self):
+        kasus = [{"bahasa": b, "kode": kode, "label": f"probe/{b}/{i}",
+                  "harapan": isi.token_kode(kode, b)}
+                 for i, (b, kode) in enumerate(_PROBE_KUNCI)]
+        # Probe yang tidak mewarnai apa pun membuktikan nol: kunci YAML harus
+        # benar-benar muncul sebagai `kunci` di jawaban acuannya.
+        self.assertIn(["kunci", "services"], kasus[0]["harapan"])
+        return kasus
+
+    def _jalankan(self, skrip, sumber, data, flag=()):
+        with tempfile.TemporaryDirectory() as d:
+            js = os.path.join(d, "banding.mjs")
+            berkas = os.path.join(d, "kasus.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(skrip)
+            with open(berkas, "w", encoding="utf-8") as f:
+                json.dump(data, f)
+            hasil = subprocess.run(["node", *flag, js, sumber, berkas],
+                                   capture_output=True, text=True, timeout=120)
+        self.assertEqual(hasil.returncode, 0, hasil.stderr[-800:])
+        laporan = json.loads(hasil.stdout)
+        self.assertEqual(laporan["jumlahBeda"], 0,
+                         f"pemindai berbeda dari Python di: {laporan['beda']}")
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk mengadu penyorot")
+    def test_js_sama_dengan_python(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self._jalankan(_SKRIP_BANDING,
+                       os.path.join(akar, "webapp", "statik", "js", "sorot.js"),
+                       {"aturan": isi.aturan_penyorot(), "kasus": self._kasus()})
+
+    @unittest.skipUnless(shutil.which("node"), "butuh node untuk mengadu penyorot")
+    def test_ts_sama_dengan_python(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self._jalankan(_SKRIP_BANDING_TS,
+                       os.path.join(akar, "packages", "bersama", "src", "sorot.ts"),
+                       {"kasus": self._kasus()},
+                       flag=("--experimental-strip-types",))

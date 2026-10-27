@@ -9,7 +9,7 @@ kegagalan semacam itu yang paling mahal: ia terbaca sebagai bug.
 
 Jadi mutasinya dipasang di MEMORI, di proses ini saja.
 
-Tiga mutasi, masing-masing mewakili satu cara rekaman ini bisa jadi tumpul:
+Empat mutasi, masing-masing mewakili satu cara rekaman ini bisa jadi tumpul:
 
 1. `sorot_untuk` jadi identitas -- pemetaan alias dilepas, persis cacat yang
    alat ini sendiri pernah punya. Kalau rekamannya tidak memerah di sini, ia
@@ -19,6 +19,7 @@ Tiga mutasi, masing-masing mewakili satu cara rekaman ini bisa jadi tumpul:
 3. `bahasa_blok` mengabaikan medan `"bahasa"` per bagian. Itu mengembalikan
    perilaku sebelum kurikulum tech stack ada, dan tidak melempar error di
    mana pun.
+4. `pemisah_kunci` dicabut dari YAML: 59 blok kehilangan warna kuncinya.
 
     python3 alat/uji_gigi_golden.py
 """
@@ -99,6 +100,17 @@ def main():
 
     hasil.append(sel("kata kunci 'lambda' dicabut dari python",
                      cabut_kunci, pulih_kunci, acuan))
+
+    def cabut_pemisah():
+        a = sorot.ATURAN["yaml"]
+        cabut_pemisah.simpan = a.pemisah_kunci
+        a.pemisah_kunci = ()
+
+    def pulih_pemisah():
+        sorot.ATURAN["yaml"].pemisah_kunci = cabut_pemisah.simpan
+
+    hasil.append(sel("pemisah kunci dicabut dari yaml",
+                     cabut_pemisah, pulih_pemisah, acuan))
 
     hasil.append(sel(
         "bahasa_blok mengabaikan medan 'bahasa'",

@@ -99,7 +99,7 @@ namanya berhenti memberi tahu apa pun.
 | **`inti/`** | **Mesin. Tidak tahu ada antarmuka terminal atau web** |
 | `inti/runner.py` | Eksekusi kode berbatas waktu/memori + pencocokan output |
 | `inti/struktur.py` | Membaca HTML & CSS jadi pohon — itu "keluaran" kedua bahasa itu |
-| `inti/sorot.py` | Penyorot sintaks: 19 set aturan + 16 alias, pemindai token satu lintasan |
+| `inti/sorot.py` | Penyorot sintaks: 42 set aturan + 16 alias, pemindai token satu lintasan |
 | `inti/berkas.py` | Menentukan sebuah blok kode itu berkas, potongan, sesi, multi, atau ilustrasi |
 | `inti/galat.py` | Menerjemahkan pesan compiler ke bahasa manusia |
 | `inti/beda.py` | Menjelaskan kenapa output pelajar berbeda |
@@ -1481,8 +1481,8 @@ lulus diam-diam). Yang mengikat:
   `noEmit`). `npm install` di akar memasang SATU perkakas (`@types/node`).
   Aplikasinya sendiri tetap jalan dengan `python3 belajar-web.py` tanpa npm.
 * **Pagarnya sudah diuji bisa MERAH**, dan itu bagian dari pekerjaannya:
-  `alat/uji_gigi_golden.py` (3 mutasi di sisi Python) dan
-  `packages/bersama/uji/gigi-golden.py` (8 mutasi di sisi TS, tiap sel menagih
+  `alat/uji_gigi_golden.py` (4 mutasi di sisi Python) dan
+  `packages/bersama/uji/gigi-golden.py` (15 mutasi di sisi TS, tiap sel menagih
   KATEGORI keluhannya, bukan cuma kode keluar bukan-nol). Baterai itu yang
   menemukan dua hal yang tidak kelihatan saat dibaca: dua loop mati di port
   `SequenceMatcher`, dan satu cabang diagnosis yang tidak pernah terpicu
@@ -1493,14 +1493,47 @@ lulus diam-diam). Yang mengikat:
   kali urutan dua medan ditukar di kode -- perubahan yang tidak mengubah satu
   pun perilaku.
 
-**Temuan sampingan yang belum dikerjakan: 421 dari 3.315 blok kode tampil
-TANPA warna.** Rekaman cakupan di `golden/sorot.json` menamai semuanya. 118 di
-antaranya `"teks"` dan memang harus polos (diagram). Sisanya 303 blok di 76
-bahasa yang tidak punya aturan di `sorot.py` -- yang terbesar `yaml` (59),
-`swift` (24), `dart` (17), `http`/`lua`/`r` (13 masing-masing). Semuanya lahir
-bersama 12 kurikulum tech stack. Menambah aturan untuk salah satunya sekarang
-terbaca sebagai perbaikan yang terukur di angka `cakupan`, bukan sebagai
-"golden bergeser".
+**Blok kode tanpa warna: 192 dari 3.315, dan 118 di antaranya memang harus
+polos** (`"teks"`, diagram). Semula 421. Rekaman cakupan di `golden/sorot.json`
+menamai sisanya. Delapan bahasa (swift, dart, lua, r, elixir, haskell, zig,
+groovy) masuk di 315df51; lima belas lagi (yaml, toml, ini, http, nginx, hcl,
+redis, perl, scala, solidity, verilog, fsharp, nix, matlab, luau; 135 blok)
+menyusul sesudahnya, di ekor `inti/sorot.py`. Sisanya 74 blok di 53 bahasa,
+dan 50 dari bahasa itu hanya punya satu atau dua blok (terbesar `assembly` 6,
+`cobol` 3, `markdown` 3): satu set aturan per satu-dua blok tidak sepadan.
+Menambah aturan untuk salah satunya terbaca sebagai perbaikan yang terukur di
+angka `cakupan`, bukan sebagai "golden bergeser". Tepat 135 sidik bergeser
+pada penambahan terakhir, semuanya blok kelima belas bahasa itu, nol di
+tempat lain; itu yang diperiksa SEBELUM rekaman diganti, karena golden cuma
+tahu "berubah".
+
+**`pemisah_kunci`: kunci di awal baris, satu fitur di TIGA pemindai.** YAML
+(59 blok) lama ditinggalkan karena pemindai murni leksikal: aturan data saja
+cuma mewarnai komentar dan tanda kutip, jadi berkas CI tetap tampak mati
+sementara angka cakupan naik. Fitur ini memberi `Aturan.pemisah_kunci`
+(`":"` YAML dan header HTTP, `"="` ini, TOML, dan atribut HCL; kosong untuk
+bahasa lain, jadi mereka identik byte demi byte). Kunci = deretan huruf,
+angka, `_ . - /` di awal baris (boleh didahului indentasi dan `- `), disusul
+pemisah, dan diwarnai `kunci`. Pilihan itu terukur, bukan selera: versi
+pertama memakai `fungsi`, dan di tiga tema gelap warnanya hanya berkontras
+1,16 sampai 1,53 terhadap teks polos (hanya tema terang 2,35), jadi kunci YAML
+nyaris tak terlihat bedanya -- gestur yang tampak sebagai perbaikan di angka
+cakupan. `kunci` (biru tebal) sama dengan direktif nginx. Dua pengaman: `:` hanya berlaku bila disusul
+spasi atau akhir baris (`http://x`, `- redis:7` bukan kunci), dan `=` tidak
+berlaku bila disusul `=` (`a == b`). Ditulis langkah demi langkah sama di
+`inti/sorot.py` (`_akhir_kunci`), `webapp/statik/js/sorot.js`, dan
+`packages/bersama/src/sorot.ts`; atributnya diekspor `webapp/isi.py` (untuk
+JS) dan `alat/ekspor_bersama.py` (untuk TS). Golden mengadu korpus (93 blok,
+91 di antaranya punya kunci di awal baris),
+dan `TestKunciAwalBarisDiTigaPemindai` mengadu probe kasus tepi yang tidak ada
+di korpus (CRLF, akhir berkas, tab, `==`) antara Python, JS, dan TS; delapan
+mutan TS dan enam mutan JS memerahkannya dengan alasan yang tepat. Batasnya, disadari: kunci
+berkutip dan kunci di dalam `{a: 1}` tidak dikenali; kepala bagian `[Unit]`
+tidak diwarnai; dan aturan umum "kata disusul `(` adalah fungsi" tetap
+berlaku, jadi `API toko (Gunicorn)` di ini mewarnai `toko` (satu kasus di 70
+blok konfigurasi; nilai YAML seperti `Host(...)` dan `hashFiles(...)` justru
+benar). Daftar kata nginx tanpa `index` dan `http` (`index.php`, `http://app`),
+dan MATLAB tanpa `'` sebagai kutip (transpos `A'`), sengaja.
 
 **Tahap 1 — React + TypeScript DIMULAI.** `packages/web`: Vite 7 + React 19,
 di atas API Python yang sama. Satu layar sudah diport (`layar-tebak` ->
@@ -1619,9 +1652,9 @@ melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
 | layar Langit | `komponen/lensa-geometri.ts`, `komponen/lensa-teks.ts`, `layar/langit-data.ts` | `layar/Langit*.tsx`, `komponen/Glif.tsx` | 440.982 sifat (`banding-lensa.mjs`: tidak ada JS lama untuk diadu), `ringkasPembuka` diadu `golden-pembuka.json` (110 kasus, dibangkitkan `alat/golden_pembuka.py`) |
 
 Keenam belas pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
-`test_konten_json.TestAlgoritmaTypeScript`, dan **204 sel mutasi** di
-`packages/bersama/uji/gigi-golden.py` (192 untuk keenam belas pembanding web,
-12 untuk ketiga golden `bersama`) membuktikan semuanya bisa MERAH. Pagar CSS dan
+`test_konten_json.TestAlgoritmaTypeScript`, dan **216 sel mutasi** di
+`packages/bersama/uji/gigi-golden.py` (201 untuk keenam belas pembanding web,
+15 untuk ketiga golden `bersama`) membuktikan semuanya bisa MERAH. Pagar CSS dan
 sumber layar Langit punya baterainya sendiri, `alat/uji_gigi_blok.py` (58 sel).
 
 **`--experimental-strip-types` diberikan eksplisit** ke `node` di suite MAUPUN
@@ -1656,14 +1689,14 @@ menanggung beban dari BAWAH (8.475 baris di [52,62) tidak berubah), dan
 visual. Yang tiga pertama DIPERTAHANKAN -- yang dijaganya rumus berikutnya,
 bukan rumus sekarang -- dan sekarang itu tertulis, bukan tersirat.
 
-**Satu celah nyata ikut ketemu dan sengaja DIBAWA apa adanya:** runner `git`
-lolos `runner.tersedia()` jadi ia muncul di pemilih Ruang Coba, tapi
-`contohAwal` tidak punya entri untuknya -- editornya terbuka KOSONG, sementara
-kurikulum sejenisnya (`fedora`) punya skrip awal. Port ini menuntut identitas
-byte dengan `layar-kerja.js`, jadi menambalnya di satu sisi akan memerahkan
-pembandingnya. Ia dicatat sebagai `CELAH_DIKETAHUI` di `banding-kerja.mjs`,
-dan runner BARU yang contohnya terlewat tetap memerahkan pagarnya. Layak
-ditambal di UI baru, di kedua sisi sekaligus.
+**Satu celah nyata ikut ketemu, sempat DIBAWA apa adanya, dan sudah ditambal
+(f99e16a):** runner `git` lolos `runner.tersedia()` jadi ia muncul di pemilih
+Ruang Coba, tapi `contohAwal` tidak punya entri untuknya -- editornya terbuka
+KOSONG, sementara kurikulum sejenisnya (`fedora`) punya skrip awal. Port ini
+menuntut identitas byte dengan `layar-kerja.js`, jadi menambalnya di satu sisi
+akan memerahkan pembandingnya; ia ditambal di KEDUA sisi sekaligus.
+`CELAH_DIKETAHUI` di `banding-kerja.mjs` kosong sekarang, tapi mekanismenya
+tetap: runner BARU yang contohnya terlewat memerahkan pagarnya.
 
 **SELURUH LAYAR SUDAH DIPORT** (2026-10-26). Lima belas layar: Dasbor (dua
 keadaan), halaman bahasa, pembaca materi, kuis, ruang kerja latihan, Ruang

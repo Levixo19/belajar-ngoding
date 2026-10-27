@@ -81,6 +81,26 @@ BATERAI = {
             "sidik token bergeser",
         ),
         (
+            # 93 blok (YAML, HTTP, ini, TOML, HCL) kehilangan warna kuncinya.
+            "kunci di awal baris dilepas",
+            "    if (aturan.pemisahKunci.length > 0 && HURUF_AWAL.test(c)) {",
+            "    if (false && aturan.pemisahKunci.length > 0 && HURUF_AWAL.test(c)) {",
+            "sidik token bergeser",
+        ),
+        (
+            # `- redis:7` dan `http://x` di awal baris jadi kunci.
+            "pengaman ':' tanpa spasi dilepas",
+            r"""  if (kode.charAt(k) === ":" && sesudah !== "" && sesudah !== " " && sesudah !== "\t""",
+            r"""  if (false && sesudah !== "" && sesudah !== " " && sesudah !== "\t""",
+            "sidik token bergeser",
+        ),
+        (
+            "penanda butir '- ' tidak dikenal",
+            r"""    if (d === " " || d === "\t" || (d === "-" && (sesudahD === " " || sesudahD === "\t"))) j -= 1;""",
+            r"""    if (d === " " || d === "\t") j -= 1;""",
+            "sidik token bergeser",
+        ),
+        (
             "namaPenyorot melewatkan pemetaan",
             "  return PEMETAAN[nama] ?? nama;",
             "  return nama;",

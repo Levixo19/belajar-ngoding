@@ -149,7 +149,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "python": {
    "komentar_baris": [
@@ -283,7 +284,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "javascript": {
    "komentar_baris": [
@@ -416,7 +418,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "c": {
    "komentar_baris": [
@@ -533,7 +536,8 @@
    ],
    "praprosesor": true,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "cpp": {
    "komentar_baris": [
@@ -689,7 +693,8 @@
    ],
    "praprosesor": true,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "bash": {
    "komentar_baris": [
@@ -788,7 +793,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": true,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "swift": {
    "komentar_baris": [
@@ -918,7 +924,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "dart": {
    "komentar_baris": [
@@ -1033,7 +1040,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "lua": {
    "komentar_baris": [
@@ -1101,7 +1109,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "r": {
    "komentar_baris": [
@@ -1178,7 +1187,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "elixir": {
    "komentar_baris": [
@@ -1251,7 +1261,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "haskell": {
    "komentar_baris": [
@@ -1340,7 +1351,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "zig": {
    "komentar_baris": [
@@ -1439,7 +1451,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "groovy": {
    "komentar_baris": [
@@ -1542,7 +1555,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "go": {
    "komentar_baris": [
@@ -1664,7 +1678,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "csharp": {
    "komentar_baris": [
@@ -1908,7 +1923,8 @@
    ],
    "praprosesor": true,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "vb": {
    "komentar_baris": [
@@ -2153,7 +2169,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": true
+   "tanpa_bedakan_kapital": true,
+   "pemisah_kunci": []
   },
   "rust": {
    "komentar_baris": [
@@ -2337,7 +2354,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "php": {
    "komentar_baris": [
@@ -2538,7 +2556,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": true,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "ruby": {
    "komentar_baris": [
@@ -2731,7 +2750,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "kotlin": {
    "komentar_baris": [
@@ -2945,7 +2965,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "typescript": {
    "komentar_baris": [
@@ -3147,7 +3168,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "sql": {
    "komentar_baris": [
@@ -3297,7 +3319,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": true
+   "tanpa_bedakan_kapital": true,
+   "pemisah_kunci": []
   },
   "html": {
    "komentar_baris": [],
@@ -3476,7 +3499,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": true
+   "tanpa_bedakan_kapital": true,
+   "pemisah_kunci": []
   },
   "css": {
    "komentar_baris": [],
@@ -3642,7 +3666,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": false,
-   "tanpa_bedakan_kapital": true
+   "tanpa_bedakan_kapital": true,
+   "pemisah_kunci": []
   },
   "fedora": {
    "komentar_baris": [
@@ -3741,7 +3766,8 @@
    ],
    "praprosesor": false,
    "variabel_dolar": true,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   },
   "git": {
    "komentar_baris": [
@@ -3840,7 +3866,1101 @@
    ],
    "praprosesor": false,
    "variabel_dolar": true,
-   "tanpa_bedakan_kapital": false
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "yaml": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [],
+   "tipe": [],
+   "bawaan": [
+    "false",
+    "null",
+    "true"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": [
+    ":"
+   ]
+  },
+  "toml": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\"\"\"",
+    "'''",
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [
+    "'",
+    "'''"
+   ],
+   "escape": true,
+   "kunci": [],
+   "tipe": [],
+   "bawaan": [
+    "false",
+    "true"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": [
+    "="
+   ]
+  },
+  "ini": {
+   "komentar_baris": [
+    "#",
+    ";"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [],
+   "tipe": [],
+   "bawaan": [
+    "false",
+    "no",
+    "off",
+    "on",
+    "true",
+    "yes"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": true,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": [
+    "="
+   ]
+  },
+  "http": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\""
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "CONNECT",
+    "DELETE",
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+    "TRACE"
+   ],
+   "tipe": [
+    "HTTP"
+   ],
+   "bawaan": [
+    "false",
+    "null",
+    "true"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": [
+    ":"
+   ]
+  },
+  "nginx": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "access_log",
+    "add_header",
+    "alias",
+    "allow",
+    "auth_basic",
+    "auth_basic_user_file",
+    "autoindex",
+    "client_body_buffer_size",
+    "client_max_body_size",
+    "deny",
+    "error_log",
+    "error_page",
+    "events",
+    "expires",
+    "fastcgi_index",
+    "fastcgi_param",
+    "fastcgi_pass",
+    "gzip",
+    "gzip_types",
+    "hash",
+    "http2",
+    "if",
+    "include",
+    "ip_hash",
+    "keepalive",
+    "keepalive_timeout",
+    "least_conn",
+    "limit_conn",
+    "limit_req",
+    "limit_req_status",
+    "limit_req_zone",
+    "listen",
+    "location",
+    "log_format",
+    "map",
+    "proxy_buffering",
+    "proxy_cache",
+    "proxy_cache_path",
+    "proxy_cache_valid",
+    "proxy_connect_timeout",
+    "proxy_http_version",
+    "proxy_pass",
+    "proxy_read_timeout",
+    "proxy_redirect",
+    "proxy_send_timeout",
+    "proxy_set_header",
+    "return",
+    "rewrite",
+    "root",
+    "sendfile",
+    "server",
+    "server_name",
+    "server_tokens",
+    "set",
+    "ssl_certificate",
+    "ssl_certificate_key",
+    "ssl_ciphers",
+    "ssl_protocols",
+    "ssl_session_cache",
+    "tcp_nopush",
+    "try_files",
+    "upstream",
+    "worker_connections",
+    "worker_processes"
+   ],
+   "tipe": [],
+   "bawaan": [
+    "backup",
+    "default_server",
+    "down",
+    "fail_timeout",
+    "max_fails",
+    "off",
+    "on",
+    "ssl",
+    "weight"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": true,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "hcl": {
+   "komentar_baris": [
+    "#",
+    "//"
+   ],
+   "komentar_blok": [
+    [
+     "/*",
+     "*/"
+    ]
+   ],
+   "kutip": [
+    "\""
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "backend",
+    "check",
+    "connection",
+    "data",
+    "depends_on",
+    "dynamic",
+    "else",
+    "for",
+    "for_each",
+    "if",
+    "import",
+    "in",
+    "lifecycle",
+    "locals",
+    "module",
+    "moved",
+    "output",
+    "provider",
+    "provisioner",
+    "required_providers",
+    "required_version",
+    "resource",
+    "terraform",
+    "variable"
+   ],
+   "tipe": [
+    "any",
+    "bool",
+    "list",
+    "map",
+    "number",
+    "object",
+    "set",
+    "string",
+    "tuple"
+   ],
+   "bawaan": [
+    "each",
+    "false",
+    "local",
+    "null",
+    "path",
+    "self",
+    "true",
+    "var"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": [
+    "="
+   ]
+  },
+  "redis": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "APPEND",
+    "AUTH",
+    "BGSAVE",
+    "BITCOUNT",
+    "BITOP",
+    "BLMOVE",
+    "BLPOP",
+    "BRPOP",
+    "CLIENT",
+    "CONFIG",
+    "DBSIZE",
+    "DECR",
+    "DECRBY",
+    "DEL",
+    "DISCARD",
+    "ECHO",
+    "EVAL",
+    "EVALSHA",
+    "EXEC",
+    "EXISTS",
+    "EXPIRE",
+    "EXPIREAT",
+    "FLUSHALL",
+    "FLUSHDB",
+    "GEOADD",
+    "GEODIST",
+    "GEOSEARCH",
+    "GET",
+    "GETBIT",
+    "GETDEL",
+    "GETSET",
+    "HDEL",
+    "HEXISTS",
+    "HGET",
+    "HGETALL",
+    "HINCRBY",
+    "HKEYS",
+    "HLEN",
+    "HMGET",
+    "HMSET",
+    "HSET",
+    "HVALS",
+    "INCR",
+    "INCRBY",
+    "INCRBYFLOAT",
+    "INFO",
+    "KEYS",
+    "LINDEX",
+    "LLEN",
+    "LMOVE",
+    "LPOP",
+    "LPUSH",
+    "LRANGE",
+    "LREM",
+    "LTRIM",
+    "MGET",
+    "MONITOR",
+    "MSET",
+    "MULTI",
+    "OBJECT",
+    "PERSIST",
+    "PEXPIRE",
+    "PFADD",
+    "PFCOUNT",
+    "PING",
+    "PSUBSCRIBE",
+    "PTTL",
+    "PUBLISH",
+    "RENAME",
+    "RPOP",
+    "RPUSH",
+    "SADD",
+    "SAVE",
+    "SCAN",
+    "SCARD",
+    "SDIFF",
+    "SELECT",
+    "SET",
+    "SETBIT",
+    "SETEX",
+    "SETNX",
+    "SINTER",
+    "SISMEMBER",
+    "SLOWLOG",
+    "SMEMBERS",
+    "SPOP",
+    "SREM",
+    "STRLEN",
+    "SUBSCRIBE",
+    "SUNION",
+    "TTL",
+    "TYPE",
+    "UNLINK",
+    "UNSUBSCRIBE",
+    "UNWATCH",
+    "WATCH",
+    "XACK",
+    "XADD",
+    "XCLAIM",
+    "XGROUP",
+    "XLEN",
+    "XPENDING",
+    "XRANGE",
+    "XREAD",
+    "XREADGROUP",
+    "XTRIM",
+    "ZADD",
+    "ZCARD",
+    "ZINCRBY",
+    "ZRANGE",
+    "ZRANGEBYSCORE",
+    "ZRANK",
+    "ZREM",
+    "ZREVRANGE",
+    "ZSCORE"
+   ],
+   "tipe": [],
+   "bawaan": [
+    "COUNT",
+    "CREATE",
+    "EX",
+    "EXAT",
+    "GROUP",
+    "KEEPTTL",
+    "LEFT",
+    "MATCH",
+    "MKSTREAM",
+    "NX",
+    "PX",
+    "RIGHT",
+    "STREAMS",
+    "WITHSCORES",
+    "XX"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": true,
+   "pemisah_kunci": []
+  },
+  "perl": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "BEGIN",
+    "END",
+    "and",
+    "chomp",
+    "chop",
+    "close",
+    "cmp",
+    "defined",
+    "delete",
+    "die",
+    "do",
+    "each",
+    "else",
+    "elsif",
+    "eof",
+    "eq",
+    "eval",
+    "exists",
+    "for",
+    "foreach",
+    "ge",
+    "grep",
+    "gt",
+    "if",
+    "index",
+    "join",
+    "keys",
+    "last",
+    "lc",
+    "lcfirst",
+    "le",
+    "length",
+    "local",
+    "lt",
+    "map",
+    "my",
+    "ne",
+    "next",
+    "no",
+    "not",
+    "open",
+    "or",
+    "our",
+    "package",
+    "pop",
+    "print",
+    "printf",
+    "push",
+    "qw",
+    "redo",
+    "require",
+    "return",
+    "reverse",
+    "say",
+    "scalar",
+    "shift",
+    "sort",
+    "splice",
+    "split",
+    "sprintf",
+    "sub",
+    "substr",
+    "uc",
+    "ucfirst",
+    "unless",
+    "unshift",
+    "until",
+    "use",
+    "values",
+    "warn",
+    "while"
+   ],
+   "tipe": [],
+   "bawaan": [
+    "ARGV",
+    "ENV",
+    "STDERR",
+    "STDIN",
+    "STDOUT"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": true,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "scala": {
+   "komentar_baris": [
+    "//"
+   ],
+   "komentar_blok": [
+    [
+     "/*",
+     "*/"
+    ]
+   ],
+   "kutip": [
+    "\"\"\"",
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "abstract",
+    "case",
+    "catch",
+    "class",
+    "def",
+    "do",
+    "else",
+    "enum",
+    "export",
+    "extends",
+    "false",
+    "final",
+    "finally",
+    "for",
+    "given",
+    "if",
+    "implicit",
+    "import",
+    "lazy",
+    "match",
+    "new",
+    "null",
+    "object",
+    "override",
+    "package",
+    "private",
+    "protected",
+    "return",
+    "sealed",
+    "super",
+    "then",
+    "this",
+    "throw",
+    "trait",
+    "true",
+    "try",
+    "type",
+    "using",
+    "val",
+    "var",
+    "while",
+    "with",
+    "yield"
+   ],
+   "tipe": [
+    "Any",
+    "AnyRef",
+    "AnyVal",
+    "Array",
+    "Boolean",
+    "Char",
+    "Double",
+    "Either",
+    "Failure",
+    "Float",
+    "Int",
+    "Left",
+    "List",
+    "Long",
+    "Map",
+    "None",
+    "Nothing",
+    "Option",
+    "Right",
+    "Seq",
+    "Set",
+    "Some",
+    "String",
+    "Success",
+    "Try",
+    "Unit",
+    "Vector"
+   ],
+   "bawaan": [],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "solidity": {
+   "komentar_baris": [
+    "//"
+   ],
+   "komentar_blok": [
+    [
+     "/*",
+     "*/"
+    ]
+   ],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "abstract",
+    "anonymous",
+    "assembly",
+    "assert",
+    "break",
+    "calldata",
+    "catch",
+    "constant",
+    "constructor",
+    "continue",
+    "contract",
+    "delete",
+    "do",
+    "else",
+    "emit",
+    "enum",
+    "error",
+    "event",
+    "external",
+    "false",
+    "for",
+    "function",
+    "if",
+    "immutable",
+    "import",
+    "indexed",
+    "interface",
+    "internal",
+    "is",
+    "library",
+    "mapping",
+    "memory",
+    "modifier",
+    "new",
+    "override",
+    "payable",
+    "pragma",
+    "private",
+    "public",
+    "pure",
+    "require",
+    "return",
+    "returns",
+    "revert",
+    "storage",
+    "struct",
+    "true",
+    "try",
+    "unchecked",
+    "using",
+    "view",
+    "virtual",
+    "while"
+   ],
+   "tipe": [
+    "address",
+    "bool",
+    "bytes",
+    "bytes1",
+    "bytes32",
+    "bytes4",
+    "int",
+    "int128",
+    "int16",
+    "int256",
+    "int32",
+    "int64",
+    "int8",
+    "string",
+    "uint",
+    "uint128",
+    "uint16",
+    "uint256",
+    "uint32",
+    "uint64",
+    "uint8"
+   ],
+   "bawaan": [
+    "abi",
+    "block",
+    "msg",
+    "this",
+    "tx"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "verilog": {
+   "komentar_baris": [
+    "//"
+   ],
+   "komentar_blok": [
+    [
+     "/*",
+     "*/"
+    ]
+   ],
+   "kutip": [
+    "\""
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "always",
+    "and",
+    "assign",
+    "begin",
+    "buf",
+    "case",
+    "casex",
+    "casez",
+    "default",
+    "else",
+    "end",
+    "endcase",
+    "endfunction",
+    "endgenerate",
+    "endmodule",
+    "endtask",
+    "for",
+    "forever",
+    "function",
+    "generate",
+    "genvar",
+    "if",
+    "initial",
+    "inout",
+    "input",
+    "integer",
+    "localparam",
+    "module",
+    "nand",
+    "negedge",
+    "nor",
+    "not",
+    "or",
+    "output",
+    "parameter",
+    "posedge",
+    "real",
+    "reg",
+    "repeat",
+    "signed",
+    "task",
+    "time",
+    "while",
+    "wire",
+    "xnor",
+    "xor"
+   ],
+   "tipe": [],
+   "bawaan": [
+    "display",
+    "dumpfile",
+    "dumpvars",
+    "finish",
+    "monitor",
+    "stop",
+    "strobe",
+    "write"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "fsharp": {
+   "komentar_baris": [
+    "//"
+   ],
+   "komentar_blok": [
+    [
+     "(*",
+     "*)"
+    ]
+   ],
+   "kutip": [
+    "\"\"\"",
+    "\""
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "abstract",
+    "and",
+    "as",
+    "async",
+    "begin",
+    "do",
+    "downto",
+    "elif",
+    "else",
+    "end",
+    "exception",
+    "false",
+    "finally",
+    "for",
+    "fun",
+    "function",
+    "if",
+    "in",
+    "inherit",
+    "interface",
+    "internal",
+    "lazy",
+    "let",
+    "match",
+    "member",
+    "module",
+    "mutable",
+    "namespace",
+    "new",
+    "not",
+    "of",
+    "open",
+    "override",
+    "private",
+    "public",
+    "raise",
+    "rec",
+    "return",
+    "static",
+    "then",
+    "to",
+    "true",
+    "try",
+    "type",
+    "use",
+    "when",
+    "while",
+    "with",
+    "yield"
+   ],
+   "tipe": [
+    "Option",
+    "Result",
+    "array",
+    "bool",
+    "byte",
+    "char",
+    "decimal",
+    "float",
+    "int",
+    "int64",
+    "list",
+    "option",
+    "seq",
+    "string",
+    "uint32",
+    "unit"
+   ],
+   "bawaan": [
+    "Array",
+    "Error",
+    "List",
+    "Map",
+    "None",
+    "Ok",
+    "Seq",
+    "Some",
+    "String",
+    "failwith",
+    "ignore",
+    "printf",
+    "printfn",
+    "sprintf"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "nix": {
+   "komentar_baris": [
+    "#"
+   ],
+   "komentar_blok": [
+    [
+     "/*",
+     "*/"
+    ]
+   ],
+   "kutip": [
+    "''",
+    "\""
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "abort",
+    "assert",
+    "else",
+    "if",
+    "import",
+    "in",
+    "inherit",
+    "let",
+    "or",
+    "rec",
+    "then",
+    "throw",
+    "with"
+   ],
+   "tipe": [],
+   "bawaan": [
+    "builtins",
+    "false",
+    "null",
+    "true"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "matlab": {
+   "komentar_baris": [
+    "%"
+   ],
+   "komentar_blok": [
+    [
+     "%{",
+     "%}"
+    ]
+   ],
+   "kutip": [
+    "\""
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "break",
+    "case",
+    "catch",
+    "classdef",
+    "continue",
+    "else",
+    "elseif",
+    "end",
+    "for",
+    "function",
+    "global",
+    "if",
+    "methods",
+    "otherwise",
+    "parfor",
+    "persistent",
+    "properties",
+    "return",
+    "switch",
+    "try",
+    "while"
+   ],
+   "tipe": [],
+   "bawaan": [
+    "eps",
+    "false",
+    "inf",
+    "nan",
+    "pi",
+    "true"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
+  },
+  "luau": {
+   "komentar_baris": [
+    "--"
+   ],
+   "komentar_blok": [
+    [
+     "--[[",
+     "]]"
+    ]
+   ],
+   "kutip": [
+    "\"",
+    "'"
+   ],
+   "kutip_mentah": [],
+   "escape": true,
+   "kunci": [
+    "and",
+    "break",
+    "continue",
+    "do",
+    "else",
+    "elseif",
+    "end",
+    "export",
+    "false",
+    "for",
+    "function",
+    "goto",
+    "if",
+    "in",
+    "local",
+    "nil",
+    "not",
+    "or",
+    "repeat",
+    "return",
+    "then",
+    "true",
+    "type",
+    "until",
+    "while"
+   ],
+   "tipe": [
+    "any",
+    "boolean",
+    "never",
+    "number",
+    "string",
+    "unknown"
+   ],
+   "bawaan": [
+    "error",
+    "getmetatable",
+    "io",
+    "ipairs",
+    "math",
+    "next",
+    "os",
+    "pairs",
+    "pcall",
+    "print",
+    "rawget",
+    "rawset",
+    "require",
+    "select",
+    "setmetatable",
+    "string",
+    "table",
+    "tonumber",
+    "tostring",
+    "type",
+    "unpack"
+   ],
+   "praprosesor": false,
+   "variabel_dolar": false,
+   "tanpa_bedakan_kapital": false,
+   "pemisah_kunci": []
   }
  },
  "alias": {

@@ -850,6 +850,7 @@ def aturan_penyorot():
             "praprosesor": a.praprosesor,
             "variabel_dolar": a.variabel_dolar,
             "tanpa_bedakan_kapital": a.tanpa_bedakan_kapital,
+            "pemisah_kunci": list(a.pemisah_kunci),
         }
     # "aplikasi" bukan bahasa tersendiri; contohnya Java.
     keluar["aplikasi"] = keluar["java"]

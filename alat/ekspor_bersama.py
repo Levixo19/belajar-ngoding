@@ -66,6 +66,7 @@ def _aturan_jadi_dict(a):
         "praprosesor": a.praprosesor,
         "variabel_dolar": a.variabel_dolar,
         "tanpa_bedakan_kapital": a.tanpa_bedakan_kapital,
+        "pemisah_kunci": list(a.pemisah_kunci),
     }
 
 

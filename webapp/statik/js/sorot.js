@@ -27,6 +27,8 @@ const HURUF_AWAL = /[A-Za-z_]/;
 const HURUF_LANJUT = /[A-Za-z0-9_]/;
 const ANGKA = /[0-9]/;
 const OPERATOR = new Set("+-*/%=<>!&|^~?:;,.()[]{}@");
+// Kunci di awal baris boleh memuat tanda hubung, titik, dan garis miring.
+const KUNCI_LANJUT = /[A-Za-z0-9_.\-/]/;
 
 let ATURAN = {};
 
@@ -52,7 +54,7 @@ function aturanUntuk(bahasa) {
   return {
     komentar_baris: [], komentar_blok: [], kutip: ['"', "'"],
     escape: true, praprosesor: false, variabel_dolar: false,
-    tanpa_bedakan_kapital: false,
+    tanpa_bedakan_kapital: false, pemisah_kunci: [],
     kunci: new Set(), tipe: new Set(), bawaan: new Set(),
     kutip_mentah: new Set(),
   };
@@ -113,6 +115,28 @@ function diAwalBaris(kode, i) {
   let j = i - 1;
   while (j >= 0 && (kode[j] === " " || kode[j] === "\t")) j -= 1;
   return j < 0 || kode[j] === "\n";
+}
+
+/** Index sesudah KUNCI yang dimulai di `i`, atau 0 kalau bukan kunci.
+ *  Padanan `_akhir_kunci` di sorot.py, langkah demi langkah. */
+function akhirKunci(kode, i, pemisah) {
+  let j = i - 1;
+  while (j >= 0 && kode[j] !== "\n") {
+    const d = kode[j];
+    if (d === " " || d === "\t" || (d === "-" && (kode[j + 1] === " " || kode[j + 1] === "\t"))) j -= 1;
+    else return 0;
+  }
+  const n = kode.length;
+  let akhir = i + 1;
+  while (akhir < n && KUNCI_LANJUT.test(kode[akhir])) akhir += 1;
+  let k = akhir;
+  while (k < n && (kode[k] === " " || kode[k] === "\t")) k += 1;
+  if (k >= n || !pemisah.includes(kode[k])) return 0;
+  const sesudah = k + 1 < n ? kode[k + 1] : "";
+  if (kode[k] === ":" && sesudah !== "" && sesudah !== " " && sesudah !== "\t"
+      && sesudah !== "\r" && sesudah !== "\n") return 0;
+  if (kode[k] === "=" && sesudah === "=") return 0;
+  return akhir;
 }
 
 /** Pecah kode jadi [[jenis, teks], ...]. Gabungannya = kode aslinya. */
@@ -210,6 +234,17 @@ export function token(kode, bahasa) {
       hasil.push(["angka", kode.slice(i, akhir)]);
       i = akhir;
       continue;
+    }
+
+    // -- kunci di awal baris -----------------------------------------------
+    if (aturan.pemisah_kunci && aturan.pemisah_kunci.length && HURUF_AWAL.test(c)) {
+      const akhir = akhirKunci(kode, i, aturan.pemisah_kunci);
+      if (akhir) {
+        buang();
+        hasil.push(["kunci", kode.slice(i, akhir)]);
+        i = akhir;
+        continue;
+      }
     }
 
     // -- pengenal ----------------------------------------------------------

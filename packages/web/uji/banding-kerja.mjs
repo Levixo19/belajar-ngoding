@@ -282,21 +282,17 @@ const RUNNER = [...bahasaRunner].sort();
 for (const b of [...RUNNER, "bahasa-yang-tidak-ada", ""]) {
   adu(`contohAwal ${b || "(kosong)"}`, acuan.contohAwal(b), contohAwal(b));
 }
-/* Celah yang SUDAH ADA di aplikasi lama, dan sengaja dibawa apa adanya: port
- * ini menuntut identitas byte dengan `contohAwal` di `layar-kerja.js`, jadi
- * menambal daftarnya di satu sisi saja akan memerahkan perbandingan di atas.
+/* Celah yang SENGAJA dibawa dari aplikasi lama. Kosong sekarang.
  *
- * `git` lolos `runner.tersedia()` -- git terpasang di mesin ini -- jadi ia
- * MUNCUL di pemilih Ruang Coba dan editornya terbuka KOSONG. Kurikulum
- * sejenisnya, `fedora`, punya skrip awal. Ini layak ditambal, tapi di UI baru
- * dan di kedua sisi sekaligus, bukan di sini.
+ * Port ini menuntut identitas byte dengan `contohAwal` di `layar-kerja.js`,
+ * jadi runner yang contohnya ditambahkan di satu sisi saja memerahkan
+ * perbandingan di atas. Runner `git` pernah ada di sini: ia lolos
+ * `runner.tersedia()` dan muncul di pemilih Ruang Coba, tapi editornya terbuka
+ * KOSONG. Ia ditambal di KEDUA sisi sekaligus (f99e16a), satu-satunya cara
+ * tanpa memerahkan pembanding ini.
  *
- * Yang dijaga daftar ini tetap bergigi: runner BARU yang contohnya lupa
- * ditambahkan tidak ada di sini, jadi ia tetap memerahkan pagarnya. */
-// Kosong lagi: celah `git` (editor Ruang Coba terbuka KOSONG karena
-// `contohAwal` tidak punya entrinya) sudah ditambal di KEDUA sisi
-// sekaligus, yang memang satu-satunya cara menambalnya tanpa
-// memerahkan pembanding ini.
+ * Daftarnya tetap ada karena tetap bergigi: runner BARU yang contohnya
+ * terlewat tidak ada di sini, jadi ia memerahkan pagarnya. */
 const CELAH_DIKETAHUI = new Set([]);
 const tanpaContoh = RUNNER.filter(
   (b) => !contohAwal(b) && !CELAH_DIKETAHUI.has(b),

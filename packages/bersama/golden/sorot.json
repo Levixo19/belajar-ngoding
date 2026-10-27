@@ -10,29 +10,44 @@
   "dart",
   "elixir",
   "fedora",
+  "fsharp",
   "git",
   "go",
   "groovy",
   "haskell",
+  "hcl",
   "html",
+  "http",
+  "ini",
   "java",
   "javascript",
   "kotlin",
   "lua",
+  "luau",
+  "matlab",
+  "nginx",
+  "nix",
+  "perl",
   "php",
   "python",
   "r",
+  "redis",
   "ruby",
   "rust",
+  "scala",
+  "solidity",
   "sql",
   "swift",
+  "toml",
   "typescript",
   "vb",
+  "verilog",
+  "yaml",
   "zig"
  ],
  "cakupan": {
-  "tersorot": 2988,
-  "polos": 327,
+  "tersorot": 3123,
+  "polos": 192,
   "bahasa_polos": {
    "abap": 2,
    "ada": 1,
@@ -51,29 +66,20 @@
    "forth": 1,
    "fortran": 1,
    "foxpro": 1,
-   "fsharp": 3,
    "gleam": 1,
    "graphql": 2,
    "haxe": 1,
-   "hcl": 8,
-   "http": 13,
-   "ini": 11,
    "jcl": 1,
    "julia": 2,
    "lean": 1,
    "lisp": 2,
-   "luau": 2,
    "markdown": 3,
-   "matlab": 4,
    "moonbit": 1,
    "move": 1,
-   "nginx": 9,
    "nim": 1,
-   "nix": 3,
    "ocaml": 1,
    "odin": 1,
    "pascal": 1,
-   "perl": 4,
    "pli": 1,
    "prisma": 1,
    "prolog": 2,
@@ -83,26 +89,20 @@
    "q": 1,
    "racket": 1,
    "raku": 1,
-   "redis": 8,
    "rego": 2,
    "rescript": 1,
    "roc": 1,
    "rpg": 1,
    "sas": 2,
-   "scala": 3,
    "scheme": 1,
    "smalltalk": 1,
-   "solidity": 3,
    "st": 1,
    "tcl": 1,
    "teks": 118,
-   "toml": 2,
    "v": 1,
-   "verilog": 3,
    "vhdl": 1,
    "wat": 1,
-   "wolfram": 1,
-   "yaml": 59
+   "wolfram": 1
   }
  },
  "kasus": [
@@ -7504,7 +7504,7 @@
   {
    "nama": "techstack/materi/2. Perjalanan Satu Request dari Browser sampai Database/4",
    "bahasa": "http",
-   "sha256": "b8cc1de3ee5313ee604c0027b9d9bd4c958cf2f678ea6c3db5a2623ad142aafa"
+   "sha256": "d88f7c48a89ac24aa855dee2795766d7c08900b586b24220a6aae8642e8d40d6"
   },
   {
    "nama": "techstack/materi/2. Perjalanan Satu Request dari Browser sampai Database/8",
@@ -7524,7 +7524,7 @@
   {
    "nama": "techstack/materi/4. LAMP, LEMP, dan Paket Server Lokal/2",
    "bahasa": "nginx",
-   "sha256": "98a09fc526c05f42b26b2452ad8b6c51b15fa5b4fd54db9766f1911d02a21d49"
+   "sha256": "f1cc738b96d9fb4e9f3de01aaf206273644e9fe068a492d447777f1c1b2282fc"
   },
   {
    "nama": "techstack/materi/4. LAMP, LEMP, dan Paket Server Lokal/4",
@@ -7539,7 +7539,7 @@
   {
    "nama": "techstack/materi/4. LAMP, LEMP, dan Paket Server Lokal/9",
    "bahasa": "yaml",
-   "sha256": "e317f0669243a11ab1c776c6ed907a67d4d78a19b029d60eaa346fce03382737"
+   "sha256": "39d9e7e6275a0dc74bd2d9a0625c58ca604e43002c65074b276892659e2f681c"
   },
   {
    "nama": "techstack/materi/5. MVC dan Arsitektur Berlapis/2",
@@ -7764,7 +7764,7 @@
   {
    "nama": "techstack/materi/15. Serverless dan Edge: Kode Tanpa Mengurus Server/6",
    "bahasa": "yaml",
-   "sha256": "c43b6979de5b3e4730ccf705deb92c8e5c5a69f97fe3ea28b37374f4ac7e9ad6"
+   "sha256": "bd03bb73f4b2efa5fb880d163c9f22fc0a538ac2d6e7b1af88acae46c6b35ac8"
   },
   {
    "nama": "techstack/materi/15. Serverless dan Edge: Kode Tanpa Mengurus Server/7",
@@ -7909,7 +7909,7 @@
   {
    "nama": "techstack/materi/27. Load Balancer dan Reverse Proxy/4",
    "bahasa": "nginx",
-   "sha256": "698ed75e6c51a373724409952355fa5f9a15f24e01a437822e5c6143d59dd9cc"
+   "sha256": "710d8fdd4385a0b00031562d94a76dc0f43e07fbcaa1ab228add6f9271e67290"
   },
   {
    "nama": "techstack/materi/28. Caching dan CDN/1",
@@ -7924,17 +7924,17 @@
   {
    "nama": "techstack/materi/28. Caching dan CDN/5",
    "bahasa": "redis",
-   "sha256": "4882af2918dbb6a571070d9f46af549675f822789497a84f8f0e7729657d4e86"
+   "sha256": "c037dc5bf04386812c465909b8030e1162f0472870f5e93c4fc3e94975f75761"
   },
   {
    "nama": "techstack/materi/28. Caching dan CDN/6",
    "bahasa": "http",
-   "sha256": "49c1ef14a64687742671ce6aaa93a5112abebdac52df12b37ddae7b893726064"
+   "sha256": "d7e38b1a972bbde4bb8dac08a2ad84eacbd29e36ac8f8f5b57d5a0acb291fca5"
   },
   {
    "nama": "techstack/materi/29. Gaya Komunikasi API: REST, GraphQL, gRPC, Webhook/1",
    "bahasa": "http",
-   "sha256": "2dc6e15eeb7dab769b26ed732e719e01116986a77b1f8bae33ef65ea6646c4cb"
+   "sha256": "6b1ef8ebfc2e8ff1f5ed94a33ea8a01b86b00fb19b41da9989876d5d03d52a62"
   },
   {
    "nama": "techstack/materi/29. Gaya Komunikasi API: REST, GraphQL, gRPC, Webhook/2",
@@ -7954,7 +7954,7 @@
   {
    "nama": "techstack/materi/29. Gaya Komunikasi API: REST, GraphQL, gRPC, Webhook/8",
    "bahasa": "yaml",
-   "sha256": "7528bf545329ae21258e101fdadcaa2ffdbda884499aba899e3f15805c6e69bb"
+   "sha256": "525bce3f191aeb01d07dce38e2c40c314751564013c3a96e92ebc609deaf36c9"
   },
   {
    "nama": "techstack/materi/30. Memilih Database dan Replikasi/3",
@@ -7974,7 +7974,7 @@
   {
    "nama": "techstack/materi/32. Rate Limiting dan Throttling/5",
    "bahasa": "http",
-   "sha256": "5e3efe1682cf003e59e10a865984b40797a8df361cf2b5c2d0ef2983c4f9bcfc"
+   "sha256": "c746942f9c18ac2c9539fa63cfa11e0b530bcddc65f1f58d606fbbf0da78eed0"
   },
   {
    "nama": "techstack/materi/32. Rate Limiting dan Throttling/7",
@@ -8014,12 +8014,12 @@
   {
    "nama": "techstack/materi/37. Retry, Idempotensi, dan Circuit Breaker/7",
    "bahasa": "yaml",
-   "sha256": "95e5d465ddce42584a459aa784e9d58c04fd97318058872361bbe41ab9839cbd"
+   "sha256": "708699430ef662f1901f1672c47ed47f131d1cca87ec88654e0306e8fe6c12fb"
   },
   {
    "nama": "techstack/materi/38. API Gateway, BFF, dan Service Mesh/2",
    "bahasa": "yaml",
-   "sha256": "daed8b45cede25522f0294d26e962b9739f45f54e51791de28d4ec37c7ddd6fb"
+   "sha256": "2f00002f169e784b762b837b85e7b64d16a32d6a44116d341a98a40f888653cc"
   },
   {
    "nama": "techstack/materi/38. API Gateway, BFF, dan Service Mesh/4",
@@ -8029,7 +8029,7 @@
   {
    "nama": "techstack/materi/39. CI/CD dan Strategi Deployment/2",
    "bahasa": "yaml",
-   "sha256": "09ef7f7702fc7236a209a8fc71b4c62b61e5f6705785ec1ba90526eda71ae20e"
+   "sha256": "9af7d5cf4c2f759f51d2c0a9efae12543d6d310c46c5130aec1950ecf2de49fd"
   },
   {
    "nama": "techstack/materi/39. CI/CD dan Strategi Deployment/5",
@@ -8044,7 +8044,7 @@
   {
    "nama": "techstack/materi/40. Twelve-Factor App, IaC, dan GitOps/5",
    "bahasa": "hcl",
-   "sha256": "5f407472221a434f5b5d09e0276d4ac379c2576b9b70eaec84fe8a8866bc9567"
+   "sha256": "b332cab47a2681bd27e55ce6dc139c07c0e8851b5d14ba9a06b4ade87b1a6000"
   },
   {
    "nama": "techstack/materi/40. Twelve-Factor App, IaC, dan GitOps/7",
@@ -8069,7 +8069,7 @@
   {
    "nama": "techstack/materi/42. Identitas dan Rantai Pasok dalam Arsitektur/6",
    "bahasa": "yaml",
-   "sha256": "7c6d85ab14615b9ac59291cc3d11fb3e8105923a06d38f73aa71059d63277034"
+   "sha256": "7e061dc9d77953e2fc4da4a93146bcef722b1cd1ee75c28b4d51f31b98370888"
   },
   {
    "nama": "techstack/materi/43. ADR, C4 Model, dan Dokumentasi Arsitektur/2",
@@ -8089,7 +8089,7 @@
   {
    "nama": "techstack/materi/44. Cara Tim Bekerja: Agile, Monorepo, dan Asisten AI/5",
    "bahasa": "yaml",
-   "sha256": "280534cfc9d5efcfad1ae0a4e476671961732a7828ce92e3c330a4ff5532abb9"
+   "sha256": "da6f44feecbbbd4286496620c337450ca61311fddaf149947eebf9d76583a616"
   },
   {
    "nama": "techstack/materi/45. Cara Memilih Stack: Kriteria, Lisensi, dan Umur/4",
@@ -8949,7 +8949,7 @@
   {
    "nama": "frontend/materi/50. Monorepo: Workspaces, Turborepo, dan Nx/2",
    "bahasa": "yaml",
-   "sha256": "93d609f8ec623bbd7590dd52aa05cb1d944a8a5c114897ad95f03136b9bdc63e"
+   "sha256": "943105ea563d82a27d494887040fd63a118f7d55bdd5cc2b5b0bf3b9664518b8"
   },
   {
    "nama": "frontend/materi/50. Monorepo: Workspaces, Turborepo, dan Nx/4",
@@ -9134,7 +9134,7 @@
   {
    "nama": "backend/materi/2. HTTP dari Dekat: Metode, Status, Header, dan HTTPS/1",
    "bahasa": "http",
-   "sha256": "ab46304e47d71dff6f4a90ed8ac445e51d4f800ecd007829e3b30deed685c896"
+   "sha256": "ac2f80f9b20477a3022888e0e59b704191db5ef6640cfc5c29f268115f91a41b"
   },
   {
    "nama": "backend/materi/2. HTTP dari Dekat: Metode, Status, Header, dan HTTPS/4",
@@ -9204,7 +9204,7 @@
   {
    "nama": "backend/materi/7. Dokumentasi dan Pengujian API dengan OpenAPI/1",
    "bahasa": "yaml",
-   "sha256": "55181dd53a112e765a3c9efb14dbc25d55276dfae8663d7254730dffe481ed90"
+   "sha256": "b43a71adbce8679b596ec8f89c06496b1151cf8a03c62afbf7fdda3fdcc08b4b"
   },
   {
    "nama": "backend/materi/7. Dokumentasi dan Pengujian API dengan OpenAPI/3",
@@ -9214,7 +9214,7 @@
   {
    "nama": "backend/materi/7. Dokumentasi dan Pengujian API dengan OpenAPI/6",
    "bahasa": "http",
-   "sha256": "33f740045a55a502761b661d1de251e95ae5c62a0e735ac4dc83a6ba252385f1"
+   "sha256": "3b6bd7b6b6a19961cbdded73be7d5b46ec76dbeba573a303b789c88597143c93"
   },
   {
    "nama": "backend/materi/7. Dokumentasi dan Pengujian API dengan OpenAPI/7",
@@ -9514,7 +9514,7 @@
   {
    "nama": "backend/materi/22. Spring Data JPA dan Hibernate di Spring Boot/7",
    "bahasa": "ini",
-   "sha256": "cb6ebe2087054065cef6399cab84c4bfd486f30f85ed5e23eb62a36255d2fa9f"
+   "sha256": "c6348efde89cb360959f2e8fb373812301437b30ad4dc74575fb32be79df3917"
   },
   {
    "nama": "backend/materi/22. Spring Data JPA dan Hibernate di Spring Boot/9",
@@ -9689,7 +9689,7 @@
   {
    "nama": "backend/materi/39. OAuth 2.0 dan PKCE: Izin Tanpa Kata Sandi/3",
    "bahasa": "http",
-   "sha256": "34120812803363ddb979c52e802b3051356f07409c078325505d254e8781b190"
+   "sha256": "578aa7fc4d0bcaced0685cfc67a5a3208dc8e224f32abe330a15cd690e956e1e"
   },
   {
    "nama": "backend/materi/39. OAuth 2.0 dan PKCE: Izin Tanpa Kata Sandi/5",
@@ -9729,12 +9729,12 @@
   {
    "nama": "backend/materi/43. Cache dengan Redis dan Valkey/4",
    "bahasa": "redis",
-   "sha256": "d4c6120988afdfdeb937c931ad1d4c879f85d30ed06932c50b39af2f412d0915"
+   "sha256": "afb99f1be3a3330cff3dbe83a1337a7de175d0de312d30c631102b0569c85509"
   },
   {
    "nama": "backend/materi/43. Cache dengan Redis dan Valkey/7",
    "bahasa": "http",
-   "sha256": "694117b2933b1fdf472eaab48f04c99210796d7979452dde1dc1e1b3ba64adcd"
+   "sha256": "3af48fa9e859dda1eda9c8d6d1b30960bb71ae59213ed859e8f61a2d217640c7"
   },
   {
    "nama": "backend/materi/43. Cache dengan Redis dan Valkey/9",
@@ -9744,7 +9744,7 @@
   {
    "nama": "backend/materi/44. Redis untuk Sesi, Pub/Sub, dan Antrean Tugas/3",
    "bahasa": "redis",
-   "sha256": "227cca948dc7a9d6b66f26822a9b20a87abcb44d3162f46877dc3b9f027dbc0f"
+   "sha256": "bec3701013f7c397f4e75064b8d79dd798005b880be521c749d28eae0750764b"
   },
   {
    "nama": "backend/materi/44. Redis untuk Sesi, Pub/Sub, dan Antrean Tugas/5",
@@ -9859,7 +9859,7 @@
   {
    "nama": "backend/materi/52. Nginx Sebagai Reverse Proxy untuk API/2",
    "bahasa": "nginx",
-   "sha256": "d3b8a9e772c12b4d4bac3df4abf06f29732ec87c9fa68d2e44d37d2278d7cf3b"
+   "sha256": "18be8c9b6966a1d0704b0ca4d6571beeb6f3bad6ff67d62370ca2dc48af18322"
   },
   {
    "nama": "backend/materi/52. Nginx Sebagai Reverse Proxy untuk API/5",
@@ -9889,7 +9889,7 @@
   {
    "nama": "backend/materi/53. Server Aplikasi di Belakang Nginx/8",
    "bahasa": "ini",
-   "sha256": "5dc6fa097a84bcfb48e8843c74807d54fcd7514ad352650eb04ddf37b2194829"
+   "sha256": "500b16c928270ff7de0f51b4f077904acc9637e2195fdf9910690a61e2329773"
   },
   {
    "nama": "backend/materi/54. Peta Web Server dan Server Aplikasi/1",
@@ -9914,7 +9914,7 @@
   {
    "nama": "backend/materi/55. Arsitektur Backend: Monolit, Event, dan Ketahanan/8",
    "bahasa": "yaml",
-   "sha256": "df75a49b1c68992b895b70db8a8a91e5a05bfcf4cb9cfd28f12fa21a13beaf88"
+   "sha256": "77183e09d87fd8e3bccd2da6fb798e577ce32ba04c8489eb5219d18c962d230f"
   },
   {
    "nama": "backend/materi/56. Peta CMS Headless dan Backend-as-a-Service/1",
@@ -10349,7 +10349,7 @@
   {
    "nama": "database/materi/20. Redis dan Valkey: Struktur Data di Dalam Memori/4",
    "bahasa": "redis",
-   "sha256": "40fbbf26ac94b1e9618863cfaf6a3eb8c2cb99ff177150d2448c22404040a4cc"
+   "sha256": "15beca8d39b84f7087178979733b4ad804399e494907c3d2fe0fefdd692bcd45"
   },
   {
    "nama": "database/materi/20. Redis dan Valkey: Struktur Data di Dalam Memori/6",
@@ -10359,7 +10359,7 @@
   {
    "nama": "database/materi/20. Redis dan Valkey: Struktur Data di Dalam Memori/8",
    "bahasa": "redis",
-   "sha256": "e1dbf42578c361b2ad28ddd826cd99f2657be1c203d9c092ee40cdeb1d1512a7"
+   "sha256": "1d8f77b9ab95a61bfc729300def71715a9f7ba933646d126ba59c0c46f260fac"
   },
   {
    "nama": "database/materi/20. Redis dan Valkey: Struktur Data di Dalam Memori/10",
@@ -10374,17 +10374,17 @@
   {
    "nama": "database/materi/21. Pola Caching: Cache-Aside, TTL, dan Invalidasi/6",
    "bahasa": "redis",
-   "sha256": "777e409f6cb0329056a17ec5d3c466de484c359b330e559ce6c54734a9b84fda"
+   "sha256": "eeec38b96c4a9f96e0f7504d1968d642bc745b22d9e18a9d64641a47aef08208"
   },
   {
    "nama": "database/materi/22. Redis untuk Antrean, Pub/Sub, dan Pembatas Laju/2",
    "bahasa": "redis",
-   "sha256": "edb7f87a546da18714f404cbbd95d212929cab12dafce3f92994a29bb4877a4e"
+   "sha256": "d2d602464449d03821c0c72062d9500bc101f9666aab7af3a628f9ea036122e1"
   },
   {
    "nama": "database/materi/22. Redis untuk Antrean, Pub/Sub, dan Pembatas Laju/4",
    "bahasa": "redis",
-   "sha256": "d467990e0936fa9aeb4a228e1c9009face925a1c1c3c8a523aded7aae52fbab2"
+   "sha256": "4624516c1332711a2e8f93ad827acfce65a6310c4cd81c24417ddfda64a37e3a"
   },
   {
    "nama": "database/materi/22. Redis untuk Antrean, Pub/Sub, dan Pembatas Laju/7",
@@ -10519,7 +10519,7 @@
   {
    "nama": "database/materi/31. Backup, Restore, dan Pemulihan ke Titik Waktu/6",
    "bahasa": "ini",
-   "sha256": "5c4289b2e7197c519a49a7471e8814080a56b345e8e3c5c8a445e2f5327c1b34"
+   "sha256": "681e60d5ee571087ae6095c7a576c31e0378461ca51600e2ec55633c2fa6b475"
   },
   {
    "nama": "database/materi/32. Replikasi, Failover, dan Ketersediaan Tinggi/3",
@@ -10579,7 +10579,7 @@
   {
    "nama": "database/materi/37. Peta Mesin Pencari: Elasticsearch, OpenSearch, dan Lainnya/2",
    "bahasa": "http",
-   "sha256": "d844c441798106453ebb3a43f0607f21651b08e58688465feb19253bc0167160"
+   "sha256": "6258f5150f399cfcd5a8c8627af5f0125e1bce8c64f1f2c1c6abf0e9514a2567"
   },
   {
    "nama": "database/materi/38. OLTP, OLAP, dan Skema Bintang/3",
@@ -10839,7 +10839,7 @@
   {
    "nama": "mobile/materi/6. Gradle dan Android Gradle Plugin/8",
    "bahasa": "toml",
-   "sha256": "c71a7835c03a120b763fccd9e3ca0bd4fef4bb1fb33836a1ada03e44d579f166"
+   "sha256": "00f83f59fac74d0886319568dab9a7b32cfc6d9daa94138db7dd224ac5cbb0d0"
   },
   {
    "nama": "mobile/materi/7. Siklus Hidup Activity dan Perubahan Konfigurasi/2",
@@ -11379,7 +11379,7 @@
   {
    "nama": "mobile/materi/36. Fastlane dan CI/CD Rilis Mobile/7",
    "bahasa": "yaml",
-   "sha256": "f2f1ba2e19058fbc9c61b7fd33325356b3b09a882a31a9df31399fb17dd02a74"
+   "sha256": "7794090953c30b817596f071d45df115ad3c28895c7cae1bf68a3078fa21914e"
   },
   {
    "nama": "mobile/materi/36. Fastlane dan CI/CD Rilis Mobile/9",
@@ -11409,7 +11409,7 @@
   {
    "nama": "mobile/materi/40. Toko Lain: F-Droid dan Microsoft Store/2",
    "bahasa": "yaml",
-   "sha256": "a791d3c77c53224a7cab8dcb68c1c34868ca1de9229135b9131e86d57afe16f1"
+   "sha256": "94574da270303add62270ebdc8dd2d0694a658d8089f04c3398b93fe9800c482"
   },
   {
    "nama": "mobile/materi/41. Aturan Baru yang Bikin Tutorial Lama Menyesatkan/5",
@@ -12139,7 +12139,7 @@
   {
    "nama": "iot/materi/16. PlatformIO: Satu Alat untuk Banyak Papan/2",
    "bahasa": "ini",
-   "sha256": "fa970cdd7706cd9fd9404c3e0ee121399ebc856232437e071e5aa7162a3eb0e7"
+   "sha256": "9585187466de68e9347cfb3ac6b573bc432da10520813cbc9d893b6b9e771430"
   },
   {
    "nama": "iot/materi/16. PlatformIO: Satu Alat untuk Banyak Papan/4",
@@ -12154,7 +12154,7 @@
   {
    "nama": "iot/materi/16. PlatformIO: Satu Alat untuk Banyak Papan/8",
    "bahasa": "ini",
-   "sha256": "69cde9601028066032a28a1284b1431140d2d55c7605a31a6c0f9d5ebb3c9294"
+   "sha256": "5821b2846ee4585bfa2408c217f06d76385a5ccf73decdf27e25624211297926"
   },
   {
    "nama": "iot/materi/17. Kenapa RTOS: Task, Tick, dan Penjadwal/3",
@@ -12189,7 +12189,7 @@
   {
    "nama": "iot/materi/19. Zephyr: Devicetree, Kconfig, dan west/6",
    "bahasa": "ini",
-   "sha256": "b8ee6b656b5bce0d0df96a0f1999f6e82de6660632ce988bb47533ca62ac54b9"
+   "sha256": "bdb85f877c5460dcfb68b42cd5aaacee117d29d89d0d6ce1682a75d6bdd46bc8"
   },
   {
    "nama": "iot/materi/19. Zephyr: Devicetree, Kconfig, dan west/7",
@@ -12224,7 +12224,7 @@
   {
    "nama": "iot/materi/23. Broker Mosquitto di Mesin Sendiri/6",
    "bahasa": "ini",
-   "sha256": "602ff89ceaccf3aece789b88c95a0f072278d2bd2d2ea6e4204f7e3ac99c48f9"
+   "sha256": "03f615bf42c74df35750a0764e4e35af212e1ecec26274247015e89d282864c4"
   },
   {
    "nama": "iot/materi/23. Broker Mosquitto di Mesin Sendiri/7",
@@ -12244,7 +12244,7 @@
   {
    "nama": "iot/materi/24. Raspberry Pi sebagai Gateway IoT/7",
    "bahasa": "ini",
-   "sha256": "e17d89d2e461d5de8bd7840ebec6e06ac8a3937f2965db4eb4f47eedc1d84743"
+   "sha256": "a6bb49e88c33050ad2e6f065915bb25a062e108e08e7ef068b9deaa3032b0f17"
   },
   {
    "nama": "iot/materi/25. Node-RED: Pemrograman Berbasis Alur/2",
@@ -12269,12 +12269,12 @@
   {
    "nama": "iot/materi/26. Home Assistant, ESPHome, dan Matter/2",
    "bahasa": "yaml",
-   "sha256": "01077107fab6f14abdbc7736bec56c986314638b5ae5f4263fbd2660b519d21a"
+   "sha256": "f3f7b58e7a6057adbc13724f96a2514c22a9935d6f5f15bfa75908c81208e43a"
   },
   {
    "nama": "iot/materi/26. Home Assistant, ESPHome, dan Matter/4",
    "bahasa": "yaml",
-   "sha256": "dfe92a13b9c1abcb7ca7993ac5ff7075b5cbe69582e0deefbac091ae54226191"
+   "sha256": "b4acef25eba4cf442a6fbbf578678822a9aaae0495ba514f9aa8f4ea29ead046"
   },
   {
    "nama": "iot/materi/27. STM32 dan HAL: Embedded di Industri/2",
@@ -12399,7 +12399,7 @@
   {
    "nama": "devops/materi/2. Linux Server, SSH, dan Firewall untuk DevOps/3",
    "bahasa": "ini",
-   "sha256": "0068d5c563cf21791d3430a8febaa84dabd2533fb26874fe9463845c4d2ca390"
+   "sha256": "7de4067b1c8c8cd3d98f8e91ca8d45df50f94d35704287fa130ddf3afa325018"
   },
   {
    "nama": "devops/materi/2. Linux Server, SSH, dan Firewall untuk DevOps/4",
@@ -12424,7 +12424,7 @@
   {
    "nama": "devops/materi/3. YAML, Bahasa Konfigurasi Alat DevOps/2",
    "bahasa": "yaml",
-   "sha256": "90fdb1da67353bae87b38862e12f6453e28aa4fc08c2f66ef6b40a25144a39d4"
+   "sha256": "19574e2c9d2143e3608577065105e5c436a70c20641befd4653960d370ac344a"
   },
   {
    "nama": "devops/materi/3. YAML, Bahasa Konfigurasi Alat DevOps/4",
@@ -12464,12 +12464,12 @@
   {
    "nama": "devops/materi/6. Nginx: Web Server dan Reverse Proxy/3",
    "bahasa": "nginx",
-   "sha256": "127963a90c661ee90dbf05de5c0b017edaa0c1399f45f7c7cfc85e24c02893d8"
+   "sha256": "4bfd7caf7a3f5904d9cae3b3d96a57ace4d4e4039c35fa792e549ffcc0f93b80"
   },
   {
    "nama": "devops/materi/6. Nginx: Web Server dan Reverse Proxy/5",
    "bahasa": "nginx",
-   "sha256": "671f3c96ed4f3dd13a63e8cfe1b83fbaf76e9750655f7f939a03efc90978564a"
+   "sha256": "220b16956eb3c451f93d910cff0cfb1776f7e7563de98b3f8c88c19d112947a0"
   },
   {
    "nama": "devops/materi/6. Nginx: Web Server dan Reverse Proxy/7",
@@ -12484,12 +12484,12 @@
   {
    "nama": "devops/materi/7. Nginx Lanjutan: HTTPS, location, dan Load Balancing/5",
    "bahasa": "nginx",
-   "sha256": "8ceffb1247d0a274eaacf33f0a81e0de7cee53d8439dc1c98308f97baffd2c04"
+   "sha256": "4b2b75a6a4e42ffbb4616d8d642c03a03bec4207b68c377ab57be16b8efa5b27"
   },
   {
    "nama": "devops/materi/7. Nginx Lanjutan: HTTPS, location, dan Load Balancing/8",
    "bahasa": "nginx",
-   "sha256": "0906beedb996c76fffb390b375a69804976545fa957c94c0f571476c6e51814f"
+   "sha256": "f461f77237873b1abb72a94c70bdfa7dc7e8e50b3c89908910f1e13962704834"
   },
   {
    "nama": "devops/materi/7. Nginx Lanjutan: HTTPS, location, dan Load Balancing/10",
@@ -12499,7 +12499,7 @@
   {
    "nama": "devops/materi/8. Peta Web Server, VPN, dan Email untuk Server/2",
    "bahasa": "yaml",
-   "sha256": "bd0faf21444fad8bc2b541827a5c0e8ed19ce12df990d9cea3e2f4e7159a85bd"
+   "sha256": "a00176a641111956427e52a2d309541b91755ce0b08a3202b475a6036df41bd9"
   },
   {
    "nama": "devops/materi/8. Peta Web Server, VPN, dan Email untuk Server/6",
@@ -12554,7 +12554,7 @@
   {
    "nama": "devops/materi/12. Docker Compose: Banyak Container dalam Satu Berkas/1",
    "bahasa": "yaml",
-   "sha256": "8fab24ebb7ad7ed4cac82f16c4df48040f7f4c385bc73185a85c63bbd00fa051"
+   "sha256": "5baccf9aef8413cf4d822ad15de10b4a63a46596f1dcc4099cf6295cdd700ee9"
   },
   {
    "nama": "devops/materi/12. Docker Compose: Banyak Container dalam Satu Berkas/3",
@@ -12569,7 +12569,7 @@
   {
    "nama": "devops/materi/13. Compose Lanjutan: Healthcheck, Variabel, dan Profil/2",
    "bahasa": "yaml",
-   "sha256": "8996728c99eb5de45bc0d9ad6391830211b0db4d72c08a0bbc1d4542ef01427e"
+   "sha256": "c3e7d33e9e40dc5b99ef80c53279be764e41ba1062c2f320d3fa11aa7962a119"
   },
   {
    "nama": "devops/materi/13. Compose Lanjutan: Healthcheck, Variabel, dan Profil/5",
@@ -12599,7 +12599,7 @@
   {
    "nama": "devops/materi/14. Podman: Container Tanpa Root di Fedora/8",
    "bahasa": "ini",
-   "sha256": "9c781847185faaf63128be918f3ddc6c533d5720ec097abf7108f0fc17bc46a4"
+   "sha256": "9cca493e011bf5c16552dc35b5e176e00d79c7fa1ccaf54c6cdcf6bd986e25e5"
   },
   {
    "nama": "devops/materi/14. Podman: Container Tanpa Root di Fedora/9",
@@ -12614,12 +12614,12 @@
   {
    "nama": "devops/materi/16. GitHub Actions: Pipeline Pertama dari Commit ke Tes/2",
    "bahasa": "yaml",
-   "sha256": "9ed9404da1a5447356c562d6116a583a6fe86999eef2e25d065af4ec01eb40d2"
+   "sha256": "1d8e74031f1493a900e5dd1932a37f1f59f6bb07c4a8d34b84866bbbd94e985f"
   },
   {
    "nama": "devops/materi/16. GitHub Actions: Pipeline Pertama dari Commit ke Tes/5",
    "bahasa": "yaml",
-   "sha256": "c4492f2dad94789cc8d8970d71bc0774d63710c0d32cea452b2fafb86833c086"
+   "sha256": "44e59d87e64a0dc5b841742bbafbd411bee47e8a7a0c7ac97013771b36c23126"
   },
   {
    "nama": "devops/materi/16. GitHub Actions: Pipeline Pertama dari Commit ke Tes/6",
@@ -12629,7 +12629,7 @@
   {
    "nama": "devops/materi/17. GitHub Actions: Matriks, Cache, dan Artefak/1",
    "bahasa": "yaml",
-   "sha256": "785ae4995a804e2cd41e9825033f1d7095ec25509e838ce54b04f57eb9adcc13"
+   "sha256": "9183db324cecc4c07d1605f4494f82ac281b0f12f7a9394475e4a67d1598d421"
   },
   {
    "nama": "devops/materi/17. GitHub Actions: Matriks, Cache, dan Artefak/2",
@@ -12639,22 +12639,22 @@
   {
    "nama": "devops/materi/17. GitHub Actions: Matriks, Cache, dan Artefak/4",
    "bahasa": "yaml",
-   "sha256": "0f966a2dc9d17c40a7660cd116077ff2f54c480b80bc4a19ee399a02d8e83322"
+   "sha256": "8a0f7dee785456d098b383441f6ec07be136dcaaf4556e6fcc80fda0da177556"
   },
   {
    "nama": "devops/materi/17. GitHub Actions: Matriks, Cache, dan Artefak/6",
    "bahasa": "yaml",
-   "sha256": "157bb92c3b1b93483b9d36d1ffb6e348c51b81391b48b7f0a959cf62676a73ab"
+   "sha256": "85ffdb86c5785b1cfe95345db2457fa6887246408487c1d6eb14fae5d30c116b"
   },
   {
    "nama": "devops/materi/18. GitHub Actions: Secrets, OIDC, dan Keamanan Workflow/1",
    "bahasa": "yaml",
-   "sha256": "0b3933c90c80db18688816ce266093cbd0761790cabf76b793b317cac2e46251"
+   "sha256": "483b61c20fbab738dc0082d7ae68802157eb422bf99657beddc32c789472a70b"
   },
   {
    "nama": "devops/materi/18. GitHub Actions: Secrets, OIDC, dan Keamanan Workflow/2",
    "bahasa": "yaml",
-   "sha256": "76b692ff06edb90fee73855d570cca8ffd3d96359f4f3f0aef3ea2976d4f9e91"
+   "sha256": "2d1f88e4649e68b1b3128f8cc9a91f72f0658d006c25d919e5aea5a84a8fb0d2"
   },
   {
    "nama": "devops/materi/18. GitHub Actions: Secrets, OIDC, dan Keamanan Workflow/3",
@@ -12664,7 +12664,7 @@
   {
    "nama": "devops/materi/18. GitHub Actions: Secrets, OIDC, dan Keamanan Workflow/5",
    "bahasa": "yaml",
-   "sha256": "9188005e62b3eec0cf29283e59e73bfed0026fda0fcc107c82e6a05dbae6f4c9"
+   "sha256": "557d29fe8186a96fb5f9cb96f34bbd3caebebf0fc90c7dea160648fb3b591da5"
   },
   {
    "nama": "devops/materi/18. GitHub Actions: Secrets, OIDC, dan Keamanan Workflow/6",
@@ -12674,7 +12674,7 @@
   {
    "nama": "devops/materi/19. GitLab CI dan Jenkins/1",
    "bahasa": "yaml",
-   "sha256": "c111a6bd77ff557feb228669c2a5ad08e1aa53af0a081a4576b4708f1efeec8b"
+   "sha256": "c9d81b7243a565174ba2f827c423093e5b3d69656deef15dc8f027209233abdb"
   },
   {
    "nama": "devops/materi/19. GitLab CI dan Jenkins/3",
@@ -12774,7 +12774,7 @@
   {
    "nama": "devops/materi/28. Cloudflare Workers dan Platform Edge/5",
    "bahasa": "toml",
-   "sha256": "902938145e7cbed2a9f59cdea44f9173a0eff82453ef94466dd66c081a735dfc"
+   "sha256": "8867a0ea6441fa71b19186ad92006652dc078316d91608a0c34dd3d85357e162"
   },
   {
    "nama": "devops/materi/29. Peta Platform Deploy: Cloud Run, Vercel, Heroku, Firebase/1",
@@ -12789,7 +12789,7 @@
   {
    "nama": "devops/materi/30. Terraform: Infrastruktur Ditulis sebagai Kode/2",
    "bahasa": "hcl",
-   "sha256": "42804b9af1328aa00f6caaabb19590a077c8e87a4ac19aee13a2e7ff9d23ec66"
+   "sha256": "ab880c691c2c0ecc506f0a9f255f1e5f470f26d71cffdf48e00be23e089d794d"
   },
   {
    "nama": "devops/materi/30. Terraform: Infrastruktur Ditulis sebagai Kode/3",
@@ -12814,7 +12814,7 @@
   {
    "nama": "devops/materi/31. Terraform State, Plan, dan Backend Jarak Jauh/5",
    "bahasa": "hcl",
-   "sha256": "3e8183864e529ab107334240d439bb80b97e88ffa7387435d0c58740430577e3"
+   "sha256": "677ee6c3430f2baec3b0e71bc2240309412d8bd2b1c4086d1e668c22c8cbd77b"
   },
   {
    "nama": "devops/materi/31. Terraform State, Plan, dan Backend Jarak Jauh/7",
@@ -12829,17 +12829,17 @@
   {
    "nama": "devops/materi/32. Modul Terraform dan Terraform di Pipeline/3",
    "bahasa": "hcl",
-   "sha256": "84b3ee86030b17d94b562ed915b602c64c9f034d0ba4f603e077ead5e277f79c"
+   "sha256": "2fb2f96823272288c0479b261d04ecbe4e665ba7ca8aaaa179cd2f29f62f97f9"
   },
   {
    "nama": "devops/materi/32. Modul Terraform dan Terraform di Pipeline/5",
    "bahasa": "yaml",
-   "sha256": "01658d3ec9ba57163b97e2b6b49dca2a3b0d482f8d4dbd911db8531e21bf3da1"
+   "sha256": "bd4fdc3a530fcad63275732c7d8363b41987cb8dcad88908f98f134c7fe94611"
   },
   {
    "nama": "devops/materi/33. Ansible: Otomasi Server Lewat SSH/1",
    "bahasa": "ini",
-   "sha256": "30e49d0572c86cd7e2cda8dfcaca94e525ee63be8e4c35e83803a1cb23aa51ec"
+   "sha256": "434c527b7574e1e89b90e7c01fa9db0cef27ebc02ec27136047b973bd1ad4783"
   },
   {
    "nama": "devops/materi/33. Ansible: Otomasi Server Lewat SSH/2",
@@ -12854,7 +12854,7 @@
   {
    "nama": "devops/materi/33. Ansible: Otomasi Server Lewat SSH/6",
    "bahasa": "yaml",
-   "sha256": "91dbaaf2e93bea383c9ad0fe9738c844b5581a4c070a09f04b27eaee89e9b3e2"
+   "sha256": "375acfaef216949c1bd7aee9f2b4536106c1d9942e3f87135e11deb4d3e3d2b1"
   },
   {
    "nama": "devops/materi/33. Ansible: Otomasi Server Lewat SSH/7",
@@ -12869,7 +12869,7 @@
   {
    "nama": "devops/materi/34. Ansible Lanjutan: Role, Template, dan Idempotensi/2",
    "bahasa": "yaml",
-   "sha256": "17a2651dbc44022a233ad9700382a0387b01bf7635804ce60003fdc2a482f59a"
+   "sha256": "5ed2d5a058bed0fdbbb72e1c569dae7ddc1846480ce8a665994ed292121f63ac"
   },
   {
    "nama": "devops/materi/34. Ansible Lanjutan: Role, Template, dan Idempotensi/3",
@@ -12879,7 +12879,7 @@
   {
    "nama": "devops/materi/34. Ansible Lanjutan: Role, Template, dan Idempotensi/4",
    "bahasa": "yaml",
-   "sha256": "56fa92314ccdc452dc80aeffd956491fca16b28c20512e8f6997a912790ce4ba"
+   "sha256": "170f3f84444563935012a1d63e5b89e3a4a2e71687618a2a600555b03083f94b"
   },
   {
    "nama": "devops/materi/34. Ansible Lanjutan: Role, Template, dan Idempotensi/6",
@@ -12889,12 +12889,12 @@
   {
    "nama": "devops/materi/34. Ansible Lanjutan: Role, Template, dan Idempotensi/7",
    "bahasa": "yaml",
-   "sha256": "72aa2a6669e6b7b42a73fda28e75c621dc34545a0d8c3ea2d031fa021c0354ef"
+   "sha256": "45df28dc0a35be7c75a99e36936e8d0e9086c22315b6c15a3ebe5fba3ca2ebdb"
   },
   {
    "nama": "devops/materi/34. Ansible Lanjutan: Role, Template, dan Idempotensi/9",
    "bahasa": "yaml",
-   "sha256": "3a667b4fe956bb18aa37ea8309e2f774f4b4393c04e2b276bf580d515c538237"
+   "sha256": "c8054e9c32251a812f77004a05b45c77cc70abcc2b73fed23cafafffe84398b5"
   },
   {
    "nama": "devops/materi/35. Peta IaC: OpenTofu, Pulumi, CloudFormation, Chef, Puppet/1",
@@ -12919,7 +12919,7 @@
   {
    "nama": "devops/materi/37. Pod, Deployment, dan Strategi Rilis/2",
    "bahasa": "yaml",
-   "sha256": "e2f0e0ef380ea938b318ce7a676d1499084dc5d5e09fcb9cb29f732e5cd5e73c"
+   "sha256": "1e3f74c3f2212d93b5bf099f23314e8268de8cdf751b3fa328da16072f6781c2"
   },
   {
    "nama": "devops/materi/37. Pod, Deployment, dan Strategi Rilis/3",
@@ -12929,12 +12929,12 @@
   {
    "nama": "devops/materi/38. Service, Ingress, dan Gateway API/1",
    "bahasa": "yaml",
-   "sha256": "2a7ddfd2f299da16d47394e7fa02ce3461fad61f85dfc438ce9725cf65f9991e"
+   "sha256": "6af034f4803b80b45ef6bb960cd44e4dd11a00edd8bacd4a696c05202a72af3f"
   },
   {
    "nama": "devops/materi/38. Service, Ingress, dan Gateway API/5",
    "bahasa": "yaml",
-   "sha256": "52b39634111ef4f092197315981df658919e7da430cec1ff8442652c9784bffc"
+   "sha256": "f25b84e09ab04349378b57db32fcbdcca453064654ba01b5c3f5884b8c898d90"
   },
   {
    "nama": "devops/materi/38. Service, Ingress, dan Gateway API/6",
@@ -12944,7 +12944,7 @@
   {
    "nama": "devops/materi/39. ConfigMap, Secret, Probe, dan Batas Resource/1",
    "bahasa": "yaml",
-   "sha256": "9f92497946aecd66b12f9d329fde523e9a5fb81d012e26396c905e0cda6c652b"
+   "sha256": "19d0c339e2ecc7a3540ab39f271418e41aef8afac34a72c98f3369082fec2fe7"
   },
   {
    "nama": "devops/materi/39. ConfigMap, Secret, Probe, dan Batas Resource/3",
@@ -12954,7 +12954,7 @@
   {
    "nama": "devops/materi/39. ConfigMap, Secret, Probe, dan Batas Resource/6",
    "bahasa": "yaml",
-   "sha256": "d20b1f8015c9c73e6e16644d040cc68d7ebd7f922bc635c4f1c1a718553bab96"
+   "sha256": "77b39a6fc68a8245b66a525b9eefd71ccaaa0c2b7b0257a8873e43b8cfec6b19"
   },
   {
    "nama": "devops/materi/41. Helm: Memasang Aplikasi dengan Chart/1",
@@ -12969,12 +12969,12 @@
   {
    "nama": "devops/materi/42. Membuat Chart Helm dan Kapan Memilih Kustomize/1",
    "bahasa": "yaml",
-   "sha256": "332ea2315f15322843bb140dc9fa4b06abe6ab033fb7519ff743e16f16df67ec"
+   "sha256": "74e05e07f929963ae633d31b90bd95e19fcfbe38dcac786997d08e00b836ad2b"
   },
   {
    "nama": "devops/materi/42. Membuat Chart Helm dan Kapan Memilih Kustomize/2",
    "bahasa": "yaml",
-   "sha256": "07b95b233028a487ac98986b5ebc7c5baf4b036bc20408edbc6dc0784d2ed9b1"
+   "sha256": "a4bc6a58875e241d3d5e51bf3e5e0aa1f281f6b1db685014593974d81c7f1596"
   },
   {
    "nama": "devops/materi/42. Membuat Chart Helm dan Kapan Memilih Kustomize/4",
@@ -12984,7 +12984,7 @@
   {
    "nama": "devops/materi/42. Membuat Chart Helm dan Kapan Memilih Kustomize/6",
    "bahasa": "yaml",
-   "sha256": "5c044892ae79f42c5dd75de40b267b752728e6c0188b427b6249c336c5f9117e"
+   "sha256": "7448302a52c888d25036771f86bc2dae4a8e7a86fd2ba4e659141698febab187"
   },
   {
    "nama": "devops/materi/43. GitOps dengan Argo CD/3",
@@ -12994,17 +12994,17 @@
   {
    "nama": "devops/materi/43. GitOps dengan Argo CD/4",
    "bahasa": "yaml",
-   "sha256": "07c6e6f788f2dad1f95485a090dfc4e8f8433045721f114b88bd22df43e00f50"
+   "sha256": "f8a1f9105351501c36645c7703eb2efba6161863fc29aad391e1e87acb28e279"
   },
   {
    "nama": "devops/materi/44. Argo CD Lanjutan: Drift, Rollback, dan Flux/2",
    "bahasa": "yaml",
-   "sha256": "89a5388bf6269174badec885f6dc9d0d9203bf04e07502d67fde64ea20c91f32"
+   "sha256": "30e7a054101c939c362107db8cfce89b4ab50ecdefe5cf7f58c54f717f67b8cf"
   },
   {
    "nama": "devops/materi/44. Argo CD Lanjutan: Drift, Rollback, dan Flux/5",
    "bahasa": "yaml",
-   "sha256": "77dcebcaa428a3b7ff5640f61c76b4e2cdd70c7b34625eb18da7f6d3079f1ee3"
+   "sha256": "2337b2034c845d1a739357c9189685e94c8f747c9d5ccfa3eb2b5c2795582d24"
   },
   {
    "nama": "devops/materi/44. Argo CD Lanjutan: Drift, Rollback, dan Flux/7",
@@ -13024,7 +13024,7 @@
   {
    "nama": "devops/materi/46. Prometheus: Mengumpulkan Metrik dari Aplikasi/5",
    "bahasa": "yaml",
-   "sha256": "f782fa69fee3c3195f0f5aea26b2b9bf66cf1d2397cc696a3a2c59a2f85cf013"
+   "sha256": "2c9016d2cb81d36e8704c9617f02d7c4201fbdc098930bd4fa1f4f39086dccb3"
   },
   {
    "nama": "devops/materi/47. PromQL, Alert, dan Dasbor Grafana/2",
@@ -13034,7 +13034,7 @@
   {
    "nama": "devops/materi/47. PromQL, Alert, dan Dasbor Grafana/4",
    "bahasa": "yaml",
-   "sha256": "4d5ade7abc2fdffee7c6319d9a7aa02a1f310f5eed8d451b07a7b3ae2aac84dc"
+   "sha256": "154f034200b4ba0d30a782d1bba2027a2713b7df0cc01d42d4e2d110569927e0"
   },
   {
    "nama": "devops/materi/48. OpenTelemetry: Satu Standar untuk Telemetri/2",
@@ -13049,7 +13049,7 @@
   {
    "nama": "devops/materi/48. OpenTelemetry: Satu Standar untuk Telemetri/6",
    "bahasa": "yaml",
-   "sha256": "ef3416f568dd382ddcfafcf0880341c210c68026b4e355403337d9836a51b8a7"
+   "sha256": "fb9eac43be0f1993e11a16a12e32ef120fe527c11f4cebcb474021b7b53b869a"
   },
   {
    "nama": "devops/materi/49. Tracing dengan OpenTelemetry dan Jaeger/3",
@@ -13074,7 +13074,7 @@
   {
    "nama": "devops/materi/50. Log Terpusat: Loki, Alloy, ELK, dan Fluent Bit/8",
    "bahasa": "yaml",
-   "sha256": "cba0b4348bbdda169b5a2695abfbbdab3c7a73f90fcdb275622da6fe1a5e017c"
+   "sha256": "d0d07ab481a4b52b9e7ee85f960c653178801fde109009f5273e222b75cefeeb"
   },
   {
    "nama": "devops/materi/52. FinOps: Membaca dan Menekan Tagihan Cloud/2",
@@ -13089,7 +13089,7 @@
   {
    "nama": "devops/materi/52. FinOps: Membaca dan Menekan Tagihan Cloud/5",
    "bahasa": "hcl",
-   "sha256": "577f867fff731638fa5e85bf7a4ecd6288f055d969f189ad1f70db0ac72c4003"
+   "sha256": "b51897331216cc5a12c1a19b5bc6ebeea0119fd5991e54b72cc4e05cad5b3afd"
   },
   {
    "nama": "devops/materi/52. FinOps: Membaca dan Menekan Tagihan Cloud/7",
@@ -13309,7 +13309,7 @@
   {
    "nama": "keamanan/materi/10. Sesi, Cookie, dan JWT/2",
    "bahasa": "http",
-   "sha256": "51353f5ebd6699eb5b92a62bb2639aead49f7993c0082be3bff685aa5aaa2523"
+   "sha256": "1cf568c014f9222361d1a01e575ecf2661a5c3c3b200c49c1c6f12358c05aa6c"
   },
   {
    "nama": "keamanan/materi/10. Sesi, Cookie, dan JWT/5",
@@ -13324,7 +13324,7 @@
   {
    "nama": "keamanan/materi/11. OAuth 2.0, OpenID Connect, dan SSO/4",
    "bahasa": "http",
-   "sha256": "1f44bfc29f6684f5022b610d0229b4af20729af1cc13b972b7c1af0a4ff97a70"
+   "sha256": "f3f4c1b2982980c680339d41cb439e24d307ac7889caa423a263ce3261a91a51"
   },
   {
    "nama": "keamanan/materi/12. Otorisasi: RBAC, Least Privilege, dan Policy as Code/2",
@@ -13359,7 +13359,7 @@
   {
    "nama": "keamanan/materi/15. Kontrol Akses Rusak dan Salah Konfigurasi/7",
    "bahasa": "nginx",
-   "sha256": "9bde88e7be410c0a78e85cb01760f3607db0e6d9e78b4f714081b9505416c721"
+   "sha256": "72c1c4b78eeaaba0d67b1c4f49f50bf627364b0ee4a40b1cde20469a2923effc"
   },
   {
    "nama": "keamanan/materi/16. Injeksi dan XSS: Validasi Masukan dan Encoding Keluaran/1",
@@ -13389,7 +13389,7 @@
   {
    "nama": "keamanan/materi/18. Rate Limiting, Brute Force, dan Perlindungan Login/5",
    "bahasa": "nginx",
-   "sha256": "2cdcdf8f3856ccc3aa078df2678225d702624f036bd4a4289a30f1e4d99da589"
+   "sha256": "45473dff7217f6e0ae39ad02a7c6ffb1f336b788431c6a249f4324cae6248fc8"
   },
   {
    "nama": "keamanan/materi/19. Header Keamanan, CORS, dan Cookie Aman/1",
@@ -13399,7 +13399,7 @@
   {
    "nama": "keamanan/materi/19. Header Keamanan, CORS, dan Cookie Aman/3",
    "bahasa": "http",
-   "sha256": "03e39b1cf5532593f0839ce07d3dc5efe5d7616eb0573676f256ae58a2d75b04"
+   "sha256": "a420c6f98d723e5940b9ffc267393d8e623fa80760ac26a7e052aaa1fbe0cc12"
   },
   {
    "nama": "keamanan/materi/20. Keamanan API: Skema, Kunci API, dan Logging Aman/1",
@@ -13429,7 +13429,7 @@
   {
    "nama": "keamanan/materi/22. Vault dan OpenBao: Brankas Rahasia Terpusat/5",
    "bahasa": "hcl",
-   "sha256": "a11502434f1d13a30e55de775feb2c7a2d718b7bd401f1bb7a6eacbe791ad7d9"
+   "sha256": "f68ceaea1aadee50091572ad9c493332480e0b79f6d19d928917446f17921079"
   },
   {
    "nama": "keamanan/materi/23. Rahasia di Git dan Kubernetes: SOPS, Sealed Secrets, ESO/1",
@@ -13439,7 +13439,7 @@
   {
    "nama": "keamanan/materi/23. Rahasia di Git dan Kubernetes: SOPS, Sealed Secrets, ESO/4",
    "bahasa": "yaml",
-   "sha256": "6a1483bb9e68d46365823b6768796ddaac77f5db5181a9eca6ca1aaba5db2737"
+   "sha256": "d4f1f4faafe7fe64eb19c25d6fbc563e0d4646c61d69ad9a5b9985585fe743da"
   },
   {
    "nama": "keamanan/materi/23. Rahasia di Git dan Kubernetes: SOPS, Sealed Secrets, ESO/5",
@@ -13449,7 +13449,7 @@
   {
    "nama": "keamanan/materi/23. Rahasia di Git dan Kubernetes: SOPS, Sealed Secrets, ESO/7",
    "bahasa": "yaml",
-   "sha256": "9c81076c3cfe7dc38c1e810035ff0200a44c8cf2ff29e83fd890d645eb56b946"
+   "sha256": "b7c6bf9ba11978af7eaadc10fb4d3b5dfcca77877a2608139a6304e3f15e473b"
   },
   {
    "nama": "keamanan/materi/24. Rantai Pasok Perangkat Lunak: Lockfile dan Dependensi/3",
@@ -13479,7 +13479,7 @@
   {
    "nama": "keamanan/materi/26. DevSecOps: SAST, SCA, DAST, dan Gerbang Kualitas/3",
    "bahasa": "yaml",
-   "sha256": "da2a24061828ef57e566797ac7a30f2c2e677f532c7fb37f45360afa28311560"
+   "sha256": "34a4679bcd759f9afe0f5dc442f4a901e5a515e98a152d9366e63e90d245a862"
   },
   {
    "nama": "keamanan/materi/26. DevSecOps: SAST, SCA, DAST, dan Gerbang Kualitas/6",
@@ -13519,7 +13519,7 @@
   {
    "nama": "keamanan/materi/29. Memindai Infrastructure as Code: Checkov dan KICS/1",
    "bahasa": "hcl",
-   "sha256": "2e5f6194559d8fb360556b218f36350b0d256d868d6cbf471e6eba9b80e1cb4d"
+   "sha256": "84102a5013eacc004bab91e2d335f3ae745eab58c5c6a0f38d66402564747b3c"
   },
   {
    "nama": "keamanan/materi/29. Memindai Infrastructure as Code: Checkov dan KICS/4",
@@ -13529,7 +13529,7 @@
   {
    "nama": "keamanan/materi/29. Memindai Infrastructure as Code: Checkov dan KICS/6",
    "bahasa": "hcl",
-   "sha256": "36466663aebeb4400465cd4168c070d500b1eb64acaf86409b18b66d242288ec"
+   "sha256": "a1f2e51591e4a412e505c7b51df40d652eabd9809c3971b5bde90e887f29b0c4"
   },
   {
    "nama": "keamanan/materi/29. Memindai Infrastructure as Code: Checkov dan KICS/8",
@@ -13579,7 +13579,7 @@
   {
    "nama": "keamanan/materi/33. Log Keamanan dan SIEM: Mendeteksi Serangan/4",
    "bahasa": "yaml",
-   "sha256": "637ebc7e8cfddbafaf0331a78d61a9da62df691b265ca318dfcb9a062183ab4d"
+   "sha256": "16312df18f408b060f9713f1ead9c20bbfa13580043baf3d378cd108dc5261ca"
   },
   {
    "nama": "keamanan/materi/33. Log Keamanan dan SIEM: Mendeteksi Serangan/6",
@@ -13599,7 +13599,7 @@
   {
    "nama": "keamanan/materi/35. Keamanan Cloud dan Kubernetes: IAM, CSPM, dan Wiz/7",
    "bahasa": "yaml",
-   "sha256": "051c8a7325ecfb6ed759c8dae1a55cd7437ab6b523ac3353c65fa73fdbeeae63"
+   "sha256": "eda420a3966c30bfab19ad18a1e9be7fe7ecdec3200579041b6b00e5db3ea46f"
   },
   {
    "nama": "keamanan/materi/35. Keamanan Cloud dan Kubernetes: IAM, CSPM, dan Wiz/8",
@@ -13774,7 +13774,7 @@
   {
    "nama": "data/materi/6. Environment Python: venv, conda, dan Miniforge/6",
    "bahasa": "yaml",
-   "sha256": "4051e911357541ac2d157c3bc4d52499965f89a669c78c623caace85d3e8eb83"
+   "sha256": "193f07e350a0dc71e628abcb1b9e7ac0dbf725d85e1255b99f8e9598da2c2c86"
   },
   {
    "nama": "data/materi/6. Environment Python: venv, conda, dan Miniforge/7",
@@ -14104,7 +14104,7 @@
   {
    "nama": "data/materi/27. Peta Alat Statistik Lain: Julia, MATLAB, SAS, SPSS/2",
    "bahasa": "matlab",
-   "sha256": "d08a643b835d5690ff306c76444ae648e81a8520473018b187393fa099068938"
+   "sha256": "98db5178110772f237c3beab17454beb5227ccaf2ceaea3252bbcaaa934b62fa"
   },
   {
    "nama": "data/materi/27. Peta Alat Statistik Lain: Julia, MATLAB, SAS, SPSS/3",
@@ -14189,7 +14189,7 @@
   {
    "nama": "data/materi/34. dbt: Model SQL, ref, dan Uji Data/4",
    "bahasa": "yaml",
-   "sha256": "e54c087ea28d3d9a84aef91d74fa567377db55282f069316158c119958e6a955"
+   "sha256": "ebb96031e54a6e8624218e003c1f775ae1809343c7b8c35ddb6ba4b908b3ec19"
   },
   {
    "nama": "data/materi/34. dbt: Model SQL, ref, dan Uji Data/6",
@@ -14719,7 +14719,7 @@
   {
    "nama": "ai/materi/18. API LLM: Pesan, Token, Biaya, dan Streaming/1",
    "bahasa": "http",
-   "sha256": "662975efd56346a40064b037228b1a8d77cc6c8a48d95efec16b54d528226aed"
+   "sha256": "674eb81d98979698ebdcfe0012dad1e5c011ca6f347b2a13850236e25dc5f1a2"
   },
   {
    "nama": "ai/materi/18. API LLM: Pesan, Token, Biaya, dan Streaming/3",
@@ -14864,7 +14864,7 @@
   {
    "nama": "ai/materi/25. Hugging Face Hub, Model Card, dan Lisensi/4",
    "bahasa": "yaml",
-   "sha256": "c4a8e1a1ee5a0ecd7386c840646ff1671e2ceda79d0b0cb7e52056775bd7f306"
+   "sha256": "285bee205fe2a90a00b60c5fe047e0452eaa21fd52b4492c33ca24160ff62bad"
   },
   {
    "nama": "ai/materi/25. Hugging Face Hub, Model Card, dan Lisensi/6",
@@ -15124,7 +15124,7 @@
   {
    "nama": "ai/materi/42. Peta Alat Eval dan Observability LLM/6",
    "bahasa": "yaml",
-   "sha256": "f60d3bf764f7850f87a93811ba697ffa2ec1b4e4f835c05640834eac75a92a80"
+   "sha256": "6b87d00bad9bf7c86621280c08e0e05a09acea319730d17363418439d18013e5"
   },
   {
    "nama": "ai/materi/42. Peta Alat Eval dan Observability LLM/7",
@@ -15164,7 +15164,7 @@
   {
    "nama": "ai/materi/44. Versi Data, Serving, dan Pemantauan Drift/3",
    "bahasa": "yaml",
-   "sha256": "7f99b987473e1d83f546e863ed28e3d925096d75a49a0c744f86c4f5af52d286"
+   "sha256": "b893ce2dfd196d9204488f54757c36cd5fe613e71dc06eb859a646b15b6f5801"
   },
   {
    "nama": "ai/materi/44. Versi Data, Serving, dan Pemantauan Drift/4",
@@ -15374,7 +15374,7 @@
   {
    "nama": "bahasalain/materi/2. Sistem Tipe: Statis, Dinamis, Kuat, dan Bertahap/11",
    "bahasa": "luau",
-   "sha256": "9fd7c263cf1348695a3b6654a0451371afe6ae998656a90be3d94ee1a5456285"
+   "sha256": "307964f38dbf8d7e3b0dc445c93db1789d01eee0b43d3a0483e2fa14ed083c67"
   },
   {
    "nama": "bahasalain/materi/3. Model Memori dan Mesin yang Menjalankan Kode/1",
@@ -15489,22 +15489,22 @@
   {
    "nama": "bahasalain/materi/7. Perl: Regex dan Olah Teks/1",
    "bahasa": "perl",
-   "sha256": "d8e38024c871aa0fe5c9df9d83f522a2bd649a212dfbd9bd73a50e2e0ff81bcf"
+   "sha256": "fda8cc48bdf91c092cf8599c1ebc0d996f9d57779df7759e1aba569e7230edfd"
   },
   {
    "nama": "bahasalain/materi/7. Perl: Regex dan Olah Teks/3",
    "bahasa": "perl",
-   "sha256": "898d8b63d21aebe4b94c3c32170778bd6a360f63cff0714052e0f756b6383f75"
+   "sha256": "4bb1bf393b110e6e194ac5750c03927fa2249d6c22e72d489034927e2040e76c"
   },
   {
    "nama": "bahasalain/materi/7. Perl: Regex dan Olah Teks/5",
    "bahasa": "perl",
-   "sha256": "fb714a8ae355092f144980df46e43add74120a06e0cf932a6a9dd95cacec755b"
+   "sha256": "01a0a2ce3a3768a0646dc6ba2eeda46680dafb00d145ceac88735a611aa7acba"
   },
   {
    "nama": "bahasalain/materi/7. Perl: Regex dan Olah Teks/7",
    "bahasa": "perl",
-   "sha256": "de66a6c606917e6e9d3cd8268833a1befa762fb506913629bf4356e1a5c318f0"
+   "sha256": "c406173e056d8a8e72037b08fcdeedc3819be8febb74adf1ed5ffc9f4519204f"
   },
   {
    "nama": "bahasalain/materi/7. Perl: Regex dan Olah Teks/9",
@@ -15649,7 +15649,7 @@
   {
    "nama": "bahasalain/materi/12. Peta Skrip Game: Luau, GML, dan Haxe/1",
    "bahasa": "luau",
-   "sha256": "e1db7a46f084f1ee17e6fdf79c1affa30b65d6731f790298eda3245be50e8910"
+   "sha256": "b31d6baf69761e5bbb2ed0e994be7c6622d8328042b9a8349d3240ea26f27402"
   },
   {
    "nama": "bahasalain/materi/12. Peta Skrip Game: Luau, GML, dan Haxe/3",
@@ -15834,17 +15834,17 @@
   {
    "nama": "bahasalain/materi/19. MATLAB dan GNU Octave: Berpikir dalam Matriks/2",
    "bahasa": "matlab",
-   "sha256": "1c7399dbbab8d828b6d6a70ee06a4acdb544bfea7bd468f9de9af49f8f054b58"
+   "sha256": "b09223481b50f74d148e8d87a746fbe75794ba228f64708d3b658af4cc96c50c"
   },
   {
    "nama": "bahasalain/materi/19. MATLAB dan GNU Octave: Berpikir dalam Matriks/4",
    "bahasa": "matlab",
-   "sha256": "07e029ecc3497a17d609cdca0d69ecd184e0397f2e70fbf90bf008fabcac1523"
+   "sha256": "79fdac36859d9dfa0e4a191776501e64b41298434ba60fa6f4fd904f49f0d037"
   },
   {
    "nama": "bahasalain/materi/19. MATLAB dan GNU Octave: Berpikir dalam Matriks/6",
    "bahasa": "matlab",
-   "sha256": "0cee568069efed5d0bb2eb4c507bd9b9709a91338cbdc845b6b4a6697d1efb4d"
+   "sha256": "24aeb035bec1baab80e05458052fcf49f30c890f6e6c96459de0dcc530d91bb6"
   },
   {
    "nama": "bahasalain/materi/19. MATLAB dan GNU Octave: Berpikir dalam Matriks/8",
@@ -15884,12 +15884,12 @@
   {
    "nama": "bahasalain/materi/21. Scala: Fungsional dan OOP di JVM/1",
    "bahasa": "scala",
-   "sha256": "6041e5e2dea1d06cec2ee8274e94706e820a0329f992c641516b14e93062c2c9"
+   "sha256": "42f1a829e1fef82193911ac679633b552f08cd79d2059cdf1f77e1e56c17f66f"
   },
   {
    "nama": "bahasalain/materi/21. Scala: Fungsional dan OOP di JVM/3",
    "bahasa": "scala",
-   "sha256": "1b83fcfcfcb91f74d7efa62d8573be37296bc09348778bb7b618a0db020a5640"
+   "sha256": "73f4d7357f3ded1a6ea6783f29ee5b8b6fffe5c9775fc5efb1ec637075e2db19"
   },
   {
    "nama": "bahasalain/materi/21. Scala: Fungsional dan OOP di JVM/5",
@@ -15899,7 +15899,7 @@
   {
    "nama": "bahasalain/materi/21. Scala: Fungsional dan OOP di JVM/7",
    "bahasa": "scala",
-   "sha256": "2f658ad960b6e4274e90a94dbef030a6a9107e07b06684f1c57372600ee6651b"
+   "sha256": "6cee8b4bb7e00483ddbcdd385068e61a6bb67529aa292b9c41abecf03ab8f54a"
   },
   {
    "nama": "bahasalain/materi/22. Groovy: Bahasa di Balik Jenkinsfile dan Gradle/1",
@@ -15934,17 +15934,17 @@
   {
    "nama": "bahasalain/materi/23. F#: Pemrograman Fungsional di .NET/2",
    "bahasa": "fsharp",
-   "sha256": "8ad5f3f1720a1650ff5e28363ae3a3f1253fa83116d652ec60d0f59a33a9d1ce"
+   "sha256": "bbc3fd1440b26ef2694275ebf859ddc9505fd452c15530564b0e152937dd5d96"
   },
   {
    "nama": "bahasalain/materi/23. F#: Pemrograman Fungsional di .NET/4",
    "bahasa": "fsharp",
-   "sha256": "84c293c28bf18df378ad638e1cdc851cbcc2719ae8f0be6fe3e332b581932010"
+   "sha256": "e9ef1ff2503dc81635b9930f2f95965af552b593c711bcfb1c2cd78e15a395a8"
   },
   {
    "nama": "bahasalain/materi/23. F#: Pemrograman Fungsional di .NET/6",
    "bahasa": "fsharp",
-   "sha256": "aadda87fd0c6c37a2936f895ffc0fb4ad2d0133437c2c4ed7064894ea67e4a29"
+   "sha256": "bf886ca17f51c2ee77cd90e20bffca21cb3008c85de40429b92e51878d17ca93"
   },
   {
    "nama": "bahasalain/materi/24. Elixir: Pattern Matching dan Operator Pipe/1",
@@ -16419,12 +16419,12 @@
   {
    "nama": "bahasalain/materi/41. Verilog dan VHDL: Menulis Rangkaian sebagai Kode/1",
    "bahasa": "verilog",
-   "sha256": "82ac68c4290dc5281e38f5b3fbbf25b1c7db6f2cfb7626d7a870b4efc4fce0a5"
+   "sha256": "8034f11eef5aa7d8d46091c5293e2cd371f31678cf9a050a6c5181cdfd5b05b5"
   },
   {
    "nama": "bahasalain/materi/41. Verilog dan VHDL: Menulis Rangkaian sebagai Kode/3",
    "bahasa": "verilog",
-   "sha256": "94ab507aca25556e7574eb59f02c3314b753cef3e9f4d92b64571cd0323d715c"
+   "sha256": "c8e9b5fe9bdf4c1d1cabf78c3f8c6ff9b612855f07bc38977b18257e572743f4"
   },
   {
    "nama": "bahasalain/materi/41. Verilog dan VHDL: Menulis Rangkaian sebagai Kode/5",
@@ -16434,7 +16434,7 @@
   {
    "nama": "bahasalain/materi/41. Verilog dan VHDL: Menulis Rangkaian sebagai Kode/6",
    "bahasa": "verilog",
-   "sha256": "5fba18099fa5deb260fa3fc391af014c2cd440f426d5f823417a186ccb946112"
+   "sha256": "7434929dae421db090568fc1ce492f1d5d953f8d24faa8dbe8588b6a21d156f5"
   },
   {
    "nama": "bahasalain/materi/41. Verilog dan VHDL: Menulis Rangkaian sebagai Kode/9",
@@ -16489,17 +16489,17 @@
   {
    "nama": "bahasalain/materi/44. Solidity dan Bahasa Smart Contract Lain/1",
    "bahasa": "solidity",
-   "sha256": "3365489cd78aa37ccc916c7befda45fc7267bbfd18d8771a636f275354a74719"
+   "sha256": "da31b3a7d5f15a99a4ddbf39aaea486fe5dc6052012dd25afb4ae2f1417bbab7"
   },
   {
    "nama": "bahasalain/materi/44. Solidity dan Bahasa Smart Contract Lain/3",
    "bahasa": "solidity",
-   "sha256": "61bbc39c965f17e139bd95a80f8978b335c2f29a25e5ba40567d08a70a958f2a"
+   "sha256": "265238092e619f662ef0c06e331a77badbaecb64340bdf9f2eb0ca16073277e7"
   },
   {
    "nama": "bahasalain/materi/44. Solidity dan Bahasa Smart Contract Lain/5",
    "bahasa": "solidity",
-   "sha256": "375d30279ac77119a3ad5190d1a22cd1497a9a037032485f753dd9d7d4b915bd"
+   "sha256": "46ed4fb0fdbe92ebbdb3d909ca1642c7d62ab39c43f0d97bbee979485d1618d6"
   },
   {
    "nama": "bahasalain/materi/44. Solidity dan Bahasa Smart Contract Lain/7",
@@ -16524,17 +16524,17 @@
   {
    "nama": "bahasalain/materi/45. Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina/1",
    "bahasa": "nix",
-   "sha256": "6d2067cae835f17eaaa564edf309212075827b633c3a71bb702e2373943ebf22"
+   "sha256": "a5751adb56b17330e3bc7fc1beb97caf7b82d3eed147f64c8723a1909471126c"
   },
   {
    "nama": "bahasalain/materi/45. Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina/3",
    "bahasa": "nix",
-   "sha256": "554fa033e3444af66ca287d9fd41c576ef43ec2cf288131e75b5a8302d24d1b2"
+   "sha256": "fdc72604b050e0feaf4b042a2be508f8c8c06c85bc913a7a47aee1f56d8f479f"
   },
   {
    "nama": "bahasalain/materi/45. Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina/5",
    "bahasa": "nix",
-   "sha256": "4d094fe12dcf7c62fc312348b173eb54791cd79a65566afe4bd342e1be23ef72"
+   "sha256": "5dfdcbac8615965679b6b58a1819a2b17d44e9d2eb153c7ae87ff5415ba87457"
   },
   {
    "nama": "bahasalain/materi/45. Peta Konfigurasi dan Integrasi: Nix, XSLT, Ballerina/7",

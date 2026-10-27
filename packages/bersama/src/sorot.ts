@@ -61,6 +61,7 @@ interface AturanMentah {
   praprosesor: boolean;
   variabel_dolar: boolean;
   tanpa_bedakan_kapital: boolean;
+  pemisah_kunci: string[];
 }
 
 /** Aturan siap pakai: daftar kata jadi `Set` supaya pencariannya O(1). */
@@ -77,12 +78,16 @@ interface Aturan {
   praprosesor: boolean;
   variabelDolar: boolean;
   tanpaBedakanKapital: boolean;
+  /** Pemisah yang menandai KUNCI di awal baris (`:` YAML/HTTP, `=` ini/TOML/HCL). */
+  pemisahKunci: string[];
 }
 
 const HURUF_AWAL = /[A-Za-z_]/;
 const HURUF_LANJUT = /[A-Za-z0-9_]/;
 const ANGKA = /[0-9]/;
 const OPERATOR = new Set("+-*/%=<>!&|^~?:;,.()[]{}@");
+// Kunci di awal baris boleh memuat tanda hubung, titik, dan garis miring.
+const KUNCI_LANJUT = /[A-Za-z0-9_.\-/]/;
 
 const MENTAH = tabel.aturan as unknown as Record<string, AturanMentah>;
 const ALIAS = tabel.alias as Record<string, string>;
@@ -106,6 +111,7 @@ function siapkan(m: AturanMentah): Aturan {
     praprosesor: m.praprosesor,
     variabelDolar: m.variabel_dolar,
     tanpaBedakanKapital: m.tanpa_bedakan_kapital,
+    pemisahKunci: m.pemisah_kunci,
   };
 }
 
@@ -124,6 +130,7 @@ const POLOS: Aturan = siapkan({
   praprosesor: false,
   variabel_dolar: false,
   tanpa_bedakan_kapital: false,
+  pemisah_kunci: [],
 });
 
 /**
@@ -225,6 +232,29 @@ function diAwalBaris(kode: string, i: number): boolean {
   let j = i - 1;
   while (j >= 0 && (kode.charAt(j) === " " || kode.charAt(j) === "\t")) j -= 1;
   return j < 0 || kode.charAt(j) === "\n";
+}
+
+/** Index sesudah KUNCI yang dimulai di `i`, atau 0 kalau bukan kunci.
+ *  Padanan `_akhir_kunci` di sorot.py, langkah demi langkah. */
+function akhirKunci(kode: string, i: number, pemisah: string[]): number {
+  let j = i - 1;
+  while (j >= 0 && kode.charAt(j) !== "\n") {
+    const d = kode.charAt(j);
+    const sesudahD = kode.charAt(j + 1);
+    if (d === " " || d === "\t" || (d === "-" && (sesudahD === " " || sesudahD === "\t"))) j -= 1;
+    else return 0;
+  }
+  const n = kode.length;
+  let akhir = i + 1;
+  while (akhir < n && KUNCI_LANJUT.test(kode.charAt(akhir))) akhir += 1;
+  let k = akhir;
+  while (k < n && (kode.charAt(k) === " " || kode.charAt(k) === "\t")) k += 1;
+  if (k >= n || !pemisah.includes(kode.charAt(k))) return 0;
+  const sesudah = kode.charAt(k + 1);
+  if (kode.charAt(k) === ":" && sesudah !== "" && sesudah !== " " && sesudah !== "\t"
+      && sesudah !== "\r" && sesudah !== "\n") return 0;
+  if (kode.charAt(k) === "=" && sesudah === "=") return 0;
+  return akhir;
 }
 
 /** Satukan token berdampingan yang sejenis.
@@ -343,6 +373,17 @@ export function token(kode: string, bahasa: string): Token[] {
       hasil.push(["angka", kode.slice(i, akhir)]);
       i = akhir;
       continue;
+    }
+
+    // -- kunci di awal baris -----------------------------------------------
+    if (aturan.pemisahKunci.length > 0 && HURUF_AWAL.test(c)) {
+      const akhir = akhirKunci(kode, i, aturan.pemisahKunci);
+      if (akhir) {
+        buang();
+        hasil.push(["kunci", kode.slice(i, akhir)]);
+        i = akhir;
+        continue;
+      }
     }
 
     // -- pengenal ----------------------------------------------------------

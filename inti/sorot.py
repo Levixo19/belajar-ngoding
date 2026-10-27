@@ -38,6 +38,9 @@ _HURUF_AWAL = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_")
 _HURUF_LANJUT = _HURUF_AWAL | set("0123456789")
 _ANGKA = set("0123456789")
 _OPERATOR = set("+-*/%=<>!&|^~?:;,.()[]{}@")
+# Kunci di awal baris boleh memuat tanda hubung, titik, dan garis miring:
+# `runs-on`, `spring.jpa.open-in-view`, `app.kubernetes.io/name`.
+_KUNCI_LANJUT = _HURUF_LANJUT | set(".-/")
 
 
 class Aturan:
@@ -46,13 +49,13 @@ class Aturan:
     __slots__ = (
         "komentar_baris", "komentar_blok", "kutip", "kutip_mentah", "escape",
         "kunci", "tipe", "bawaan", "praprosesor", "variabel_dolar",
-        "tanpa_bedakan_kapital",
+        "tanpa_bedakan_kapital", "pemisah_kunci",
     )
 
     def __init__(self, komentar_baris=(), komentar_blok=(), kutip=('"', "'"),
                  kutip_mentah=(), escape=True, kunci=(), tipe=(), bawaan=(),
                  praprosesor=False, variabel_dolar=False,
-                 tanpa_bedakan_kapital=False):
+                 tanpa_bedakan_kapital=False, pemisah_kunci=()):
         self.komentar_baris = tuple(komentar_baris)
         self.komentar_blok = tuple(komentar_blok)
         # Diurutkan dari yang terpanjang supaya '"""' menang atas '"'.
@@ -65,6 +68,9 @@ class Aturan:
         self.praprosesor = praprosesor
         self.variabel_dolar = variabel_dolar
         self.tanpa_bedakan_kapital = tanpa_bedakan_kapital
+        # Pemisah yang menandai KUNCI di awal baris: ":" untuk YAML dan header
+        # HTTP, "=" untuk ini, TOML, dan atribut HCL. Kosong = tidak ada.
+        self.pemisah_kunci = tuple(pemisah_kunci)
 
 
 def _kata(teks):
@@ -825,6 +831,40 @@ def _di_awal_baris(kode, i):
     return j < 0 or kode[j] == "\n"
 
 
+def _akhir_kunci(kode, i, pemisah):
+    """Index tepat sesudah KUNCI yang dimulai di `i`, atau 0 kalau bukan kunci.
+
+    Kunci = deretan huruf, angka, `_ . - /` yang berdiri di AWAL baris (boleh
+    didahului indentasi dan penanda butir `- `) dan disusul salah satu
+    `pemisah`. Dua pengaman supaya yang bukan kunci tidak ikut terwarnai:
+    `:` hanya berlaku bila disusul spasi atau akhir baris (`http://x` bukan
+    kunci), dan `=` tidak berlaku bila disusul `=` (`a == b` bukan penugasan).
+    Pemindai ini murni leksikal: tanpa pengaman itu ia tidak punya cara lain
+    membedakan `image: nginx` dari `curl http://host` di dalam blok skrip.
+    """
+    j = i - 1
+    while j >= 0 and kode[j] != "\n":
+        if kode[j] in " \t" or (kode[j] == "-" and kode[j + 1] in " \t"):
+            j -= 1
+        else:
+            return 0
+    n = len(kode)
+    akhir = i + 1
+    while akhir < n and kode[akhir] in _KUNCI_LANJUT:
+        akhir += 1
+    k = akhir
+    while k < n and kode[k] in " \t":
+        k += 1
+    if k >= n or kode[k] not in pemisah:
+        return 0
+    sesudah = kode[k + 1:k + 2]
+    if kode[k] == ":" and sesudah not in ("", " ", "\t", "\r", "\n"):
+        return 0
+    if kode[k] == "=" and sesudah == "=":
+        return 0
+    return akhir
+
+
 def token(kode, bahasa):
     """Pecah `kode` jadi urutan (jenis, teks). Gabungannya = kode aslinya.
 
@@ -916,6 +956,15 @@ def token(kode, bahasa):
             hasil.append(("angka", kode[i:akhir]))
             i = akhir
             continue
+
+        # -- kunci di awal baris -----------------------------------------------
+        if aturan.pemisah_kunci and c in _HURUF_AWAL:
+            akhir = _akhir_kunci(kode, i, aturan.pemisah_kunci)
+            if akhir:
+                buang()
+                hasil.append(("kunci", kode[i:akhir]))
+                i = akhir
+                continue
 
         # -- pengenal ------------------------------------------------------------
         if c in _HURUF_AWAL:
@@ -1018,3 +1067,205 @@ def polos(kode, bahasa):
 
 # Modul "Bikin Aplikasi" memakai contoh kode Java, jadi aturan leksikalnya sama.
 ATURAN["aplikasi"] = ATURAN["java"]
+
+
+# ------------------------------------------------- bahasa yang dulu tanpa warna
+#
+# Menyusul belakangan, di ekor berkas. Kata kuncinya diturunkan dari kata yang
+# BENAR-BENAR muncul di kurikulum, dan yang bentuknya juga muncul sebagai bagian
+# URL atau prosa sengaja tidak didaftarkan: `http` tidak ada di nginx karena
+# `proxy_pass http://toko_backend` akan mewarnai awal URL-nya, dan `index`
+# tidak ada karena `index.php` akan ikut terwarnai sebagai direktif.
+#
+# YAML, TOML, ini, header HTTP, dan atribut HCL berbagi satu fitur pemindai,
+# `pemisah_kunci`: kunci di awal baris. Pemindai leksikal tanpa fitur itu hanya
+# bisa mewarnai komentar dan tanda kutip, dan berkas konfigurasi tetap tampak
+# mati walau angka cakupannya naik.
+
+ATURAN["yaml"] = Aturan(
+    komentar_baris=("#",), pemisah_kunci=(":",),
+    bawaan=_kata("true false null"),
+)
+
+ATURAN["toml"] = Aturan(
+    komentar_baris=("#",),
+    kutip=('"""', "'''", '"', "'"), kutip_mentah=("'", "'''"),
+    pemisah_kunci=("=",), bawaan=_kata("true false"),
+)
+
+# ini juga dipakai untuk unit systemd, application.properties, dan
+# postgresql.conf. `;` dan `#` sama-sama pembuka komentar di berkas itu.
+ATURAN["ini"] = Aturan(
+    komentar_baris=("#", ";"), pemisah_kunci=("=",), variabel_dolar=True,
+    bawaan=_kata("true false yes no on off"),
+)
+
+ATURAN["http"] = Aturan(
+    komentar_baris=("#",), kutip=('"',), pemisah_kunci=(":",),
+    kunci=_kata("GET POST PUT PATCH DELETE HEAD OPTIONS CONNECT TRACE"),
+    tipe=_kata("HTTP"), bawaan=_kata("true false null"),
+)
+
+ATURAN["nginx"] = Aturan(
+    komentar_baris=("#",), variabel_dolar=True,
+    kunci=_kata("""
+        server location upstream events listen server_name root alias
+        try_files return rewrite if set map include error_page proxy_pass
+        proxy_set_header proxy_http_version proxy_buffering proxy_read_timeout
+        proxy_send_timeout proxy_connect_timeout proxy_redirect proxy_cache
+        proxy_cache_path proxy_cache_valid fastcgi_pass fastcgi_param
+        fastcgi_index least_conn ip_hash hash keepalive client_max_body_size
+        client_body_buffer_size expires add_header server_tokens autoindex
+        limit_req_zone limit_req limit_req_status limit_conn access_log
+        error_log log_format worker_processes worker_connections gzip
+        gzip_types sendfile tcp_nopush keepalive_timeout ssl_certificate
+        ssl_certificate_key ssl_protocols ssl_ciphers ssl_session_cache
+        auth_basic auth_basic_user_file deny allow http2
+    """),
+    bawaan=_kata("""
+        on off weight max_fails fail_timeout backup down default_server ssl
+    """),
+)
+
+ATURAN["hcl"] = Aturan(
+    komentar_baris=("#", "//"), komentar_blok=(("/*", "*/"),),
+    kutip=('"',), pemisah_kunci=("=",),
+    kunci=_kata("""
+        resource data variable output module provider locals terraform
+        required_providers required_version backend moved import check dynamic
+        for_each depends_on lifecycle provisioner connection for in if else
+    """),
+    tipe=_kata("string number bool list map set object tuple any"),
+    bawaan=_kata("true false null var local each self path"),
+)
+
+# Perintah Redis tidak membedakan huruf besar-kecil; daftarnya huruf besar
+# karena pemindai membandingkan kata yang sudah dibesarkan.
+ATURAN["redis"] = Aturan(
+    komentar_baris=("#",), tanpa_bedakan_kapital=True,
+    kunci=_kata("""
+        SET GET GETSET GETDEL SETEX SETNX SETBIT GETBIT BITCOUNT BITOP MSET
+        MGET APPEND STRLEN INCR INCRBY INCRBYFLOAT DECR DECRBY DEL UNLINK
+        EXISTS EXPIRE EXPIREAT PEXPIRE TTL PTTL PERSIST KEYS SCAN TYPE RENAME
+        LPUSH RPUSH LPOP RPOP LLEN LRANGE LINDEX LREM LTRIM LMOVE BLMOVE BLPOP
+        BRPOP HSET HGET HMSET HMGET HGETALL HDEL HEXISTS HINCRBY HKEYS HVALS
+        HLEN SADD SREM SMEMBERS SISMEMBER SCARD SPOP SUNION SINTER SDIFF ZADD
+        ZREM ZRANGE ZREVRANGE ZRANGEBYSCORE ZSCORE ZRANK ZINCRBY ZCARD PUBLISH
+        SUBSCRIBE UNSUBSCRIBE PSUBSCRIBE XADD XLEN XRANGE XREAD XREADGROUP
+        XGROUP XACK XPENDING XCLAIM XTRIM MULTI EXEC DISCARD WATCH UNWATCH
+        EVAL EVALSHA PING ECHO AUTH SELECT INFO FLUSHALL FLUSHDB DBSIZE SAVE
+        BGSAVE CONFIG CLIENT MONITOR SLOWLOG PFADD PFCOUNT GEOADD GEODIST
+        GEOSEARCH OBJECT
+    """),
+    bawaan=_kata("""
+        EX PX EXAT NX XX KEEPTTL WITHSCORES COUNT MATCH STREAMS MKSTREAM GROUP
+        CREATE LEFT RIGHT
+    """),
+)
+
+ATURAN["perl"] = Aturan(
+    komentar_baris=("#",), variabel_dolar=True,
+    kunci=_kata("""
+        my our local sub use no package require if elsif else unless while
+        until for foreach last next redo return do eval die warn print say
+        printf chomp chop push pop shift unshift splice keys values each
+        delete exists defined scalar join split map grep sort reverse sprintf
+        length substr index lc uc lcfirst ucfirst open close eof and or not
+        eq ne lt gt le ge cmp qw BEGIN END
+    """),
+    bawaan=_kata("STDIN STDOUT STDERR ARGV ENV"),
+)
+
+ATURAN["scala"] = Aturan(
+    komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+    kutip=('"""', '"', "'"),
+    kunci=_kata("""
+        abstract case catch class def do else enum export extends final
+        finally for given if implicit import lazy match new object override
+        package private protected return sealed super then this throw trait
+        try type using val var while with yield true false null
+    """),
+    tipe=_kata("""
+        Int Long Double Float Boolean Char String Unit Any AnyRef AnyVal
+        Nothing List Map Set Seq Vector Array Option Some None Either Left
+        Right Try Success Failure
+    """),
+)
+
+ATURAN["solidity"] = Aturan(
+    komentar_baris=("//",), komentar_blok=(("/*", "*/"),),
+    kunci=_kata("""
+        pragma import contract interface library abstract function modifier
+        event error struct enum mapping constructor returns return public
+        private internal external view pure payable virtual override memory
+        storage calldata if else for while do break continue emit require
+        revert assert new delete is using immutable constant indexed
+        anonymous try catch unchecked assembly true false
+    """),
+    tipe=_kata("""
+        address bool string bytes uint int uint8 uint16 uint32 uint64 uint128
+        uint256 int8 int16 int32 int64 int128 int256 bytes1 bytes4 bytes32
+    """),
+    bawaan=_kata("msg block tx abi this"),
+)
+
+ATURAN["verilog"] = Aturan(
+    komentar_baris=("//",), komentar_blok=(("/*", "*/"),), kutip=('"',),
+    kunci=_kata("""
+        module endmodule input output inout wire reg integer real time
+        parameter localparam assign always initial begin end if else case
+        casex casez endcase default for while forever repeat function
+        endfunction task endtask generate endgenerate genvar posedge negedge
+        or and not nand nor xor xnor buf signed
+    """),
+    bawaan=_kata("display monitor finish stop dumpfile dumpvars write strobe"),
+)
+
+# `'` sengaja tidak dipakai sebagai kutip: di F# ia penanda parameter tipe
+# (`'a`) dan literal karakter.
+ATURAN["fsharp"] = Aturan(
+    komentar_baris=("//",), komentar_blok=(("(*", "*)"),),
+    kutip=('"""', '"'),
+    kunci=_kata("""
+        let in rec and mutable if then else elif match with when function fun
+        type of module namespace open do for to downto while yield return use
+        new not true false begin end exception try finally raise inherit
+        interface abstract member static override private public internal
+        async lazy as
+    """),
+    tipe=_kata("""
+        int string float bool unit char byte list array seq option Option
+        Result decimal int64 uint32
+    """),
+    bawaan=_kata("""
+        printfn printf sprintf failwith ignore Array List Seq Map String
+        Some None Ok Error
+    """),
+)
+
+ATURAN["nix"] = Aturan(
+    komentar_baris=("#",), komentar_blok=(("/*", "*/"),), kutip=("''", '"'),
+    kunci=_kata("""
+        let in if then else with rec inherit import assert or throw abort
+    """),
+    bawaan=_kata("true false null builtins"),
+)
+
+# `'` sengaja tidak dipakai sebagai kutip: di MATLAB ia juga operator transpos
+# (`A'`), dan sebagai kutip ia menelan sisa baris.
+ATURAN["matlab"] = Aturan(
+    komentar_baris=("%",), komentar_blok=(("%{", "%}"),), kutip=('"',),
+    kunci=_kata("""
+        function end if elseif else for while switch case otherwise break
+        continue return try catch parfor global persistent classdef
+        properties methods
+    """),
+    bawaan=_kata("true false pi inf nan eps"),
+)
+
+# Luau = Lua + `continue`, anotasi tipe, dan `export type`. Objek TERSENDIRI,
+# bukan alias: bahasa_didukung() membuang duplikat berdasarkan id().
+ATURAN["luau"] = copy.copy(ATURAN["lua"])
+ATURAN["luau"].kunci = ATURAN["lua"].kunci | frozenset(("continue", "type", "export"))
+ATURAN["luau"].tipe = ATURAN["lua"].tipe | frozenset(
+    ("number", "string", "boolean", "any", "unknown", "never"))
