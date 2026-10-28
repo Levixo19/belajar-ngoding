@@ -231,8 +231,8 @@ export function Statistik() {
   }
   if (!s) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat statistik…</span>
       </div>
     );
@@ -384,6 +384,10 @@ export function Statistik() {
             </span>
           ))}
         </div>
+        <p className="baris-sisi" style={{ margin: "var(--s2) 0 0" }}>
+          Gelar naik dari total XP. Ia penanda berapa banyak yang sudah kamu
+          kerjakan di aplikasi ini, bukan penilaian kemampuan.
+        </p>
       </section>
 
       <section>
@@ -408,7 +412,7 @@ export function Statistik() {
       </section>
 
       <section>
-        <span className="mata">Ketersediaan toolchain</span>
+        <span className="mata">Ketersediaan program pendukung</span>
         <div className="kartu">
           <div className="rinci">
             {s.toolchain.map((tc) => (
@@ -434,8 +438,10 @@ export function Statistik() {
             ))}
           </div>
           <p className="baris-sisi" style={{ margin: "var(--s4) 0 0" }}>
-            Toolchain itu opsional. Materi dan kuis berjalan penuh tanpa satu pun
-            compiler; yang mati hanya penilaian otomatis untuk bahasa itu.
+            Program pendukung ini opsional dan gratis. Materi dan kuis berjalan
+            penuh tanpa satu pun compiler; yang belum tersedia hanya hal yang
+            menjalankan kode untuk bahasa itu: tombol Jalankan, penilaian
+            otomatis, Tebak keluarannya, dan Ruang Coba.
           </p>
         </div>
       </section>

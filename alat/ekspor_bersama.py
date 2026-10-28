@@ -108,10 +108,11 @@ def susun():
 def _ganti_gaya_js(pesan):
     """Rujukan grup `\\1` gaya Python jadi `$1` gaya JavaScript.
 
-    `$` di-escape LEBIH DULU. Tidak satu pun dari 60 pesan hari ini memuatnya,
-    tapi pesan pertama yang memuat `$9,99` akan menghasilkan rujukan grup palsu
-    kalau urutannya dibalik -- dan gejalanya bukan error melainkan satu kalimat
-    penjelasan yang potongannya hilang.
+    `$` di-escape LEBIH DULU. Sejak penjelasan PHP ditambahkan (2026-10-28)
+    beberapa pesan memuatnya ("Variabel $\\1 dipakai ..."), jadi urutan ini
+    sudah terpakai: kalau dibalik, `$9,99` atau `$nama` menghasilkan rujukan
+    grup palsu -- dan gejalanya bukan error melainkan satu kalimat penjelasan
+    yang potongannya hilang.
     """
     keluar = pesan.replace("$", "$$")
     return re.sub(r"\\(\d)", r"$\1", keluar)
@@ -120,13 +121,17 @@ def _ganti_gaya_js(pesan):
 def susun_galat():
     """Tabel pola pesan error, untuk penerjemah di luar Python.
 
-    Polanya DISALIN apa adanya dari `galat.POLA`. Semua ke-60-nya memakai
-    konstruksi yang sama artinya di JavaScript (`(?:...)`, `\\b`, `\\s`,
-    `\\w`, `\\d`, kelas karakter, escape tanda baca), jadi yang perlu
-    diterjemahkan cuma rujukan grup di pesannya.
+    Polanya DISALIN apa adanya dari `galat.POLA`. Semuanya memakai konstruksi
+    yang sama artinya di JavaScript (`(?:...)`, lookahead negatif `(?!...)`,
+    `.*?` malas, `\\b`, `\\s`, `\\w`, `\\d`, kelas karakter, escape tanda
+    baca), jadi yang perlu diterjemahkan cuma rujukan grup di pesannya. Yang
+    TIDAK boleh dipakai pola baru: lookbehind (`(?<=...)`), karena modul yang
+    gagal diurai di peramban lama mematikan seluruh aplikasi, dan lookahead
+    POSITIF yang melihat melewati teks yang cocok, karena kalimat penjelasan
+    disusun dengan mencocokkan ulang pola pada `group(0)`.
 
     Satu beda yang DIBIARKAN dan harus diketahui: `\\w` di Python mencakup
-    huruf Unicode, di JavaScript cuma ASCII. Ke-60 pola ini memakainya untuk
+    huruf Unicode, di JavaScript cuma ASCII. Semua pola ini memakainya untuk
     nama pengenal dan nama tag -- semuanya ASCII -- jadi hasilnya sama. Pola
     BARU yang perlu mencocokkan huruf berdiakritik tidak boleh mengandalkan
     `\\w`; pakai kelas karakter eksplisit.

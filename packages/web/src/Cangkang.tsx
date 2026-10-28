@@ -26,10 +26,13 @@ import { arahkanLangit, nyalakanLangit } from "./langit.ts";
 import { nyalakanKursor } from "./kursor.ts";
 import { pasangSorot } from "./permukaan.ts";
 import { ungkapJudulSaatTiba } from "./sinema.ts";
-import { masuk, pasangIsyarat } from "./gerak.ts";
+import { adaGerak, masuk, pasangIsyarat } from "./gerak.ts";
+import { useFokusRute } from "./fokus-rute.ts";
 
 import { Ikon } from "./komponen/Ikon.tsx";
 import { Lencana, MajuBaca } from "./komponen/Lencana.tsx";
+import { TetesKaca } from "./komponen/TetesKaca.tsx";
+import { FilterKaca } from "./komponen/FilterKaca.tsx";
 import { Palet } from "./komponen/Palet.tsx";
 import type { BahasaPalet } from "./komponen/palet-cari.ts";
 import { Bantuan, usePintasanCangkang } from "./komponen/Pintasan.tsx";
@@ -53,7 +56,7 @@ const LAYAR_PENUH = new Set(["latihan", "coba"]);
    dan dua ujung yang sejauh itu berhenti terbaca sebagai satu baris. */
 const LAYAR_KOLOM = new Set([
   "bahasa", "kuis", "bookmark", "catatan", "cari", "statistik", "atur",
-  "pustaka", "karier", "tebak",
+  "pustaka", "karier", "tebak", "pengantar",
 ]);
 
 /** ANGKA INI DIPAKAI JUGA DI `gaya.css` (blok `@media 860px`). Jaga cocok. */
@@ -216,11 +219,18 @@ export function Cangkang({
   useEffect(() => {
     if (!panelBuka) return;
     const dengar = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPanelBuka(false);
+      if (e.key !== "Escape") return;
+      // Fokus yang sedang di dalam panel kembali ke pemicunya: panelnya
+      // menghilang, dan fokus yang ikut dilepas jatuh ke <body>.
+      const dalam = turunRef.current?.contains(document.activeElement);
+      setPanelBuka(false);
+      if (dalam && !sempit) {
+        turunRef.current?.querySelector<HTMLElement>(".rel-pemicu")?.focus();
+      }
     };
     globalThis.addEventListener("keydown", dengar);
     return () => globalThis.removeEventListener("keydown", dengar);
-  }, [panelBuka]);
+  }, [panelBuka, sempit]);
 
   // Klik di luar menutup panel "Lainnya" (mode lebar). Antarmuka lama
   // melakukannya lewat popover; tanpa ini panel menggantung sampai Esc atau
@@ -256,6 +266,8 @@ export function Cangkang({
      alami elemennya. Gerak yang dimatikan berarti layarnya langsung berdiri
      di tempatnya -- bukan tak terlihat selamanya. */
   const layarRef = useRef<HTMLElement>(null);
+  // Judul tab dan fokus mengikuti layar; lihat `fokus-rute.ts`.
+  useFokusRute(layarRef, alamat ?? rute);
   useEffect(() => {
     if (!layarRef.current) return;
     masuk(layarRef.current, { geser: 8, zum: 0.995, pegas: "halus" });
@@ -308,6 +320,12 @@ export function Cangkang({
   useEffect(() => pasangSorot(), []);
 
   const diPanel = MENU_LAIN.some(([nama]) => nama === rute);
+  /* Butir yang diikuti tetes kaca cair: butir utama yang aktif, atau pemicu
+     "Lainnya" kalau yang aktif tinggal di dalam panelnya, atau null (halaman
+     bahasa dan materi tidak punya butir sama sekali). */
+  const aktifRel = diPanel
+    ? "lainnya"
+    : MENU_UTAMA.some(([nama]) => nama === rute) ? rute : null;
 
   /* `<li><a>`, BUKAN `<a>` telanjang. `gaya.css` mendesain butir navigasi
      lewat `.rel-menu a` (21 aturan), dan `.rel-menu` itu sebuah `<ul>`.
@@ -320,6 +338,7 @@ export function Cangkang({
       <li key={nama}>
       <a
         className={ini ? "kini" : undefined}
+        data-rel={nama}
         href={href}
         // `aria-current` WAJIB ikut dipasang DAN dilepas: warna tidak
         // dibacakan pembaca layar, jadi kelas `.kini` saja tidak pernah cukup.
@@ -352,6 +371,33 @@ export function Cangkang({
 
   return (
     <>
+      {/* Lompat ke isi: butir fokus PERTAMA dokumen, seperti `index.html` lama.
+          Sebuah <button>, bukan <a href="#layar">: alamat di aplikasi ini
+          adalah rute, jadi `#layar` dibaca router sebagai rute tak dikenal
+          dan melempar orangnya ke Dasbor. Tanpanya membuka materi ke-20 lewat
+          papan ketik berarti menab belasan kali melewati menu yang sama. */}
+      <button
+        type="button"
+        className="lompat"
+        onClick={() => {
+          const l = layarRef.current;
+          if (!l) return;
+          // `tabindex` dipasang SAAT dibutuhkan dan dilepas ketika fokus
+          // pergi. Dipasang tetap, klik pada teks mana pun di dalam layar
+          // memindahkan fokus dari <body> ke <main>, dan "klik teks menjatuhkan
+          // fokus ke BODY" (dijaga alur-nyata.mjs) berhenti benar.
+          l.setAttribute("tabindex", "-1");
+          l.style.outline = "none";
+          l.addEventListener("blur", () => {
+            l.removeAttribute("tabindex");
+            l.style.outline = "";
+          }, { once: true });
+          l.focus();
+          l.scrollIntoView({ block: "start", behavior: adaGerak() ? "smooth" : "auto" });
+        }}
+      >
+        Lompat ke isi
+      </button>
       {/* Lapisan latar: grain fraktal plus satu cahaya lebar dari atas layar,
           keduanya DIAM. Lima aturan `#latar` di `gaya.css` tidak pernah punya
           elemen untuk dikenakan sampai sekarang, jadi kanvasnya rata gelap.
@@ -375,7 +421,11 @@ export function Cangkang({
           yang menandai butir aktif `.rel-menu a.kini::before` -- yang memang
           sudah ada di stylesheet. */}
       <nav id="rel" aria-label="Navigasi utama">
-        <a className="merek" href="#/dasbor">
+        {/* Kaca cair: kanvas tetes, tetes cadangan, dan filter pembiasan. Semuanya
+            `aria-hidden` dan menempel di bilah ini; blok CSS "kaca cair" di
+            ujung gaya.css yang membuatnya tampak. */}
+        <TetesKaca aktif={aktifRel} />
+        <a className="merek" href="#/dasbor" aria-label="belajar-codingV2, ke Dasbor">
           <span className="merek-bara" aria-hidden="true" />
           <span className="merek-teks">
             <b>belajar</b>
@@ -393,10 +443,20 @@ export function Cangkang({
               membuat navigasi tidak menyalakan apa pun sama sekali -- butir di
               panel tertutup ber-`offsetWidth` nol. */}
           <div ref={turunRef}
-               className={"rel-turun rel-turun-kanan" + (panelBuka ? " buka" : "")}>
+               className={"rel-turun rel-turun-kanan" + (panelBuka ? " buka" : "")}
+               onBlur={(e) => {
+                 // Tab yang keluar dari panel menutupnya (mode lebar). Hanya
+                 // bila fokus BERPINDAH ke elemen lain: klik pada bagian panel
+                 // yang tak bisa difokuskan melepas fokus tanpa tujuan.
+                 const ke = e.relatedTarget;
+                 if (!sempit && ke instanceof Node && !e.currentTarget.contains(ke)) {
+                   setPanelBuka(false);
+                 }
+               }}>
             <button
               type="button"
               className={"rel-pemicu" + (diPanel ? " kini" : "")}
+              data-rel="lainnya"
               aria-expanded={panelBuka}
               aria-current={diPanel ? "true" : undefined}
               onClick={() => setPanelBuka((b) => !b)}
@@ -468,6 +528,9 @@ export function Cangkang({
             halaman panjang bisa muncul di mana saja. */}
         <MajuBaca rute={rute} />
       </nav>
+
+      {/* Filter pembiasan untuk `.tbl-kaca`: satu untuk seluruh aplikasi, tidak digambar. */}
+      <FilterKaca />
 
       <div id="panggung" className={konteks ? "berkonteks" : undefined}>
         {konteks ? <StripKonteks k={konteks} /> : null}

@@ -83,6 +83,9 @@ function Tirai({ tugas, tutup }: { tugas: Tugas; tutup: Penjawab }) {
   useEffect(() => {
     const saatTombol = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // Escape pada daftar `Pilihan` yang sedang terbuka hanya menutup
+        // daftarnya; dialognya tetap (lihat catatan kepala `Pilihan.tsx`).
+        if ((e.target as Element | null)?.closest?.(".pil-pemicu[aria-expanded='true']")) return;
         e.preventDefault();
         e.stopPropagation();
         tutup(null);

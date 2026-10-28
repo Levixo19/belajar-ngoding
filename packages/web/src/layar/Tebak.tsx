@@ -114,8 +114,8 @@ export function Tebak({ bahasaKey, label }: Props) {
     return (
       <div>
         {kepala}
-        <div className="deret">
-          <div className="pusaran" />
+        <div className="deret" role="status">
+          <div className="pusaran" aria-hidden="true" />
           <span>Memuat contoh…</span>
         </div>
       </div>
@@ -304,8 +304,8 @@ function KartuTebak({
 
       <div className="tebak-hasil" role="status">
         {sedang && !hasil ? (
-          <div className="deret">
-            <div className="pusaran" />
+          <div className="deret" role="status">
+            <div className="pusaran" aria-hidden="true" />
             <span>Menjalankan contohnya…</span>
           </div>
         ) : null}

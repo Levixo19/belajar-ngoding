@@ -29,6 +29,7 @@ import { Ikon } from "../komponen/Ikon.tsx";
 import { useFokusDialog } from "../komponen/fokus-dialog.ts";
 import { PembungkusModal } from "../komponen/Jendela.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { Pilihan } from "../komponen/Pilihan.tsx";
 import { TombolBookmark, TombolCatatan } from "../komponen/Tanda.tsx";
 import { Kode } from "../komponen/Kode.tsx";
 import { Pratinjau } from "../komponen/Pratinjau.tsx";
@@ -57,6 +58,18 @@ interface HasilJalan {
   catatan: string;
   stdin?: string;
   detik: number;
+}
+
+/** Satu kalimat untuk pembaca layar. Hasil Jalankan muncul di panel yang
+ *  bukan live region (isinya bisa ratusan baris), jadi tanpa ini orang yang
+ *  menekan Ctrl+Enter tidak pernah tahu programnya sudah selesai. Yang
+ *  diumumkan hanya garis besarnya; rinciannya ada di panel. */
+function kalimatJalan(r: HasilJalan): string {
+  if (r.timeout) return "Program dihentikan karena melewati batas waktu.";
+  if (!r.sukses && (r.kode_keluar !== 0 || r.galat)) {
+    return "Program berhenti dengan error. Pesannya ada di panel hasil.";
+  }
+  return "Program selesai dijalankan. Keluarannya ada di panel hasil.";
 }
 
 interface BarisBeda {
@@ -469,17 +482,38 @@ function lulusTadi(kunci: string, lulus: number): number | null {
   return tadi;
 }
 
+/* Alasan "tidak dinilai" datang dari dua sumber: kalimat penulis latihan
+   (berakhir titik) dan mesin ("Toolchain belum terpasang: gcc", tanpa titik
+   dan berjargon). Disambung tanpa pemisah, kalimat sesudahnya menempel. */
+function kalimatAlasan(alasan: string | undefined): string {
+  const s = (alasan ?? "").trim().replace(/^Toolchain\b/, "Program pendukung");
+  if (!s) return "";
+  return /[.!?]$/.test(s) ? s : s + ".";
+}
+
 function KartuPeriksa({
   r, tadi, tuju,
 }: {
   r: HasilPeriksa; tadi: number | null; tuju?: Tuju;
 }) {
   if (!r.bisa_dinilai) {
-    return <Keadaan jenis="kunci" judul="Belum bisa dinilai" ket={r.alasan} />;
+    return (
+      <Keadaan jenis="kunci" judul="Belum bisa dinilai"
+               ket={kalimatAlasan(r.alasan)} />
+    );
   }
   const lulus = r.uji.filter((u) => u.lulus).length;
   const nyaris = !r.lulus
     && r.uji.some((u) => !u.lulus && u.beda && u.beda.nyaris);
+  // Galat sintaks/kompilasi tidak punya diff: `api.py` sengaja
+  // mengosongkannya karena tidak ada output untuk dibandingkan. Judul dan
+  // legenda yang menyuruh "lihat bedanya" untuk kasus itu menunjuk ke tempat
+  // yang kosong, tepat saat pelajar paling butuh arah.
+  const gagal = r.uji.filter((u) => !u.lulus);
+  const adaDiff = gagal.some((u) => u.beda);
+  const adaPembanding = adaDiff
+    || gagal.some((u) => u.mode === "regex" || u.mode === "mengandung");
+  const hanyaGalat = !adaPembanding && gagal.some((u) => u.galat);
   return (
     <div>
       <div
@@ -493,7 +527,10 @@ function KartuPeriksa({
             : nyaris ? "var(--nyala)" : "var(--teks)" }}>
             {r.lulus ? "Benar. Outputmu sudah sesuai."
               : nyaris ? "Hampir. Isinya sudah benar, tinggal bentuknya."
-              : "Belum sesuai. Lihat bedanya di bawah."}
+              : hanyaGalat
+                ? "Belum sesuai. Programmu berhenti dengan error; pesannya ada di bawah."
+                : adaPembanding ? "Belum sesuai. Lihat bedanya di bawah."
+                  : "Belum sesuai."}
           </h3>
           <span className="deret-kanan" />
           <span className={"pil" + (tadi !== null && lulus > tadi ? " pil-tumbuh" : "")}>
@@ -502,11 +539,18 @@ function KartuPeriksa({
           </span>
           <span className="pil">{r.detik + " detik"}</span>
         </div>
-        {!r.lulus ? (
+        {!r.lulus && adaDiff ? (
           <p style={{ margin: "var(--s2) 0 0", color: "var(--teks-2)",
                       fontSize: "var(--t-ui)" }}>
             Baris hijau bertanda − adalah yang diharapkan; baris merah bertanda +
             adalah punyamu.
+          </p>
+        ) : null}
+        {!r.lulus && hanyaGalat ? (
+          <p style={{ margin: "var(--s2) 0 0", color: "var(--teks-2)",
+                      fontSize: "var(--t-ui)" }}>
+            Perbaiki errornya dulu. Begitu programnya berjalan sampai selesai,
+            perbandingan dengan keluaran yang diharapkan muncul di sini.
           </p>
         ) : null}
       </div>
@@ -542,8 +586,11 @@ function KartuJalan({
       <div className="deret" style={{ marginBottom: "var(--s3)" }}>
         <h3>{dok ? "Halamanmu" : "Hasil menjalankan"}</h3>
         <span className="deret-kanan" />
-        <span className={"pil" + (r.kode_keluar === 0 ? " pil-tumbuh" : " pil-salah")}>
-          {`kode keluar ${r.kode_keluar}`}
+        <span
+          className={"pil" + (r.kode_keluar === 0 ? " pil-tumbuh" : " pil-salah")}
+          title="Kode keluar 0 berarti programnya selesai tanpa error. Angka lain berarti ia berhenti karena error."
+        >
+          {r.kode_keluar === 0 ? "selesai tanpa error" : `berhenti dengan error (kode keluar ${r.kode_keluar})`}
         </span>
         <span className="pil">{r.detik + " detik"}</span>
         {/* Sinyal overflow panel, dan ia lahir TERSEMBUNYI: yang menyalakannya
@@ -864,6 +911,7 @@ export function Latihan({
                                         { key: kunciBahasa, indeks, kode });
       if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "jalan", r, kode });
+      umumkan(kalimatJalan(r));
     } catch (e) {
       if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "galat", pesan: (e as Error).message });
@@ -937,8 +985,8 @@ export function Latihan({
   }
   if (!x) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat latihan…</span>
       </div>
     );
@@ -952,6 +1000,28 @@ export function Latihan({
 
   const semuaBaris = x.solusi.split("\n");
   const rekor = pisahRekor(semuaBaris);
+
+  /* Gerbang sebelum solusi terlihat, dipakai KEDUA jalan menuju solusi:
+     "Lihat contoh solusi" dan "Bandingkan dengan kodeku" (yang menampilkan
+     seluruh baris solusi sekaligus). Jalan kedua dulu melewatinya, jadi
+     gerbang yang dijaga di satu pintu terbuka lebar di pintu sebelahnya.
+     Gerbangnya MENYATAKAN KEADAAN, tidak menghakimi, dan memang DILEWATI
+     begitu semua petunjuk terbuka: sesudah petunjuk terakhir dibaca tidak
+     ada lagi "coba sendiri dulu" yang tersisa untuk dijaga. */
+  const izinkanSolusi = async (akibat: string): Promise<boolean> => {
+    if (hintTerbuka < x.hint.length
+        && await perluKonfirmasiJawaban()) {
+      if (!hidup.current) return false;
+      const tafsir = hintTerbuka === 0
+        ? "Belum ada petunjuk yang dibuka. Petunjuk pertama biasanya sudah "
+          + "cukup, dan sisanya tetap kamu yang kerjakan."
+        : `Kamu membuka ${hintTerbuka} dari ${x.hint.length} petunjuk, itu `
+          + "cara yang benar untuk buntu.";
+      return globalThis.confirm(
+        `${tafsir} ${akibat} Lanjut membuka solusinya?`) && hidup.current;
+    }
+    return true;
+  };
 
   return (
     <div className="masuk kerja">
@@ -1023,7 +1093,28 @@ export function Latihan({
             <Keadaan
               jenis="kunci"
               judul="Latihan ini tidak dinilai mesin"
-              ket={x.alasan}
+              ket={(
+                <>
+                  {kalimatAlasan(x.alasan)}
+                  {/* Alasan dari server cuma menyebut programnya ("Toolchain
+                      belum terpasang: gcc") tanpa jalan keluar. Perintah
+                      pasang beserta tombol Salinnya sudah ada di halaman
+                      bahasa; di sini cukup menunjuk ke sana. Kalau alasannya
+                      sudah berkata "belum terpasang", kalimat kita tidak
+                      mengulanginya. */}
+                  {!x.bisa_jalan ? (
+                    <>
+                      {" "}{/belum terpasang/.test(x.alasan ?? "")
+                        ? "Jadi"
+                        : "Program pendukungnya belum terpasang di komputer ini, jadi"}
+                      {" "}kodenya belum bisa dijalankan dari sini. Materi dan
+                      kuis tetap bisa dikerjakan. Cara memasangnya, gratis, ada
+                      di <a href={"#/bahasa/" + kunciBahasa}>
+                        {"halaman " + x.label_bahasa}</a>.
+                    </>
+                  ) : null}
+                </>
+              )}
               aksi={
                 <button type="button" className="tbl tbl-kecil"
                         onClick={tandaiManual}>
@@ -1120,7 +1211,11 @@ export function Latihan({
                     <Ikon nama="jalankan" ukuran={17} />
                     Jalankan<kbd>Ctrl ⏎</kbd>
                   </button>
-                ) : null}
+                ) : (
+                  <a className="pil" href={"#/bahasa/" + kunciBahasa}>
+                    Belum bisa dijalankan di komputer ini
+                  </a>
+                )}
                 {x.dinilai ? (
                   <button type="button" className="tbl tbl-utama"
                           onClick={() => { void periksa(); }}>
@@ -1231,26 +1326,11 @@ export function Latihan({
                     className="tbl tbl-kecil tbl-hantu"
                     onClick={async () => {
                       if (!rekor.length) return;
-                      /* Gerbangnya MENYATAKAN KEADAAN, tidak menghakimi, dan ia
-                         memang DILEWATI begitu semua petunjuk terbuka: sesudah
-                         petunjuk terakhir dibaca tidak ada lagi "coba sendiri
-                         dulu" yang tersisa untuk dijaga, jadi menagih
-                         konfirmasi di situ cuma menghukum yang paling gigih. */
-                      const tafsir = hintTerbuka === 0
-                        ? `0 dari ${x.hint.length} petunjuk terbuka, belum ada `
-                          + "yang kamu buka. Petunjuk pertama biasanya sudah "
-                          + "cukup, dan yang tersisa tetap kamu yang kerjakan."
-                        : `Kamu membuka ${hintTerbuka} dari ${x.hint.length} `
-                          + "petunjuk, itu cara yang benar untuk buntu.";
-                      if (hintTerbuka < x.hint.length
-                          && await perluKonfirmasiJawaban()) {
-                        if (!hidup.current) return;
-                        if (!globalThis.confirm(
-                          `${tafsir} Solusinya dibuka dari ekornya: `
-                          + `${(rekor[0] as string[]).length} baris terakhir `
-                          + `dulu, bukan ${semuaBaris.length} baris sekaligus.`,
-                        )) return;
-                      }
+                      if (!(await izinkanSolusi(
+                        "Solusinya dibuka dari ekornya: "
+                        + `${(rekor[0] as string[]).length} baris terakhir `
+                        + `dulu, bukan ${semuaBaris.length} baris sekaligus.`,
+                      ))) return;
                       if (!hidup.current) return;
                       setRekorLangkah(0);
                     }}
@@ -1260,10 +1340,17 @@ export function Latihan({
                   <button
                     type="button"
                     className="tbl tbl-kecil tbl-hantu"
-                    onClick={() => setBanding(pasangkanUbahan(bedaBaris(
-                      semuaBaris,
-                      (pegangan.current?.nilai() ?? "").split("\n"),
-                    )))}
+                    onClick={async () => {
+                      if (!(await izinkanSolusi(
+                        "Perbandingan ini memperlihatkan seluruh baris "
+                        + "solusi sekaligus.",
+                      ))) return;
+                      if (!hidup.current) return;
+                      setBanding(pasangkanUbahan(bedaBaris(
+                        semuaBaris,
+                        (pegangan.current?.nilai() ?? "").split("\n"),
+                      )));
+                    }}
                   >
                     Bandingkan dengan kodeku
                   </button>
@@ -1285,8 +1372,8 @@ export function Latihan({
                   : "Tekan Jalankan untuk melihat keluaran kodemu."}
               />
             ) : hasil.jenis === "sibuk" ? (
-              <div className="kartu deret">
-                <div className="pusaran" />
+              <div className="kartu deret" role="status">
+                <div className="pusaran" aria-hidden="true" />
                 <span>{hasil.pesan}</span>
               </div>
             ) : hasil.jenis === "galat" ? (
@@ -1572,6 +1659,7 @@ export function Coba({
       const r = await kirim<HasilJalan>("coba", { bahasa, kode, stdin });
       if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "jalan", r, kode });
+      umumkan(kalimatJalan(r));
     } catch (e) {
       if (saya !== nomorJalan.current) return;
       setHasil({ jenis: "galat", pesan: (e as Error).message });
@@ -1600,15 +1688,14 @@ export function Coba({
           <div className="deret deret-rapat">
             <label className="deret deret-rapat">
               <span className="mata">Bahasa</span>
-              <select
-                value={bahasa}
-                aria-label="Bahasa yang dipakai"
-                onChange={(e) => gantiBahasa(e.target.value)}
-              >
-                {daftar.map((b) => (
-                  <option key={b.runner} value={b.runner}>{b.label}</option>
-                ))}
-              </select>
+              <Pilihan
+                label="Bahasa yang dipakai"
+                namaTombol="Bahasa yang dipakai"
+                gaya={{ minWidth: "11rem" }}
+                nilai={bahasa}
+                opsi={daftar.map((b) => ({ id: b.runner, nama: b.label }))}
+                onUbah={gantiBahasa}
+              />
             </label>
           </div>
         </div>
@@ -1714,8 +1801,8 @@ export function Coba({
                        ket="Tekan Jalankan (atau Ctrl+Enter) untuk menjalankan
                             kodenya di komputermu sendiri." />
             ) : hasil.jenis === "sibuk" ? (
-              <div className="kartu deret">
-                <div className="pusaran" />
+              <div className="kartu deret" role="status">
+                <div className="pusaran" aria-hidden="true" />
                 <span>{hasil.pesan}</span>
               </div>
             ) : hasil.jenis === "galat" ? (

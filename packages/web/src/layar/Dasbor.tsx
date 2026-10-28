@@ -40,15 +40,18 @@ import { Sampul } from "../komponen/Sampul.tsx";
 
 import { ambil } from "../api.ts";
 import { tingkatGerak } from "../gerak.ts";
+import { ambilLokal, simpanLokal } from "../lokal.ts";
 import { Bilah } from "../komponen/Bilah.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { ikonTipe } from "../komponen/ikon-bentuk.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { PetaRasi } from "../komponen/Rasi.tsx";
 import type { DataPeta } from "../komponen/rasi-geometri.ts";
+import { Skyline } from "../komponen/Skyline.tsx";
 import { angka, tanpaNomor } from "../util.ts";
 import { hariIniISO } from "../waktu.ts";
 import type { Tingkat } from "./Bahasa.tsx";
+import { PenutupDasbor } from "./PenutupDasbor.tsx";
 import {
   bandingHarian, baraPetak, celahBelajar, cincinAngka, dijalaniDasbor,
   jedaBara, jumlahKurikulum, kalimatPembuka, labelLanjut, labelMulai,
@@ -318,46 +321,89 @@ function usePinKeHariIni(
   }, [petakRef, geserRef, tanda]);
 }
 
+/** Tampilan hamparan di kartu Bara. Datar bawaan dan kanonik; Cakrawala pilihan. */
+type TampilBara = "datar" | "cakrawala";
+const TAMPIL_BARA: Array<[TampilBara, string]> = [
+  ["datar", "Datar"],
+  ["cakrawala", "Cakrawala"],
+];
+const KUNCI_TAMPIL_BARA = "bara.tampil";
+
+/** Nilai yang tidak dikenal (kunci lama, disunting tangan) jatuh ke datar. */
+function bacaTampilBara(): TampilBara {
+  return ambilLokal<unknown>(KUNCI_TAMPIL_BARA, "datar") === "cakrawala" ? "cakrawala" : "datar";
+}
+
 function BlokBara({ d }: { d: DataDasbor }) {
   const petakRef = useRef<HTMLDivElement>(null);
   const geserRef = useRef<HTMLSpanElement>(null);
   const p = useMemo(() => baraPetak(d, hariIniISO()), [d]);
   const jeda = useMemo(() => jedaBara(d.heatmap), [d.heatmap]);
-  usePinKeHariIni(petakRef, geserRef, p);
+  const [tampil, setTampil] = useState<TampilBara>(bacaTampilBara);
+  const datar = tampil === "datar";
+  // Kisinya baru ada lagi sesudah pelajar kembali ke tampilan datar, jadi
+  // tandanya ikut berubah: tanpa itu pin ke hari ini tidak pernah dipasang
+  // ulang dan kisinya terbuka di bulan pertama.
+  usePinKeHariIni(petakRef, geserRef, datar ? p : null);
+  const pilihTampil = (t: TampilBara) => {
+    setTampil(t);
+    simpanLokal(KUNCI_TAMPIL_BARA, t);
+  };
 
   return (
     <section>
-      <span className="mata">Bara enam bulan terakhir</span>
+      <div className="bara-kepala">
+        <span className="mata">Bara enam bulan terakhir</span>
+        {/* Tab di sini KEADAAN, bukan tindakan (sama dengan tab halaman
+            bahasa): yang terbuka `tbl-pilih`, yang lain `tbl-hantu`. */}
+        <div className="deret deret-rapat" role="group" aria-label="Tampilan hamparan">
+          {TAMPIL_BARA.map(([kunci, label]) => (
+            <button
+              key={kunci}
+              type="button"
+              className={"tbl tbl-kecil " + (kunci === tampil ? "tbl-pilih" : "tbl-hantu")}
+              aria-pressed={kunci === tampil}
+              onClick={() => pilihTampil(kunci)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="kartu kartu-rapat">
         {/* Kisi ini menggulir ke samping, jadi ia WAJIB bisa difokus: tanpa
             `tabIndex`, pengguna papan ketik tidak punya satu pun cara menggeser
             isinya -- dan sesudah pin di bawah, yang tidak terjangkau justru
             lima bulan pertamanya. */}
-        <div
-          ref={petakRef}
-          className="bara-petak"
-          tabIndex={0}
-          role="group"
-          aria-label="Hamparan XP harian enam bulan terakhir, bisa digeser ke samping"
-        >
-          {/* Sel kosong pembuka supaya kolom pertama jatuh di hari yang benar.
-              Sel sungguhan berkelas, bukan div bergaya inline: ukurannya satu
-              angka yang hidup di CSS bersama `.bara-sel` dan `.bara-petak`. */}
-          {Array.from({ length: p.kosong }, (_v, i) => (
-            <div key={"k" + i} className="bara-kosong" aria-hidden="true" />
-          ))}
-          {p.sel.map((s) => (
-            <div
-              key={s.tanggal}
-              className={
-                "bara-sel" +
-                (s.tingkat ? " bara-" + s.tingkat : "") +
-                (s.kini ? " bara-kini" : "")
-              }
-              title={s.judul}
-            />
-          ))}
-        </div>
+        {datar ? (
+          <div
+            ref={petakRef}
+            className="bara-petak"
+            tabIndex={0}
+            role="group"
+            aria-label="Hamparan XP harian enam bulan terakhir, bisa digeser ke samping"
+          >
+            {/* Sel kosong pembuka supaya kolom pertama jatuh di hari yang benar.
+                Sel sungguhan berkelas, bukan div bergaya inline: ukurannya satu
+                angka yang hidup di CSS bersama `.bara-sel` dan `.bara-petak`. */}
+            {Array.from({ length: p.kosong }, (_v, i) => (
+              <div key={"k" + i} className="bara-kosong" aria-hidden="true" />
+            ))}
+            {p.sel.map((s) => (
+              <div
+                key={s.tanggal}
+                className={
+                  "bara-sel" +
+                  (s.tingkat ? " bara-" + s.tingkat : "") +
+                  (s.kini ? " bara-kini" : "")
+                }
+                title={s.judul}
+              />
+            ))}
+          </div>
+        ) : (
+          <Skyline hari={p.sel} kosong={p.kosong} target={d.target_harian} />
+        )}
 
         {/* Jeda dirender DI BAWAH kisi, bukan di dalamnya, dan letaknya bukan
             selera: `.bara-petak` adalah `grid-auto-flow: column` dengan tujuh
@@ -379,10 +425,13 @@ function BlokBara({ d }: { d: DataDasbor }) {
               streak dan membantahnya. */}
           <span>{`${angka(p.aktif)} hari ber-XP`}</span>
           {/* Arahnya disebut, bukan cuma keberadaannya: sesudah kisinya dipin
-              di ujung kanan, yang tersembunyi ada di KIRI. */}
-          <span ref={geserRef} className="bara-geser" hidden>
-            · geser ke kiri untuk yang lebih lama
-          </span>
+              di ujung kanan, yang tersembunyi ada di KIRI. Hanya di tampilan
+              datar: cakrawala tidak menggulir ke samping. */}
+          {datar ? (
+            <span ref={geserRef} className="bara-geser" hidden>
+              · geser ke kiri untuk yang lebih lama
+            </span>
+          ) : null}
           {/* Rampa diberi kata di kedua ujungnya, bukan angka ambang:
               ambangnya dihitung dari target harian yang bisa diubah, jadi
               angka apa pun di sini akan jadi salinan kedua yang cepat basi. */}
@@ -426,7 +475,7 @@ function KartuLanjutkan({ s }: { s: Langkah }) {
         <h2>{tanpaNomor(s.judul)}</h2>
         <p>{s.alasan}</p>
       </div>
-      <span className="lanjutkan-tbl">
+      <span className="lanjutkan-tbl tbl-kaca">
         <span>Lanjutkan</span>
         <Ikon nama="lanjut" ukuran={20} />
       </span>
@@ -528,7 +577,9 @@ function UbinKarier() {
   }, []);
 
   return (
-    <a className="meja-ubin-satu" href={p ? "#/karier/" + p.id : "#/karier"}>
+    <a className="meja-ubin-satu" href={p ? "#/karier/" + p.id : "#/karier"}
+       title={p ? "Kesiapan dihitung dari persen kurikulum yang sudah kamu "
+         + "selesaikan di aplikasi ini. Ia bukan penilaian kemampuan." : undefined}>
       <span className="meja-ubin-kepala">
         <Ikon nama="karier" ukuran={18} />
         Peta karier
@@ -706,7 +757,7 @@ function KartuMulaiUtama({ s, bahasa }: { s: Langkah; bahasa: BahasaAwal[] }) {
             : `${jenis}. Langkah pertama di jalur ${s.label_bahasa}.`}
         </p>
       </div>
-      <span className="tbl tbl-utama tbl-besar">
+      <span className="tbl tbl-utama tbl-besar tbl-kaca">
         Mulai
         <Ikon nama="lanjut" ukuran={18} />
       </span>
@@ -829,6 +880,11 @@ function LayarMulai({
           {`${angka(bahasa.length)} bahasa · ${angka(jml.materi)} materi · ` +
             `${angka(jml.kuis)} kuis · ${angka(jml.latihan)} latihan. ` +
             "Pilih satu; sisanya menunggu dan tidak ke mana-mana."}
+        </p>
+        <p className="mulai-pengantar">
+          <a className="tbl tbl-kecil tbl-hantu" href="#/pengantar">
+            Baru di sini? Lihat pengantarnya
+          </a>
         </p>
       </header>
 
@@ -997,7 +1053,7 @@ function MejaKerja({ d, bahasa }: { d: DataDasbor; bahasa: BahasaAwal[] }) {
           {d.kuis_jatuh_tempo > 2 ? (
             <p className="meja-catatan">
               {`${d.kuis_jatuh_tempo} kuis menunggu diulang. ` +
-                "Dua yang paling mendesak sudah ada di antrean; sisanya bisa besok."}
+                "Dua kuis di antreanmu dipilih dari bahasa yang sedang kamu pelajari lebih dulu, lalu yang skornya paling rendah; sisanya bisa menyusul."}
             </p>
           ) : null}
           {/* Di kolom kanan, bukan di bawah: kolom kiri (sapaan + kartu) lebih
@@ -1030,6 +1086,11 @@ function MejaKerja({ d, bahasa }: { d: DataDasbor; bahasa: BahasaAwal[] }) {
       <section className="meja-ritme">
         <BlokBara d={d} />
       </section>
+
+      {/* Penutup yang tersingkap saat dasbor digulir sampai habis. Hanya di dasbor yang
+          berjalan: layar mulai (xp 0) sengaja tidak punya penutup, karena yang dibutuhkan
+          orang itu satu pintu, bukan layar kedua. */}
+      <PenutupDasbor d={d} />
     </div>
   );
 }
@@ -1074,7 +1135,7 @@ export function Dasbor({
       />
     );
   }
-  if (!d) return <div className="pusaran" aria-label="Memuat" />;
+  if (!d) return <div className="pusaran" role="status" aria-label="Memuat" />;
   if (d.xp === 0) return <LayarMulai d={d} bahasa={bahasa} aturan={aturan} />;
   return <MejaKerja d={d} bahasa={bahasa} />;
 }

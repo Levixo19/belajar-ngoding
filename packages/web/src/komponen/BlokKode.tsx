@@ -16,7 +16,7 @@
  * definisi "lulus" tetap cuma satu dan tempatnya `runner.periksa`.
  */
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { kirim } from "../api.ts";
 import { salin } from "../sorak.tsx";
@@ -24,6 +24,8 @@ import { Editor, type PeganganEditor } from "./Editor.tsx";
 import { Ikon } from "./Ikon.tsx";
 import { Jejak } from "./Jejak.tsx";
 import { Kode } from "./Kode.tsx";
+import { PohonBerkas } from "./PohonBerkas.tsx";
+import { pecahBerkas } from "./pohon-teks.ts";
 import { Pratinjau } from "./Pratinjau.tsx";
 import {
   bisaDipratinjau, dokumenPratinjau, halamanDikarang,
@@ -61,6 +63,12 @@ const LENCANA: Record<string, string> = {
   program: "berkas utuh", potongan: "potongan", sesi: "sesi",
   multi: "beberapa berkas", ilustrasi: "ilustrasi",
 };
+
+/* Kaki blok multi-berkas yang dipecah penampil. Petunjuk dari server ("pisahkan
+   sesuai komentar penanda") tidak lagi benar di sini: penandanya sudah jadi
+   baris pohon dan tidak terlihat di dalam kode. */
+const KAKI_PECAH = "Tombol Salin di atas membawa semua berkas sekaligus beserta komentar "
+  + "penandanya; tombol di kepala kode hanya membawa berkas yang sedang dibuka.";
 
 /**
  * Kartu keluaran satu kali jalan.
@@ -122,8 +130,11 @@ export function KartuKeluaran({
           </div>
         ) : null}
         <span className="deret-kanan" />
-        <span className={"pil" + (lulus ? " pil-tumbuh" : " pil-salah")}>
-          {"kode keluar " + r.kode_keluar}
+        <span
+          className={"pil" + (lulus ? " pil-tumbuh" : " pil-salah")}
+          title="Kode keluar 0 berarti programnya selesai tanpa error. Angka lain berarti ia berhenti karena error."
+        >
+          {lulus ? "selesai tanpa error" : `berhenti dengan error (kode keluar ${r.kode_keluar})`}
         </span>
         <span className="pil">{r.detik + " detik"}</span>
         <button type="button" className="tbl tbl-kecil tbl-hantu"
@@ -189,6 +200,11 @@ export function BlokKode({
 
   const p = b.petunjuk;
   const lencana = LENCANA[p.jenis] || p.jenis;
+  // Blok multi-berkas yang penandanya bisa dipecah tampil sebagai pohon dan panel kode.
+  const pecah = useMemo(
+    () => (p.jenis === "multi" ? pecahBerkas(b.kode) : null),
+    [p.jenis, b.kode],
+  );
   // Menjalankan butuh DUA syarat, dan keduanya jawaban server: blok ini memang
   // program utuh (`bisa_dijalankan` dari berkas.py) DAN toolchain-nya
   // benar-benar terpasang di mesin ini (`siap` dari runner.py).
@@ -241,7 +257,7 @@ export function BlokKode({
             <button type="button" className="tbl tbl-kecil tbl-hantu"
                     title="Ubah kodenya lalu jalankan lagi"
                     onClick={() => setEditorBuka(true)}>
-              Utak-atik
+              Ubah kodenya
             </button>
           ) : null}
           {editorBuka ? (
@@ -268,7 +284,7 @@ export function BlokKode({
               title="Putar ulang program ini baris demi baris, lengkap dengan isi variabelnya"
               onClick={() => setJejakBuka((v) => !v)}
             >
-              Lihat jalannya
+              Lihat baris demi baris
             </button>
           ) : null}
           {/* Ruang Coba tetap ada, tapi tidak lagi jadi satu-satunya jalan:
@@ -296,12 +312,16 @@ export function BlokKode({
             label={"Utak-atik kode: " + (p.nama || b.judul || judulMateri)}
             pintasan={{ "ctrl+enter": () => { void jalankan(); } }}
           />
+        ) : pecah ? (
+          <PohonBerkas catatan={pecah.catatan} berkas={pecah.berkas} />
         ) : (
           <Kode token={b.token} />
         )}
       </div>
 
-      {p.perintah.length ? (
+      {pecah ? (
+        <div className="blok-kaki">{KAKI_PECAH}</div>
+      ) : p.perintah.length ? (
         <div className="blok-kaki">
           {"Jalankan: "}
           <span className="perintah">{p.perintah.join("   lalu   ")}</span>
@@ -314,8 +334,8 @@ export function BlokKode({
 
       <div className="blok-keluaran">
         {hasil.jenis === "sibuk" ? (
-          <div className="keluaran-kartu deret">
-            <div className="pusaran" />
+          <div className="keluaran-kartu deret" role="status">
+            <div className="pusaran" aria-hidden="true" />
             <span>Menjalankan…</span>
           </div>
         ) : hasil.jenis === "galat" ? (

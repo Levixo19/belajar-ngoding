@@ -1,11 +1,11 @@
-"""Tes kontrak 41 endpoint: BENTUK jawaban API, bukan nilainya.
+"""Tes kontrak 42 endpoint: BENTUK jawaban API, bukan nilainya.
 
 Kenapa ia ada, dan kenapa ia berbeda dari `test_web.py`.
 
 `test_web.py` menguji APA yang dijawab server: skor kuis yang benar, materi
 yang terkunci, isi yang sama di dua antarmuka. Yang TIDAK dijaganya satu hal
 yang justru paling mudah rusak saat backend-nya diganti: **nama medan dan
-tipenya**. Antarmuka React membaca empat puluh satu endpoint ini, dan satu
+tipenya**. Antarmuka React membaca empat puluh dua endpoint ini, dan satu
 medan yang berganti nama tidak menghasilkan error di satu pun sisi -- ia
 menghasilkan `undefined` yang digambar sebagai halaman kosong.
 
@@ -13,7 +13,7 @@ Empat hal yang membuat tes ini pagar, bukan daftar keinginan:
 
 1. **Daftar endpointnya DITURUNKAN dari `server.RUTE`, tidak diketik.**
    Endpoint baru tanpa entri kontrak membuat tes ini MERAH dengan menyebut
-   nama jalurnya. Daftar yang diketik tangan akan diam untuk endpoint ke-42,
+   nama jalurnya. Daftar yang diketik tangan akan diam untuk endpoint ke-43,
    dan yang diam itu justru endpoint yang paling baru dan paling mungkin salah.
 
 2. **Yang ditagih bentuk, bukan nilai.** `{"xp": 7}` dan `{"xp": 1200}`
@@ -331,7 +331,9 @@ KONTRAK = {
         lambda k: {"dari": k["profesi"], "ke": k["profesi2"]},
         {"jalur": [str], "celah": [list]}),
 
-    ("GET", "/api/karier/kuis"): ({}, {"hasil": [dict]}),
+    ("GET", "/api/karier/kuis"): ({"pilihan": "0,1,2"}, {"hasil": [
+        {"id": str, "skor": ANGKA, "cocok": [str],
+         "dari": [{"soal": int, "keahlian": [str]}]}]}),
 
     ("GET", "/api/langit"): ({}, {
         "bahasa": [{"key": str, "label": str,
@@ -387,6 +389,11 @@ KONTRAK = {
     ("POST", "/api/konfigurasi/bawaan"): ({}, {"konfigurasi": dict}),
 
     ("GET", "/api/data/ekspor"): ({}, {"progres": dict}),
+
+    ("GET", "/api/data/cadangan"): ({}, {
+        "salinan": [{"nama": str, "waktu": str, "xp": int, "materi": int,
+                     "sah": bool}],
+        "maks": int}),
 
     ("POST", "/api/data/cadangkan"): ({}, {"cadangan": str}),
 
@@ -577,7 +584,7 @@ class TestKontrakApi(unittest.TestCase):
         """Endpoint baru tanpa entri kontrak MERAH, dengan menyebut jalurnya.
 
         Ini penjaga yang membuat tes di bawah berarti. Tanpa dia, endpoint
-        ke-42 bisa lahir tanpa satu pun pemeriksaan bentuk -- dan ia justru
+        ke-43 bisa lahir tanpa satu pun pemeriksaan bentuk -- dan ia justru
         yang paling baru dan paling mungkin salah.
         """
         rute = set(modul_server.RUTE)
@@ -586,7 +593,7 @@ class TestKontrakApi(unittest.TestCase):
         lebih = sorted(f"{m} {j}" for m, j in kontrak - rute)
         self.assertEqual(kurang, [], "rute tanpa kontrak: " + ", ".join(kurang))
         self.assertEqual(lebih, [], "kontrak tanpa rute: " + ", ".join(lebih))
-        self.assertEqual(len(rute), 41,
+        self.assertEqual(len(rute), 42,
                          f"jumlah endpoint berubah ({len(rute)}). Kalau itu "
                          "memang disengaja, perbarui angkanya DI SINI supaya "
                          "pertumbuhannya terlihat di riwayat.")
@@ -624,7 +631,7 @@ class TestKontrakApi(unittest.TestCase):
                 diperiksa += 1
         # Lantai populasi: tanpa ini, sebuah bug di `_urut` atau `_konteks` yang
         # membuat seluruh perulangan dilewati tetap melapor hijau.
-        self.assertGreaterEqual(diperiksa, 41,
+        self.assertGreaterEqual(diperiksa, 42,
                                 f"cuma {diperiksa} endpoint yang benar-benar "
                                 "diperiksa")
 
@@ -671,6 +678,34 @@ class TestKontrakApi(unittest.TestCase):
                     j, str, "karantina berisi JALUR BERKAS, bukan objek")
         finally:
             simpanan.KARANTINA[:] = asli
+
+    def test_salinan_bentuknya_diuji_saat_terisi(self):
+        """`salinan` diuji saat BERISI. Di profil uji daftarnya kosong sampai
+        sebuah salinan dibuat, dan daftar kosong memuaskan `[apa pun]`: urutan
+        `_urut()` menjalankan GET ini SEBELUM `/api/data/cadangkan`, jadi
+        tanpa tes ini bentuk butirnya tidak pernah diperiksa."""
+        progress.save_progress(progress._default())
+        self._wajib("POST", "/api/data/cadangkan", {})
+        isi_ = self._wajib("GET", "/api/data/cadangan", {})
+        self.assertTrue(isi_["salinan"], "daftar salinan tetap kosong")
+        try:
+            periksa(KONTRAK[("GET", "/api/data/cadangan")][1], isi_)
+        except Salah as e:
+            self.fail(f"bentuk /api/data/cadangan bergeser saat berisi -- {e}")
+        self.assertTrue(all(s["sah"] for s in isi_["salinan"]))
+
+    def test_kuis_karier_bentuknya_diuji_saat_terisi(self):
+        """`hasil` kuis karier diuji saat BERISI, dan tiap hasil wajib punya
+        alasan (`dari`). Tanpa jawaban, daftarnya kosong dan memuaskan bentuk
+        apa pun: entri lama `[dict]` lolos dengan `dari` yang tidak pernah
+        diperiksa, padahal layar kuis menampilkannya kata demi kata."""
+        r = self._wajib("GET", "/api/karier/kuis", {"pilihan": "0,1,2"})
+        self.assertEqual(len(r["hasil"]), 3, "hasil kuis tidak terisi")
+        try:
+            periksa(KONTRAK[("GET", "/api/karier/kuis")][1], r)
+        except Salah as e:
+            self.fail(f"bentuk /api/karier/kuis bergeser saat berisi -- {e}")
+        self.assertTrue(all(h["dari"] for h in r["hasil"]), "ada hasil tanpa alasan")
 
     def test_latihan_bermuatan_penuh(self):
         """`/api/latihan` diuji lagi pada latihan yang medannya TERISI.

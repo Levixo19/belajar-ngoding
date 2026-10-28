@@ -31,6 +31,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent as TekanEvent,
   type ReactNode,
 } from "react";
 
@@ -39,7 +40,21 @@ import { adaGerak, gerakPenuh } from "../gerak.ts";
 import { sorak } from "../sorak.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { OrbitBekal } from "../komponen/OrbitBekal.tsx";
+import { Pilihan } from "../komponen/Pilihan.tsx";
 import { urlAman } from "../util.tsx";
+import {
+  aksiMaju,
+  bilanganKata,
+  judulHasil,
+  kalimatSisa,
+  labelAksiMaju,
+  namaKeahlian,
+  nomorSoal,
+  parameterPilihan,
+  sisaJawaban,
+  soalBelumDijawab,
+} from "./kuis-cocok-teks.ts";
 
 const W = 1040;
 const KIRI = 196;
@@ -388,8 +403,8 @@ export function Karier({ id }: { id?: string }) {
   }
   if (!data || !letak || !terpilih) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat peta karier…</span>
       </div>
     );
@@ -633,7 +648,7 @@ export function Karier({ id }: { id?: string }) {
           </figcaption>
         </figure>
 
-        <aside className="kr-panel" aria-live="polite">
+        <aside className="kr-panel" id="kr-panel" aria-live="polite">
           <PanelDetail
             p={terpilih}
             data={data}
@@ -644,7 +659,43 @@ export function Karier({ id }: { id?: string }) {
         </aside>
       </div>
 
-      <KuisCocok data={data} perId={perId} onPilih={pilih} />
+      {/* Orbit di bagian sendiri, BUKAN di dalam panel: panel itu kolom samping
+          selebar sekitar 370 px, dan papan orbit yang dikecilkan sampai 318 px
+          membuat label saling menimpa dan simpul dua cincin bertumpuk (jarak antar
+          cincin 45 px lebih kecil dari simpulnya). `key` mengosongkan pilihan dan
+          putaran hanya saat profesinya berganti. */}
+      <section className="kr-bagian" id="kr-orbit" aria-labelledby="kr-judul-orbit">
+        <div className="kr-bagian-kepala">
+          <span className="mata">Bekal dalam orbit</span>
+          <h2 id="kr-judul-orbit">{terpilih.nama}</h2>
+          <p>
+            Kurikulum yang dibutuhkan profesi yang sedang kamu pilih di atas, dan seberapa jauh kamu
+            sudah melangkah di tiap-tiapnya.
+          </p>
+        </div>
+        <OrbitBekal
+          key={terpilih.id}
+          nama={terpilih.nama}
+          kelompok={terpilih.kelompok}
+          pelengkap={terpilih.pelengkap}
+          kur={data.kurikulum}
+          pusat={
+            <>
+              <Cincin persen={terpilih.kesiapan} ukuran={56} />
+              <span className="or-pusat-angka">{persenTeks(terpilih.kesiapan)}</span>
+              <span className="or-pusat-nama">kesiapan</span>
+            </>
+          }
+        />
+      </section>
+
+      <KuisCocok
+        data={data}
+        perId={perId}
+        tujuan={tujuan}
+        onPilih={pilih}
+        onTujuan={setTujuan}
+      />
       <Perencana data={data} terpilih={terpilih} onPilih={pilih} />
 
       <section className="kr-bagian" aria-labelledby="kr-judul-rumpun">
@@ -975,41 +1026,156 @@ function TombolTujuan({
   );
 }
 
-/** Kuis kecocokan. Minimal tiga jawaban sebelum tombolnya hidup -- di bawah
- *  itu hasilnya lebih mirip tebakan daripada saran. */
+/** Jawaban server untuk satu profesi hasil kuis. `dari` menyebut soal mana
+ *  yang mendorongnya; server lama tanpa medan itu tetap terbaca (`cocok`). */
+interface HasilKuis {
+  id: string;
+  cocok: string[];
+  dari?: Array<{ soal: number; keahlian: string[] }>;
+}
+
+/** Kuis kecocokan: satu soal sekali tampil, jawaban tercatat di sampingnya.
+ *
+ *  Kuis lama menampilkan enam soal dan 24 pilihan sekaligus, pilihan terpilih
+ *  hanya dibedakan garis tipis, tombol hasilnya mati tanpa alasan, dan hasilnya
+ *  cuma nama profesi dengan "Cocok karena: Antarmuka web". Orang tidak tahu
+ *  jawaban mana yang membawanya ke sana, dan "Lihat profesi" menggulir tidak ke
+ *  mana-mana (panelnya ada di atas, jauh dari kuis).
+ *
+ *  Prinsip yang dipakai, masing-masing dengan akibat yang bisa dilihat. Semuanya
+ *  hipotesis desain: belum pernah diuji pada pelajar sungguhan.
+ *   - Beban ingatan kerja: satu soal dan empat pilihan per layar, dengan
+ *     "Soal 2 dari 6". Kemajuannya nyata, bukan hitung mundur atau desakan.
+ *   - Keadaan sistem terlihat: pilihan terpilih bertanda centang, nomor terisi,
+ *     dan huruf tebal. Bukan warna saja. Daftar jawaban di samping merekam apa
+ *     yang sudah dipilih, dengan kalimat pilihannya sendiri.
+ *   - Kendali dan bisa dibalik: Kembali, lompat lewat daftar, lewati tanpa
+ *     denda, ubah jawaban kapan saja. Tidak ada pilihan yang terpilih dari awal.
+ *   - Syarat minimum disebut dengan angkanya, dan tidak ada tombol yang buntu.
+ *   - Hasil dalam kata-kata pemilihnya: "Soal 1: <jawabanmu> menunjuk ke
+ *     <keahlian>". Tidak ada label tentang siapa orangnya: urutannya
+ *     kedekatan dengan jawaban, bukan penilaian kemampuan.
+ *   - Tindakan sesudahnya jelas: lihat profesi (menggulir ke panelnya) atau
+ *     jadikan tujuan. Memilih tetap keputusan orangnya.
+ */
 function KuisCocok({
   data,
   perId,
+  tujuan,
   onPilih,
+  onTujuan,
 }: {
   data: DataKarier;
   perId: Map<string, Profesi>;
+  tujuan: string;
   onPilih: (id: string, dariPengguna: boolean) => void;
+  onTujuan: (v: string) => void;
 }) {
-  const [jawaban, setJawaban] = useState<Array<number | null>>(
+  const total = data.kuis.length;
+  const [jawaban, setJawaban] = useState<Array<number | null>>(() =>
     data.kuis.map(() => null),
   );
-  const [hasil, setHasil] = useState<Array<{
-    id: string;
-    cocok: string[];
-  }> | null>(null);
-  const [sedang, setSedang] = useState(false);
-  const cukup = jawaban.filter((x) => x !== null).length >= 3;
+  const [aktif, setAktif] = useState(0);
+  const [tahap, setTahap] = useState<"soal" | "hasil">("soal");
+  // Jawaban disimpan BERSAMA hasilnya: yang ditampilkan di kartu adalah
+  // jawaban saat hasil dihitung, bukan yang sudah berubah sesudahnya.
+  const [hasil, setHasil] = useState<{
+    daftar: HasilKuis[];
+    jawaban: Array<number | null>;
+  } | null>(null);
+  const soalRef = useRef<HTMLLegendElement>(null);
+  const hasilRef = useRef<HTMLHeadingElement>(null);
+  // Fokus pindah ke judul soal atau hasil HANYA sesudah orang berpindah lewat
+  // tombol, supaya pembaca layar langsung mendengar apa yang baru. Dipasang
+  // dulu, dipakai efek sesudah gambar baru terpasang.
+  const fokus = useRef<"soal" | "hasil" | null>(null);
+  // Penjaga klik ganda. Bukan `disabled`: tombol yang sedang berfokus lalu
+  // dinonaktifkan menjatuhkan fokusnya ke body.
+  const sibuk = useRef(false);
+  const nomorMinta = useRef(0);
+
+  const cukup = sisaJawaban(jawaban) === 0;
+  const maju = aksiMaju(jawaban, aktif);
+  const soal = data.kuis[aktif] as Soal;
+
+  useEffect(() => {
+    const mau = fokus.current;
+    if (!mau) return;
+    fokus.current = null;
+    (mau === "hasil" ? hasilRef.current : soalRef.current)?.focus({ preventScroll: true });
+  }, [aktif, tahap, hasil]);
+
+  function pergi(i: number) {
+    const baru = Math.max(0, Math.min(total - 1, i));
+    if (baru === aktif && tahap === "soal") {
+      soalRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    fokus.current = "soal";
+    setAktif(baru);
+    setTahap("soal");
+  }
+
+  function pilihJawaban(i: number, j: number) {
+    setJawaban((d) => d.map((x, k) => (k === i ? j : x)));
+  }
 
   async function lihat() {
-    setSedang(true);
+    if (sibuk.current || !cukup) return;
+    sibuk.current = true;
+    const ini = ++nomorMinta.current;
+    const salinan = [...jawaban];
     try {
-      const r = await ambil<{ hasil: Array<{ id: string; cocok: string[] }> }>(
-        "karier/kuis",
-        { pilihan: jawaban.map((x) => (x === null ? "" : String(x))).join(",") },
-      );
-      setHasil(r.hasil);
+      const r = await ambil<{ hasil: HasilKuis[] }>("karier/kuis", {
+        pilihan: parameterPilihan(salinan),
+      });
+      if (ini !== nomorMinta.current) return;
+      fokus.current = "hasil";
+      setHasil({ daftar: r.hasil, jawaban: salinan });
+      setTahap("hasil");
     } catch (e) {
       sorak("Gagal memuat hasil kuis: " + (e as Error).message, "salah");
     } finally {
-      setSedang(false);
+      sibuk.current = false;
     }
   }
+
+  function lanjutkan() {
+    if (maju.jenis === "hasil") void lihat();
+    else pergi(maju.jenis === "belum" ? maju.ke : aktif + 1);
+  }
+
+  function keBelumDijawab() {
+    const ke = soalBelumDijawab(jawaban, aktif + 1);
+    if (ke !== null) pergi(ke);
+  }
+
+  /** Memilih profesi di peta lalu membawa orangnya ke panelnya: panel itu ada
+   *  di atas kuis, jadi tanpa gulir tombolnya terlihat tidak berbuat apa-apa. */
+  function lihatProfesi(id: string) {
+    onPilih(id, true);
+    document.getElementById("kr-panel")?.scrollIntoView({
+      behavior: adaGerak() ? "smooth" : "auto",
+      block: "start",
+    });
+  }
+
+  function tombolSoal(e: TekanEvent<HTMLFieldSetElement>) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const n = Number(e.key);
+    if (Number.isInteger(n) && n >= 1 && n <= soal.opsi.length) {
+      e.preventDefault();
+      // Fokus ikut ke pilihan itu: panah berikutnya mulai dari yang terpilih.
+      e.currentTarget.querySelectorAll<HTMLInputElement>("input[type=radio]")[n - 1]?.focus();
+      pilihJawaban(aktif, n - 1);
+    } else if (e.key === "Enter" && jawaban[aktif] !== null) {
+      e.preventDefault();
+      lanjutkan();
+    }
+  }
+
+  // Tombol di daftar jawaban hanya muncul bila ia bukan salinan tombol maju.
+  const salinanMaju = (cukup && maju.jenis === "hasil") || (!cukup && maju.jenis === "belum");
 
   return (
     <section className="kr-bagian" id="kr-cocok" aria-labelledby="kr-judul-cocok">
@@ -1017,77 +1183,176 @@ function KuisCocok({
         <span className="mata">Kuis kecocokan</span>
         <h2 id="kr-judul-cocok">Mana yang cocok denganmu?</h2>
         <p>
-          Enam pertanyaan tentang apa yang membuatmu betah bekerja. Tidak ada
-          jawaban yang salah; hasilnya cuma titik mulai.
+          {`${bilanganKata(total)} pertanyaan tentang apa yang membuatmu betah bekerja, satu per satu. `}
+          Jawabanmu tercatat di sebelah kanan dan bisa kamu ubah kapan saja. Tidak
+          ada jawaban yang salah; hasilnya cuma titik mulai.
         </p>
       </div>
       <div className="kr-soal-kisi">
-        {data.kuis.map((q, i) => (
-          <fieldset key={i} className="kr-soal">
-            <legend>
-              <span className="kr-soal-no">{String(i + 1).padStart(2, "0")}</span>
-              {q.q}
-            </legend>
-            <div className="kr-opsi">
-              {q.opsi.map((o, j) => (
-                <button
-                  key={j}
-                  type="button"
-                  className="kr-pilihan"
-                  aria-pressed={jawaban[i] === j}
-                  onClick={() =>
-                    setJawaban((d) => d.map((x, k) => (k === i ? j : x)))
-                  }
-                >
-                  {o}
+        <div className="kc-utama">
+          {tahap === "hasil" && hasil ? (
+            <div className="kc-hasil kr-hasil-kuis">
+              <h3 className="kc-hasil-judul" ref={hasilRef} tabIndex={-1}>
+                {judulHasil(hasil.daftar.length)}
+              </h3>
+              <p className="kr-catatan">
+                Urutannya menunjukkan kedekatan dengan jawabanmu, bukan penilaian
+                kemampuanmu. Ini titik mulai; profesi lain tetap bisa kamu jelajahi
+                di peta di atas.
+              </p>
+              {hasil.daftar.length ? (
+                <ol className="kr-juara">
+                  {hasil.daftar.map((x, i) => {
+                    const p = perId.get(x.id);
+                    if (!p) return null;
+                    return (
+                      <li key={x.id}>
+                        <span className="kr-juara-no" aria-hidden="true">{i + 1}</span>
+                        <div className="isi">
+                          <h4 className="judul">{p.nama}</h4>
+                          <p className="kc-ringkas">{p.ringkas}</p>
+                          <div className="kc-alasan">
+                            <span className="kc-alasan-judul">Muncul karena jawabanmu</span>
+                            {x.dari?.length ? (
+                              <ul>
+                                {x.dari.map((d) => {
+                                  const pil = hasil.jawaban[d.soal];
+                                  const teks = pil === null || pil === undefined
+                                    ? ""
+                                    : data.kuis[d.soal]?.opsi[pil] ?? "";
+                                  return (
+                                    <li key={d.soal}>
+                                      <span className="kc-ref">{`Soal ${d.soal + 1}`}</span>{" "}
+                                      {`“${teks}” `}
+                                      <span className="kc-ke">
+                                        {`menunjuk ke ${namaKeahlian(d.keahlian, data.keahlian)}`}
+                                      </span>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            ) : (
+                              <p className="ket">
+                                {"Cocok karena: " + namaKeahlian(x.cocok, data.keahlian)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="kc-aksi-kartu">
+                          <button
+                            type="button"
+                            className="tbl tbl-hantu tbl-kecil"
+                            onClick={() => lihatProfesi(p.id)}
+                          >
+                            Lihat profesi
+                          </button>
+                          <TombolTujuan p={p} tujuan={tujuan} onTujuan={onTujuan} />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              ) : (
+                <p className="kr-catatan">
+                  Jawabanmu belum menunjuk ke profesi mana pun. Coba jawab beberapa
+                  soal lagi, atau ubah jawaban yang masih kamu ragukan.
+                </p>
+              )}
+              <div className="kr-aksi">
+                <button type="button" className="tbl tbl-hantu" onClick={() => pergi(aktif)}>
+                  Ubah jawaban
                 </button>
-              ))}
+              </div>
             </div>
-          </fieldset>
-        ))}
-      </div>
-      <div className="kr-aksi">
-        <button
-          type="button"
-          className="tbl tbl-utama"
-          disabled={!cukup || sedang}
-          onClick={lihat}
-        >
-          Lihat yang cocok
-        </button>
-      </div>
-      <div className="kr-hasil-kuis" aria-live="polite">
-        {hasil === null ? null : hasil.length ? (
-          <ol className="kr-juara">
-            {hasil.map((x, i) => {
-              const p = perId.get(x.id);
-              if (!p) return null;
+          ) : (
+            <>
+              <p className="kc-kepala-soal">
+                <span className="kc-hitung">{`Soal ${aktif + 1} dari ${total}`}</span>
+                <span className="kc-bantu">
+                  {`Pilih satu. Tombol 1 sampai ${soal.opsi.length} juga bisa.`}
+                </span>
+              </p>
+              <fieldset className="kr-soal" key={aktif} onKeyDown={tombolSoal}>
+                <legend ref={soalRef} tabIndex={-1}>
+                  <span className="kr-soal-no" aria-hidden="true">{nomorSoal(aktif)}</span>
+                  <span className="kc-sr">{`Soal ${aktif + 1} dari ${total}. `}</span>
+                  {soal.q}
+                </legend>
+                <div className="kr-opsi">
+                  {soal.opsi.map((o, j) => (
+                    <label key={j} className="kr-pilihan">
+                      <input
+                        type="radio"
+                        className="kc-radio"
+                        name={`kc-soal-${aktif}`}
+                        value={j}
+                        checked={jawaban[aktif] === j}
+                        onChange={() => pilihJawaban(aktif, j)}
+                      />
+                      <span className="kc-nomor" aria-hidden="true">{j + 1}</span>
+                      <span className="kc-label">{o}</span>
+                      <span className="kc-tanda" aria-hidden="true">
+                        <Ikon nama="selesai" ukuran={20} />
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div className="kr-aksi kc-nav">
+                {aktif > 0 ? (
+                  <button type="button" className="tbl tbl-hantu" onClick={() => pergi(aktif - 1)}>
+                    Kembali
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className={"tbl " + (maju.jenis === "lanjut" || maju.jenis === "hasil" ? "tbl-utama" : "tbl-hantu")}
+                  onClick={lanjutkan}
+                >
+                  {labelAksiMaju(maju)}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <aside className="kc-rel" aria-labelledby="kc-rel-judul">
+          <h3 className="kc-rel-judul" id="kc-rel-judul">Jawabanmu</h3>
+          <ol className="kc-daftar">
+            {data.kuis.map((s, i) => {
+              const j = jawaban[i] ?? null;
               return (
-                <li key={x.id}>
-                  <span className="kr-juara-no">{i + 1}</span>
-                  <div className="isi">
-                    <div className="judul">{p.nama}</div>
-                    <div className="ket">
-                      {"Cocok karena: " +
-                        x.cocok.map((k) => data.keahlian[k] ?? k).join(", ")}
-                    </div>
-                  </div>
+                <li key={i}>
                   <button
                     type="button"
-                    className="tbl tbl-hantu tbl-kecil"
-                    onClick={() => onPilih(p.id, true)}
+                    className="kc-baris"
+                    data-kosong={j === null ? "" : undefined}
+                    aria-current={tahap === "soal" && i === aktif ? "step" : undefined}
+                    aria-label={`Soal ${i + 1}: ${j === null ? "belum dijawab" : s.opsi[j]}`}
+                    onClick={() => pergi(i)}
                   >
-                    Lihat profesi
+                    <span className="kc-no" aria-hidden="true">{nomorSoal(i)}</span>
+                    <span className="kc-teks" aria-hidden="true">
+                      {j === null ? "Belum dijawab" : s.opsi[j]}
+                    </span>
+                    <span className="kc-cek" aria-hidden="true">
+                      {j === null ? null : <Ikon nama="selesai" ukuran={16} />}
+                    </span>
                   </button>
                 </li>
               );
             })}
           </ol>
-        ) : (
-          <p className="kr-catatan">
-            Jawabanmu belum cukup condong ke satu arah. Coba jawab semua soal.
-          </p>
-        )}
+          <p className="kc-sisa">{kalimatSisa(jawaban)}</p>
+          {salinanMaju ? null : (
+            <button
+              type="button"
+              className="tbl tbl-hantu tbl-kecil"
+              onClick={cukup ? () => void lihat() : keBelumDijawab}
+            >
+              {cukup ? "Lihat yang cocok" : "Ke soal yang belum dijawab"}
+            </button>
+          )}
+        </aside>
       </div>
     </section>
   );
@@ -1145,6 +1410,10 @@ function Perencana({
 
   const kur = data.kurikulum;
   const perId = new Map(data.profesi.map((p) => [p.id, p]));
+  const opsiProfesi = useMemo(
+    () => data.profesi.map((p) => ({ id: p.id, nama: p.nama })),
+    [data],
+  );
 
   return (
     <section className="kr-bagian" aria-labelledby="kr-judul-pindah">
@@ -1158,37 +1427,31 @@ function Perencana({
         </p>
       </div>
       <div className="kr-pilih-jalur">
-        <label>
-          <span>Sekarang</span>
-          <select
-            aria-label="Profesi asal"
-            value={dari}
-            onChange={(e) => setDari(e.target.value)}
-          >
-            {data.profesi.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nama}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* Bukan `<select>`: popup native-nya di luar kendali halaman dan di
+            Wayland menutup sendiri begitu klik dilepas. Lihat `Pilihan.tsx`. */}
+        <div className="pil-medan">
+          <label htmlFor="kr-pilih-asal">Sekarang</label>
+          <Pilihan
+            id="kr-pilih-asal"
+            label="Profesi asal"
+            nilai={dari}
+            opsi={opsiProfesi}
+            onUbah={setDari}
+          />
+        </div>
         <span className="kr-panah" aria-hidden="true">
           <Ikon nama="lanjut" ukuran={20} />
         </span>
-        <label>
-          <span>Ingin menjadi</span>
-          <select
-            aria-label="Profesi tujuan"
-            value={ke}
-            onChange={(e) => onPilih(e.target.value, true)}
-          >
-            {data.profesi.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nama}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="pil-medan">
+          <label htmlFor="kr-pilih-tujuan">Ingin menjadi</label>
+          <Pilihan
+            id="kr-pilih-tujuan"
+            label="Profesi tujuan"
+            nilai={ke}
+            opsi={opsiProfesi}
+            onUbah={(v) => onPilih(v, true)}
+          />
+        </div>
       </div>
       <div className="kr-jalur" aria-live="polite">
         {catatan ? <p className="kr-catatan">{catatan}</p> : null}

@@ -27,12 +27,12 @@ async function muatPlaywright() {
 export async function mulai(o = {}) {
   const { lebar = 1366, tinggi = 768, tema = "terang", gerak = "mati", hash = "#/langit", profil = "nyata",
     dpr = 1, reduce = false, forced = false, throttle = 1, bilahKlasik = false,
-    tunggu = null, ukuranTeks = null } = o;
+    tunggu = null, ukuranTeks = null, argsChrome = [] } = o;
   // Alamat lensa (#/langit/<kurikulum>[/n]): ikhtisar ada tetapi tersembunyi, jadi yang ditunggu lensanya.
   const sasaranTunggu = tunggu ?? (/^#\/langit\/[^/]+/.test(hash) ? ".lt-lensa g[role=option]" : ".lt-ikhtisar, .lt-daftar");
   const chromium = await muatPlaywright();
   const browser = await chromium.launch({
-    executablePath: process.env.CHROME ?? "/usr/bin/google-chrome", headless: true, args: ["--no-sandbox"],
+    executablePath: process.env.CHROME ?? "/usr/bin/google-chrome", headless: true, args: ["--no-sandbox", ...argsChrome],
     ...(bilahKlasik ? { ignoreDefaultArgs: ["--hide-scrollbars"] } : {}),
   });
   const ctx = await browser.newContext({

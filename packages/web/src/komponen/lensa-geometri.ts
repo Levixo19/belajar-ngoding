@@ -440,9 +440,11 @@ export function selubungCembung(titik: readonly Titik[]): Titik[] {
 
 /** Titik-titik poligon wilayah: selubung cembung yang dikembangkan `pad` piksel
  *  menjauhi pusatnya. Bentuk rasi tipis memanjang, jadi pembagian rata ke semua
- *  arah cukup (tidak butuh offset poligon yang sebenarnya). Dipakai untuk DUA
- *  hal yang harus sama: garis putus yang digambar saat rasi disorot, dan batas
- *  klik. Yang disorot adalah yang bisa diklik. */
+ *  arah cukup (tidak butuh offset poligon yang sebenarnya). Ini BATAS SASARAN
+ *  (`sasaranIkhtisar`): celah di antara bintang yang renggang tetap milik
+ *  rasinya. Garis putus yang digambar saat rasi disorot BUKAN ini: selubung
+ *  cembung melompati setiap lekukan rasi, jadi garisnya menggembung jauh dari
+ *  bintang (sampai 69 px di SQL pada skala 1,286). Gambarnya dari `pathWilayah`. */
 export function wilayahPoligon(titik: readonly Titik[], pad: number): Titik[] {
   const h = selubungCembung(titik);
   if (h.length < 3) return h;
@@ -456,26 +458,171 @@ export function wilayahPoligon(titik: readonly Titik[], pad: number): Titik[] {
   });
 }
 
-/** Path tertutup membulat dari poligon wilayah. */
+/** Bantalan garis wilayah yang DIGAMBAR, piksel: jarak garis putus dari rangka
+ *  rasi. Lebih ketat daripada `padWilayah` karena dihitung dari rangka, bukan
+ *  dari selubung, jadi di mana pun garisnya sama jauh dari bintang atau ruas
+ *  terdekat. Lantainya (14,9 px pada skala 0,571) masih di luar cincin sorot
+ *  bintang (jari-jari 4,6 + 5) dan braket "berikutnya" (4,6 + 7). */
+export const padKontur = (skala: number): number => 12 + 5 * skala;
+
+/** Jarak titik (px, py) ke ruas a-b; a sama dengan b berarti ke satu titik. */
+function jarakKeRuas(px: number, py: number, ax: number, ay: number, bx: number, by: number): number {
+  const dx = bx - ax, dy = by - ay;
+  const l2 = dx * dx + dy * dy;
+  const t = l2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+/** Tepi sel marching squares yang dipotong kontur, per kode sudut-di-dalam
+ *  (kiri-atas 8, kanan-atas 4, kanan-bawah 2, kiri-bawah 1). Tepi: 0 atas,
+ *  1 kanan, 2 bawah, 3 kiri. Kode 5 dan 10 pelana, dipilih di pemakainya. */
+const POTONG: readonly (readonly (readonly [number, number])[])[] = [
+  [], [[3, 2]], [[2, 1]], [[3, 1]], [[0, 1]], [], [[0, 2]], [[0, 3]],
+  [[0, 3]], [[0, 2]], [], [[0, 1]], [[3, 1]], [[1, 2]], [[3, 2]], [],
+];
+
+/**
+ * Lingkar-lingkar tertutup tempat jarak ke RANGKA rasi tepat `pad` piksel.
+ * Rangka = tiap bintang ditambah ruas antara bintang BERURUTAN, termasuk ruas
+ * yang tidak digambar di batas bab: tanpa jembatan itu celah antar-bab yang
+ * lebih lebar dari 2 x `pad` memecah satu rasi jadi beberapa pulau.
+ *
+ * Ini kontur jarak (marching squares atas grid sel `pad / 6`), bukan selubung
+ * cembung: garisnya mengikuti lekukan rasi dan tidak pernah lebih jauh dari
+ * `pad` (ditambah galat interpolasi sub-piksel) dari bintang atau garisnya.
+ * Medan jarak hanya dihitung di sekitar tiap ruas, jadi ongkosnya sebanding
+ * dengan jumlah bintang, bukan luas kotak. Rongga yang cukup besar muncul
+ * sebagai lingkar tersendiri, jadi gambarnya wajib memakai `fill-rule: evenodd`.
+ * Rongga yang lebih kecil dari separuh cakram bantalan (pi x pad^2 / 2) tidak
+ * digambar: di dalam rangka yang rapat ia terbaca sebagai noktah putus-putus,
+ * bukan sebagai bentuk rasi.
+ */
+export function lingkarWilayah(titik: readonly Titik[], pad: number): Titik[][] {
+  if (titik.length === 0 || !(pad > 0)) return [];
+  const h = Math.max(1.5, pad / 6);
+  const jangkau = pad + 2 * h;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const [x, y] of titik) {
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x);
+    y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  // Tepi grid selalu di luar kontur (jarak >= jangkau + h > pad): lingkarnya tertutup.
+  const ox = x0 - jangkau - h, oy = y0 - jangkau - h;
+  const kol = Math.ceil((x1 - ox + jangkau + h) / h) + 1;
+  const bar = Math.ceil((y1 - oy + jangkau + h) / h) + 1;
+  const f = new Float32Array(kol * bar).fill(pad + 4 * h);
+  const cap = (ax: number, ay: number, bx: number, by: number) => {
+    const i0 = Math.max(0, Math.floor((Math.min(ax, bx) - jangkau - ox) / h));
+    const i1 = Math.min(kol - 1, Math.ceil((Math.max(ax, bx) + jangkau - ox) / h));
+    const j0 = Math.max(0, Math.floor((Math.min(ay, by) - jangkau - oy) / h));
+    const j1 = Math.min(bar - 1, Math.ceil((Math.max(ay, by) + jangkau - oy) / h));
+    for (let j = j0; j <= j1; j++) {
+      for (let i = i0; i <= i1; i++) {
+        const d = jarakKeRuas(ox + i * h, oy + j * h, ax, ay, bx, by);
+        const k = j * kol + i;
+        if (d < (f[k] as number)) f[k] = d;
+      }
+    }
+  };
+  for (let i = 0; i < titik.length; i++) {
+    const [ax, ay] = titik[i] as Titik;
+    cap(ax, ay, ax, ay);
+    if (i > 0) {
+      const [px, py] = titik[i - 1] as Titik;
+      cap(px, py, ax, ay);
+    }
+  }
+
+  const dalam = (k: number): boolean => (f[k] as number) <= pad;
+  const posisi = new Map<number, Titik>();
+  const sambung = new Map<number, number[]>();
+  /** Id tepi sel (i, j); `tepi` 0 atas, 1 kanan, 2 bawah, 3 kiri. Titik potongnya
+   *  diinterpolasi linear di antara dua node yang statusnya berbeda. */
+  const tepi = (i: number, j: number, sisi: number): number => {
+    const jj = sisi === 2 ? j + 1 : j;
+    const ii = sisi === 1 ? i + 1 : i;
+    const tegak = sisi === 1 || sisi === 3;
+    const id = (jj * kol + ii) * 2 + (tegak ? 1 : 0);
+    if (!posisi.has(id)) {
+      const ka = jj * kol + ii;
+      const fa = f[ka] as number;
+      const fb = f[tegak ? ka + kol : ka + 1] as number;
+      const t = (pad - fa) / (fb - fa);
+      posisi.set(id, [ox + ii * h + (tegak ? 0 : t * h), oy + jj * h + (tegak ? t * h : 0)]);
+    }
+    return id;
+  };
+  const hubung = (a: number, b: number) => {
+    const sa = sambung.get(a);
+    if (sa) sa.push(b); else sambung.set(a, [b]);
+    const sb = sambung.get(b);
+    if (sb) sb.push(a); else sambung.set(b, [a]);
+  };
+  for (let j = 0; j < bar - 1; j++) {
+    for (let i = 0; i < kol - 1; i++) {
+      const kk = j * kol + i;
+      const kode = (dalam(kk) ? 8 : 0) | (dalam(kk + 1) ? 4 : 0) |
+        (dalam(kk + kol + 1) ? 2 : 0) | (dalam(kk + kol) ? 1 : 0);
+      if (kode === 0 || kode === 15) continue;
+      let pasang = POTONG[kode] as readonly (readonly [number, number])[];
+      if (kode === 5 || kode === 10) {
+        const tengah =
+          ((f[kk] as number) + (f[kk + 1] as number) + (f[kk + kol] as number) + (f[kk + kol + 1] as number)) / 4 <= pad;
+        // 5 (kanan-atas + kiri-bawah di dalam) dan 10 (kiri-atas + kanan-bawah):
+        // tengah di dalam menyambung dua sudut di dalam, jadi yang dipotong dua sudut luar.
+        // Cabang ini tercapai 8 kali di korpus (8 dari 128 kombinasi rasi dan skala)
+        // dan membaliknya hanya mengubah satu leher atau rongga selebar satu sel
+        // (sekitar 3 px). Tidak ada pagar yang membedakannya: raster 1 px independen
+        // sendiri berselisih dengan kontur di 14 dari 128 kasus, jadi bukan penagih
+        // yang adil. Pagar mati yang disadari, bukan yang lupa dibuat.
+        const sambungDalam: readonly (readonly [number, number])[] = kode === 5 ? [[0, 3], [1, 2]] : [[0, 1], [3, 2]];
+        const pisahDalam: readonly (readonly [number, number])[] = kode === 5 ? [[0, 1], [3, 2]] : [[0, 3], [1, 2]];
+        pasang = tengah ? sambungDalam : pisahDalam;
+      }
+      for (const [a, b] of pasang) hubung(tepi(i, j, a), tepi(i, j, b));
+    }
+  }
+
+  const lingkar: Titik[][] = [];
+  const sudah = new Set<number>();
+  for (const awal of sambung.keys()) {
+    if (sudah.has(awal)) continue;
+    const jalan: Titik[] = [];
+    let kini = awal, lalu = -1;
+    for (;;) {
+      sudah.add(kini);
+      jalan.push(posisi.get(kini) as Titik);
+      const tetangga = sambung.get(kini) as number[];
+      const lanjut = tetangga[0] !== lalu ? tetangga[0] : tetangga[1];
+      if (lanjut === undefined || lanjut === awal || sudah.has(lanjut)) break;
+      lalu = kini;
+      kini = lanjut;
+    }
+    if (jalan.length < 3) continue;
+    // Luas lingkar (rumus tali sepatu). Lingkar luar selalu memuat cakram
+    // berjari-jari `pad` di tiap bintang, jadi tidak pernah di bawah ambang.
+    let luas = 0;
+    for (let i = 0, j = jalan.length - 1; i < jalan.length; j = i++) {
+      const [xi, yi] = jalan[i] as Titik;
+      const [xj, yj] = jalan[j] as Titik;
+      luas += xj * yi - xi * yj;
+    }
+    if (Math.abs(luas) / 2 >= (Math.PI * pad * pad) / 2) lingkar.push(jalan);
+  }
+  return lingkar;
+}
+
+/** Path garis wilayah yang digambar saat rasi disorot: satu `M...Z` per lingkar
+ *  (`lingkarWilayah`). Kosong untuk rasi tanpa bintang. Penggambarnya wajib
+ *  memasang `fill-rule: evenodd` supaya rongga tidak ikut terisi. */
 export function pathWilayah(titik: readonly Titik[], pad: number): string {
-  const v = wilayahPoligon(titik, pad);
-  if (v.length === 0) return "";
-  if (v.length < 3) {
-    const [x, y] = v[0] as Titik;
-    return lingkaran(x, y, pad + 6);
+  let d = "";
+  for (const l of lingkarWilayah(titik, pad)) {
+    d += `M${f2((l[0] as Titik)[0])},${f2((l[0] as Titik)[1])}`;
+    for (let i = 1; i < l.length; i++) d += `L${f2((l[i] as Titik)[0])},${f2((l[i] as Titik)[1])}`;
+    d += "Z";
   }
-  const n = v.length;
-  const m = v.map((a, i) => {
-    const b = v[(i + 1) % n] as Titik;
-    return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] as Titik;
-  });
-  let d = `M${f2((m[n - 1] as Titik)[0])},${f2((m[n - 1] as Titik)[1])}`;
-  for (let i = 0; i < n; i++) {
-    const a = v[i] as Titik;
-    const b = m[i] as Titik;
-    d += `Q${f2(a[0])},${f2(a[1])} ${f2(b[0])},${f2(b[1])}`;
-  }
-  return d + "Z";
+  return d;
 }
 
 /** Titik di dalam poligon? (ray casting; poligon cembung maupun tidak.) */

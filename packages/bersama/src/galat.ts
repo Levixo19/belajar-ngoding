@@ -1,14 +1,14 @@
 /* Menerjemahkan pesan error compiler/runtime. Port dari `inti/galat.py`.
  *
- * Tabel polanya TIDAK ditulis di sini: ke-71-nya dihasilkan
- * `alat/ekspor_bersama.py` ke `../data/pola-galat.json`. Tujuh puluh satu pola
- * yang diketik ulang adalah tujuh puluh satu kesempatan untuk menyimpang, dan
+ * Tabel polanya TIDAK ditulis di sini: seluruhnya dihasilkan
+ * `alat/ekspor_bersama.py` ke `../data/pola-galat.json`. Setiap pola yang
+ * diketik ulang adalah satu kesempatan lagi untuk menyimpang, dan
  * menyimpangnya tidak menimbulkan error -- cuma satu pesan error yang kembali
  * tampil mentah kepada orang yang justru paling tidak bisa membacanya.
  *
  * Yang tetap ditulis di sini cuma ALGORITMANYA, dan satu hal yang harus
  * diketahui saat menambah pola BARU di `inti/galat.py`: `\w` di Python
- * mencakup huruf Unicode, di JavaScript cuma ASCII. Ke-71 pola hari ini
+ * mencakup huruf Unicode, di JavaScript cuma ASCII. Pola yang ada hari ini
  * memakainya untuk nama pengenal dan nama tag -- semuanya ASCII -- jadi
  * hasilnya sama. Pola baru yang perlu mencocokkan huruf berdiakritik tidak
  * boleh mengandalkan `\w`.

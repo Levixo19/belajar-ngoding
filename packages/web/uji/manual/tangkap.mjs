@@ -25,7 +25,8 @@ for (const [nama, o] of jalan) {
 {
   const s = await mulai({ lebar: 1905, tinggi: 904, tema: "terang", hash: "#/langit", profil: "campur" });
   await s.page.getByRole("button", { name: "Perulangan" }).click();
-  await s.page.selectOption(".langit-pilih", { label: "Frontend Developer" });
+  await s.page.locator(".langit-pilih").click();   // Pilihan buatan sendiri, bukan <select>
+  await s.page.locator(".pil-daftar li", { hasText: "Frontend Developer" }).first().click();
   await s.page.waitForTimeout(500);
   await s.page.screenshot({ path: `${TK}/ik-saring-terang-1905.png` });
   await s.tutup();

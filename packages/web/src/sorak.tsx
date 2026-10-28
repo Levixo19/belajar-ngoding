@@ -181,9 +181,21 @@ export function umumkan(teks: string): void {
     document.body.appendChild(pengumum);
   }
   const el = pengumum;
+  // Pengumuman yang tiba dalam jendela 60 md yang sama DIGABUNG, bukan saling
+  // menimpa: hasil Periksa ("Benar. Outputmu sudah sesuai.") dan badge yang
+  // baru didapat diumumkan hampir bersamaan, dan dulu hanya yang terakhir
+  // yang sampai ke pembaca layar.
+  antreanUmum.push(teks);
+  if (jamUmum) clearTimeout(jamUmum);
   el.textContent = "";
-  setTimeout(() => { el.textContent = teks; }, 60);
+  jamUmum = setTimeout(() => {
+    el.textContent = antreanUmum.join(" ");
+    antreanUmum = [];
+    jamUmum = null;
+  }, 60);
 }
+let antreanUmum: string[] = [];
+let jamUmum: ReturnType<typeof setTimeout> | null = null;
 
 export interface Hadiah {
   xp_tambah?: number;

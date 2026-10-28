@@ -103,11 +103,24 @@ export function Lencana({ putaran }: { putaran: string }) {
   const streakTeks = useAngkaJalan(d?.streak ?? 0, (n) => String(Math.round(n)));
   const xpTeks = useAngkaJalan(d?.xp ?? 0, (n) => String(Math.round(n)));
 
-  const judulStreak = d?.streak
-    ? `Streak ${d.streak} hari berjalan · rekor ${d.streak_rekor} hari`
-    : "Streak terputus. Kerjakan satu hal apa pun hari ini untuk memulai lagi.";
+  // Tiga keadaan, dan tak satu pun menyebut kata "terputus": teks ini tampil di
+  // SETIAP layar, termasuk untuk orang yang belum pernah punya streak dan
+  // selagi datanya belum termuat. Kalimatnya menjelaskan hitungannya dan apa
+  // yang memulainya, bukan menyatakan sesuatu telah hilang.
+  const judulStreak = !d
+    ? "Streak: jumlah hari berurutan kamu belajar"
+    : d.streak
+      ? `Streak ${d.streak} hari berjalan · rekor ${d.streak_rekor} hari`
+      : d.streak_rekor
+        ? `Belum ada hari berurutan sekarang · rekor ${d.streak_rekor} hari. `
+          + "Satu hal kecil hari ini memulai hitungan baru."
+        : "Belum ada hari berurutan. Satu hal kecil hari ini memulai hitungannya.";
+  // Gelar adalah tingkat dari total XP, bukan penilaian kemampuan; target
+  // harian punya bawaan yang tak pernah dijelaskan ke pelajar baru.
   const judulXp = d
-    ? `Level ${d.level}, ${d.gelar} · ${d.xp_hari_ini} dari ${d.target_harian} XP hari ini`
+    ? `Level ${d.level}, gelar ${d.gelar} (tingkat dari total XP) · `
+      + `${d.xp_hari_ini} dari ${d.target_harian} XP target hari ini, `
+      + "bisa diubah di Pengaturan"
     : "Total XP dan level";
 
   return (

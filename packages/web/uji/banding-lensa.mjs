@@ -15,6 +15,10 @@
  *   [tombol]   tabel tombol papan ketik pohon bintang
  *   [glif]     empat bentuk status berbeda, semuanya path berkoordinat mutlak
  *   [wilayah]  selubung cembung dan uji titik-di-dalam
+ *   [kontur]   garis wilayah yang DIGAMBAR mengikuti rangka rasi: tiap simpulnya
+ *              sejauh bantalan dari bintang atau garisnya (tidak lebih, tidak
+ *              kurang), semua bintang di dalam, celah antar-bintang tidak
+ *              memecahnya, dan rongga jadi lingkar sendiri
  *   [garis]    garis rasi ikhtisar: >= 95 persen ruas dalam-bab tergambar di
  *              akar 1156, 1440, dan 1905 px, dari tepi glif ke tepi glif
  *   [kartu]    bintang yang pusatnya tertutup kartu judul bintang lain tetap
@@ -76,6 +80,9 @@ import {
   deltaGulirPanel,
   deltaGulirTampak,
   LETAK_PANEL,
+  lingkarWilayah,
+  padKontur,
+  padWilayah,
   pathBraket,
   pathWilayah,
   sasaranIkhtisar,
@@ -640,6 +647,80 @@ aku("lensa", labelLebar.menimpa <= 0.015 * labelLebar.total,
   const L = [[0, 0], [10, 0], [10, 4], [4, 4], [4, 10], [0, 10]];
   aku("wilayah", titikDiPoligon(L, 2, 7) && titikDiPoligon(L, 7, 2) && !titikDiPoligon(L, 7, 7) && !titikDiPoligon(L, -1, 5), "poligon cekung");
   aku("wilayah", wilayahPoligon([[1, 1]], 8).length === 1 && pathWilayah([[1, 1]], 8).startsWith("M"), "satu titik");
+}
+
+/* ------------------------------------------------------------------ kontur */
+
+{
+  // Rangka dihitung DI SINI dari bintangnya, bukan dengan memanggil
+  // `lingkarWilayah`: bintang ditambah ruas antara bintang berurutan.
+  const jarakRuas = (px, py, a, b) => {
+    const dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy;
+    const t = l2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - a[0]) * dx + (py - a[1]) * dy) / l2));
+    return Math.hypot(px - a[0] - t * dx, py - a[1] - t * dy);
+  };
+  const jarakRangka = (bintang, x, y) => {
+    let d = Infinity;
+    bintang.forEach((s, i) => {
+      const lalu = bintang[i - 1] ?? s;
+      d = Math.min(d, jarakRuas(x, y, [s.x, s.y], [lalu.x, lalu.y]));
+    });
+    return d;
+  };
+  // Genap-ganjil lintas lingkar: rongga di dalam lingkar luar berarti di luar.
+  const dalamLingkar = (lingkar, x, y) => lingkar.filter((l) => titikDiPoligon(l, x, y)).length % 2 === 1;
+  // Yang diperiksa adalah PATH yang digambar aplikasi, diurai balik jadi lingkar.
+  const urai = (d) => d.split("Z").filter(Boolean)
+    .map((l) => [...l.matchAll(/[ML]([-\d.]+),([-\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])]));
+
+  // Geometri tidak bergantung pada status bintang, jadi satu profil cukup.
+  const bahasa = KURIKULUM.map((k) => bahasaDari(k, PROFIL[0]));
+  for (const skala of SKALA) {
+    const ik = bangunIkhtisar(bahasa, TATA, skala);
+    const pad = padKontur(skala);
+    // Lebih ketat daripada selubung, tapi masih di luar cincin sorot (4,6 + 5)
+    // dan braket "berikutnya" (4,6 + 7) yang digambar pada bintang.
+    aku("kontur", pad < padWilayah(skala) && pad >= JARI_PX.selesai + 7 + 1, `bantalan ${pad} skala ${skala}`);
+    for (const rasi of ik.rasi) {
+      const titik = rasi.bintang.map((s) => [s.x, s.y]);
+      const d = pathWilayah(titik, pad);
+      const lingkar = urai(d);
+      aku("kontur", lingkar.length >= 1 && d.startsWith("M") && !/NaN|Infinity/.test(d) &&
+          lingkar.length === lingkarWilayah(titik, pad).length, `path ${rasi.key} skala ${skala}`);
+      for (const s of rasi.bintang) {
+        aku("kontur", dalamLingkar(lingkar, s.x, s.y), `bintang di luar kontur ${rasi.key}#${s.i} skala ${skala}`);
+      }
+      // Jarak tiap simpul ke rangka = bantalan. Batas atas 10 persen menampung
+      // galat interpolasi sel (terukur <= 1,3 px pada skala 1,5); selubung cembung
+      // lama menjauh sampai 69 px dan jauh melewatinya.
+      let min = Infinity, maks = -Infinity;
+      for (const l of lingkar) {
+        for (const [x, y] of l) {
+          const e = jarakRangka(rasi.bintang, x, y) - pad;
+          min = Math.min(min, e);
+          maks = Math.max(maks, e);
+        }
+      }
+      aku("kontur", min >= -0.5 && maks <= 0.1 * pad,
+          `kontur ${rasi.key} skala ${skala}: selisih jarak-bantalan ${min.toFixed(2)}..${maks.toFixed(2)}`);
+    }
+  }
+  // Rangka menyambung bintang berurutan: celah 190 px (jauh di atas 2 x bantalan)
+  // tidak memecah rasi jadi dua pulau.
+  aku("kontur", lingkarWilayah([[0, 0], [10, 0], [200, 0], [210, 0]], 10).length === 1, "celah memecah rasi");
+  // Cincin delapan bintang (jari-jari 60, loncatan 46 px): lingkar luar dan rongganya.
+  const cincin = Array.from({ length: 9 }, (_, i) => [60 * Math.cos((i * Math.PI) / 4), 60 * Math.sin((i * Math.PI) / 4)]);
+  const lingkarCincin = lingkarWilayah(cincin, 10);
+  aku("kontur", lingkarCincin.length === 2 && !dalamLingkar(lingkarCincin, 0, 0) && dalamLingkar(lingkarCincin, 60, 0),
+      "rongga cincin menjadi lingkar sendiri");
+  // Cincin yang sama sebesar jari-jari 14: rongganya sekitar 3 px, noktah yang tidak digambar.
+  const cincinKecil = Array.from({ length: 9 }, (_, i) => [14 * Math.cos((i * Math.PI) / 4), 14 * Math.sin((i * Math.PI) / 4)]);
+  aku("kontur", lingkarWilayah(cincinKecil, 10).length === 1, "rongga kecil ikut digambar");
+  // Satu bintang: lingkaran berjari-jari bantalan.
+  const satu = lingkarWilayah([[5, 5]], 12);
+  aku("kontur", satu.length === 1 && satu[0].every(([x, y]) => Math.abs(Math.hypot(x - 5, y - 5) - 12) < 0.5),
+      "satu bintang bukan lingkaran");
+  aku("kontur", pathWilayah([], 8) === "" && lingkarWilayah([[0, 0]], 0).length === 0, "tanpa bintang atau tanpa bantalan");
 }
 
 /* ----------------------------------------------------------------- pembuka */

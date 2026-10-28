@@ -8264,9 +8264,9 @@ class TestLebarDigitDiMesin(unittest.TestCase):
             "berarti yang terlihat bukan yang ditulis di CSS (invarian #2)")
         self.assertEqual(
             # 31 -> 29 (2026-10-14): dua claimant ikut terbuang bersama blok
-            # cangkang IDE, bukan diganti nilai.
-            len(dek), 29,
-            "jumlah aturan `font-variant-numeric` di gaya.css bukan 29 "
+            # cangkang IDE, bukan diganti nilai. 29 -> 30 (2026-10-28): `.or-persen`, tabular-nums.
+            len(dek), 30,
+            "jumlah aturan `font-variant-numeric` di gaya.css bukan 30 "
             "melainkan " + str(len(dek)) + ". Angkanya dinaikkan BERSAMA "
             "suntingannya: setiap claimant baru wajib diadu nilainya terhadap "
             "gaya inline yang dipasang `angkaKe()`")
@@ -24420,3 +24420,1552 @@ class TestPluginTokenVite(unittest.TestCase):
             m = pola.search(html)
             self.assertIsNotNone(m, html)
             self.assertEqual(m.group(1), "abc123")
+
+
+# ------------------------------------------------ UX belajar: teks yang jujur dan tenang
+
+class TestUxBelajar(unittest.TestCase):
+    """Pagar sumber untuk perbaikan UX belajar. Perilakunya dibuktikan di peramban
+    oleh `uji/manual/belajar-ux.mjs` dan `data-dialog.mjs`; tes di sini hanya
+    menjaga agar bentuk lama yang menyesatkan dalam audit tidak kembali."""
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", *jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def test_lencana_tidak_menyebut_streak_terputus(self):
+        # Tampil di SETIAP layar, juga untuk xp 0 dan selagi data belum termuat.
+        s = self._baca("komponen", "Lencana.tsx")
+        self.assertNotIn("Streak terputus", s)
+        self.assertIn("Belum ada hari berurutan", s)
+
+    def test_hasil_periksa_tidak_menyuruh_lihat_diff_yang_kosong(self):
+        s = self._baca("layar", "Kerja.tsx")
+        awal = s.index("function KartuPeriksa(")
+        badan = s[awal:awal + 4200]
+        self.assertIn("hanyaGalat", badan)
+        # Legenda diff hanya bila memang ada diff.
+        self.assertIn("!r.lulus && adaDiff", badan)
+        self.assertNotIn("{!r.lulus ? (\n          <p", badan)
+
+    def test_materi_menjelaskan_kapan_selesai_tanpa_kata_tuntas(self):
+        s = self._baca("layar", "Belajar.tsx")
+        self.assertIn("Selesai tercatat saat kamu membaca sampai bagian paling bawah", s)
+        self.assertNotIn('"belum tuntas"', s)
+        self.assertNotIn('"sudah dibaca tuntas"', s)
+
+    def test_toolchain_hilang_punya_arah_dan_tidak_bergaya_galat(self):
+        k = self._baca("layar", "Kerja.tsx")
+        self.assertIn("Program pendukungnya belum terpasang", k)
+        self.assertIn("Belum bisa dijalankan di komputer ini", k)
+        # Alasan dari mesin tidak berakhir titik dan berjargon; tanpa pembantu
+        # ini kalimat sesudahnya menempel ("...gcc Program pendukungnya...").
+        self.assertEqual(k.count("kalimatAlasan("), 3)
+        b = self._baca("layar", "Bahasa.tsx")
+        awal = b.index("function BlokToolchain(")
+        blok = b[awal:awal + 1400]
+        self.assertIn('jenis="kosong"', blok)
+        self.assertIn("Semuanya gratis", blok)
+        self.assertNotIn('jenis="salah"', blok)
+
+    def test_statistik_menyebut_gratis_bukan_toolchain(self):
+        s = self._baca("layar", "Statistik.tsx")
+        self.assertIn("opsional dan gratis", s)
+        self.assertNotIn("Toolchain itu opsional", s)
+
+    def test_dialog_reset_menyebut_dampak_dan_pemulihan(self):
+        s = self._baca("komponen", "BlokData.tsx")
+        self.assertIn("XP, level, streak, dan badge-mu tetap ada", s)
+        self.assertNotIn("Ini tidak bisa dibatalkan", s)
+        self.assertNotIn("jangan mengandalkan itu", s)
+
+    def test_setiap_pusaran_diumumkan_atau_dekorasi(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        dasar = os.path.join(akar, "packages", "web", "src")
+        telanjang = []
+        for d, _x, berkas in os.walk(dasar):
+            for nama in berkas:
+                if not nama.endswith(".tsx"):
+                    continue
+                with open(os.path.join(d, nama), encoding="utf-8") as f:
+                    baris_semua = f.read().splitlines()
+                for no, baris in enumerate(baris_semua):
+                    if 'className="pusaran"' not in baris or 'role="status"' in baris:
+                        continue
+                    # Dekorasi (aria-hidden) hanya sah di dalam pembungkus
+                    # role="status": baris itu sendiri atau dua baris di atasnya.
+                    konteks = " ".join(baris_semua[max(0, no - 2):no + 1])
+                    if 'aria-hidden="true"' not in baris or 'role="status"' not in konteks:
+                        telanjang.append(f"{nama}:{no + 1}")
+        self.assertEqual(telanjang, [], "pusaran tanpa nama atau role: dibaca sebagai kosong")
+
+
+class TestCadanganResetBertahan(BasisWeb):
+    """Cadangan sebelum reset tidak boleh tertimpa penyimpanan berikutnya.
+
+    `.bak` bergulir (`simpanan.tulis_json` menimpanya tiap simpan); terukur di
+    profil sementara: 30 XP sebelum reset menjadi 0 XP begitu satu materi dibuka.
+    Dialog dan toast menjanjikan cadangan, jadi harus ada yang benar-benar
+    bertahan. Dijaga juga `tests/test_progress.py`.
+    """
+
+    def test_endpoint_reset_mengembalikan_salinan_bertanggal_yang_bertahan(self):
+        lang = _bahasa("python")
+        for m in lang["materials"][:2]:
+            progress.record_material_read("python_materi", m["title"], tuntas=True)
+        xp = progress.load_progress()["xp"]
+        self.assertGreater(xp, 0)
+        r = api.data_reset({"bagian": "semua", "konfirmasi": "HAPUS"})
+        self.assertIn(".cadangan-", r["cadangan"])
+        progress.record_material_read("python_materi", lang["materials"][0]["title"], tuntas=False)
+        with open(r["cadangan"], encoding="utf-8") as f:
+            self.assertEqual(json.load(f)["xp"], xp)
+
+
+class TestUxAksesibel(unittest.TestCase):
+    """Perbaikan hasil audit aksesibilitas desktop. Perilakunya dibuktikan di
+    peramban oleh `uji/manual/belajar-ux.mjs`; tes ini menjaga bentuknya."""
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _web(self, *jalur):
+        return self._baca("packages", "web", "src", *jalur)
+
+    def test_pindah_rute_mengubah_judul_dan_fokus_dan_ada_lompat_ke_isi(self):
+        # Port React kehilangan ketiganya dari antarmuka lama: judul tab tetap
+        # "belajar-codingV2" di semua layar, fokus tertinggal di tautan yang
+        # diklik, dan tombol "Lompat ke isi" tidak ada.
+        c = self._web("Cangkang.tsx")
+        self.assertIn("useFokusRute(layarRef", c)
+        self.assertIn('className="lompat"', c)
+        # tabindex dipasang saat Lompat ke isi ditekan, BUKAN permanen: yang
+        # permanen membuat klik pada teks mana pun memindahkan fokus ke <main>.
+        self.assertIn('l.setAttribute("tabindex", "-1")', c)
+        self.assertNotIn("tabIndex={-1}", c)
+        self.assertIn('aria-label="belajar-codingV2, ke Dasbor"', c)
+        f = self._web("fokus-rute.ts")
+        self.assertIn("document.title = judulDokumen(judul)", f)
+        # Fokus pindah hanya sesudah navigasi sungguhan (hashchange): kunci rute
+        # juga berubah di pemuatan pertama, dan pengaman "render pertama" yang
+        # dulu dipakai gagal di lima dari tujuh pintu masuk. Judul tab berhenti
+        # tertinggal di <h1> lama selama pengamat hidup, dan pengamatnya lepas.
+        self.assertIn('addEventListener("hashchange", tandai)', f)
+        self.assertIn("const boleh = sudahPindah.current;", f)
+        self.assertIn("kepala !== diterapkan", f)
+        self.assertIn("!difokus.isConnected", f)
+        self.assertNotIn("pertama.current", f)
+        self.assertIn("pengamat.disconnect()", f)
+        self.assertIn("clearTimeout(batas)", f)
+        # Mengetik di kotak cari lalu Enter mengubah alamat: fokus tidak dicuri.
+        self.assertIn("fokusLiar(document.activeElement)", f)
+        # Sesudah "Lompat ke isi" fokus ada di kontainer layar; pindah rute dari
+        # situ tetap harus membawa fokus ke h1 yang baru.
+        self.assertIn('aktif.id === "layar"', f)
+
+    def test_pengumuman_yang_berdekatan_digabung_bukan_saling_menimpa(self):
+        s = self._web("sorak.tsx")
+        self.assertIn("antreanUmum.push(teks)", s)
+        self.assertIn('antreanUmum.join(" ")', s)
+
+    def test_hasil_kuis_sampai_ke_pembaca_layar(self):
+        k = self._web("layar", "Kuis.tsx")
+        # SATU pengumuman lewat umumkan(); pembungkus role="status" yang memuat
+        # tombol "Soal berikutnya" membuat hasilnya terdengar dua kali.
+        self.assertNotIn('<div role="status">', k)
+        self.assertIn("umumkan(r.benar", k)
+        self.assertEqual(k.count("Jawaban yang benar: "), 2)
+        self.assertIn("judulHasil.current?.focus", k)
+
+    def test_editor_mengaitkan_petunjuk_papan_ketik_dan_hasil_jalankan_diumumkan(self):
+        e = self._web("komponen", "Editor.tsx")
+        self.assertIn("aria-describedby={idPetunjuk}", e)
+        self.assertIn("id={idPetunjuk}", e)
+        k = self._web("layar", "Kerja.tsx")
+        self.assertEqual(k.count("umumkan(kalimatJalan(r))"), 2)
+
+    def test_isian_pengaturan_punya_label_terkait(self):
+        a = self._web("layar", "Atur.tsx")
+        self.assertEqual(a.count("<label htmlFor={id}>"), 2)
+        self.assertIn("const id = useId();", a)
+
+    def test_menu_lainnya_mengembalikan_fokus_dan_menutup_saat_tab_keluar(self):
+        c = self._web("Cangkang.tsx")
+        self.assertIn('querySelector<HTMLElement>(".rel-pemicu")?.focus()', c)
+        self.assertIn("onBlur={(e) =>", c)
+
+    def test_nav_materi_bernama(self):
+        b = self._web("layar", "Belajar.tsx")
+        self.assertIn('aria-label="Materi sebelum dan sesudah"', b)
+        self.assertIn('aria-label="Di halaman ini"', b)
+
+    def test_lencana_belum_diraih_tidak_diredupkan_dengan_opacity(self):
+        # opacity .5 menurunkan teks lencana terkunci ke 2,1:1 di tema terang.
+        css = self._baca("webapp", "statik", "gaya.css")
+        self.assertNotIn(".medali.terkunci { opacity", css)
+        self.assertIn(".medali.terkunci { border-style: dashed; color: var(--redup); }", css)
+
+
+class TestPulihkanDariSalinan(BasisWeb):
+    """Salinan progres bertanggal bisa DICARI dan DIPULIHKAN dari layar.
+
+    Dulu salinannya ada di disk, tetapi satu-satunya jalan kembali adalah
+    mengimpor berkas titik tanpa akhiran `.json` yang jalurnya hanya muncul di
+    toast sebelum halaman dimuat ulang. Klien hanya menyebut NAMA salinan;
+    servernya yang mencarinya di kolam salinan (`progress.baca_cadangan`), jadi
+    tidak ada jalur dari luar yang dibuka. Perilaku di peramban dijaga
+    `uji/manual/data-dialog.mjs`; yang di sini bentuk dan penjagaannya.
+    """
+
+    def _dua_materi(self):
+        lang = _bahasa("python")
+        for m in lang["materials"][:2]:
+            progress.record_material_read("python_materi", m["title"], tuntas=True)
+        return progress.load_progress()["xp"]
+
+    def test_daftar_kosong_lalu_berisi_dengan_bentuk_tetap(self):
+        self.assertEqual(api.data_cadangan_daftar(),
+                         {"salinan": [], "maks": progress.CADANGAN_MAKS})
+        self._dua_materi()
+        progress.cadangkan()
+        d = api.data_cadangan_daftar()
+        self.assertEqual(len(d["salinan"]), 1)
+        self.assertEqual(set(d["salinan"][0]),
+                         {"nama", "waktu", "xp", "materi", "sah"})
+
+    def test_pulih_dari_salinan_pra_reset_dan_pemulihannya_bisa_dibalik(self):
+        xp = self._dua_materi()
+        self.assertGreater(xp, 0)
+        api.data_reset({"bagian": "semua", "konfirmasi": "HAPUS"})
+        self.assertEqual(progress.load_progress()["xp"], 0)
+        salinan = api.data_cadangan_daftar()["salinan"]
+        self.assertEqual(salinan[0]["xp"], xp)
+        r = api.data_impor({"cadangan": salinan[0]["nama"]})
+        self.assertEqual(progress.load_progress()["xp"], xp)
+        # Keadaan SEBELUM pemulihan disimpan lebih dulu: memulihkannya
+        # mengembalikan progres kosong tadi. Pemulihan tidak satu arah.
+        self.assertIn(".cadangan-", r["cadangan"])
+        api.data_impor({"cadangan": os.path.basename(r["cadangan"])})
+        self.assertEqual(progress.load_progress()["xp"], 0)
+
+    def test_nama_di_luar_kolam_ditolak_dan_progres_tetap_utuh(self):
+        xp = self._dua_materi()
+        progress.cadangkan()
+        luar = os.path.join(self.dir.name, "luar.json")
+        with open(luar, "w", encoding="utf-8") as f:
+            json.dump({"xp": 999}, f)
+        for tipu in ("../" + os.path.basename(self.dir.name) + "/luar.json",
+                     luar, "luar.json", "progress.json", "progress.json.bak",
+                     "", 7, ["x"], {"a": 1}):
+            with self.assertRaises(api.Galat) as c:
+                api.data_impor({"cadangan": tipu})
+            self.assertEqual(c.exception.kode, 404, repr(tipu))
+        self.assertEqual(progress.load_progress()["xp"], xp)
+
+    def test_salinan_rusak_tampil_tetapi_tidak_bisa_dipulihkan(self):
+        xp = self._dua_materi()
+        rusak = progress.PROGRESS_FILE + ".cadangan-29990101-000000"
+        with open(rusak, "w", encoding="utf-8") as f:
+            f.write("{bukan json")
+        d = api.data_cadangan_daftar()["salinan"]
+        self.assertEqual([x["sah"] for x in d], [False])
+        with self.assertRaises(api.Galat) as c:
+            api.data_impor({"cadangan": d[0]["nama"]})
+        self.assertEqual(c.exception.kode, 404)
+        self.assertEqual(progress.load_progress()["xp"], xp)
+
+    def test_layar_punya_pilih_salinan_dan_dialog_reset_menunjuknya(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", "komponen",
+                               "BlokData.tsx"), encoding="utf-8") as f:
+            b = " ".join(f.read().split())
+        self.assertIn('"data/cadangan"', b)
+        self.assertIn('"data/impor", { cadangan: dipilih.nama }', b)
+        self.assertIn(
+            "onUbah={(v) => { dipilih.nama = v; setNama(v); }}", b)
+        self.assertIn("onClick={pulihkan}", b)
+        # Ketiga kalimat Reset menunjuk tombol yang memang ada. "Impor progres"
+        # meminta berkas yang jalurnya tidak pernah ditunjukkan kepada siapa pun.
+        self.assertEqual(b.count("lewat tombol Pulihkan dari"), 3)
+        self.assertNotIn("lewat Impor progres", b)
+
+
+class TestSisaUxBelajar(unittest.TestCase):
+    """Tiga sisa hasil audit UX belajar. Perilakunya dibuktikan di peramban
+    (`uji/manual/belajar-ux.mjs` blok J, `banding-dasbor.mjs`); tes ini menjaga
+    bentuknya dan satu hal yang gampang terlupa: deviasi dari antarmuka lama
+    harus bernama, sempit, dan ditagih pembandingnya."""
+
+    def _baca(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, *jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def test_layar_tanpa_h1_memakai_judul_kartu_keadaan(self):
+        f = self._baca("packages", "web", "src", "fokus-rute.ts")
+        # <h1> selalu menang; kartu Keadaan hanya cadangan. Terbalik, kartu
+        # "Perlu diketahui" di dalam sebuah layar menjadi judul tab layar itu.
+        self.assertIn(
+            'akar.querySelector<HTMLElement>("h1") ?? '
+            'akar.querySelector<HTMLElement>(".keadaan-isi > b")', f)
+
+    def test_kabar_program_pendukung_bukan_gaya_galat(self):
+        css = self._baca("webapp", "statik", "gaya.css")
+        self.assertIn(".fakta-kurang, .fakta-kurang svg { color: var(--tenang); }", css)
+        self.assertNotIn(".fakta-kurang, .fakta-kurang svg { color: var(--salah); }", css)
+
+    def test_kalimat_streak_tanpa_dorongan_dan_deviasinya_bernama(self):
+        teks = self._baca("packages", "web", "src", "layar", "dasbor-teks.ts")
+        self.assertIn("return `Sudah ${d.streak} hari berturut-turut.`;", teks)
+        self.assertNotIn("berturut-turut. Jaga apinya", teks)
+        banding = self._baca("packages", "web", "uji", "banding-dasbor.mjs")
+        self.assertIn('const DORONGAN_STREAK_LAMA = " Jaga apinya tetap menyala.";', banding)
+        # Tabel deviasi yang tidak pernah terpakai, atau yang antarmuka lamanya
+        # sudah berubah, menghentikan pembanding.
+        self.assertIn("DEVIASI MATI ATAU BASI", banding)
+
+    def test_teks_tidak_diredupkan_dengan_opacity(self):
+        # Peredupan `opacity` pada TEKS menjatuhkan kontras di bawah 4,5:1
+        # walau token warnanya sendiri lolos: nomor bab terkunci 11px ~3:1,
+        # label simpul Karier 1,6 sampai 2,9:1, `<mark>` terang 3,1:1 (terukur
+        # di peramban). Yang diredupkan sekarang bentuknya, bukan hurufnya;
+        # perilakunya dijaga belajar-ux.mjs blok K.
+        css = self._baca("webapp", "statik", "gaya.css")
+        self.assertIn(".peta-bab .peta-terkunci { border-style: dashed; color: var(--redup); }", css)
+        self.assertNotIn(".peta-bab .peta-terkunci { border-style: dashed; opacity", css)
+        self.assertIn(".kr-simpul.redup > :not(.kr-label) { opacity: .32; }", css)
+        self.assertIn(".kr-rumpun.redup, .kr-simpul.redup .kr-label { fill: var(--redup); }", css)
+        self.assertNotIn(".kr-simpul.redup { opacity", css)
+        self.assertNotIn(".kr-rumpun.redup { opacity", css)
+        self.assertIn('[data-tema="terang"] mark { color: var(--teks); }', css)
+
+    def test_judul_bagian_materi_h2_dan_kartu_terkunci_tidak_buntu(self):
+        b = self._baca("packages", "web", "src", "layar", "Belajar.tsx")
+        self.assertIn("{bg.judul ? <h2>{bg.judul}</h2> : null}", b)
+        self.assertNotIn("<h3>{bg.judul}</h3>", b)
+        css = self._baca("webapp", "statik", "gaya.css")
+        # h2 mewarisi gaya yang sama dengan h3 lama, bukan gaya h2 polos.
+        self.assertIn(".prosa h2, .prosa h3 { margin: 2em 0 .75em;", css)
+        self.assertIn(".prosa .dunia-nyata > h2, .prosa .dunia-nyata > h3 {", css)
+        # Tautan langsung hanya ke materi yang tidak terkunci dan belum selesai:
+        # predikat yang sama dengan `pilihLanjut`, keputusan kuncinya `b.materi`.
+        self.assertIn(
+            'b.materi.find((x) => x.status !== "selesai" && !x.terkunci)', b)
+        f = self._baca("packages", "web", "src", "fokus-rute.ts")
+        self.assertIn('kepala.setAttribute("role", "heading")', f)
+        self.assertIn('kepala.setAttribute("aria-level", "1")', f)
+
+    def test_pengantar_kuis_menyebut_materi_yang_belum_dibaca(self):
+        k = self._baca("packages", "web", "src", "layar", "Kuis.tsx")
+        self.assertIn("siap?: boolean;", k)
+        self.assertIn("sisa_materi?: number;", k)
+        self.assertIn("!q.pernah && q.siap === false && (q.sisa_materi ?? 0) > 0", k)
+        self.assertIn("materi yang diuji kuis ini belum kamu baca", k)
+
+
+class TestKuisKarierWizard(unittest.TestCase):
+    """Rancangan kuis kecocokan Peta Karier. Perilakunya dibuktikan di peramban
+    (`uji/manual/kuis-karier.mjs`, sebelas mutan yang semuanya merah); tes ini
+    menjaga enam keputusan yang gampang dibalikkan tanpa satu pun error."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _kuis(self):
+        s = " ".join(self._baca("packages", "web", "src", "layar", "Karier.tsx").split())
+        a, b = s.index("function KuisCocok("), s.index("/** Perencana perpindahan.")
+        self.assertLess(a, b)
+        return s[a:b]
+
+    def test_pilihan_adalah_radio_bukan_tombol_bertekan(self):
+        k = self._kuis()
+        # Radio asli memberi panah, kelompok, dan "1 dari 4" ke pembaca layar
+        # tanpa satu baris kode. Tombol ber-aria-pressed menirunya setengah jadi.
+        self.assertIn('type="radio"', k)
+        self.assertNotIn("aria-pressed", k)
+
+    def test_tidak_ada_tombol_mati_di_kuis(self):
+        # Kuis lama punya tombol hasil yang mati tanpa alasan sampai tiga soal
+        # terjawab. Syaratnya kini disebut dengan angka dan tombolnya mengantar
+        # ke soal yang belum dijawab; tombol berfokus yang dinonaktifkan juga
+        # menjatuhkan fokus ke body.
+        self.assertNotIn("disabled=", self._kuis())
+
+    def test_alasan_datang_dari_server_bukan_dihitung_klien(self):
+        k = self._kuis()
+        # Satu-satunya yang boleh memutuskan kenapa sebuah profesi cocok adalah
+        # `pelajar/karier.skor_kuis`; layar hanya menampilkan `dari`-nya.
+        self.assertIn("x.dari", k)
+        self.assertNotIn("bobot", k)
+
+    def test_lihat_profesi_membawa_orangnya_ke_panel(self):
+        # Panelnya ada di atas kuis. Tanpa gulir, tombolnya terlihat tidak
+        # berbuat apa-apa: ia hanya mengganti profesi terpilih di peta.
+        self.assertIn('document.getElementById("kr-panel")', self._kuis())
+        sumber = self._baca("packages", "web", "src", "layar", "Karier.tsx")
+        self.assertIn('id="kr-panel"', sumber)
+        css = self._baca("webapp", "statik", "gaya.css")
+        self.assertIn(".kr-panel { scroll-margin-top: calc(var(--rel-tinggi) + var(--s4)); }", css)
+
+    def test_aturan_kartu_juara_tidak_bocor_ke_li_turunan(self):
+        css = self._baca("webapp", "statik", "gaya.css")
+        # `.kr-juara li` berlaku untuk SEMUA li turunan: daftar alasan di dalam
+        # kartu hasil ikut menjadi kotak bertepi dan yang pertama bertepi kuning.
+        self.assertIn(".kr-juara > li {", css)
+        self.assertIn(".kr-juara > li:first-child {", css)
+        self.assertNotIn(".kr-juara li {", css)
+        self.assertNotIn(".kr-juara li:first-child {", css)
+
+    def test_blok_css_kuis_tidak_meredupkan_dengan_opacity(self):
+        css = self._baca("webapp", "statik", "gaya.css")
+        awal = css.index("/* Kuis kecocokan Peta Karier: satu soal sekali tampil")
+        blok = css[awal:css.index("/* ============================================================ hero gulir")]
+        self.assertGreater(blok.count("{"), 30)
+        # Teks yang diredupkan opacity jatuh di bawah 4,5:1 tanpa token mana
+        # pun berubah. Radio disembunyikan dengan `appearance: none`, bukan opacity.
+        self.assertNotIn("opacity", blok)
+        self.assertIn("appearance: none", blok)
+
+
+class TestPilihanKarier(unittest.TestCase):
+    """Dropdown Perencana Peta Karier (`komponen/Pilihan.tsx`), pengganti
+    `<select>` native. Perilakunya dibuktikan di peramban
+    (`uji/manual/pilihan-karier.mjs`, tiga belas mutan yang semuanya merah); tes
+    ini menjaga keputusan yang gampang terbalik tanpa satu pun error, dan
+    menjalankan logika murninya di Node."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _perencana(self):
+        s = self._baca("packages", "web", "src", "layar", "Karier.tsx")
+        a = s.index("function Perencana(")
+        b = s.index("</section>", a)
+        return s[a:b]
+
+    def test_perencana_tidak_memakai_select_native(self):
+        import re
+        p = self._perencana()
+        # Popup `<select>` adalah jendela terpisah yang tidak bisa dikendalikan
+        # halaman; di Wayland ia menutup sendiri begitu klik dilepas. Yang dicari
+        # elemennya, bukan kata di komentar yang menjelaskan alasannya (diapit
+        # tanda kutip balik).
+        self.assertIsNone(re.search(r"(?<!`)<select\b", p), "Perencana kembali memakai <select>")
+        self.assertEqual(p.count("<Pilihan"), 2)
+        self.assertIn('htmlFor="kr-pilih-asal"', p)
+        self.assertIn('htmlFor="kr-pilih-tujuan"', p)
+
+    def test_tidak_ada_select_native_di_sumber(self):
+        import re
+        # Semua dropdown aplikasi memakai `Pilihan`. Satu `<select>` yang kembali
+        # membawa pulang gejala popup native yang menutup sendiri.
+        akar = self._akar("packages", "web", "src")
+        for dasar, _, berkas in os.walk(akar):
+            for nama in berkas:
+                if not nama.endswith(".tsx"):
+                    continue
+                with open(os.path.join(dasar, nama), encoding="utf-8") as f:
+                    isi = f.read()
+                self.assertIsNone(re.search(r"(?<!`)<select\b", isi),
+                                  f"{os.path.relpath(os.path.join(dasar, nama), akar)} memakai <select>")
+
+    def test_daftar_lewat_portal_dan_dialog_tidak_menutup_karena_escape_daftar(self):
+        k = self._baca("packages", "web", "src", "komponen", "Pilihan.tsx")
+        # `.jendela { overflow: hidden }` memotong daftar yang menempel di dalamnya.
+        self.assertIn("createPortal(", k)
+        self.assertIn('closest("#tirai")', k)
+        # Dialog menangkap Escape di fase capture tingkat dokumen: tanpa
+        # pengecualian ini Escape pada daftar yang terbuka menutup SELURUH dialog.
+        for berkas in (("komponen", "Jendela.tsx"), ("komponen", "fokus-dialog.ts")):
+            sumber = self._baca("packages", "web", "src", *berkas)
+            self.assertIn(".pil-pemicu[aria-expanded='true']", sumber, berkas)
+        css = self._baca("webapp", "statik", "gaya.css")
+        self.assertIn(".pil-daftar { position: fixed;", css)
+
+    def test_label_tidak_membungkus_daftar(self):
+        import re
+        # Label yang membungkus daftar meneruskan klik pada opsi ke tombol dan
+        # membukanya lagi sesudah memilih.
+        for isi in re.findall(r"<label[^>]*>(.*?)</label>", self._perencana(), re.S):
+            self.assertNotIn("<Pilihan", isi)
+
+    def test_pilihan_menjaga_fokus_di_tombol(self):
+        import re
+        k = self._baca("packages", "web", "src", "komponen", "Pilihan.tsx")
+        self.assertIn('role="combobox"', k)
+        self.assertIn("aria-activedescendant", k)
+        # Fokus pindah ke daftar = `blur` menutup daftar sebelum `click` sempat
+        # memilih: persis gejala yang dilaporkan.
+        self.assertIn("onPointerDown={(e) => e.preventDefault()}", k)
+        # `pointerenter` palsu dikirim ke elemen yang tergulir ke bawah kursor diam.
+        self.assertNotIn("onPointerEnter", k)
+        self.assertIsNone(re.search(r"\.scrollIntoView\(", k), "menggulir halaman, bukan daftar")
+        self.assertNotIn("disabled=", k)
+
+    def test_penunjuk_tidak_menggulir_daftar_di_bawahnya(self):
+        k = self._baca("packages", "web", "src", "komponen", "Pilihan.tsx")
+        self.assertIn("gulirKeAktif.current = false;", k)
+        self.assertIn("if (!buka || !gulirKeAktif.current) return;", k)
+
+    def test_css_pilihan_tidak_meredupkan_dengan_opacity(self):
+        css = self._baca("webapp", "statik", "gaya.css")
+        blok = css[css.index("/* Pilihan (select-only combobox"):css.index("/* ============================================================ hero gulir")]
+        self.assertGreater(blok.count("{"), 10)
+        self.assertNotIn("opacity", blok)
+
+    def test_logika_murni_dijalankan_di_node(self):
+        import shutil
+        import subprocess
+        if not shutil.which("node"):
+            self.skipTest("node tidak terpasang")
+        modul = "file://" + self._akar("packages", "web", "src", "komponen", "pilihan-teks.ts")
+        skrip = f"""
+import {{ geserAktif, cariAwalan, sambungAwalan }} from {modul!r};
+import assert from "node:assert/strict";
+const op = ["Android Developer", "Data Analyst", "Data Engineer", "Frontend Developer", "Database Administrator"]
+  .map((nama, i) => ({{ id: "x" + i, nama }}));
+assert.equal(geserAktif("ArrowDown", 0, 5), 1);
+assert.equal(geserAktif("ArrowDown", 4, 5), 4, "tidak melewati akhir");
+assert.equal(geserAktif("ArrowUp", 0, 5), 0, "tidak melewati awal");
+assert.equal(geserAktif("Home", 3, 5), 0);
+assert.equal(geserAktif("End", 1, 5), 4);
+assert.equal(geserAktif("PageDown", 0, 5), 4);
+assert.equal(geserAktif("a", 0, 5), null, "bukan tombol navigasi");
+assert.equal(geserAktif("ArrowDown", 0, 0), null, "daftar kosong");
+assert.equal(cariAwalan(op, "d", 0), 1, "satu huruf mulai SESUDAH yang aktif");
+assert.equal(cariAwalan(op, "d", 1), 2, "menggilir opsi berawalan sama");
+assert.equal(cariAwalan(op, "d", 4), 1, "berputar ke awal");
+assert.equal(cariAwalan(op, "dat", 1), 1, "beberapa huruf boleh tetap di opsi sekarang");
+assert.equal(cariAwalan(op, "datab", 0), 4);
+assert.equal(cariAwalan(op, "DATA E", 0), 2, "huruf besar-kecil tidak dibedakan");
+assert.equal(cariAwalan(op, "z", 0), -1);
+assert.equal(cariAwalan(op, "  ", 0), -1);
+assert.equal(cariAwalan([], "a", 0), -1);
+assert.equal(sambungAwalan("da", 1000, "t", 1500), "dat", "jeda pendek menyambung");
+assert.equal(sambungAwalan("da", 1000, "t", 1701), "t", "jeda panjang memulai kata baru");
+console.log("ok");
+"""
+        r = subprocess.run(["node", "--experimental-strip-types", "--input-type=module", "-e", skrip],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr[-800:])
+        self.assertIn("ok", r.stdout)
+
+
+class TestPengantar(unittest.TestCase):
+    """Layar Pengantar (`#/pengantar`, `komponen/HeroGulir.tsx`): hero yang
+    membuka saat digulir. Perilakunya dibuktikan di peramban
+    (`uji/manual/pengantar.mjs`, enam belas mutan sumber dan CSS) dan logika
+    isyaratnya oleh `uji/banding-hero.mjs` (tujuh belas sel mutasi). Tes ini
+    menjaga keputusan yang gampang terbalik tanpa satu pun error: tanpa pustaka,
+    gerak hanya lewat `gerakPenuh()`, isi tidak dirender selama tertutup,
+    tidak ada transition pada properti yang digerakkan JS, dan gambar sungguhan
+    ada dan kecil."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _blok_css(self):
+        with open(self._akar("webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            css = f.read()
+        awal = css.index("/* ============================================================ hero gulir")
+        return css[awal:css.index("/* ============================================================ orbit bekal")]
+
+    def test_rute_dan_ukuran_layar_terdaftar(self):
+        m = self._baca("packages", "web", "src", "main.tsx")
+        self.assertIn('if (nama === "pengantar") { return <Pengantar bahasa={awal.bahasa} />; }', m)
+        c = self._baca("packages", "web", "src", "Cangkang.tsx")
+        self.assertIn('"pustaka", "karier", "tebak", "pengantar", ]);', c)
+        v = self._baca("packages", "web", "vite.config.ts")
+        self.assertIn('"/gambar": { target: ASAL_PYTHON, changeOrigin: false }', v)
+
+    def test_tanpa_pustaka_baru(self):
+        h = self._baca("packages", "web", "src", "komponen", "HeroGulir.tsx")
+        for dilarang in ("framer-motion", "next/", "gsap", "tailwind"):
+            self.assertNotIn('from "' + dilarang, h)
+        import json
+        with open(self._akar("packages", "web", "package.json"), encoding="utf-8") as f:
+            paket = json.load(f)
+        semua = {**paket.get("dependencies", {}), **paket.get("devDependencies", {})}
+        self.assertNotIn("framer-motion", semua)
+        self.assertNotIn("tailwindcss", semua)
+
+    def test_gerak_hanya_lewat_gerak_penuh_dan_semua_pendengar_dilepas(self):
+        h = self._baca("packages", "web", "src", "komponen", "HeroGulir.tsx")
+        self.assertIn('import { adaGerak, gerakPenuh } from "../gerak.ts";', h)
+        # `tingkatGerak()` satu-satunya yang boleh memutuskan; tidak membaca dataset sendiri.
+        self.assertNotIn("dataset.gerak", h)
+        self.assertNotIn("data-gerak", h)
+        self.assertIn('window.addEventListener("wheel", roda, { passive: false });', h)
+        for lepas in ('window.removeEventListener("wheel", roda);',
+                      'window.removeEventListener("keydown", tombol);',
+                      'window.removeEventListener("scroll", gulir);',
+                      'document.removeEventListener("tampilan-berubah", segarkan);',
+                      'mq.removeEventListener("change", segarkan);',
+                      "if (raf) cancelAnimationFrame(raf);"):
+            self.assertIn(lepas, h)
+
+    def test_isi_tidak_dirender_selama_tertutup_dan_tombol_hanya_saat_tertutup(self):
+        h = self._baca("packages", "web", "src", "komponen", "HeroGulir.tsx")
+        self.assertIn('{terbuka ? ( <div className="hg-isi" ref={isi} tabIndex={-1}>', h)
+        self.assertIn("{penuh && !terbuka ? ( <button", h)
+        self.assertIn('className="tbl tbl-kecil tbl-hantu hg-lewati"', h)
+        self.assertIn("{!terbuka ? <p", h)
+        # Papan ketik tidak dicuri dari kotak isian, tombol, tautan, atau dialog.
+        self.assertIn("closest?.(PEMILIK_TOMBOL)", h)
+
+    def test_css_blok_hero_satu_mesin_tanpa_peredupan_teks_dan_tanpa_html(self):
+        import re
+        blok = self._blok_css()
+        tanpa_komentar = re.sub(r"/\*.*?\*/", "", blok, flags=re.S)
+        self.assertGreater(tanpa_komentar.count("{"), 20)
+        # Satu properti, satu mesin: JS menyusul targetnya tiap bingkai.
+        self.assertNotRegex(tanpa_komentar, r"transition\s*:")
+        # Peredupan opacity dilarang pada teks; yang boleh hanya gambar latar dan keyframe masuk.
+        for sel in re.findall(r"([^{}]+)\{[^{}]*opacity[^{}]*\}", tanpa_komentar):
+            self.assertTrue(sel.strip().endswith(".hg-latar") or sel.strip() == "from", sel.strip())
+        # Pemilih yang menunjuk <html> dilarang di lapisan baru.
+        self.assertNotRegex(tanpa_komentar, r"(^|[\s,}])(html|:root)\b")
+        self.assertIn(".hg { --hg-p: 0;", tanpa_komentar)
+        self.assertIn('.hg[data-terbuka="true"] { --hg-p: 1; }', tanpa_komentar)
+        # Blok baru mendarat di ujung berkas, sesudah blok Pilihan: nol pajak alamat
+        # untuk rujukan `gaya.css:NNNN`.
+        with open(self._akar("webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            css = f.read()
+        self.assertGreater(css.index("hero gulir"), css.index("/* Pilihan (select-only combobox"))
+
+    def test_gambar_ada_berformat_jpeg_dan_kecil(self):
+        for nama in ("pengantar-peta.jpg", "pengantar-rasi.jpg"):
+            jalur = self._akar("webapp", "statik", "gambar", nama)
+            self.assertTrue(os.path.isfile(jalur), nama)
+            with open(jalur, "rb") as f:
+                isi = f.read()
+            self.assertEqual(isi[:3], b"\xff\xd8\xff", nama)
+            self.assertLessEqual(len(isi), 300 * 1024, nama)
+        p = self._baca("packages", "web", "src", "layar", "Pengantar.tsx")
+        self.assertIn('gambarLatar="/gambar/pengantar-peta.jpg"', p)
+        self.assertIn('gambarMedia="/gambar/pengantar-rasi.jpg"', p)
+        h = self._baca("packages", "web", "src", "komponen", "HeroGulir.tsx")
+        # Latar dekoratif (alt kosong); media membawa alt dari pemanggilnya.
+        self.assertIn('<img className="hg-latar" src={gambarLatar} alt=""', h)
+        self.assertIn("alt={altMedia}", h)
+
+    def test_angka_dari_data_dan_teks_tanpa_dash(self):
+        import re
+        p = self._baca("packages", "web", "src", "layar", "Pengantar.tsx")
+        self.assertIn("jumlahKurikulum(bahasa)", p)
+        self.assertIn("angka(bahasa.length)", p)
+        # Angka yang diketik adalah kalimat yang suatu hari berbohong.
+        self.assertIsNone(re.search(r"\b\d[\d.]* (kurikulum|materi|kuis|latihan)\b", p))
+        for dash in ("—", "–"):
+            self.assertNotIn(dash, p)
+        # Gambar contoh disebut terang-terangan sebagai contoh, bukan progres pembaca.
+        self.assertIn("progres contoh, bukan progresmu", p)
+
+    def test_pengantar_tidak_masuk_palet_dan_hanya_satu_tautan_masuk(self):
+        d = self._baca("packages", "web", "src", "layar", "Dasbor.tsx")
+        self.assertEqual(d.count('href="#/pengantar"'), 1)
+        for berkas in ("palet-cari.ts", "pintasan-tabel.ts", "Palet.tsx"):
+            self.assertNotIn("pengantar", self._baca("packages", "web", "src", "komponen", berkas), berkas)
+
+    def test_skrip_manual_menolak_server_pemilik(self):
+        for nama in ("pengantar.mjs", "gambar-pengantar.mjs"):
+            s = self._baca("packages", "web", "uji", "manual", nama)
+            self.assertIn('.port === "7777"', s, nama)
+            self.assertIn("process.exit(2)", s, nama)
+
+
+class TestOrbitBekal(unittest.TestCase):
+    """Orbit bekal di Peta Karier (`komponen/OrbitBekal.tsx`). Perilakunya
+    dibuktikan di peramban (`uji/manual/orbit-bekal.mjs`, 61 pemeriksaan dan 19
+    mutan sumber dan CSS) dan logikanya oleh `uji/banding-orbit.mjs` (19 sel
+    mutasi). Tes ini menjaga keputusan yang gampang terbalik tanpa satu pun
+    error: orbit di BAGIAN halaman (panel profesi terlalu sempit), tanpa
+    pustaka, putaran lewat `useGerakPenuh()` dan berhenti saat disentuh, simpul
+    berupa tombol bernama, dan tanpa peredupan opacity."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _blok_css(self):
+        with open(self._akar("webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            css = f.read()
+        # Dibatasi di judul blok berikutnya: blok baru di ujung berkas tidak boleh ikut dinilai
+        # oleh aturan blok ini (pelajaran dari hero, kuis, dan pilihan).
+        return css[css.index("/* ============================================================ orbit bekal"):
+                   css.index("/* ============================================================ cakrawala bara")]
+
+    def test_orbit_di_bagian_halaman_bukan_di_panel_sempit(self):
+        k = self._baca("packages", "web", "src", "layar", "Karier.tsx")
+        self.assertEqual(k.count("<OrbitBekal"), 1)
+        self.assertIn("<OrbitBekal key={terpilih.id}", k)
+        # Sesudah grid tangga+panel (`</aside>`), bukan di dalam `PanelDetail`: panel itu
+        # kolom ~370 px dan orbit yang diperkecil ke 318 px bertumpuk dan saling menimpa label.
+        self.assertGreater(k.index("<OrbitBekal"), k.index("</aside>"))
+        self.assertIn('id="kr-orbit"', k)
+
+    def test_tanpa_pustaka_baru_dan_tanpa_jaringan(self):
+        import json
+        o = self._baca("packages", "web", "src", "komponen", "OrbitBekal.tsx")
+        for dilarang in ("lucide", "@/components/ui", "framer-motion", "next/", "../api.ts"):
+            self.assertNotIn('from "' + dilarang, o)
+        self.assertNotIn("kirim(", o)
+        with open(self._akar("packages", "web", "package.json"), encoding="utf-8") as f:
+            paket = json.load(f)
+        semua = {**paket.get("dependencies", {}), **paket.get("devDependencies", {})}
+        for nama in ("lucide-react", "framer-motion", "tailwindcss"):
+            self.assertNotIn(nama, semua)
+
+    def test_putaran_lewat_hook_ditulis_ke_dom_dan_dilepas(self):
+        o = self._baca("packages", "web", "src", "komponen", "OrbitBekal.tsx")
+        self.assertIn('import { useGerakPenuh } from "./gerak-penuh.ts";', o)
+        self.assertNotIn("dataset.gerak", o)
+        self.assertNotIn("data-gerak", o)
+        # Sudut ditulis ke DOM lewat ref, tidak jadi state (aslinya render ulang tiap 50 ms).
+        self.assertIn('papan.current?.style.setProperty("--or-sudut"', o)
+        self.assertNotIn("setSudut", o)
+        self.assertIn("return () => cancelAnimationFrame(raf);", o)
+        g = self._baca("packages", "web", "src", "komponen", "gerak-penuh.ts")
+        self.assertIn('document.removeEventListener("tampilan-berubah", segarkan);', g)
+        self.assertIn('mq.removeEventListener("change", segarkan);', g)
+
+    def test_berhenti_saat_disentuh_dan_ada_tombol_jeda(self):
+        o = self._baca("packages", "web", "src", "komponen", "OrbitBekal.tsx")
+        self.assertIn("const berputar = penuh && !jeda && !hover && !fokus && dipilih === null;", o)
+        # WCAG 2.2.2: gerak otomatis lebih dari lima detik harus bisa dihentikan, dan tombolnya terlihat.
+        self.assertIn("{penuh ? ( <div className=\"or-alat\">", o)
+        self.assertIn("aria-pressed={jeda}", o)
+        self.assertIn('{jeda ? "Putar lagi" : "Jeda putaran"}', o)
+        # Fokus hanya dari papan: tombol Jeda sendiri tidak boleh ikut menghentikan putaran.
+        self.assertIn("onFocus={() => setFokus(true)}", o)
+
+    def test_simpul_tombol_bernama_dan_data_dari_logika_murni(self):
+        o = self._baca("packages", "web", "src", "komponen", "OrbitBekal.tsx")
+        self.assertIn("aria-label={labelNode(n)}", o)
+        self.assertIn("aria-pressed={n.id === dipilih?.id}", o)
+        # Jari-jari dan kecepatan datang dari satu sumber (`orbit-teks.ts`), bukan ditulis ulang di CSS.
+        self.assertIn('"--jd": `${JARI.dalam}cqw`', o)
+        self.assertIn('"--laju": KECEPATAN[n.lingkar]', o)
+        t = self._baca("packages", "web", "src", "komponen", "orbit-teks.ts")
+        self.assertIn("export const JARI: Record<Lingkar, number> = { dalam: 30, luar: 44 };", t)
+
+    def test_css_blok_orbit_tanpa_opacity_html_dan_transisi_selain_scale(self):
+        import re
+        blok = re.sub(r"/\*.*?\*/", "", self._blok_css(), flags=re.S)
+        self.assertGreater(blok.count("{"), 25)
+        self.assertNotIn("opacity", blok)
+        self.assertNotRegex(blok, r"(^|[\s,}])(html|:root)\b")
+        # Satu properti, satu mesin: JS menulis `--or-sudut`, jadi `transform` tidak boleh bertransisi.
+        for sifat in re.findall(r"transition\s*:\s*([a-z-]+)", blok):
+            self.assertEqual(sifat, "scale")
+        self.assertIn("container-type: inline-size;", blok)
+        self.assertIn("translateX(var(--jari))", blok)
+
+    def test_blok_orbit_di_ujung_berkas_sesudah_blok_hero(self):
+        with open(self._akar("webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            css = f.read()
+        self.assertGreater(css.index("orbit bekal\n"), css.index("hero gulir"))
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (("komponen", "OrbitBekal.tsx"), ("komponen", "orbit-teks.ts")):
+            s = self._baca("packages", "web", "src", *berkas)
+            for dash in ("—", "–"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "orbit-bekal.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+
+
+class TestSkyline(unittest.TestCase):
+    """Cakrawala bara: tampilan tiga dimensi dari hamparan XP harian di kartu
+    Bara (`komponen/Skyline.tsx`, logika di `skyline-teks.ts`). Perilakunya
+    dibuktikan di peramban (`uji/manual/skyline.mjs`, 112 pemeriksaan dan 27
+    mutan sumber dan CSS) dan logikanya oleh `uji/banding-skyline.mjs` (45 sel
+    mutasi). Tes ini menjaga keputusan yang gampang terbalik tanpa satu pun
+    error: datar tetap bawaan dan kanonik, nilai ingatan asing jatuh ke datar,
+    kisi datar dipin ulang sesudah kembali, klik dan hover tidak menavigasi,
+    satu perhentian Tab dan hanya papan ketik yang diumumkan, gerak dikunci
+    saat dipasang, dan CSS tanpa opacity, transisi, atau pemilih html."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _css(self):
+        with open(self._akar("webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            return f.read()
+
+    def _blok_css(self):
+        css = self._css()
+        # Dibatasi di judul blok berikutnya: blok baru di ujung berkas tidak boleh ikut dinilai
+        # oleh aturan blok ini (sama dengan blok orbit).
+        return css[css.index("/* ============================================================ cakrawala bara"):
+                   css.index("/* ============================================================== pohon berkas")]
+
+    def test_datar_bawaan_pilihan_diingat_dan_nilai_asing_jatuh_ke_datar(self):
+        d = self._baca("packages", "web", "src", "layar", "Dasbor.tsx")
+        self.assertIn('const KUNCI_TAMPIL_BARA = "bara.tampil";', d)
+        self.assertIn(
+            'return ambilLokal<unknown>(KUNCI_TAMPIL_BARA, "datar") === "cakrawala" ? "cakrawala" : "datar";', d)
+        self.assertIn("simpanLokal(KUNCI_TAMPIL_BARA, t);", d)
+        # Tab di sini keadaan, bukan tindakan: yang terbuka `tbl-pilih`, sama dengan tab halaman bahasa.
+        self.assertIn('"tbl tbl-kecil " + (kunci === tampil ? "tbl-pilih" : "tbl-hantu")', d)
+        self.assertIn("aria-pressed={kunci === tampil}", d)
+        self.assertIn("<Skyline hari={p.sel} kosong={p.kosong} target={d.target_harian} />", d)
+
+    def test_kisi_datar_dipin_ulang_sesudah_kembali_dari_cakrawala(self):
+        d = self._baca("packages", "web", "src", "layar", "Dasbor.tsx")
+        # Kisinya baru ada lagi sesudah pelajar kembali, jadi tandanya ikut berubah: tanpa itu efek pin
+        # tidak berjalan ulang dan kisinya terbuka di bulan pertama. Petunjuk geser hanya di tampilan datar.
+        self.assertIn("usePinKeHariIni(petakRef, geserRef, datar ? p : null);", d)
+        self.assertIn("{datar ? ( <span ref={geserRef}", d)
+
+    def test_logika_murni_tanpa_react_dom_atau_pustaka(self):
+        import json
+        t = self._baca("packages", "web", "src", "komponen", "skyline-teks.ts")
+        self.assertNotIn('from "react"', t)
+        for dilarang in ("document", "window", "localStorage"):
+            self.assertNotIn(dilarang, t)
+        s = self._baca("packages", "web", "src", "komponen", "Skyline.tsx")
+        self.assertIn('} from "./skyline-teks.ts";', s)
+        for dilarang in ("lucide", "framer-motion", "three", "d3", "@/components/ui", "../api.ts"):
+            self.assertNotIn('from "' + dilarang, s)
+        self.assertNotIn("kirim(", s)
+        with open(self._akar("packages", "web", "package.json"), encoding="utf-8") as f:
+            paket = json.load(f)
+        semua = {**paket.get("dependencies", {}), **paket.get("devDependencies", {})}
+        for nama in ("tailwindcss", "framer-motion", "lucide-react", "three", "d3"):
+            self.assertNotIn(nama, semua)
+
+    def test_klik_dan_hover_tidak_menavigasi(self):
+        s = self._baca("packages", "web", "src", "komponen", "Skyline.tsx")
+        # Hari yang disorot hanya mengganti baris keterangan. Membuka materi menulis progres, dan pada peta
+        # bintang lama 66 persen klik tepat di pusat bintang mengenai tetangganya.
+        for dilarang in ("href", "location.", "navigate", "onClick", "window.open"):
+            self.assertNotIn(dilarang, s)
+
+    def test_satu_perhentian_tab_dan_hanya_papan_ketik_diumumkan(self):
+        s = self._baca("packages", "web", "src", "komponen", "Skyline.tsx")
+        self.assertEqual(s.count("tabIndex={"), 1)
+        self.assertEqual(s.count("umumkan(teksHari"), 1)
+        # Hover yang ikut diumumkan menjadi hujan kalimat bagi pengguna pembaca layar yang menyentuh tetikus.
+        awal, akhir = s.index("const saatPenunjuk"), s.index("const siluet")
+        self.assertNotIn("umumkan", s[awal:akhir])
+        self.assertIn('aria-hidden="true" focusable="false"', s)
+        # Alt+Panah = Mundur/Maju peramban; Ctrl dan Meta milik pintasan lain.
+        self.assertIn("if (e.altKey || e.ctrlKey || e.metaKey) return;", s)
+        self.assertIn("role=\"group\"", s)
+
+    def test_gerak_lewat_hook_dan_dikunci_saat_dipasang(self):
+        s = self._baca("packages", "web", "src", "komponen", "Skyline.tsx")
+        self.assertIn('import { useGerakPenuh } from "./gerak-penuh.ts";', s)
+        self.assertIn("const [masuk] = useState(penuh);", s)
+        self.assertNotIn("dataset.gerak", s)
+        self.assertNotIn("data-gerak", s)
+        self.assertIn('(masuk ? " sk-masuk" : "")', s)
+
+    def test_angka_geometri_satu_sumber_dengan_skrip_peramban(self):
+        t = self._baca("packages", "web", "src", "komponen", "skyline-teks.ts")
+        self.assertIn("export const SKALA = 34;", t)
+        self.assertIn("export const TINGGI_MAKS = 2.4;", t)
+        # Kedua langkah layar harus turun (koefisien y positif): itu satu-satunya syarat kunci urutan gambar.
+        self.assertIn("export const MINGGU = { x: 1, y: 0.14 } as const;", t)
+        self.assertIn("export const HARI = { x: -0.34, y: 0.66 } as const;", t)
+        m = self._baca("packages", "web", "uji", "manual", "skyline.mjs")
+        self.assertIn("2.4 * 34", m)
+
+    def test_css_blok_tanpa_opacity_html_hex_dan_transisi(self):
+        import re
+        blok = re.sub(r"/\*.*?\*/", "", self._blok_css(), flags=re.S)
+        self.assertGreater(blok.count("{"), 20)
+        self.assertNotIn("opacity", blok)
+        self.assertNotIn("transition", blok)
+        self.assertNotRegex(blok, r"(^|[\s,}])(html|:root)\b")
+        self.assertNotRegex(blok, r"#[0-9a-fA-F]{3,8}\b")
+        # Satu-satunya gerak: animasi masuk, hanya di bawah `.sk-masuk`, berangkat dari skala nol.
+        self.assertEqual(re.findall(r"@keyframes\s+([a-z-]+)", blok), ["sk-tumbuh"])
+        self.assertIn("@keyframes sk-tumbuh { from { transform: scaleY(0); } }", " ".join(blok.split()))
+        for pemilih in re.findall(r"([^{};]+)\{[^{}]*\banimation\s*:", blok):
+            self.assertTrue(pemilih.strip().startswith(".sk-masuk"), pemilih)
+        self.assertIn("backwards;", blok)
+        self.assertNotIn("forwards", blok)
+
+    def test_kartu_cakrawala_memakai_satu_kolom_lentur_dipagari_supports(self):
+        blok = " ".join(self._blok_css().split())
+        # `.meja-ritme` di lapisan desktop berkolom `max-content`, jadi svg berlebar 100% jatuh ke 300 px.
+        self.assertIn(
+            "@supports selector(:has(*)) { .meja-ritme:has(.sk-wadah) { grid-template-columns: minmax(0, 1fr); } }",
+            blok)
+
+    def test_blok_sesudah_blok_orbit_dan_sebelum_blok_pohon(self):
+        css = self._css()
+        judul = "/* ============================================================ cakrawala bara"
+        self.assertGreater(css.index(judul), css.index("orbit bekal\n"))
+        self.assertLess(css.index(judul), css.index("pohon berkas\n"))
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (("src", "komponen", "Skyline.tsx"), ("src", "komponen", "skyline-teks.ts"),
+                       ("uji", "banding-skyline.mjs")):
+            s = self._baca("packages", "web", *berkas)
+            for dash in ("—", "–"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "skyline.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+
+
+class TestPohonBerkas(unittest.TestCase):
+    """Penampil pohon berkas untuk blok multi-berkas (`komponen/PohonBerkas.tsx`,
+    logika di `pohon-teks.ts`). Perilakunya dibuktikan di peramban
+    (`uji/manual/pohon-berkas.mjs`, 141 pemeriksaan atas ke-25 blok nyata dan 29
+    mutan sumber dan CSS) dan logikanya oleh `uji/banding-pohon.mjs` (42 sel
+    mutasi). Tes ini menjaga keputusan yang gampang terbalik tanpa satu pun
+    error: pemecahan di KLIEN (server dan kontrak tidak disentuh), pola penanda
+    sama dengan server, satu perhentian Tab dengan pola tree, klik tidak
+    menavigasi, klaim penyorotnya jujur, dan CSS tanpa opacity, transisi, atau
+    pemilih html."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _mentah(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _blok_css(self):
+        css = self._mentah("webapp", "statik", "gaya.css")
+        # Dibatasi di judul blok berikutnya: blok baru di ujung berkas tidak boleh ikut dinilai
+        # oleh aturan blok ini (sama dengan blok cakrawala dan orbit).
+        return css[css.index("/* ============================================================== pohon berkas"):
+                   css.index("/* ================================================================ kaca cair")]
+
+    def test_blok_multi_dipecah_di_klien_tanpa_menyentuh_server(self):
+        b = self._baca("packages", "web", "src", "komponen", "BlokKode.tsx")
+        self.assertIn('() => (p.jenis === "multi" ? pecahBerkas(b.kode) : null),', b)
+        self.assertIn("<PohonBerkas catatan={pecah.catatan} berkas={pecah.berkas} />", b)
+        # Petunjuk server ("pisahkan sesuai komentar penanda") tidak lagi benar di penampil: penandanya
+        # sudah jadi baris pohon, jadi kakinya diganti.
+        self.assertIn("{pecah ? ( <div className=\"blok-kaki\">{KAKI_PECAH}</div>", b)
+        # Server dan kontrak API tidak berubah: `/lama` dan `tebak` memakai petunjuk yang sama.
+        for berkas in (("webapp", "isi.py"), ("webapp", "api.py"), ("inti", "berkas.py")):
+            s = self._baca(*berkas)
+            self.assertNotIn("PohonBerkas", s, berkas)
+            self.assertNotIn("pecahBerkas", s, berkas)
+
+    def test_pola_penanda_sama_dengan_server(self):
+        import re
+        srv = re.search(r'_PENANDA_BERKAS = re\.compile\(\s*r"""(.*?)"""', self._mentah("inti", "berkas.py"), re.S)
+        ts = re.search(r"export const POLA_PENANDA = /\^\\s\*(.*)/;", self._mentah("packages", "web", "src", "komponen", "pohon-teks.ts"))
+        self.assertIsNotNone(srv)
+        self.assertIsNotNone(ts)
+        norm = lambda x: x.replace("\\/", "/").replace("\\#", "#")
+        # Dua penanda yang berbeda pendapat tentang satu blok adalah blok yang tampil terpecah di satu
+        # tempat dan utuh di tempat lain. Klien menambah jangkar awal baris; di data nyata keduanya sama.
+        self.assertEqual(norm(srv.group(1)), norm(ts.group(1)))
+
+    def test_logika_murni_tanpa_react_dom_atau_pustaka(self):
+        import json
+        t = self._baca("packages", "web", "src", "komponen", "pohon-teks.ts")
+        self.assertNotIn('from "react"', t)
+        for dilarang in ("document", "window", "localStorage"):
+            self.assertNotIn(dilarang, t)
+        s = self._baca("packages", "web", "src", "komponen", "PohonBerkas.tsx")
+        for dilarang in ("lucide", "framer-motion", "@/components/ui", "../api.ts"):
+            self.assertNotIn('from "' + dilarang, s)
+        self.assertNotIn("kirim(", s)
+        with open(self._akar("packages", "web", "package.json"), encoding="utf-8") as f:
+            paket = json.load(f)
+        semua = {**paket.get("dependencies", {}), **paket.get("devDependencies", {})}
+        for nama in ("tailwindcss", "framer-motion", "lucide-react", "react-arborist"):
+            self.assertNotIn(nama, semua)
+
+    def test_pohon_satu_perhentian_tab_peran_tree_dan_klik_tidak_menavigasi(self):
+        s = self._baca("packages", "web", "src", "komponen", "PohonBerkas.tsx")
+        self.assertIn('role="tree"', s)
+        self.assertIn('role="treeitem"', s)
+        self.assertIn("tabIndex={i === fokusAman ? 0 : -1}", s)
+        for atribut in ("aria-level", "aria-posinset", "aria-setsize", "aria-expanded", "aria-selected"):
+            self.assertIn(atribut + "={", s)
+        # Alt+Panah = Mundur/Maju peramban; Ctrl dan Meta milik pintasan lain.
+        self.assertIn("if (e.altKey || e.ctrlKey || e.metaKey) return;", s)
+        # Fokus dipindah program HANYA sesudah tombol papan ketik, bukan sesudah klik atau Tab.
+        self.assertIn("perluFokus", s)
+        for dilarang in ("href", "location.", "navigate", "window.open"):
+            self.assertNotIn(dilarang, s)
+
+    def test_klaim_penyorot_jujur_polos_tetap_berwarna_dasar(self):
+        t = self._baca("packages", "web", "src", "komponen", "pohon-teks.ts")
+        # Pemindai tidak pernah sepenuhnya polos: string, angka, dan operator tetap diwarnai untuk bahasa
+        # yang tidak dikenal (`POLOS` di sorot.ts, sama di sisi Python). Komentar yang mengaku "tanpa
+        # warna" adalah klaim yang suatu hari berbohong tanpa satu tes pun gagal.
+        self.assertIn("pewarnaan DASAR pemindai", t)
+        self.assertNotIn("(tanpa warna)", t)
+        self.assertIn('json: "javascript"', t)
+
+    def test_css_blok_tanpa_opacity_html_hex_transisi_dan_gerak(self):
+        import re
+        blok = re.sub(r"/\*.*?\*/", "", self._blok_css(), flags=re.S)
+        self.assertGreater(blok.count("{"), 15)
+        self.assertNotIn("opacity", blok)
+        self.assertNotIn("transition", blok)
+        self.assertNotIn("@keyframes", blok)
+        self.assertNotIn("animation", blok)
+        self.assertNotRegex(blok, r"(^|[\s,}])(html|:root)\b")
+        self.assertNotRegex(blok, r"#[0-9a-fA-F]{3,8}\b")
+        # Cincin fokus jatuh DI DALAM baris: kontainer pohon menggulir, cincin di luar kotak terpotong.
+        self.assertIn(".pb-baris:focus-visible { outline-offset: -2px; }", blok)
+        self.assertIn('.pb-baris[aria-expanded="true"] > .pb-panah { transform: rotate(90deg); }', blok)
+        self.assertIn("minmax(8rem, 12rem) minmax(0, 1fr)", blok)
+
+    def test_blok_sesudah_blok_cakrawala_dan_sebelum_kaca_cair(self):
+        css = self._mentah("webapp", "statik", "gaya.css")
+        judul = "/* ============================================================== pohon berkas"
+        self.assertGreater(css.index(judul), css.index("cakrawala bara\n"))
+        # Blok kaca cair menyusul di ujung berkas; pohon berkas bukan lagi yang terakhir.
+        self.assertGreater(css.index("/* ================================================================ kaca cair"), css.index(judul))
+        self.assertTrue(css.endswith("}\n"))
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (("src", "komponen", "PohonBerkas.tsx"), ("src", "komponen", "pohon-teks.ts"),
+                       ("uji", "banding-pohon.mjs")):
+            s = self._baca("packages", "web", *berkas)
+            for dash in ("\u2014", "\u2013"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "pohon-berkas.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+
+
+class TestKacaCair(unittest.TestCase):
+    """Kaca cair di bilah atas (`komponen/TetesKaca.tsx`, fisika di `tetes-teks.ts`,
+    shader di `tetes-shader.ts`, blok "kaca cair" di kaki gaya.css). Perilakunya dibuktikan
+    di peramban (`uji/manual/kaca-cair.mjs`: 80 pemeriksaan, 19 mutan sumber dan CSS) dan
+    fisikanya oleh `uji/banding-tetes.mjs` (48 sel mutasi). Tes ini menjaga keputusan yang
+    gampang terbalik tanpa satu pun error: tetes mengikuti butir AKTIF (bukan klik), penanda
+    lama baru mati sesudah komponen memegang penanda, gerak lewat `tingkatGerak()`, waktu
+    tidak pernah mundur, kaca mati di tema kontras, atribusi MIT ikut, dan CSS tanpa
+    transisi, opasitas, atau pemilih html."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _mentah(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _tanpa_komentar(self, teks):
+        import re
+        teks = re.sub(r"/\*.*?\*/", "", teks, flags=re.S)
+        return re.sub(r"(?m)^\s*//.*$", "", teks)
+
+    JUDUL = "/* ================================================================ kaca cair"
+    JUDUL_BERIKUT = "/* ================================================================== tombol kaca"
+
+    def _blok_css(self):
+        css = self._mentah("webapp", "statik", "gaya.css")
+        # Dibatasi di judul blok berikutnya: blok baru di ujung berkas tidak boleh ikut dinilai
+        # oleh aturan blok ini (sama dengan blok pohon berkas dan cakrawala).
+        return css[css.index(self.JUDUL):css.index(self.JUDUL_BERIKUT)]
+
+    def test_cangkang_memasang_tetes_dan_menandai_butir(self):
+        s = self._baca("packages", "web", "src", "Cangkang.tsx")
+        self.assertIn('import { TetesKaca } from "./komponen/TetesKaca.tsx";', s)
+        # Butir yang diikuti tetes: butir utama yang aktif, atau pemicu "Lainnya" kalau yang aktif
+        # tinggal di dalam panelnya, atau null (halaman bahasa dan materi tidak punya butir).
+        self.assertIn('const aktifRel = diPanel ? "lainnya" : MENU_UTAMA.some(([nama]) => nama === rute) ? rute : null;', s)
+        self.assertIn("data-rel={nama}", s)
+        self.assertIn('data-rel="lainnya"', s)
+        nav = s.index('<nav id="rel" aria-label="Navigasi utama">')
+        tetes = s.index("<TetesKaca aktif={aktifRel} />")
+        self.assertGreater(tetes, nav)
+        self.assertLess(tetes, s.index('<a className="merek"'))
+
+    def test_komponen_gerak_lewat_tingkat_gerak_dan_tanpa_pustaka(self):
+        import json
+        s = self._baca("packages", "web", "src", "komponen", "TetesKaca.tsx")
+        self.assertIn('import { tingkatGerak } from "../gerak.ts";', s)
+        # Tingkat gerak hanya diputuskan `tingkatGerak()`: membaca atribut sendiri membuat
+        # `prefers-reduced-motion` tidak lagi menang.
+        for dilarang in ("dataset.gerak", "data-gerak", "getAttribute(\"data-gerak"):
+            self.assertNotIn(dilarang, s)
+        for dilarang in ("lucide", "framer-motion", "tailwind", "three", "ogl", "@/components"):
+            self.assertNotIn('from "' + dilarang, s)
+        with open(self._akar("packages", "web", "package.json"), encoding="utf-8") as f:
+            paket = json.load(f)
+        semua = {**paket.get("dependencies", {}), **paket.get("devDependencies", {})}
+        for nama in ("tailwindcss", "framer-motion", "lucide-react", "three", "ogl", "gsap"):
+            self.assertNotIn(nama, semua)
+
+    def test_pemasangan_bisa_dibatalkan_dan_urutan_efek_benar(self):
+        s = self._baca("packages", "web", "src", "komponen", "TetesKaca.tsx")
+        self.assertEqual(s.count("useLayoutEffect(() => {"), 2)
+        # Efek tata letak berjalan menurut urutan deklarasi: yang memasang HARUS lebih dulu dari
+        # yang memanggil `ke.current`, kalau tidak pemanggilan pertama jatuh ke null.
+        self.assertLess(s.index("}, []);"), s.index("}, [aktif]);"))
+        # StrictMode memasang dua kali: tiap pendengar dan atribut yang dipasang dilepas.
+        for lepas in ("pengamat.disconnect();", "nav.removeEventListener(\"pointermove\", saatGerak);",
+                      "nav.removeEventListener(\"pointerleave\", saatPergi);", "nav.removeEventListener(\"pointerdown\", saatTekan);",
+                      "document.removeEventListener(\"tampilan-berubah\", saatTampilan);",
+                      "kurangiGerak.removeEventListener(\"change\", saatTampilan);",
+                      "document.removeEventListener(\"visibilitychange\", saatLihat);",
+                      "delete nav.dataset.kaca;", "delete nav.dataset.tk;", "delete nav.dataset.bias;"):
+            self.assertIn(lepas, s)
+        self.assertIn("cancelAnimationFrame(raf)", s)
+        # Hanya tiga pemanggil `perluBingkai`, semuanya membawa tingkat gerak yang berlaku.
+        self.assertEqual(s.count("perluBingkai(t, tingkatGerak())"), 3)
+        self.assertNotIn("perluBingkai(t)", s)
+
+    def test_fisika_murni_waktu_tidak_mundur_dan_kursor_dibaca_dari_nyala(self):
+        raw = self._mentah("packages", "web", "src", "komponen", "tetes-teks.ts")
+        kode = self._tanpa_komentar(raw)
+        for dilarang in ("document", "window", "localStorage", "Math.random", "requestAnimationFrame"):
+            self.assertNotIn(dilarang, kode)
+        t = " ".join(raw.split())
+        # Cap waktu rAF adalah AWAL bingkai dan bisa lebih awal dari performance.now(): bingkai
+        # pertama sesudah diam bisa berdurasi negatif. Ditemukan di peramban, bukan di pembanding.
+        self.assertIn("const dt = dtMentah > 0 ? dtMentah : 0;", t)
+        # Kursor dibaca dari `nyala` (tingkat penuh), bukan hanya dari `s` hasil integrasi.
+        self.assertIn('|| (mode === "penuh" && t.kursor.nyala)', t)
+        self.assertIn('return tema !== "kontras";', t)
+        self.assertIn("export function acakBerbenih(", t)
+
+    def test_shader_hanya_data(self):
+        s = self._mentah("packages", "web", "src", "komponen", "tetes-shader.ts")
+        kode = self._tanpa_komentar(s)
+        for dilarang in ("import ", "function ", "document", "window"):
+            self.assertNotIn(dilarang, kode)
+        self.assertIn("export const NAMA_UNIFORM = [", s)
+
+    def test_atribusi_mit_ikut_di_ketiga_berkas(self):
+        for nama in ("TetesKaca.tsx", "tetes-teks.ts", "tetes-shader.ts"):
+            s = self._baca("packages", "web", "src", "komponen", nama)
+            self.assertIn("Giannattasio", s, nama)
+            self.assertIn("MIT", s, nama)
+        s = self._baca("packages", "web", "src", "komponen", "TetesKaca.tsx")
+        # Syarat lisensi MIT: pemberitahuan hak cipta dan teks izin ikut di salinan yang substansial.
+        self.assertIn("MIT License. Copyright (c) Guglielmo Giannattasio (@gughigug).", s)
+        self.assertIn("Permission is hereby granted, free of charge", s)
+        self.assertIn('THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND', s)
+
+    def test_blok_css_di_ujung_berkas_dengan_konflik_yang_tercatat(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        # Kaca cair menyusul pohon berkas, dan hanya dua blok yang menyusulnya: tombol kaca, lalu
+        # penutup dasbor (yang paling ujung; dijaga TestPenutupDasbor).
+        self.assertLess(css.index(self.JUDUL), css.index(self.JUDUL_BERIKUT))
+        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(self.JUDUL) + 5:])), 2)
+        self.assertTrue(css.endswith("}\n"))
+        blok = self._blok_css()
+        self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
+        # Keputusan lama "kaca buram dibuang dari bilah" dibalik atas permintaan eksplisit pemilik;
+        # konfliknya WAJIB tertulis di tempat yang akan dibaca orang yang ingin mencabutnya.
+        self.assertIn("DIBUANG", blok)
+        self.assertIn("MENCABUT fitur ini", blok)
+
+    def test_blok_css_tanpa_opasitas_transisi_atau_pemilih_html(self):
+        import re
+        kode = self._tanpa_komentar(self._blok_css())
+        for dilarang in ("opacity", "transition", "animation", "@keyframes", "!important"):
+            self.assertNotIn(dilarang, kode)
+        # Token lokal dipasang di #rel, bukan di <html>; pemilih ber-kombinator (tema terang)
+        # menunjuk keturunan dan tidak dihitung pagar POPULASI.
+        self.assertNotRegex(kode, r"(^|[\s,}])(html|:root|body)\b")
+        for sel in re.findall(r"([^{}]+)\{", kode):
+            for bagian in sel.split(","):
+                bagian = bagian.strip()
+                if bagian.startswith("[data-tema"):
+                    self.assertIn("#rel", bagian)
+
+    def test_blok_css_aturan_yang_menjaga_kontras_dan_urutan_lapis(self):
+        blok = " ".join(self._tanpa_komentar(self._blok_css()).split())
+        # Blur 10 px dan latar diredupkan di tema gelap: diukur, bukan dikira (3,15:1 -> 5,74:1).
+        self.assertEqual(blok.count("blur(14px) saturate(1.5) brightness(var(--tk-cerah))"), 2)
+        self.assertEqual(blok.count("blur(10px) saturate(1.5) brightness(var(--tk-cerah))"), 2)
+        self.assertIn("--tk-cerah: 0.8;", blok)
+        # Tema terang tidak boleh ikut diredupkan: huruf gelap di atas latar gelap lebih buruk.
+        self.assertIn('[data-tema="terang"] #rel[data-kaca="cair"] { --tk-tinta: 64%; --tk-cerah: 1.06; }', blok)
+        # Penanda lama baru dilepas sesudah komponen memasang data-tk.
+        self.assertIn('#rel[data-kaca="cair"][data-tk] #rel-utama a.kini, #rel[data-kaca="cair"][data-tk] .rel-pemicu.kini { background: transparent; }', blok)
+        # Kanvas di bawah huruf, dan tersembunyi tanpa atributnya (tema kontras, layar sempit).
+        self.assertIn('#rel[data-tk="gl"] .tk-kanvas { display: block; z-index: -1; }', blok)
+        self.assertIn(".tk-kanvas, .tk-cadangan { display: none; }", blok)
+        self.assertIn("@media (min-width: 861px) and (prefers-reduced-transparency: reduce)", blok)
+        # Tidak ada satu pun aturan kaca yang berlaku di luar atribut `data-kaca`/`data-tk`.
+        self.assertNotIn("\n#rel {", self._blok_css())
+
+    def test_kelas_komponen_dan_css_berpasangan(self):
+        s = self._baca("packages", "web", "src", "komponen", "TetesKaca.tsx")
+        blok = self._blok_css()
+        for kelas in ("tk-bias", "tk-kanvas", "tk-cadangan"):
+            self.assertIn('className="' + kelas + '"', s)
+            self.assertIn("." + kelas, blok)
+        self.assertIn('id="tk-bias"', s)
+        self.assertIn("url(#tk-bias)", blok)
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (("src", "komponen", "TetesKaca.tsx"), ("src", "komponen", "tetes-teks.ts"),
+                       ("src", "komponen", "tetes-shader.ts"), ("uji", "banding-tetes.mjs"),
+                       ("uji", "manual", "kaca-cair.mjs")):
+            s = self._baca("packages", "web", *berkas)
+            for dash in ("—", "–"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "kaca-cair.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+        self.assertIn("process.env.HANYA", m)
+
+
+class TestTombolKaca(unittest.TestCase):
+    """Tombol kaca (`.tbl-kaca` di blok "tombol kaca" gaya.css, filter di `komponen/FilterKaca.tsx`),
+    dipakai di dua tombol utama dasbor. Perilakunya dibuktikan di peramban
+    (`uji/manual/tombol-kaca.mjs`: 37 pemeriksaan di dua server berprofil, 16 mutan sumber dan CSS).
+    Tes ini menjaga keputusan yang gampang terbalik tanpa satu pun error: satu filter untuk semua
+    tombol, skala lewat `scale` (bukan `transform`, milik umpan tekan WAAPI), tema terang tanpa
+    kilau yang menjatuhkan kontras, tema kontras pekat, dan LISENSI: komponen asalnya tidak
+    mencantumkan lisensi, jadi tidak ada kode yang boleh disalin."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _mentah(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _tanpa_komentar(self, teks):
+        import re
+        return re.sub(r"/\*.*?\*/", "", teks, flags=re.S)
+
+    def _blok_css(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        m = re.search(r"/\* =+ tombol kaca", css)
+        self.assertIsNotNone(m)
+        # Dibatasi di judul blok berikutnya (penutup dasbor): aturannya punya animasi dan opasitas sendiri.
+        akhir = re.search(r"/\* =+ penutup dasbor", css)
+        self.assertIsNotNone(akhir)
+        return css[m.start():akhir.start()]
+
+    def test_blok_di_ujung_berkas(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        blok = self._blok_css()
+        # Tombol kaca bukan lagi blok terakhir: hanya penutup dasbor yang menyusulnya.
+        self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
+        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(blok) + 5:])), 1)
+        self.assertTrue(css.endswith("}\n"))
+        self.assertGreater(css.index(blok), css.index("kaca cair\n"))
+
+    def test_satu_filter_tanpa_logika_dan_tersembunyi(self):
+        s = self._baca("packages", "web", "src", "komponen", "FilterKaca.tsx")
+        self.assertEqual(s.count('id="tbl-kaca"'), 1)
+        self.assertIn('className="tbl-kaca-filter" width="0" height="0" aria-hidden="true" focusable="false"', s)
+        self.assertIn("const GESER = 26;", s)
+        # Tombolnya setinggi 44 sampai 52 px; komponen asal memakai 70 untuk tombol yang lebih besar.
+        for dilarang in ("tingkatGerak", "useState", "useEffect", "document", "window"):
+            self.assertNotIn(dilarang, s)
+        c = self._baca("packages", "web", "src", "Cangkang.tsx")
+        self.assertIn('import { FilterKaca } from "./komponen/FilterKaca.tsx";', c)
+        self.assertEqual(c.count("<FilterKaca />"), 1)
+        blok = " ".join(self._tanpa_komentar(self._blok_css()).split())
+        # Absolut 0x0, BUKAN display none: filter di dalam elemen yang tidak digambar tidak terpakai.
+        self.assertIn(".tbl-kaca-filter { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }", blok)
+        self.assertNotIn("display: none", blok)
+
+    def test_lisensi_komponen_asal_kosong_jadi_tidak_ada_kode_yang_disalin(self):
+        # Komentar dibungkus per baris: penanda ` * ` di akhir baris tidak boleh memotong frasa yang dicari.
+        s = self._baca("packages", "web", "src", "komponen", "FilterKaca.tsx").replace(" * ", " ")
+        self.assertIn("bidang lisensinya KOSONG", s)
+        self.assertIn("TIDAK ada satu baris pun yang disalin", s)
+        self.assertIn("Ali Imam", s)
+        blok = " ".join(self._blok_css().split())
+        self.assertIn("TIDAK mencantumkan lisensi", blok)
+        self.assertIn("tidak ada baris yang disalin", blok)
+        # Bundel asal berisi kelas Tailwind dan nilai bayangan tertentu; tidak satu pun ikut.
+        for dilarang in ("rgba(0,0,0,0.9)", "inset_3px_3px", "container-glass", "LiquidButton"):
+            self.assertNotIn(dilarang, s + blok)
+
+    def test_dipasang_hanya_di_dua_tombol_utama_dasbor(self):
+        d = self._baca("packages", "web", "src", "layar", "Dasbor.tsx")
+        self.assertIn('<span className="lanjutkan-tbl tbl-kaca">', d)
+        self.assertIn('<span className="tbl tbl-utama tbl-besar tbl-kaca">', d)
+        self.assertEqual(d.count("tbl-kaca"), 2)
+        # Satu layar satu tombol utama: yang berkaca selalu tombol utama, bukan tombol tambahan.
+        for berkas in ("Kerja.tsx", "Kuis.tsx", "Belajar.tsx", "Bahasa.tsx", "Karier.tsx", "Pengantar.tsx"):
+            self.assertNotIn("tbl-kaca", self._baca("packages", "web", "src", "layar", berkas), berkas)
+
+    def test_skala_lewat_scale_bukan_transform(self):
+        raw = self._blok_css()
+        kode = " ".join(self._tanpa_komentar(raw).split())
+        # Umpan tekan (`pasangIsyarat`) menganimasikan `transform` lewat WAAPI; `scale` bertumpuk
+        # dengannya tanpa berebut. Satu properti, satu mesin.
+        self.assertNotIn("transform", kode)
+        self.assertIn("transition: scale var(--pegas-jawab-ms) var(--pegas-jawab), background var(--cepat);", kode)
+        self.assertIn(".tbl-kaca:hover { scale: 1.04;", kode)
+        self.assertIn('[data-gerak="mati"] .tbl-kaca:hover { scale: 1; }', kode)
+        self.assertIn("@media (prefers-reduced-motion: reduce) { .tbl-kaca:hover { scale: 1; } }", kode)
+
+    def test_kontras_tema_terang_tanpa_kilau_dan_tema_kontras_pekat(self):
+        kode = " ".join(self._tanpa_komentar(self._blok_css()).split())
+        # Teks PUTIH di atas kuningan di tema terang: kilau 22 persen menjatuhkan kontras ke 3,27:1;
+        # kuningan pekat 5,92:1; angka terang sekitar 5,3:1 (diukur dari piksel, bukan token).
+        self.assertIn("--kc-tinta: 80%; --kc-kilau: 22%; --kc-lengkung: 32%;", kode)
+        self.assertIn('[data-tema="terang"] .tbl-kaca { --kc-tinta: 94%; --kc-kilau: 0%; --kc-lengkung: 14%; }', kode)
+        self.assertIn('[data-tema="kontras"] .tbl-kaca, [data-tema="kontras"] .tbl-kaca:hover { background: var(--nyala);', kode)
+        self.assertIn("@media (prefers-reduced-transparency: reduce) { .tbl-kaca, .tbl-kaca:hover { background: var(--nyala);", kode)
+        self.assertIn("@supports (backdrop-filter: url(#a)) { .tbl-kaca { -webkit-backdrop-filter: url(#tbl-kaca); backdrop-filter: url(#tbl-kaca); } }", kode)
+
+    def test_blok_css_tanpa_opasitas_animasi_atau_pemilih_html(self):
+        kode = self._tanpa_komentar(self._blok_css())
+        for dilarang in ("opacity", "animation", "@keyframes", "!important"):
+            self.assertNotIn(dilarang, kode)
+        self.assertNotRegex(kode, r"(^|[\s,}])(html|:root|body)\b")
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (("src", "komponen", "FilterKaca.tsx"), ("uji", "manual", "tombol-kaca.mjs")):
+            s = self._baca("packages", "web", *berkas)
+            for dash in ("—", "–"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "tombol-kaca.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+        self.assertIn("process.env.HANYA", m)
+
+
+class TestPenutupDasbor(unittest.TestCase):
+    """Penutup dasbor (`layar/PenutupDasbor.tsx`, isinya di `layar/penutup-teks.ts`, blok "penutup
+    dasbor" di kaki gaya.css). Perilakunya dibuktikan di peramban (`uji/manual/penutup.mjs`) dan
+    isinya oleh `uji/banding-penutup.mjs`. Tes ini menjaga keputusan yang gampang terbalik tanpa
+    satu pun error: penutup hanya di dasbor berprogres (bukan layar mulai), tanpa pustaka animasi
+    (GSAP diganti `magnet()` dan CSS bergulir), gerak hanya lewat `useGerakPenuh()`, animasi tak
+    berhingga hanya di tingkat penuh, keadaan akhir kemunculan = keadaan alami, tanpa peredupan
+    opacity pada teks, LISENSI komponen asal yang kosong, dan konflik dengan keputusan 2026-10-17
+    (marquee dan ajakan penutup dibuang dari dasbor) yang WAJIB tertulis."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _mentah(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _tanpa_komentar(self, teks):
+        import re
+        teks = re.sub(r"/\*.*?\*/", "", teks, flags=re.S)
+        return re.sub(r"(?m)^\s*//.*$", "", teks)
+
+    def _blok_css(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        m = re.search(r"/\* =+ penutup dasbor", css)
+        self.assertIsNotNone(m)
+        return css[m.start():]
+
+    def _keyframes(self, kode, nama):
+        """Isi `@keyframes <nama> { ... }` dengan kurung kurawal yang diseimbangkan."""
+        awal = kode.index("@keyframes " + nama + " {")
+        kurung = kode.index("{", awal)
+        dalam = 0
+        for i in range(kurung, len(kode)):
+            if kode[i] == "{":
+                dalam += 1
+            elif kode[i] == "}":
+                dalam -= 1
+                if dalam == 0:
+                    return kode[kurung + 1:i]
+        self.fail("kurung @keyframes " + nama + " tidak seimbang")
+
+    def _aturan(self, kode):
+        """(pemilih, isi) tiap aturan biasa: @keyframes dibuang, dan aturan di dalam @media atau
+        @supports diperlakukan sebagai aturan sendiri."""
+        import re
+        tanpa = re.sub(r"@keyframes\s+[\w-]+\s*\{(?:[^{}]|\{[^{}]*\})*\}", "", kode)
+        return [(p.strip(), i) for p, i in re.findall(r"([^{}]+)\{([^{}]*)\}", tanpa)]
+
+    def test_blok_paling_ujung_dan_satu_judul(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        blok = self._blok_css()
+        self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
+        self.assertEqual(css.rindex("/* ===="), css.index(blok))
+        self.assertTrue(css.endswith("}\n"))
+        self.assertGreater(css.index(blok), css.index("tombol kaca"))
+
+    def test_dipasang_sekali_di_meja_kerja_bukan_di_layar_mulai(self):
+        d = self._baca("packages", "web", "src", "layar", "Dasbor.tsx")
+        self.assertIn('import { PenutupDasbor } from "./PenutupDasbor.tsx";', d)
+        self.assertEqual(d.count("<PenutupDasbor"), 1)
+        # Profil baru (XP 0) mendapat layar mulai; penutup berisi angka kemajuan yang belum ada.
+        self.assertGreater(d.index("<PenutupDasbor"), d.index("function MejaKerja("))
+        self.assertLess(d.index("<PenutupDasbor"), d.index("export function Dasbor("))
+
+    def test_tanpa_pustaka_animasi_dan_gerak_lewat_mesin_repo(self):
+        t = self._tanpa_komentar(self._mentah("packages", "web", "src", "layar", "PenutupDasbor.tsx"))
+        p = self._tanpa_komentar(self._mentah("packages", "web", "src", "layar", "penutup-teks.ts"))
+        for dilarang in ("gsap", "GSAP", "ScrollTrigger", "framer", "motion/react", "tailwind", "lucide"):
+            self.assertNotIn(dilarang, t + p)
+        # Aslinya GSAP; di sini mesin repo: magnet() dan tingkat gerak lewat hook, bukan data-gerak.
+        self.assertIn('import { adaGerak, magnet } from "../gerak.ts";', t)
+        self.assertIn('import { useGerakPenuh } from "../komponen/gerak-penuh.ts";', t)
+        self.assertIn("useGerakPenuh()", t)
+        for dilarang in ("data-gerak", "dataset.gerak", "localStorage", 'addEventListener("scroll"', "requestAnimationFrame"):
+            self.assertNotIn(dilarang, t + p)
+        # Komponen berimpor hanya dari react dan dari dalam paket ini.
+        import re
+        for sumber in re.findall(r'from "([^"]+)"', t + p):
+            self.assertTrue(sumber == "react" or sumber.startswith("."), sumber)
+
+    def test_pembersih_efek_dan_gulir_halus_lewat_adagerak(self):
+        t = self._baca("packages", "web", "src", "layar", "PenutupDasbor.tsx")
+        # StrictMode memasang efek dua kali: magnet dan pengamat wajib punya pembersih.
+        self.assertIn("return () => lepas.forEach((f) => f());", t)
+        self.assertIn("return () => pengamat.disconnect();", t)
+        self.assertEqual(t.count('behavior: adaGerak() ? "smooth" : "auto"'), 2)
+        self.assertNotIn('behavior: "smooth"', t)
+
+    def test_kelas_berpasangan_antara_tsx_dan_css(self):
+        import re
+        t = self._mentah("packages", "web", "src", "layar", "PenutupDasbor.tsx")
+        blok = self._blok_css()
+        dipakai = set()
+        for isi in re.findall(r'className="([^"]+)"', t):
+            dipakai.update(k for k in isi.split() if k.startswith("pd-"))
+        dideklarasi = set(re.findall(r"\.(pd-[a-z-]+)", self._tanpa_komentar(blok)))
+        self.assertEqual(dipakai - dideklarasi, set(), "kelas di TSX tanpa aturan CSS")
+        self.assertEqual(dideklarasi - dipakai, set(), "aturan CSS yatim")
+
+    def test_css_animasi_hanya_di_tingkat_penuh_dan_tanpa_peredupan_teks(self):
+        import re
+        kode = self._tanpa_komentar(self._blok_css())
+        aturan = self._aturan(kode)
+        self.assertGreater(len(aturan), 40)
+        for pemilih, isi in aturan:
+            if re.search(r"\banimation\s*:", isi):
+                # Animasi tak berhingga dan kemunculan terhubung gulir: hanya bila gerak penuh.
+                self.assertIn('[data-penuh="ya"]', pemilih, pemilih)
+            if re.search(r"\bopacity\s*:", isi):
+                # Peredupan teks dengan opacity dilarang; satu-satunya yang boleh adalah cahaya dekoratif.
+                self.assertEqual(pemilih, ".pd-aurora", pemilih)
+            for transisi in re.findall(r"\btransition\s*:\s*([^;]+);", isi):
+                for dilarang in ("transform", "all", "width", "height"):
+                    self.assertNotIn(dilarang, transisi, pemilih)
+            self.assertNotRegex(pemilih, r"(^|[\s,])(html|:root|body)\b", pemilih)
+        self.assertNotIn("!important", kode)
+        # Animasi tak berhingga menunggu pembungkus terlihat; kemunculan terhubung gulir butuh dukungannya.
+        self.assertIn('.pd-bungkus[data-penuh="ya"][data-tampak="ya"] .pd-aurora { animation: pd-napas', " ".join(kode.split()))
+        self.assertIn('.pd-bungkus[data-penuh="ya"][data-tampak="ya"] .pd-jalur { animation: pd-geser', " ".join(kode.split()))
+        self.assertIn("@supports (animation-timeline: view())", kode)
+
+    def test_kemunculan_berangkat_dari_tak_terlihat_dan_berakhir_di_keadaan_alami(self):
+        kode = self._tanpa_komentar(self._blok_css())
+        for nama in ("pd-naik", "pd-naik-besar"):
+            isi = self._keyframes(kode, nama)
+            self.assertIn("from {", isi)
+            # Tanpa `to` dan tanpa persen: keadaan akhirnya keadaan alami elemen, jadi gerak yang dimatikan
+            # atau garis waktu yang tak didukung tidak menyembunyikan apa pun selamanya.
+            self.assertNotIn("to {", isi)
+            self.assertNotIn("%", isi)
+        # Satu properti, satu mesin: kata raksasa memakai `translate` untuk letak dan `transform` untuk gerak masuk.
+        self.assertIn("translate: -50% 0;", " ".join(kode.split()))
+        self.assertIn("@keyframes pd-geser { to { transform: translateX(-50%); } }", " ".join(kode.split()))
+        self.assertIn("@keyframes pd-napas { from { scale: 1; opacity: .6; } to { scale: 1.1; opacity: 1; } }", " ".join(kode.split()))
+
+    def test_penyingkapan_dan_cetak_dan_kontras(self):
+        kode = " ".join(self._tanpa_komentar(self._blok_css()).split())
+        # Pembungkus memotong, lapisan isi menempel ke layar hanya di tingkat penuh.
+        self.assertIn("clip-path: inset(0);", kode)
+        self.assertIn("view-timeline: --pd block;", kode)
+        self.assertIn('.pd-bungkus[data-penuh="ya"] .pd-isi { position: fixed;', kode)
+        self.assertIn("margin-bottom: calc(-2 * var(--s8));", kode)
+        # Kertas tidak memuat layar yang hanya bermakna di layar.
+        self.assertIn("@media print { .pd-bungkus { display: none; } }", kode)
+        # Tema kontras tinggi tanpa hiasan.
+        self.assertIn('[data-tema="kontras"] .pd-aurora, [data-tema="kontras"] .pd-kisi, [data-tema="kontras"] .pd-raksasa { display: none; }', kode)
+
+    def test_lisensi_komponen_asal_kosong_dan_konflik_tercatat(self):
+        # Komentar dibungkus per baris: penanda ` * ` di akhir baris tidak boleh memotong frasa yang dicari.
+        t = self._baca("packages", "web", "src", "layar", "PenutupDasbor.tsx").replace(" * ", " ")
+        p = self._baca("packages", "web", "src", "layar", "penutup-teks.ts").replace(" * ", " ")
+        css = " ".join(self._blok_css().split())
+        for s in (t, p, css):
+            self.assertIn("bidang lisensinya KOSONG", s)
+        self.assertIn("Hossain Jahed", t + p + css)
+        self.assertIn("tidak ada kodenya yang disalin", t)
+        self.assertIn("Tidak ada kodenya yang disalin", p)
+        self.assertIn("tidak ada baris yang disalin", css)
+        # Konfliknya juga tertulis di CSS, tempat orang yang ingin mencabut blok ini akan membaca.
+        self.assertIn("KONFLIK yang disadari: keputusan 2026-10-17", css)
+        # Bundel asal memakai GSAP dan kelas Tailwind; tidak satu pun ikut.
+        for dilarang in ("gsap.", "ScrollTrigger.create", "motion-footer", "text-[", "bg-[", "dark:"):
+            self.assertNotIn(dilarang, t + css)
+        # Keputusan 2026-10-17 (audit 12 agen) membuang marquee dan ajakan penutup dari dasbor; pemilik kini
+        # memintanya lagi dan konfliknya WAJIB tertulis di tempat yang akan dibaca orang yang ingin mencabutnya.
+        agen = self._baca("AGENTS.md")
+        self.assertIn("**Penutup dasbor", agen)
+        awal = agen.index("**Penutup dasbor")
+        bagian = agen[awal:agen.index("### Proyek akhir", awal)]
+        self.assertIn("2026-10-17", bagian)
+        self.assertIn("marquee", bagian)
+        self.assertIn("ajakan penutup", bagian)
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (
+            ("src", "layar", "PenutupDasbor.tsx"), ("src", "layar", "penutup-teks.ts"),
+            ("uji", "banding-penutup.mjs"), ("uji", "manual", "penutup.mjs"),
+        ):
+            s = self._baca("packages", "web", *berkas)
+            for dash in ("—", "–"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "penutup.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+        self.assertIn("process.env.HANYA", m)
+        # Penantian awal pada akar yang selalu ada: komponen yang dicabut harus jadi pemeriksaan GAGAL,
+        # bukan penantian yang kedaluwarsa dan mematikan skrip.
+        self.assertIn('tunggu: ".meja"', m)
+        self.assertNotIn('tunggu: ".pd-bungkus"', m)

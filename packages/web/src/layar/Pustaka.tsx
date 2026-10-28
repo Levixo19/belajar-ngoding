@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from "react";
 import { ambil } from "../api.ts";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { Pilihan as PilihanDaftar } from "../komponen/Pilihan.tsx";
 import { angka, tandai, urlAman } from "../util.tsx";
 
 const PENYARING = ["q", "kurikulum", "jenis", "bahasa", "sumber"] as const;
@@ -181,24 +182,22 @@ function Pilihan({
   ganti: (ubah: Partial<Saring>) => void;
 }) {
   return (
-    <select
-      aria-label={teksSemua}
-      value={nilaiKini}
-      // Lebar dipatok di sini, bukan di gaya.css: `select` bawaan aplikasi ini
+    <PilihanDaftar
+      label={teksSemua}
+      namaTombol={teksSemua}
+      nilai={nilaiKini}
+      // Lebar dipatok di sini, bukan di gaya.css: pilihan bawaan aplikasi ini
       // selebar wadahnya, dan dua pilihan yang masing-masing merentang 1000 px
       // mendorong daftar tautan satu layar ke bawah.
-      style={{ width: "auto", flex: "0 1 15rem", minWidth: 0 }}
-      onChange={(e) => ganti({ [nama]: e.target.value } as Partial<Saring>)}
-    >
-      <option value="">{teksSemua}</option>
-      {Object.keys(label)
-        .filter((k) => segi[k] || k === nilaiKini)
-        .map((k) => (
-          <option key={k} value={k}>
-            {`${label[k]} (${angka(segi[k] || 0)})`}
-          </option>
-        ))}
-    </select>
+      gaya={{ width: "auto", flex: "0 1 15rem", minWidth: 0 }}
+      opsi={[
+        { id: "", nama: teksSemua },
+        ...Object.keys(label)
+          .filter((k) => segi[k] || k === nilaiKini)
+          .map((k) => ({ id: k, nama: `${label[k]} (${angka(segi[k] || 0)})` })),
+      ]}
+      onUbah={(v) => ganti({ [nama]: v } as Partial<Saring>)}
+    />
   );
 }
 
@@ -272,8 +271,8 @@ export function Pustaka({ params }: { params: URLSearchParams }) {
   }
   if (!data) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat tautan…</span>
       </div>
     );

@@ -1,8 +1,8 @@
 {
  "fungsi": "galat.terjemahkan(pesan), ringkas(pesan), rapikan(pesan, nama)",
  "cakupan": {
-  "pola": 71,
-  "tersentuh": 71,
+  "pola": 274,
+  "tersentuh": 274,
   "tidak_tersentuh": []
  },
  "kasus": [
@@ -74,7 +74,7 @@
    "bahasa": "rust",
    "masukan": "error[E0425]: cannot find value `x` in this scope\n --> program.rs:2:20",
    "masukan_sha256": "999fe73291d3ce702d505f8c4cee9edf185419f2651258e602d40b159cc0affa",
-   "terjemahan_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "terjemahan_sha256": "16094211eacab9c6c2e765c3f0e2d2b386a2a1b8a3e091997048723d7fa00f71",
    "ringkas_sha256": "8ed72973623446d7eb8fcd638e1ea7069b57367c8b2faa9e88ed063ce122c012",
    "rapikan_sha256": "999fe73291d3ce702d505f8c4cee9edf185419f2651258e602d40b159cc0affa"
   },
@@ -605,6 +605,1582 @@
    "terjemahan_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
    "ringkas_sha256": "702d51124c6c0214d2b434905e969593c45afc5785661230b6ddfa4951ad2f78",
    "rapikan_sha256": "82c5381414b8fe996fb0f5211765f20b8a6da339f0eac15c2d797509402ab5c8"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in '<main>': undefined local variable or method 'x' for main (NameError)",
+   "masukan_sha256": "a2240320574e5a578de0253b99671e3dba0488a3633d9610a3d9c5b4b863b3ee",
+   "terjemahan_sha256": "fddfddd530260e91ea2e80fb70ff01bf4777b97c1f0ab8fc19a396debaf9772e",
+   "ringkas_sha256": "6052b6060822dbecae93d7ac6fa33b9c05f7959bcb6829ac8677e90bb364e56e",
+   "rapikan_sha256": "a2240320574e5a578de0253b99671e3dba0488a3633d9610a3d9c5b4b863b3ee"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Object#f': wrong number of arguments (given 1, expected 2) (ArgumentError)\n\tfrom /tmp/x/program.rb:4:in '<main>'",
+   "masukan_sha256": "0cc194c4ff3e98d8073d7d31f0c57f46887bf8864c64e1c66a4a1c075e438b68",
+   "terjemahan_sha256": "0b9c4d239b0a54b23703c0f25f01445b9e5ee70cfc4c789c01c785d5c22e39ba",
+   "ringkas_sha256": "0e468f3a5cdb1d52afd51c62d8b3e8c413222b7c4baa89a09ac27e5e93997823",
+   "rapikan_sha256": "0cc194c4ff3e98d8073d7d31f0c57f46887bf8864c64e1c66a4a1c075e438b68"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:2:in 'Array#fetch': index 5 outside of array bounds: -2...2 (IndexError)\n\tfrom /tmp/x/program.rb:2:in '<main>'",
+   "masukan_sha256": "0154f08f21b275e99ee4018d66bb8e0b1c2a335a66c6b91bf772192d3803eeb0",
+   "terjemahan_sha256": "443827f8538d7d3b3388ea1970b545f5a3b7b9664fb37415e8d4aab7cf84e151",
+   "ringkas_sha256": "033606d0580a1035d5041bdda8290e6682d60fcb211bc04abae1f4cf7da35d25",
+   "rapikan_sha256": "0154f08f21b275e99ee4018d66bb8e0b1c2a335a66c6b91bf772192d3803eeb0"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'String#+': no implicit conversion of Integer into String (TypeError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "8f64cea71762d3098b846ef4e94dd4d130dbf3391e36ea7cf1dcfdb0ef5867cf",
+   "terjemahan_sha256": "34a2a2ac6885006cd923d5d0f3e579ce697539a0736ac180ac1ce220aed4a739",
+   "ringkas_sha256": "9b441800f6abf2c3d1c799d49818aceaab20ed2798bb312fcd4db3dd79e8d9c1",
+   "rapikan_sha256": "8f64cea71762d3098b846ef4e94dd4d130dbf3391e36ea7cf1dcfdb0ef5867cf"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Kernel#require': cannot load such file -- x (LoadError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "0926608623fdb76789321f28b9dff701bc5d57e1be1052123dd7f10793bf63fb",
+   "terjemahan_sha256": "0bffa3b018337ef459a35cc6bee1916ff01999fd6d6344a4bf76057b589240b5",
+   "ringkas_sha256": "d83f2aa5c601e0577f1caad21eb0f89ccc2914c2c16f79f134258d3a266f6d05",
+   "rapikan_sha256": "0926608623fdb76789321f28b9dff701bc5d57e1be1052123dd7f10793bf63fb"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in '<main>': uninitialized constant Foo (NameError)",
+   "masukan_sha256": "348a43e34371a42df94629b4be37e950c84dac9386d1b25c3421698552ca383c",
+   "terjemahan_sha256": "d8ea7476e451dd5890e77968ee6c795c2bdae47b2f708e96985cc8d1589e384e",
+   "ringkas_sha256": "4ae59de1d9ef8e557aa6d57be5b696f734ca5eae82617bda7f41baedf3c23a3a",
+   "rapikan_sha256": "348a43e34371a42df94629b4be37e950c84dac9386d1b25c3421698552ca383c"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:2:in '<main>': can't modify frozen String: \"abc\" (FrozenError)",
+   "masukan_sha256": "fd0b8465117d288b2420ec38e3051c4d55c8834e58de5cf9579001df2ff75fc4",
+   "terjemahan_sha256": "4744011c7fb96e5d12074607272a272251a42eded6cdd3f1ed39e1fbc8f3e57f",
+   "ringkas_sha256": "883196f4d955c4a8237f30683f79f01c0de8296aa1bd3dbc02180bf81ce9e827",
+   "rapikan_sha256": "fd0b8465117d288b2420ec38e3051c4d55c8834e58de5cf9579001df2ff75fc4"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb: /tmp/x/program.rb:2: syntax errors found (SyntaxError)\n> 1 | def f\n    | ^~~ expected an `end` to close the `def` statement\n> 2 |   puts 1",
+   "masukan_sha256": "e706a6b20ac9a1c0358ea691c2c2bb12f464ed5576473a695a1f573e364d1763",
+   "terjemahan_sha256": "5b0afa7f444dbdd9f43d0fe074b1c52ebf44dd4a5a0e124cc78c1df389690ccc",
+   "ringkas_sha256": "2bf99a19dee6870c1b76621e655636729e5e33b60d0c64b1d19c5526e8081488",
+   "rapikan_sha256": "e706a6b20ac9a1c0358ea691c2c2bb12f464ed5576473a695a1f573e364d1763"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Kernel#Float': invalid value for Float(): \"x\" (ArgumentError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "b5730ff3bcdad899606fd86145cd2809202afc02dc8cc3e9d4be98f2c87670bd",
+   "terjemahan_sha256": "78d58ee566dccbdb6e11a7532f9521d2d84472bf8d5823ad93f1edeaff1f6399",
+   "ringkas_sha256": "68d43bc54547425c4c4749be88ea733b9201ef0b4d25bb07b7879c4c0a90df2d",
+   "rapikan_sha256": "b5730ff3bcdad899606fd86145cd2809202afc02dc8cc3e9d4be98f2c87670bd"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Integer#+': String can't be coerced into Integer (TypeError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "718dcbc4d9962662a175697c80fd122e03cbd8645d82d412f5fa29b29cf09726",
+   "terjemahan_sha256": "aacee0b2a9a93d3f6716c4300b72417ab42e6e672373ee9b90519c3a1e06512b",
+   "ringkas_sha256": "8625150b8ad3f39bda783d5f2f15d335959d2fd19b7f570fff524f81b9e3429b",
+   "rapikan_sha256": "718dcbc4d9962662a175697c80fd122e03cbd8645d82d412f5fa29b29cf09726"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:2:in '<main>': undefined method '+' for nil (NoMethodError)",
+   "masukan_sha256": "9b722d4bc82fadba24ac58fec44b84090ad36eda9b4beb8f6558a8c33e8369f9",
+   "terjemahan_sha256": "1bc95629056e10788eb8bbc038989c1e152531b7bfaef4338741e241982732e9",
+   "ringkas_sha256": "5227460eb3295674186803fe7ad1d460bce845258d8f5d715674c82b3c26d123",
+   "rapikan_sha256": "9b722d4bc82fadba24ac58fec44b84090ad36eda9b4beb8f6558a8c33e8369f9"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:7:in '<main>': private method 'sekret' called for an instance of A (NoMethodError)",
+   "masukan_sha256": "842f28acfd191a9984b63c97b30d3afdb05be8e727d6fdce60d3772534f9a58f",
+   "terjemahan_sha256": "fa66640717538caa9a918ad565f8e0051a2fbcc656beae6cc56eced662df91cf",
+   "ringkas_sha256": "0e592fba2a5be3b0c90b4a47f85d34b809c6d016a658e59f05c637512079b502",
+   "rapikan_sha256": "842f28acfd191a9984b63c97b30d3afdb05be8e727d6fdce60d3772534f9a58f"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:2:in 'Object#f': stack level too deep (SystemStackError)\n\tfrom /tmp/x/program.rb:2:in 'Object#f'\n\tfrom /tmp/x/program.rb:2:in 'Object#f'\n\tfrom /tmp/x/program.rb:2:in 'Object#f'",
+   "masukan_sha256": "5eaef5c4d26df88c02cb68260bc310a00d98249fb47684545d7fb5b2adcaec1b",
+   "terjemahan_sha256": "744cc129f80c1157e4f0a41487e25c28af61a0b192aae5453ffbf489b7c342e8",
+   "ringkas_sha256": "0f3f0f6971388418ea6e558d3aface045fb8c4efaef869420c60a224eba0c33e",
+   "rapikan_sha256": "5eaef5c4d26df88c02cb68260bc310a00d98249fb47684545d7fb5b2adcaec1b"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb: /tmp/x/program.rb:2: syntax error found (SyntaxError)\n  1 | puts 1\n> 2 | end\n    | ^~~ unexpected 'end', ignoring it",
+   "masukan_sha256": "93da878b63a0edcb417decb5156e770005be647d54bec5ef6805a79bf16aa5b1",
+   "terjemahan_sha256": "79d387e2e6f15c4accaf4c69a4d99e4e681e017fa5e94dac401efdb432fccb55",
+   "ringkas_sha256": "77b39aa6b16589161b78535380c838d4b9fe9ea9e2e93572b4029d7e627c4671",
+   "rapikan_sha256": "93da878b63a0edcb417decb5156e770005be647d54bec5ef6805a79bf16aa5b1"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:3:in '<main>': undefined method 'bar' for class Foo (NoMethodError)",
+   "masukan_sha256": "8367f8ef4c9282781db95d9b002df6050e9c6349d9cf550fef6a70e1d79e7f84",
+   "terjemahan_sha256": "4809f16e75e5332fedd70bd6538d7f70a89c2f10aac0fc3c7c104e56dbc6c033",
+   "ringkas_sha256": "a026fbfe15565dfe327756319501e5ee6f8143f7ae24e639d2fdf8dfedde70e8",
+   "rapikan_sha256": "8367f8ef4c9282781db95d9b002df6050e9c6349d9cf550fef6a70e1d79e7f84"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb: /tmp/x/program.rb:1: syntax error found (SyntaxError)\n> 1 | puts \"abc\n    |          ^ unterminated string meets end of file",
+   "masukan_sha256": "10a4bc388169a80a5690aef5c4b4edee08b72a6be215bedb0674eac05cb2f1ff",
+   "terjemahan_sha256": "3a9fb7b47efe3c7340e3da74d56bf93f4537dc962edb3002a893e23bda1e6b37",
+   "ringkas_sha256": "40b07142f01528723ccd4a7b64d5773df234d5628782679585c6b7799322500c",
+   "rapikan_sha256": "10a4bc388169a80a5690aef5c4b4edee08b72a6be215bedb0674eac05cb2f1ff"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Integer#+': nil can't be coerced into Integer (TypeError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "c29a9f2ba9014a2b2f7ed0eaeec121f41c8f967608c0f8128e86edbcb820a366",
+   "terjemahan_sha256": "ac16a2f71d085a45742bb4852d1b290a80520f02968c542a447f1303afe9ac55",
+   "ringkas_sha256": "bceb552dbe9f89c130c8b0f0bb6f6fd2a8533262776a5cee13c087270a8127b6",
+   "rapikan_sha256": "c29a9f2ba9014a2b2f7ed0eaeec121f41c8f967608c0f8128e86edbcb820a366"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in '<main>': undefined method 'foo' for an instance of Symbol (NoMethodError)",
+   "masukan_sha256": "9dbe4b1db56b12d5252aca481d113a4e647c9245c4c909aeb3767fcba37eab60",
+   "terjemahan_sha256": "565c7836c55621785bb3b45a8df00e68cb12abac8db058a3bd3b379908c80f03",
+   "ringkas_sha256": "ba90a5f3ffa68ec97452e8afb77aeea980e785554a4cd0fa24e7bd72a18c20c0",
+   "rapikan_sha256": "9dbe4b1db56b12d5252aca481d113a4e647c9245c4c909aeb3767fcba37eab60"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Object#f': missing keyword: :a (ArgumentError)\n\tfrom /tmp/x/program.rb:4:in '<main>'",
+   "masukan_sha256": "402424289255bfd0f1648003682ec86a2dc71d4b6706d08bc115c31fbd7f1772",
+   "terjemahan_sha256": "ae35d08773eeca4829e06a17b3303b64793920258ec89fe192edc4a3b0f4a210",
+   "ringkas_sha256": "776d7aac09d3362a194adbc29365095f5e1b9c57dfe62a231927bf8c89a2f8a1",
+   "rapikan_sha256": "402424289255bfd0f1648003682ec86a2dc71d4b6706d08bc115c31fbd7f1772"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Comparable#<': comparison of String with 1 failed (ArgumentError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "951c848174039205c4bcadfbc21ee7c85e8f7b4f3bf61a118e9063e84bf82cbb",
+   "terjemahan_sha256": "d3685363b48baeeb0e916771078dcf2fa76284c3dc97cacd83f355ec5e150958",
+   "ringkas_sha256": "82623cfb850717d596e2791dc745cacd5f172d2ad5911548483897fdb8a68c3a",
+   "rapikan_sha256": "951c848174039205c4bcadfbc21ee7c85e8f7b4f3bf61a118e9063e84bf82cbb"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'IO.read': No such file or directory @ rb_sysopen - x.txt (Errno::ENOENT)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "03ae8c4d242328bfc5dacc067ec8b85ef5641c5fa367972a3058475127ca5bb6",
+   "terjemahan_sha256": "6eecd9ddc28dcca895d726e7530758c55ae135d05a199905a46e3f4bfb1cff3e",
+   "ringkas_sha256": "cf6938e48cd38a719bf56d0bb1b63f6e19686605850831677bfb59294f897b21",
+   "rapikan_sha256": "03ae8c4d242328bfc5dacc067ec8b85ef5641c5fa367972a3058475127ca5bb6"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:2:in 'Object#f': no block given (yield) (LocalJumpError)\n\tfrom /tmp/x/program.rb:4:in '<main>'",
+   "masukan_sha256": "8071ebd32c7a5fddbfd8c82f4aeed1a72048fb064dd61c26016420b562b93ad2",
+   "terjemahan_sha256": "d2e9a284774715e8bd89fedc417fabb0c7397bec01b60f97ab200552e0bedd78",
+   "ringkas_sha256": "3739113fd7eff318237ba5c43efabd8ddb450e9203db4e127cadb6f2b4553d60",
+   "rapikan_sha256": "8071ebd32c7a5fddbfd8c82f4aeed1a72048fb064dd61c26016420b562b93ad2"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb: /tmp/x/program.rb:1: syntax error found (SyntaxError)\n> 1 | puts(\"a\"\n    |         ^ unexpected end-of-input; expected a `)` to close the arguments",
+   "masukan_sha256": "8acc5f6cc27b39878ee89112110dad1a43f8d57c8d17cf6f542db739f642925a",
+   "terjemahan_sha256": "b986d876a099c8d23cc5361d6a4f626b01371eb4d41cd33f5ce06427a22900f8",
+   "ringkas_sha256": "241cbc25a47775458329425a302e805a527589269dc4eb879844178a23da94c6",
+   "rapikan_sha256": "8acc5f6cc27b39878ee89112110dad1a43f8d57c8d17cf6f542db739f642925a"
+  },
+  {
+   "bahasa": "ruby",
+   "masukan": "/tmp/x/program.rb:1:in 'Kernel#Integer': can't convert nil into Integer (TypeError)\n\tfrom /tmp/x/program.rb:1:in '<main>'",
+   "masukan_sha256": "034389fc42ab2b4cbd28344516334120dc45ad1b1649e6450b76695ec4fd5bbd",
+   "terjemahan_sha256": "b8d3375f63d5f4653b9cdf459ae618cdd58e16e9281105e956c25dd89b70bae2",
+   "ringkas_sha256": "b5844fe145191341661a997673d1737b2cbfb3c430782dc64823059b65d76f74",
+   "rapikan_sha256": "034389fc42ab2b4cbd28344516334120dc45ad1b1649e6450b76695ec4fd5bbd"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0382]: borrow of moved value: `s`\n --> /tmp/x/main.rs:4:23\n  |\n2 |     let s = String::from(\"a\");",
+   "masukan_sha256": "c5104093b82b6e5d0a830cec86abb13ce294ea89a64d87d9ed050d0eab408497",
+   "terjemahan_sha256": "e7fd7dcf988cbbff276a025fdbf69d5cf425b98b5ba828e2e27a35a3eb1bbf08",
+   "ringkas_sha256": "50b56dbae3f62a6c203611c71d38f9f0fc468df7d42518bb407fd22fe6d0b507",
+   "rapikan_sha256": "c5104093b82b6e5d0a830cec86abb13ce294ea89a64d87d9ed050d0eab408497"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0384]: cannot assign twice to immutable variable `x`\n --> /tmp/x/main.rs:3:5\n  |\n2 |     let x = 5;",
+   "masukan_sha256": "cf3e14d9dc0632f32f03146f4b80fb28674b91c41245429ce5bad9c0a5dec358",
+   "terjemahan_sha256": "c40c56d397bc0ffbaab3dcb626cd22465ab0876541992a7f8aede8abe90297d6",
+   "ringkas_sha256": "5f05f49f39f4c3ff4968ce690e9c2bfe7bfd4a48ec634f4612d954dd6f6c4c82",
+   "rapikan_sha256": "cf3e14d9dc0632f32f03146f4b80fb28674b91c41245429ce5bad9c0a5dec358"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0596]: cannot borrow `v` as mutable, as it is not declared as mutable\n --> /tmp/x/main.rs:3:5\n  |\n3 |     v.push(2);",
+   "masukan_sha256": "3aaa21242b04045718867a2d8f7f349a9a26a91a77e20b8e0e3f26b7b8035b75",
+   "terjemahan_sha256": "72f1632643b16ececb5e5962e4a394ba502b4b0340f2de158bbac6b1e4c3cb0c",
+   "ringkas_sha256": "dbaeead857e5c3fd05a5a55159a76336ce8c990c144752dc9390c705155cfc2d",
+   "rapikan_sha256": "3aaa21242b04045718867a2d8f7f349a9a26a91a77e20b8e0e3f26b7b8035b75"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0599]: no method named `foo` found for type `{integer}` in the current scope\n --> /tmp/x/main.rs:3:7\n  |\n3 |     n.foo();",
+   "masukan_sha256": "0d65ea4592e9251c9d5ea098f9b99b6b937542679b5ba686578c0e0b5fee032f",
+   "terjemahan_sha256": "56ab3c2a80b29b8bfde6f7993ca9c09dbbb012af74bde20a61cda0b03b9e3229",
+   "ringkas_sha256": "07473bdd584184c12aafc0d44bbab611f6cbb10fcbdcdae7106b7527056ef22d",
+   "rapikan_sha256": "0d65ea4592e9251c9d5ea098f9b99b6b937542679b5ba686578c0e0b5fee032f"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0433]: cannot find type `HashMap` in this scope\n --> /tmp/x/main.rs:2:13\n  |\n2 |     let m = HashMap::new();",
+   "masukan_sha256": "cd290336ad73971e0392eccea64b2f2a4fa522a5e0955ebf99d434cba2a40555",
+   "terjemahan_sha256": "60a9d294c86d048ab0052c55e279ea4dc47d29bc1c5728976131e4cf18cb77b7",
+   "ringkas_sha256": "9c1ff5f037654b7920f598c01bb9eda84acbd381d50afb8f8209ec01153d110c",
+   "rapikan_sha256": "cd290336ad73971e0392eccea64b2f2a4fa522a5e0955ebf99d434cba2a40555"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error: expected `;`, found `println`\n --> /tmp/x/main.rs:2:14\n  |\n2 |     let x = 5",
+   "masukan_sha256": "12a6b0c1b567a70b3a5947ca41572c551395d3fca33f0754133465d9e422d2a0",
+   "terjemahan_sha256": "8d2cbe01795095ccce03fa0418af3149849e7fe4d4ac40af477cac4496da2fee",
+   "ringkas_sha256": "73b762f6e487d57d40a1ebf195b2f877742b76475d5f31816b011b25b2dcec3e",
+   "rapikan_sha256": "12a6b0c1b567a70b3a5947ca41572c551395d3fca33f0754133465d9e422d2a0"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0061]: this function takes 2 arguments but 1 argument was supplied\n --> /tmp/x/main.rs:5:20\n  |\n5 |     println!(\"{}\", f(1));",
+   "masukan_sha256": "14a828f9e453121aad7845a82074f5995bc9b8a6982b431673e54bf9208bc8cf",
+   "terjemahan_sha256": "45ddfb4743b55f94c7e7d02b4621e7b74ff0cfebf83abc2fe13bd829b933412b",
+   "ringkas_sha256": "0deba392939ec5670dc6eedaca05073c5e9ee102c415bbc18d5344072e67a92e",
+   "rapikan_sha256": "14a828f9e453121aad7845a82074f5995bc9b8a6982b431673e54bf9208bc8cf"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "\nthread 'main' (294049) panicked at /tmp/x/main.rs:4:21:\nindex out of bounds: the len is 3 but the index is 5\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+   "masukan_sha256": "2a838c1c8c7e633a4f31248162458862a0a45f4d2ccd5449f6c06c6b4310ca71",
+   "terjemahan_sha256": "eb8269d016fd5e25262ac93928cd813c382013f8f721abf99dcfb7f71a3ecd85",
+   "ringkas_sha256": "0dfb42eab644c07ecef457a14a7150fe6f2bccb9c8dfd0c6ec97cbe307b1e820",
+   "rapikan_sha256": "2a838c1c8c7e633a4f31248162458862a0a45f4d2ccd5449f6c06c6b4310ca71"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "\nthread 'main' (294048) panicked at /tmp/x/main.rs:3:20:\nattempt to divide by zero\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+   "masukan_sha256": "25c991e448cb09af08e7f0bde1dd3fbe69fa1b61bfb856e88e4b0bb37108bb7f",
+   "terjemahan_sha256": "5620860375744dde5161f5409dd69925930df6d25491f4eb3adb8e67ba016bc1",
+   "ringkas_sha256": "27f01fbf6c984daf507d218ee08c7e3dbb4042a5ae20e37f511fdf4cbeb703e0",
+   "rapikan_sha256": "25c991e448cb09af08e7f0bde1dd3fbe69fa1b61bfb856e88e4b0bb37108bb7f"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "\nthread 'main' (294047) panicked at /tmp/x/main.rs:3:30:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+   "masukan_sha256": "c71a074f2ee2b315bd77568cd141a2f8f10669663f3c8855fbbf4cbd19129589",
+   "terjemahan_sha256": "952c5c5f4ecaa3ec5e198e1a59c37289feb256bf15f24ad5164c8daadc228437",
+   "ringkas_sha256": "62069169304d88446803c4b878f6e12816c1f5c905cf8fb3ca20f5a3e83064d8",
+   "rapikan_sha256": "c71a074f2ee2b315bd77568cd141a2f8f10669663f3c8855fbbf4cbd19129589"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "\nthread 'main' (294050) panicked at /tmp/x/main.rs:2:32:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: InvalidDigit }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+   "masukan_sha256": "5968f7575cfa2bf75d1b5c733eb31fe770646ace08498e8cae7fe46e4df3ae4e",
+   "terjemahan_sha256": "b59a0eda2ed453c89d1fab8fe8607d47c05d04a85ca6fbbd7c3e9b5ee8e6e6d7",
+   "ringkas_sha256": "a58cbb9da16df615fd86551fb40bf2dbced75a28b7a516d787efed34fed93f26",
+   "rapikan_sha256": "5968f7575cfa2bf75d1b5c733eb31fe770646ace08498e8cae7fe46e4df3ae4e"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0106]: missing lifetime specifier\n --> /tmp/x/main.rs:1:33\n  |\n1 | fn longest(a: &str, b: &str) -> &str {",
+   "masukan_sha256": "648baf1f2e69bfbdd425c65d2c22162ecca6ea5892e5877856159600380cc649",
+   "terjemahan_sha256": "9435b32f96193719d6776c80feefdf11b4ce9ffdd5c36586edbfe8b8e8f0ba44",
+   "ringkas_sha256": "59b29214c9fb75abb890aaf37d7a2c0dfab26f3775c29cb1fbf7bb3fb8dfb670",
+   "rapikan_sha256": "648baf1f2e69bfbdd425c65d2c22162ecca6ea5892e5877856159600380cc649"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0277]: cannot add `&str` to `{integer}`\n --> /tmp/x/main.rs:2:15\n  |\n2 |     let x = 5 + \"a\";",
+   "masukan_sha256": "4a5efaacc16d96f2d187c96e0e453b31d00994cd8ddf63685abc26d60f07d885",
+   "terjemahan_sha256": "f63c147d92ece96b61191278051ed2b083a509833d4f5e8a28d2317b43151e57",
+   "ringkas_sha256": "295fc65adb966321a38ebbb8b413f70116fa9a0c9fd1c05d1fef2a2eeaa56992",
+   "rapikan_sha256": "4a5efaacc16d96f2d187c96e0e453b31d00994cd8ddf63685abc26d60f07d885"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0277]: `P` doesn't implement `std::fmt::Display`\n --> /tmp/x/main.rs:3:20\n  |\n3 |     println!(\"{}\", P);",
+   "masukan_sha256": "ff801cc83e5e93d2f6205ad7684d3a7f1bb4f37159399cdc1f1a8d0220e7c8e3",
+   "terjemahan_sha256": "407e8a94ebd4aeebe134fe2134f33913bdb89578f26169de65ee5f7cbfbf0b0a",
+   "ringkas_sha256": "f71afd211d9bd54b0a498d617fafb307237cf0479cdd88da6ba054a0cad687f1",
+   "rapikan_sha256": "ff801cc83e5e93d2f6205ad7684d3a7f1bb4f37159399cdc1f1a8d0220e7c8e3"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error: this file contains an unclosed delimiter\n --> /tmp/x/main.rs:2:20\n  |\n1 | fn main() {",
+   "masukan_sha256": "b446747376f313d14db0da309a54c3a349afefe4b3dd34e0ff4f0e0519a1f5b8",
+   "terjemahan_sha256": "89f2887d7b2a9635a76e51aa37ace37bb67bbdc56f3d092b69098538ca306060",
+   "ringkas_sha256": "b4dd377e8269b009314b86cbe7743604593aa022a4d0d89d25e820ec4166a0cc",
+   "rapikan_sha256": "b446747376f313d14db0da309a54c3a349afefe4b3dd34e0ff4f0e0519a1f5b8"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0499]: cannot borrow `s` as mutable more than once at a time\n --> /tmp/x/main.rs:4:13\n  |\n3 |     let a = &mut s;",
+   "masukan_sha256": "1d2050cbc277b875fe3c05bdf029fb6ad933af4def7e343e05beebc7ca0082ab",
+   "terjemahan_sha256": "77f4e615f25516a298de8f46906a392bf285952535151521dc89909bf0de7a7a",
+   "ringkas_sha256": "4026c6d7df5dbb8832b4d221f3c01260a64493e2c75c13cadbe5a61ec228b037",
+   "rapikan_sha256": "1d2050cbc277b875fe3c05bdf029fb6ad933af4def7e343e05beebc7ca0082ab"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0597]: `x` does not live long enough\n --> /tmp/x/main.rs:5:13\n  |\n4 |         let x = 5;",
+   "masukan_sha256": "17ce79cfdc0ff92fff6fed2c8916cda06d3b9cc5d1d43765d8ed5033d2be4d31",
+   "terjemahan_sha256": "bcee2f8de2ae5ff6ab871dca7543ae3418f6df9d54eae41dce0233bf1ae1025c",
+   "ringkas_sha256": "37bb611872b7c0ffbb0bec437fcd6ba2423c685be5924ce9f634677613f4e16c",
+   "rapikan_sha256": "17ce79cfdc0ff92fff6fed2c8916cda06d3b9cc5d1d43765d8ed5033d2be4d31"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0004]: non-exhaustive patterns: `E::B` not covered\n --> /tmp/x/main.rs:7:11\n  |\n7 |     match e {",
+   "masukan_sha256": "8c4a6a4c12c371507c17bdcf5cf8279d6cd5c9080120464a8cb8f3d85af850a7",
+   "terjemahan_sha256": "84b60dd885068bb1da82cb95ee67564ee0eabf728e0748ef78da2e70ef480130",
+   "ringkas_sha256": "dfc058ff3daf32826ccf581b9c1455dbfe0af3c739fb648c6c96186cf1a41211",
+   "rapikan_sha256": "8c4a6a4c12c371507c17bdcf5cf8279d6cd5c9080120464a8cb8f3d85af850a7"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0308]: mismatched types\n --> /tmp/x/main.rs:1:11\n  |\n1 | fn f() -> i32 {\n  |    -      ^^^ expected `i32`, found `()`\n  |    |\n  |    implicitly returns `()` as its body has no tail or `return` expression\n2 |     5;",
+   "masukan_sha256": "59347eb8cb4401cecbf3093b9bc4b9a3841d31bf11a6386baad603578c18453b",
+   "terjemahan_sha256": "eb0733f4b487276f669b4f490899be328c162a4680cc6d5f469e3ef28851a206",
+   "ringkas_sha256": "0584f8e8374e66cdd4293b46346c30d2572cbcb3bfc3c114067f84d8f11bf59c",
+   "rapikan_sha256": "59347eb8cb4401cecbf3093b9bc4b9a3841d31bf11a6386baad603578c18453b"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0601]: `main` function not found in crate `latihan`\n --> /tmp/x/main.rs:3:2\n  |\n3 | }",
+   "masukan_sha256": "3204b52a14a1093c54bf17afbf3cfe0cb3f95807d48ee042f11a9191e86c4bbb",
+   "terjemahan_sha256": "dfc33b7b3a7e1e463410f4c3a6bc0acacbf3b5a1b6ba8f9bbb544b14950c83b4",
+   "ringkas_sha256": "643823e77b1023a8c080ee800ddbaff43e74553bd5e1f64d3b5c05a29a3a8068",
+   "rapikan_sha256": "3204b52a14a1093c54bf17afbf3cfe0cb3f95807d48ee042f11a9191e86c4bbb"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error: cannot find macro `printn` in this scope\n --> /tmp/x/main.rs:2:5\n  |\n2 |     printn!(\"x\");",
+   "masukan_sha256": "552cfc97744d6d9680515ad891a7161f8148dc0eaf8f5a1075bf8f8b4d9128e8",
+   "terjemahan_sha256": "8aed262127292381faeca93c16f0cb27929f3aaebce958004ae5e9c15e6a2112",
+   "ringkas_sha256": "0221563764eab7feebf905f4f715999e20aeda8d26569f6eb4d8d3d12696dc52",
+   "rapikan_sha256": "552cfc97744d6d9680515ad891a7161f8148dc0eaf8f5a1075bf8f8b4d9128e8"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0432]: unresolved import `std::collections::Hashmap`\n --> /tmp/x/main.rs:1:5\n  |\n1 | use std::collections::Hashmap;",
+   "masukan_sha256": "8204ebbcedab6b96549d2d764556aea5ce84fa96e5a69117445805495a76bfde",
+   "terjemahan_sha256": "3cc839298114d11f4110d425326e77e030e0c49eedf26e18f066663713293f06",
+   "ringkas_sha256": "34c330ed41e216a4b708979d7272e913bd17a6d03f9ce0ed0a92f014dfc6d33b",
+   "rapikan_sha256": "8204ebbcedab6b96549d2d764556aea5ce84fa96e5a69117445805495a76bfde"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0425]: cannot find function `foo` in this scope\n --> /tmp/x/main.rs:2:5\n  |\n2 |     foo();",
+   "masukan_sha256": "0626f25613b098682f56967ed0e42c5c2bc6fbec3f22bbb78652939560831e16",
+   "terjemahan_sha256": "a8c2918cb89bcb71462bd075136d9b5d6ad0c348894c78dab2c08733014b8ce2",
+   "ringkas_sha256": "b078ced208bd243c843cc38944620c5ace43e1ea75424311b7b7933657a4aa3a",
+   "rapikan_sha256": "0626f25613b098682f56967ed0e42c5c2bc6fbec3f22bbb78652939560831e16"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0369]: cannot add `P` to `P`\n --> /tmp/x/main.rs:5:16\n  |\n5 |     let _c = a + b;",
+   "masukan_sha256": "f65f307ac2acf8b7c44eeef26879da30ec822366c9090168510a9e173df18634",
+   "terjemahan_sha256": "ab85a1f35fc4e7ebfcfb95c086b960e5ab5c55fb11cb0e036c8bdc6567e5f460",
+   "ringkas_sha256": "198ac7e41937100770a7b98e0f170d1bee7ecfd225766aca933f9475effc975f",
+   "rapikan_sha256": "f65f307ac2acf8b7c44eeef26879da30ec822366c9090168510a9e173df18634"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error: unexpected closing delimiter: `}`\n --> /tmp/x/main.rs:3:1\n  |\n1 | fn main() {",
+   "masukan_sha256": "1b65b314de7712684a74d1804abb6d66b3fbcf534d4699387793e5f2248fd6b0",
+   "terjemahan_sha256": "3a6cf7ffd7de88c7f6babed87f8474e8cf078e87a393fe2d9e8368853036160c",
+   "ringkas_sha256": "0886e840ab5d4a73228edc6dd9957c5bc0be42da34290ca3d754dc7bab9c70a7",
+   "rapikan_sha256": "1b65b314de7712684a74d1804abb6d66b3fbcf534d4699387793e5f2248fd6b0"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0609]: no field `b` on type `P`\n --> /tmp/x/main.rs:6:22\n  |\n6 |     println!(\"{}\", p.b);",
+   "masukan_sha256": "0a95263b0e65cea38bfa0b83a2bbbb76339f5e8ac40e9d7942c2cf0c2cf298a8",
+   "terjemahan_sha256": "4bd65fe0f3a172c3bb07c1cb06dfc95c29ac6fa829b6178183361b9cafd6acfe",
+   "ringkas_sha256": "3697ae6be0ecddf87aadeba7b19830197f07482b1b4995e626e138ee9e1d5aae",
+   "rapikan_sha256": "0a95263b0e65cea38bfa0b83a2bbbb76339f5e8ac40e9d7942c2cf0c2cf298a8"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0063]: missing field `a` in initializer of `P`\n --> /tmp/x/main.rs:5:14\n  |\n5 |     let _p = P { };",
+   "masukan_sha256": "41577c5fc604962c291ca451163367680810134cd7434104993a65a97fd97216",
+   "terjemahan_sha256": "1ea0faa3894347258fc5b1faa47b5d36201ebb0f24251ee284e3b024ae554fc9",
+   "ringkas_sha256": "af65c45e596e9d66b9443235490cd7a55cd13a93e443261dabe9f18873dfec50",
+   "rapikan_sha256": "41577c5fc604962c291ca451163367680810134cd7434104993a65a97fd97216"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0381]: used binding `x` isn't initialized\n --> /tmp/x/main.rs:3:20\n  |\n2 |     let x: i32;",
+   "masukan_sha256": "3dfcd99c2dd5f662aa37dc23cd522b57f999370cf570bb21018ca6edaaf44907",
+   "terjemahan_sha256": "e4a9379a32b6c7546e4cebda719364f0e6546975c8854551686b5abcc894a5c0",
+   "ringkas_sha256": "ef468f54778b4e274e71bc3201e588fd4c630119e2c1a21cec15cf15bfa19202",
+   "rapikan_sha256": "3dfcd99c2dd5f662aa37dc23cd522b57f999370cf570bb21018ca6edaaf44907"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0277]: the type `str` cannot be indexed by `{integer}`\n --> /tmp/x/main.rs:3:15\n  |\n3 |     let c = s[0];",
+   "masukan_sha256": "49f3aace6c4a2c27303eb7585d5cf0fa322f9e6b76ec8b8de2945afd3862a3c0",
+   "terjemahan_sha256": "05aa247cf6260f42823ce78ce104527f3a5637b6bb1d26ff65d568cdaff1e236",
+   "ringkas_sha256": "8b62496b13cc836fb7510bcf7aea57dec61ae84ebd9977a27265c000b0de21d1",
+   "rapikan_sha256": "49f3aace6c4a2c27303eb7585d5cf0fa322f9e6b76ec8b8de2945afd3862a3c0"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0596]: cannot borrow `*v` as mutable, as it is behind a `&` reference\n --> /tmp/x/main.rs:2:5\n  |\n2 |     v.push(1);",
+   "masukan_sha256": "51e8b7071b03a3b47d392b6f2b76c64f02957feaa7ae64ea1cbd0ddb2de73acd",
+   "terjemahan_sha256": "562b0649497f84e05640168e623ba77b10c3cc4ad844150465f9cc06c7f56b18",
+   "ringkas_sha256": "f312367a17f68f353ed8da17c969eb2cc514661d8407fe455f6a81d518670713",
+   "rapikan_sha256": "51e8b7071b03a3b47d392b6f2b76c64f02957feaa7ae64ea1cbd0ddb2de73acd"
+  },
+  {
+   "bahasa": "rust",
+   "masukan": "error[E0277]: can't compare `Vec<{integer}>` with `{integer}`\n --> /tmp/x/main.rs:4:22\n  |\n4 |     println!(\"{}\", a == 5);",
+   "masukan_sha256": "68a5cec5e353203fea35840bee38a2108cfebe8c10317aa81ca88452d1df451f",
+   "terjemahan_sha256": "cc8197c965398f8810d2f9521865cd2d7af593978fce530eb3d19c312523b492",
+   "ringkas_sha256": "41c37790d368e53b8ef70afcafe8906271ebe2b955bb4c8c4d8064393bc7d017",
+   "rapikan_sha256": "68a5cec5e353203fea35840bee38a2108cfebe8c10317aa81ca88452d1df451f"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,19): error CS0103: The name 'y' does not exist in the current context [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "452a5069fcd43d5a67cf3a5485a20b558cc0c4dc3e441a5f3defe5b07ee2ddf7",
+   "terjemahan_sha256": "e267ac17841ab5861e3e6b9f62ab6428ad4f26c58aee9c7bdf1bb8465fcc4de7",
+   "ringkas_sha256": "80324a4e99c3ce7c7c1723b43cf2a435f15c61e324f99ca2e99212b256b05034",
+   "rapikan_sha256": "452a5069fcd43d5a67cf3a5485a20b558cc0c4dc3e441a5f3defe5b07ee2ddf7"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,21): error CS1061: 'string' does not contain a definition for 'Foo' and no accessible extension method 'Foo' accepting a first argument of type 'string' could be found (are you missing a using directive or an assembly reference?) [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "7e0ab8b0d9fe42918ffc29d7c6fcaaf193450c500875c28024f29378c56ab9ec",
+   "terjemahan_sha256": "226548649ebddc519e956aaf6bc0fc7ecc0a2538b1e27ec20b8582e08c03bc6a",
+   "ringkas_sha256": "f241087ccb54449b31c6870d2052acd88224966c78e86963ac3814fb79da60c4",
+   "rapikan_sha256": "7e0ab8b0d9fe42918ffc29d7c6fcaaf193450c500875c28024f29378c56ab9ec"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,19): error CS0165: Use of unassigned local variable 'x' [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "6341c81dfd0e0edca5304d347fafa05799ba9d3ac37df84ea2856d0ab42c1d27",
+   "terjemahan_sha256": "eb95966e7646cae20dd45950b58216146b9588d208f4da90862c92cd2c05cade",
+   "ringkas_sha256": "12c8f24180e839a7cac11ad69e0a8690ff8eeef306743d726acbd1326565bfee",
+   "rapikan_sha256": "6341c81dfd0e0edca5304d347fafa05799ba9d3ac37df84ea2856d0ab42c1d27"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,19): error CS7036: There is no argument given that corresponds to the required parameter 'b' of 'F(int, int)' [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "0155429d2d015c1e4e8f81cc12b96c38f38ae84f45b96d30db75dc289535b1e8",
+   "terjemahan_sha256": "78ece84322c764cf0c4ae2b6bdf0131ca17c8c06562acf744ed7d36037b3eefd",
+   "ringkas_sha256": "cecd17b64ed1d56512a6c7718c13be6aa9a30ae3b7a5a3eefe32006a7932a533",
+   "rapikan_sha256": "0155429d2d015c1e4e8f81cc12b96c38f38ae84f45b96d30db75dc289535b1e8"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,21): error CS1503: Argument 1: cannot convert from 'string' to 'int' [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "3b4c2fb413d17903480ea3715a8c90f3b6875848b56acfe397377d153dce925d",
+   "terjemahan_sha256": "235cd7c97e9575f106595c4836c06f755b6fee3b72873c1361075e8efe3493f9",
+   "ringkas_sha256": "096fa123a925f94dfbe6c0c162c7760b29208b053f72e2235f7c8f1b35119a23",
+   "rapikan_sha256": "3b4c2fb413d17903480ea3715a8c90f3b6875848b56acfe397377d153dce925d"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,12): error CS0161: 'F(int)': not all code paths return a value [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "13977d6d923578fd1e9a3ba58543d5b62ee9de5e53048b40d38d6611074bc91b",
+   "terjemahan_sha256": "01953c8c779306e47d0930f8ef246541b77491f3e9dc21bb939be08a0cbb24b4",
+   "ringkas_sha256": "5626a9c76e4b6ee9b2c93f7f199126b0f67a334705949c9019daa3afc1d5da14",
+   "rapikan_sha256": "13977d6d923578fd1e9a3ba58543d5b62ee9de5e53048b40d38d6611074bc91b"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(4,6): error CS1513: } expected [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "8d1e2f4e0347f4b9f72ab7d104f605fc8dd1c3e51b884e7d95cbc3fb44e0de19",
+   "terjemahan_sha256": "d15aa20a29b23535112a8ae585c4b0d92403e0950d6e57cc9da7f04b74b99f66",
+   "ringkas_sha256": "c36947fc33e5dd47d74efc61635599dda56e98fed689e5e885d830d2bd077ef9",
+   "rapikan_sha256": "8d1e2f4e0347f4b9f72ab7d104f605fc8dd1c3e51b884e7d95cbc3fb44e0de19"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,5): error CS0128: A local variable or function named 'a' is already defined in this scope [/tmp/x/latihan.csproj]\n/tmp/x/Program.cs(2,5): warning CS0219: The variable 'a' is assigned but its value is never used [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "43d1bcf2599d051bdbd8c5b91be7b31682f9458487f97c0735aa039345df4c01",
+   "terjemahan_sha256": "14234fb4e042ff3d80e6dcbc4707ce4b5b1a13dde8072f6339713961aef71dab",
+   "ringkas_sha256": "ac26a4e05a9491c7c380d72047858a24aab414039cc65dec7f3e896b6cc567e7",
+   "rapikan_sha256": "43d1bcf2599d051bdbd8c5b91be7b31682f9458487f97c0735aa039345df4c01"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "Unhandled exception. System.InvalidCastException: Unable to cast object of type 'System.String' to type 'System.Int32'.\n   at Program.<Main>$(String[] args) in /tmp/x/Program.cs:line 2\n\nProgram membatalkan dirinya sendiri (abort).",
+   "masukan_sha256": "306387aac25b427199037d524340d77159c38ff78efd1a698565aaa6f86df99e",
+   "terjemahan_sha256": "22c81f52c59d9f4d9536cf452d7150b83cb653c276edcf653ff095e46709187c",
+   "ringkas_sha256": "9776798c3f9ea8e57f4d32fe0b4e2e1324655c812be036a19c96c13527598cce",
+   "rapikan_sha256": "306387aac25b427199037d524340d77159c38ff78efd1a698565aaa6f86df99e"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "Unhandled exception. System.Collections.Generic.KeyNotFoundException: The given key 'x' was not present in the dictionary.\n   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)\n   at Program.<Main>$(String[] args) in /tmp/x/Program.cs:line 2\n",
+   "masukan_sha256": "9df78453ff9cc293e425ab60b06ea45269e406ac68b5cd3f67e7e25cf922d580",
+   "terjemahan_sha256": "8c40d10a7aa8aef4bdd6078fa6141bd30cc1773e5390cf1613d82780d07833eb",
+   "ringkas_sha256": "cc8b7b83770a9ede6aa93eaab7ddcd3bd143568119d11e06ef8cf4ce1f7dab1d",
+   "rapikan_sha256": "9df78453ff9cc293e425ab60b06ea45269e406ac68b5cd3f67e7e25cf922d580"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "Unhandled exception. System.ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')\n   at System.Collections.Generic.List`1.get_Item(Int32 index)\n   at Program.<Main>$(String[] args) in /tmp/x/Program.cs:line 2\n",
+   "masukan_sha256": "815d126408cd1aebeb5dd0d014c51d8213ca76e78db55ba7974c260486204dad",
+   "terjemahan_sha256": "9b586e1dd18601a5a1be722a6d245dbac64215ebb16ccd5fc876b5265fc997d2",
+   "ringkas_sha256": "b6521edee5e3c47d07177919874a95f13906ce4b01cf5230f717ab3ea09b37e2",
+   "rapikan_sha256": "815d126408cd1aebeb5dd0d014c51d8213ca76e78db55ba7974c260486204dad"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(4,32): error CS0120: An object reference is required for the non-static field, method, or property 'P.n' [/tmp/x/latihan.csproj]\n/tmp/x/Program.cs(3,9): warning CS0414: The field 'P.n' is assigned but its value is never used [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "d65575443ed3785d123e28ec2be1448efd18f502457bdefd04836f8ef5e05e52",
+   "terjemahan_sha256": "821ce9f41197c53591349d6d86463810365b9aad43f75d086cccb04a14a2d76f",
+   "ringkas_sha256": "7a68b780316c03f41595d2301ba975b74d1ddde30cc751db3d85148103beac08",
+   "rapikan_sha256": "d65575443ed3785d123e28ec2be1448efd18f502457bdefd04836f8ef5e05e52"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,9): error CS0019: Operator '+' cannot be applied to operands of type 'int' and 'bool' [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "4287c09a559f3546d30c3c035a6af815cc462a08d680cd6474eb7ee32b936946",
+   "terjemahan_sha256": "b66acab2f9a2dc274dc168cd538a0266b8c7e7f976ad49df4f9e81e3d238f1c6",
+   "ringkas_sha256": "d1432622f879479006a7ac46d46d771a64f07652c9875eccf8f635411e6a8c3c",
+   "rapikan_sha256": "4287c09a559f3546d30c3c035a6af815cc462a08d680cd6474eb7ee32b936946"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "Unhandled exception. System.InvalidOperationException: Sequence contains no elements\n   at System.Linq.ThrowHelper.ThrowNoElementsException()\n   at System.Linq.Enumerable.First[TSource](IEnumerable`1 source)\n   at Program.<Main>$(String[] args) in /tmp/x/Program.cs:line 2",
+   "masukan_sha256": "90919c3305358c63398812c6250233bbb1e79550c03cd06b493d66407e54055e",
+   "terjemahan_sha256": "7dfaf9c1baebb9faed0cc8a511e82765f933fe4d605c324eeb0ec9a9117170e4",
+   "ringkas_sha256": "3ee7ce01752adfbeacafd69d4822d67e06629e0129c0de15a96ee9c1cf75d0c2",
+   "rapikan_sha256": "90919c3305358c63398812c6250233bbb1e79550c03cd06b493d66407e54055e"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,3): error CS0122: 'A.x' is inaccessible due to its protection level [/tmp/x/latihan.csproj]\n/tmp/x/Program.cs(3,23): warning CS0169: The field 'A.x' is never used [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "284bee19b52414d87a9056ad4d33c3a45b7a93d4414d6bdff01b244c5eb86947",
+   "terjemahan_sha256": "ca430a075b18f24c56bede7fe3178cd8ad183328efeba0bc9fa1f7555d6bbaa0",
+   "ringkas_sha256": "e7f0c7084f4aa80d523b8197ddfb8da68ee6530b585cd664204118a3a540ab27",
+   "rapikan_sha256": "284bee19b52414d87a9056ad4d33c3a45b7a93d4414d6bdff01b244c5eb86947"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "CSC : error CS5001: Program does not contain a static 'Main' method suitable for an entry point [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "7a118ae73bc8cc9c88e3656b99fae0326b4714d609310c87be637f85d6a6152a",
+   "terjemahan_sha256": "c22987b919e29135d1dd8512305b7b74a790792203262e91df3fbb8350561703",
+   "ringkas_sha256": "117dc7c5f33fedca17bf781e83cc218a7607b9a624ec98dea0a0b0a9a705002a",
+   "rapikan_sha256": "7a118ae73bc8cc9c88e3656b99fae0326b4714d609310c87be637f85d6a6152a"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,1): error CS1022: Type or namespace definition, or end-of-file expected [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "61737f3b1b61e305a8b4bf74a2f98b75ae9868745cb0cf67740d78f0cd51402e",
+   "terjemahan_sha256": "b73f1f0f7e0c84ed6e278d907abf726a18a8b9184eea85201589cf7deac07615",
+   "ringkas_sha256": "beea7865abee8211885ba9d55762dd0829be5770e5e1d49ee32d53a5cdf20fba",
+   "rapikan_sha256": "61737f3b1b61e305a8b4bf74a2f98b75ae9868745cb0cf67740d78f0cd51402e"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(4,23): error CS0191: A readonly field cannot be assigned to (except in a constructor or init-only setter of the type in which the field is defined or a variable initializer) [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "fc2d9d373b2241fb3e77854f4be1286a996a5c77631544e70c341c3cf1ecdb43",
+   "terjemahan_sha256": "febfb9bd12104711db61a2264dbbc276642e763fc9477777dc17092bb8a77b40",
+   "ringkas_sha256": "7732ef011f16d004c2c9f5365731bc4f0793c677bcfae2b7b62899adecbcd999",
+   "rapikan_sha256": "fc2d9d373b2241fb3e77854f4be1286a996a5c77631544e70c341c3cf1ecdb43"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,22): error CS1026: ) expected [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "127e6c6ce539cbad3dbcf11206a3e282bc4dbf1d31186d85889606193ce8d7ac",
+   "terjemahan_sha256": "df3fe3bc1e0b59d7f33810409a4a799ea3f583d2fb2b7b57def4d3cb29bfab93",
+   "ringkas_sha256": "fe62bee0273171726cc5c436782e499a840af8d489a9fddc1fbe8d96dac8e86c",
+   "rapikan_sha256": "127e6c6ce539cbad3dbcf11206a3e282bc4dbf1d31186d85889606193ce8d7ac"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,9): error CS0266: Cannot implicitly convert type 'double' to 'int'. An explicit conversion exists (are you missing a cast?) [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "bf8f516b448184d997b4ebbc1c38573a720c1f6e5892ada352310bfd5e066c55",
+   "terjemahan_sha256": "10025c3b4ea603514f6f387523fe96ffca01788c3d91857e4712f60851f6d589",
+   "ringkas_sha256": "4e99ebbe0045390802d17647e81d8dc31cf892371f1d72fd9095869a71f72a5f",
+   "rapikan_sha256": "bf8f516b448184d997b4ebbc1c38573a720c1f6e5892ada352310bfd5e066c55"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,5): error CS1001: Identifier expected [/tmp/x/latihan.csproj]\n/tmp/x/Program.cs(1,5): error CS1003: Syntax error, ',' expected [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "6e7ca63f372f4263099ef5fdbd545a961449cde19e0591a2ef772b783bee8a91",
+   "terjemahan_sha256": "9fbb97c531b64904b156bd19984d8a61d83d99a85f5aeb5be8c903409e1446b9",
+   "ringkas_sha256": "cb8463a9eb4f8ff5717144c11ff119ff4be5d6a60e546cd37f4a9f2f67261111",
+   "rapikan_sha256": "6e7ca63f372f4263099ef5fdbd545a961449cde19e0591a2ef772b783bee8a91"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,9): error CS0144: Cannot create an instance of the abstract type or interface 'A' [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "d349472236981743ca4f5e7553b438e7a5885faaf47081614b7a656dcbaf0d50",
+   "terjemahan_sha256": "81ffee8fde99b15f6fe570584280d005c18fc2b85d49cb59457cca69db12cb21",
+   "ringkas_sha256": "15c7fc7a97fe66dacc469c10b379c320e94f60273a7205a81a4fd81478155948",
+   "rapikan_sha256": "d349472236981743ca4f5e7553b438e7a5885faaf47081614b7a656dcbaf0d50"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,13): error CS0246: The type or namespace name 'Stopwatch' could not be found (are you missing a using directive or an assembly reference?) [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "bee72775800ae51bd6b9e15432f01e4ef6037f03b160f29b061701c9b1274313",
+   "terjemahan_sha256": "873229b803dc77299a9eb156ad4931401ede5a1c0f4c696d0b2013b4afe4213a",
+   "ringkas_sha256": "19f8a5b2c3a511bc59f58846368b7a76fd38724f4f03b62ed21f28d6080fa5e0",
+   "rapikan_sha256": "bee72775800ae51bd6b9e15432f01e4ef6037f03b160f29b061701c9b1274313"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,5): error CS0029: Cannot implicitly convert type 'int' to 'bool' [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "ad650430f8cb1020c2ccd7c7278ae0d359a8d9260d73d75eec2cfd78fbdefe43",
+   "terjemahan_sha256": "f5450b04e6c10f3f63dbba57f7063b2be26294449aece261827d3d6558baa988",
+   "ringkas_sha256": "f70f5bf2856f249f8a79cf04747437bcf2e9a550c0346122f7108fd5b75fb0c5",
+   "rapikan_sha256": "ad650430f8cb1020c2ccd7c7278ae0d359a8d9260d73d75eec2cfd78fbdefe43"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,1): error CS0131: The left-hand side of an assignment must be a variable, property or indexer [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "2b19556b8264bc7f300178f3ea11bd10b17fd8df4f955a4c437bf024aa90604d",
+   "terjemahan_sha256": "8ea9dc6609d2cdd0941ee3fe736044e0467f596be0e4fa4ddab9c442ded50cf4",
+   "ringkas_sha256": "2c9c659bd10c9d50282f5374941b374c1647a2016ada710b89d73a27167fa748",
+   "rapikan_sha256": "2b19556b8264bc7f300178f3ea11bd10b17fd8df4f955a4c437bf024aa90604d"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(1,19): error CS0127: Since 'F()' returns void, a return keyword must not be followed by an object expression [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "18da6bb696dc119624ec934bbbee68f0b20936d63b8884db6ccb23022251abc0",
+   "terjemahan_sha256": "fcfc4859e5fe603ba8693232e04f237b7adf55955bb08b3278838b04920a544e",
+   "ringkas_sha256": "1ccb777a92ed046012eb8665a3c4a8655e02488243541f500b627198677351a0",
+   "rapikan_sha256": "18da6bb696dc119624ec934bbbee68f0b20936d63b8884db6ccb23022251abc0"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "Unhandled exception. System.ArgumentNullException: Value cannot be null. (Parameter 's')\n   at System.Int32.Parse(String s)\n   at Program.<Main>$(String[] args) in /tmp/x/Program.cs:line 2\n",
+   "masukan_sha256": "ffa5235190969fa6862e0e60ec987af781b4c1f45c7c722b17b6915121d232b7",
+   "terjemahan_sha256": "60ad7a7df66d3f415bd9715d2e7241622bf92fb5a73854744e9fd53f0b69ee12",
+   "ringkas_sha256": "3b249269d87ff3f5dba30b03bf1b5f3b88618776ba6cb477f3698297ab312a6c",
+   "rapikan_sha256": "ffa5235190969fa6862e0e60ec987af781b4c1f45c7c722b17b6915121d232b7"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(3,31): error CS1002: ; expected [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "c584e10f95f864876d3763feaa0a3c78319afed967602e02c5b3d294ebe30cc7",
+   "terjemahan_sha256": "f5e527859b9d33ea9cb46b0d4217db0e2c4a7456509beb91dc73c254005ffb59",
+   "ringkas_sha256": "9fda2e227341e3ad028b50819a155b89062c733e1150c8b4b6d2d7fc5cc5d181",
+   "rapikan_sha256": "c584e10f95f864876d3763feaa0a3c78319afed967602e02c5b3d294ebe30cc7"
+  },
+  {
+   "bahasa": "csharp",
+   "masukan": "/tmp/x/Program.cs(2,18): error CS0136: A local or parameter named 'x' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter [/tmp/x/latihan.csproj]",
+   "masukan_sha256": "c3115e4cae8b490af6abde03fc86dcf5dd48648c8a2b9877a683ee574f173dab",
+   "terjemahan_sha256": "2ad35ac260b9cdd762457f6e4df86b7f1b4a7786dbb65061590615d6a06a168b",
+   "ringkas_sha256": "d3df6e13bf2a79d69b851da65b0d67da7cda670a9e542debd5855a0ce9523af1",
+   "rapikan_sha256": "c3115e4cae8b490af6abde03fc86dcf5dd48648c8a2b9877a683ee574f173dab"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,27): error BC30451: 'y' is not declared. It may be inaccessible due to its protection level. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "e01d1f9f628223ecb710a9c7c4493e00d4d44f3395f5bb9c34f5fb1e98503842",
+   "terjemahan_sha256": "9287c988c5b139e7a3d2a1cd9df4b0393d4b056285e648ac14e4dbe439fb3f78",
+   "ringkas_sha256": "f8b2d418e5ee12bccc1532fb77cfa82cefe974605e0f2e19fe43a359ce95fadc",
+   "rapikan_sha256": "e01d1f9f628223ecb710a9c7c4493e00d4d44f3395f5bb9c34f5fb1e98503842"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,30): error BC30198: ')' expected. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "3f1493dda82d60054fa093ecbbbf301ba233a8c07dee31fe63d7aacf7935c089",
+   "terjemahan_sha256": "1223b3ee276670872941b6300c272e5e295d97709389654b4d0464770178fd88",
+   "ringkas_sha256": "cd9240aedd351e65259923aec647387efefaf8835fcbe890861ce4bb4bc6ffba",
+   "rapikan_sha256": "3f1493dda82d60054fa093ecbbbf301ba233a8c07dee31fe63d7aacf7935c089"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(4,9): error BC30491: Expression does not produce a value. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "41f40328e5b092a8ef377764a1b75079fc90fe3c8cc040b19269435e6783f968",
+   "terjemahan_sha256": "fd5de210102243e428cdb0e5419e845dcf51205ceaf12112160eab9b502bd055",
+   "ringkas_sha256": "e44c5706d3d240d8898a00caa8819bf4f6e57ac68237e654f37920c038a92516",
+   "rapikan_sha256": "41f40328e5b092a8ef377764a1b75079fc90fe3c8cc040b19269435e6783f968"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(4,27): error BC30456: 'Foo' is not a member of 'String'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "b7a959a59803f9ac78e3ac07ce968bfd5c72ea7ef388deb00b56f79998e41918",
+   "terjemahan_sha256": "d017a340563f48f034e1bd3f1cb7a7d2a844ebc29e580153afa0d5cc869a7866",
+   "ringkas_sha256": "91f89a3b77daba2b307e68092f38550a9a3a152bccecedf4cea641c75070fa51",
+   "rapikan_sha256": "b7a959a59803f9ac78e3ac07ce968bfd5c72ea7ef388deb00b56f79998e41918"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,18): error BC30002: Type 'Foo' is not defined. [/tmp/x/latihan.vbproj]\n/tmp/x/Program.vb(4,27): warning BC42104: Variable 'f' is used before it has been assigned a value. A null reference exception could result at runtime. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "911dc176d949fd7ce33ade13f4ec75deb3dd78fe9356d3c4d9bb02579c40866e",
+   "terjemahan_sha256": "69660bb95bbca99c032b1bc0b762bb57dd9f17c3de1014e041e6da14e85e4a34",
+   "ringkas_sha256": "722b9d359876ac73b435c65ae49d53fc96de9239ae34194cc40e6264bd428590",
+   "rapikan_sha256": "911dc176d949fd7ce33ade13f4ec75deb3dd78fe9356d3c4d9bb02579c40866e"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(6,27): error BC30455: Argument not specified for parameter 'b' of 'Public Function F(a As Integer, b As Integer) As Integer'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "89c80691a7da2f8d360d352bf9fd70b666ccf93a7bbbd21726ce7ea077ab20cf",
+   "terjemahan_sha256": "1c6f39247e772ce0b49683bab83e98038636ef09ae8a8ae247d2be7fdf7a19ab",
+   "ringkas_sha256": "1f5125bea87d5b3c1cf3f8cb1eb8b64628629638b417a753fcb640a1d110544c",
+   "rapikan_sha256": "89c80691a7da2f8d360d352bf9fd70b666ccf93a7bbbd21726ce7ea077ab20cf"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(6,32): error BC30057: Too many arguments to 'Public Function F(a As Integer) As Integer'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "57b3a5f3bd09cb473e850a6a995256461b2dab8554b22c9467d09d11814fb30f",
+   "terjemahan_sha256": "8215c65448b1b08b752a58657ae83049d5176941817924a0172abca5aa83e5da",
+   "ringkas_sha256": "7a255297bc04b924db7df754cc58375f8859b840c6f32be083f203be562cb4db",
+   "rapikan_sha256": "57b3a5f3bd09cb473e850a6a995256461b2dab8554b22c9467d09d11814fb30f"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(4,13): error BC30288: Local variable 'x' is already declared in the current block. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "4319079996e3edbb63783d76137411ecc9a5e62648745996d2a0ccf60097fa9d",
+   "terjemahan_sha256": "c30b5ef51eb576177457bdff5892a09ba6a9df5eea6581a25d15f8f31829b595",
+   "ringkas_sha256": "ffb93d45bb4651acdf0726d5fdff28e95ca888507013745d55dbe20927b23d56",
+   "rapikan_sha256": "4319079996e3edbb63783d76137411ecc9a5e62648745996d2a0ccf60097fa9d"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "Unhandled exception. System.NullReferenceException: Object reference not set to an instance of an object.\n   at Latihan.Program.Main() in /tmp/x/Program.vb:line 4\n\nProgram membatalkan dirinya sendiri (abort).",
+   "masukan_sha256": "6c29c40957f0e9dff4bb25ef8ed3c4b70415184fc4599ee8347904aecfc56b7d",
+   "terjemahan_sha256": "5b0cc5f87f92c6e7fde8eedd12d0610f973a1f77bb44c7a53e127b5b6d988e2a",
+   "ringkas_sha256": "1fc3783f3b07e14d37cdabaad22e3c7ffbf5cc126e28e84fa3328c1e13f1399a",
+   "rapikan_sha256": "6c29c40957f0e9dff4bb25ef8ed3c4b70415184fc4599ee8347904aecfc56b7d"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.\n   at Latihan.Program.Main() in /tmp/x/Program.vb:line 4\n\nProgram membatalkan dirinya sendiri (abort).",
+   "masukan_sha256": "089e958df7893e9b3c4d4f83197ea10cbbff10b412c2a001dfce8d798261524b",
+   "terjemahan_sha256": "fb1167273395799ffc36305217439b86ac9215a7e34f7ded90a8a0e48902f314",
+   "ringkas_sha256": "893d3c0326a2435047e2e9c6e1c51e88c50832cdda72cda026d6c3890e38763c",
+   "rapikan_sha256": "089e958df7893e9b3c4d4f83197ea10cbbff10b412c2a001dfce8d798261524b"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "Unhandled exception. System.DivideByZeroException: Attempted to divide by zero.\n   at Latihan.Program.Main() in /tmp/x/Program.vb:line 4\n\nProgram membatalkan dirinya sendiri (abort).",
+   "masukan_sha256": "59d6efebafe2dcd83870d91d8168d5b098c28103020656c6d3895c3a8617ef3e",
+   "terjemahan_sha256": "4a0aebbf800f087d111390b48363dd9496a260ccbd80d79365c6abb39843a22b",
+   "ringkas_sha256": "5aa0049b769e9cea10adda0eb25a5f0c6d25740ed038e72694a6decf1e158a01",
+   "rapikan_sha256": "59d6efebafe2dcd83870d91d8168d5b098c28103020656c6d3895c3a8617ef3e"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "Unhandled exception. System.InvalidCastException: Conversion from string \"abc\" to type 'Integer' is not valid.\n ---> System.FormatException: The input string 'abc' was not in a correct format.\n   at Microsoft.VisualBasic.CompilerServices.Conversions.ParseDouble(String Value, NumberFormatInfo NumberFormat)\n   at Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)",
+   "masukan_sha256": "c8568e632d17a9681e3d5c383474212e93c7c7852e9d3da482a717f24018f509",
+   "terjemahan_sha256": "0a153b5d987f9918098beeb581f4afc61d3661681eb27e84d9bb35ddf3542274",
+   "ringkas_sha256": "0442d95cc8c4bfe45ab289a02761feeb6f79943553c3779bc0de3396e1e8d668",
+   "rapikan_sha256": "c8568e632d17a9681e3d5c383474212e93c7c7852e9d3da482a717f24018f509"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(4,9): error BC30092: 'Next' must be preceded by a matching 'For'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "0ec161369412c80b10e815febd982eb4b95d6fa1e7cc47ce1a7f0e690589095c",
+   "terjemahan_sha256": "96e0ef49f92a299a0b97cc31b9c1f8fa655b8f55a3ce51cb13ec2f6f1e4649ab",
+   "ringkas_sha256": "a7c11c839d71ce611d6688962b4367062eb13dbe8ad3f89c3c9f480995489448",
+   "rapikan_sha256": "0ec161369412c80b10e815febd982eb4b95d6fa1e7cc47ce1a7f0e690589095c"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(4,31): error BC30512: Option Strict On disallows implicit conversions from 'String' to 'Double'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "081126600ad637bedf4c6f085782c8b2ddac54548eb5027312ad0a74e459b854",
+   "terjemahan_sha256": "3708a9a04b37ecaf25b55f4b1acc4bb0128d23bcf45d17de643f51e2f1c32750",
+   "ringkas_sha256": "f0754cf1360d255f4c536fcab68bbb8c9fb7970ff4bb31ffdc83803d72a4ac83",
+   "rapikan_sha256": "081126600ad637bedf4c6f085782c8b2ddac54548eb5027312ad0a74e459b854"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(7,27): error BC30389: 'Latihan.Program.A.x' is not accessible in this context because it is 'Private'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "7f50fdc33aa10228ed8b00f53486eee8e051ac4f4feb26b6e22c83b98e8e1fb3",
+   "terjemahan_sha256": "0a4a557f6ec84ae60f7039981b772e1637127b2c9427c197bc97b3851a0626c6",
+   "ringkas_sha256": "fa8ebabcb7a0f0263c1ce81d80534201e610c31880eb8407a7dc9722ecb4e556",
+   "rapikan_sha256": "7f50fdc33aa10228ed8b00f53486eee8e051ac4f4feb26b6e22c83b98e8e1fb3"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,27): error BC30800: Method arguments must be enclosed in parentheses. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "e8b9108fd6391aebb61cc30017a36347ae4fc220897984fd7023f9d124f9944b",
+   "terjemahan_sha256": "0c373c3d8eca11f59574dd65113b0df50787254281b39454b97ef24dca737bcc",
+   "ringkas_sha256": "b553d1ed7cd44a73f608bd96d0da213c22debfbd3d038497cc1abee9f0d15f05",
+   "rapikan_sha256": "e8b9108fd6391aebb61cc30017a36347ae4fc220897984fd7023f9d124f9944b"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,18): error BC30182: Type expected. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "16480378856ba33256c22f8d260a3bbbc1b5f55eb8644910634674cb25f1a481",
+   "terjemahan_sha256": "1fd23ef42f2f67d77dbaf474f5b43b5c8ef87ed31607341c11136d5d6d3df6d5",
+   "ringkas_sha256": "9993eb84959e2f872673ecd784ffcc9498ac9817e4dad4e07195515c40ed30df",
+   "rapikan_sha256": "16480378856ba33256c22f8d260a3bbbc1b5f55eb8644910634674cb25f1a481"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(4,9): error BC30074: Constant cannot be the target of an assignment. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "07a7367141ccf899ecddb9822fa64c46d3fbafacc38df8c8e628ea7a67111d3c",
+   "terjemahan_sha256": "c84f125f8dbf2bce793d191e32a5ecd635bcb3e659c9acb9be639263faef7fb8",
+   "ringkas_sha256": "79accf205676b8f5f2ff1f65b7b0352bceb31c47db80ef14bdb102901b72e885",
+   "rapikan_sha256": "07a7367141ccf899ecddb9822fa64c46d3fbafacc38df8c8e628ea7a67111d3c"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "Unhandled exception. System.OverflowException: Arithmetic operation resulted in an overflow.\n   at Latihan.Program.Main() in /tmp/x/Program.vb:line 4\n\nProgram membatalkan dirinya sendiri (abort).",
+   "masukan_sha256": "579fddd93f0cd6507e42c2e62e90cb46d1a8f79c10a205cd9beb5f8df8aef4ce",
+   "terjemahan_sha256": "e31c4eec70c5da930e6315b5b0aa7c30f4db9ac0541a3b2ab233a3679dec7cb8",
+   "ringkas_sha256": "d136161414b26b0fb4729ec078cd062c7c73d8e4ca4c20ac4472a8340836fa35",
+   "rapikan_sha256": "579fddd93f0cd6507e42c2e62e90cb46d1a8f79c10a205cd9beb5f8df8aef4ce"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,13): error BC30203: Identifier expected. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "09ad914faa1b61d8e6c5963e482a7b0a1d1daca7bdc0c5040776dec629e44ff3",
+   "terjemahan_sha256": "8bec4a7589d8ae6a6baf93579c20473a8953f0d8701c4794875b32f4219af3ae",
+   "ringkas_sha256": "e42c7af631f1a7bbcb77ae62aa4ca9487e5ea6893f1bcca14ef3c4f5b49ce982",
+   "rapikan_sha256": "09ad914faa1b61d8e6c5963e482a7b0a1d1daca7bdc0c5040776dec629e44ff3"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(2,5): error BC30188: Declaration expected. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "163ce62192b03673a35e57a02bce97760f2def7e3ddbb58b6bd5f3f9e8db4c5f",
+   "terjemahan_sha256": "8f6f818ec4f5214b08f9de561c5068f50a5baeda648032b5bd39ccadb5cf7fee",
+   "ringkas_sha256": "767f6bf678b8a8023bb768d01918a7008f836fe1c0c04ba9b8cb36e01896d0d6",
+   "rapikan_sha256": "163ce62192b03673a35e57a02bce97760f2def7e3ddbb58b6bd5f3f9e8db4c5f"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,30): error BC30205: End of statement expected. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "2cca2cbe2ec7838015b2f74437bbd0046c24c58513581a8b18e6010c969ebcac",
+   "terjemahan_sha256": "4f342293a12cdc85e0251e6793d11cc4a3bebdd186b0c3f7fb8208d62f27bc44",
+   "ringkas_sha256": "58d6fd0611691dc1fd6701c02d9389c37696d50d79af8f987a246c8a4ff8b743",
+   "rapikan_sha256": "2cca2cbe2ec7838015b2f74437bbd0046c24c58513581a8b18e6010c969ebcac"
+  },
+  {
+   "bahasa": "vb",
+   "masukan": "/tmp/x/Program.vb(3,9): error BC30084: 'For' must end with a matching 'Next'. [/tmp/x/latihan.vbproj]",
+   "masukan_sha256": "434960e0908a60bd0b9e4fea2b07709cdf96341477e609e940b36ed26c8b1719",
+   "terjemahan_sha256": "67520cd61eef68c3ea5fab2e86dc949e34452ad6fbf28ad7406d2fa7f8ffc68f",
+   "ringkas_sha256": "5af380bfa9d3f099779adef291535bad88bb1cc06d054fe6239a2f724880108c",
+   "rapikan_sha256": "434960e0908a60bd0b9e4fea2b07709cdf96341477e609e940b36ed26c8b1719"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: Unclosed '{' on line 2 in /tmp/x/program.php on line 4",
+   "masukan_sha256": "238567c8768e3345db08d69e263b87ad2b40fda5cfe0662b6559e032bab9e6f7",
+   "terjemahan_sha256": "cc0a6e7ce638ffc2e387c3ad490c7de717c14798ab86e77f9b7291b20a65ddbd",
+   "ringkas_sha256": "521cba46c9b91c482c6e9ac55547203865c647d7d24afa444d6d001b1a7d2052",
+   "rapikan_sha256": "238567c8768e3345db08d69e263b87ad2b40fda5cfe0662b6559e032bab9e6f7"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Undefined variable $x in /tmp/x/program.php on line 2",
+   "masukan_sha256": "9fcbe5a40db15486f0bd91735a31b55d98434eeab6ee5b62d297a72d95ea9849",
+   "terjemahan_sha256": "836873c266cf80604ff88edafd13fc04e4f46194cfa68b50cf8de46e7329e7ab",
+   "ringkas_sha256": "076fcbb80d07fb78f88376a7923c81f87a3d7615955a5d5c6e44127c142c175e",
+   "rapikan_sha256": "9fcbe5a40db15486f0bd91735a31b55d98434eeab6ee5b62d297a72d95ea9849"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Call to undefined function foo() in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "44c0035a02d06feac10010a384881e079c693c367ea820e3d361272072268144",
+   "terjemahan_sha256": "e42bbc3a0dbdf65fab3f5cad0c65dd46f17cb8a7392dc674367ba264db169881",
+   "ringkas_sha256": "db0c51a1fb20d1e32b771249b2b55b1b14c4e52e192563cf6c36bb902dfb2ddf",
+   "rapikan_sha256": "44c0035a02d06feac10010a384881e079c693c367ea820e3d361272072268144"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Call to undefined method A::bar() in /tmp/x/program.php:4\nStack trace:\n#0 {main}",
+   "masukan_sha256": "1b7ff6114d6f6ebdd819b40d3c2d003830e94ad5504b4756ebe201909cf509b6",
+   "terjemahan_sha256": "a78620158ee6c7332097cd8ddcd673088201d489e556fc8e3259e89da20acbfa",
+   "ringkas_sha256": "c4af8b55dfbc70855034214319ec8a48892e3bea8d49f445fb57b446f3516183",
+   "rapikan_sha256": "1b7ff6114d6f6ebdd819b40d3c2d003830e94ad5504b4756ebe201909cf509b6"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Class \"Foo\" not found in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "539fe52a6fe7f7d9e2fe486c176a52378b21dcc634ff3a140e4d7ce5eb79842f",
+   "terjemahan_sha256": "4a922a68b2bfeed17840e8e042d530495868f8937a3d07fef13ba4367f861435",
+   "ringkas_sha256": "df71642f264e974d5caf93679f916c7278da56b54b9c2f4c14288faff5dd15fb",
+   "rapikan_sha256": "539fe52a6fe7f7d9e2fe486c176a52378b21dcc634ff3a140e4d7ce5eb79842f"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught TypeError: Unsupported operand types: string * int in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "23c8821ed89a12f2464e2b4b2fa79f3bf245d4c7fb12dda22ff5144c7f36d60a",
+   "terjemahan_sha256": "451c94297a91c5dad6e395e1082eb7bca33fa67035f7438080c277e9f4f60403",
+   "ringkas_sha256": "f58eafdbff36fc2b54cc82ede9e4c30405090b55d30efcb8d3be60ac44689712",
+   "rapikan_sha256": "23c8821ed89a12f2464e2b4b2fa79f3bf245d4c7fb12dda22ff5144c7f36d60a"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught ArgumentCountError: Too few arguments to function f(), 1 passed in /tmp/x/program.php on line 3 and exactly 2 expected in /tmp/x/program.php:2\nStack trace:\n#0 /tmp/x/program.php(3): f(1)",
+   "masukan_sha256": "b873cd1c422d5cb7f422f008ca17a2cb63a91f8550b00171da83db0919763ec7",
+   "terjemahan_sha256": "d7db5ff8ffe5d4e74507fec456decccc7accc0227c8e06090b29c780f3971907",
+   "ringkas_sha256": "78703138937d88f35720324d0519bbc49afbfe4e0a84b99f96647f97ed0fd1ca",
+   "rapikan_sha256": "b873cd1c422d5cb7f422f008ca17a2cb63a91f8550b00171da83db0919763ec7"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Attempt to read property \"nama\" on null in /tmp/x/program.php on line 3",
+   "masukan_sha256": "9d63bbb95c8cc183e0e8c402cac6b2bb46d1a55c3dd78c1a72223199e5f9a353",
+   "terjemahan_sha256": "e35c9dbb45cc1ab1a467e9522effcee3aeefaf7b0e5ff104a9f5add82629123f",
+   "ringkas_sha256": "877eb441b4407a971632c1887790dd028757cf9534970ac18f9354fb5bf0a974",
+   "rapikan_sha256": "9d63bbb95c8cc183e0e8c402cac6b2bb46d1a55c3dd78c1a72223199e5f9a353"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Call to a member function foo() on null in /tmp/x/program.php:3\nStack trace:\n#0 {main}",
+   "masukan_sha256": "7a3ef0a15cf5ecd7776f86c2465468e32ffa8ab7d5d269ceafa29bcae6c3fa04",
+   "terjemahan_sha256": "21a541dad2cf8d97d408b52c69971ef27e4f5669416c22fda5fed5c428025073",
+   "ringkas_sha256": "136d010410a009ba2b9e78b44a2c021a3cd5f9e27b018a9906ff6ac0f37f1f8b",
+   "rapikan_sha256": "7a3ef0a15cf5ecd7776f86c2465468e32ffa8ab7d5d269ceafa29bcae6c3fa04"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Cannot redeclare function f() (previously declared in /tmp/x/program.php:2) in /tmp/x/program.php on line 3\nStack trace:\n#0 {main}",
+   "masukan_sha256": "69c7f3f49a44f1053cea67019738a07e7da9732cec299537be545263c9144220",
+   "terjemahan_sha256": "89a3b912ddf6bb447e2579bc06170446f4ef91b294b9d0cdbb79982db6653901",
+   "ringkas_sha256": "03428d6a192a98170a7daf88f5429236b4732109a0f5c6186653898dc86cd70e",
+   "rapikan_sha256": "69c7f3f49a44f1053cea67019738a07e7da9732cec299537be545263c9144220"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Undefined constant \"FOO\" in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "e1ad01c105b9b171ef5c9513691674992015b38864cbd29c57d985af5dfd7a17",
+   "terjemahan_sha256": "b15c757e8f13fb9a78a692a4f386fcbcf02e06fad8d38c6795f5d6f451b0d70e",
+   "ringkas_sha256": "8b884ddfaf1baef8a4a048bde7c26f51ce3da1e853fc714e4d3bdd940a23e18e",
+   "rapikan_sha256": "e1ad01c105b9b171ef5c9513691674992015b38864cbd29c57d985af5dfd7a17"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Array to string conversion in /tmp/x/program.php on line 2\nArray",
+   "masukan_sha256": "3a4fc45743ca971219b9dc9aa8bd501e08605a8e92b700bf7f9a5a1e41625faf",
+   "terjemahan_sha256": "a8c6232a27258dd99224afe6981991b5ed7373a4620ea7cf12b14cf207678d56",
+   "ringkas_sha256": "70ae249618adbdcdfe4463ae98de20bdc3ea6a2afeb45416c8f5fb3e52f4b945",
+   "rapikan_sha256": "3a4fc45743ca971219b9dc9aa8bd501e08605a8e92b700bf7f9a5a1e41625faf"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: require(x.php): Failed to open stream: No such file or directory in /tmp/x/program.php on line 2\n\nFatal error: Uncaught Error: Failed opening required 'x.php' (include_path='.:/usr/share/pear:/usr/share/php') in /tmp/x/program.php:2",
+   "masukan_sha256": "9dfaf1720c4a4f62d920965541127f67f294ddf526736bebc3f9d972c758c14b",
+   "terjemahan_sha256": "801f6d9f8cd25bf69fdb795491027c872eb1c23278c805e084262180632f8724",
+   "ringkas_sha256": "4b24d75f9113f793f6a8ec93aab84ced1f91e99c58bfadef8fe68d04b9086397",
+   "rapikan_sha256": "9dfaf1720c4a4f62d920965541127f67f294ddf526736bebc3f9d972c758c14b"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Cannot modify readonly property A::$x in /tmp/x/program.php:6\nStack trace:\n#0 {main}",
+   "masukan_sha256": "8c0f460e39e287d9792265915d698124fa898de9cd3e5ac37f6364833685576b",
+   "terjemahan_sha256": "0a7301ea23baf06fc8fe1bddc9712b4405b7211e834671451662609d9e06d66d",
+   "ringkas_sha256": "0c218f027acd017ee0f3648d01ea18593536c1068a57dc75f7a347841b16f6ba",
+   "rapikan_sha256": "8c0f460e39e287d9792265915d698124fa898de9cd3e5ac37f6364833685576b"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught UnhandledMatchError: Unhandled match case 5 in /tmp/x/program.php:3\nStack trace:\n#0 {main}",
+   "masukan_sha256": "ce6e181de6ff80334ea553a8f0b8276551db404fe3f0b2ebb752db5c639bfff2",
+   "terjemahan_sha256": "3df5f0f3f83484de24fd115f11598b5d88f920e73d41b0ea3ed5b7520ec3a13b",
+   "ringkas_sha256": "0058d99138c73a4e417152487070d41df6b4604e57360a6de4d1476aac818698",
+   "rapikan_sha256": "ce6e181de6ff80334ea553a8f0b8276551db404fe3f0b2ebb752db5c639bfff2"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Cannot access private property A::$x in /tmp/x/program.php:6\nStack trace:\n#0 {main}",
+   "masukan_sha256": "594443be3152c73a0959090075609ef6bb3b76c43cc9cfe0880a0e4abbc5a1d4",
+   "terjemahan_sha256": "fea3c6bb6533994b19e4fa27cd1485801a1f856f7dcf8794984a61e45bb471b4",
+   "ringkas_sha256": "ce6e901afabad8fac05ece76bc02542ed47fd17a085f48159543ab430893fd77",
+   "rapikan_sha256": "594443be3152c73a0959090075609ef6bb3b76c43cc9cfe0880a0e4abbc5a1d4"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught ValueError: str_repeat(): Argument #2 ($times) must be greater than or equal to 0 in /tmp/x/program.php:2\nStack trace:\n#0 /tmp/x/program.php(2): str_repeat('a', -1)",
+   "masukan_sha256": "bad82c594358977ab0d80f64679fc61890fda187370d6ed097d06d5d5fbb4761",
+   "terjemahan_sha256": "073a4ce7940e4a0d8103557fa8fe3fe92966b5e6d38ca09f8e625eb017efafe5",
+   "ringkas_sha256": "b0d4de0191d6d79605145a94f061266a543f87112303e061a3d2c12ba5110c59",
+   "rapikan_sha256": "bad82c594358977ab0d80f64679fc61890fda187370d6ed097d06d5d5fbb4761"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught DivisionByZeroError: Modulo by zero in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "3e41925b4bc056f525f299bdde66d18f2ea9cdde80ffb53e64f6f0c880bff1be",
+   "terjemahan_sha256": "07ad13dacf55832acf4c45a85544e8d377bb38498e8c3704f78c18838bb6712a",
+   "ringkas_sha256": "7b55c7eaa67f7dd39c11b3345d627a2f45547619714f3fec204dc8391b0a085f",
+   "rapikan_sha256": "3e41925b4bc056f525f299bdde66d18f2ea9cdde80ffb53e64f6f0c880bff1be"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: syntax error, unexpected variable \"$y\" in /tmp/x/program.php on line 3",
+   "masukan_sha256": "b4d649b236e3f1e8b1ee9833dddbc894bbb19924f4add3b6580ea6d71407cd4a",
+   "terjemahan_sha256": "294e6a0d3f717072496b869a3a94135f2f3e4967f74be441115a6f83fb17cd5d",
+   "ringkas_sha256": "9d4a8d2db2626bb018bf0ea5798d2639d2c246ab7e990c8d1400376451ec5b79",
+   "rapikan_sha256": "b4d649b236e3f1e8b1ee9833dddbc894bbb19924f4add3b6580ea6d71407cd4a"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: syntax error, unexpected token \";\" in /tmp/x/program.php on line 2",
+   "masukan_sha256": "5554f2f00217b0b4d92e97a72b9f8fb1f63aae42950544699d91445d17694fd5",
+   "terjemahan_sha256": "4e90b78ea55c31f9c2af2138ed316205880dda612687e796351ca0fc7175eba6",
+   "ringkas_sha256": "66f45a0c809aca78debe78bdada76385bf9a78ec5c8cda01dedfbcbeec93d446",
+   "rapikan_sha256": "5554f2f00217b0b4d92e97a72b9f8fb1f63aae42950544699d91445d17694fd5"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Trying to access array offset on null in /tmp/x/program.php on line 3",
+   "masukan_sha256": "1f9cdb012ef7cdac10792927842d9f4eafcb28fe07d51c2b0216fc0ff69efbd4",
+   "terjemahan_sha256": "429e2a0ad568f6da7ab08de9069e10a663b48812c24c485eb40752a62a6a281a",
+   "ringkas_sha256": "d2a028fc689bd6f8a0162817a13295918951c103353866a824cd0aba905c5594",
+   "rapikan_sha256": "1f9cdb012ef7cdac10792927842d9f4eafcb28fe07d51c2b0216fc0ff69efbd4"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught TypeError: f(): Return value must be of type int, string returned in /tmp/x/program.php:2\nStack trace:\n#0 /tmp/x/program.php(3): f()",
+   "masukan_sha256": "4e5e9b8e1554ed366d16ac61c10e9c18e09e88c5449d0fff9c839416e8b0d421",
+   "terjemahan_sha256": "b5ed232cdd3142f7839ba4eabd5fdd18d10494ac746cb5c7a59a9481d9c625d6",
+   "ringkas_sha256": "abc2054a83b5d25698a8bec64815de1bba71fa044b3442a6b7e5517bf56da31b",
+   "rapikan_sha256": "4e5e9b8e1554ed366d16ac61c10e9c18e09e88c5449d0fff9c839416e8b0d421"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Undefined array key 5 in /tmp/x/program.php on line 3",
+   "masukan_sha256": "f37b428adf2932f65dfcd81636e19cab41c44da367e59138a3de59b6d890df00",
+   "terjemahan_sha256": "fcdb8b57021f3f7edc400cf1c533fa350a59b4a6609e8875eed1187300c0be59",
+   "ringkas_sha256": "defe73a6e913a167d4df8f876442b898b20e1d9ccb459404922ed5f3b5f930a7",
+   "rapikan_sha256": "f37b428adf2932f65dfcd81636e19cab41c44da367e59138a3de59b6d890df00"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Uninitialized string offset 10 in /tmp/x/program.php on line 3",
+   "masukan_sha256": "c71f046652f9514da218989ddb3a04dcb7e0b8559c0f593abc8ebd1cb0efb33c",
+   "terjemahan_sha256": "68811d82ca3079f4007e086248cc8b16f27ece68d396238b90f14a12fa17d3ff",
+   "ringkas_sha256": "62a89e2a7e674f2a7998f3c24c19a57b40002d57b81792bbb9236fe2be234121",
+   "rapikan_sha256": "c71f046652f9514da218989ddb3a04dcb7e0b8559c0f593abc8ebd1cb0efb33c"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Cannot instantiate abstract class A in /tmp/x/program.php:3\nStack trace:\n#0 {main}",
+   "masukan_sha256": "aa3fc47e40d69e90e48ad9aa49882517b788eefb67328ed60957e7c9f54fa6f6",
+   "terjemahan_sha256": "71345608135f9a6a9b0e980b9cb28ad117904012ac4f9221675b15073114c819",
+   "ringkas_sha256": "32296a92d740e40b1c77f3d1c91e47dadeadb058c04904ff5c1cfb0a2dbedbfe",
+   "rapikan_sha256": "aa3fc47e40d69e90e48ad9aa49882517b788eefb67328ed60957e7c9f54fa6f6"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: syntax error, unexpected token \";\", expecting \")\" in /tmp/x/program.php on line 2",
+   "masukan_sha256": "7b737901fe6eeb1ab7e27726922ab2e3a64bef30dedfbd2c50c67d217acd428b",
+   "terjemahan_sha256": "2ee6b285852daad508888961edbe549bae20ba5eaaae6c3aa8741eabb598a222",
+   "ringkas_sha256": "1c6b693c572dc01ca0aebb42bd05d56915bc6b2a07af74651d0a4a269d1f21d3",
+   "rapikan_sha256": "7b737901fe6eeb1ab7e27726922ab2e3a64bef30dedfbd2c50c67d217acd428b"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: syntax error, unexpected end of file, expecting variable or \"${\" or \"{$\" in /tmp/x/program.php on line 3",
+   "masukan_sha256": "38bf4275fc62f5d4a19ff296e33c7f3af9c47361b4fd303407e3e0079ec312c9",
+   "terjemahan_sha256": "4f371fa824d9fa4c5f4b48357f514fbbc345a9dca91d89473283036d7c39d6a6",
+   "ringkas_sha256": "9e2c83ce1abd6e8f9c85fe9bfee72d15982d3c558c838fd628accf722913452d",
+   "rapikan_sha256": "38bf4275fc62f5d4a19ff296e33c7f3af9c47361b4fd303407e3e0079ec312c9"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Exception: boom in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "44f12776af5a34ca9d96099e7cefea206a993a5b5e652f462fa569ad5c671988",
+   "terjemahan_sha256": "065c019ed183f7af662a22b00e9787cb6a7f227f3ef8c64b546852d1d96493eb",
+   "ringkas_sha256": "a5003c84f643ed8cfd25c49b4b9c1dacae081137a141085f038407327a9aa05a",
+   "rapikan_sha256": "44f12776af5a34ca9d96099e7cefea206a993a5b5e652f462fa569ad5c671988"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: Unmatched '}' in /tmp/x/program.php on line 4",
+   "masukan_sha256": "62aef31951fdf13402d99ed47b8d186ac04466eb9d6d23e827d92f65dfa6a0ac",
+   "terjemahan_sha256": "3a6cf7ffd7de88c7f6babed87f8474e8cf078e87a393fe2d9e8368853036160c",
+   "ringkas_sha256": "3d8f80e5931dfa3cce9eccf976e246e7960e461ab663efdcb4c85344548d8a92",
+   "rapikan_sha256": "62aef31951fdf13402d99ed47b8d186ac04466eb9d6d23e827d92f65dfa6a0ac"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: Undefined property: A::$x in /tmp/x/program.php on line 4",
+   "masukan_sha256": "6818fe2542f03cbf551c9e47174903576a52b6cdf8fcc879ef71bb9710003b77",
+   "terjemahan_sha256": "74164feb74b4b2a50596158053d9f8ae3b98e7d8ed8b65f9a106996148174eca",
+   "ringkas_sha256": "837c5f30a753e1d2c8f6afb02df5908e85f462d06e2179c271cda1d13c9ae38b",
+   "rapikan_sha256": "6818fe2542f03cbf551c9e47174903576a52b6cdf8fcc879ef71bb9710003b77"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Value of type int is not callable in /tmp/x/program.php:3\nStack trace:\n#0 {main}",
+   "masukan_sha256": "650abcd58727900681194268667721009c24c1958159ece97d91dc0a2b892551",
+   "terjemahan_sha256": "03f4073bfdd281a1d431875fbde24ed699bb585e7c5aab66591a8bd9e4cd9e75",
+   "ringkas_sha256": "9eff8fbf3bdb5456ad7603002a41a170dead1388f28f8589ac41a458e84f8e0b",
+   "rapikan_sha256": "650abcd58727900681194268667721009c24c1958159ece97d91dc0a2b892551"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Non-static method A::hi() cannot be called statically in /tmp/x/program.php:5\nStack trace:\n#0 {main}",
+   "masukan_sha256": "d456a608900bc89c5fc6fef76c5c930228c5b073e64a8c3a1e0fa243ad9dff95",
+   "terjemahan_sha256": "f1cd9b5f1c21357d13213ace09c01ded5d094a54243054013de3481f184fb86a",
+   "ringkas_sha256": "871e02803f757076242a5b0640223f81e2ad72cd7ec8760913db9d69774f240a",
+   "rapikan_sha256": "d456a608900bc89c5fc6fef76c5c930228c5b073e64a8c3a1e0fa243ad9dff95"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: syntax error, unexpected token \"else\", expecting end of file in /tmp/x/program.php on line 2",
+   "masukan_sha256": "2923edbb0a981b3e56b45c09a6879e18bc77cbf4a5141cc512669bec5bf0e050",
+   "terjemahan_sha256": "d466e633da80cd1f6e1eb0f2a82fe49bfb68e9cb5d777514260fdaafdc44a496",
+   "ringkas_sha256": "cd138f04dedca8a85a8a9b3238f165c9e04b3eceee70c5cbc4bf7d113b8b7156",
+   "rapikan_sha256": "2923edbb0a981b3e56b45c09a6879e18bc77cbf4a5141cc512669bec5bf0e050"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught Error: Call to private method A::f() from global scope in /tmp/x/program.php:6\nStack trace:\n#0 {main}",
+   "masukan_sha256": "1a37fc7af5fe9a6c297bff9d8a22b88208f3dad7f28ad01add8830689827f4d7",
+   "terjemahan_sha256": "4fcb367eb92fce5055e75fe2f1f602e9008a5231063aa53a24d56b20c5ba388c",
+   "ringkas_sha256": "a7f0005cb1de2ea25c1cd19178686fd25fa8d033469e1f88709c76d1ed6f481c",
+   "rapikan_sha256": "1a37fc7af5fe9a6c297bff9d8a22b88208f3dad7f28ad01add8830689827f4d7"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nWarning: foreach() argument must be of type array|object, int given in /tmp/x/program.php on line 2",
+   "masukan_sha256": "97a64bc56d0854f8156ee0c779642a21fc4dff26b07990ad4ecf3e5136d4a57d",
+   "terjemahan_sha256": "50f8583702b6328c304d91698011b3725a056af23a9584eefb07cd0167841a89",
+   "ringkas_sha256": "afcc716fc0a13986e17f6c3f58371f06a3897d78a7fbc69cc49e966761b32c12",
+   "rapikan_sha256": "97a64bc56d0854f8156ee0c779642a21fc4dff26b07990ad4ecf3e5136d4a57d"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nParse error: syntax error, unexpected end of file, expecting \",\" or \";\" in /tmp/x/program.php on line 2",
+   "masukan_sha256": "bd3b7651745d151d76e2d2ae636df181ccdedecef401c2117ea1d3e0d043bb1e",
+   "terjemahan_sha256": "8f37d5a14bef78f60bac669b66193fb59518a374ef30486bf10f85c8775d5f4a",
+   "ringkas_sha256": "d058334de07c1f746c2b5545cee536cd6c7ce18d648828d73c6710061b022370",
+   "rapikan_sha256": "bd3b7651745d151d76e2d2ae636df181ccdedecef401c2117ea1d3e0d043bb1e"
+  },
+  {
+   "bahasa": "php",
+   "masukan": "\nFatal error: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, int given in /tmp/x/program.php:2\nStack trace:\n#0 {main}",
+   "masukan_sha256": "4c091d980e0db52a0f434bf21bdb1a9215acefd89adda266df11b036fc54e7a8",
+   "terjemahan_sha256": "fd49cb0fc91275716b835893bb8537ab6708bf01e12ba56601de15f54480c7b5",
+   "ringkas_sha256": "8f1f1fe7d986688aaf1dd3fdfb6d088bc9b53d5bf083adf75988311c0e4795c6",
+   "rapikan_sha256": "4c091d980e0db52a0f434bf21bdb1a9215acefd89adda266df11b036fc54e7a8"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:5: error: 'val' cannot be reassigned.\n    x = 2\n    ^",
+   "masukan_sha256": "3c5799c2a3aa239bc072a4fea2f089b2f68c01d534d8af048a8da15048b19244",
+   "terjemahan_sha256": "c408a482444c8073027cf637a332320689df9684482350b4f72bd5edf329f5e4",
+   "ringkas_sha256": "897ae35bb1339f2a0f5799d6a2a2fe4e35fc9844477dd34b6bcb9888f343ac30",
+   "rapikan_sha256": "3c5799c2a3aa239bc072a4fea2f089b2f68c01d534d8af048a8da15048b19244"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:14: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'String?'.\n    println(s.length)\n             ^",
+   "masukan_sha256": "c96ddbac51241637f4a34d9e1c20427a30346809f43f2fda5616d188b3e74798",
+   "terjemahan_sha256": "d3ff81bc06f2b99856d51573c2fc82b324dbcd55584d500b7b3b81816d9440df",
+   "ringkas_sha256": "c2f0135ebfd04484562093a0e0eb7933a25795b14167f23420dc255d7b312978",
+   "rapikan_sha256": "c96ddbac51241637f4a34d9e1c20427a30346809f43f2fda5616d188b3e74798"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:2:18: error: null cannot be a value of a non-null type 'Int'.\n    val n: Int = null\n                 ^^^^",
+   "masukan_sha256": "c6dd87ccd5ecf584e70b44a2a605fa8912fe5ddacec4117dc7a8009bec17eae7",
+   "terjemahan_sha256": "7ab17d6f0547420e4c0b63e7460a5a5763555717f2eeb35668e01d94992d694a",
+   "ringkas_sha256": "2b89e82bde3a63c47153a774a147bda3c3673c42d286af72b8b2bb21dace0d93",
+   "rapikan_sha256": "c6dd87ccd5ecf584e70b44a2a605fa8912fe5ddacec4117dc7a8009bec17eae7"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:18: error: too many arguments for 'fun f(a: Int): Int'.\n    println(f(1, 2))\n                 ^",
+   "masukan_sha256": "2a3766d3f3732b4e0ef6cb0d2b3a4b0ad57621a8b96987181e1f568ae3a16e57",
+   "terjemahan_sha256": "e5afba00d0df9341bc0de48da2668d2e1a9c6aadeef46a696afcf821281eb097",
+   "ringkas_sha256": "6bc144dbd12ea6c667c8e610a19d8eb70ed9108949f749dd1cfe60503d23c16b",
+   "rapikan_sha256": "2a3766d3f3732b4e0ef6cb0d2b3a4b0ad57621a8b96987181e1f568ae3a16e57"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:2:16: error: syntax error: Expecting ')'.\n    println(\"a\"\n               ^",
+   "masukan_sha256": "68fccc51e50cea19f2a438c49e19d14c93ab3abd88392d809565ca197c38db70",
+   "terjemahan_sha256": "9321ceec44082e6dedf2696c2ab8cf6a46d5ffb57574839f7e455b1953a1e850",
+   "ringkas_sha256": "6575255a5d604657e2e4d565aee97a262e23923cde8d8d8cbfdc173046e1bed8",
+   "rapikan_sha256": "68fccc51e50cea19f2a438c49e19d14c93ab3abd88392d809565ca197c38db70"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:13: error: variable 'x' must be initialized.\n    println(x)\n            ^",
+   "masukan_sha256": "aa02cda363dc1d6dc7290312d5fdded0bab694117837838734d823f4c16b0de6",
+   "terjemahan_sha256": "158e6c253f6f24f37a00f211188a900cd81218a2f6517f5cb58f5b882e4d289d",
+   "ringkas_sha256": "b2b4b7928d551481b09c1ab64bfbe46a5bc36f3f8e0967f4e7bb7ab7c0cc8d19",
+   "rapikan_sha256": "aa02cda363dc1d6dc7290312d5fdded0bab694117837838734d823f4c16b0de6"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:2:9: error: conflicting declarations:\nlocal val a: Int\nlocal val a: Int\n    val a = 1",
+   "masukan_sha256": "140c090be2eabbcc76034a3023ad6057884dc42cc6fa72ef5c87263f9dab4f12",
+   "terjemahan_sha256": "5c768208ee810d78c87f3570ed469de423833448461afbc0c664906e94cec320",
+   "ringkas_sha256": "e240fb6425bddd951e960489d7f2b5c765099c106d53ef0a2547a193e603af94",
+   "rapikan_sha256": "140c090be2eabbcc76034a3023ad6057884dc42cc6fa72ef5c87263f9dab4f12"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:9: error: condition type mismatch: inferred type is 'Int' but 'Boolean' was expected.\n    if (x) {\n        ^",
+   "masukan_sha256": "0fe07807a06155d2573adcb261f2d4606cd0661faaf024f9e6e72599d13ebe16",
+   "terjemahan_sha256": "9444878ff366faf2385074edd33b768a7c4f190e7b2c9b13f42c2e8409dcbaf1",
+   "ringkas_sha256": "228c4fe96c2330982b04e2defa0d2e0f6add3b80f6eec4704a6318ab024493fc",
+   "rapikan_sha256": "0fe07807a06155d2573adcb261f2d4606cd0661faaf024f9e6e72599d13ebe16"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:13: error: cannot create an instance of an abstract class.\n    val a = A()\n            ^^^",
+   "masukan_sha256": "cf4f04a54d418fa2ee8b0d19ef9b1243887ef61a142eaca502942699fc33834d",
+   "terjemahan_sha256": "390bdb4e8db2a5ef78ba82896c9a86742abf9178c23882b0fe476c4d41fa0804",
+   "ringkas_sha256": "f0f0901554e2e9c73eb8554199e7f7e81b0488befa49b23a99c80c017bfce104",
+   "rapikan_sha256": "cf4f04a54d418fa2ee8b0d19ef9b1243887ef61a142eaca502942699fc33834d"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:5:17: error: cannot access 'val x: Int': it is private in 'A'.\n    println(A().x)\n                ^",
+   "masukan_sha256": "9cf9f3b524669c22aeb507ec2d39444eae51e11ca7f4402ce8d8912eb0b8fa51",
+   "terjemahan_sha256": "8b149360405b14492f9bf1bcd40c34363c9788431e6da69a1f7547f1f5760f0b",
+   "ringkas_sha256": "7fcac476a39952a90745f138be7268f6758652ed83a66fbbdd103107b3e874c2",
+   "rapikan_sha256": "9cf9f3b524669c22aeb507ec2d39444eae51e11ca7f4402ce8d8912eb0b8fa51"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:1:8: error: unresolved reference 'foo'.\nimport foo.Bar\n       ^^^",
+   "masukan_sha256": "924c12423b84dd8cdfbd73e877971931db1c9a9c763494ad4379b8d0aebc9a30",
+   "terjemahan_sha256": "1c4b6cf60563a57f19e0da67479503760125e3d563255772345e8c4ec9143eef",
+   "ringkas_sha256": "82cc722594ab9cc1b052de489e568d98ca00e7191534d7412b1c9fc4e647c1b3",
+   "rapikan_sha256": "924c12423b84dd8cdfbd73e877971931db1c9a9c763494ad4379b8d0aebc9a30"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:2:9: error: this variable must either have an explicit type or be initialized.\n    val x =\n        ^\nmain.kt:2:12: error: syntax error: Expecting an expression.",
+   "masukan_sha256": "4bb56b237a6580642f80ccf9fbdf227af506053bc52a074b98096c15c2f8f4d4",
+   "terjemahan_sha256": "2d7d2eb00b0efe2dd5310ffc4866e0f385790f587896d498dfdb75e8d55dd6a8",
+   "ringkas_sha256": "b1db168bac457e07fa70e3c6764ffe558b57d07656cd84d7ac8617be9f90a19e",
+   "rapikan_sha256": "4bb56b237a6580642f80ccf9fbdf227af506053bc52a074b98096c15c2f8f4d4"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" kotlin.UninitializedPropertyAccessException: lateinit property n has not been initialized\n\tat A.getN(main.kt:2)\n\tat MainKt.main(main.kt:5)\n\tat MainKt.main(main.kt)",
+   "masukan_sha256": "dbf8d26921cc3f13ee76d9e893f3a231bbdf52140d39c1e3dab699a72348b8aa",
+   "terjemahan_sha256": "c394d526f3ad9476cbae960188dfce55580461a91c33a0442393be0defa7e316",
+   "ringkas_sha256": "39b3e3638a9ed9c2bd9979d0c8bb155856625f4638a144c610f49140789bae7a",
+   "rapikan_sha256": "dbf8d26921cc3f13ee76d9e893f3a231bbdf52140d39c1e3dab699a72348b8aa"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" java.lang.NullPointerException\n\tat MainKt.main(main.kt:3)\n\tat MainKt.main(main.kt)",
+   "masukan_sha256": "245220062647bad858dbd06b03fbd9a792049f622d249544b53adec3a9dd0454",
+   "terjemahan_sha256": "2227ce1c6924aefe1deea3badcac8677d3ac055c637faa25d6ceced632cc4fa1",
+   "ringkas_sha256": "ddf8f8c0fb13893e275c588cb8bc548693706f2fa4ce123c2b9a15674426cd66",
+   "rapikan_sha256": "245220062647bad858dbd06b03fbd9a792049f622d249544b53adec3a9dd0454"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" java.lang.IndexOutOfBoundsException: Index 5 out of bounds for length 3\n\tat java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)\n\tat java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)\n\tat java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)\n\tat java.base/java.util.Objects.checkIndex(Objects.java:361)\n\tat java.base/java.util.ArrayList.get(ArrayList.java:427)\n\tat MainKt.main(main.kt:3)\n\tat MainKt.main(main.kt)",
+   "masukan_sha256": "a2823b4f29581927d9cdd80065d95571313b5c5d3e3aaa1d5403a998e8693c49",
+   "terjemahan_sha256": "940b70e3aa1949bc594b05032e2d22a6ae32245b522e5d5691a9062e114ee546",
+   "ringkas_sha256": "339ea822fca1522984b11e67481733de261d0d730d8fd35a916497d3be081509",
+   "rapikan_sha256": "a2823b4f29581927d9cdd80065d95571313b5c5d3e3aaa1d5403a998e8693c49"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" java.util.NoSuchElementException: List is empty.\n\tat kotlin.collections.CollectionsKt___CollectionsKt.first(_Collections.kt:222)\n\tat MainKt.main(main.kt:3)\n\tat MainKt.main(main.kt)",
+   "masukan_sha256": "0645235444ca0ca219f38559d2b6f4c8bdc888b9cc0f47a1f18d321325919fda",
+   "terjemahan_sha256": "c39b8360f9bdaa1f70b2be2917cccef0c0aa1cd5e84273ae18c6252cc52aa5c9",
+   "ringkas_sha256": "1d0947346a0682c1d84310ee55742b1d2bad3f311fa3fde3c874f44a3cc63ca5",
+   "rapikan_sha256": "0645235444ca0ca219f38559d2b6f4c8bdc888b9cc0f47a1f18d321325919fda"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')\n\tat MainKt.main(main.kt:3)\n\tat MainKt.main(main.kt)",
+   "masukan_sha256": "fcb84e7aa06d773bfdc7d957ea5f305d18bb65d9bc34a6ea556cd6ca21b4c2af",
+   "terjemahan_sha256": "825103987b15047ccbe7840df5395e591c91512d6b9e5980c8da4a5e54aa3a2e",
+   "ringkas_sha256": "5d3e0669cac0bad8d0d961beb11be97f9b66468d488be505faf713affd522f78",
+   "rapikan_sha256": "fcb84e7aa06d773bfdc7d957ea5f305d18bb65d9bc34a6ea556cd6ca21b4c2af"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:7: error: assignment type mismatch: actual type is 'String', but 'Int' was expected.\n    x = \"a\"\n      ^",
+   "masukan_sha256": "e44f48e67f3f43c2dec68ba5995995fcae6728439a05700bcea60d3dbddeb457",
+   "terjemahan_sha256": "d7c00eb9a29bae410809b5ddf2d280bfe6c0b67d8ae24bbe9d04679d99ad1b9a",
+   "ringkas_sha256": "f618c81135c7467caf78e24d71f69079c2ef81614d1df56089ec74a275c3dfc7",
+   "rapikan_sha256": "e44f48e67f3f43c2dec68ba5995995fcae6728439a05700bcea60d3dbddeb457"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:2:12: error: return type mismatch: expected 'Int', actual 'String'.\n    return \"a\"\n           ^^^",
+   "masukan_sha256": "2c2ba89026bfb81239d49f13738d013f1373d58ae8a16e4887f668efe2f3c90f",
+   "terjemahan_sha256": "eb551d5477d590ca6b2343b3e90cbf0c850b8f1795e1b89e19e10f4583c8963d",
+   "ringkas_sha256": "058fd376ab79dc50e02bbb0a937646fb3231c143a3e9575a71b6556d82ebbb54",
+   "rapikan_sha256": "2c2ba89026bfb81239d49f13738d013f1373d58ae8a16e4887f668efe2f3c90f"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:13: error: no value passed for parameter 'b'.\n    println(f(a = 1, c = 2))\n            ^\nmain.kt:3:22: error: no parameter with name 'c' found.",
+   "masukan_sha256": "30f84fa2334ea316ddd0b8f5f0cfbfc1db22ea83d3bad49270044364ce2222a1",
+   "terjemahan_sha256": "851fb2b3844e03b39521403209f1b9c929800f42aad43389a8263c3ca671fb3a",
+   "ringkas_sha256": "eda896f85d5e47d7d74baebbd79638225e3b666bccc635261b16ffd9b47dfcdf",
+   "rapikan_sha256": "30f84fa2334ea316ddd0b8f5f0cfbfc1db22ea83d3bad49270044364ce2222a1"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:3:7: error: unresolved reference 'add' on receiver of type 'List<Int>'.\n    l.add(3)\n      ^^^",
+   "masukan_sha256": "48e67e8877f5f0f1c6f044ae76a9daea32437ebccee4b2187d3ecb6037c26147",
+   "terjemahan_sha256": "e4d6d59c733109abc17359bc081bd15f2f3741aed27798968791a3f1cc609dbb",
+   "ringkas_sha256": "4fab59dd34fd8beb1771828d3441b68f9aa59f0c97d908309d7776a163b7278f",
+   "rapikan_sha256": "48e67e8877f5f0f1c6f044ae76a9daea32437ebccee4b2187d3ecb6037c26147"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "main.kt:4:15: error: argument type mismatch: actual type is 'String?', but 'String' was expected.\n    println(f(x))\n              ^",
+   "masukan_sha256": "72031e48b70ef4f6300f47e3b8667b2e65c2c1538ba1ce42990071adb61d75be",
+   "terjemahan_sha256": "5118572e1d383c295f91a8591737ee96e9870af85c57794dc22fff617edec0fb",
+   "ringkas_sha256": "315d679556efdc9da61302b5eedec95e822c7075647b630641d587450edac4fe",
+   "rapikan_sha256": "72031e48b70ef4f6300f47e3b8667b2e65c2c1538ba1ce42990071adb61d75be"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" java.lang.StackOverflowError\n\tat MainKt.f(main.kt:1)\n\tat MainKt.f(main.kt:1)\n\tat MainKt.f(main.kt:1)",
+   "masukan_sha256": "e849ba0fd21ab4b2d96ff37635bcd23d431c7d18f0b72114e70043368822dd09",
+   "terjemahan_sha256": "df411b6852080ca40b75fec785f8e482b1b95592e807626cff44416da277d32a",
+   "ringkas_sha256": "00a2d32b7f9efc461a08f9887783c12c76161e1d389a21262ba78c264ba8583f",
+   "rapikan_sha256": "e849ba0fd21ab4b2d96ff37635bcd23d431c7d18f0b72114e70043368822dd09"
+  },
+  {
+   "bahasa": "kotlin",
+   "masukan": "Exception in thread \"main\" java.lang.IllegalStateException: x kosong\n\tat MainKt.main(main.kt:3)\n\tat MainKt.main(main.kt)",
+   "masukan_sha256": "67ea838365bd7161513324a1c55953445d33d6baa0601de384342744a40a761f",
+   "terjemahan_sha256": "d754e12fc1ae6ec37800f942e2767c5973df7c71b79c765a9fb603a65f3ffb18",
+   "ringkas_sha256": "2fbaef535ea0628616a5f9e5db98c7ede8a37d44ecf0169e9de7122161e9c588",
+   "rapikan_sha256": "67ea838365bd7161513324a1c55953445d33d6baa0601de384342744a40a761f"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,5): error TS2322: Type 'string' is not assignable to type 'number'.",
+   "masukan_sha256": "bd336f7d612ee8b8848bd9aba32de915477d74df83213ab61edfe38a42a2c81f",
+   "terjemahan_sha256": "f15923f3895157066a3ae2564bd53183b6c36245a9fe947133b10f79e1e2e0bf",
+   "ringkas_sha256": "37b03194a436d04f6b23887b1b95fcf198a41291d9a7e4c5348e6fd516d8f422",
+   "rapikan_sha256": "bd336f7d612ee8b8848bd9aba32de915477d74df83213ab61edfe38a42a2c81f"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,13): error TS2304: Cannot find name 'y'.",
+   "masukan_sha256": "5826bb4017f2c1809e02c36bb0c0fbd675f79b83317ab202edeace6671a855fc",
+   "terjemahan_sha256": "7e7eb38f922fbc36cb322b1a0dbc70b9fbaad79a53f7a964a6b5c487ffb0f614",
+   "ringkas_sha256": "6f9284643fb853179919c55c61f76d7b237a0c5ac9f53bf95816c5e33cd523b6",
+   "rapikan_sha256": "5826bb4017f2c1809e02c36bb0c0fbd675f79b83317ab202edeace6671a855fc"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,15): error TS2339: Property 'foo' does not exist on type '\"abc\"'.",
+   "masukan_sha256": "7b21196958d87bb942ae7d3421996a28419c3ad67edc2a7c65d738de915e7621",
+   "terjemahan_sha256": "f1a086dbddad77b4fbf281dc78d91cca5403c84c3e7b370ea180770d8a1e333b",
+   "ringkas_sha256": "eee7151946f4631d042b685b0312e46b4a47622d3a49aaab794e876a06bd39e0",
+   "rapikan_sha256": "7b21196958d87bb942ae7d3421996a28419c3ad67edc2a7c65d738de915e7621"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,12): error TS7006: Parameter 'x' implicitly has an 'any' type.",
+   "masukan_sha256": "ea736bfb9daff329f6b090e46bf301a741e8834c13f7e6c2c618c23d08ceb18e",
+   "terjemahan_sha256": "96f091390d65560c14616acfc32f98cf3887772e0b4522a243ed94de4cbbad50",
+   "ringkas_sha256": "238092504f1de8acbc5fad58074751e6256b45256672e9ea69c0b91f8ee2d84b",
+   "rapikan_sha256": "ea736bfb9daff329f6b090e46bf301a741e8834c13f7e6c2c618c23d08ceb18e"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,39): error TS18047: 's' is possibly 'null'.",
+   "masukan_sha256": "f3b6027096b6eebc7dbe21df32d2fd84f55646f421a5b9639e66b02aea4536f0",
+   "terjemahan_sha256": "8cd9166f2e87263eb54a49f808295addd01ae2b16f21b71ba9c239c2e0a84e4e",
+   "ringkas_sha256": "9dfdf127c70e1ac4cb12b3aa36aa776514c0d3a54480c1877903a1b8723c91be",
+   "rapikan_sha256": "f3b6027096b6eebc7dbe21df32d2fd84f55646f421a5b9639e66b02aea4536f0"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,15): error TS2551: Property 'lenght' does not exist on type '\"abc\"'. Did you mean 'length'?",
+   "masukan_sha256": "79fc678c5fd573eb6d705de3b6f1e265c64c91d37079d2afe1b660f9a306985e",
+   "terjemahan_sha256": "33eddfbc468d7548fbd1f19adc625d0f1b4d142a31282689cedab654a79396eb",
+   "ringkas_sha256": "c17681669f22198b311d1d7a22c87929a4492aac4c25f3716759d99cb4127b07",
+   "rapikan_sha256": "79fc678c5fd573eb6d705de3b6f1e265c64c91d37079d2afe1b660f9a306985e"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,19): error TS2307: Cannot find module './nope' or its corresponding type declarations.",
+   "masukan_sha256": "2aafc50f9d44363a12f1bc01451bd668d4b960e6508ec5e68dd058fe68dadc6c",
+   "terjemahan_sha256": "c66f41b74400cb5076339bc494c81ab78fb75d2ff7fa6b7f3ea21f4dcd0581cb",
+   "ringkas_sha256": "d0092a14b8488feff09f848f96d386c3098b1634ebb8fa2bf9d0b0ff5c9725dd",
+   "rapikan_sha256": "2aafc50f9d44363a12f1bc01451bd668d4b960e6508ec5e68dd058fe68dadc6c"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,1): error TS2588: Cannot assign to 'a' because it is a constant.",
+   "masukan_sha256": "a35ae95aa27929f87bfb8ee79f1d36db3a68f4409edb50ec35d5586434fbd094",
+   "terjemahan_sha256": "24e42a7e51353a86aa85149e5c8e6f8a430a85d36125989eb22fb36c506c59a3",
+   "ringkas_sha256": "c4e07f5c3daea0418c4e64701caff30b815766ec659f8ab6d54737894ceaefa0",
+   "rapikan_sha256": "a35ae95aa27929f87bfb8ee79f1d36db3a68f4409edb50ec35d5586434fbd094"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,7): error TS2741: Property 'b' is missing in type '{ a: number; }' but required in type 'P'.",
+   "masukan_sha256": "1d0defb31b445a45ae7e2833f9f321db35f94ad7ce4e6b887deae0fbb40ae032",
+   "terjemahan_sha256": "92d57ab5b229f9d96da3af26f1c78a551d7ce809a7c145b48fffcea409828a0a",
+   "ringkas_sha256": "25a028287d90b8f79f9e6ba7e1040c69d22b0842a77d9b35770c19942ac2ff3b",
+   "rapikan_sha256": "1d0defb31b445a45ae7e2833f9f321db35f94ad7ce4e6b887deae0fbb40ae032"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,13): error TS2448: Block-scoped variable 'a' used before its declaration.\nprogram.ts(1,13): error TS2454: Variable 'a' is used before being assigned.",
+   "masukan_sha256": "33a949e4a761ee4ec5d5de8064dfd3e6684e618f3f70a5c2a48ff0a31beb7ed4",
+   "terjemahan_sha256": "c6ca69d4a01bb977d68d991be8436ae5382dfb1edace247ab4df6da2d00d9e2c",
+   "ringkas_sha256": "db75a51e4ba0ce40a6cba62bb5de0cede65ce1148e82522aa55ce7733f8c77b3",
+   "rapikan_sha256": "33a949e4a761ee4ec5d5de8064dfd3e6684e618f3f70a5c2a48ff0a31beb7ed4"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,15): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.",
+   "masukan_sha256": "eec1158f2d0f4967a9f1bf2eda2b017a32dc589037b6381d28950fa8257f1433",
+   "terjemahan_sha256": "f71e62685a8c5b4d839dcac1ca86e3b98cc594d36eea5fb980213dae49de308b",
+   "ringkas_sha256": "dbca4901e7c7db7475c6c8400a562a060a77497a4d60c9127a60aa3f096eb721",
+   "rapikan_sha256": "eec1158f2d0f4967a9f1bf2eda2b017a32dc589037b6381d28950fa8257f1433"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,24): error TS2366: Function lacks ending return statement and return type does not include 'undefined'.",
+   "masukan_sha256": "3fb4f9ecb3c61704e0662943102084ba1968956e1d14e211f0b8482266f1e8b8",
+   "terjemahan_sha256": "ab2b8dea08afab167830ce3cdd1422c606c194737ae8258df0d77b7e5021c021",
+   "ringkas_sha256": "6ac41a0f68a86e273807a45a615ea71e717b1ea2efac19646775aef5a248738f",
+   "rapikan_sha256": "3fb4f9ecb3c61704e0662943102084ba1968956e1d14e211f0b8482266f1e8b8"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,5): error TS2451: Cannot redeclare block-scoped variable 'a'.\nprogram.ts(2,5): error TS2451: Cannot redeclare block-scoped variable 'a'.",
+   "masukan_sha256": "4d3e877edbda330b36e1069efed043c7b433840768605b7328e58810a60ed621",
+   "terjemahan_sha256": "8c5d8d62c826c4a8d28e613ff1f0305e945ca08ba9f4ffe84dd570a59fb344ce",
+   "ringkas_sha256": "6e979c991e433d53b939b15b75ebc7524a84063f4f5c04d8ee5592b037f80815",
+   "rapikan_sha256": "4d3e877edbda330b36e1069efed043c7b433840768605b7328e58810a60ed621"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,9): error TS1109: Expression expected.",
+   "masukan_sha256": "cab399b73038aef29ef88fb48bcebde153988e6087259f264176b9b2df564a31",
+   "terjemahan_sha256": "dbbaef04b7c50d4222bb46355092b97707bd524fd398b82d5968406b23c6b0a5",
+   "ringkas_sha256": "ec54759300594e8aa0d5477307552714901e233a585c2ced9f75eb9bb5cf076f",
+   "rapikan_sha256": "cab399b73038aef29ef88fb48bcebde153988e6087259f264176b9b2df564a31"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,1): error TS2349: This expression is not callable.\n  Type 'Number' has no call signatures.",
+   "masukan_sha256": "e7607acb4a9330c211fa378bdd7672deb267dab1d1fe76617430a78bba77fb9d",
+   "terjemahan_sha256": "18ce76e7c97d06105c32baf6a32fcca21f9189290c29b60d92658adad0757f01",
+   "ringkas_sha256": "2e748a91f8060def1519e4791b304696cefa1854fd895055c0eb97b5f579bcd8",
+   "rapikan_sha256": "e7607acb4a9330c211fa378bdd7672deb267dab1d1fe76617430a78bba77fb9d"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,9): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.",
+   "masukan_sha256": "30163e61f8ec9af891bb6cf8db2d1e7e640658a9fbe0e597287688673c8d429b",
+   "terjemahan_sha256": "fc9c97b46e902d2a13235f81c7b5854710cdccbb73b42df930053256ca155b2b",
+   "ringkas_sha256": "e4163bd29e780f656c6abc0a506e79f61a37b53091c16011e66b9ed41c5e56e0",
+   "rapikan_sha256": "30163e61f8ec9af891bb6cf8db2d1e7e640658a9fbe0e597287688673c8d429b"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,5): error TS2367: This comparison appears to be unintentional because the types 'number' and 'string' have no overlap.",
+   "masukan_sha256": "22ab45be9ced0c2b8737a4b7e445a96d1faf47b3c212458da56afae6061b5f77",
+   "terjemahan_sha256": "44d5f5e460a7ce8604b8e18d49f44c2ba687dc2f49043093bb5e2f00e6e405f5",
+   "ringkas_sha256": "9a6ee840e5b5ef55262f4c826ee4ac693d373c31072248f9a14634a5a247a9ec",
+   "rapikan_sha256": "22ab45be9ced0c2b8737a4b7e445a96d1faf47b3c212458da56afae6061b5f77"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,11): error TS2564: Property 'x' has no initializer and is not definitely assigned in the constructor.",
+   "masukan_sha256": "2567b3e329ba845ad64b55681729057421f3c1f6f2171b539c9226eb56aae565",
+   "terjemahan_sha256": "c39902df6a55011eb5e0c88b4ea09016768fa3145378b94f7f343bcaf00250ec",
+   "ringkas_sha256": "3f6b65cec4696fa81b74b6fd64a89baa55e3c49ef4a6a40920f186ae31950248",
+   "rapikan_sha256": "2567b3e329ba845ad64b55681729057421f3c1f6f2171b539c9226eb56aae565"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(3,3): error TS2540: Cannot assign to 'a' because it is a read-only property.",
+   "masukan_sha256": "1a88472023635b8ff964105995e5ada4bb25ebcabb3b9281769a7b38afcf0c8f",
+   "terjemahan_sha256": "e4d19a0b103813fc97dbe5623855f6324fe3dedd96802653c5fca1b292e8f61d",
+   "ringkas_sha256": "9e01c6e31a505b29d5e578427f98002c54d4e5a1cdac9436b037e1b544f2a2d8",
+   "rapikan_sha256": "1a88472023635b8ff964105995e5ada4bb25ebcabb3b9281769a7b38afcf0c8f"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,8): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.",
+   "masukan_sha256": "e806a782df16c0a2edcdf52fc38ed0e20831244fedd145985c93647803b02470",
+   "terjemahan_sha256": "5e54d1cac54ffc3ad653145d211690367bee3fd2326d7fdc4a753afd13d4979a",
+   "ringkas_sha256": "4728df8661482fbcf676e4024021fd9fa82717e01a82602a665bcbd3d9ec387c",
+   "rapikan_sha256": "e806a782df16c0a2edcdf52fc38ed0e20831244fedd145985c93647803b02470"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,1): error TS1128: Declaration or statement expected.",
+   "masukan_sha256": "a7f51cc3e4e8058616ad183d9e8aa1c2a409cd5a57bb2b1198ec0ff5fa2de285",
+   "terjemahan_sha256": "7584d032008e12d1065cd42ee615c8c8d7eaa7a3875748a0a09445bbb875a537",
+   "ringkas_sha256": "8ddaf01aa6fa7540825a43aec23fca7fea07d8f38415ff84b0f531e45ddbe8f5",
+   "rapikan_sha256": "a7f51cc3e4e8058616ad183d9e8aa1c2a409cd5a57bb2b1198ec0ff5fa2de285"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,13): error TS7053: Element implicitly has an 'any' type because expression of type '\"b\"' can't be used to index type '{ a: number; }'.\n  Property 'b' does not exist on type '{ a: number; }'.",
+   "masukan_sha256": "e0c7760c4061f7d0cf9130413406ece71e899bf3a20c2a51bb67a3ef8632338d",
+   "terjemahan_sha256": "1302474ac7894362b019aff8b9ba771538552738b9f556762509ee5b6e76427b",
+   "ringkas_sha256": "28bfd5de62398c753feb1086ddaa4a6d3ff4db4eace2328144d1b961ea4b6c4c",
+   "rapikan_sha256": "e0c7760c4061f7d0cf9130413406ece71e899bf3a20c2a51bb67a3ef8632338d"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,7): error TS2420: Class 'C' incorrectly implements interface 'I'.\n  Property 'f' is missing in type 'C' but required in type 'I'.",
+   "masukan_sha256": "7d5abd6794e6d53af156cb37af1bebdcb0853f0b8403e48cc9be3b34fce723ba",
+   "terjemahan_sha256": "af5d7391962cf021dd9d2032868e6e050aed1f605ddc4926fcfe647af56e9f7c",
+   "ringkas_sha256": "6a30f25ecc0baa697eb75bf54c4eda5575f3abefb86eefad6f4991c4ba98b330",
+   "rapikan_sha256": "7d5abd6794e6d53af156cb37af1bebdcb0853f0b8403e48cc9be3b34fce723ba"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,14): error TS1002: Unterminated string literal.",
+   "masukan_sha256": "3048d45818752920e24b61c3e473536543f8b7435bb914ce529e7424f40d23e8",
+   "terjemahan_sha256": "3a9fb7b47efe3c7340e3da74d56bf93f4537dc962edb3002a893e23bda1e6b37",
+   "ringkas_sha256": "8031630068fb0226f49b6da6fd20a05c21bb0cf5d4114a786a17d8ce58abb878",
+   "rapikan_sha256": "3048d45818752920e24b61c3e473536543f8b7435bb914ce529e7424f40d23e8"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,34): error TS2353: Object literal may only specify known properties, and 'b' does not exist in type '{ a: number; }'.",
+   "masukan_sha256": "0b7cbe40482ebf2cd324626798a4a87c1842ae61a85c5f42b533bf86ecb59728",
+   "terjemahan_sha256": "91b79f5874e8cf19bb5b2a9f1491fd022658ebf12b0d55bfec798f0f34d75375",
+   "ringkas_sha256": "64e44e5cc7e7ebf8fce1bfa84348177faba80c695ea1df1d25936beac625adfc",
+   "rapikan_sha256": "0b7cbe40482ebf2cd324626798a4a87c1842ae61a85c5f42b533bf86ecb59728"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,16): error TS1308: 'await' expressions are only allowed within async functions and at the top levels of modules.",
+   "masukan_sha256": "97b9da2a1ce22b2023651cde2e60e5c06d4d339ce7f18ca460000eea20520329",
+   "terjemahan_sha256": "7317b42589e2bc63e22747848d7bd4ce4df3b64b752e887df11351e1a02052a6",
+   "ringkas_sha256": "7e7164c298d462391f6538de407bf5289a6621f2b1d67471888277abf78c2c91",
+   "rapikan_sha256": "97b9da2a1ce22b2023651cde2e60e5c06d4d339ce7f18ca460000eea20520329"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(2,6): error TS2554: Expected 1 arguments, but got 2.",
+   "masukan_sha256": "c6db8343a4219caf874643059a1f9a1952fd4fd4fdc4c175aee9338fbf7c73a5",
+   "terjemahan_sha256": "ae97a9e4095192e986eb16837de6f0b12f9ed48886f0195e18ab06f02258eca3",
+   "ringkas_sha256": "7b539a2114aa20fc7d41686d48acef8ef646d4d70156236d533c9a076ad3503e",
+   "rapikan_sha256": "c6db8343a4219caf874643059a1f9a1952fd4fd4fdc4c175aee9338fbf7c73a5"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(1,20): error TS2769: No overload matches this call.\n  The last overload gave the following error.\n    Argument of type '{}' is not assignable to parameter of type 'string | number'.",
+   "masukan_sha256": "80942355a797f63dab715e91437b6a2895c958a034c797f0b9dccfa7cf0bc2cc",
+   "terjemahan_sha256": "0120943cfd016092c256d7675683b506344c3bf5e433928c8c0a8ce60a723ed4",
+   "ringkas_sha256": "465eef059f15e7ccf443b0a6746ad786584955dced5d53db50bb479ed2749571",
+   "rapikan_sha256": "80942355a797f63dab715e91437b6a2895c958a034c797f0b9dccfa7cf0bc2cc"
+  },
+  {
+   "bahasa": "typescript",
+   "masukan": "program.ts(3,1): error TS1005: '}' expected.",
+   "masukan_sha256": "5b4829832aaa3452507483835227a6e8438175acc839d7c345c3faca4a632bfe",
+   "terjemahan_sha256": "ca04149675797f0743ea4050bc7c4605fda7de7c2d6df0d3cdbb18dc1d02ddbe",
+   "ringkas_sha256": "0f26a816526730e07b3f17a743161b55238d4cb8a02652cd42e6f015f33c047b",
+   "rapikan_sha256": "5b4829832aaa3452507483835227a6e8438175acc839d7c345c3faca4a632bfe"
   }
  ]
 }

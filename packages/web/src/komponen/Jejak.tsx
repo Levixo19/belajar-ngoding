@@ -171,8 +171,8 @@ export function Jejak({
   if (!rekaman) {
     return (
       <section className="jejak" aria-label="Jalannya program">
-        <div className="deret">
-          <div className="pusaran" />
+        <div className="deret" role="status">
+          <div className="pusaran" aria-hidden="true" />
           <span>Merekam jalannya program…</span>
         </div>
       </section>

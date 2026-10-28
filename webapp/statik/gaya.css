@@ -1826,7 +1826,7 @@ input[type="range"] { min-height: var(--sentuh); }
   font-size: var(--t-ui);
 }
 .fakta-butir svg { color: var(--redup); flex: none; }
-.fakta-kurang, .fakta-kurang svg { color: var(--salah); }
+.fakta-kurang, .fakta-kurang svg { color: var(--tenang); } /* kabar, bukan galat: program pendukung itu opsional dan gratis */
 
 /* ============================================================ satu keputusan
    Kartu tindakan utama. Satu-satunya benda di seluruh aplikasi yang memakai
@@ -1954,7 +1954,7 @@ input[type="range"] { min-height: var(--sentuh); }
 }
 .prosa li > .par-butir { margin: .5em 0 0; }
 .prosa li > .par-butir:last-child { margin-bottom: 0; }
-.prosa h3 { margin: 2em 0 .75em; font-size: var(--t-judul-2); }
+.prosa h2, .prosa h3 { margin: 2em 0 .75em; font-size: var(--t-judul-2); }
 .prosa > section + section { margin-top: .4em; }
 
 /* Paragraf yang di sumbernya ditulis menjorok — penjelasan tambahan di bawah
@@ -3139,7 +3139,7 @@ pre.kode {
   background: color-mix(in srgb, var(--nyala) 10%, transparent);
 }
 .peta-bab .peta-kini i { background: var(--nyala); }
-.peta-bab .peta-terkunci { border-style: dashed; opacity: .7; }
+.peta-bab .peta-terkunci { border-style: dashed; color: var(--redup); } /* bukan opacity: nomor 11px jatuh ke 3:1 */
 .peta-bab .peta-terkunci i { background: var(--garis); }
 
 /* Chip penyaring tingkat. Keadaan diamnya adalah SEMUA tampil: tidak ada
@@ -3949,7 +3949,7 @@ pre.kode {
   border-radius: var(--r);
   background: var(--kartu);
 }
-.medali.terkunci { opacity: .5; }
+.medali.terkunci { border-style: dashed; color: var(--redup); } /* bukan opacity: teks 2,1:1 di tema terang */
 .medali .cap {
   width: 38px; height: 38px; flex: none;
   display: grid; place-items: center;
@@ -4169,7 +4169,7 @@ mark {
   border-radius: 3px;
   padding: 0 1px;
 }
-[data-tema="terang"] mark { color: var(--nyala); }
+[data-tema="terang"] mark { color: var(--teks); } /* --nyala di atas tint amber: 4,05:1 */
 
 /* =============================================================== perayaan
    Dipakai saat latihan lulus dan saat naik level. Cahaya lampu menguat
@@ -4371,10 +4371,10 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
 
 .kr-rumpun { fill: var(--teks-2); font-size: 14px; font-weight: 600;
              pointer-events: none; transition: opacity var(--sedang); }
-.kr-rumpun.redup { opacity: .3; }
+.kr-rumpun.redup, .kr-simpul.redup .kr-label { fill: var(--redup); } /* teks: warna, bukan opacity (2-2,9:1) */
 
 .kr-simpul { cursor: pointer; outline: none; transition: opacity var(--sedang); }
-.kr-simpul.redup { opacity: .32; }
+.kr-simpul.redup > :not(.kr-label) { opacity: .32; } /* hanya bentuknya yang diredupkan */
 .kr-sasaran { fill: transparent; }
 .kr-cincin-alas { fill: none; stroke: var(--garis); stroke-width: 2.5; }
 .kr-cincin-isi { fill: none; stroke: var(--nyala); stroke-width: 2.5; stroke-linecap: round; }
@@ -4466,8 +4466,8 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
                        letter-spacing: -.025em; margin: var(--s2) 0 var(--s3); text-wrap: balance; }
 .kr-bagian-kepala p { color: var(--teks-2); line-height: var(--tinggi-badan); margin: 0; }
 
-.kr-soal-kisi { display: grid; gap: var(--s4);
-                grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr)); }
+.kr-soal-kisi { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--s5); }
+.kc-utama { flex: 2 1 28rem; min-width: 0; }
 .kr-soal { margin: 0; padding: var(--s4); min-width: 0;
            border: var(--tebal-garis) solid var(--garis); border-radius: var(--r-besar);
            background: var(--kartu); }
@@ -4487,14 +4487,14 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
 }
 .kr-pilihan:hover { border-color: var(--garis-kuat); color: var(--teks); }
 .kr-pilihan:active { translate: 0 1px; }
-.kr-pilihan[aria-pressed="true"] { border-color: var(--nyala); color: var(--teks);
+.kr-pilihan:has(.kc-radio:checked) { border-color: var(--nyala); color: var(--teks);
   background: color-mix(in srgb, var(--nyala) 12%, var(--dasar)); }
 .kr-hasil-kuis { margin-top: var(--s5); }
 .kr-juara { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
-.kr-juara li { display: flex; align-items: center; gap: var(--s4); padding: var(--s4);
+.kr-juara > li { display: flex; align-items: flex-start; gap: var(--s4); padding: var(--s4);
                border-radius: var(--r-besar); background: var(--kartu);
                border: var(--tebal-garis) solid var(--garis); }
-.kr-juara li:first-child { border-color: var(--nyala); }
+.kr-juara > li:first-child { border-color: var(--nyala); }
 .kr-juara .isi { flex: 1; min-width: 0; }
 .kr-juara .judul { font-weight: 700; font-size: var(--t-judul-3); }
 .kr-juara .ket { color: var(--redup); font-size: var(--t-kecil); margin-top: 2px; }
@@ -4502,7 +4502,7 @@ html.alih-tema, html.alih-tema *, html.alih-tema *::before, html.alih-tema *::af
                width: 2ch; text-align: center; }
 
 .kr-pilih-jalur { display: flex; flex-wrap: wrap; align-items: end; gap: var(--s4); }
-.kr-pilih-jalur label { display: grid; gap: var(--s1); font-size: var(--t-kecil);
+.kr-pilih-jalur .pil-medan { display: grid; gap: var(--s1); font-size: var(--t-kecil);
                         color: var(--redup); min-width: 16rem; }
 .kr-panah { color: var(--redup); padding-bottom: var(--s3); }
 .kr-jalur { margin-top: var(--s5); }
@@ -6306,7 +6306,7 @@ html.lingkar-tema::view-transition-new(root) {
     border-radius: 16px;
     background: linear-gradient(180deg, color-mix(in srgb, var(--tumbuh) 6%, var(--kartu)), var(--kartu) 60%);
   }
-  .prosa .dunia-nyata > h3 {
+  .prosa .dunia-nyata > h2, .prosa .dunia-nyata > h3 {
     margin-top: 0; font-family: var(--f-plakat); font-style: italic; font-weight: 600;
     font-variation-settings: "opsz" 20; color: var(--tumbuh);
   }
@@ -7031,3 +7031,757 @@ body {
 }
 
 /* Akhir blok layar Langit. */
+
+/* Kuis kecocokan Peta Karier: satu soal sekali tampil, jawaban tercatat di
+   samping. Blok ini di ujung berkas supaya tidak menggeser alamat yang dirujuk
+   tes. Dasar kartu soal, pilihan, dan juara ada di blok Karier (.kr-soal,
+   .kr-pilihan, .kr-juara); di sini hanya yang baru. Pilihan terpilih dibedakan
+   oleh centang, nomor terisi, dan huruf tebal, bukan oleh warna saja. */
+.kc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.kc-kepala-soal { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s1) var(--s4); margin: 0 0 var(--s3); }
+.kc-hitung { font-family: var(--f-kode); font-size: var(--t-kecil); color: var(--teks-2); }
+.kc-bantu { font-size: var(--t-kecil); color: var(--redup); }
+.kr-soal legend { font-size: var(--t-judul-3); }
+.kr-pilihan { position: relative; display: flex; align-items: center; gap: var(--s3); }
+.kc-radio { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; appearance: none; background: transparent; border: 0; cursor: pointer; }
+.kc-nomor { flex: none; display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: var(--r-kecil); border: var(--tebal-garis) solid var(--garis-kuat); font-family: var(--f-kode); font-size: var(--t-kecil); color: var(--teks-2); }
+.kc-label { flex: 1; min-width: 0; }
+.kc-tanda { flex: none; display: grid; color: var(--nyala); visibility: hidden; }
+.kr-pilihan:has(.kc-radio:checked) .kc-tanda { visibility: visible; }
+.kr-pilihan:has(.kc-radio:checked) .kc-label { font-weight: 600; }
+.kr-pilihan:has(.kc-radio:checked) .kc-nomor { background: var(--nyala); border-color: var(--nyala); color: var(--di-atas-aksen); }
+.kc-nav { margin-top: var(--s4); }
+.kc-nav .tbl:last-child { margin-left: auto; }
+.kc-rel { flex: 1 1 17rem; max-width: 22rem; min-width: 0; padding: var(--s4); border: var(--tebal-garis) solid var(--garis); border-radius: var(--r-besar); background: var(--kartu); position: sticky; top: calc(var(--rel-tinggi) + var(--s4)); }
+.kc-rel-judul { margin: 0 0 var(--s3); font-size: var(--t-ui); font-weight: 700; }
+.kc-daftar { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s1); }
+.kc-baris { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: var(--s3); width: 100%; padding: var(--s2) var(--s3); text-align: left; font: inherit; font-size: var(--t-kecil); line-height: var(--tinggi-ui); color: var(--teks-2); background: transparent; border: var(--tebal-garis) solid transparent; border-radius: var(--r); cursor: pointer; }
+.kc-baris:hover { border-color: var(--garis-kuat); color: var(--teks); }
+.kc-baris[aria-current="step"] { border-color: var(--nyala); color: var(--teks); background: color-mix(in srgb, var(--nyala) 10%, var(--dasar)); }
+.kc-baris[data-kosong] .kc-teks { color: var(--redup); font-style: italic; }
+.kc-no { font-family: var(--f-kode); }
+.kc-teks { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.kc-cek { display: grid; color: var(--nyala); }
+.kc-sisa { margin: var(--s3) 0; color: var(--teks-2); font-size: var(--t-kecil); line-height: var(--tinggi-badan); }
+.kc-hasil { margin-top: 0; }
+.kc-hasil-judul { margin: 0 0 var(--s2); font-size: var(--t-judul-2); line-height: var(--tinggi-rapat); }
+.kc-hasil .kr-catatan { margin: 0 0 var(--s4); max-width: 62ch; }
+.kr-juara .judul { margin: 0; }
+.kc-ringkas { margin: var(--s1) 0 0; color: var(--teks-2); font-size: var(--t-ui); line-height: var(--tinggi-badan); }
+.kc-alasan { margin-top: var(--s3); }
+.kc-alasan-judul { display: block; font-size: var(--t-kecil); font-weight: 600; color: var(--teks-2); }
+.kc-alasan ul { list-style: none; margin: var(--s1) 0 0; padding: 0; display: grid; gap: var(--s1); font-size: var(--t-kecil); line-height: var(--tinggi-ui); color: var(--teks-2); }
+.kc-ref { font-family: var(--f-kode); }
+.kc-ke { color: var(--teks); }
+.kc-aksi-kartu { display: grid; gap: var(--s2); flex: none; }
+.kr-panel { scroll-margin-top: calc(var(--rel-tinggi) + var(--s4)); }
+
+/* Pilihan (select-only combobox, komponen/Pilihan.tsx): daftarnya digambar di
+   dalam halaman, bukan popup native yang di Wayland menutup sendiri begitu klik
+   dilepas. Di ujung berkas supaya tidak menggeser alamat yang dirujuk tes. */
+.pil-kotak { position: relative; min-width: 0; }
+.pil-pemicu { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); width: 100%; min-height: var(--sentuh); padding: var(--s2) var(--s3); text-align: left; font: inherit; font-size: var(--t-ui); color: var(--teks); background: var(--dasar-dalam); border: var(--tebal-garis) solid var(--garis); border-radius: var(--r-kecil); cursor: pointer; transition: border-color var(--cepat), box-shadow var(--cepat); }
+.pil-pemicu:hover { border-color: var(--garis-kuat); }
+.pil-pemicu[aria-expanded="true"] { border-color: var(--nyala-gelap); box-shadow: var(--cahaya); }
+.pil-nilai { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pil-panah { flex: none; display: grid; color: var(--redup); }
+.pil-pemicu[aria-expanded="true"] .pil-panah { transform: rotate(180deg); }
+.pil-daftar { position: fixed; z-index: 30; max-height: min(20rem, 50vh); overflow-y: auto; margin: 0; padding: var(--s1); list-style: none; background: var(--kartu); border: var(--tebal-garis) solid var(--garis-kuat); border-radius: var(--r); box-shadow: var(--bayang-naik); }
+.pil-daftar li { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s2) var(--s3); border-radius: var(--r-kecil); cursor: pointer; font-size: var(--t-ui); line-height: var(--tinggi-ui); color: var(--teks-2); }
+.pil-daftar li[data-aktif] { background: color-mix(in srgb, var(--nyala) 14%, var(--kartu)); color: var(--teks); }
+.pil-daftar li[aria-selected="true"] { color: var(--teks); font-weight: 600; }
+
+/* ============================================================ hero gulir
+   Layar Pengantar (`HeroGulir.tsx`). SATU angka, `--hg-p` (0 tertutup sampai 1
+   terbuka), menggerakkan semuanya; JS menulisnya ke elemen `.hg`, dan tanpa
+   gerak penuh `[data-terbuka="true"]` memberinya 1 dari CSS, jadi hero tidak
+   pernah tampil tertutup lebih dulu. Pelatnya sengaja gelap di semua tema,
+   seperti pelat langit di layar Langit: gambarnya langit malam dan teks
+   terangnya diukur terhadap itu, bukan terhadap kertas halaman.
+   Tidak ada `transition` pada properti yang digerakkan `--hg-p`: JS-lah yang
+   menyusul targetnya tiap bingkai (satu properti, satu mesin). */
+.hg { --hg-p: 0; --hg-tinggi: min(72vh, 44rem); margin-bottom: var(--s6); }
+.hg[data-terbuka="true"] { --hg-p: 1; }
+.hg-pelat {
+  position: relative; overflow: hidden; isolation: isolate;
+  height: var(--hg-tinggi);
+  border-radius: var(--r-besar);
+  border: var(--tebal-garis) solid var(--garis-kuat);
+  background: #070b18; color: #f4efe2;
+}
+.hg-latar {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; filter: brightness(.55) saturate(.9);
+  opacity: calc(1 - var(--hg-p));
+}
+.hg-media {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+  width: calc(18rem + (100% - 18rem) * var(--hg-p));
+  height: calc(min(24rem, 62%) + (100% - min(24rem, 62%)) * var(--hg-p));
+  border-radius: calc(var(--r-besar) * (1 - var(--hg-p)));
+  overflow: hidden;
+  box-shadow: 0 0 0 var(--tebal-garis) rgba(244, 239, 226, .2), 0 24px 64px rgba(0, 0, 0, .5);
+}
+.hg-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 82%; }
+.hg-scrim {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(4, 7, 16, .62), rgba(4, 7, 16, .28) 72%),
+    linear-gradient(to top, rgba(4, 7, 16, .7), rgba(4, 7, 16, 0) 45%);
+}
+.hg-judul {
+  position: absolute; inset: 0; z-index: 2; margin: 0; padding: 0 var(--s5);
+  display: flex; flex-direction: column; justify-content: center;
+  text-align: center; pointer-events: none;
+  font-family: var(--f-plakat); font-weight: 500; color: inherit;
+  font-size: clamp(2rem, 4.3vw, 4.4rem); line-height: 1.12; letter-spacing: -.01em;
+  text-shadow: 0 2px 28px rgba(2, 4, 12, .85), 0 0 2px rgba(2, 4, 12, .6);
+}
+.hg-kiri, .hg-kanan { display: block; }
+.hg-kiri { translate: calc(var(--hg-p) * -16%) 0; }
+.hg-kanan { translate: calc(var(--hg-p) * 16%) 0; font-style: italic; }
+.hg-petunjuk {
+  position: absolute; left: 0; right: 0; bottom: var(--s5); z-index: 2; margin: 0;
+  text-align: center; font-size: var(--t-ui); letter-spacing: .04em;
+  color: #e8e2d2; text-shadow: 0 1px 12px rgba(2, 4, 12, .9);
+}
+.hg-lewati, .hg-lewati:hover {
+  position: absolute; top: var(--s4); right: var(--s4); z-index: 3;
+  color: #f4efe2; border-color: rgba(244, 239, 226, .5); background: rgba(4, 7, 16, .6);
+}
+.hg-lewati:hover { background: rgba(4, 7, 16, .85); border-color: #f4efe2; }
+.hg-isi { margin-top: var(--s6); animation: hg-muncul 420ms ease-out; }
+.hg-isi:focus { outline: none; }
+@keyframes hg-muncul { from { opacity: 0; translate: 0 12px; } }
+.pengantar { display: grid; gap: var(--s6); max-width: 64rem; margin-inline: auto; }
+.pengantar .sambut { margin: 0; text-align: center; }
+.pengantar .sambut-sub { margin-inline: auto; }
+.pengantar-catatan { margin: var(--s2) 0 0; color: var(--redup); font-size: var(--t-kecil); }
+.pengantar-pintu { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fill, minmax(min(24rem, 100%), 1fr)); }
+.pengantar-aksi { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s4); margin: 0; }
+.pengantar-aksi span { max-width: 34rem; color: var(--teks-2); font-size: var(--t-ui); }
+.mulai-pengantar { margin: var(--s3) 0 0; }
+
+/* ============================================================ orbit bekal
+   `OrbitBekal.tsx` di panel profesi Peta Karier. JS hanya menulis SATU
+   variabel, `--or-sudut`, ke papan; posisi tiap simpul dihitung di sini dengan
+   rantai `rotate -> translateX -> rotate balik`, jadi labelnya tetap tegak.
+   Jari-jari cincin memakai `cqw` (lebar papan) supaya orbit ikut mengecil di
+   panel yang sempit. Tidak ada `transition` pada `transform` (JS yang
+   menggerakkannya tiap bingkai): hanya `scale` simpul terpilih, properti lain.
+   Tidak ada `opacity` untuk kesan kedalaman: teks yang diredupkan jatuh di
+   bawah 4,5:1. Yang dikodekan: cincin dalam = bekal, luar = pelengkap, isi
+   cincin simpul = persen, hijau = selesai dan kuningan = sedang dikerjakan. */
+.or-wadah { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--s5) var(--s6); }
+.or-kolom { flex: 0 1 38rem; min-width: 0; padding-inline: var(--s6); }
+.or-papan {
+  --or-sudut: 0deg;
+  position: relative; width: min(100%, 34rem); aspect-ratio: 1; margin-inline: auto;
+  container-type: inline-size;
+}
+.or-lintasan {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; border-radius: 50%;
+  border: var(--tebal-garis) dashed var(--garis); pointer-events: none;
+}
+.or-lintasan-dalam { width: calc(var(--jd) * 2); height: calc(var(--jd) * 2); }
+.or-lintasan-luar { width: calc(var(--jl) * 2); height: calc(var(--jl) * 2); }
+.or-pusat {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 26cqw;
+  display: grid; justify-items: center; gap: var(--s1); text-align: center; pointer-events: none;
+}
+.or-pusat-angka { font-family: var(--f-judul); font-weight: 700; font-size: var(--t-judul-3); }
+.or-pusat-nama { font-size: var(--t-kecil); line-height: 1.25; color: var(--teks-2); }
+.or-node {
+  --a: calc(var(--dasar) + var(--or-sudut) * var(--laju));
+  position: absolute; left: 50%; top: 50%; width: 3.1rem; height: 3.1rem; padding: 0;
+  border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  background: var(--kartu); color: var(--teks);
+  transform: translate(-50%, -50%) rotate(var(--a)) translateX(var(--jari)) rotate(calc(var(--a) * -1));
+  transition: scale var(--cepat);
+}
+.or-node[data-lingkar="dalam"] { --jari: var(--jd); }
+.or-node[data-lingkar="luar"] { --jari: var(--jl); }
+.or-ring { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; pointer-events: none; }
+.or-ring circle { fill: none; stroke-width: 3; }
+.or-ring-jalur { stroke: var(--garis-kuat); }
+.or-ring-isi { stroke: var(--nyala); stroke-linecap: round; }
+.or-node[data-status="selesai"] .or-ring-isi { stroke: var(--tumbuh); }
+.or-persen { position: relative; font-size: var(--t-kecil); font-weight: 600; font-variant-numeric: tabular-nums; }
+.or-nama {
+  position: absolute; top: calc(100% + var(--s1)); left: 50%; translate: -50% 0; width: 7rem;
+  text-align: center; font-size: var(--t-kecil); line-height: 1.2; color: var(--teks-2); pointer-events: none;
+}
+.or-node:hover .or-nama, .or-node.aktif .or-nama { color: var(--teks); }
+.or-node.aktif { scale: 1.2; z-index: 3; outline: 2px solid var(--nyala); outline-offset: 3px; }
+.or-node.aktif .or-nama { font-weight: 600; }
+.or-node.berkaitan { outline: 2px dashed var(--tenang); outline-offset: 3px; }
+.or-alat { display: flex; justify-content: center; margin-top: var(--s6); }
+/* Teksnya berganti antara "Jeda putaran" dan "Putar lagi": tanpa lebar tetap tombolnya melompat ukuran. */
+.or-jeda { min-width: 9.5rem; justify-content: center; }
+.or-rinci { flex: 1 1 18rem; min-width: 0; display: grid; gap: var(--s3); align-content: start; }
+.or-rinci-kepala { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
+.or-rinci h4 { margin: 0; font-family: var(--f-judul); font-size: var(--t-judul-3); }
+.or-rinci-ket { margin: 0; color: var(--teks-2); font-size: var(--t-ui); line-height: var(--tinggi-ui); }
+.or-tautan {
+  padding: 0; border: 0; background: none; font: inherit; color: var(--teks); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.or-buka { justify-self: start; }
+/* Verdigris = selesai, sama dengan busur simpulnya; kuningan (bawaan bilah) = sedang dikerjakan. */
+.or-rinci[data-status="selesai"] .kr-bekal-bilah > i { background: var(--tumbuh); }
+
+/* ============================================================ cakrawala bara
+
+   Tampilan tiga dimensi dari hamparan bara (komponen/Skyline.tsx). Dipilih
+   pelajar di kepala kartu Bara; tampilan datar tetap bawaan.
+
+   Warna puncak batang = tingkat yang sama dengan `.bara-1`..`.bara-3`, dengan
+   satu perbedaan yang disengaja: nilai campurnya lebih terang (40, 68 persen
+   kuningan, bukan 22 dan 52), karena di sini batang tidak punya tepi bertoreh
+   seperti sel datar, dan dua permukaan sampingnya digelapkan dari warna
+   puncak. Tinggi batang adalah saluran kedua yang selalu ada (WCAG 1.4.1),
+   jadi tema kontras tidak butuh inti yang tumbuh.
+
+   Tidak ada `opacity` dan tidak ada transisi: satu-satunya gerak adalah
+   animasi masuk, hanya pada gerak penuh (kelas `sk-masuk` dipasang komponen),
+   berangkat dari `scaleY(0)` ke keadaan alami batang. */
+.bara-kepala {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--s2) var(--s3);
+  margin-bottom: var(--s2);
+}
+.bara-kepala .mata { margin-bottom: 0; }
+.sk-wadah { min-width: 0; }
+.sk-papan { border-radius: var(--r-kecil); }
+.sk-papan:focus-visible { outline-offset: 4px; }
+.sk-bidang { position: relative; max-width: 64rem; margin-inline: auto; }
+.sk-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sk-b { --sk-atas: var(--dasar-dalam); }
+.sk-t1 { --sk-atas: color-mix(in srgb, var(--nyala) 40%, var(--dasar-dalam)); }
+.sk-t2 { --sk-atas: color-mix(in srgb, var(--nyala) 68%, var(--dasar-dalam)); }
+.sk-t3 { --sk-atas: var(--nyala); }
+.sk-atas { fill: var(--sk-atas); }
+.sk-muka { fill: color-mix(in srgb, var(--sk-atas) 74%, black); }
+.sk-sisi { fill: color-mix(in srgb, var(--sk-atas) 54%, black); }
+.sk-atas, .sk-muka, .sk-sisi {
+  stroke: color-mix(in srgb, var(--sk-atas) 60%, var(--teks));
+  stroke-width: .7; stroke-linejoin: round;
+}
+.sk-t0 .sk-atas { stroke: var(--garis); }
+.sk-kini .sk-atas { stroke: var(--teks); stroke-width: 1.6; }
+/* Digambar sesudah semua batang dan melintasinya; tidak menangkap penunjuk. */
+.sk-aktif {
+  fill: none; stroke: var(--teks); stroke-width: 1.6; stroke-linejoin: round;
+  pointer-events: none;
+}
+.sk-bulan {
+  position: absolute; transform: translateX(-50%);
+  font-size: var(--t-mikro); color: var(--redup);
+  white-space: nowrap; pointer-events: none;
+}
+.sk-info {
+  margin: var(--s2) 0 0; min-height: 1.5em;
+  font-size: var(--t-kecil); color: var(--teks-2);
+}
+.sk-ringkas {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--s3) var(--s5); margin: var(--s3) 0 0;
+}
+.sk-ringkas > div { min-width: 0; }
+.sk-ringkas dt { font-size: var(--t-mikro); color: var(--redup); }
+.sk-ringkas dd { margin: 0; font-size: var(--t-badan); color: var(--teks); }
+.sk-masuk .sk-b {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  animation: sk-tumbuh 520ms cubic-bezier(.32,.72,.36,1) backwards;
+}
+@keyframes sk-tumbuh { from { transform: scaleY(0); } }
+
+/* `.meja-ritme` di lapisan desktop memakai kolom `max-content` (sisa sampul
+   yang tidak lagi digambar), jadi kartunya mengikuti lebar isinya. Cakrawala
+   gambar berlebar 100%, dan di kolom seperti itu ia jatuh ke 300 px. Hanya
+   kartu yang memuatnya memakai satu kolom lentur; tampilan datar tidak
+   berubah. Tanpa :has() ia tetap terbaca, hanya sempit. */
+@supports selector(:has(*)) {
+  .meja-ritme:has(.sk-wadah) { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ============================================================== pohon berkas
+
+   Penampil blok multi-berkas di halaman materi (komponen/PohonBerkas.tsx):
+   pohon folder di kiri, kode berkas yang dipilih di kanan. Berkas yang dipilih
+   ditandai garis kuningan di tepi kiri barisnya (sama dengan baris materi yang
+   sedang dikerjakan) dan `aria-selected`, bukan warna saja. Folder terbuka
+   ditandai segitiga yang diputar oleh `aria-expanded`, jadi keadaan yang
+   dibaca pembaca layar dan yang terlihat tidak bisa berbeda.
+
+   Tanpa `opacity`, tanpa transisi, tanpa pemilih `html`: pohonnya diam. */
+.pb-wadah { min-width: 0; }
+.pb-catatan { border-bottom: var(--tebal-garis) solid var(--garis); }
+.pb-badan {
+  display: grid; grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  min-width: 0;
+}
+.pb-pohon {
+  display: flex; flex-direction: column; gap: 1px;
+  min-width: 0; padding: var(--s2); overflow-x: auto; scrollbar-width: thin;
+  border-right: var(--tebal-garis) solid var(--garis); background: var(--kartu);
+}
+.pb-baris {
+  display: flex; align-items: center; gap: var(--s2);
+  padding: var(--s1) var(--s2);
+  padding-left: calc(var(--s2) + var(--pb-dalam, 0) * var(--s4));
+  border-left: 2px solid transparent; border-radius: var(--r-kecil);
+  font-family: var(--f-kode); font-size: var(--t-kecil); color: var(--teks-2);
+  white-space: nowrap; cursor: pointer;
+}
+.pb-baris:hover { background: var(--kartu-naik); color: var(--teks); }
+.pb-baris[aria-selected="true"] {
+  background: var(--kartu-naik); color: var(--teks); border-left-color: var(--nyala);
+}
+/* Kontainernya menggulir, jadi cincin fokus yang digambar di luar kotak akan terpotong. */
+.pb-baris:focus-visible { outline-offset: -2px; }
+.pb-folder { font-weight: 600; }
+.pb-berkas > svg { flex: none; }
+.pb-nama { overflow: hidden; text-overflow: ellipsis; }
+.pb-panah {
+  flex: none; width: 0; height: 0;
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  border-left: 6px solid currentColor;
+}
+.pb-baris[aria-expanded="true"] > .pb-panah { transform: rotate(90deg); }
+.pb-isi { display: flex; flex-direction: column; min-width: 0; }
+.pb-kepala {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s2) var(--s3); background: var(--kartu);
+  border-bottom: var(--tebal-garis) solid var(--garis); font-size: var(--t-kecil);
+}
+.pb-jalur {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--f-kode); color: var(--teks);
+}
+.pb-jalur-folder { color: var(--redup); }
+.pb-meta { color: var(--redup); font-size: var(--t-mikro); white-space: nowrap; }
+.pb-kosong { margin: 0; padding: var(--s4); color: var(--redup); font-size: var(--t-kecil); }
+
+/* ================================================================ kaca cair
+   Bilah atas jadi kaca, dan butir yang sedang dibuka ditandai SATU TETES AIR
+   yang berpindah (komponen/TetesKaca.tsx; teknik dari "Liquid Glass Navbar",
+   @gughigug, MIT). Blok ini SATU-SATUNYA yang membuatnya tampak, dan semuanya
+   digantungkan pada atribut yang dipasang komponen di <nav id="rel">:
+
+     data-kaca="cair"   kaca dinyalakan (tema kontras tinggi: "polos")
+     data-tk="gl|css"   tetes digambar WebGL, atau kapsul CSS cadangan
+     data-bias="on"     latar dibiaskan (hanya Chromium)
+
+   Tanpa atributnya, atau tanpa komponennya, bilah instrumen lama di atas
+   tetap utuh. MENCABUT fitur ini = hapus blok ini dan satu baris
+   <TetesKaca/> di Cangkang.tsx.
+
+   Keputusan yang bertentangan dengan catatan lama dan disadari: kaca buram
+   pernah DIBUANG dari bilah ("pil kaca", ronde 2026-10-18, ditandai ciri
+   template paling mudah dikenali). Pemilik meminta liquid glass secara
+   eksplisit (2026-10-28), jadi ia kembali, tetapi hanya di bilah ini dan
+   dengan sebab yang lain: tetesnya yang mengodekan sesuatu, yaitu "kamu ada
+   di butir ini". Panel "Lainnya" TETAP padat: backdrop-filter anak di dalam
+   elemen ber-backdrop-filter hanya melihat isi induknya, bukan halaman.
+
+   Teks butir tetap token teks biasa; kontrasnya diukur dari piksel sungguhan
+   di keempat tema (uji/manual/kaca-cair.mjs), bukan dikira dari tokennya,
+   karena yang berada di bawah kaca berganti setiap kali halaman digulir. */
+.tk-bias, .tk-kanvas, .tk-cadangan { position: absolute; pointer-events: none; }
+.tk-bias { width: 0; height: 0; overflow: hidden; }
+.tk-kanvas, .tk-cadangan { display: none; }
+
+@media (min-width: 861px) {
+  /* Angka kontrasnya DIUKUR, bukan dikira (uji/manual/kaca-cair.mjs bagian D). Versi
+     pertama memburamkan hanya 2 px sesudah pembiasan dan tidak meredupkan latar:
+     kartu aksen kuningan dan heatmap yang lewat di bawah kaca tetap tajam dan terang,
+     dan huruf bilah jatuh ke 3,15:1 (gelap) dan 2,71:1 (malam) pada gulir 700 px,
+     padahal di gulir 0 semuanya 6,1:1 dan tak ada yang curiga. Tebal tinta nyaris
+     tidak menolong (46% sampai 70% memberi hasil sama); yang menolong blur 10 px dan
+     latar diredupkan: 5,74:1 dan 5,33:1. Meredupkan latar hanya untuk tema gelap, di
+     tema terang ia justru memburukkan huruf gelap. */
+  #rel[data-kaca="cair"] {
+    --tk-tinta: 46%;
+    --tk-cerah: 0.8;
+    border-radius: var(--r-penuh);
+    border-color: color-mix(in srgb, var(--nyala) 22%, var(--garis));
+    background: color-mix(in srgb, var(--kartu) var(--tk-tinta), transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5) brightness(var(--tk-cerah));
+    backdrop-filter: blur(14px) saturate(1.5) brightness(var(--tk-cerah));
+    box-shadow: var(--kilau-tepi),
+      0 1px 2px color-mix(in srgb, var(--dasar-dalam) 50%, transparent),
+      0 22px 50px -24px color-mix(in srgb, var(--dasar-dalam) 90%, transparent);
+  }
+  /* Kertas terang menaruh kaca di atas isi yang lebih gelap dari bilahnya,
+     jadi tintanya lebih tebal supaya huruf gelap tidak jatuh ke abu-abu. */
+  [data-tema="terang"] #rel[data-kaca="cair"] { --tk-tinta: 64%; --tk-cerah: 1.06; }
+  #rel[data-kaca="cair"][data-bias="on"] {
+    -webkit-backdrop-filter: url(#tk-bias) blur(10px) saturate(1.5) brightness(var(--tk-cerah));
+    backdrop-filter: url(#tk-bias) blur(10px) saturate(1.5) brightness(var(--tk-cerah));
+  }
+
+  /* Tetes menggantikan penanda lama. Latar `a.kini` baru dilepas sesudah
+     komponen memasang `data-tk` (sebelum cat pertama), jadi tidak ada bingkai
+     tanpa penanda, dan kalau komponen gagal penanda lama tetap ada. */
+  #rel[data-kaca="cair"][data-tk] #rel-utama a.kini,
+  #rel[data-kaca="cair"][data-tk] .rel-pemicu.kini { background: transparent; }
+
+  /* Lapisan tetes berada DI ATAS latar bilah dan DI BAWAH huruf: z-index
+     negatif di dalam konteks susun milik #rel (fixed). Posisi dan ukuran
+     kanvas ditulis komponen langsung ke style. */
+  #rel[data-tk="gl"] .tk-kanvas { display: block; z-index: -1; }
+  #rel[data-tk="css"] .tk-cadangan {
+    display: block; z-index: -1; left: 0;
+    border-radius: var(--r-penuh);
+    background: linear-gradient(180deg,
+      color-mix(in srgb, white 30%, transparent), color-mix(in srgb, white 10%, transparent));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 55%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, white 16%, transparent),
+      0 8px 18px -10px color-mix(in srgb, black 55%, transparent);
+  }
+  [data-tema="terang"] #rel[data-tk="css"] .tk-cadangan {
+    background: linear-gradient(180deg, rgba(120, 170, 230, .3), rgba(120, 170, 230, .12));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9),
+      inset 0 0 0 1px rgba(40, 90, 170, .24),
+      0 8px 18px -10px rgba(20, 50, 100, .5);
+  }
+}
+
+/* Orang yang meminta transparansi dikurangi mendapat bilah padat; tetesnya
+   tetap ada karena ia penanda posisi, bukan hiasan latar. */
+@media (min-width: 861px) and (prefers-reduced-transparency: reduce) {
+  #rel[data-kaca="cair"], #rel[data-kaca="cair"][data-bias="on"] {
+    background: var(--kartu-naik);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ================================================================== tombol kaca
+   `.tbl-kaca` mengubah sebuah tombol utama jadi kaca bertinta kuningan: tinta
+   tembus pandang, kilau lengkung di atas, lekuk gelap di bawah, dan pembiasan isi
+   di belakangnya lewat filter SVG `#tbl-kaca` (komponen/FilterKaca.tsx, dipasang
+   sekali oleh Cangkang). Dipakai di DUA tombol saja: chip "Lanjutkan" di kartu
+   Lanjutkan dan chip "Mulai" di layar mulai, yaitu tombol utama dasbor. Satu layar
+   satu tombol utama tidak berubah: yang berubah hanya cara ia digambar, dan ia
+   tetap satu-satunya permukaan beraksen di layarnya.
+
+   Gagasan dari komponen "Liquid Glass Button" (21st.dev, `designali-in`). Halaman
+   asalnya TIDAK mencantumkan lisensi (bidangnya kosong), jadi tidak ada baris yang
+   disalin: nilai bayangan dan susunan lapisnya ditulis sendiri. Mencabutnya =
+   buang kelas `tbl-kaca` dari dua tombol itu dan hapus blok ini; tombolnya kembali
+   kuningan pekat seperti `.tbl-utama`.
+
+   Skala saat disorot lewat properti `scale`, BUKAN `transform`: umpan tekan
+   (`pasangIsyarat`) menganimasikan `transform` lewat WAAPI, dan dua mesin untuk
+   satu properti saling mengejar. `scale` dan `transform` bertumpuk, jadi tombol
+   yang disorot lalu ditekan membesar lalu mengecil tanpa berebut. Tingkat gerak
+   mati dan `prefers-reduced-motion` mematikan skalanya; transparansi dikurangi
+   mengembalikan kuningan pekat; tema kontras tinggi juga pekat. */
+.tbl-kaca-filter { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+
+.tbl-kaca {
+  /* Tiga angka yang menentukan seberapa "kaca": tinta kuningan, kilau putih di atas,
+     dan kilau lengkung di dalam. Tema terang menaruh teks PUTIH di atas kuningan, jadi
+     kilau yang menerangkan latar tepat di bawah huruf langsung menjatuhkan kontras:
+     diukur 3,27:1 dengan angka tema gelap (22 dan 32 persen), 5,92:1 untuk kuningan
+     pekat. Di terang kilau atasnya dimatikan dan sisanya dikecilkan (sekitar 5,3:1). */
+  --kc-tinta: 80%;
+  --kc-kilau: 22%;
+  --kc-lengkung: 32%;
+  position: relative;
+  isolation: isolate;
+  border-color: color-mix(in srgb, white 34%, var(--nyala));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white var(--kc-kilau), transparent), transparent 58%),
+    color-mix(in srgb, var(--nyala) var(--kc-tinta), transparent);
+  color: var(--di-atas-aksen);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 58%, transparent),
+    inset 0 -2px 3px -1px color-mix(in srgb, black 30%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, white 12%, transparent),
+    inset 0 10px 14px -8px color-mix(in srgb, white var(--kc-lengkung), transparent),
+    0 10px 20px -12px color-mix(in srgb, var(--nyala) 65%, transparent);
+  transition: scale var(--pegas-jawab-ms) var(--pegas-jawab), background var(--cepat);
+}
+[data-tema="terang"] .tbl-kaca { --kc-tinta: 94%; --kc-kilau: 0%; --kc-lengkung: 14%; }
+@supports (backdrop-filter: url(#a)) {
+  .tbl-kaca {
+    -webkit-backdrop-filter: url(#tbl-kaca);
+    backdrop-filter: url(#tbl-kaca);
+  }
+}
+.tbl-kaca:hover {
+  scale: 1.04;
+  border-color: color-mix(in srgb, white 46%, var(--nyala-lembut));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white var(--kc-kilau), transparent), transparent 58%),
+    color-mix(in srgb, var(--nyala-lembut) var(--kc-tinta), transparent);
+}
+[data-gerak="mati"] .tbl-kaca:hover { scale: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .tbl-kaca:hover { scale: 1; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .tbl-kaca, .tbl-kaca:hover {
+    background: var(--nyala);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+[data-tema="kontras"] .tbl-kaca, [data-tema="kontras"] .tbl-kaca:hover {
+  background: var(--nyala);
+  border-color: var(--nyala);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* ================================================================== penutup dasbor
+   Layar penuh yang TERSINGKAP di bawah dasbor saat digulir sampai habis
+   (layar/PenutupDasbor.tsx). Gagasan dari komponen "Motion Footer" (21st.dev,
+   Hossain Jahed; bidang lisensinya KOSONG, jadi tidak ada baris yang disalin, dan
+   GSAP di sana diganti mesin gerak repo ini dan CSS bergulir).
+
+   KONFLIK yang disadari: keputusan 2026-10-17 membuang marquee dan ajakan penutup dari
+   dasbor ("dasbor = meja kerja"), dan pemilik memintanya kembali pada 2026-10-28. Pagar dari
+   alasan lama tetap berlaku (hanya dasbor berprogres, hanya butir yang berarti, tanpa tombol
+   beraksen kedua, animasi hanya gerak penuh); rinciannya di AGENTS.md, "Penutup dasbor".
+
+   Penyingkapannya: pembungkus `.pd-bungkus` ikut tergulir dan dipotong `clip-path`,
+   sedangkan lapisan `.pd-isi` di dalamnya `position: fixed`. Lapisan itu diam,
+   pembungkusnya naik, dan yang terlihat hanya bagian lapisan yang jatuh di dalam
+   kotak pembungkus: dari bawah layar, dasbor terasa terangkat membuka sesuatu yang
+   sudah ada. `position: fixed` di dalam `#layar` tetap menempel ke viewport
+   (diukur, walau `#panggung` berupa container query); di peramban yang tidak begitu
+   lapisannya jatuh jadi bagian biasa di dasar halaman, bukan rusak.
+
+   Hanya tingkat gerak PENUH yang menyingkap (`data-penuh`). Selain itu, dan di bawah
+   `prefers-reduced-motion`, lapisannya bagian statis biasa: membajak gulir adalah gerak
+   akibat interaksi. Animasi yang tak berhingga (strip, aurora) berhenti selagi penutup
+   tidak terlihat (`data-tampak`), dan keadaan diamnya adalah keadaan alami: gerak yang
+   dimatikan tidak menghilangkan apa pun. Kemunculan bergantian terhubung ke gulir lewat
+   `animation-timeline`, tanpa JS; tanpa dukungannya, isinya tampil apa adanya.
+
+   Tata letak: satu komposisi di tengah (alis, judul, dua pil besar berbingkai ganda,
+   empat pil kecil), strip miring di atas, kata raksasa tembus pandang di dasar. Tidak ada
+   tombol beraksen kedua: yang utama tetap kartu Lanjutkan, dan tombol "ke atas" membawa
+   orang kembali ke sana. Mencabutnya = hapus blok ini dan satu baris <PenutupDasbor/>. */
+.pd-bungkus {
+  position: relative;
+  /* Melebar sampai tepi panggung: #layar memadatkan isinya ke --panggung-maks. */
+  width: 100cqw;
+  margin-inline: calc(50% - 50cqw);
+  margin-top: var(--s8);
+  /* Membatalkan padding bawah `.meja` DAN `#layar` (keduanya --s8), supaya lapisan menempel ke
+     dasar halaman. Diukur: dengan satu --s8 pembungkus berhenti 64 px di atas dasar viewport dan
+     halaman biasa mengintip di celahnya. Skrip peramban menagih bawah pembungkus = tinggi layar. */
+  margin-bottom: calc(-2 * var(--s8));
+  height: 100vh;
+  height: 100dvh;
+  clip-path: inset(0);
+  view-timeline: --pd block;
+}
+.pd-isi {
+  position: absolute;
+  inset: 0;
+  z-index: var(--l-latar);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Blok tengah berpusat di ruang sisa, jadi padding ini menurunkannya separuhnya (24 px). Tanpa itu di
+     1280x800 pil alis menimpa tepi bawah strip miring sedalam 9 px (diukur; di 1440 jaraknya 35 px). */
+  padding-top: var(--s7);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 50% 100%, color-mix(in srgb, var(--nyala) 9%, transparent), transparent 62%),
+    var(--dasar);
+  color: var(--teks);
+}
+.pd-bungkus[data-penuh="ya"] .pd-isi { position: fixed; inset: auto 0 0 0; height: 100vh; height: 100dvh; }
+
+.pd-aurora {
+  position: absolute; left: 50%; top: 50%; width: 80vw; height: 60vh;
+  translate: -50% -50%;
+  border-radius: 50%;
+  filter: blur(70px);
+  background: radial-gradient(circle at 50% 50%,
+    color-mix(in srgb, var(--nyala) 22%, transparent) 0%,
+    color-mix(in srgb, var(--tumbuh) 16%, transparent) 40%,
+    transparent 70%);
+  opacity: .9;
+  scale: 1;
+  pointer-events: none;
+}
+.pd-kisi {
+  position: absolute; inset: 0; pointer-events: none;
+  background-size: 60px 60px;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--teks) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--teks) 4%, transparent) 1px, transparent 1px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+}
+.pd-raksasa {
+  position: absolute; left: 50%; bottom: -5vh;
+  translate: -50% 0;
+  font-family: var(--f-plakat);
+  font-size: min(26vw, 46vh);
+  font-weight: 700;
+  line-height: .75;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+  user-select: none; pointer-events: none;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--teks) 16%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--teks) 17%, transparent), transparent 66%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.pd-strip {
+  position: absolute; left: -4%; right: -4%;
+  top: calc(var(--rel-tinggi) + var(--s7));
+  rotate: -2deg;
+  scale: 1.04;
+  overflow: hidden;
+  padding-block: var(--s3);
+  border-block: var(--tebal-garis) solid color-mix(in srgb, var(--garis-kuat) 55%, transparent);
+  background: color-mix(in srgb, var(--dasar) 68%, transparent);
+  pointer-events: none;
+}
+.pd-jalur { display: flex; width: max-content; }
+.pd-paruh { display: flex; }
+.pd-kelompok { display: flex; margin: 0; padding: 0; list-style: none; }
+.pd-kelompok li {
+  display: inline-flex; align-items: center; gap: var(--s5);
+  padding-right: var(--s5);
+  font-family: var(--f-ui); font-size: var(--t-kecil); font-weight: 600;
+  letter-spacing: .04em; white-space: nowrap;
+  color: var(--teks-2);
+}
+.pd-kelompok li::after {
+  content: ""; flex: none; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--nyala);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--nyala) 70%, transparent);
+}
+
+.pd-tengah {
+  position: relative; z-index: 1;
+  margin: auto;
+  display: flex; flex-direction: column; align-items: center; gap: var(--s6);
+  max-width: 68rem; padding: var(--s8) var(--s6);
+  text-align: center;
+}
+.pd-alis {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  padding: var(--s1) var(--s4);
+  border-radius: var(--r-penuh);
+  border: var(--tebal-garis) solid color-mix(in srgb, var(--teks) 12%, transparent);
+  background: color-mix(in srgb, var(--kartu) 55%, transparent);
+  font-family: var(--f-ui); font-size: var(--t-kecil); font-weight: 500; color: var(--teks-2);
+}
+.pd-alis::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%; flex: none;
+  background: var(--nyala);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--nyala) 70%, transparent);
+}
+.pd-judul {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--f-plakat);
+  font-size: clamp(2.4rem, 1.2rem + 3.8vw, 5.2rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+  color: var(--teks);
+  background: linear-gradient(180deg, var(--teks) 20%, color-mix(in srgb, var(--teks) 72%, transparent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.pd-aksi, .pd-kecil { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s4); }
+.pd-kecil { gap: var(--s3); }
+
+/* Pil kaca. BINGKAI GANDA untuk yang besar: cangkang luar bergaris tipis, inti dalam
+   bergradien dengan bayangan dalam, jari-jari dalam lebih kecil daripada luar. */
+.pd-pil {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  border-radius: var(--r-penuh);
+  color: var(--teks); text-decoration: none; cursor: pointer;
+  font-family: var(--f-ui); font-weight: 600;
+  transition: background var(--cepat), border-color var(--cepat), color var(--cepat);
+}
+.pd-pil:hover { text-decoration: none; }
+.pd-pil-besar {
+  padding: 6px;
+  border: var(--tebal-garis) solid color-mix(in srgb, var(--teks) 10%, transparent);
+  background: color-mix(in srgb, var(--teks) 4%, transparent);
+}
+.pd-pil-besar:hover { border-color: color-mix(in srgb, var(--nyala) 45%, transparent); }
+.pd-inti {
+  display: inline-flex; align-items: center; gap: var(--s3);
+  padding: var(--s3) var(--s3) var(--s3) var(--s5);
+  border-radius: var(--r-penuh);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--teks) 10%, transparent), color-mix(in srgb, var(--teks) 3%, transparent));
+  box-shadow: inset 0 1px 1px color-mix(in srgb, white 14%, transparent), inset 0 -1px 2px color-mix(in srgb, black 30%, transparent);
+  font-size: var(--t-badan);
+}
+.pd-bulat {
+  display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%;
+  background: color-mix(in srgb, var(--teks) 10%, transparent);
+  transition: translate var(--pegas-jawab-ms) var(--pegas-jawab), scale var(--pegas-jawab-ms) var(--pegas-jawab), background var(--cepat);
+}
+.pd-pil-besar:hover .pd-bulat {
+  translate: 2px -1px; scale: 1.06;
+  background: color-mix(in srgb, var(--nyala) 30%, transparent);
+}
+.pd-pil-kecil, .pd-atas {
+  padding: var(--s2) var(--s4);
+  border: var(--tebal-garis) solid color-mix(in srgb, var(--teks) 10%, transparent);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--teks) 7%, transparent), color-mix(in srgb, var(--teks) 2%, transparent));
+  box-shadow: inset 0 1px 1px color-mix(in srgb, white 10%, transparent);
+  font-size: var(--t-ui); font-weight: 500; color: var(--teks-2);
+}
+.pd-pil-kecil:hover, .pd-atas:hover {
+  color: var(--teks);
+  border-color: color-mix(in srgb, var(--teks) 22%, transparent);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--teks) 11%, transparent), color-mix(in srgb, var(--teks) 3%, transparent));
+}
+.pd-atas { justify-content: center; width: 3rem; height: 3rem; padding: 0; }
+.pd-atas svg { rotate: -90deg; transition: translate var(--pegas-jawab-ms) var(--pegas-jawab); }
+.pd-atas:hover svg { translate: 0 -3px; }
+
+.pd-kaki {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s5);
+  padding: 0 var(--s7) var(--s6);
+}
+.pd-catatan { margin: 0; font-size: var(--t-kecil); color: var(--teks-2); }
+.pd-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Animasi tak berhingga: hanya tingkat penuh, hanya selagi terlihat. */
+@keyframes pd-napas { from { scale: 1; opacity: .6; } to { scale: 1.1; opacity: 1; } }
+@keyframes pd-geser { to { transform: translateX(-50%); } }
+.pd-bungkus[data-penuh="ya"][data-tampak="ya"] .pd-aurora { animation: pd-napas 8s ease-in-out infinite alternate; }
+.pd-bungkus[data-penuh="ya"][data-tampak="ya"] .pd-jalur { animation: pd-geser 70s linear infinite; }
+
+/* Kemunculan bergantian terhubung ke gulir. Keadaan akhirnya keadaan alami elemen. */
+@keyframes pd-naik-besar { from { transform: translateY(10vh) scale(.8); opacity: 0; } }
+@keyframes pd-naik { from { transform: translateY(50px); opacity: 0; } }
+@supports (animation-timeline: view()) {
+  .pd-bungkus[data-penuh="ya"] .pd-raksasa { animation: pd-naik-besar linear both; animation-timeline: --pd; animation-range: entry 10% entry 100%; }
+  .pd-bungkus[data-penuh="ya"] .pd-alis { animation: pd-naik linear both; animation-timeline: --pd; animation-range: entry 25% entry 80%; }
+  .pd-bungkus[data-penuh="ya"] .pd-judul { animation: pd-naik linear both; animation-timeline: --pd; animation-range: entry 32% entry 88%; }
+  .pd-bungkus[data-penuh="ya"] .pd-aksi { animation: pd-naik linear both; animation-timeline: --pd; animation-range: entry 42% entry 95%; }
+  .pd-bungkus[data-penuh="ya"] .pd-kecil { animation: pd-naik linear both; animation-timeline: --pd; animation-range: entry 52% entry 100%; }
+}
+
+/* Tema kontras tinggi: tanpa hiasan, pil bergaris tegas. */
+[data-tema="kontras"] .pd-aurora, [data-tema="kontras"] .pd-kisi, [data-tema="kontras"] .pd-raksasa { display: none; }
+[data-tema="kontras"] .pd-pil, [data-tema="kontras"] .pd-pil-besar { border-color: var(--garis-kuat); }
+@media print {
+  .pd-bungkus { display: none; }
+}

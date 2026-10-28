@@ -32,6 +32,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -120,6 +121,10 @@ export function Editor({
   isiRuang?: boolean;
 }) {
   const teksRef = useRef<HTMLTextAreaElement>(null);
+  // Petunjuk papan ketik di kaki dikaitkan ke textarea: jalan keluar dari
+  // editor (Esc lalu Tab, WCAG 2.1.2) tidak boleh hanya ada sebagai teks
+  // visual yang tidak pernah dibacakan saat editornya berfokus.
+  const idPetunjuk = useId();
   const lapisRef = useRef<HTMLDivElement>(null);
   const sorotRef = useRef<HTMLPreElement>(null);
   const nomorRef = useRef<HTMLPreElement>(null);
@@ -717,6 +722,7 @@ export function Editor({
           autoComplete="off"
           wrap="off"
           aria-label={label}
+          aria-describedby={idPetunjuk}
           onInput={() => {
             gambar();
             beritahuTunda();
@@ -736,7 +742,7 @@ export function Editor({
         >
           {pesan}
         </span>
-        <span className="sembunyi-hp" style={{ marginLeft: "auto" }}>
+        <span id={idPetunjuk} className="sembunyi-hp" style={{ marginLeft: "auto" }}>
           Tab menambah indentasi · Esc lalu Tab untuk keluar · Ctrl+/ komentari
         </span>
       </div>

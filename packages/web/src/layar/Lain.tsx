@@ -81,7 +81,7 @@ export function Bookmark() {
       {galat ? (
         <Keadaan jenis="salah" gambar="belum" judul="Bookmark tidak terbaca" ket={galat} />
       ) : !d ? (
-        <div className="pusaran" aria-label="Memuat" />
+        <div className="pusaran" role="status" aria-label="Memuat" />
       ) : (
         <>
           {d.daftar.length ? (
@@ -361,7 +361,7 @@ export function Catatan() {
       {galat ? (
         <Keadaan jenis="salah" gambar="belum" judul="Catatan tidak terbaca" ket={galat} />
       ) : !d ? (
-        <div className="pusaran" aria-label="Memuat" />
+        <div className="pusaran" role="status" aria-label="Memuat" />
       ) : d.daftar.length ? (
         <div className="senarai">
           {(saring === null
@@ -619,7 +619,7 @@ export function Cari({
           ket="Coba: pointer, rekursi, JOIN, closure, malloc, interface."
         />
       ) : !hasil ? (
-        <div className="pusaran" aria-label="Mencari" />
+        <div className="pusaran" role="status" aria-label="Mencari" />
       ) : hasil.length ? (
         <div>
           <div className="baris-sisi" style={{ marginBottom: "var(--s3)" }}>
