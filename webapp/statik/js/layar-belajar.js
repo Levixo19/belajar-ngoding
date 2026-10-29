@@ -3071,7 +3071,7 @@ function blokKode(b, i, m, key, bhs, bersih) {
         // punya yang tidak muat di sini.
         p.bisa_dijalankan ? h("a.tbl.tbl-kecil.tbl-hantu", {
           title: "Buka di Ruang Coba: layar penuh, bisa diberi masukan (stdin)",
-          href: `#/coba?key=${key}&materi=${m.indeks}&bagian=${i}`,
+          href: `#/coba?key=${key}&materi=${m.indeks}&bagian=${b.bagian ?? i}`,
         }, "Ruang Coba") : null)),
     sarung,
     p.perintah.length

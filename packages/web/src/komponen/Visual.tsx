@@ -83,7 +83,7 @@ export function Visual({ spek }: { spek: SpekUmum }) {
           aria-label={spek.judul}
           className="visual-svg"
           preserveAspectRatio="xMinYMin meet"
-          style={{ maxWidth: w + "px" }}
+          style={{ width: "100%", maxWidth: Math.round(w * 1.3) + "px" }}
         >
           {hasil.simpul.map(keSimpul)}
         </svg>

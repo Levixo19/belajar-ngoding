@@ -583,7 +583,7 @@ def materi(params):
         "sorot": isi.bahasa_sorot(lang),
         "indeks": idx,
         "jumlah": len(lang["materials"]),
-        "judul": m["title"],
+        "judul": m["title"], "menit": waktu.menit_materi(m),  # satu rumus dengan halaman bahasa
         "sebelum": (lang["materials"][idx - 1]["title"]
                     if idx > 0 and idx - 1 in terbuka else ""),
         "sesudah": (lang["materials"][idx + 1]["title"]

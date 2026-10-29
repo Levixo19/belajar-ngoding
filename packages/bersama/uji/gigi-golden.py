@@ -2946,6 +2946,128 @@ BATERAI = {
                 '[tautan]',
             ),
         ]),
+    "banding-dasbor-hidup.mjs (tahap, durasi angka)": (
+        "banding-dasbor-hidup.mjs", PAKET_WEB,
+        sumber_web("komponen/angka-hidup-teks.ts"), [
+            (
+                'NaN dan t negatif tidak lagi aman',
+                '  if (!(t > 0)) return dari;',
+                '  if (t < 0) return dari;',
+                '[tahap]',
+            ),
+            (
+                'ujung animasi salah satu',
+                '  if (t >= 1) return ke;',
+                '  if (t >= 1) return ke - 1;',
+                '[tahap]',
+            ),
+            (
+                'kurva linear, bukan ease-out',
+                '  const k = 1 - Math.pow(1 - t, 3);',
+                '  const k = t;',
+                '[tahap]',
+            ),
+            (
+                'pembulatan ke bawah',
+                '  return Math.round(dari + (ke - dari) * k);',
+                '  return Math.floor(dari + (ke - dari) * k);',
+                '[tahap]',
+            ),
+            (
+                'batas atas durasi 2 detik',
+                '  return Math.min(1100, 450 + Math.round(Math.log10(1 + jarak) * 220));',
+                '  return Math.min(2000, 450 + Math.round(Math.log10(1 + jarak) * 220));',
+                '[durasi]',
+            ),
+            (
+                'dasar durasi 300',
+                '  return Math.min(1100, 450 + Math.round(Math.log10(1 + jarak) * 220));',
+                '  return Math.min(1100, 300 + Math.round(Math.log10(1 + jarak) * 220));',
+                '[durasi]',
+            ),
+            (
+                'durasi tumbuh dua kali lebih cepat terhadap jarak',
+                '  return Math.min(1100, 450 + Math.round(Math.log10(1 + jarak) * 220));',
+                '  return Math.min(1100, 450 + Math.round(Math.log10(1 + jarak) * 400));',
+                '[durasi]',
+            ),
+        ]),
+    "banding-dasbor-hidup.mjs (rel, teks, stat, lencana)": (
+        "banding-dasbor-hidup.mjs", PAKET_WEB,
+        sumber_web("layar/dasbor-hidup-teks.ts"), [
+            (
+                'persen terkecil di depan',
+                '.sort((a, b) => b.persen - a.persen);',
+                '.sort((a, b) => a.persen - b.persen);',
+                '[rel]',
+            ),
+            (
+                'bahasa yang belum dijalani ikut masuk rel',
+                '  const urut = bahasa.filter((b) => b.persen > 0)',
+                '  const urut = bahasa.filter((b) => b.persen >= 0)',
+                '[rel]',
+            ),
+            (
+                'posisi sekarang di belakang, bukan di depan',
+                '  return [...awal, ...sisa].slice(0, maks);',
+                '  return [...sisa, ...awal].slice(0, maks);',
+                '[rel]',
+            ),
+            (
+                'rel memuat tujuh panel',
+                'export const MAKS_REL = 6;',
+                'export const MAKS_REL = 7;',
+                '[rel]',
+            ),
+            (
+                'lebar bilah tidak dijepit',
+                '    isi: Math.max(0, Math.min(100, b.persen)),',
+                '    isi: b.persen,',
+                '[teks]',
+            ),
+            (
+                'persen dibulatkan ke bawah',
+                '    persen: `${Math.round(b.persen)}% selesai`,',
+                '    persen: `${Math.floor(b.persen)}% selesai`,',
+                '[teks]',
+            ),
+            (
+                'target tercapai tidak pernah ditandai',
+                '      capai: kurang === 0,',
+                '      capai: false,',
+                '[stat]',
+            ),
+            (
+                'satuan streak tertukar',
+                '      satuan: d.streak ? "hari berturut-turut" : "belum ada hari berurutan",',
+                '      satuan: d.streak ? "belum ada hari berurutan" : "hari berturut-turut",',
+                '[stat]',
+            ),
+            (
+                'level berikutnya sama dengan level sekarang',
+                'menuju level ${angka(d.level + 1)}`,',
+                'menuju level ${angka(d.level)}`,',
+                '[stat]',
+            ),
+            (
+                'bilah hari ini tidak dijepit di 100',
+                '      isi: Math.min(100, (d.xp_hari_ini / Math.max(1, d.target_harian)) * 100),',
+                '      isi: (d.xp_hari_ini / Math.max(1, d.target_harian)) * 100,',
+                '[stat]',
+            ),
+            (
+                'celah streak ditulis walau streak masih hidup',
+                '  const celah = d.streak ? null : celahBelajar(d);',
+                '  const celah = celahBelajar(d);',
+                '[stat]',
+            ),
+            (
+                'lencana tertukar: total per dimiliki',
+                '  return `${d.badge_dimiliki}/${d.badge_total}`;',
+                '  return `${d.badge_total}/${d.badge_dimiliki}`;',
+                '[lencana]',
+            ),
+        ]),
 }
 
 

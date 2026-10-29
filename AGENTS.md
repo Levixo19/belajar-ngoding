@@ -696,6 +696,122 @@ lagi di badan halaman. Tautan "kembali ke bahasa" dan tombol maju/mundur cuma
 ada di strip — itu sebabnya pembaca materi kehilangan `.materi-balik` dan ruang
 kerja latihan kehilangan kaki "latihan sebelumnya/berikutnya".
 
+**Strip konteks selebar ISI, bukan selebar jendela** (2026-10-28, permintaan pemilik: "untuk bar BAB
+itu tolong disesuaikan dong jangan kepanjangan seperti itu", dengan tangkapan layar jendela 1853 px).
+`#konteks` dulu membentang selebar `#panggung`: tombol kembali di x=16 dan panah di x=1837, sementara
+isi pembaca materi cuma 271 sampai 1583, jadi kedua ujung strip terpisah jauh dari isinya. Sekarang
+`--konteks-maks` (1312 px, lebar tiga kolom pembaca materi: daftar bab 248, kolom baca, peta 208, dan dua
+celah; terukur sama di 1440 sampai 2560 px) membatasinya lewat `width: 100%; max-width; margin-inline:
+auto`. Pada jendela 1440 px ke atas tepi strip persis sejajar dengan daftar bab dan peta halaman; di
+jendela yang lebih sempit tidak ada yang berubah. Satu batas untuk SEMUA layar yang memakai strip
+(bahasa, materi, kuis, latihan), bukan satu per jenis layar: kelas ukuran (`lebar`, `kolom`) menempel di
+`#layar`, saudara SESUDAH strip, dan CSS tidak bisa memilih saudara sebelumnya tanpa `:has()`. Suntingan
+CSS-nya sengaja net-zero baris (token digabung ke baris `--konteks-tinggi`, aturan ke baris `display:
+flex`, keterangan menggantikan dua baris komentar) supaya alamat `gaya.css:NNNN` yang dirujuk berkas lain
+tidak bergeser. Pagarnya `uji/manual/strip-konteks.mjs` (26 pemeriksaan di empat lebar materi ditambah
+bahasa dan latihan; hijau pada kode baru, 8 merah pada salinan berperilaku lama) dan
+`TestStripKonteksSelebarIsi`. Batasnya: bila kolom pembaca materi diubah, 1312 harus dihitung ulang (skrip
+menangkapnya lewat pemeriksaan sejajar di 1440 px ke atas), dan kesejajaran di 1280 px tidak diukur
+karena peta halaman belum tampil di sana.
+
+**Lembar baca: prosa sempit, pelat lebar, dan bug alamat Ruang Coba** (2026-10-29, sesudah debat 17 agen:
+4 riset, 8 perancang, 5 kritikus; pemilik: "layar materi ini juga masih kaku dan membuat ngantuk saat
+belajar ... rombak desainnya"). Hasil debat lengkap (fakta terkoreksi, tiga desain, keputusan yang menunggu
+pemilik) ada di memori `debat-desain-pembaca-materi-2026-10-29`; yang sudah DIBANGUN: fondasi (empat butir
+pertama), siluet baru (pelat gelap, rel terlipat, meta, callout bersimbol, "Cara memecahkannya" terlipat),
+dan judul bagian:
+
+* **Bug Ruang Coba (sudah ada sebelum perombakan).** `isi.bagian_materi` memecah bagian yang punya `body`
+  DAN `code` jadi dua blok, jadi indeks blok (`m.bagian[i]` di klien, anak ke-i `<article>`) bergeser dari
+  indeks `sections`. Tautan Ruang Coba mengirim indeks blok, sedangkan `/api/materi/contoh` membaca
+  `m["sections"][bagian]`: 807 dari 2.757 blok kode (256 materi) salah alamat, 560 berujung galat 409/404 dan
+  247 membuka kode LAIN, tanpa satu galat pun di klien (tes kontrak hanya memeriksa bentuk). Perbaikannya
+  aditif: blok `kode` kini membawa `bagian` (indeks data), dan kedua antarmuka (`BlokKode.tsx`,
+  `layar-belajar.js`) memakainya (`b.bagian ?? i`, jadi server lama tetap terbaca). Indeks BLOK tetap
+  dipakai peta bagian, pintasan, dan `children[i]`; indeks DATA dipakai Ruang Coba, kunci Tebak, dan
+  `visual.setelah`. Ada TIGA ruang indeks, jadi desain apa pun yang menambah unit atau langkah harus memilih
+  satu secara sadar. `TestAlamatBlokKodeRuangCoba` menyapu seluruh korpus (merah pada kode lama).
+* **H1 materi 66 px adalah bug urutan CSS**, bukan keputusan: `.kepala-materi h1` (sekitar 41 px; komentarnya
+  sendiri bilang "judul raksasa cuma mendorong prosa ke bawah lipatan") kalah dari `.kepala-besar h1` (66 px)
+  karena aturan itu ditulis belakangan dan header membawa KEDUA kelas. Sekarang aturan 66 px memakai
+  `.kepala-besar:where(:not(.kepala-materi)) h1` (net-zero baris, spesifisitas layar lain tidak berubah).
+* **Baris prosa 99 karakter, bukan 72**: `72ch` mengukur lebar angka nol (Atkinson 0,648 em), jadi 791 px. Yang
+  menggerakkan penggeser "Lebar kolom baca" (`--baca`) memagari SELURUH `.prosa`, kode ikut. Blok "lembar
+  baca" di kaki `gaya.css` memisahkannya: prosa (`.par`, `ul`, `ol`, `h2`) = tiga perempat `--baca`
+  (593 px, sekitar 75 huruf, tetap mengikuti penggeser), kode, tabel, dan gambar tetap selebar pelat
+  (790 px, karena p99 baris kode 84 kolom: kolom 590 px hanya memuat 33% blok kode tanpa gulir mendatar).
+  Rata kiri, jadi H1, prosa, dan pelat berbagi tepi yang sama. Blok kode dapat penanda tepi kiri 3 px
+  (kuningan bila bisa dijalankan); tidak ada token warna yang berubah (kontras sintaks tidak bergeser).
+* **Header tidak lagi mengulang bab dan posisi** yang sudah dibawa strip konteks: label "Bab N · judul" dan
+  pil "materi N dari M" dibuang untuk kurikulum berbab; sisa satu pil tingkat.
+* **Tema yang diukur dulu: TERANG.** Pemilik membaca di tema terang (tangkapan layarnya krem), padahal
+  bawaan aplikasi gelap. Di terang halaman `#faf9f6` dan kode `#f6f6f7` hanya 1,03:1, jadi kode tidak
+  punya siluet. Jawabannya pelat gelap (di bawah), bukan menggelapkan token sintaks di atas kertas terang.
+* **Pelat kode gelap di tema terang** (setelah pemilik menegur "kamu gada sama sekali merombak design"):
+  `[data-tema="terang"] .blok-kode` di dalam `@media screen` memasang ulang SELURUH token tema gelap
+  (salinan `:root`, termasuk `--k-*`) pada pelat, dan menurun ke editor, hasil, dan jejak di dalamnya.
+  Kontras sintaks yang sudah diukur di tema gelap ikut berlaku tanpa angka baru (latar 0,006 luminans,
+  teks 15,3:1); `test_pelat_gelap_di_tema_terang_adalah_salinan_tema_gelap` menuntut tiap token SAMA
+  dengan `:root`. Hanya `.blok-kode` (kode sungguhan dengan kepala Salin/Jalankan) yang gelap. Blok `pra`
+  (contoh sejajar dan diagram di dalam prosa) tetap terang, dan itu sengaja: gelap berarti "ini diketik
+  atau dijalankan", terang berarti "ini dibaca". Cetak tetap terang (`@media screen`). Pemilih ber-kombinator,
+  jadi aman terhadap pagar POPULASI. Penanda tepi kiri kini `border-left: 3px` (kuningan bila bisa
+  dijalankan), bukan `box-shadow` (bayangan dalam tak terlihat di atas pelat gelap).
+* **Rel kiri melipat bab** (hanya `@container panggung (min-width: 1130px)`, tiga kolom): judul bab jadi
+  tombol `aria-expanded`, butir materi bab non-aktif mendapat `materi-rel-tutup` dan hilang. DOM TETAP DATAR
+  (butir tetap anak langsung daftar), jadi pintasan dan pengukur yang membaca `li` tidak berubah; yang
+  terbuka secara bawaan hanya bab yang memuat materi aktif. Dari 23 butir HTML hanya 10 tampak.
+* **"Cara memecahkannya" terlipat** (`komponen/IsiProsa.tsx`): bagian "Di dunia nyata" ada di SEMUA materi
+  dan kata kuncinya sudah ada di data, jadi tidak butuh satu kata konten baru. Tombol asli
+  (`aria-expanded`, `aria-controls`), isi `hidden` (bukan `<details>`, supaya cetak cukup menimpa
+  `display: block` tanpa `!important`). Semuanya terjadi DI DALAM `<section>` bagiannya, jadi
+  `children[i]` artikel tidak bergeser.
+* **Baris meta di kepala**: "sekitar N menit · N kode · N gambar" (`ringkasMateri` di `Belajar.tsx`),
+  menit dari server (`api.materi` -> `waktu.menit_materi`, satu rumus dengan halaman bahasa). Callout
+  `Jebakan:`/`Aturan:` dapat simbol CSS (`::before`: segitiga `--salah`, siku `--nyala`), tanpa markup
+  baru. Gambar konsep diperbesar (`Visual.tsx`, `maxWidth` 1,3 kali lebar bawaan).
+* **Efek melawan kantuk TIDAK terbukti.** Semua ini hipotesis desain dari debat dan ukuran peramban;
+  belum ada pelajar yang membacanya berjam-jam. Server milik pemilik harus di-restart agar `isi.py`
+  dan `api.py` baru aktif (CSS dan bundel langsung berlaku saat dimuat ulang).
+* **Judul bagian untuk prosa panjang** (2026-10-29, `alat/tambah_judul.py`). 612 bagian prosa sedikitnya
+  150 kata (bukan bagian pertama) berdiri tanpa satu pun penanda di tengah halaman; sekarang semuanya
+  punya `heading`, jadi `h2` di layar dan peta "Di halaman ini" memuatnya (HTML materi 4: peta berisi
+  tujuh judul asli, bukan kalimat pertama yang dipotong). Hanya field `heading` yang bertambah, sebagai
+  kunci PERTAMA bagian: tidak ada bagian yang dipecah, disisipkan, atau digeser, jadi ketiga ruang indeks
+  di atas tidak bergeser. Judulnya ditulis enam agen (Sonnet, masing-masing seperenam korpus) dan digerbang
+  mesin: 8 sampai 52 huruf, 2 sampai 8 kata, huruf kapital hanya di awal dan nama atau singkatan,
+  tanpa dash, emoji, atau tanda baca penutup, bukan kata umum kosong ("Penjelasan", "Contoh"), tanpa
+  kosakata tempelan ("menyelami", "komprehensif"), unik di dalam materinya dan bukan judul materi itu
+  sendiri. Penerapnya membuktikan sesudah menulis bahwa tiap bagian sama persis selain `heading`, dan
+  mengembalikan berkasnya kalau tidak. Cara memakainya: `calon <kurikulum,...> naskah.txt` menulis daftar
+  bagian yang butuh judul, `terap hasil.json [--tulis]` memeriksa dan menulis. Batas yang disadari: banyak
+  judul berbentuk daftar ("A, B, dan C") karena banyak bagian memuat tiga pokok sama berat (506 dari 612
+  memuat "dan"), dan judul 150 kata ke bawah tidak diberi (bagian pendek mengalir mengikuti judul
+  sebelumnya). Pagarnya `tests/test_judul_bagian.py` (7 tes): nol bagian prosa panjang tanpa judul, nol judul
+  bermasalah gaya, dan gerbang serta penyisipnya diuji sendiri.
+* **`periksa_gaya.py` dulu buta terhadap judul.** Ia hanya membaca badan materi, jadi 37 judul berhuruf
+  kapital penekanan ("pojok KIRI ATAS", "kapan async TIDAK perlu") dan empat judul ber-em dash tidak pernah
+  terhitung. Sekarang `python3 alat/periksa_gaya.py judul` menghitungnya (kapital penekanan, dash, emoji,
+  tempelan, umum, kembar), dan semuanya sudah dibereskan (42 judul disunting, `ISI`, `TIDAK`, `BUKAN`, dll.
+  jadi huruf kecil; singkatan asli seperti ROC, PKCE, NGINX didaftarkan di `AKRONIM`). Pindai kosakata AI
+  (30-an pola Indonesia: "peran penting", "lanskap", "tidak hanya ... tetapi juga", "dengan demikian", ...)
+  atas seluruh prosa menemukan korpusnya sudah bersih: dari 760 ribu kata hanya sekitar 50 kecocokan, hampir
+  semuanya pemakaian wajar ("unggul" di perbandingan, "makanya" di nada ngobrol). Frasa "saat materi ini
+  ditulis" (187 baris di 12 kurikulum ranah) SENGAJA dibiarkan: ia mencap versi dan bulan rilis di samping
+  angka versinya, yaitu fakta yang berumur, bukan hiasan.
+* **Sengaja belum dikerjakan, beserta sebabnya.** Gambar menurut peran (medan penempatan per
+  blok TIDAK ADA di skema: `_MEDAN_UMUM` hanya `setelah, jenis, judul, ket`; satu perancang sempat
+  mengklaim `setelah_blok` ada, dan ia salah); "Tebak dulu" bawaan di tiap materi (median 29 baris per
+  blok, 41% membocorkan jawaban lewat komentar ujung baris, hanya sekitar 11% materi cocok, jadi fitur itu
+  hanya akan hidup di sebagian kecil halaman; "Cara memecahkannya" yang terlipat sudah memberi latihan
+  mengingat di SEMUA materi); desain "Lembar Bab" dan "Rasi Baca" dari debat.
+* Pagarnya: `uji/manual/lembar-baca.mjs` (50 pemeriksaan: empat tema plus pecahkan, rel, dan callout; 18 dari
+  27 pemeriksaan awal merah pada salinan berperilaku lama), `TestLembarBaca` (11 tes),
+  `TestAlamatBlokKodeRuangCoba` (3 tes), dan `tests/test_judul_bagian.py` (7 tes). Empat pagar "blok terakhir"
+  (`TestKacaCair`, `TestTombolKaca`, `TestPenutupDasbor`, `TestDasborHidup`) menyesuaikan jumlah blok
+  susulan. Batas yang disadari: semua angka layout desain yang BELUM dibangun adalah hitungan dari token,
+  bukan ukuran peramban; efek melawan kantuk adalah hipotesis, tidak terbukti.
+
 **Jangan pernah memakai `scrollIntoView` untuk menggulir jalur materi.** Ia
 menggulir SEMUA leluhur yang bisa digulir, termasuk dokumen — jadi membuka
 materi ke-13 lewat navigasi dalam aplikasi mendaratkan pembacanya sembilan
@@ -1577,6 +1693,94 @@ tipis (0,22), dan baterai mutan menyunting berkas sumber DI TEMPAT lalu memulihk
 (md5 diverifikasi): server pemilik yang sedang hidup bisa melayani CSS yang sedang
 dimutasi selama sekitar satu menit per mutan.
 
+**Dasbor hidup** (2026-10-28, permintaan pemilik: "menambahkan apapun yang bisa kamu ambil dari
+21st.dev tadi untuk membuat aplkiasiku menjadi makin interaktif dan lugas", lalu "aku berfikir mau
+merubah landing pagenya, itu terlalu kaku menurutku"; ditanya layar mana dan kaku di mana, jawabannya
+Dasbor, dan yang kaku tata letak, gerak, isi, dan gaya visualnya). Dasbor berprogres disusun ulang.
+Yang lama tiga belas kotak berbingkai sama dalam dua kolom (3.382 px di 1440, lubang kosong di kolom
+kanan, dan jawaban "aku ngapain" hanya satu dari lima belas kotak); yang baru 2.861 px dan lima
+bagian dengan bobot berbeda: hero (sapaan Bodoni, tiga angka tanpa kotak, tiket "Lanjutkan"
+selebar sapaan), "Habis ini" (paling banyak tiga langkah ditambah tantangan, mendatar), rel
+"Bahasamu" (panel yang meluas), ritme (pekan 4fr dan bara 8fr), dan dua ubin jelajah; penutup
+dasbor tetap. Bagian-bagiannya: `layar/Dasbor.tsx` (`MejaKerja`, `StripHariIni`, `TiketLanjut`,
+`BarisLangkah`, `RelBahasa`), `layar/dasbor-hidup-teks.ts` (isi murni), `komponen/AngkaHidup.tsx`
+dengan `komponen/angka-hidup-teks.ts`, dan blok "dasbor hidup" di KAKI gaya.css (kelas `.ds-*`).
+Keputusan yang masing-masing ada sebabnya:
+
+* **Keputusan lama tetap berlaku.** "Dasbor = meja kerja" (2026-10-17) tidak dibalik: tidak ada
+  kalimat gulir atau marquee baru (strip berjalan milik penutup dasbor, dari permintaan lain), dan
+  profil XP 0 tetap memakai layar mulai. "Satu layar satu tombol utama" juga: tiket adalah
+  SATU-SATUNYA `tbl-kaca` di `MejaKerja` (`TestTombolKaca` menghitung dua literal di `Dasbor.tsx`,
+  tiket dan layar mulai). Kelas lama (`.meja-*`, `.bento`) TIDAK disentuh karena `/lama` memakainya;
+  mencabut fitur ini = hapus blok CSS, ketiga berkas baru, dan kembalikan `MejaKerja` dari git.
+* **Gagasan dari 21st.dev, tidak ada kode yang disalin.** "Hover Expand" dan "Expanding Cards"
+  untuk rel, "Count Up" untuk angka; lisensi komponen asal sering KOSONG, dan tidak ada pustaka
+  yang ditambah. `TestDasborHidup` menagih catatan itu di komentar.
+* **Rel: `flex-grow` satu-satunya properti yang dianimasikan.** Terbuka = kelas `.buka`, jadi gerak
+  mati tetap benar tanpa animasi. Isi panel tertutup `inert`, jadi Tab tidak melewati tautan yang
+  tidak terlihat. Hanya `pointerType === "mouse"` yang membuka lewat hover (sentuhan tidak
+  melompat), papan ketik lewat `onFocusCapture` (fokus pada tab membuka panelnya), tab berupa
+  `<button aria-expanded>`. Rasi (`PetaRasi`) hanya digambar di panel terbuka; panel tertutup
+  memuat persen bahasanya sebagai pengukur tegak (`::before` setinggi `--p`). Paling banyak enam
+  panel: posisi sekarang dulu, lalu persen terbesar (`urutRel`), hanya bahasa yang sudah dijalani.
+* **Pergeseran tata letak BUKAN gerakan penunjuk, dan ini cacat yang ditemukan pengukuran.**
+  Panel yang melebar menggeser panel lain ke bawah penunjuk yang diam, dan Chrome menjawabnya
+  dengan `pointerenter` palsu yang membawa koordinat SAMA. Tanpa penyaring hover melompat 3, 2, 3,
+  5 dalam 200 ms dan berhenti di panel yang tidak ditunjuk siapa pun (panel kelima melewati tepi
+  kanan sampai 140 px selama transisi yang terputus). Penyaringnya `posisiMouse` di `RelBahasa`:
+  `pointerenter` yang koordinatnya sama dengan peristiwa terakhir diabaikan. Pelajarannya dua:
+  pemeriksaan keadaan akhir hanya menangkapnya kadang-kadang (lulus sekali, lalu gagal lima kali
+  berturut-turut), jadi pagarnya merekam URUTAN panel terbuka per bingkai; dan KONTROL tanpa
+  mutasi di salinan baterai yang menemukannya, karena ia memerah padahal tidak ada yang dimutasi.
+* **Angka hidup (`AngkaHidup`).** Keadaan alaminya angka AKHIR; animasi hanya berangkat dari nol,
+  hanya di tingkat gerak penuh (`useGerakPenuh`), dan tidak menganimasikan angka yang di luar layar
+  saat dipasang (kedipan di depan orang yang membaca). Teks ditulis lewat ref, bukan anak React;
+  perubahan nilai berangkat dari angka sebelumnya; pembaca layar membaca `.ds-sr`. Ini salinan
+  KETIGA hitung-naik (setelah `useAngkaJalan` di `Lencana.tsx` dan kartu angka `Statistik.tsx`,
+  kurva ease-out kubik yang sama) dan sengaja tidak digabung: menggabungkannya menyentuh pagar
+  `TestLebarDigitDiMesin` dan tiga pemakai sekaligus. Hitungannya `font-variant-numeric:
+  tabular-nums` hanya di `.angka-hidup` (pagar itu kini 31).
+* **Kartu bara meluber 40 px** begitu ditaruh di kolom 4fr/8fr: `.meja-ritme` berkolom
+  `max-content`. Dipatok `minmax(0, 1fr)` di `.ds-ritme`. Label rasi di panel semula 7 px dan tab
+  tertutup kosong; keduanya diperbaiki lewat CSS (label diperbesar, pengukur tegak).
+* **Tanggal di komentar kode harus tanggal sebenarnya.** Komentar kepala blok CSS sempat bertanggal
+  2026-10-29 padahal hari itu 2026-10-28 (tanggal yang saya karang, bukan dibaca dari `date`);
+  tesnya ikut menagih tanggal itu. Sekarang keduanya 2026-10-28.
+
+Pagarnya: `uji/banding-dasbor-hidup.mjs` (6.836 perbandingan SIFAT atas rumus dan isi, oracle
+independen; terdaftar di tiga tempat, 19 sel mutasi semuanya merah dengan kategori yang tepat),
+`uji/manual/dasbor-hidup.mjs` (97 pemeriksaan di peramban: A sampai G 48 di server berprofil
+berprogres, D kontras 48 di empat tema, H 1 di server berprofil BARU; penyaring `HANYA=A,B,...`
+dan `FOTO=`), dan `TestDasborHidup` (10 tes). Baterai mutan peramban (14 mutan sumber dan CSS,
+dijalankan di SALINAN pohon di jalur pendek dengan `node_modules` ditautkan dan server sendiri;
+skripnya di scratchpad sesi, bukan di repo) semuanya merah dengan alasan yang benar. Ia
+menemukan empat hal yang tidak kelihatan saat pagarnya ditulis, dan keempatnya sudah ditambal:
+
+* **Kontrol TANPA mutasi memerah**: itu cacat hover di atas, bukan flaky. Pemeriksaan keadaan akhir
+  sempat lulus sekali lalu gagal lima kali berturut-turut.
+* **Mutan "patok kolom bara dibuang" LOLOS.** `.ds-ritme > * { min-width: 0 }` sudah menahan
+  luberan, jadi pemeriksaan tepi kanan tetap hijau; yang berubah grid-nya menjadi dua kolom dengan
+  kolom kedua terjepit 38,7 px. Ditambah pemeriksaan "kartu bara satu kolom".
+* **Mutan "penyaring koordinat dibuang" LOLOS** (pagar pertamanya merekam urutan panel, dan itu
+  bergantung pada pewaktu `pointerenter` palsu milik Chrome). Ditambah pemeriksaan deterministik
+  yang mengirim `pointerout`/`pointerover` sintetis berkoordinat sama (React membacanya sebagai
+  `pointerenter`) dan menuntut hover tidak pindah, lalu yang berkoordinat beda dan menuntutnya pindah.
+* **Regex pagar "terdaftar di tiga tempat" salah**: `banding-[a-z]+\.mjs` tidak mengenal tanda
+  hubung, jadi pembanding bernama dua kata dilaporkan "tidak ada di skrip npm" padahal ada.
+  Dilebarkan jadi `[a-z-]+`. Penyisipan komentar di `test_web.py` juga menggeser alamat yang
+  dirujuk berkas lain; hunk-nya dibuat net-zero (pajak alamat, lihat di atas).
+
+Jebakan alat: `mulai({ ukuranTeks })` hanya mengenal kunci `"kecil"`, `"sedang"`, `"besar"`, dan
+`"sangat besar"` (dengan spasi); kunci lain jatuh DIAM-DIAM ke 16 px dan pengukuran huruf besar
+tampak lulus tanpa mengukur apa pun. Alat Write mengubah escape `\u2014` menjadi karakternya, jadi
+regex dash di skrip diperbaiki lewat Python. Batas yang disadari: margin kontras tertipis 4,68:1
+(persen panel tertutup, tema malam) dan 4,71:1 (keterangan angka, tema terang); ukuran huruf
+diukur di 18 dan 20 px saja (tanpa luberan, panel terbuka menyempit 888 jadi 824 px, kolom bara
+tetap tunggal); tata letak di 1280, 1440, 1600 px; GPU nyata, Firefox, Safari, dan pembaca layar
+nyata belum diuji; `skyline.mjs` lama gagal pada peringatan konsol "GPU stall" dari kanvas kaca
+cair, bukan karena perubahan ini. Dua tautan di `.bagian-kepala` menjorok 8 px ke kanan sebagai
+area sentuh, sama seperti sebelum perubahan ini.
+
 ### Proyek akhir
 
 Tiap bahasa ditutup satu latihan bertanda `proyek: True`. Ia latihan biasa di
@@ -2001,9 +2205,9 @@ ditunjuk). Yang mengikat:
 * **Dua bahasa warna hidup berdampingan** sampai ada ronde CSS-saja untuk
   `PetaRasi`: Bahasa dan Dasbor masih memakai kuningan = selesai.
 * **Pengukuran di peramban tinggal di repo**: `packages/web/uji/manual/`
-  (dua puluh enam berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
+  (dua puluh sembilan berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
   `tangkap.mjs`, `fokus-dialog.mjs`, `data-dialog.mjs`, `sapuan-kontrol.mjs`,
-  `belajar-ux.mjs`, `kuis-karier.mjs`, `pilihan-karier.mjs`, `pengantar.mjs`, `gambar-pengantar.mjs`, `orbit-bekal.mjs`, `skyline.mjs`, `pohon-berkas.mjs`, `kaca-cair.mjs`, `tombol-kaca.mjs`, `penutup.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
+  `belajar-ux.mjs`, `kuis-karier.mjs`, `pilihan-karier.mjs`, `pengantar.mjs`, `gambar-pengantar.mjs`, `orbit-bekal.mjs`, `skyline.mjs`, `pohon-berkas.mjs`, `kaca-cair.mjs`, `tombol-kaca.mjs`, `penutup.mjs`, `dasbor-hidup.mjs`, `strip-konteks.mjs`, `lembar-baca.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
   `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET kecuali `data-dialog.mjs` dan
   `sapuan-kontrol.mjs` (yang MENULIS) serta `belajar-ux.mjs` (mengetik di editor
   PROFIL UJI; dua server: pelajar baru dan pelajar kembali) dan `kuis-karier.mjs`
@@ -2379,10 +2583,11 @@ melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
 | `layarDasbor` | `layar/dasbor-teks.ts` | `layar/Dasbor.tsx` | 360 profil hasilan, benih 20261026 |
 | palet perintah | `komponen/palet-cari.ts` | `komponen/Palet.tsx` | 247 teks x 35 kueri, urutan penuh |
 | layar Langit | `komponen/lensa-geometri.ts`, `komponen/lensa-teks.ts`, `layar/langit-data.ts` | `layar/Langit*.tsx`, `komponen/Glif.tsx` | 440.982 sifat (`banding-lensa.mjs`: tidak ada JS lama untuk diadu), `ringkasPembuka` diadu `golden-pembuka.json` (110 kasus, dibangkitkan `alat/golden_pembuka.py`) |
+| dasbor hidup | `layar/dasbor-hidup-teks.ts`, `komponen/angka-hidup-teks.ts` | `layar/Dasbor.tsx`, `komponen/AngkaHidup.tsx` | 6.836 sifat (`banding-dasbor-hidup.mjs`: tidak ada JS lama untuk diadu, oracle independen) |
 
-Kedua puluh dua pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
-`test_konten_json.TestAlgoritmaTypeScript`, dan **413 sel mutasi** di
-`packages/bersama/uji/gigi-golden.py` (398 untuk kedua puluh dua pembanding web,
+Kedua puluh tiga pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
+`test_konten_json.TestAlgoritmaTypeScript`, dan **432 sel mutasi** di
+`packages/bersama/uji/gigi-golden.py` (417 untuk kedua puluh tiga pembanding web,
 15 untuk ketiga golden `bersama`) membuktikan semuanya bisa MERAH. Pagar CSS dan
 sumber layar Langit punya baterainya sendiri, `alat/uji_gigi_blok.py` (58 sel).
 
@@ -2982,6 +3187,8 @@ contoh. Yang mengikat untuk tulisan baru:
   ada dash di prosa, blok `Keluaran:` berubah, atau judul/kode/bagian lain
   ikut berubah. Heading dan kode boleh dibetulkan, tapi dengan tangan dan
   dengan alasan: judul tidak pernah, karena ia kunci progres.
+* **Judul bagian punya alat sendiri**: `python3 alat/periksa_gaya.py judul` mengukurnya, dan
+  `python3 alat/tambah_judul.py` menulisnya (lihat "Lembar baca"). `ganti_badan.py` tetap tidak boleh menyentuhnya.
 * **Menulis ulang juga berarti memeriksa fakta.** Putaran ini menemukan
   puluhan klaim yang salah di prosa lama (int(-3.99) bukan "dibulatkan ke
   bawah", PriorityQueue bukan antrean FIFO, contoh `[InlineData(10, "E")]`

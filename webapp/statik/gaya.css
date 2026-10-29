@@ -500,7 +500,7 @@
      untuk remah roti yang mengulang judul yang sudah tertulis besar-besar
      tepat di bawahnya. */
   --rel-tinggi: 54px;
-  --konteks-tinggi: 44px;
+  --konteks-tinggi: 44px; --konteks-maks: 1312px; /* = lebar isi pembaca materi */
   /* Titik tempel untuk apa pun yang menempel DI BAWAH bilah. Diisi ulang
      oleh `#panggung.berkonteks` di bawah, jadi kolom yang menempel tidak
      perlu tahu apakah strip konteksnya sedang ada. */
@@ -1012,15 +1012,15 @@ code { font-family: var(--f-kode); font-size: .92em; }
    di halamannya sendiri.
 
    Ia HANYA ADA di layar yang punya konteks (bahasa, materi, kuis, latihan).
-   Di dasbor dan pengaturan ia tidak dirender sama sekali — dan 44 piksel itu
-   kembali jadi milik isinya. */
+   Di dasbor dan pengaturan ia tidak dirender sama sekali (44 px kembali ke isinya).
+   Selebar ISI, bukan jendela: --konteks-maks = lebar tiga kolom pembaca materi. */
 
 #konteks {
   position: sticky;
   top: var(--rel-tinggi);
   z-index: var(--l-lengket);
   min-height: var(--konteks-tinggi);
-  display: flex;
+  display: flex; width: 100%; max-width: var(--konteks-maks); margin-inline: auto;
   align-items: center;
   gap: var(--s3);
   padding: 0 var(--s4);
@@ -6237,7 +6237,7 @@ html.lingkar-tema::view-transition-new(root) {
     letter-spacing: -.012em;
     font-variation-settings: "opsz" 26;
   }
-  .kepala-besar h1 { font-size: clamp(2.8rem, 1.6rem + 2.8vw, 4.6rem); line-height: 1.02; }
+  .kepala-besar:where(:not(.kepala-materi)) h1 { font-size: clamp(2.8rem, 1.6rem + 2.8vw, 4.6rem); line-height: 1.02; }
   .kepala-materi h1 { font-variation-settings: "opsz" 18; letter-spacing: -.008em; }
   .kepala-latihan h1 { font-family: var(--f-ui); }
   /* Label kecil di atas judul: bukan huruf kapital berjarak (ciri template),
@@ -7784,4 +7784,369 @@ body {
 [data-tema="kontras"] .pd-pil, [data-tema="kontras"] .pd-pil-besar { border-color: var(--garis-kuat); }
 @media print {
   .pd-bungkus { display: none; }
+}
+
+/* ================================================================== dasbor hidup
+   Susunan baru Dasbor berprogres (layar/Dasbor.tsx, MejaKerja). Permintaan pemilik
+   2026-10-28: "landing page" terasa kaku. Diagnosisnya terukur di tangkapan layar 1440:
+   tiga belas kotak berbingkai sama dalam dua kolom, kolom kanan atas separuh kosong, kartu bara
+   hanya dua pertiga lebar, dan jawaban "aku ngapain sekarang" hanya satu dari lima belas kotak.
+   Susunannya sekarang: sapaan dan tiga angka hari ini TANPA kotak, tiket langkah utama selebar
+   layar, deretan "Habis ini", rel bahasa yang meluas saat disorot, lalu ritme dan dua ubin.
+
+   Gagasan interaksinya dari katalog 21st.dev ("Hover Expand", "Expanding Cards", "Count Up");
+   tidak ada kode yang disalin, dan tidak ada pustaka. Kelas `.meja-*` dan `.bento` lama TIDAK
+   disentuh: antarmuka lama di /lama masih memakainya lewat berkas ini.
+
+   Aturan gerak: satu properti, satu mesin. Hover mengangkat lewat `translate` (umpan tekan WAAPI
+   memegang `transform`); rel hanya menganimasikan `flex-grow`. Keadaan terbuka/tertutup rel adalah
+   keadaan alami (kelas `.buka`), bukan hasil animasi, jadi gerak yang dimatikan tidak
+   menyembunyikan apa pun. Mencabutnya = hapus blok ini dan kembalikan MejaKerja dari git. */
+.ds-meja { gap: var(--s8); }
+.ds-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.angka-hidup { font-variant-numeric: tabular-nums; }
+
+/* ---- hero: sapaan, tiga angka, tiket */
+.ds-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas: "kini stat" "tiket tiket";
+  column-gap: var(--s8);
+  row-gap: var(--s7);
+  align-items: end;
+}
+.ds-hero-kini { grid-area: kini; min-width: 0; display: grid; gap: var(--s3); align-content: end; }
+.ds-hero > .ds-stat { grid-area: stat; }
+.ds-hero > .ds-tiket, .ds-hero > .sambut-sub { grid-area: tiket; }
+.ds-sapa {
+  margin: 0;
+  font-family: var(--f-plakat);
+  font-weight: 600;
+  font-variation-settings: "opsz" 26;
+  font-size: clamp(2.8rem, 1.5rem + 3.6vw, 5.2rem);
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+
+.ds-stat {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s4) var(--s5);
+  align-items: start;
+  padding-left: var(--s6);
+  border-left: var(--tebal-garis) solid var(--garis);
+}
+.ds-stat-butir { display: grid; gap: var(--s2); align-content: start; min-width: 0; }
+.ds-stat-angka {
+  font-family: var(--f-plakat);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 1.7rem + 1.8vw, 3.4rem);
+  line-height: 1;
+  color: var(--teks);
+}
+.ds-stat-butir.capai .ds-stat-angka { color: var(--tumbuh); }
+.ds-stat-satuan { font-size: var(--t-kecil); line-height: 1.3; color: var(--teks-2); }
+.ds-stat-ket { font-size: var(--t-kecil); line-height: 1.35; color: var(--redup); }
+.ds-bilah { margin-top: var(--s1); }
+.ds-stat-lencana {
+  grid-column: 1 / -1;
+  justify-self: start;
+  display: inline-flex; align-items: center; gap: var(--s2);
+  min-height: 24px;
+  padding: var(--s1) var(--s3);
+  border-radius: var(--r-penuh);
+  border: var(--tebal-garis) solid var(--garis);
+  font-size: var(--t-kecil);
+  color: var(--teks-2);
+  transition: border-color var(--cepat), color var(--cepat);
+}
+.ds-stat-lencana:hover { text-decoration: none; border-color: var(--garis-kuat); color: var(--teks); }
+
+/* tiket langkah utama: satu-satunya permukaan beraksen di layar ini */
+.ds-tiket {
+  position: relative;
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s6);
+  padding: var(--s5) var(--s6) var(--s5) var(--s5);
+  border-radius: var(--r-besar);
+  border: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 38%, var(--garis));
+  background: linear-gradient(100deg, color-mix(in srgb, var(--nyala) 9%, var(--kartu)), var(--kartu) 58%);
+  box-shadow: var(--kilau-tepi),
+    0 0 0 5px color-mix(in srgb, var(--teks) 2.5%, transparent),
+    0 0 0 calc(5px + var(--tebal-garis)) var(--garis);
+  color: inherit;
+  overflow: hidden;
+  transition: border-color var(--cepat), translate var(--pegas-jawab-ms) var(--pegas-jawab);
+}
+.ds-tiket:hover { text-decoration: none; border-color: var(--nyala); translate: 0 -2px; }
+.ds-tiket-sampul {
+  display: block;
+  height: 7.5rem;
+  border-radius: var(--r);
+  overflow: hidden;
+  border: var(--tebal-garis) solid var(--garis);
+}
+.ds-tiket-sampul svg { display: block; width: 100%; height: 100%; }
+.ds-tiket-isi { min-width: 0; display: grid; gap: var(--s2); align-content: center; }
+.ds-tiket-isi .mata { margin: 0; }
+.ds-tiket-isi h2 {
+  margin: 0;
+  font-family: var(--f-judul);
+  font-size: clamp(1.5rem, 1.1rem + 1vw, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+.ds-tiket-alasan { font-size: var(--t-ui); color: var(--teks-2); }
+.ds-tiket:hover .lanjutkan-tbl { gap: var(--s4); }
+.ds-tiket:hover .lanjutkan-tbl svg {
+  translate: 2px -1px;
+  background: color-mix(in srgb, var(--di-atas-aksen) 24%, transparent);
+}
+
+/* ---- habis ini */
+.ds-antrean { display: grid; gap: var(--s3); min-width: 0; }
+.ds-antrean .bagian-kepala { margin-bottom: 0; }
+.ds-antrean-daftar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--s4);
+}
+.ds-langkah {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--s2);
+  min-width: 0;
+  min-height: 9.5rem;
+  padding: var(--s4) var(--s5) var(--s6);
+  border-radius: var(--r);
+  border: var(--tebal-garis) solid var(--garis);
+  background: var(--kartu);
+  color: inherit;
+  transition: border-color var(--cepat), translate var(--pegas-jawab-ms) var(--pegas-jawab);
+}
+.ds-langkah:hover { text-decoration: none; border-color: var(--garis-kuat); translate: 0 -2px; }
+.ds-langkah-atas { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+.ds-langkah-judul { font-family: var(--f-judul); font-weight: 600; font-size: var(--t-badan); line-height: 1.25; }
+.ds-langkah-ket {
+  font-size: var(--t-kecil); line-height: 1.4; color: var(--teks-2);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ds-langkah-panah {
+  position: absolute; right: var(--s4); bottom: var(--s3);
+  color: var(--redup);
+  transition: translate var(--pegas-jawab-ms) var(--pegas-jawab), color var(--cepat);
+}
+.ds-langkah:hover .ds-langkah-panah { translate: 3px 0; color: var(--nyala); }
+
+/* ---- rel bahasa: satu panel terbuka, yang lain jadi tab tegak */
+.ds-rel { display: grid; gap: var(--s3); min-width: 0; }
+.ds-rel .bagian-kepala { margin-bottom: 0; }
+.ds-rel .meja-judul { margin: 0; }
+.ds-rel-rak { display: flex; gap: var(--s2); height: 21rem; }
+.ds-panel {
+  position: relative;
+  display: flex;
+  flex: 0 0 4rem;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--r);
+  border: var(--tebal-garis) solid var(--garis);
+  background: var(--kartu);
+  transition: flex-grow 420ms cubic-bezier(.32, .72, 0, 1), border-color var(--cepat);
+}
+/* Panel tertutup memuat persennya sebagai ISI: terisi dari bawah setinggi persen bahasa itu,
+   dengan garis tipis di puncaknya. Yang terbuka tidak memerlukannya (ada bilah dan angkanya). */
+.ds-panel::before {
+  content: "";
+  position: absolute; inset: auto 0 0 0;
+  height: var(--p, 0%);
+  background: color-mix(in srgb, var(--nyala) 20%, transparent);
+  border-top: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 60%, transparent);
+  pointer-events: none;
+}
+.ds-panel.buka::before { display: none; }
+.ds-panel.buka {
+  flex: 1 1 4rem;
+  border-color: color-mix(in srgb, var(--nyala) 34%, var(--garis));
+}
+.ds-panel-tab {
+  flex: none;
+  width: 4rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s4) 0;
+  background: none; border: 0;
+  font: inherit; color: var(--teks-2);
+  cursor: pointer;
+}
+.ds-panel-nama {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  white-space: nowrap;
+  font-family: var(--f-judul); font-weight: 600; font-size: var(--t-badan);
+  color: var(--teks);
+}
+.ds-panel-persen { font-family: var(--f-ui); font-size: var(--t-kecil); color: var(--teks-2); }
+.ds-panel.buka .ds-panel-persen { visibility: hidden; }
+.ds-panel-tab:hover .ds-panel-nama { color: var(--nyala-lembut); }
+.ds-panel-isi {
+  flex: 1 0 30rem;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--s3);
+  padding: var(--s4) var(--s5) var(--s4) var(--s2);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.ds-panel.buka .ds-panel-isi { opacity: 1; transition-delay: 140ms; }
+.ds-panel-rasi { min-height: 0; }
+/* Rasi digambar dalam 1.000 satuan lebar; di panel ia menyusut, jadi hurufnya dibesarkan
+   supaya label bab tetap terbaca (sekitar 12 px sesudah penskalaan). */
+.ds-panel-rasi .rasi-label-bab { font-size: 17px; }
+.ds-panel-rasi .rasi-nomor { font-size: 12.5px; }
+.ds-panel-ket { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: var(--s2) var(--s4); }
+.ds-panel-ket b { font-family: var(--f-judul); font-size: 1.2rem; }
+.ds-panel-ket > span { font-size: var(--t-kecil); color: var(--teks-2); text-align: right; }
+.ds-panel-ket .bilah { grid-column: 1 / -1; }
+.ds-panel-tautan {
+  grid-column: 1 / -1;
+  justify-self: start;
+  display: inline-flex; align-items: center;
+  min-height: 28px;
+  padding: var(--s1) var(--s4);
+  border-radius: var(--r-penuh);
+  border: var(--tebal-garis) solid color-mix(in srgb, var(--nyala) 40%, var(--garis));
+  font-size: var(--t-ui); font-weight: 600; color: var(--nyala);
+  transition: border-color var(--cepat), background var(--cepat);
+}
+.ds-panel-tautan:hover { text-decoration: none; border-color: var(--nyala); background: color-mix(in srgb, var(--nyala) 10%, transparent); }
+
+/* ---- ritme dan dua ubin */
+.ds-ritme { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--s6); align-items: start; }
+.ds-ritme > * { min-width: 0; }
+/* `.meja-ritme` berkolom `max-content` (kartu mengikuti isinya, lihat "Cakrawala bara"); di kolom
+   yang lebih sempit dari isinya kartu itu meluber melewati tepi konten. Kolomnya dipatok ke lebar
+   kolom grid; hamparan bara menggulir di dalamnya (ia sudah punya wadah gulir dan pin ke hari ini). */
+.ds-ritme .meja-ritme { grid-template-columns: minmax(0, 1fr); }
+.ds-jelajah { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s5); }
+
+@media print {
+  .ds-rel-rak { height: auto; flex-wrap: wrap; }
+  .ds-panel, .ds-panel.buka { flex: 1 1 100%; }
+  .ds-panel-isi { opacity: 1; }
+}
+
+/* ================================================================== lembar baca
+   2026-10-29, hasil debat 17 agen untuk layar pembaca materi. Dua keputusan yang dulu
+   disatukan, dipisah di sini: `.materi-utama .prosa` dipagari `--baca` seluruhnya, jadi
+   prosa DAN kode berbagi satu lebar. Terukur: baris prosa 99 karakter (`72ch` = 791 px
+   karena `ch` mengukur angka nol), padahal baris kode p99 butuh 84 kolom. Sekarang prosa
+   memakai tiga perempat `--baca` (sekitar 75 huruf, tetap mengikuti penggeser "Lebar kolom
+   baca"), sedangkan kode, tabel, dan gambar tetap selebar pelat penuh. Rata kiri: judul,
+   prosa, dan pelat berbagi tepi yang sama, dan sisa di kanan jadi tempat catatan.
+   Mencabutnya = hapus blok ini (dan tiga perubahan TSX yang memakai kelasnya). */
+@media (min-width: 861px) {
+  .materi-utama .prosa > section > .par,
+  .materi-utama .prosa > section > ul,
+  .materi-utama .prosa > section > ol,
+  .materi-utama .prosa > section > h2 {
+    max-width: calc(var(--baca) * .75);
+  }
+}
+
+/* Blok kode = PELAT. Di tema terang pelat dan halaman hanya 1,03:1 (kertas krem lawan abu
+   muda), jadi kode tidak terpisah dari prosa dan semua blok terbaca sebagai satu lembar abu.
+   Di tema terang pelat kini memakai palet GELAP milik tema gelap, dipasang ulang pada
+   elemennya sendiri (token kustom menurun ke editor, hasil, jejak, dan beda di dalamnya),
+   seperti "pelat langit" di layar Langit. Nilainya SALINAN tema gelap, jadi kontras
+   sintaksnya sama dengan yang sudah terukur di sana (>= 4,5:1) dan tidak butuh angka baru.
+   Hanya di layar: cetak tetap kertas putih. Tepi kiri 3 px: kuningan bila bisa dijalankan. */
+.blok-kode { border-left: 3px solid var(--garis-kuat); }
+@supports selector(:has(*)) {
+  .blok-kode:has(.blok-alat .tbl-utama) { border-left-color: var(--nyala); }
+}
+@media screen {
+  [data-tema="terang"] .blok-kode {
+    color-scheme: dark;
+    --dasar: #0a0e1a; --dasar-dalam: #070a13; --kartu: #10162a; --kartu-naik: #151c33;
+    --garis: #232c47; --garis-kuat: #36415f;
+    --teks: #ece9df; --teks-2: #b4b7c7; --redup: #8d92aa;
+    --nyala: #e4b96b; --nyala-lembut: #f1d39d; --nyala-gelap: #3a2d14;
+    --tumbuh: #63bfa5; --salah: #ef8a84; --tenang: #94b6d8; --ungu: #dcae66;
+    --di-atas-aksen: #1b1407;
+    --kode-latar: #0d1222;
+    --k-komentar: #868ba3; --k-string: #9fd4a9; --k-angka: #e8b97c; --k-kunci: #8eaeff;
+    --k-tipe: #7fcad6; --k-bawaan: #dcae66; --k-fungsi: #c6cffa; --k-operator: #9a9ca3;
+    --k-khusus: #9fd4a9; --k-teks: #e3e4e8;
+    color: var(--teks);
+    border-top-color: var(--garis); border-right-color: var(--garis); border-bottom-color: var(--garis);
+    box-shadow: 0 1px 2px rgba(10, 14, 26, .16), 0 16px 32px -20px rgba(10, 14, 26, .5);
+  }
+}
+
+/* Baris meta di bawah judul: sekitar berapa menit, berapa kode, berapa gambar. Orientasi
+   sebelum membaca (angka menitnya dari `pelajar/waktu.py`, sama dengan halaman bahasa). */
+.kepala-materi .deret { align-items: center; }
+.kepala-meta { font-size: var(--t-kecil); color: var(--redup); }
+
+/* Peringatan dan aturan diberi SIMBOL, bukan hanya garis: jebakan = segitiga (warna dan
+   bentuk, supaya tidak bergantung pada warna), aturan = braket sasaran, bahasa bentuk yang
+   sama dengan reticle di aplikasi ini. Teksnya tetap dibuka kata "Jebakan:" atau "Aturan",
+   jadi simbolnya dekorasi murni bagi pembaca layar. */
+.prosa .peran { position: relative; padding-left: calc(var(--s4) + 1.7rem); }
+.prosa .peran::before {
+  content: ""; position: absolute; left: var(--s3); top: calc(var(--s3) + .3em);
+  width: 1.05rem; height: 1.05rem;
+}
+.prosa .peran-jebakan::before { background: var(--salah); clip-path: polygon(50% 6%, 97% 92%, 3% 92%); }
+.prosa .peran-aturan::before { border: 2px solid var(--nyala); border-right: 0; border-bottom: 0; }
+
+/* "Cara memecahkannya" terlipat sampai dibuka: ambil kembali (coba dulu) lebih awet daripada
+   baca ulang, dan ia sudah ada di SEMUA materi, jadi tidak butuh konten baru. Tombol asli
+   dengan `aria-expanded` dan isi ber-`hidden`; cetak membukanya (tidak ada yang bisa diklik di
+   kertas). */
+.pecahkan { margin: 0 0 1.25em; }
+.pecahkan-tombol {
+  display: flex; align-items: baseline; gap: var(--s3); width: 100%;
+  padding: var(--s2) 0; border: 0; background: none; text-align: left;
+  font: inherit; font-weight: 600; color: var(--teks); cursor: pointer;
+}
+.pecahkan-tombol::before {
+  content: ""; flex: none; align-self: center; width: .5em; height: .5em;
+  border-right: 2px solid var(--nyala); border-bottom: 2px solid var(--nyala);
+  transform: rotate(-45deg); transition: transform var(--cepat);
+}
+.pecahkan-tombol[aria-expanded="true"]::before { transform: rotate(45deg); }
+.pecahkan-saran { font-size: var(--t-kecil); font-weight: 400; color: var(--redup); }
+@media print {
+  .pecahkan-isi[hidden] { display: block; }
+  .pecahkan-tombol::before { display: none; }
+}
+
+/* Rel kiri: bab selain yang sedang dibaca terlipat jadi satu baris (judul + angka + panah), dan
+   judul bab menjadi tombol yang membukanya. Daftar yang memuat dua puluh judul sekaligus adalah
+   dinding teks di kolom kiri. Hanya di tata letak tiga kolom (kolom tegak); di layar sempit jalurnya
+   strip mendatar dan semua butir tetap terlihat. Bab terkunci tetap tampil, dengan alasannya. */
+.materi-rel-bab-tombol {
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--s1);
+  width: 100%; padding: 0; border: 0; background: none; text-align: left;
+  font: inherit; color: inherit; cursor: pointer;
+}
+@container panggung (min-width: 1130px) {
+  .materi-rel-tutup { display: none; }
+  .materi-rel-bab-tombol {
+    flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--s3);
+  }
+  .materi-rel-bab-tombol::after {
+    content: ""; flex: none; align-self: center; width: .45em; height: .45em;
+    border-right: 2px solid var(--redup); border-bottom: 2px solid var(--redup);
+    transform: rotate(-45deg); transition: transform var(--cepat);
+  }
+  .materi-rel-bab-tombol[aria-expanded="true"]::after { transform: rotate(45deg); }
 }

@@ -43,6 +43,8 @@ export interface Petunjuk {
 
 export interface BagianKode {
   jenis: "kode";
+  /** Indeks DATA bagian ini (bukan indeks blok): yang dipahami `/api/materi/contoh`. */
+  bagian?: number;
   judul?: string;
   kode: string;
   token: Token[];
@@ -295,7 +297,7 @@ export function BlokKode({
               className="tbl tbl-kecil tbl-hantu"
               title="Buka di Ruang Coba: layar penuh, bisa diberi masukan (stdin)"
               href={`#/coba?key=${kunciBahasa}&materi=${indeksMateri}`
-                + `&bagian=${indeksBagian}`}
+                + `&bagian=${b.bagian ?? indeksBagian}`}
             >
               Ruang Coba
             </a>

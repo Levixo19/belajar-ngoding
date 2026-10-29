@@ -8264,9 +8264,9 @@ class TestLebarDigitDiMesin(unittest.TestCase):
             "berarti yang terlihat bukan yang ditulis di CSS (invarian #2)")
         self.assertEqual(
             # 31 -> 29 (2026-10-14): dua claimant ikut terbuang bersama blok
-            # cangkang IDE, bukan diganti nilai. 29 -> 30 (2026-10-28): `.or-persen`, tabular-nums.
-            len(dek), 30,
-            "jumlah aturan `font-variant-numeric` di gaya.css bukan 30 "
+            # cangkang IDE, bukan diganti nilai. 29 -> 30, 30 -> 31 (2026-10-28): `.or-persen`, `.angka-hidup`.
+            len(dek), 31,
+            "jumlah aturan `font-variant-numeric` di gaya.css bukan 31 "
             "melainkan " + str(len(dek)) + ". Angkanya dinaikkan BERSAMA "
             "suntingannya: setiap claimant baru wajib diadu nilainya terhadap "
             "gaya inline yang dipasang `angkaKe()`")
@@ -25586,10 +25586,10 @@ class TestKacaCair(unittest.TestCase):
     def test_blok_css_di_ujung_berkas_dengan_konflik_yang_tercatat(self):
         import re
         css = self._mentah("webapp", "statik", "gaya.css")
-        # Kaca cair menyusul pohon berkas, dan hanya dua blok yang menyusulnya: tombol kaca, lalu
-        # penutup dasbor (yang paling ujung; dijaga TestPenutupDasbor).
+        # Kaca cair menyusul pohon berkas, dan hanya empat blok yang menyusulnya: tombol kaca,
+        # penutup dasbor, dasbor hidup, lalu lembar baca (yang paling ujung; dijaga TestLembarBaca).
         self.assertLess(css.index(self.JUDUL), css.index(self.JUDUL_BERIKUT))
-        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(self.JUDUL) + 5:])), 2)
+        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(self.JUDUL) + 5:])), 4)
         self.assertTrue(css.endswith("}\n"))
         blok = self._blok_css()
         self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
@@ -25690,9 +25690,9 @@ class TestTombolKaca(unittest.TestCase):
         import re
         css = self._mentah("webapp", "statik", "gaya.css")
         blok = self._blok_css()
-        # Tombol kaca bukan lagi blok terakhir: hanya penutup dasbor yang menyusulnya.
+        # Tombol kaca bukan lagi blok terakhir: penutup dasbor, dasbor hidup, dan lembar baca menyusulnya.
         self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
-        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(blok) + 5:])), 1)
+        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(blok) + 5:])), 3)
         self.assertTrue(css.endswith("}\n"))
         self.assertGreater(css.index(blok), css.index("kaca cair\n"))
 
@@ -25804,7 +25804,9 @@ class TestPenutupDasbor(unittest.TestCase):
         css = self._mentah("webapp", "statik", "gaya.css")
         m = re.search(r"/\* =+ penutup dasbor", css)
         self.assertIsNotNone(m)
-        return css[m.start():]
+        # Dibatasi di judul blok berikutnya (dasbor hidup): aturannya punya opasitas dan animasi sendiri.
+        berikut = re.search(r"/\* =+ ", css[m.end():])
+        return css[m.start():m.end() + berikut.start()] if berikut else css[m.start():]
 
     def _keyframes(self, kode, nama):
         """Isi `@keyframes <nama> { ... }` dengan kurung kurawal yang diseimbangkan."""
@@ -25832,7 +25834,8 @@ class TestPenutupDasbor(unittest.TestCase):
         css = self._mentah("webapp", "statik", "gaya.css")
         blok = self._blok_css()
         self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
-        self.assertEqual(css.rindex("/* ===="), css.index(blok))
+        # Penutup dasbor disusul tepat DUA blok: dasbor hidup, lalu lembar baca (yang paling ujung).
+        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(blok) + 5:])), 2)
         self.assertTrue(css.endswith("}\n"))
         self.assertGreater(css.index(blok), css.index("tombol kaca"))
 
@@ -25969,3 +25972,434 @@ class TestPenutupDasbor(unittest.TestCase):
         # bukan penantian yang kedaluwarsa dan mematikan skrip.
         self.assertIn('tunggu: ".meja"', m)
         self.assertNotIn('tunggu: ".pd-bungkus"', m)
+
+
+class TestDasborHidup(unittest.TestCase):
+    """Susunan baru Dasbor (`layar/Dasbor.tsx` `MejaKerja`, helper murni `dasbor-hidup-teks.ts`,
+    `komponen/AngkaHidup.tsx`, blok "dasbor hidup" di kaki gaya.css). Perilakunya dibuktikan di
+    peramban (`uji/manual/dasbor-hidup.mjs`) dan isinya oleh `uji/banding-dasbor-hidup.mjs`.
+    Tes ini menjaga keputusan yang gampang terbalik tanpa satu pun error: kelas lama TIDAK
+    disentuh (antarmuka di /lama masih memakainya), tiket tetap satu-satunya tombol beraksen,
+    rel hanya menganimasikan `flex-grow` dengan keadaan terbuka sebagai keadaan alami, isi panel
+    yang tertutup `inert`, penunjuk mouse (bukan sentuhan) yang membuka panel, angka yang
+    menghitung naik hanya di gerak penuh dan berangkat dari angka akhir, dan pustaka tetap nol."""
+
+    def _akar(self, *jalur):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(akar, *jalur)
+
+    def _baca(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return " ".join(f.read().split())
+
+    def _mentah(self, *jalur):
+        with open(self._akar(*jalur), encoding="utf-8") as f:
+            return f.read()
+
+    def _tanpa_komentar(self, teks):
+        import re
+        teks = re.sub(r"/\*.*?\*/", "", teks, flags=re.S)
+        return re.sub(r"(?m)^\s*//.*$", "", teks)
+
+    def _blok_css(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        m = re.search(r"/\* =+ dasbor hidup", css)
+        self.assertIsNotNone(m)
+        berikut = re.search(r"/\* =+ ", css[m.end():])
+        return css[m.start():m.end() + berikut.start()] if berikut else css[m.start():]
+
+    def _aturan(self, kode):
+        import re
+        return [(p.strip(), i) for p, i in re.findall(r"([^{}]+)\{([^{}]*)\}", kode)]
+
+    def test_blok_paling_ujung_dan_satu_judul(self):
+        import re
+        css = self._mentah("webapp", "statik", "gaya.css")
+        blok = self._blok_css()
+        self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
+        # Disusul tepat SATU blok, lembar baca, yang paling ujung.
+        self.assertEqual(len(re.findall(r"/\* =+ ", css[css.index(blok) + 5:])), 1)
+        self.assertTrue(css.endswith("}\n"))
+        self.assertGreater(css.index(blok), css.index("penutup dasbor"))
+
+    def test_meja_kerja_memakai_komponen_baru_dan_tidak_lagi_yang_lama(self):
+        d = self._tanpa_komentar(self._mentah("packages", "web", "src", "layar", "Dasbor.tsx"))
+        for baru in ("function StripHariIni(", "function TiketLanjut(", "function BarisLangkah(", "function RelBahasa("):
+            self.assertIn(baru, d)
+        for lama in ("function KartuBara(", "function CincinLevel(", "function KartuLanjutkan(",
+                     "function BlokAntrean(", "function PanelLangitMeja(", "function BarisBahasaMeja("):
+            self.assertNotIn(lama, d, lama)
+        corong = d[d.index("function MejaKerja("):d.index("export function Dasbor(")]
+        for urutan in ('className="meja ds-meja"', "<StripHariIni", "<TiketLanjut", "<BarisLangkah",
+                       "<RelBahasa", 'className="ds-ritme"', 'className="ds-jelajah"', "<PenutupDasbor"):
+            self.assertIn(urutan, corong, urutan)
+        self.assertEqual(corong.count("<PenutupDasbor"), 1)
+        # Urutan di layar: hero, habis ini, rel, ritme, jelajah, penutup.
+        posisi = [corong.index(x) for x in ("<StripHariIni", "<BarisLangkah", "<RelBahasa", 'className="ds-ritme"', 'className="ds-jelajah"', "<PenutupDasbor")]
+        self.assertEqual(posisi, sorted(posisi))
+        # `meja-ritme` tetap `<section>`: pagar skyline dan kolom lentur kartu bara membacanya.
+        self.assertIn('<section className="meja-ritme">', corong)
+
+    def test_kelas_lama_tidak_disentuh_karena_antarmuka_lama_memakainya(self):
+        css = self._mentah("webapp", "statik", "gaya.css")
+        blok = self._tanpa_komentar(self._blok_css())
+        for lama in (".meja-kini", ".meja-antrean", ".meja-bahasa", ".meja-langit", ".bento", ".lanjutkan {", ".cincin"):
+            self.assertIn(lama, css[:css.index(self._blok_css())], lama)
+        # Blok baru tidak menulis ulang aturan lama; satu-satunya rujukan `.meja-ritme` ada di dalam `.ds-ritme`.
+        for pemilih, _ in self._aturan(blok):
+            for lama in (".meja-kini", ".meja-antrean", ".meja-bahasa", ".meja-langit", ".bento"):
+                self.assertNotIn(lama, pemilih, pemilih)
+            if ".meja-ritme" in pemilih:
+                self.assertIn(".ds-ritme", pemilih)
+        js = self._mentah("webapp", "statik", "js", "layar-belajar.js")
+        self.assertIn("meja-kini", js)
+
+    def test_satu_tombol_beraksen_dan_tiket_selebar_sapaan(self):
+        d = self._baca("packages", "web", "src", "layar", "Dasbor.tsx")
+        self.assertEqual(d.count("tbl-kaca"), 2)
+        self.assertEqual(d.count('<span className="lanjutkan-tbl tbl-kaca">'), 1)
+        kode = " ".join(self._tanpa_komentar(self._blok_css()).split())
+        self.assertIn('grid-template-areas: "kini stat" "tiket tiket";', kode)
+        # Tiket mengangkat dengan `translate`, bukan `transform`: umpan tekan WAAPI memegang `transform`.
+        self.assertIn(".ds-tiket:hover { text-decoration: none; border-color: var(--nyala); translate: 0 -2px; }", kode)
+
+    def test_rel_bahasa_inert_fokus_dan_hanya_mouse_yang_membuka(self):
+        d = self._tanpa_komentar(self._mentah("packages", "web", "src", "layar", "Dasbor.tsx"))
+        rel = d[d.index("function RelBahasa("):d.index("function KartuMulaiUtama(")]
+        self.assertIn("inert={!buka}", rel)
+        self.assertIn("aria-expanded={buka}", rel)
+        self.assertIn("onFocusCapture={() => setAktif(i)}", rel)
+        self.assertIn('e.pointerType !== "mouse"', rel)
+        # Pergeseran tata letak bukan gerakan penunjuk: `pointerenter` palsu berkoordinat sama diabaikan.
+        self.assertIn("posisiMouse", rel)
+        self.assertIn("lalu.x === e.clientX && lalu.y === e.clientY", rel)
+        self.assertIn("buka && peta ?", rel)
+        # Rasi dimuat sekali dan dibatalkan bila layar ditinggalkan.
+        self.assertIn("dibatalkan = true;", rel)
+        self.assertEqual(rel.count('ambil<{ bahasa: DataPeta[] }>("langit")'), 1)
+
+    def test_css_rel_hanya_menganimasikan_flex_grow_dan_tanpa_peredupan_teks(self):
+        import re
+        kode = self._tanpa_komentar(self._blok_css())
+        self.assertNotIn("!important", kode)
+        self.assertNotIn("@keyframes", kode)
+        self.assertNotRegex(kode, r"(^|[\s,}])animation\s*:")
+        aturan = self._aturan(kode)
+        self.assertGreater(len(aturan), 50)
+        for pemilih, isi in aturan:
+            self.assertNotRegex(pemilih, r"(^|[\s,])(html|:root|body)\b", pemilih)
+            for transisi in re.findall(r"\btransition\s*:\s*([^;]+);", isi):
+                for dilarang in ("transform", "all", "width", "height"):
+                    self.assertNotIn(dilarang, transisi, pemilih)
+            if re.search(r"\bopacity\s*:", isi):
+                # Peredupan dengan opacity dilarang pada teks yang tampil; satu-satunya yang boleh
+                # panel yang tertutup (inert, tak terlihat) dan keadaan terbukanya yang harus 1.
+                self.assertIn(".ds-panel-isi", pemilih)
+        kd = " ".join(kode.split())
+        self.assertIn(".ds-panel.buka .ds-panel-isi { opacity: 1; transition-delay: 140ms; }", kd)
+        self.assertIn("transition: flex-grow 420ms cubic-bezier(.32, .72, 0, 1), border-color var(--cepat);", kd)
+        self.assertIn(".ds-panel.buka { flex: 1 1 4rem;", kd)
+        # `@media` di berkas ini ditulis multi-baris: pembaca kelas hidup hanya mengenali kepala selektor
+        # di awal baris, dan satu-liner membuat `.ds-rel-rak` terbaca token liar.
+        self.assertNotRegex(self._blok_css(), r"@media[^{\n]*\{[^\n]*\.")
+
+    def test_kelas_berpasangan_antara_tsx_dan_css(self):
+        import re
+        pakai = set()
+        for berkas in (("layar", "Dasbor.tsx"), ("komponen", "AngkaHidup.tsx")):
+            t = self._mentah("packages", "web", "src", *berkas)
+            for isi in re.findall(r'className="([^"]+)"', t):
+                pakai.update(k for k in isi.split() if k.startswith("ds-"))
+        # `ds-meja` dan kelas dinamis (`ds-bilah` lewat prop `kelas`) tetap kelas biasa.
+        # Awalan id dinamis (`"ds-panel-" + b.key`) berakhir `-` dan bukan kelas.
+        pakai.update(
+            k for k in re.findall(r'"(ds-[a-z-]+)', self._mentah("packages", "web", "src", "layar", "Dasbor.tsx"))
+            if not k.endswith("-")
+        )
+        dideklarasi = set(re.findall(r"\.(ds-[a-z-]+)", self._tanpa_komentar(self._blok_css())))
+        self.assertEqual(pakai - dideklarasi, set(), "kelas di TSX tanpa aturan CSS")
+        self.assertEqual(dideklarasi - pakai, set(), "aturan CSS yatim")
+
+    def test_angka_hidup_berangkat_dari_angka_akhir_dan_hanya_di_gerak_penuh(self):
+        t = self._tanpa_komentar(self._mentah("packages", "web", "src", "komponen", "AngkaHidup.tsx"))
+        self.assertIn("useGerakPenuh()", t)
+        self.assertIn("if (!penuh || sebelum === nilai)", t)
+        self.assertIn('aria-hidden="true"', t)
+        self.assertIn('<span className="ds-sr">{angka(nilai)}</span>', t)
+        # Di luar layar saat dipasang: angka akhir, tidak dianimasikan (kedipan di depan orang yang membaca).
+        self.assertIn("k.bottom < 0 || k.top > window.innerHeight", t)
+        # Pembersih mengembalikan angka akhir; teks lewat ref, bukan anak React.
+        self.assertIn("cancelAnimationFrame(id);", t)
+        self.assertNotRegex(t, r"<span ref=\{hidup\}[^>]*>\s*\{")
+        for dilarang in ("data-gerak", "dataset.gerak", "localStorage", "gsap", "GSAP"):
+            self.assertNotIn(dilarang, t)
+
+    def test_tanpa_pustaka_dan_lisensi_dicatat(self):
+        for berkas in (("layar", "dasbor-hidup-teks.ts"), ("komponen", "AngkaHidup.tsx"), ("komponen", "angka-hidup-teks.ts")):
+            s = self._tanpa_komentar(self._mentah("packages", "web", "src", *berkas))
+            import re
+            for sumber in re.findall(r'from "([^"]+)"', s):
+                self.assertTrue(sumber == "react" or sumber.startswith("."), (berkas, sumber))
+        p = self._baca("packages", "web", "src", "layar", "dasbor-hidup-teks.ts").replace(" * ", " ")
+        self.assertIn("21st.dev", p)
+        self.assertIn("Tidak ada kodenya yang disalin", p)
+        css = " ".join(self._blok_css().split())
+        self.assertIn("tidak ada kode yang disalin, dan tidak ada pustaka", css)
+        self.assertIn("2026-10-28", css)
+
+    def test_teks_tanpa_dash_dan_skrip_menolak_server_pemilik(self):
+        for berkas in (
+            ("src", "layar", "dasbor-hidup-teks.ts"), ("src", "komponen", "AngkaHidup.tsx"),
+            ("src", "komponen", "angka-hidup-teks.ts"), ("uji", "banding-dasbor-hidup.mjs"),
+            ("uji", "manual", "dasbor-hidup.mjs"),
+        ):
+            s = self._baca("packages", "web", *berkas)
+            for dash in ("—", "–"):
+                self.assertNotIn(dash, s, berkas)
+        m = self._baca("packages", "web", "uji", "manual", "dasbor-hidup.mjs")
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+        self.assertIn("process.env.HANYA", m)
+        self.assertIn('tunggu: ".ds-meja"', m)
+
+
+class TestStripKonteksSelebarIsi(unittest.TestCase):
+    """Strip konteks ("bar bab") selebar ISI, bukan selebar jendela. Dulu `#konteks` membentang
+    selebar `#panggung`: di jendela 1853 px tombol kembalinya di x=16 dan panahnya di x=1837,
+    padahal isi pembaca materi cuma 271 sampai 1583. Sekarang `--konteks-maks` (1312 px, lebar
+    tiga kolom pembaca materi) membatasinya dan strip ditengahkan. Ukurannya dibuktikan di peramban
+    (`uji/manual/strip-konteks.mjs`); tes ini menjaga bahwa batas itu tidak hilang diam-diam."""
+
+    def _css(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            return f.read()
+
+    def test_token_dideklarasikan_sekali_dan_dipakai_aturan_strip(self):
+        import re
+        css = self._css()
+        self.assertEqual(css.count("--konteks-maks: 1312px;"), 1)
+        aturan = re.search(r"(?m)^#konteks \{(.*?)^\}", css, flags=re.S)
+        self.assertIsNotNone(aturan, "aturan dasar `#konteks { ... }` tidak ketemu")
+        isi = " ".join(aturan.group(1).split())
+        for butir in ("width: 100%;", "max-width: var(--konteks-maks);", "margin-inline: auto;"):
+            self.assertIn(butir, isi, "strip konteks kehilangan batas lebarnya")
+        # Perilaku lama di jendela sempit tidak boleh berubah: tingginya tetap dari token yang sama.
+        self.assertIn("min-height: var(--konteks-tinggi);", isi)
+
+    def test_lapisan_laptop_tidak_menimpa_lebar_strip(self):
+        import re
+        css = self._css()
+        for m in re.finditer(r"(?m)^\s*#konteks \{(.*?)\}", css, flags=re.S):
+            isi = " ".join(m.group(1).split())
+            self.assertNotRegex(isi, r"(?<![-\w])(max-)?width:\s*(none|auto|100vw)", isi[:80])
+            self.assertNotIn("margin-inline: 0", isi)
+            self.assertNotIn("margin: 0", isi)
+
+    def test_skrip_peramban_menolak_server_pemilik_dan_tanpa_dash(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "uji", "manual", "strip-konteks.mjs"),
+                  encoding="utf-8") as f:
+            m = f.read()
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+        for dash in ("—", "–"):
+            self.assertNotIn(dash, m)
+
+
+class TestAlamatBlokKodeRuangCoba(unittest.TestCase):
+    """Tautan "Ruang Coba" dari blok kode memakai indeks DATA bagian, bukan indeks blok.
+
+    `isi.bagian_materi` memecah bagian yang punya body DAN code jadi dua blok (prosa lalu kode),
+    jadi indeks blok bergeser dari indeks `sections` begitu ada satu bagian campur di depannya.
+    `/api/materi/contoh` membaca `m["sections"][bagian]`. Sebelum medan `bagian` ada, 807 dari 2.757
+    blok kode (256 materi) menunjuk bagian yang salah: 560 berujung galat 409/404, 247 membuka
+    kode LAIN, tanpa satu galat pun di sisi klien. Tes kontrak hanya memeriksa bentuk jawaban."""
+
+    def _semua_blok_kode(self):
+        from inti.kurikulum import LANGUAGES
+        from webapp import isi
+        for lang in LANGUAGES:
+            for mi, m in enumerate(lang["materials"]):
+                for b in isi.bagian_materi(m, lang):
+                    if b["jenis"] == "kode":
+                        yield lang["key"], mi, m, b
+
+    def test_bagian_tiap_blok_kode_menunjuk_kode_yang_sama(self):
+        total, salah = 0, []
+        for kunci, mi, m, b in self._semua_blok_kode():
+            total += 1
+            i = b.get("bagian")
+            benar = (isinstance(i, int) and 0 <= i < len(m["sections"])
+                     and m["sections"][i].get("code") == b["kode"])
+            if not benar and len(salah) < 5:
+                salah.append((kunci, mi, i))
+        self.assertGreater(total, 2000, "korpus blok kode menyusut?")
+        self.assertEqual(salah, [], "blok kode yang `bagian`-nya tidak menunjuk kodenya sendiri")
+
+    def test_bagian_campur_dua_blok_satu_indeks_data(self):
+        from inti.kurikulum import LANGUAGES
+        from webapp import isi
+        ditemukan = 0
+        for lang in LANGUAGES:
+            for m in lang["materials"]:
+                for i, s in enumerate(m["sections"]):
+                    if not (s.get("body") and s.get("code") is not None):
+                        continue
+                    blok = isi.bagian_materi(m, lang)
+                    kode = [b for b in blok if b["jenis"] == "kode" and b.get("bagian") == i]
+                    self.assertEqual(len(kode), 1, (lang["key"], m["title"], i))
+                    ditemukan += 1
+                    break
+                if ditemukan >= 3:
+                    break
+            if ditemukan >= 3:
+                break
+        self.assertGreaterEqual(ditemukan, 3, "tidak ada bagian campur untuk diuji?")
+
+    def test_kedua_antarmuka_memakai_bagian_bukan_indeks_blok(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", "komponen", "BlokKode.tsx"),
+                  encoding="utf-8") as f:
+            tsx = f.read()
+        with open(os.path.join(akar, "webapp", "statik", "js", "layar-belajar.js"),
+                  encoding="utf-8") as f:
+            js = f.read()
+        self.assertIn("&bagian=${b.bagian ?? indeksBagian}", tsx)
+        self.assertIn("&bagian=${b.bagian ?? i}`", js)
+
+
+class TestLembarBaca(unittest.TestCase):
+    """Pembaca materi 2026-10-29 (hasil debat 17 agen): prosa lebih sempit dari pelat kode, H1 tidak
+    lagi 66 px, header tidak mengulang bab dan posisi yang sudah dibawa strip konteks. Ukurannya
+    dibuktikan di peramban (`uji/manual/lembar-baca.mjs`); tes ini menjaga yang gampang hilang diam-diam:
+    urutan CSS yang dulu membuat `.kepala-besar h1` mengalahkan `.kepala-materi h1`."""
+
+    def _css(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "webapp", "statik", "gaya.css"), encoding="utf-8") as f:
+            return f.read()
+
+    def _blok(self):
+        import re
+        css = self._css()
+        m = re.search(r"/\* =+ lembar baca", css)
+        self.assertIsNotNone(m, "blok `lembar baca` hilang")
+        return css[m.start():]
+
+    def test_blok_paling_ujung(self):
+        import re
+        css = self._css()
+        blok = self._blok()
+        self.assertEqual(re.findall(r"/\* =+ ", blok[5:]), [])
+        self.assertEqual(css.rindex("/* ===="), css.index(blok))
+        self.assertTrue(css.endswith("}\n"))
+
+    def test_prosa_tiga_perempat_baca_sedangkan_kode_tetap_selebar_pelat(self):
+        kode = " ".join(self._blok().split())
+        self.assertIn("@media (min-width: 861px) {", kode)
+        self.assertIn(".materi-utama .prosa > section > .par, .materi-utama .prosa > section > ul, "
+                      ".materi-utama .prosa > section > ol, .materi-utama .prosa > section > h2 "
+                      "{ max-width: calc(var(--baca) * .75); }", kode)
+        # Kode, tabel, dan gambar TIDAK ikut dibatasi: pelat tetap selebar `--baca`.
+        self.assertIn(".blok-kode { border-left: 3px solid var(--garis-kuat); }", kode)
+        self.assertIn("@supports selector(:has(*)) { .blok-kode:has(.blok-alat .tbl-utama) "
+                      "{ border-left-color: var(--nyala); } }", kode)
+
+    def test_tanpa_important_opacity_dan_pemilih_html(self):
+        import re
+        kode = self._blok()
+        self.assertNotIn("!important", kode)
+        self.assertNotIn("opacity", kode)
+        self.assertIsNone(re.search(r"(?m)^\s*html\b", kode))
+        self.assertNotRegex(kode, r"@media[^{\n]*\{[^\n]*\.")
+
+    def test_h1_materi_tidak_lagi_dikalahkan_urutan(self):
+        css = self._css()
+        self.assertEqual(css.count(".kepala-besar:where(:not(.kepala-materi)) h1 { font-size: clamp(2.8rem"), 1)
+        self.assertNotIn("\n  .kepala-besar h1 { font-size: clamp(2.8rem", css)
+        self.assertIn(".kepala-materi h1 { font-size: clamp(2rem, 1.3rem + 1.4vw, 2.8rem);", css)
+
+    def test_header_materi_tidak_mengulang_bab_dan_posisi(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", "layar", "Belajar.tsx"),
+                  encoding="utf-8") as f:
+            d = f.read()
+        awal = d.index('<header className="kepala-besar kepala-materi">')
+        kepala = d[awal:d.index("</header>", awal)]
+        self.assertNotIn("`Bab ${m.bab.nomor}", kepala)
+        self.assertEqual(kepala.count("materi ${m.indeks + 1} dari ${m.jumlah}"), 1)
+        self.assertEqual(kepala.count('className="pil'), 0)
+        self.assertEqual(kepala.count('"pil bab-tingkat bab-"'), 1)
+
+    def test_pelat_gelap_di_tema_terang_adalah_salinan_tema_gelap(self):
+        """Palet pelat HARUS sama dengan token tema gelap (`:root`): kontras sintaks yang sudah terukur di
+        sana ikut berlaku, tanpa angka baru. Satu token yang melenceng = kode yang gagal kontras diam-diam."""
+        import re
+        css = self._css()
+        akar = re.search(r":root \{(.*?)\n\}", css, flags=re.S).group(1)
+        gelap = dict(re.findall(r"(--[\w-]+):\s*([^;]+);", akar))
+        pelat = re.search(r"@media screen \{\s*\[data-tema=\"terang\"\] \.blok-kode \{(.*?)\n  \}", self._blok(), flags=re.S)
+        self.assertIsNotNone(pelat, "aturan pelat gelap hilang")
+        token = dict(re.findall(r"(--[\w-]+):\s*(#[0-9a-fA-F]{3,8})", pelat.group(1)))
+        self.assertGreaterEqual(len(token), 28, "token pelat berkurang")
+        for nama, nilai in token.items():
+            self.assertEqual(nilai.lower(), gelap[nama].split("/*")[0].strip().lower(), nama)
+        for wajib in ("--kode-latar", "--k-komentar", "--k-string", "--k-angka", "--k-kunci", "--k-tipe",
+                      "--k-bawaan", "--k-fungsi", "--k-operator", "--k-khusus", "--k-teks", "--teks", "--redup"):
+            self.assertIn(wajib, token)
+        self.assertIn("color-scheme: dark;", pelat.group(1))
+
+    def test_pecahkan_terlipat_dan_dibuka_di_cetak(self):
+        import re
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", "komponen", "IsiProsa.tsx"), encoding="utf-8") as f:
+            d = f.read()
+        for butir in ('aria-expanded={buka}', 'aria-controls={id}', 'hidden={!buka}', 'className="pecahkan-isi"',
+                      "Cara memecahkannya"):
+            self.assertIn(butir, d)
+        kode = " ".join(self._blok().split())
+        self.assertIn("@media print { .pecahkan-isi[hidden] { display: block; }", kode)
+        with open(os.path.join(akar, "packages", "web", "src", "layar", "Belajar.tsx"), encoding="utf-8") as f:
+            b = f.read()
+        self.assertIn('lipat={bg.judul === "Di dunia nyata"}', b)
+        self.assertIsNone(re.search(r"BlokProsa key=\{j\} blk=\{blk\}", b), "BlokProsa langsung di Belajar.tsx")
+
+    def test_rel_kiri_melipat_bab_hanya_di_tiga_kolom(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", "layar", "Belajar.tsx"), encoding="utf-8") as f:
+            b = f.read()
+        for butir in ('className="materi-rel-bab-tombol"', "aria-expanded={buka(bb.nomor)}",
+                      '"materi-rel-tutup"', "const buka = (n: number) => terbuka[n] ?? n === babAktif;"):
+            self.assertIn(butir, b)
+        kode = " ".join(self._blok().split())
+        self.assertIn("@container panggung (min-width: 1130px) { .materi-rel-tutup { display: none; }", kode)
+
+    def test_baris_meta_dan_menit_dari_server(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "src", "layar", "Belajar.tsx"), encoding="utf-8") as f:
+            b = f.read()
+        with open(os.path.join(akar, "webapp", "api.py"), encoding="utf-8") as f:
+            a = f.read()
+        self.assertIn('className="kepala-meta">{ringkasMateri(m)}', b)
+        self.assertIn('"menit": waktu.menit_materi(m),', a)
+
+    def test_callout_bersimbol_dan_gambar_diperbesar(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        kode = " ".join(self._blok().split())
+        self.assertIn(".prosa .peran-jebakan::before { background: var(--salah); clip-path: polygon(", kode)
+        self.assertIn(".prosa .peran-aturan::before { border: 2px solid var(--nyala);", kode)
+        with open(os.path.join(akar, "packages", "web", "src", "komponen", "Visual.tsx"), encoding="utf-8") as f:
+            v = f.read()
+        self.assertIn('style={{ width: "100%", maxWidth: Math.round(w * 1.3) + "px" }}', v)
+
+    def test_skrip_peramban_menolak_server_pemilik_dan_tanpa_dash(self):
+        akar = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(akar, "packages", "web", "uji", "manual", "lembar-baca.mjs"),
+                  encoding="utf-8") as f:
+            m = f.read()
+        self.assertIn('.port === "7777"', m)
+        self.assertIn("process.exit(2)", m)
+        for dash in ("—", "–"):
+            self.assertNotIn(dash, m)

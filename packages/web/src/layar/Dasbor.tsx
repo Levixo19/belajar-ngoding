@@ -39,8 +39,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Sampul } from "../komponen/Sampul.tsx";
 
 import { ambil } from "../api.ts";
-import { tingkatGerak } from "../gerak.ts";
 import { ambilLokal, simpanLokal } from "../lokal.ts";
+import { AngkaHidup } from "../komponen/AngkaHidup.tsx";
 import { Bilah } from "../komponen/Bilah.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { ikonTipe } from "../komponen/ikon-bentuk.ts";
@@ -52,8 +52,9 @@ import { angka, tanpaNomor } from "../util.ts";
 import { hariIniISO } from "../waktu.ts";
 import type { Tingkat } from "./Bahasa.tsx";
 import { PenutupDasbor } from "./PenutupDasbor.tsx";
+import { statHariIni, teksLencana, teksRel, urutRel } from "./dasbor-hidup-teks.ts";
 import {
-  bandingHarian, baraPetak, celahBelajar, cincinAngka, dijalaniDasbor,
+  baraPetak,
   jedaBara, jumlahKurikulum, kalimatPembuka, labelLanjut, labelMulai,
   paketTigaPuluh, pecahSapa, pekanAngka, sapaJam, tandaUbin, tautanLangkah,
   type DataDasbor, type Langkah,
@@ -89,115 +90,6 @@ export function PilJenis({ tipe }: { tipe: string }) {
   );
 }
 
-/**
- * Cincin level. `stroke-dashoffset` AKHIR dipasang langsung di atributnya;
- * animasinya cuma berangkat dari lingkaran kosong.
- *
- * `--panas` diteruskan sebagai properti kustom, dan itu harus lewat gaya inline
- * React (bukan `Object.assign` ke `style` seperti versi JS, yang diam-diam
- * membuang properti `--*`).
- */
-function CincinLevel({ d }: { d: DataDasbor }) {
-  const R = 56;
-  const keliling = 2 * Math.PI * R;
-  const { rasio, panas } = cincinAngka(d);
-  const akhir = keliling * (1 - rasio);
-  const isiRef = useRef<SVGCircleElement>(null);
-
-  useEffect(() => {
-    const isi = isiRef.current;
-    if (!isi || tingkatGerak() === "mati") return;
-    isi.animate(
-      { strokeDashoffset: [String(keliling), String(akhir)] },
-      { duration: 900, easing: "cubic-bezier(.32,.72,.36,1)" },
-    );
-  }, [keliling, akhir]);
-
-  return (
-    <div
-      className="cincin"
-      style={{ "--panas": String(panas) } as React.CSSProperties}
-      title={`${d.di_level} dari ${d.butuh_level} XP menuju level ${d.level + 1}`}
-    >
-      <svg viewBox="0 0 132 132" aria-hidden="true">
-        <circle cx="66" cy="66" r={R} fill="none" strokeWidth="7" className="alur" />
-        <circle
-          ref={isiRef}
-          cx="66"
-          cy="66"
-          r={R}
-          fill="none"
-          strokeWidth="7"
-          className="isi"
-          strokeDasharray={keliling}
-          strokeDashoffset={akhir}
-        />
-      </svg>
-      <div className="cincin-isi">
-        <div className="cincin-angka">{d.level}</div>
-        <div className="cincin-label">level</div>
-      </div>
-    </div>
-  );
-}
-
-function KartuBara({ d }: { d: DataDasbor }) {
-  const kurang = Math.max(0, d.target_harian - d.xp_hari_ini);
-  const banding = bandingHarian(d);
-  const celah = d.streak ? null : celahBelajar(d);
-  return (
-    <div className="kartu kartu-level">
-      <CincinLevel d={d} />
-      <div className="kartu-level-isi">
-        <h2>{d.gelar}</h2>
-        <div className="kartu-level-ket">
-          {`${angka(d.xp)} XP · ${d.di_level}/${d.butuh_level} menuju level ${d.level + 1}`}
-        </div>
-        <Bilah persen={(d.di_level / Math.max(1, d.butuh_level)) * 100} />
-
-        <div className="target">
-          <div className="target-baris">
-            <span>Target hari ini</span>
-            <b className={kurang ? undefined : "tercapai"}>
-              {kurang ? `${d.xp_hari_ini}/${d.target_harian} XP` : "tercapai"}
-            </b>
-          </div>
-          <Bilah
-            persen={(d.xp_hari_ini / Math.max(1, d.target_harian)) * 100}
-            kelas={kurang ? "" : "tumbuh"}
-          />
-        </div>
-
-        <div className="banding">
-          {banding.teks}
-          {banding.arah ? <span className="banding-arah">{banding.arah}</span> : null}
-        </div>
-
-        {celah ? (
-          <div className="celah">
-            <span>Hari belajar terakhir: </span>
-            <b>{celah.tanggal}</b>
-            <span className="celah-jarak">{` · ${angka(celah.selisih)} hari lalu`}</span>
-          </div>
-        ) : null}
-
-        <div className="deret deret-rapat">
-          <span className={"pil" + (d.streak ? " pil-nyala" : "")}>
-            <Ikon nama="api" ukuran={14} tebal={1.9} />
-            {d.streak ? `${d.streak} hari belajar` : "belum ada hari berurutan"}
-          </span>
-          <a
-            className={"pil" + (d.badge_dimiliki ? " pil-ungu" : "")}
-            href="#/statistik"
-          >
-            <Ikon nama="bintang" ukuran={14} tebal={1.9} />
-            {`${d.badge_dimiliki}/${d.badge_total}`}
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Minggu ini: tujuh hari terakhir sebagai tujuh batang, hari ini di ujung.
@@ -449,98 +341,6 @@ function BlokBara({ d }: { d: DataDasbor }) {
   );
 }
 
-/** Kartu tindakan utama dasbor: satu-satunya permukaan beraksen di layar ini. */
-function KartuLanjutkan({ s }: { s: Langkah }) {
-  return (
-    <a className="lanjutkan" href={tautanLangkah(s)}>
-      {/* Sampul generatif, persis benih yang sama dengan antarmuka lama:
-          `<bahasa>/<tipe>/<indeks>`. Benihnya bagian dari kontrak -- benih
-          yang berbeda memberi gambar yang berbeda untuk langkah yang sama,
-          dan yang hilang bukan keindahan melainkan sifat "kartu ini punya
-          wajahnya sendiri yang tidak berubah-ubah". */}
-      <span className="lanjutkan-sampul">
-        <Sampul
-          teks={`${s.bahasa}/${s.tipe}/${s.indeks}`}
-          bahasa={s.bahasa}
-          lebar={640}
-          tinggi={260}
-        />
-      </span>
-      <span className="lanjutkan-nomor">{s.indeks + 1}</span>
-      <div className="lanjutkan-isi">
-        <span className="mata">
-          {`${labelLanjut(s.tipe)} · ${s.label_bahasa}` +
-            (s.menit ? ` · ≈${s.menit} menit` : "")}
-        </span>
-        <h2>{tanpaNomor(s.judul)}</h2>
-        <p>{s.alasan}</p>
-      </div>
-      <span className="lanjutkan-tbl tbl-kaca">
-        <span>Lanjutkan</span>
-        <Ikon nama="lanjut" ukuran={20} />
-      </span>
-    </a>
-  );
-}
-
-/**
- * Antrean hari ini: sisa langkah dari `saran.py` PLUS tantangan harian, jadi
- * SATU daftar.
- *
- * Sebelumnya keduanya dua blok terpisah dengan dua judul, dan tantangannya
- * bahkan punya kartunya sendiri lengkap dengan tombol -- padahal keduanya
- * menjawab pertanyaan yang sama persis ("apa lagi yang bisa kukerjakan
- * sekarang") dan disusun modul yang sama. Dua daftar untuk satu pertanyaan
- * memaksa orang membandingkan keduanya sebelum memilih.
- */
-function BlokAntrean({
-  langkah, tantangan, bahasa,
-}: {
-  langkah: Langkah[];
-  tantangan?: Langkah | null;
-  bahasa: BahasaAwal[];
-}) {
-  const siap = useMemo(
-    () => new Map(bahasa.map((b) => [b.key, b.siap])),
-    [bahasa],
-  );
-  const baris = (s: Langkah, cap: string | null, kunci: string) => (
-    <a className="baris" key={kunci} href={tautanLangkah(s)}>
-      <PilJenis tipe={s.tipe} />
-      <div className="isi">
-        <div className="judul">{tanpaNomor(s.judul)}</div>
-        <div className="ket">
-          {`${s.label_bahasa} · ${s.alasan}` + (s.menit ? ` · ≈${s.menit} menit` : "")}
-        </div>
-      </div>
-      {cap ? <span className="pil pil-ungu sembunyi-hp">{cap}</span> : null}
-      {/* Ditandai SEBELUM diklik, bukan sesudah. Latihan di bahasa yang
-          toolchain-nya belum terpasang tetap bisa dikerjakan dan ditandai
-          selesai sendiri -- yang mati cuma penilaian otomatisnya -- tapi orang
-          berhak tahu itu sebelum membuka halamannya, bukan sesudah menulis
-          tiga puluh baris kode. */}
-      {s.tipe === "latihan" && siap.get(s.bahasa) === false ? (
-        <span className="pil pil-kunci">tanpa nilai otomatis</span>
-      ) : null}
-      <span className="baris-panah">
-        <Ikon nama="lanjut" ukuran={18} />
-      </span>
-    </a>
-  );
-
-  return (
-    <section>
-      <div className="bagian-kepala">
-        <span className="mata">Antrean berikutnya</span>
-        <a href="#/cari">Cari isi lain</a>
-      </div>
-      <div className="senarai">
-        {langkah.map((s, i) => baris(s, null, "l" + i))}
-        {tantangan ? baris(tantangan, "tantangan hari ini", "t") : null}
-      </div>
-    </section>
-  );
-}
 
 /**
  * Ubin Peta Karier di dasbor: profesi yang paling dekat dicapai.
@@ -657,82 +457,240 @@ function UbinPustaka({ kunci, label }: { kunci?: string | null; label?: string |
   );
 }
 
-/** Panel "Langitmu": rasi kurikulum yang sedang dijalani.
+
+/* --------------------------------------------------------- dasbor hidup */
+
+/** Tiga angka hari ini: XP, streak, dan level. Tanpa kotak: angkanya yang menjadi bentuk.
  *
- *  Kalau tidak ada satu pun kurikulum yang sudah disentuh, panelnya TIDAK
- *  digambar -- bukan digambar kosong. Langit yang seluruh bintangnya redup
- *  tidak menjawab apa pun, dan ia memakan setinggi 230 piksel untuk itu. */
-function PanelLangitMeja({ kunci }: { kunci?: string | null }) {
-  const [bhs, setBhs] = useState<DataPeta | null>(null);
+ *  Menggantikan kartu level (cincin + bilah + target + banding + dua pil) yang menumpuk
+ *  tujuh hal di satu kotak. Isinya sama dan dari data yang sama (`statHariIni`); yang
+ *  berubah cuma ia berdiri di samping sapaan, jadi jawaban "hari ini aku di mana" terbaca
+ *  tanpa menggulir. Angkanya menghitung naik saat tampil (`AngkaHidup`). */
+function StripHariIni({ d }: { d: DataDasbor }) {
+  const stat = statHariIni(d);
+  return (
+    <section className="ds-stat" aria-label="Hari ini">
+      {stat.map((x) => (
+        <div key={x.kunci} className={"ds-stat-butir" + (x.capai ? " capai" : "")}>
+          <span className="ds-stat-angka">
+            <AngkaHidup nilai={x.nilai} />
+          </span>
+          <span className="ds-stat-satuan">{x.satuan}</span>
+          {x.isi >= 0 ? (
+            <Bilah persen={x.isi} kelas={"ds-bilah" + (x.capai ? " tumbuh" : "")} />
+          ) : null}
+          {x.ket ? <span className="ds-stat-ket">{x.ket}</span> : null}
+        </div>
+      ))}
+      <a className="ds-stat-lencana" href="#/statistik">
+        <Ikon nama="bintang" ukuran={14} tebal={1.9} />
+        {`${teksLencana(d)} lencana`}
+      </a>
+    </section>
+  );
+}
+
+/** Langkah utama, selebar sapaannya: satu baris yang menjawab "sekarang aku ngapain".
+ *
+ *  Tetap SATU-SATUNYA tombol beraksen di layar ini (kaca bertinta kuningan); yang berubah bentuknya,
+ *  dari kartu tinggi di setengah kolom menjadi tiket mendatar. Sampul generatif memakai
+ *  benih yang sama dengan antarmuka lama (`<bahasa>/<tipe>/<indeks>`). */
+function TiketLanjut({ s }: { s: Langkah }) {
+  return (
+    <a className="ds-tiket" href={tautanLangkah(s)}>
+      <span className="ds-tiket-sampul" aria-hidden="true">
+        <Sampul
+          teks={`${s.bahasa}/${s.tipe}/${s.indeks}`}
+          bahasa={s.bahasa}
+          lebar={360}
+          tinggi={220}
+        />
+      </span>
+      <span className="ds-tiket-isi">
+        <span className="mata">
+          {`${labelLanjut(s.tipe)} · ${s.label_bahasa}` +
+            (s.menit ? ` · ≈${s.menit} menit` : "")}
+        </span>
+        <h2>{tanpaNomor(s.judul)}</h2>
+        <span className="ds-tiket-alasan">{s.alasan}</span>
+      </span>
+      <span className="lanjutkan-tbl tbl-kaca">
+        <span>Lanjutkan</span>
+        <Ikon nama="lanjut" ukuran={20} />
+      </span>
+    </a>
+  );
+}
+
+/** Habis ini: sisa langkah dari `saran.py` PLUS tantangan harian, satu deretan kartu.
+ *
+ *  Paling banyak tiga langkah ditambah tantangan: lima baris yang sama bobotnya bukan
+ *  pilihan melainkan daftar, dan "Cari isi lain" ada untuk yang ingin lebih. Teks
+ *  alasannya tetap ada (dipotong di tiga baris), karena justru itu yang membedakan dua
+ *  latihan HTML yang judulnya mirip. */
+function BarisLangkah({
+  langkah, tantangan, bahasa, paket, kuisTunggu,
+}: {
+  langkah: Langkah[];
+  tantangan?: Langkah | null;
+  bahasa: BahasaAwal[];
+  paket: { jumlah: number; total: number };
+  kuisTunggu: number;
+}) {
+  const siap = useMemo(
+    () => new Map(bahasa.map((b) => [b.key, b.siap])),
+    [bahasa],
+  );
+  const kartu = (s: Langkah, cap: string | null, kunci: string) => (
+    <a className="ds-langkah" key={kunci} href={tautanLangkah(s)}>
+      <span className="ds-langkah-atas">
+        <PilJenis tipe={s.tipe} />
+        {cap ? <span className="pil pil-ungu">{cap}</span> : null}
+      </span>
+      <span className="ds-langkah-judul">{tanpaNomor(s.judul)}</span>
+      <span className="ds-langkah-ket">
+        {`${s.label_bahasa} · ${s.alasan}` + (s.menit ? ` · ≈${s.menit} menit` : "")}
+      </span>
+      {/* Ditandai SEBELUM diklik, bukan sesudah: latihan di bahasa yang program
+          pendukungnya belum terpasang tetap bisa dikerjakan, hanya penilaian
+          otomatisnya yang mati, dan orang berhak tahu itu sebelum menulis kodenya. */}
+      {s.tipe === "latihan" && siap.get(s.bahasa) === false ? (
+        <span className="pil pil-kunci">tanpa nilai otomatis</span>
+      ) : null}
+      <span className="ds-langkah-panah" aria-hidden="true">
+        <Ikon nama="lanjut" ukuran={18} />
+      </span>
+    </a>
+  );
+  if (!langkah.length && !tantangan) return null;
+  return (
+    <section className="ds-antrean" aria-label="Habis ini">
+      <div className="bagian-kepala">
+        <span className="mata">Habis ini</span>
+        <a href="#/cari">Cari isi lain</a>
+      </div>
+      {paket.jumlah > 1 ? (
+        <p className="meja-paket">
+          <Ikon nama="waktu" ukuran={16} />
+          {`Punya 30 menit? ${paket.jumlah} langkah teratas kira-kira ${paket.total} menit.`}
+        </p>
+      ) : null}
+      <div className="ds-antrean-daftar">
+        {langkah.slice(0, 3).map((s, i) => kartu(s, null, "l" + i))}
+        {tantangan ? kartu(tantangan, "tantangan hari ini", "t") : null}
+      </div>
+      {kuisTunggu > 2 ? (
+        <p className="meja-catatan">
+          {`${kuisTunggu} kuis menunggu diulang. ` +
+            "Dua kuis di antreanmu dipilih dari bahasa yang sedang kamu pelajari lebih dulu, lalu yang skornya paling rendah; sisanya bisa menyusul."}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/** Rel bahasa: panel yang meluas saat disorot atau difokus, satu terbuka pada satu waktu.
+ *
+ *  Gagasannya dari "Hover Expand" dan "Expanding Cards" (21st.dev), tetapi isinya data
+ *  sungguhan: panel yang terbuka memperlihatkan RASI bahasa itu (bintang yang sudah dibaca
+ *  menyala), persennya, dan satu tautan masuk. Ini menggantikan dua bagian sekaligus,
+ *  "Yang sedang kamu jalani" (tiga baris persen) dan "Langitmu" (satu rasi dari satu bahasa).
+ *
+ *  Yang terbuka sejak awal bahasa tempat posisi sekarang berada. Penunjuk mouse membuka
+ *  panel yang dilayangi (touch tidak, supaya sentuhan tidak melompat-lompat); papan ketik
+ *  membukanya lewat fokus pada tab panel, dan isi panel yang tertutup `inert`, jadi Tab
+ *  tidak melewati tautan yang tidak terlihat. Pengganti hover untuk orang yang tidak
+ *  bisa melayangkan penunjuk: tab-nya sebuah tombol (`aria-expanded`). */
+function RelBahasa({
+  daftar, kunciPosisi,
+}: { daftar: DataDasbor["bahasa"]; kunciPosisi: string | null }) {
+  const urut = useMemo(() => urutRel(daftar, kunciPosisi), [daftar, kunciPosisi]);
+  const [rasi, setRasi] = useState<Record<string, DataPeta>>({});
+  const [aktif, setAktif] = useState(0);
+  /** Posisi penunjuk pada peristiwa terakhir. Panel yang melebar menggeser panel lain ke bawah
+   *  penunjuk yang diam, dan peramban menjawabnya dengan `pointerenter` palsu yang membawa
+   *  koordinat SAMA: tanpa penyaring ini hover melompat 3, 2, 3, 5 dalam 200 ms dan berhenti
+   *  di panel yang tidak ditunjuk siapa pun. Pergeseran tata letak bukan gerakan penunjuk. */
+  const posisiMouse = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     let dibatalkan = false;
     ambil<{ bahasa: DataPeta[] }>("langit")
-      .then((d) => {
+      .then((r) => {
         if (dibatalkan) return;
-        const pilih =
-          d.bahasa.find((x) => x.key === kunci) ??
-          d.bahasa.find((x) => x.materi.some((m) => m.status !== "baru"));
-        if (pilih) setBhs(pilih);
+        setRasi(Object.fromEntries(r.bahasa.map((x) => [x.key, x])));
       })
       .catch(() => {
-        /* panelnya tidak digambar */
+        /* panelnya tetap berisi persen dan tautan, tanpa rasi */
       });
     return () => {
       dibatalkan = true;
     };
-  }, [kunci]);
+  }, []);
 
-  if (!bhs) return null;
+  if (!urut.length) return null;
+  const terbuka = Math.min(aktif, urut.length - 1);
   return (
-    <section className="meja-langit" aria-label="Peta langit belajarmu">
-      <div className="meja-langit-kepala">
-        <h2 className="meja-judul">Langitmu</h2>
-        <span className="meja-langit-ket">
-          Satu materi, satu bintang. Yang sudah kamu baca menyala.
-        </span>
-        <a className="meja-langit-tautan" href="#/langit">
-          Seluruh langit
-        </a>
+    <section className="ds-rel" aria-label="Bahasa yang sedang kamu jalani">
+      <div className="bagian-kepala">
+        <h2 className="meja-judul">Bahasamu</h2>
+        <a href="#/langit">Seluruh langit</a>
       </div>
-      <div className="meja-langit-isi">
-        <PetaRasi data={bhs} tinggi={230} />
+      <div
+        className="ds-rel-rak"
+        onPointerMove={(e) => {
+          posisiMouse.current = { x: e.clientX, y: e.clientY };
+        }}
+      >
+        {urut.map((b, i) => {
+          const t = teksRel(b);
+          const buka = i === terbuka;
+          const peta = rasi[b.key];
+          return (
+            <div
+              key={b.key}
+              className={"ds-panel" + (buka ? " buka" : "")}
+              style={{ "--p": `${t.isi}%` } as React.CSSProperties}
+              onPointerEnter={(e) => {
+                if (e.pointerType !== "mouse") return;
+                const lalu = posisiMouse.current;
+                if (lalu && lalu.x === e.clientX && lalu.y === e.clientY) return;
+                posisiMouse.current = { x: e.clientX, y: e.clientY };
+                setAktif(i);
+              }}
+              onFocusCapture={() => setAktif(i)}
+            >
+              <button
+                type="button"
+                className="ds-panel-tab"
+                aria-expanded={buka}
+                aria-controls={"ds-panel-" + b.key}
+                onClick={() => setAktif(i)}
+              >
+                <span className="ds-panel-nama">{b.label}</span>
+                <span className="ds-panel-persen">{`${Math.round(b.persen)}%`}</span>
+              </button>
+              <div className="ds-panel-isi" id={"ds-panel-" + b.key} inert={!buka}>
+                <div className="ds-panel-rasi">
+                  {buka && peta ? <PetaRasi data={peta} tinggi={190} /> : null}
+                </div>
+                <div className="ds-panel-ket">
+                  <b>{t.persen}</b>
+                  <span>{t.materi}</span>
+                  <Bilah persen={t.isi} kelas={b.persen >= 100 ? "tumbuh" : ""} />
+                  <a className="ds-panel-tautan" href={"#/bahasa/" + b.key}>
+                    {`Buka ${b.label}`}
+                  </a>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
 }
 
-/** Bahasa yang sedang dijalani: satu baris per bahasa, persennya SELALU
- *  terlihat. Akordeon lama menyembunyikannya sampai di-hover. Tanpa nomor
- *  01-04: nomor di aplikasi ini berarti urutan, dan bahasa-bahasa ini bukan
- *  urutan. */
-function BarisBahasaMeja({ daftar }: { daftar: DataDasbor["bahasa"] }) {
-  if (!daftar.length) return null;
-  return (
-    <section className="meja-bahasa" aria-label="Bahasa yang sedang kamu jalani">
-      <h2 className="meja-judul">Yang sedang kamu jalani</h2>
-      <div className="meja-bahasa-daftar">
-        {daftar.map((b) => (
-          <a key={b.key} className="meja-bahasa-baris" href={"#/bahasa/" + b.key}>
-            <span className="meja-bahasa-nama">{b.label}</span>
-            <span className="meja-bahasa-ket">
-              {`${b.materi}/${b.total_materi} materi`}
-            </span>
-            <span className="meja-bahasa-bilah">
-              <Bilah
-                persen={Math.min(100, b.persen)}
-                kelas={b.persen >= 100 ? "tumbuh" : ""}
-              />
-            </span>
-            {/* "selesai", bukan "materi": persennya ikut menghitung kuis dan
-                latihan. */}
-            <b className="meja-bahasa-persen">{`${Math.round(b.persen)}% selesai`}</b>
-          </a>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 /* --------------------------------------------------------- layar mulai */
 
@@ -977,20 +935,17 @@ function LayarMulai({
 function MejaKerja({ d, bahasa }: { d: DataDasbor; bahasa: BahasaAwal[] }) {
   const sapa = sapaJam(new Date().getHours());
   const { awal, sisa } = pecahSapa(sapa, d.nama);
-  // Langkah PERTAMA diangkat keluar dari daftar dan diberi kartunya sendiri.
-  // Inilah perubahan susunan yang paling menentukan di seluruh dasbor: yang
-  // dibutuhkan orang yang belajar dari nol bukan ringkasan capaiannya,
-  // melainkan satu kalimat yang menjawab "sekarang aku ngapain". Sisanya tetap
-  // ada, tapi di KOLOM SEBELAH, bukan di bawahnya.
+  // Langkah PERTAMA diangkat keluar dari daftar dan diberi tiketnya sendiri: yang dibutuhkan
+  // orang yang belajar dari nol bukan ringkasan capaiannya, melainkan satu kalimat yang
+  // menjawab "sekarang aku ngapain". Sisanya tetap ada, di deretan "Habis ini".
   const [utama, ...sisaLangkah] = d.langkah;
-  const dijalani = useMemo(() => dijalaniDasbor(d.bahasa), [d.bahasa]);
   const p = d.posisi;
   const paket = paketTigaPuluh([utama, ...sisaLangkah]);
 
   return (
-    <div className="meja">
-      <section className="meja-atas">
-        <div className="meja-kini">
+    <div className="meja ds-meja">
+      <section className="ds-hero">
+        <div className="ds-hero-kini">
           <span className="mata">
             {new Date().toLocaleDateString("id-ID", {
               weekday: "long",
@@ -999,14 +954,12 @@ function MejaKerja({ d, bahasa }: { d: DataDasbor; bahasa: BahasaAwal[] }) {
               year: "numeric",
             })}
           </span>
-          {/* Pil gambar DI DALAM sapaannya ("Selamat [pil] malam."), dengan
-              benih dari bahasa langkah pertama -- jadi gambar pertama yang
-              dilihat orang pagi itu adalah pelajaran yang menunggunya.
-              Judulnya tetap terbaca utuh: pilnya `aria-hidden` dan kosong
-              teks, jadi pembaca layar mendengar "Selamat malam." apa adanya,
-              dan `pecahSapa()` memang mengembalikan dua potongan khusus
-              supaya ada celah untuk menaruhnya. */}
-          <h1>
+          {/* Pil gambar DI DALAM sapaannya ("Selamat [pil] malam."), dengan benih dari bahasa
+              langkah pertama: gambar pertama yang dilihat orang pagi itu adalah pelajaran
+              yang menunggunya. Pilnya `aria-hidden` dan kosong teks, jadi pembaca layar
+              mendengar "Selamat malam." apa adanya (`pecahSapa()` memang mengembalikan dua
+              potongan supaya ada celah untuk menaruhnya). */}
+          <h1 className="ds-sapa">
             {awal}{" "}
             <span className="judul-pil" aria-hidden="true">
               <Sampul
@@ -1028,64 +981,39 @@ function MejaKerja({ d, bahasa }: { d: DataDasbor; bahasa: BahasaAwal[] }) {
               {` · ${p.materi}/${p.total_materi} materi`}
             </p>
           ) : null}
-          {paket.muat.length > 1 ? (
-            <p className="meja-paket">
-              <Ikon nama="waktu" ukuran={16} />
-              {`Punya 30 menit? ${paket.muat.length} langkah teratas kira-kira ${paket.total} menit.`}
-            </p>
-          ) : null}
-          {utama ? (
-            <KartuLanjutkan s={utama} />
-          ) : (
-            <p className="sambut-sub">{kalimatPembuka(d)}</p>
-          )}
         </div>
-        <div className="meja-antrean">
-          {sisaLangkah.length || d.tantangan ? (
-            <BlokAntrean
-              langkah={sisaLangkah}
-              tantangan={d.tantangan}
-              bahasa={bahasa}
-            />
-          ) : (
-            <p className="sambut-sub">{kalimatPembuka(d)}</p>
-          )}
-          {d.kuis_jatuh_tempo > 2 ? (
-            <p className="meja-catatan">
-              {`${d.kuis_jatuh_tempo} kuis menunggu diulang. ` +
-                "Dua kuis di antreanmu dipilih dari bahasa yang sedang kamu pelajari lebih dulu, lalu yang skornya paling rendah; sisanya bisa menyusul."}
-            </p>
-          ) : null}
-          {/* Di kolom kanan, bukan di bawah: kolom kiri (sapaan + kartu) lebih
-              tinggi daripada antrean, dan ruang di bawah antrean itulah tempat
-              persen tiap bahasa terlihat tanpa menggulir. */}
-          <BarisBahasaMeja daftar={dijalani.slice(0, 4)} />
-        </div>
+        <StripHariIni d={d} />
+        {utama ? (
+          <TiketLanjut s={utama} />
+        ) : (
+          <p className="sambut-sub">{kalimatPembuka(d)}</p>
+        )}
       </section>
 
-      <PanelLangitMeja kunci={p ? p.key : null} />
+      <BarisLangkah
+        langkah={sisaLangkah}
+        tantangan={d.tantangan}
+        bahasa={bahasa}
+        paket={{ jumlah: paket.muat.length, total: paket.total }}
+        kuisTunggu={d.kuis_jatuh_tempo}
+      />
 
-      <div className="bento">
-        <div className="bento-level">
-          <KartuBara d={d} />
-        </div>
-        <div className="bento-pekan">
-          <PekanIni d={d} />
-        </div>
-        <div className="bento-karier">
-          <UbinKarier />
-        </div>
-        <div className="bento-pustaka">
-          <UbinPustaka
-            kunci={utama ? utama.bahasa : null}
-            label={utama ? utama.label_bahasa : null}
-          />
-        </div>
+      <RelBahasa daftar={d.bahasa} kunciPosisi={p ? p.key : null} />
+
+      <div className="ds-ritme">
+        <PekanIni d={d} />
+        <section className="meja-ritme">
+          <BlokBara d={d} />
+        </section>
       </div>
 
-      <section className="meja-ritme">
-        <BlokBara d={d} />
-      </section>
+      <div className="ds-jelajah">
+        <UbinKarier />
+        <UbinPustaka
+          kunci={utama ? utama.bahasa : null}
+          label={utama ? utama.label_bahasa : null}
+        />
+      </div>
 
       {/* Penutup yang tersingkap saat dasbor digulir sampai habis. Hanya di dasbor yang
           berjalan: layar mulai (xp 0) sengaja tidak punya penutup, karena yang dibutuhkan
