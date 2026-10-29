@@ -91,6 +91,7 @@ puts "Halo, #{nama}! Umurmu #{2026 - 2006} tahun."
 3.times { |i| puts "baris ke-#{i + 1}" }"""
             },
             {
+                "heading": "Cara mencetak, interpolasi, dan konvensi nama",
                 "body": [
                     "Program tadi mencetak enam baris. Baris ketiganya berbunyi \"Halo, Andi!",
                     "Umurmu 20 tahun.\", karena Ruby menghitung 2026 - 2006 dulu, baru",
@@ -308,6 +309,7 @@ rescue ArgumentError => e
 end"""
             },
             {
+                "heading": "Duck typing dan beda to_i dengan Integer",
                 "body": [
                     "Keluaran (bagian pentingnya):",
                     "  42           Integer      false",
@@ -531,6 +533,7 @@ puts "---"
 end"""
             },
             {
+                "heading": "Symbol-to-proc, string beku, dan heredoc",
                 "body": [
                     "Keluaran (bagian pentingnya):",
                     "  asli       : Ruby dirancang untuk membuat programmer bahagia",
@@ -771,6 +774,7 @@ puts "kata unik  : #{hitung.size}"
 puts "total kata : #{kata.size}\""""
             },
             {
+                "heading": "Idiom Ruby untuk mengurutkan dan memformat",
                 "body": [
                     "Keluaran:",
                     "  Data      : 78, 92, 65, 88, 71, 95, 59, 83",
@@ -994,6 +998,7 @@ end
 puts "kelipatan 3 yang ganjil: #{hasil.join(', ')}\""""
             },
             {
+                "heading": "Urutan when dan lambda di case",
                 "body": [
                     "Keluaran:",
                     "  kosong",
@@ -1233,6 +1238,7 @@ panjang = ->(s) { s.length }
 puts kata.map(&panjang).inspect"""
             },
             {
+                "heading": "Peran ensure dan nilai balik yield",
                 "body": [
                     "Keluaran:",
                     "  [1, 4, 9, 16, 25]",
@@ -1470,6 +1476,7 @@ terurut = data.map(&:nilai).sort
 puts terurut.each_cons(2).map { |a, b| b - a }.inspect"""
             },
             {
+                "heading": "Struct, partition, dan lazy dalam rantai",
                 "body": [
                     "Keluaran:",
                     "  -- Lulus, nilai tertinggi dulu --",
@@ -1702,6 +1709,7 @@ puts "a > b   = #{a > b}"
 puts "terbesar= #{[a, b, Uang.new(99_000)].max}\""""
             },
             {
+                "heading": "Argumen berkunci, operator, dan Comparable",
                 "body": [
                     "Keluaran (bagian pentingnya):",
                     "  ============REKAP=============",
@@ -1955,6 +1963,7 @@ rescue ArgumentError => e
 end"""
             },
             {
+                "heading": "Fluent interface dan variabel class bersama",
                 "body": [
                     "Keluaran:",
                     "  tarik 900rb: false",
@@ -2215,6 +2224,7 @@ puts "tertinggi: #{k.first.inspect}"
 puts "nama     : #{k.map { |nama, _| nama }.join(', ')}\""""
             },
             {
+                "heading": "Urutan ancestors dan NotImplementedError",
                 "body": [
                     "Keluaran:",
                     "  Persegi            16.00",
@@ -2486,6 +2496,7 @@ rescue KonfigurasiError => e
 end"""
             },
             {
+                "heading": "Cause dan aturan rescue yang sering dilanggar",
                 "body": [
                     "Keluaran:",
                     "  bayar   20000 -> sisa 30000",
@@ -2741,6 +2752,7 @@ puts "ukuran: #{File.size(teks)} byte"
 puts "berkas masih ada? #{File.exist?(teks)}\""""
             },
             {
+                "heading": "Memecah CSV, nomor baris, dan chomp",
                 "body": [
                     "Keluaran:",
                     "  Cici  A  95",
@@ -2955,6 +2967,7 @@ desc "Tes lalu periksa gaya"
 task ci: %i[spec lint]"""
             },
             {
+                "heading": "Konvensi lib, Rake, dan RuboCop",
                 "body": [
                     "Konvensi yang dipatuhi hampir semua proyek Ruby:",
                     "",
@@ -3224,6 +3237,7 @@ end
 # end"""
             },
             {
+                "heading": "Nilai batas, cover?, dan memilih kerangka tes",
                 "body": [
                     "Lihat nilai yang dipilih di test_grade_tepat_di_batas: 85 dan 84, 75",
                     "dan 74, 60 dan 59. Menguji tepat di batas adalah yang paling",
@@ -3455,6 +3469,7 @@ rescue NoMethodError => e
 end"""
             },
             {
+                "heading": "Tiga syarat method_missing yang aman",
                 "body": [
                     "Keluaran:",
                     "  tema         : terang",
@@ -3684,6 +3699,7 @@ if /(?<thn>\\d{4})-(?<bln>\\d{2})-(?<tgl>\\d{2})/ =~ tanggal
 end"""
             },
             {
+                "heading": "Pola ketat lawan pola longgar",
                 "body": [
                     "Keluaran (bagian pentingnya):",
                     "  jam       taraf pesan",
@@ -3896,6 +3912,7 @@ puts "acuan     : #{acuan}"
 puts "usia      : #{acuan.year - lahir.year - (belum ? 1 : 0)} tahun\""""
             },
             {
+                "heading": "Tanggal akhir bulan, usia, dan epoch",
                 "body": [
                     "Keluaran:",
                     "  mulai    : Thursday, 15 January 2026",
@@ -4141,6 +4158,7 @@ rescue FrozenError
 end"""
             },
             {
+                "heading": "Beda Struct dan Data pada keluaran",
                 "body": [
                     "Keluaran:",
                     "  kelas A   : Andi, Budi, Cici, Dedi",
@@ -4362,6 +4380,7 @@ warn "peringatan ini masuk stderr, bukan stdout"
 puts "program selesai dengan kode 0\""""
             },
             {
+                "heading": "Argumen perintah, OptionParser, dan shebang",
                 "body": [
                     "Keluaran di stdout:",
                     "  minimal=75 urut=nilai rinci=true",
@@ -4587,6 +4606,7 @@ puts "@@bersama  Induk=#{Induk.bersama}  Anak=#{Anak.bersama}   <- ikut berubah"
 puts "@sendiri   Induk=#{Induk.sendiri}  Anak=#{Anak.sendiri}   <- terpisah\""""
             },
             {
+                "heading": "Jebakan Hash.new([]) dan operator and",
                 "body": [
                     "Keluaran:",
                     "  strip  : \"sudah rapi\"",
@@ -4829,6 +4849,7 @@ menipis = gudang.stok_menipis(10).map { |b| "#{b.kode} #{b.nama} (#{b.stok})" }
 puts "stok menipis (<10): #{menipis.join(', ')}\""""
             },
             {
+                "heading": "Empat keputusan desain dan idiom Ruby",
                 "body": [
                     "Kalau dijalankan, program ini mencetak lima baris catatan gerak barang.",
                     "Tiga di antaranya ditolak: Adaptor yang stoknya cuma 4 diminta keluar",

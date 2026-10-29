@@ -55,6 +55,7 @@ SQL_MATERIALS = [
                 ]
             },
             {
+                "heading": "Aturan menulis perintah SQL",
                 "body": [
                     "Di MySQL, database baru dibikin pakai CREATE DATABASE, lalu dipilih",
                     "pakai USE supaya perintah berikutnya bekerja di situ:",
@@ -356,6 +357,7 @@ SELECT '19.99 * 100 lalu dibulatkan ke bawah: ' || CAST(19.99 * 100 AS INTEGER);
 -- menyimpan sen sebagai INTEGER.""",
             },
             {
+                "heading": "Tipe waktu dan kolom yang terisi sendiri",
                 "body": [
                     "Waktu",
                     "",
@@ -461,6 +463,7 @@ SELECT '19.99 * 100 lalu dibulatkan ke bawah: ' || CAST(19.99 * 100 AS INTEGER);
                 ],
             },
             {
+                "heading": "Constraint dan aksi referensial",
                 "body": [
                     "Constraint adalah aturan yang dijaga oleh database, bukan oleh kode",
                     "aplikasimu. Bedanya besar. Aplikasi bisa punya banyak versi dan banyak",
@@ -901,6 +904,7 @@ ALTER TABLE customer ALTER COLUMN email SET NOT NULL;
 ALTER TABLE pesanan DROP CONSTRAINT fk_pesanan_customer;""",
             },
             {
+                "heading": "Tanda kutip dan beda dialek SQL",
                 "body": [
                     "Hal yang paling sering bikin bingung waktu membaca SQL orang lain adalah",
                     "tanda kutip. Ada empat macam, dan artinya beda-beda:",
@@ -1165,6 +1169,7 @@ SELECT * FROM mahasiswa WHERE ipk BETWEEN 3.0 AND 3.8;
 SELECT * FROM mahasiswa WHERE ipk IS NOT NULL;"""
             },
             {
+                "heading": "AND, OR, LIKE, dan ORDER BY",
                 "body": [
                     "Beberapa syarat bisa digabung pakai operator logika AND, OR, dan NOT.",
                     "AND artinya semua syarat harus benar, OR artinya cukup salah satu, dan",
@@ -1368,6 +1373,7 @@ SELECT nama, harga FROM produk WHERE id = 2;   -- 5000 -> 5500
 SELECT ABS(-7) AS mutlak, ROUND(3.14159, 2) AS dua_desimal, 17 % 5 AS sisa;""",
             },
             {
+                "heading": "NULL dan logika tiga nilai",
                 "body": [
                     "NULL bukan angka 0, dan bukan juga teks kosong ''. NULL artinya \"nggak",
                     "diketahui\".",
@@ -1470,6 +1476,7 @@ SELECT ABS(-7) AS mutlak, ROUND(3.14159, 2) AS dua_desimal, 17 % 5 AS sisa;""",
                 ],
             },
             {
+                "heading": "Menulis percabangan dengan CASE",
                 "body": [
                     "CASE adalah satu-satunya cara menulis logika if-else di dalam sebuah",
                     "query. Pakai CASE, kamu bisa mengubah kode angka jadi keterangan,",
@@ -2321,6 +2328,7 @@ FROM pelanggan
 GROUP BY kota;""",
             },
             {
+                "heading": "Padanan fungsi teks di tiap database",
                 "body": [
                     "Banyak database pakai nama berbeda untuk pekerjaan yang sama. Yang perlu",
                     "kamu ingat adalah kebutuhannya. Nama fungsinya bisa dicari belakangan.",
@@ -2522,6 +2530,7 @@ WHERE tanggal_daftar >= '2024-01-01' AND tanggal_daftar < '2025-01-01';
 SELECT date('2024-03-31', '+1 month') AS sqlite_meluber;""",
             },
             {
+                "heading": "Tiga jebakan menyimpan dan menyaring tanggal",
                 "body": [
                     "Ada tiga jebakan tanggal yang paling sering bikin pusing di kode nyata.",
                     "",
@@ -2745,6 +2754,7 @@ WHERE rk = 1
 ORDER BY jurusan;""",
             },
             {
+                "heading": "Cara kerja EXISTS dan jebakan NOT IN",
                 "body": [
                     "EXISTS (subquery) bernilai benar kalau subquery-nya menghasilkan minimal",
                     "satu baris. Yang dicek adalah ada atau nggaknya baris, bukan isi",
@@ -3069,6 +3079,7 @@ VALUES ('citra@mail.com', '2024-04-01', 75000)
 RETURNING id, email, total;""",
             },
             {
+                "heading": "UPDATE dan DELETE lintas tabel",
                 "body": [
                     "UPDATE dan DELETE yang udah kamu pelajari selalu pakai nilai yang",
                     "diketik tangan. Di kode nyata, jauh lebih sering nilainya diambil dari",
@@ -3126,6 +3137,7 @@ RETURNING id, email, total;""",
                 ],
             },
             {
+                "heading": "Kenapa UPSERT lebih aman daripada cek manual",
                 "body": [
                     "UPSERT artinya \"simpan kalau baru, perbarui kalau udah ada\". Sebelum",
                     "tahu UPSERT, biasanya orang menulisnya di aplikasi dengan tiga langkah:",
@@ -3201,6 +3213,7 @@ INSERT OR IGNORE INTO pelanggan (email, nama) VALUES ('andi@mail.com', 'Andi');
 INSERT OR REPLACE INTO pelanggan (email, nama) VALUES ('andi@mail.com', 'Andi');""",
             },
             {
+                "heading": "RETURNING, hapus bertahap, dan TRUNCATE",
                 "body": [
                     "Sesudah INSERT, hampir selalu kamu butuh id baris yang baru dibikin,",
                     "misalnya untuk dipasang sebagai FOREIGN KEY di tabel berikutnya. Jangan",
@@ -3327,6 +3340,7 @@ INSERT OR REPLACE INTO pelanggan (email, nama) VALUES ('andi@mail.com', 'Andi');
                 ]
             },
             {
+                "heading": "Normalisasi dan hubungan antar tabel",
                 "body": [
                     "Normalisasi adalah cara merapikan struktur tabel supaya nggak boros dan",
                     "nggak ada data yang diulang-ulang (redundansi). Data yang diulang di",
@@ -3502,6 +3516,7 @@ SELECT id, email FROM pengguna
 WHERE email = 'levi@contoh.id' AND sandi = '' OR '1'='1';""",
             },
             {
+                "heading": "Kenapa placeholder menutup SQL injection",
                 "body": [
                     "Database membaca query ketiga tadi sebagai: (email cocok dan sandi",
                     "kosong) atau ('1' sama dengan '1'). Bagian kanan selalu benar, jadi",
@@ -3619,6 +3634,7 @@ DROP USER 'pelapor'@'%';
 FLUSH PRIVILEGES;""",
             },
             {
+                "heading": "Prinsip hak paling kecil dan kebiasaan aman",
                 "body": [
                     "Prinsip hak paling kecil (least privilege) artinya tiap user database",
                     "cuma dikasih hak secukupnya supaya pekerjaannya jalan. Nggak lebih.",
@@ -4989,7 +5005,7 @@ SELECT nim, kode, skor, nilai_huruf(skor) AS huruf FROM nilai;
 CALL beri_predikat();""",
             },
             {
-                "heading": "Menolak data tidak sah, dan kapan semua ini TIDAK dipakai",
+                "heading": "Menolak data tidak sah, dan kapan semua ini tidak dipakai",
                 "body": [
                     "Sampai sini semua kode cuma menghitung. Padahal tugas trigger yang",
                     "paling berguna justru menolak: menggagalkan INSERT atau UPDATE yang",
@@ -5327,6 +5343,7 @@ SELECT kurs FROM mata_uang WHERE kode = 'USD' FOR SHARE;
                 ]
             },
             {
+                "heading": "Tiga masalah dan empat isolation level",
                 "body": [
                     "Kalau banyak transaction jalan bersamaan, ada tiga masalah yang bisa",
                     "muncul:",
@@ -5442,6 +5459,7 @@ SELECT kurs FROM mata_uang WHERE kode = 'USD' FOR SHARE;
                 ]
             },
             {
+                "heading": "Scaling dan daftar periksa query lambat",
                 "body": [
                     "Scaling artinya cara database menampung beban yang makin besar. Ada",
                     "dua arah:",
@@ -5475,6 +5493,7 @@ SELECT kurs FROM mata_uang WHERE kode = 'USD' FOR SHARE;
                 ]
             },
             {
+                "heading": "Profesi database dan kebiasaan latihan",
                 "body": [
                     "Pekerjaan di industri yang banyak bersentuhan dengan database:",
                     "  - Backend Developer: nulis query dan memakai ORM tiap hari.",

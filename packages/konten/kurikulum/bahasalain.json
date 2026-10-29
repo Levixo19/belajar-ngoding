@@ -66,6 +66,7 @@
      "code": "| nilai lulus total |\nnilai := #(70 85 60 90).\nlulus := nilai select: [:n | n >= 70].\ntotal := lulus inject: 0 into: [:a :b | a + b].\nTranscript show: total printString; cr."
     },
     {
+     "heading": "Smalltalk dan ide kirim pesan",
      "body": [
       "OOP, singkatan dari object-oriented programming, menyatukan data dan",
       "fungsi yang mengolahnya ke dalam objek. Tapi caranya ada tiga rasa.",
@@ -318,7 +319,7 @@
      "code": "--!strict\nlocal function luas(p: number, l: number): number\n    return p * l\nend\n\nprint(luas(3, 4))\nprint(luas(\"3\", 4)) -- ditolak pemeriksa tipe di mode strict"
     },
     {
-     "heading": "Lebih jauh: tipe dependen",
+     "heading": "Tipe dependen",
      "body": [
       "Ada sistem tipe yang jauh lebih kuat lagi, namanya tipe dependen.",
       "Tipenya boleh bergantung pada nilai, misalnya \"daftar yang panjangnya",
@@ -2346,6 +2347,7 @@
      "code": "// Pemain.h\n#import <Foundation/Foundation.h>\n\n@interface Pemain : NSObject\n@property (nonatomic, copy) NSString *nama;\n@property (nonatomic) NSInteger skor;\n- (void)tambahSkor:(NSInteger)nilai;\n@end\n\n// Pemain.m\n@implementation Pemain\n- (void)tambahSkor:(NSInteger)nilai {\n    self.skor += nilai;\n    NSLog(@\"%@ sekarang punya %ld poin\", self.nama, (long)self.skor);\n}\n@end\n\n// pemakaian\nPemain *p = [[Pemain alloc] init];\np.nama = @\"Ani\";\n[p tambahSkor:10];"
     },
     {
+     "heading": "Sintaks Objective-C dan pesan ke nil",
      "body": [
       "Objective-C adalah bahasa C ditambah sistem objek bergaya Smalltalk.",
       "Ia lahir di tahun 1980-an, dipakai NeXT, lalu jadi bahasa utama Apple",
@@ -2797,6 +2799,7 @@
      "code": "nilai <- c(85, 70, 92)     # c() = combine, bikin vektor\nnilai + 5                  # [1] 90 75 97\nnilai[1]                   # [1] 85   (indeks mulai dari 1)\nnilai[-1]                  # [1] 70 92 (buang elemen pertama)\nnilai[nilai > 80]          # [1] 85 92\nmean(nilai)                # [1] 82.33333\nmedian(nilai)              # [1] 85\nsd(nilai)                  # [1] 11.23981\nlength(nilai)              # [1] 3"
     },
     {
+     "heading": "Vektorisasi, indeks 1, dan daur ulang",
      "body": [
       "Di Python, angka 5 dan daftar [5] itu dua hal berbeda. Di R nggak ada",
       "beda: angka 5 adalah vektor yang panjangnya satu. Makanya nilai + 5",
@@ -3426,6 +3429,7 @@
      "code": "@main def halo(): Unit =\n  val nama = \"Ani\"          // val: nggak bisa diisi ulang\n  var skor = 0              // var: boleh diubah\n  skor += 10\n  val nilai = List(85, 70, 92)\n  println(s\"Halo, $nama! Skor $skor\")\n  println(nilai.map(_ + 5))           // List(90, 75, 97)\n  println(nilai.filter(_ > 80).sum)   // 177\n\n  val umur = Map(\"Ani\" -> 17, \"Budi\" -> 18)\n  println(umur.get(\"Ani\"))            // Some(17)\n  println(umur.get(\"Citra\"))          // None\n  println(umur.getOrElse(\"Citra\", 0)) // 0"
     },
     {
+     "heading": "Inferensi tipe, val, dan Option",
      "body": [
       "Beberapa hal langsung terlihat beda dari Java:",
       "",
@@ -3883,6 +3887,7 @@
      "code": "{:ok, nilai} = {:ok, 42}\nIO.puts(nilai)                 # 42\n\n[pertama | sisa] = [1, 2, 3]\nIO.inspect(pertama)            # 1\nIO.inspect(sisa)               # [2, 3]\n\n%{nama: nama} = %{nama: \"Ani\", kelas: \"A\"}\nIO.puts(nama)                  # Ani\n\n{:ok, _} = {:error, :enoent}   # ** (MatchError)\n\ny = 5\ncase 5 do\n  ^y -> IO.puts(\"sama dengan y\")\n  _ -> IO.puts(\"beda\")\nend"
     },
     {
+     "heading": "Atom, tuple, list, map, dan tanda pin",
      "body": [
       "Di kebanyakan bahasa, = artinya \"isi variabel di kiri dengan nilai di",
       "kanan\". Di Elixir, = artinya \"cocokkan bentuk di kiri dengan nilai di",
@@ -4104,6 +4109,7 @@
      "code": "children = [{Penghitung, 0}]\n{:ok, sup} = Supervisor.start_link(children, strategy: :one_for_one)\n\nPenghitung.tambah(5)\nPenghitung.tambah(10)\nIO.puts(\"nilai: #{Penghitung.nilai()}\")\n\nlama = Process.whereis(Penghitung)\nProcess.exit(lama, :kill)          # paksa prosesnya mati\nProcess.sleep(100)\nbaru = Process.whereis(Penghitung)\nIO.puts(\"pid berganti? #{lama != baru}\")\nIO.puts(\"nilai sesudah crash: #{Penghitung.nilai()}\")\nIO.inspect(Supervisor.count_children(sup))"
     },
     {
+     "heading": "Strategi restart dan supervision tree",
      "body": [
       "Keluarannya:",
       "",
@@ -4216,6 +4222,7 @@
      "code": "sudo dnf install erlang           # Fedora 44 masih OTP 26\nerlc hitung.erl                   # menghasilkan hitung.beam\nerl -noshell -s hitung main -s init stop"
     },
     {
+     "heading": "Asal Erlang dan sintaksnya yang asing",
      "body": [
       "Keluarannya:",
       "",
@@ -4253,6 +4260,7 @@
      "code": "import gleam/int\nimport gleam/io\nimport gleam/list\n\npub fn bagi(a: Int, b: Int) -> Result(Int, String) {\n  case b {\n    0 -> Error(\"pembagi nol\")\n    _ -> Ok(a / b)\n  }\n}\n\npub fn main() {\n  io.println(\"Halo, Dunia!\")\n  case bagi(10, 2) {\n    Ok(hasil) -> io.println(\"hasil: \" <> int.to_string(hasil))\n    Error(pesan) -> io.println(\"gagal: \" <> pesan)\n  }\n  io.println(int.to_string(7 / 0))\n  [85, 70, 92]\n  |> list.map(fn(n) { n + 5 })\n  |> list.filter(fn(n) { n > 80 })\n  |> list.length\n  |> int.to_string\n  |> io.println\n}"
     },
     {
+     "heading": "Gleam tanpa null, exception, dan if",
      "body": [
       "Keluarannya Halo, Dunia!, lalu hasil: 5, lalu 0, lalu 2. Contoh ini sudah",
       "dijalankan dengan Gleam 1.19.2, versi terbaru saat materi ini ditulis.",
@@ -4679,6 +4687,7 @@
      "code": "let () = print_endline \"Halo, Dunia!\"\n\nlet rec faktorial n = if n = 0 then 1 else n * faktorial (n - 1)\n\nlet rata xs = List.fold_left ( +. ) 0.0 xs /. float_of_int (List.length xs)\n\nlet () =\n  Printf.printf \"%d\\n\" (faktorial 5);          (* 120 *)\n  Printf.printf \"%.2f\\n\" (rata [85.; 70.; 92.]) (* 82.33 *)"
     },
     {
+     "heading": "Tipe kuat OCaml dan jebakan operator",
      "body": [
       "OCaml adalah anggota keluarga ML yang paling banyak dipakai. Ia cepat,",
       "bertipe kuat dengan inferensi penuh, dan sejak OCaml 5 (2022) mendukung",
@@ -5041,6 +5050,7 @@
      "code": "?- kakek(budi, Cucu).\nCucu = citra ;\nCucu = eka ;\nCucu = fajar.\n\n?- orangtua(X, citra).\nX = ani.\n\n?- kakek(ani, X).\nfalse.\n\n?- orangtua(budi, dodi).\ntrue.\n\n?- leluhur(budi, Keturunan).\nKeturunan = ani ;\nKeturunan = dodi ;\nKeturunan = citra ;\nKeturunan = eka ;\nKeturunan = fajar."
     },
     {
+     "heading": "Unifikasi dan backtracking Prolog",
      "body": [
       "Jawaban-jawaban ini sudah dicek dengan menjalankan program yang sama di",
       "Tau Prolog. Perhatikan bahwa aturan yang sama bisa dipakai ke dua arah.",
@@ -5074,6 +5084,7 @@
      "code": "def jumlah : List Nat → Nat\n  | [] => 0\n  | x :: xs => x + jumlah xs\n\n#eval jumlah [1, 2, 3]   -- 6\n\nexample : jumlah [1, 2, 3] = 6 := rfl\n\ntheorem jumlah_satu (n : Nat) : jumlah [n] = n := by\n  simp [jumlah]"
     },
     {
+     "heading": "Membuktikan teorema dengan Lean 4",
      "body": [
       "Tes biasa memeriksa beberapa contoh: jumlah [1, 2, 3] harus 6. Lean bisa",
       "melangkah lebih jauh, yaitu membuktikan sifat untuk semua kemungkinan",
@@ -5220,6 +5231,7 @@
      "code": "section .data\n    pesan   db \"Halo, Dunia!\", 10\n    panjang equ $ - pesan\n\nsection .text\n    global _start\n\n_start:\n    mov rax, 1          ; nomor syscall write\n    mov rdi, 1          ; berkas 1 = stdout\n    mov rsi, pesan      ; alamat teks\n    mov rdx, panjang    ; banyaknya byte\n    syscall\n\n    mov rax, 60         ; nomor syscall exit\n    xor rdi, rdi        ; kode keluar 0\n    syscall"
     },
     {
+     "heading": "Cara kerja syscall write dan exit",
      "body": [
       "Program ini nggak memakai pustaka apa pun, termasuk printf.",
       "Ia langsung minta tolong ke kernel Linux lewat syscall.",
@@ -6119,6 +6131,7 @@
      "code": "       IDENTIFICATION DIVISION.\n       PROGRAM-ID. BUNGA.\n       DATA DIVISION.\n       WORKING-STORAGE SECTION.\n       01 SALDO         PIC 9(7)V99 VALUE 1500000.00.\n       01 PERSEN        PIC 9V99    VALUE 2.50.\n       01 BUNGA         PIC 9(7)V99.\n       01 TAMPIL        PIC Z,ZZZ,ZZ9.99.\n       01 KECIL         PIC 9(5).\n       PROCEDURE DIVISION.\n           COMPUTE BUNGA ROUNDED = SALDO * PERSEN / 100.\n           DISPLAY \"Bunga mentah: \" BUNGA.\n           MOVE BUNGA TO TAMPIL.\n           DISPLAY \"Bunga: \" TAMPIL.\n           ADD BUNGA TO SALDO.\n           MOVE SALDO TO TAMPIL.\n           DISPLAY \"Saldo baru: \" TAMPIL.\n           MOVE 1234567 TO KECIL.\n           DISPLAY \"KECIL: \" KECIL.\n           STOP RUN."
     },
     {
+     "heading": "Simbol picture dan jebakan pemotongan",
      "body": [
       "Keluaran (GnuCOBOL 3.2):",
       "",
@@ -7536,6 +7549,7 @@
      "code": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\ncontract TokenKelas {\n    string public nama = \"Token Kelas\";\n    address public pemilik;\n    uint256 public totalPasokan;\n    mapping(address => uint256) public saldo;\n\n    event Transfer(address indexed dari, address indexed ke, uint256 jumlah);\n\n    constructor() {\n        pemilik = msg.sender;\n    }\n\n    function mint(address ke, uint256 jumlah) external {\n        require(msg.sender == pemilik, \"bukan pemilik\");\n        saldo[ke] += jumlah;\n        totalPasokan += jumlah;\n        emit Transfer(address(0), ke, jumlah);\n    }\n\n    function transfer(address ke, uint256 jumlah) external {\n        require(saldo[msg.sender] >= jumlah, \"saldo kurang\");\n        saldo[msg.sender] -= jumlah;\n        saldo[ke] += jumlah;\n        emit Transfer(msg.sender, ke, jumlah);\n    }\n\n    function saldoKu() external view returns (uint256) {\n        return saldo[msg.sender];\n    }\n}"
     },
     {
+     "heading": "State, mapping, dan require di Solidity",
      "body": [
       "Kontrak ini dikompilasi dengan solc 0.8.37 tanpa error. Bagian",
       "yang penting:",
@@ -7754,6 +7768,7 @@
      "code": "{ pkgs ? import <nixpkgs> {} }:\n\npkgs.mkShell {\n  packages = [ pkgs.python3 pkgs.nodejs_22 pkgs.sqlite ];\n\n  shellHook = ''\n    echo \"Lingkungan siap: $(python3 --version)\"\n  '';\n}"
     },
     {
+     "heading": "Nix store, derivation, dan flakes",
      "body": [
       "Jalankan nix-shell di folder itu, dan kamu masuk ke shell yang",
       "punya Python, Node.js 22, dan SQLite persis versi yang",

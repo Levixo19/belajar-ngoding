@@ -56,6 +56,7 @@
      "code": "print(\"Halo Dunia!\")\nprint(\"Aku sedang belajar Python.\")"
     },
     {
+     "heading": "Aturan dasar sintaks Python dan shebang",
      "body": [
       "print(...) itu fungsi bawaan untuk menampilkan teks ke layar.",
       "",
@@ -157,6 +158,7 @@
      "code": "umur = 20\nharga = 15000.50\nnama = \"Budi\"\nlulus = True\ndata_kosong = None\n\nprint(type(umur))     # <class 'int'>\nprint(type(harga))    # <class 'float'>\nprint(type(nama))     # <class 'str'>\n\n# Multiple assignment sekaligus\nx, y, z = 1, 2, 3\nprint(x, y, z)        # 1 2 3\n\n# Semua variabel bernilai sama\na = b = c = 0\nprint(a, b, c)        # 0 0 0"
     },
     {
+     "heading": "Penamaan, konversi tipe, dan f-string",
      "body": [
       "Aturan memberi nama variabel:",
       "  1. Boleh pakai huruf, angka, dan underscore (_). Nama nggak boleh",
@@ -276,6 +278,7 @@
      ]
     },
     {
+     "heading": "Fungsi print dengan banyak nilai, sep, dan end",
      "body": [
       "print() bisa lebih banyak dari yang kamu lihat di materi pertama.",
       "",
@@ -320,6 +323,7 @@
      "code": "# --- escape sequence: backslash + satu huruf = SATU karakter ---\nprint(\"Baris satu\\nBaris dua\")\nprint(\"Nama:\\tAndi\")\nprint(\"Dia bilang \\\"halo\\\" lalu pergi\")\nprint(len(\"a\\nb\"))              # 3, bukan 4\n\n# --- raw string: backslash dibiarkan apa adanya ---\nprint(r\"C:\\Users\\Andi\\nota.txt\")\nprint(len(r\"a\\nb\"))             # 4\n\n# --- print() dengan beberapa nilai, sep, dan end ---\nnama = \"Andi\"\numur = 20\nprint(\"Nama:\", nama, \"Umur:\", umur)   # spasi disisipkan otomatis\nprint(nama, umur, sep=\" | \")\nprint(\"a\", \"b\", \"c\", sep=\"\")\n\nprint(\"Memuat\", end=\"\")          # tanpa pindah baris\nprint(\"...\", end=\"\")\nprint(\" selesai\")\n\nprint()                          # end tetap jalan -> satu baris kosong\nprint(\"Setelah baris kosong\")"
     },
     {
+     "heading": "Masukan input() dan cara import modul",
      "body": [
       "Masukan: input()",
       "",
@@ -464,6 +468,7 @@
      ]
     },
     {
+     "heading": "Operator perbandingan, logika, in, dan is",
      "body": [
       "Operator perbandingan membandingkan dua nilai. Hasilnya selalu bool,",
       "yaitu True atau False:",
@@ -585,6 +590,7 @@
      "code": "nilai = 85\n\nif nilai >= 90:\n    print(\"A\")\nelif nilai >= 80:\n    print(\"B\")\nelif nilai >= 70:\n    print(\"C\")\nelse:\n    print(\"D\")\n# Output: B\n\n# Ternary (conditional expression) - satu baris\nstatus = \"Lulus\" if nilai >= 75 else \"Tidak Lulus\"\nprint(status)   # Lulus"
     },
     {
+     "heading": "Fitur match-case dan nilai truthy falsy",
      "body": [
       "Sebelum versi 3.10, Python nggak punya switch-case seperti bahasa lain.",
       "Sejak Python 3.10, ada match-case yang mirip switch:",
@@ -696,6 +702,7 @@
      "code": "for i in range(1, 11):\n    if i == 5:\n        continue     # lewati 5\n    if i == 8:\n        break        # berhenti di 8\n    print(i, end=\" \")\n# Output: 1 2 3 4 6 7\n\n# KHAS PYTHON: for...else / while...else\n# blok else dijalankan HANYA jika loop selesai TANPA break\nfor i in range(3):\n    print(\"cek\", i)\nelse:\n    print(\"loop selesai normal, tanpa break\")"
     },
     {
+     "heading": "Comprehension, nested loop, dan nama _",
      "body": [
       "List comprehension adalah cara ringkas bikin list dari sebuah loop.",
       "Bentuk ini khas Python, dan dibahas lebih detail di materi tersendiri:",
@@ -856,6 +863,7 @@
      "code": "import math\nfrom decimal import Decimal, ROUND_HALF_UP\nfrom fractions import Fraction\n\na = 0.1 + 0.2\nprint(a)                       # 0.30000000000000004\nprint(a == 0.3)                # False, inilah jebakannya\nprint(math.isclose(a, 0.3))    # True, cara yang benar\nprint(abs(a - 0.3) < 1e-9)     # True, versi manualnya\n\n# math.isclose memakai toleransi RELATIF, jadi lawan nol ia gagal\nprint(math.isclose(1e-12, 0.0))                # False\nprint(math.isclose(1e-12, 0.0, abs_tol=1e-9))  # True\n\nrata = sum([80, 90, 85]) / 3\nprint(rata)                    # 85.0\nprint(f\"{rata:.2f}\")           # 85.00, untuk DITAMPILKAN pakai f-string\n\n# round() membulatkan ke GENAP terdekat kalau nilainya tepat di tengah\nprint(round(0.5), round(1.5), round(2.5))   # 0 2 2, bukan 1 2 3\nprint(round(2.675, 2))                      # 2.67, bukan 2.68\n\nmenit, detik = divmod(125, 60)        # hasil bagi dan sisa sekaligus\nprint(menit, detik, abs(-7))          # 2 5 7\nprint(float(\"nan\") == float(\"nan\"))   # False, nan tidak sama dengan apa pun\n\n# Uang: pakai Decimal, dan SELALU dibuat dari string\ntotal = Decimal(\"19.99\") + Decimal(\"5.01\")\nprint(total)                          # 25.00, dua desimalnya terjaga\npajak = total * Decimal(\"0.11\")\nprint(pajak)                          # 2.7500\nprint(pajak.quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP))   # 2.75\nprint(Decimal(0.1))     # 0.1000000000000000055511151231257827... (JEBAKAN)\nprint(Decimal(\"0.1\"))   # 0.1\n\n# Fraction: pecahan yang benar-benar tepat\nprint(Fraction(1, 3) + Fraction(1, 6))    # 1/2\nprint(Fraction(1, 10) + Fraction(2, 10) == Fraction(3, 10))   # True"
     },
     {
+     "heading": "Operator bitwise, rantai perbandingan, dan walrus",
      "body": [
       "Ada tiga kelompok operator lagi yang belum dibahas, padahal ketiganya",
       "sering kamu temui.",
@@ -1044,6 +1052,7 @@
      "code": "baris = \"# ini komentar\"\nberkas = \"laporan.py\"\n\n# startswith / endswith: penyaring paling umum di kode nyata, hasilnya bool\nprint(baris.startswith(\"#\"))              # True\nprint(berkas.endswith(\".py\"))             # True\nprint(berkas.endswith((\".py\", \".txt\")))   # True - boleh diberi tuple pilihan\n\nteks = \"pisang goreng pisang bakar\"\n\n# find() memberi -1 kalau tidak ketemu; index() MELEMPAR ValueError\nprint(teks.find(\"pisang\"))    # 0\nprint(teks.find(\"apel\"))      # -1  <- aman dipakai di dalam if\nprint(teks.index(\"goreng\"))   # 7\nprint(teks.count(\"pisang\"))   # 2\n\nprint(\"budi santoso\".title())              # Budi Santoso  (tiap kata dikapitalkan)\nprint(\"catatan\\nbaris dua\".splitlines())   # ['catatan', 'baris dua']\n\n# strip() membuang kedua ujung; rstrip()/lstrip() hanya satu ujung\nprint(repr(\"  data  \".rstrip()))   # '  data'\nprint(repr(\"  data  \".lstrip()))   # 'data  '\nprint(\"7\".zfill(3))                # 007  (diisi nol di depan sampai lebar 3)\n\n# removeprefix / removesuffix (Python 3.9+): buang kalau ada, diamkan kalau tidak.\n# Ditulis di dalam if supaya berkas ini tetap jalan di Python 3.8 -- di sana\n# kedua method itu belum ada, dan memanggilnya berujung AttributeError.\nif hasattr(str, \"removesuffix\"):\n    print(berkas.removesuffix(\".py\"))   # laporan\n    print(baris.removeprefix(\"# \"))     # ini komentar\nelse:\n    # Cara lama, dan alasan kedua method itu akhirnya dibuat: yang ini\n    # gampang salah -- lupa memeriksa endswith() lebih dulu membuat\n    # [:-3] memotong tiga huruf terakhir dari nama yang tidak berakhiran .py.\n    print(berkas[:-3] if berkas.endswith(\".py\") else berkas)\n    print(baris[2:] if baris.startswith(\"# \") else baris)"
     },
     {
+     "heading": "Beda find() dan index() saat teks tak ketemu",
      "body": [
       "find() dan index() sama-sama mencari posisi sebuah teks. Bedanya ada",
       "di sikapnya kalau teksnya nggak ketemu. find() memberi -1, sedangkan",
@@ -1101,6 +1110,7 @@
      "code": "nama = \"Andi\"\nn = 1234567\np = 0.4567\nipk = 3.75\n\nprint(f\"{nama=}\")        # nama='Andi'  <- nama variabelnya ikut tercetak\nprint(f\"{ipk=}\")         # ipk=3.75     <- cara tercepat mengintip isi variabel\nprint(f\"{n:,}\")          # 1,234,567    <- pemisah ribuan otomatis\nprint(f\"{p:.1%}\")        # 45.7%        <- dikali 100 lalu diberi tanda persen\nprint(f\"{ipk:08.2f}\")    # 00003.75     <- lebar 8, 2 desimal, sisanya diisi nol\nprint(f\"[{nama:^20}]\")   # [        Andi        ]   <- rata TENGAH selebar 20\nprint(f\"[{nama:*^20}]\")  # [********Andi********]   <- karakter pengisi bebas"
     },
     {
+     "heading": "Format {nilai=}, .format(), dan operator %",
      "body": [
       "Bentuk {nilai=} dipakai untuk mengintip isi variabel waktu kamu nyari",
       "bug. Dia mencetak nama variabelnya sekalian, jadi kamu nggak perlu",
@@ -1305,6 +1315,7 @@
      "code": "nama = [\"Andi\", \"Budi\", \"Citra\", \"Dewi\"]\nnilai = [85, 70, 95]\n\n# Dua koleksi berjalan sejajar - tanpa satu pun indeks\nfor n, v in zip(nama, nilai):\n    print(f\"{n}: {v}\")\n# Dewi TIDAK muncul: zip berhenti di koleksi terpendek, tanpa error apa pun\n\nprint(list(zip(nama, nilai)))\n# [('Andi', 85), ('Budi', 70), ('Citra', 95)]\n\n# Pola yang sangat sering dipakai: dua list jadi satu dictionary\nkunci = [\"nama\", \"umur\", \"kota\"]\nisi = [\"Andi\", 20, \"Bandung\"]\nprint(dict(zip(kunci, isi)))\n# {'nama': 'Andi', 'umur': 20, 'kota': 'Bandung'}\n\n# zip(*matriks): baris berubah jadi kolom (transpose)\nmatriks = [[1, 2, 3], [4, 5, 6]]\nprint(list(zip(*matriks)))\n# [(1, 4), (2, 5), (3, 6)]\n\n# enumerate: nomor dan isinya sekaligus. start= mengubah NOMOR-nya saja\nfor i, n in enumerate(nama, start=1):\n    print(f\"{i}. {n}\")\n# 1. Andi / 2. Budi / 3. Citra / 4. Dewi   <- Andi tetap ikut\n\n# Keduanya boleh digabung: nomor + dua koleksi sejajar\nfor i, (n, v) in enumerate(zip(nama, nilai), start=1):\n    print(i, n, v)"
     },
     {
+     "heading": "Hasil zip terpotong dan iterator sekali pakai",
      "body": [
       "zip berhenti di koleksi yang paling pendek, dan nggak ngasih tahu.",
       "Nggak ada error, nggak ada peringatan, sisanya hilang begitu aja.",
@@ -1346,6 +1357,7 @@
      "code": "angka = [12, -5, 8, 30, -1]\n\n# any: cukup SATU yang benar. all: harus SEMUA benar.\nprint(any(x < 0 for x in angka))     # True  - ada yang minus\nprint(all(x < 100 for x in angka))   # True  - semuanya di bawah 100\nprint(any([]), all([]))              # False True  <- jebakan koleksi kosong\n\n# any/all memakai aturan truthy: \"\", 0, [], None dihitung salah\nform = {\"nama\": \"Andi\", \"email\": \"\", \"kota\": \"Bandung\"}\nprint(all(form.values()))            # False - masih ada isian kosong\n\nnama = [\"dewi\", \"Andi\", \"budi\", \"Citra\"]\n\n# key= diberi NAMA fungsi, tanpa tanda kurung: len, bukan len()\nprint(sorted(nama))                  # ['Andi', 'Citra', 'budi', 'dewi']\nprint(sorted(nama, key=str.lower))   # ['Andi', 'budi', 'Citra', 'dewi']\nprint(sorted(nama, key=len, reverse=True))  # ['Citra', 'dewi', 'Andi', 'budi']\nprint(max(nama, key=len))            # Citra\nprint(max([], default=0))            # 0  - tanpa default: ValueError\nprint(list(reversed(angka)))         # [-1, 30, 8, -5, 12]\nprint(sum([15000, 25000], start=10000))     # 50000  (10000 = ongkos kirim)\n\n# Mengenali objek - muncul di mana-mana saat membaca kode orang lain\nnilai = True\nprint(type(nilai), type(nilai).__name__)    # <class 'bool'> bool\nprint(isinstance(nilai, int))               # True! bool adalah turunan int\nprint(isinstance(3.5, (int, float)))        # True - boleh beberapa tipe\n\nteks = \"Halo\\nDunia\"\nprint(str(teks))                     # tercetak jadi DUA baris\nprint(repr(teks))                    # 'Halo\\nDunia' - ditampilkan apa adanya\nprint([\"Halo\", \"Dunia\"])             # isi list selalu dicetak pakai repr\n\na = [1, 2]\nb = a\nc = [1, 2]\nprint(id(a) == id(b), id(a) == id(c))       # True False"
     },
     {
+     "heading": "Jebakan any, all, sort, dan reversed",
      "body": [
       "any() dan all() langsung berhenti begitu jawabannya udah pasti. Sifat",
       "ini namanya short-circuit. Karena itu, isi kurungnya lebih baik",
@@ -1566,6 +1578,7 @@
      "code": "from collections import namedtuple, deque\n\n# --- namedtuple: tuple yang tiap posisinya punya NAMA ---\nSuhu = namedtuple(\"Suhu\", [\"kota\", \"derajat\"])\n\nbacaan = [Suhu(\"Bandung\", 22), Suhu(\"Surabaya\", 33), Suhu(\"Medan\", 30)]\nfor b in bacaan:\n    print(f\"{b.kota}: {b.derajat}\")     # dibaca lewat nama, bukan b[1]\n\nprint(bacaan[0])                        # Suhu(kota='Bandung', derajat=22)\nkota, derajat = bacaan[0]               # tetap bisa di-unpack seperti tuple\nprint(kota, derajat)                    # Bandung 22\nprint(bacaan[0] == (\"Bandung\", 22))     # True -- ia MEMANG sebuah tuple\n\ndingin = bacaan[0]._replace(derajat=18) # immutable: hasilnya SALINAN baru\nprint(dingin, \"|\", bacaan[0])           # data lama tidak ikut berubah\n\n# --- deque: antrean yang cepat di KEDUA ujung ---\nantrean = deque([\"Andi\", \"Budi\"])\nantrean.append(\"Citra\")                 # masuk dari belakang\nantrean.appendleft(\"Zaki\")              # masuk dari DEPAN\nprint(antrean)                          # deque(['Zaki', 'Andi', 'Budi', 'Citra'])\nprint(antrean.popleft())                # Zaki  -- keluar dari depan\nprint(antrean.pop())                    # Citra -- keluar dari belakang\nprint(list(antrean))                    # ['Andi', 'Budi']\n\n# maxlen: riwayat berukuran tetap, yang paling tua otomatis terbuang\nriwayat = deque(maxlen=3)\nfor perintah in [\"buka\", \"tulis\", \"simpan\", \"tutup\"]:\n    riwayat.append(perintah)\nprint(riwayat)                          # \"buka\" hilang tanpa error apa pun"
     },
     {
+     "heading": "Jebakan defaultdict, Counter, dan deque",
      "body": [
       "Ada beberapa jebakan yang perlu kamu tahu:",
       "",
@@ -1683,6 +1696,7 @@
      "code": "def sapa(nama, sapaan=\"Halo\"):\n    print(f\"{sapaan}, {nama}!\")\n\nsapa(\"Andi\")                  # Halo, Andi!\nsapa(\"Budi\", sapaan=\"Hai\")    # Hai, Budi!  (keyword argument)\nsapa(nama=\"Citra\", sapaan=\"Selamat pagi\")\n\n# *args: menerima BANYAK argumen posisi jadi tuple\ndef total(*angka):\n    return sum(angka)\n\nprint(total(1, 2, 3))        # 6\nprint(total(1, 2, 3, 4, 5))  # 15\n\n# **kwargs: menerima BANYAK argumen keyword jadi dict\ndef profil(**data):\n    for key, value in data.items():\n        print(f\"{key}: {value}\")\n\nprofil(nama=\"Andi\", umur=20, jurusan=\"Informatika\")"
     },
     {
+     "heading": "Scope, docstring, dan type hint",
      "body": [
       "Scope variabel",
       "",
@@ -1810,6 +1824,7 @@
      "code": "a = [1, 2, 3]\nb = a                  # b BUKAN salinan: nama KEDUA untuk objek yang sama\n\nprint(a is b)          # True  -> memang satu objek\nprint(id(a) == id(b))  # True  -> nomor identitasnya sama persis\n\nb.append(4)\nprint(a)               # [1, 2, 3, 4]  <- a ikut berubah, padahal yang disentuh b\n\n# Bandingkan dengan int: angka TIDAK bisa diubah di tempat\nx = 10\ny = x\ny += 1                 # membuat objek 11 yang BARU, lalu y menunjuk ke sana\nprint(x, y)            # 10 11  -> x tidak tersentuh\n\n# Tanda '=' memindahkan LABEL, bukan mengubah objeknya\na = [9, 9]             # a sekarang menunjuk objek lain\nprint(b)               # [1, 2, 3, 4]  <- b masih memegang objek yang lama\nprint(a is b)          # False"
     },
     {
+     "heading": "Membuat salinan: [:], copy, dan deepcopy",
      "body": [
       "Kalau kamu memang mau objek baru, mintalah terang-terangan. Ada beberapa",
       "bentuk yang sering muncul di kode orang, dan semuanya mengerjakan hal yang",
@@ -1979,6 +1994,7 @@
      "code": "# Dua bentuk data yang paling sering memaksa orang menulis rekursi untuk\n# pertama kalinya. Polanya sama persis: kalau isinya wadah lagi -> panggil\n# diri sendiri; kalau bukan wadah -> itu base case, kerjakan lalu berhenti.\n\nfrom pathlib import Path\nfrom tempfile import TemporaryDirectory\n\n# --- 1. Menelusuri dict bersarang (bentuknya persis hasil json.load) ---\ndata = {\n    \"nama\": \"toko\",\n    \"cabang\": [\n        {\"nama\": \"utara\", \"stok\": {\"beras\": 10, \"gula\": 4}},\n        {\"nama\": \"selatan\", \"stok\": {\"beras\": 7}},\n    ],\n}\n\ndef cari_angka(simpul, jalur=\"data\"):\n    if isinstance(simpul, dict):\n        for kunci, nilai in simpul.items():\n            cari_angka(nilai, f\"{jalur}[{kunci!r}]\")\n    elif isinstance(simpul, list):\n        for i, nilai in enumerate(simpul):\n            cari_angka(nilai, f\"{jalur}[{i}]\")\n    elif isinstance(simpul, (int, float)):\n        # base case: angka tidak punya isi untuk ditelusuri lagi\n        print(f\"{jalur} = {simpul}\")\n\ncari_angka(data)\n# data['cabang'][0]['stok']['beras'] = 10\n# data['cabang'][0]['stok']['gula'] = 4\n# data['cabang'][1]['stok']['beras'] = 7\n\n# --- 2. Menelusuri folder bertingkat ---\ndef pohon(folder, tingkat=0):\n    for anak in sorted(folder.iterdir()):   # sorted: urutan iterdir tak dijamin\n        print(\"  \" * tingkat + anak.name + (\"/\" if anak.is_dir() else \"\"))\n        if anak.is_dir():\n            pohon(anak, tingkat + 1)        # recursive case\n        # berkas biasa = base case: tidak ada isi untuk ditelusuri\n\nwith TemporaryDirectory() as tmp:           # folder contoh, dihapus otomatis\n    akar = Path(tmp)\n    (akar / \"src\" / \"utils\").mkdir(parents=True)\n    (akar / \"src\" / \"main.py\").write_text(\"print('halo')\")\n    (akar / \"src\" / \"utils\" / \"teks.py\").write_text(\"\")\n    (akar / \"README.md\").write_text(\"catatan\")\n    pohon(akar)\n# README.md\n# src/\n#   main.py\n#   utils/\n#     teks.py\n\n# Jebakan halus di cari_angka: isinstance(True, int) bernilai True di Python,\n# jadi True/False ikut tercetak sebagai angka. Kalau itu tidak diinginkan,\n# saring lebih dulu dengan cabang isinstance(simpul, bool) SEBELUM cabang int.\n# Untuk folder, versi loop-nya sudah disediakan Python: os.walk()."
     },
     {
+     "heading": "RecursionError dan kapan loop lebih baik",
      "body": [
       "Python membatasi seberapa dalam rekursi boleh menumpuk:",
       "",
@@ -2115,6 +2131,7 @@
      "code": "def buat_akun(nama, umur, kota):\n    return f\"{nama} ({umur} th) dari {kota}\"\n\nbaris = [\"Andi\", 20, \"Bandung\"]\ndata = {\"nama\": \"Budi\", \"umur\": 22, \"kota\": \"Medan\"}\n\n# buat_akun(baris) -> TypeError: list-nya dianggap SATU argumen\nprint(buat_akun(*baris))    # * membongkar list jadi 3 argumen posisi\nprint(buat_akun(**data))    # ** membongkar dict jadi argumen keyword\n\ngenap = [2, 4, 6, 8]\nprint(genap)                # [2, 4, 6, 8]  -> 1 argumen, dicetak apa adanya\nprint(*genap)               # 2 4 6 8       -> 4 argumen, dipisah spasi\nprint(*genap, sep=\" | \")    # 2 | 4 | 6 | 8\n\n# Pasangan * di def dan * di pemanggilan sering muncul bersama:\ndef luas(panjang, lebar=2):\n    return panjang * lebar\n\ndef luas_dicatat(*args, **kwargs):   # KUMPULKAN apa pun yang dikirim\n    print(f\"-> luas dipanggil dengan {args} {kwargs}\")\n    return luas(*args, **kwargs)     # BONGKAR lagi, persis seperti semula\n\nprint(luas_dicatat(5))\nprint(luas_dicatat(5, lebar=3))"
     },
     {
+     "heading": "Menuang dan menampung koleksi dengan bintang",
      "body": [
       "luas_dicatat menampung argumen apa pun ke args dan kwargs, lalu",
       "membongkarnya lagi waktu meneruskan ke luas. Kalau bintang di baris",
@@ -2168,6 +2185,7 @@
      "code": "bawaan = {\"warna\": \"biru\", \"ukuran\": 12, \"tebal\": False}\npilihan = {\"ukuran\": 16}\n\nsetelan = {**bawaan, **pilihan}     # yang KANAN menimpa yang kiri\nprint(setelan)\nprint(bawaan)                       # bawaan tetap utuh, tidak ikut berubah\n\ndepan = [1, 2]\nbelakang = [3, 4]\nprint([*depan, *belakang, 5])       # [1, 2, 3, 4, 5]\nprint([*depan, *range(7, 10)])      # sumbernya boleh iterable apa saja\nprint({*depan, *belakang, 1})       # set: duplikatnya hilang sendiri\n\n# Extended unpacking: bintang menampung SISANYA, hasilnya selalu list\nbaris = [\"andi\", \"80\", \"90\", \"70\", \"lulus\"]\nnama, *nilai, status = baris\nprint(nama, nilai, status)          # andi ['80', '90', '70'] lulus\n\npertama, *sisa = [10, 20, 30]\nprint(pertama, sisa)                # 10 [20, 30]\n\nsatu, *habis = [9]\nprint(satu, habis)                  # 9 []  sisanya boleh kosong, bukan error"
     },
     {
+     "heading": "Parameter keyword-only dan positional-only",
      "body": [
       "Sampai sini bintang selalu diikuti nama. Kalau bintang berdiri sendiri di",
       "daftar parameter, artinya lain lagi: semua parameter sesudahnya wajib",
@@ -2300,6 +2318,7 @@
      "code": "# Anotasi tipe: titik dua untuk variabel/parameter, panah untuk nilai kembali\njumlah: int = 0\nnama: str = \"Andi\"\nharga: float = 15000.5\n\ndef tambah(a: int, b: int) -> int:\n    return a + b\n\ndef sapa(orang: str) -> None:      # -> None: fungsi ini tidak mengembalikan apa-apa\n    print(f\"Halo, {orang}!\")\n\nsapa(nama)\njumlah = tambah(3, 4)\nprint(jumlah, harga)               # 7 15000.5\n\n# Anotasi cuma DICATAT sebagai data biasa, tidak pernah jadi aturan:\nprint(tambah.__annotations__)\n# {'a': <class 'int'>, 'b': <class 'int'>, 'return': <class 'int'>}\n\n# Buktinya: kirim str ke parameter yang ditulis int -- Python diam saja\nprint(tambah(\"3\", \"4\"))            # 34, bukan 7 dan bukan error"
     },
     {
+     "heading": "Tipe koleksi dan gaya lama dari typing",
      "body": [
       "Tipe koleksi ditulis pakai kurung siku yang menyebut isinya:",
       "",
@@ -2351,6 +2370,7 @@
      "code": "from typing import Any, Callable, Optional, Sequence, Union\n\ndef cari_nama(user_id: int) -> Optional[str]:\n    # Optional[str] = str ATAU None. Sejak 3.10 boleh ditulis str | None.\n    daftar = {1: \"Andi\", 2: \"Budi\"}\n    return daftar.get(user_id)          # .get() memang bisa mengembalikan None\n\ndef rata_rata(angka: Sequence[float]) -> float:\n    # Sequence = bisa di-index dan di-len: list, tuple, str (set tidak)\n    return sum(angka) / len(angka)\n\ndef terapkan(data: Sequence[int], fungsi: Callable[[int], int]) -> list[int]:\n    # Callable[[int], int] = fungsi yang menerima satu int, mengembalikan int\n    return [fungsi(x) for x in data]\n\ndef tampilkan(nilai: Union[int, str]) -> None:   # sama artinya dengan int | str\n    print(\"nilai:\", nilai)\n\ndef ringkas(data: dict[str, Any]) -> str:\n    # Any = \"isinya apa saja, jangan diperiksa\" -- pintu darurat, jangan diobral\n    return \", \".join(f\"{k}={v}\" for k, v in data.items())\n\nclass Node:\n    def __init__(self, nilai: int) -> None:\n        self.nilai = nilai\n        self.berikut: Optional[\"Node\"] = None   # \"Node\" belum jadi -> pakai kutip\n\n    def sambung(self, nilai: int) -> \"Node\":    # forward reference, alasan sama\n        self.berikut = Node(nilai)\n        return self.berikut\n\nprint(cari_nama(1))                  # Andi\nprint(cari_nama(99))                 # None  <- inilah yang diwakili Optional\nprint(rata_rata([80, 90, 100]))      # 90.0\nprint(terapkan([1, 2, 3], lambda x: x * 10))   # [10, 20, 30]\ntampilkan(7)\ntampilkan(\"tujuh\")\nprint(ringkas({\"nama\": \"Andi\", \"umur\": 20, \"aktif\": True}))\n\nkepala = Node(1)\nkepala.sambung(2).sambung(3)\nprint(kepala.nilai, kepala.berikut.nilai, kepala.berikut.berikut.nilai)  # 1 2 3"
     },
     {
+     "heading": "Isi typing, mypy, dan jebakan anotasi",
      "body": [
       "Ini isi baris from typing import ... yang paling sering muncul di atas",
       "berkas:",
@@ -2492,6 +2512,7 @@
      "code": "angka = [5, 3, 8, 1, 9, 2]\n\n# map: transformasi tiap elemen\ndikali2 = list(map(lambda x: x * 2, angka))\nprint(dikali2)    # [10, 6, 16, 2, 18, 4]\n\n# filter: menyaring elemen sesuai kondisi\ngenap = list(filter(lambda x: x % 2 == 0, angka))\nprint(genap)      # [8, 2]\n\n# reduce: gabungkan semua elemen jadi satu nilai (perlu import)\nfrom functools import reduce\ntotal = reduce(lambda a, b: a + b, angka)\nprint(total)      # 28\n\n# sorted dengan key (lambda menentukan dasar pengurutan)\nmahasiswa = [(\"Andi\", 85), (\"Budi\", 70), (\"Citra\", 95)]\nurut = sorted(mahasiswa, key=lambda m: m[1], reverse=True)\nprint(urut)       # [('Citra', 95), ('Andi', 85), ('Budi', 70)]"
     },
     {
+     "heading": "Kenapa map dan filter dibungkus list",
      "body": [
       "Kenapa tiap map() dan filter() di atas dibungkus list()? Soalnya dua-duanya",
       "nggak mengembalikan list. Yang keluar adalah iterator, yaitu objek yang",
@@ -2614,6 +2635,7 @@
      "code": "# Closure = fungsi dalam yang TETAP MENGINGAT variabel fungsi luarnya, bahkan\n# setelah fungsi luar itu selesai dan variabel lokalnya \"seharusnya\" lenyap.\n\ndef pembuat_pengali(faktor):\n    def kali(x):\n        return x * faktor      # faktor bukan milik kali(); ia datang dari E\n    return kali                # fungsinya DIKEMBALIKAN, bukan dipanggil\n\nkali3 = pembuat_pengali(3)     # pembuat_pengali sudah SELESAI di baris ini\nkali10 = pembuat_pengali(10)\n\nprint(kali3(5), kali10(5))     # 15 50\n\n# Kenapa faktor masih ada? Karena masih ada fungsi yang menyebutnya, jadi Python\n# menyimpannya di sebuah \"cell\" yang menempel pada fungsi itu. Bisa dilihat:\nprint(kali3.__code__.co_freevars)             # ('faktor',)\nprint(kali3.__closure__[0].cell_contents)     # 3\nprint(kali10.__closure__[0].cell_contents)    # 10\n# Dua fungsi, dua kotak terpisah - kali3 dan kali10 tidak saling mengganggu.\n# Fungsi yang tidak mengambil apa pun dari luar punya __closure__ bernilai None:\nprint((lambda x: x + 1).__closure__)          # None\n\n# ---------------------------------------------------------------------------\n# Pencacah tanpa satu pun variabel global.\n\ndef buat_pencacah(mulai=0):\n    hitung = mulai\n\n    def tambah(langkah=1):\n        nonlocal hitung        # \"hitung milik fungsi PEMBUNGKUS, bukan punyaku\"\n        hitung += langkah      # tanpa baris nonlocal di atas -> UnboundLocalError\n        return hitung\n\n    def lihat():\n        return hitung          # cuma MEMBACA -> nonlocal tidak diperlukan\n\n    return tambah, lihat\n\ntambah_a, lihat_a = buat_pencacah()\ntambah_b, lihat_b = buat_pencacah(100)\n\nprint(tambah_a(), tambah_a(), tambah_a())   # 1 2 3\nprint(tambah_b(5))                          # 105\nprint(lihat_a(), lihat_b())                 # 3 105\n\n# Bandingkan dengan versi 'global' di materi Function: di sana hitung tinggal di\n# tingkat modul - terlihat dan bisa diubah SIAPA SAJA di berkas itu, dan dua\n# pencacah mustahil hidup berdampingan. Di sini hitung tak bisa disentuh dari\n# luar kecuali lewat tambah() dan lihat(); namanya bahkan tidak ada di modul.\nprint(\"hitung\" in dir())                    # False"
     },
     {
+     "heading": "Beda global dan nonlocal, serta pemakaian closure",
      "body": [
       "global vs nonlocal",
       "",
@@ -2827,6 +2849,7 @@
      "code": "class Mahasiswa:\n    def __init__(self, nama, umur):\n        self.nama = nama      # atribut/attribute\n        self.umur = umur\n\n    def perkenalan(self):     # method\n        print(f\"Halo, saya {self.nama}, {self.umur} tahun.\")\n\n# Membuat object (instance)\nm1 = Mahasiswa(\"Andi\", 20)\nm2 = Mahasiswa(\"Budi\", 22)\n\nm1.perkenalan()   # Halo, saya Andi, 20 tahun.\nm2.perkenalan()   # Halo, saya Budi, 22 tahun.\n\nprint(m1.nama)    # Andi (akses atribut langsung)"
     },
     {
+     "heading": "Class attribute, static method, dan class method",
      "body": [
       "Class attribute vs instance attribute",
       "",
@@ -3025,6 +3048,7 @@
      "code": "from abc import ABC, abstractmethod\n\n\nclass Penyimpan(ABC):\n    \"\"\"Kontrak: apa pun yang menyimpan catatan wajib bisa simpan & ambil.\"\"\"\n\n    @abstractmethod\n    def simpan(self, kunci, nilai):\n        pass\n\n    @abstractmethod\n    def ambil(self, kunci):\n        pass\n\n    def simpan_banyak(self, pasangan):    # method BIASA, isinya sudah lengkap\n        for kunci, nilai in pasangan:\n            self.simpan(kunci, nilai)     # memakai method yang belum ditulis\n\n\nclass PenyimpanMemori(Penyimpan):         # implementasi konkret pertama\n    def __init__(self):\n        self.data = {}\n\n    def simpan(self, kunci, nilai):\n        self.data[kunci] = nilai\n\n    def ambil(self, kunci):\n        return self.data.get(kunci)\n\n\nclass PenyimpanBaris(Penyimpan):          # implementasi konkret kedua\n    def __init__(self):\n        self.baris = []\n\n    def simpan(self, kunci, nilai):\n        self.baris.append(f\"{kunci}={nilai}\")\n\n    def ambil(self, kunci):\n        for b in self.baris:\n            k, _, v = b.partition(\"=\")\n            if k == kunci:\n                return v\n        return None\n\n\nclass PenyimpanSetengahJadi(Penyimpan):\n    def simpan(self, kunci, nilai):       # method 'ambil' LUPA ditulis\n        print(\"disimpan:\", kunci)\n\n\n# Kode di bawah ini tidak peduli gudangnya jenis apa: kontraknya menjamin\n# simpan(), ambil(), dan simpan_banyak() PASTI ada di dua-duanya.\nfor gudang in (PenyimpanMemori(), PenyimpanBaris()):\n    gudang.simpan_banyak([(\"nama\", \"Levi\"), (\"kota\", \"Bontang\")])\n    print(type(gudang).__name__, \"->\", gudang.ambil(\"kota\"))\n\ntry:\n    Penyimpan()                 # class kontrak memang TIDAK boleh jadi objek\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\ntry:\n    PenyimpanSetengahJadi()      # turunan yang belum lengkap ikut ditolak\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\n# PenyimpanMemori -> Bontang\n# PenyimpanBaris -> Bontang\n# TypeError: Can't instantiate abstract class Penyimpan without an\n#            implementation for abstract methods 'ambil', 'simpan'\n# TypeError: Can't instantiate abstract class PenyimpanSetengahJadi without\n#            an implementation for abstract method 'ambil' (kalimat persisnya\n#            berbeda antar versi Python; yang penting nama method yang kurang)"
     },
     {
+     "heading": "Jebakan ABC dan raise NotImplementedError",
      "body": [
       "Ada tiga hal yang perlu kamu tangkap dari program di atas:",
       "",
@@ -3096,6 +3120,7 @@
      "code": "from typing import Protocol, runtime_checkable\n\n\n@runtime_checkable\nclass Pencetak(Protocol):\n    \"\"\"Kontrak: apa pun yang punya cetak(teks) sudah dianggap cocok.\"\"\"\n\n    def cetak(self, teks: str) -> None: ...\n\n\nclass Layar:                  # tidak mewarisi Pencetak, dan memang tidak perlu\n    def cetak(self, teks):\n        print(\"[layar]\", teks)\n\n\nclass Penampung:              # juga tidak menyebut Pencetak sama sekali\n    def __init__(self):\n        self.isi = []\n\n    def cetak(self, teks):\n        self.isi.append(teks)\n\n\ndef laporkan(keluaran: Pencetak, baris):\n    for b in baris:\n        keluaran.cetak(b)\n\n\nlaporkan(Layar(), [\"gaji: 100\", \"bonus: 20\"])\n\np = Penampung()\nlaporkan(p, [\"gaji: 100\", \"bonus: 20\"])\nprint(p.isi)\n\n# isinstance() hanya bekerja karena Protocol-nya diberi @runtime_checkable,\n# dan yang dicek cuma NAMA method-nya ada, bukan bentuk parameternya.\nprint(isinstance(Layar(), Pencetak))     # True\nprint(isinstance(3, Pencetak))           # False: int tidak punya cetak()\n\n# [layar] gaji: 100\n# [layar] bonus: 20\n# ['gaji: 100', 'bonus: 20']\n# True\n# False"
     },
     {
+     "heading": "Protocol dibanding ABC, dan cara membaca ABC",
      "body": [
       "Protocol ada di modul typing sejak Python 3.8, dan arah kontraknya",
       "kebalikan dari ABC. Di ABC, class turunan harus menyebut nama induknya.",
@@ -3209,6 +3234,7 @@
      "code": "class Rekening:\n    def __init__(self, pemilik, saldo):\n        self.pemilik = pemilik\n        self._saldo = saldo         # konvensi: 'protected'\n\n    @property\n    def saldo(self):                # getter\n        return self._saldo\n\n    @saldo.setter\n    def saldo(self, nilai):         # setter dengan validasi\n        if nilai < 0:\n            raise ValueError(\"Saldo tidak boleh negatif!\")\n        self._saldo = nilai\n\n    def setor(self, jumlah):\n        if jumlah > 0:\n            self._saldo += jumlah\n\nr = Rekening(\"Andi\", 100000)\nprint(r.saldo)      # 100000 (dipanggil TANPA tanda kurung, seperti atribut biasa)\nr.setor(50000)\nprint(r.saldo)      # 150000\nr.saldo = -100      # ValueError: Saldo tidak boleh negatif!"
     },
     {
+     "heading": "Asal @saldo.setter dan raise di dalam setter",
      "body": [
       "Ada dua baris di contoh itu yang perlu dibongkar, karena dua-duanya",
       "muncul tanpa pernah diperkenalkan.",
@@ -3244,6 +3270,7 @@
      "code": "class Titik:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __str__(self):              # dipanggil oleh print()/str()\n        return f\"({self.x}, {self.y})\"\n\n    def __repr__(self):             # representasi untuk debugging\n        return f\"Titik({self.x}, {self.y})\"\n\n    def __eq__(self, other):        # dipanggil oleh operator ==\n        return self.x == other.x and self.y == other.y\n\n    def __add__(self, other):       # dipanggil oleh operator +\n        return Titik(self.x + other.x, self.y + other.y)\n\np1 = Titik(1, 2)\np2 = Titik(3, 4)\nprint(p1)          # (1, 2)  -- lewat __str__\nprint(p1 == Titik(1, 2))   # True -- lewat __eq__\nprint(p1 + p2)     # (4, 6) -- lewat __add__"
     },
     {
+     "heading": "Dunder method lain dan __slots__",
      "body": [
       "Dunder method lain yang umum dipakai:",
       "  __len__(self)       -> dipanggil oleh len(objek)",
@@ -3387,6 +3414,7 @@
      "code": "from dataclasses import dataclass, field, asdict, replace\n\n# Ditulis tangan: tiga method di bawah harus diketik sendiri, satu per satu\nclass TitikManual:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __repr__(self):\n        return f\"TitikManual(x={self.x}, y={self.y})\"\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\n# Hal yang sama persis - ketiganya dibuatkan otomatis\n@dataclass\nclass Titik:\n    x: int          # field diumumkan lewat ANOTASI TIPE, bukan lewat self.x = x\n    y: int\n\np = Titik(3, 4)              # __init__ ada, urutan parameternya seperti di atas\nprint(p.x, p.y)              # 3 4\nprint(p)                     # Titik(x=3, y=4)         <- __repr__ bawaan\nprint(p == Titik(3, 4))      # True                    <- __eq__ bawaan\nprint(TitikManual(3, 4))     # TitikManual(x=3, y=4)\n\np.y = 99                     # dataclass biasa TETAP bisa diubah seperti class lain\nprint(p)                     # Titik(x=3, y=99)\n\n# Tanpa __repr__, print() sebuah objek cuma menampilkan alamat memorinya\nclass Polos:\n    def __init__(self, x):\n        self.x = x\n\nprint(str(Polos(3)).startswith(\"<__main__.Polos object at 0x\"))   # True\n\n# ---- field berdefault, dan default yang mutable ----\n@dataclass\nclass Keranjang:\n    pemilik: str\n    diskon: float = 0.0                     # yang berdefault WAJIB di belakang\n    isi: list = field(default_factory=list)  # BUKAN  isi: list = []\n\nk1 = Keranjang(\"Andi\")\nk2 = Keranjang(\"Budi\")\nk1.isi.append(\"apel\")\nprint(k1.isi, k2.isi)     # ['apel'] []   <- tiap objek dapat list SENDIRI\nprint(asdict(k1))         # {'pemilik': 'Andi', 'diskon': 0.0, 'isi': ['apel']}\n\n# ---- frozen & order ----\n@dataclass(frozen=True, order=True)\nclass Uang:\n    jumlah: int\n    mata: str = \"IDR\"\n\na = Uang(5000)\nb = replace(a, jumlah=7000)     # objek BARU, satu field diganti; a tidak tersentuh\nprint(a)                        # Uang(jumlah=5000, mata='IDR')  <- a tidak berubah\nprint(b)                        # Uang(jumlah=7000, mata='IDR')\nprint(a < b)                    # True  <- order=True menghidupkan < > <= >=\nprint(len({a, Uang(5000)}))     # 1     <- frozen=True membuatnya bisa masuk set/dict\n\ntry:\n    a.jumlah = 9000             # frozen: menulis ke field ditolak\nexcept Exception as e:\n    # FrozenInstanceError - cannot assign to field 'jumlah'\n    print(type(e).__name__, \"-\", e)"
     },
     {
+     "heading": "Lima aturan dan jebakan @dataclass",
      "body": [
       "Ada beberapa aturan main dan jebakan @dataclass yang perlu kamu tahu",
       "sebelum memakainya.",
@@ -3490,6 +3518,7 @@
      "code": "from enum import Enum, auto\n\nclass Status(Enum):\n    MENUNGGU = \"menunggu\"      # kiri = NAMA anggota, kanan = NILAInya\n    DIKIRIM = \"dikirim\"\n    SELESAI = \"selesai\"\n\nclass Prioritas(Enum):\n    RENDAH = auto()            # auto() mengisi 1, 2, 3 - dipakai kalau nilainya\n    SEDANG = auto()            # memang tidak penting, yang penting namanya\n    TINGGI = auto()\n\ns = Status.DIKIRIM\nprint(s)                       # Status.DIKIRIM\nprint(s.name)                  # DIKIRIM   <- namanya, bertipe str\nprint(s.value)                 # dikirim   <- nilai yang kamu tulis\nprint(s is Status.DIKIRIM)     # True      <- tiap anggota cuma ada SATU objeknya\nprint(s is Status.SELESAI)     # False\nprint(Prioritas.TINGGI.value)  # 3\n\nfor st in Status:              # urutan iterasi = urutan penulisan\n    print(st.name, \"->\", st.value)\n\nprint(Status(\"selesai\"))       # Status.SELESAI  <- cari lewat NILAI (kurung biasa)\nprint(Status[\"SELESAI\"])       # Status.SELESAI  <- cari lewat NAMA (kurung siku)\nprint(len(Status))             # 3\n\n# Nilai yang tidak terdaftar langsung ditolak - inilah gunanya Enum\ntry:\n    Status(\"dikirin\")          # salah ketik, ketahuan DI SINI\nexcept ValueError as e:\n    print(\"ValueError:\", e)    # 'dikirin' is not a valid Status\n\ndef pesan(st):\n    if st is Status.MENUNGGU:\n        return \"Pesanan sedang diproses.\"\n    if st is Status.DIKIRIM:\n        return \"Pesanan sedang di jalan.\"\n    return \"Pesanan selesai.\"\n\nprint(pesan(Status.MENUNGGU))  # Pesanan sedang diproses."
     },
     {
+     "heading": "Anggota Enum, jebakan, IntEnum, dan StrEnum",
      "body": [
       "Yang perlu kamu pegang soal Enum:",
       "",
@@ -3645,6 +3674,7 @@
      "code": "def bagi(a, b):\n    try:\n        hasil = a / b\n    except ZeroDivisionError:\n        print(\"Tidak bisa membagi dengan nol!\")\n        return None\n    except TypeError:\n        print(\"Tipe data harus angka!\")\n        return None\n    else:\n        print(\"Pembagian berhasil.\")\n        return hasil\n    finally:\n        print(\"Selesai mencoba pembagian.\")\n\nprint(bagi(10, 2))    # Pembagian berhasil. / Selesai mencoba... / 5.0\nprint(bagi(10, 0))    # Tidak bisa membagi dengan nol! / Selesai... / None\nprint(bagi(10, \"a\"))  # Tipe data harus angka! / Selesai... / None"
     },
     {
+     "heading": "Menangkap banyak jenis, raise, dan EAFP",
      "body": [
       "Kamu bisa menangkap beberapa jenis exception sekaligus. Caranya, tulis",
       "jenis-jenisnya di dalam kurung:",
@@ -3779,6 +3809,7 @@
      "code": "# Program ini SENGAJA gagal. Jalankan, lalu baca teks error yang muncul --\n# itulah traceback. Bedah barisnya ada di komentar paling bawah berkas ini.\n\ndef baca_baris(baris):\n    nama, umur = baris.split(\",\")\n    return {\"nama\": nama, \"umur\": int(umur)}\n\n\ndef rata_rata_umur(daftar):\n    total = 0\n    for baris in daftar:\n        orang = baca_baris(baris)\n        total += orang[\"umur\"]\n    return total / len(daftar)\n\n\ndata = [\n    \"Andi,30\",\n    \"Budi,25\",\n    \"Citra,tiga puluh\",       # <- baris inilah biang keroknya\n]\n\nprint(\"Mulai menghitung...\")\nprint(\"Rata-rata umur:\", rata_rata_umur(data))\nprint(\"Baris ini tidak pernah tercetak.\")\n\n# Yang muncul di layar:\n#\n# Mulai menghitung...\n# Traceback (most recent call last):\n#   File \"/home/kamu/traceback-asli.py\", line 24, in <module>\n#     print(\"Rata-rata umur:\", rata_rata_umur(data))\n#                              ~~~~~~~~~~~~~~^^^^^^\n#   File \"/home/kamu/traceback-asli.py\", line 12, in rata_rata_umur\n#     orang = baca_baris(baris)\n#   File \"/home/kamu/traceback-asli.py\", line 6, in baca_baris\n#     return {\"nama\": nama, \"umur\": int(umur)}\n#                                   ~~~^^^^^^\n# ValueError: invalid literal for int() with base 10: 'tiga puluh'\n#\n# (Jalur berkasnya ditulis Python selengkap-lengkapnya, jadi di layarmu nanti\n#  yang tampil adalah tempat kamu menyimpan berkas ini.)\n#\n# Membacanya dari BAWAH:\n#   1. ValueError -- int() diberi teks yang bukan angka, isinya 'tiga puluh'.\n#   2. Frame terbawah: baris 6, di dalam baca_baris; di situ int(umur) jalan.\n#   3. Naik: baris 12 di rata_rata_umur, yang memanggil baca_baris.\n#   4. Naik lagi: baris 24 di <module>, yaitu tingkat atas berkas.\n#   Jalurnya: baris 24 -> baris 12 -> baris 6, lalu meledak.\n#\n# Dan yang perlu DIPERBAIKI bukan baris 6. int(umur) sudah benar; yang salah\n# datanya di baris 20. Pesan errornya yang menunjukkan itu: begitu kamu tahu\n# nilai yang bikin gagal berbunyi 'tiga puluh', kamu tahu harus mencari ke mana.\n#\n# \"Mulai menghitung...\" tetap tercetak karena baris 23 sudah lewat. Baris 25\n# tidak, karena program berhenti seketika saat sebuah error tidak ditangani."
     },
     {
+     "heading": "Silsilah exception dan menangkap secara luas",
      "body": [
       "Sekarang sisi menangkap error. Materi Exception Handling mengajarkan",
       "cara menangkap satu jenis error yang sudah kamu duga. Di kode nyata,",
@@ -3921,6 +3952,7 @@
      "code": "import math\nimport random\nimport datetime\n\nprint(math.sqrt(16))        # 4.0\nprint(math.pi)               # 3.141592653589793\nprint(math.ceil(4.2))        # 5\nprint(math.floor(4.8))       # 4\n\nprint(random.randint(1, 10)) # angka acak 1-10\nprint(random.choice([\"A\", \"B\", \"C\"]))  # pilih acak dari list\n\nsekarang = datetime.datetime.now()\nprint(sekarang.year, sekarang.month, sekarang.day)"
     },
     {
+     "heading": "Module sendiri, idiom __main__, dan pip",
      "body": [
       "Bikin module sendiri itu gampang. Setiap berkas .py yang kamu tulis",
       "sudah otomatis jadi module:",
@@ -4080,6 +4112,7 @@
      "code": "toko-online/                 # folder akar project (nama bebas)\n|-- pyproject.toml\n|-- README.md\n|-- .gitignore\n|-- main.py                  # titik masuk, sengaja di luar paket\n|-- toko/                    # PAKET -- inilah yang di-import orang\n|   |-- __init__.py\n|   |-- uang.py\n|   |-- laporan.py\n|   `-- model/               # subpaket: folder di dalam paket, ber-__init__.py juga\n|       |-- __init__.py\n|       `-- produk.py\n`-- tests/\n    |-- test_uang.py\n    `-- test_produk.py"
     },
     {
+     "heading": "Peran __init__.py, import relatif, dan __all__",
      "body": [
       "__init__.py itu lebih dari berkas kosong penanda. Python menjalankan",
       "berkas ini waktu paketnya pertama kali di-import. Biasanya dia punya",
@@ -4310,6 +4343,7 @@
      "code": "#!/usr/bin/env python3\n# Baris pertama di atas dijelaskan di bagian terakhir materi ini.\n\"\"\"ringkas - menampilkan beberapa baris pertama sebuah berkas teks.\"\"\"\nimport argparse\n\n\ndef buat_parser():\n    p = argparse.ArgumentParser(\n        prog=\"ringkas\",\n        description=\"Menampilkan beberapa baris pertama sebuah berkas teks.\")\n    # Argumen POSISI: wajib ada, artinya ditentukan urutannya.\n    p.add_argument(\"berkas\", help=\"berkas yang akan dibaca\")\n    # OPSI: boleh ada boleh tidak, ditandai - atau --, urutannya bebas.\n    # type=int mengubah \"3\" jadi 3 sekaligus menolak isian yang bukan angka.\n    p.add_argument(\"-n\", \"--baris\", type=int, default=5,\n                   help=\"berapa baris ditampilkan (default: 5)\")\n    # store_true = saklar tanpa nilai: ditulis -> True, tidak ditulis -> False.\n    p.add_argument(\"--huruf-besar\", action=\"store_true\",\n                   help=\"ubah hasilnya jadi HURUF BESAR\")\n    return p\n\n\ndef main():\n    parser = buat_parser()\n    # Bentuk sebenarnya cuma:  args = parser.parse_args()\n    # yang membaca sys.argv[1:] sendiri. Daftarnya ditulis di sini supaya\n    # contoh ini bisa langsung dicoba tanpa mengetik argumen apa pun.\n    args = parser.parse_args([\"laporan.txt\", \"-n\", \"3\", \"--huruf-besar\"])\n\n    print(args)                          # sebuah Namespace berisi hasil parsing\n    print(\"args.berkas      :\", args.berkas)\n    print(\"args.baris       :\", args.baris, \"->\", type(args.baris))\n    print(\"args.huruf_besar :\", args.huruf_besar)   # --huruf-besar, tanda - jadi _\n\n    print()\n    print(\"Ini yang keluar kalau orang mengetik:  ringkas --help\")\n    print(\"-\" * 52)\n    parser.print_help()\n\n\nif __name__ == \"__main__\":\n    main()"
     },
     {
+     "heading": "Hasil argparse, shebang, dan python3 -m",
      "body": [
       "Yang barusan terjadi, dan alasan hampir nggak ada yang menulis parser",
       "sendiri:",
@@ -4463,6 +4497,7 @@
      "code": "import logging\n\n# Satu baris ini menyalakan logging sekaligus menentukan BATAS bawahnya:\n# pesan yang levelnya DI BAWAH INFO tidak ditampilkan sama sekali.\nlogging.basicConfig(level=logging.INFO,\n                    format=\"%(levelname)s | %(name)s | %(message)s\")\n\nlogging.debug(\"nilai sementara x = 42\")   # hilang tanpa suara: DEBUG di bawah INFO\nlogging.info(\"program mulai\")\nlogging.warning(\"berkas konfigurasi tidak ada, memakai nilai bawaan\")\nlogging.error(\"gagal menyimpan data ke berkas\")\nlogging.critical(\"koneksi database putus, program berhenti\")\n\nprint(\"ini print biasa, tidak ada urusannya dengan logging\")\n\n# Yang tercetak:\n# INFO | root | program mulai\n# WARNING | root | berkas konfigurasi tidak ada, memakai nilai bawaan\n# ERROR | root | gagal menyimpan data ke berkas\n# CRITICAL | root | koneksi database putus, program berhenti\n# ini print biasa, tidak ada urusannya dengan logging\n#\n# Dua hal untuk diperhatikan:\n#   1. Baris debug TIDAK muncul, dan program juga tidak protes. Ia disaring.\n#   2. Nama logger-nya \"root\" karena kita memanggil logging.info() langsung.\n#      Cara yang lebih baik ada di bagian berikutnya.\n#\n# Coba ganti INFO jadi logging.WARNING di basicConfig lalu jalankan lagi:\n# dua baris teratas ikut lenyap, tanpa satu pun baris log disunting."
     },
     {
+     "heading": "Level log, format, dan getLogger(__name__)",
      "body": [
       "Ada lima level, dari yang paling remeh sampai yang paling gawat. Angka",
       "di tengah itu nilai aslinya. Level itu angka yang dibandingkan, bukan",
@@ -4551,6 +4586,7 @@
      "code": "import logging\n\n# filename= mengalihkan SELURUH log ke berkas. Setelah baris ini tidak ada satu\n# pun baris log yang muncul di layar -- semuanya masuk ke app.log.\nlogging.basicConfig(\n    filename=\"app.log\",\n    filemode=\"w\",     # \"w\" = tulis ulang dari kosong; \"a\" (bawaan) = menyambung\n    level=logging.DEBUG,\n    format=\"%(levelname)-8s [%(name)s] %(message)s\",\n)\n\nlogger = logging.getLogger(__name__)\n\n\ndef bagi(a, b):\n    # Nilainya dikirim sebagai ARGUMEN (%s), bukan dirangkai dengan f-string.\n    logger.debug(\"bagi dipanggil: a=%s b=%s\", a, b)\n    try:\n        hasil = a / b\n    except ZeroDivisionError:\n        # exception() = error() + traceback lengkapnya, dalam satu panggilan.\n        # Hanya bermakna DI DALAM blok except.\n        logger.exception(\"pembagian gagal\")\n        return None\n    logger.info(\"hasilnya %s\", hasil)\n    return hasil\n\n\nprint(\"__name__ di berkas ini :\", __name__)\nprint(\"nama logger            :\", logger.name)\nprint(\"bagi(10, 2) ->\", bagi(10, 2))\nprint(\"bagi(10, 0) ->\", bagi(10, 0))\n\nlogging.shutdown()    # pastikan yang masih tertahan benar-benar tertulis\n\nprint(\"--- isi app.log ---\")\nwith open(\"app.log\") as f:\n    print(f.read(), end=\"\")\n\n# Yang tercetak di layar:\n# __name__ di berkas ini : __main__\n# nama logger            : __main__\n# bagi(10, 2) -> 5.0\n# bagi(10, 0) -> None\n# --- isi app.log ---\n# DEBUG    [__main__] bagi dipanggil: a=10 b=2\n# INFO     [__main__] hasilnya 5.0\n# DEBUG    [__main__] bagi dipanggil: a=10 b=0\n# ERROR    [__main__] pembagian gagal\n# Traceback (most recent call last):\n#   File \"app.py\", line 18, in bagi\n#     hasil = a / b\n# ZeroDivisionError: division by zero\n#\n# Perhatikan: nama logger-nya \"__main__\" karena berkas ini DIJALANKAN langsung.\n# Kalau berkas yang sama di-import module lain, namanya berubah sendiri.\n# Traceback di dalam log itu bukan hasil print terpisah -- satu panggilan\n# logger.exception() yang membawanya, lengkap sampai baris penyebabnya.\n# (jalur berkas & nomor barisnya menyesuaikan berkasmu sendiri.)"
     },
     {
+     "heading": "Jebakan basicConfig, level, dan f-string di log",
      "body": [
       "Ada beberapa jebakan yang sering kejadian:",
       "",
@@ -4686,6 +4722,7 @@
      "code": "from datetime import date, datetime, timedelta\n\n# Dibuat manual, bukan dari jam komputer: tahun, bulan, tanggal\nlahir = date(2005, 8, 17)\nprint(lahir)                        # 2005-08-17\nprint(lahir.year, lahir.month, lahir.day)   # 2005 8 17\n\n# datetime = tanggal + jam dalam satu objek\njadwal = datetime(2024, 3, 1, 14, 30, 0)\nprint(jadwal)                       # 2024-03-01 14:30:00\nprint(jadwal.hour, jadwal.minute)   # 14 30\nprint(jadwal.date())                # 2024-03-01  (ambil bagian date-nya saja)\nprint(jadwal.weekday())             # 4  -> Senin=0, jadi 4 berarti Jumat\n\n# Menambah waktu WAJIB lewat timedelta.\n# \"jadwal + 7\" langsung = TypeError, karena 7 itu apa? hari? detik?\nminggu_depan = jadwal + timedelta(days=7)\nprint(minggu_depan)                 # 2024-03-08 14:30:00\nprint(jadwal - timedelta(hours=3))  # 2024-03-01 11:30:00\n\n# Selisih dua datetime menghasilkan timedelta, bukan angka biasa\nselisih = minggu_depan - jadwal\nprint(selisih)                      # 7 days, 0:00:00\nprint(selisih.days)                 # 7\nprint(selisih.total_seconds())      # 604800.0\n\n# Umur dalam hari = selisih dua date\numur = date(2024, 3, 1) - lahir\nprint(umur.days, \"hari\")            # 6771 hari"
     },
     {
+     "heading": "Method strftime, strptime, dan kode formatnya",
      "body": [
       "Di kode nyata, tanggal hampir selalu dipakai untuk salah satu dari dua",
       "hal. Pertama, diubah jadi teks untuk disimpan atau ditampilkan. Kedua,",
@@ -4733,6 +4770,7 @@
      "code": "from datetime import datetime\n\njadwal = datetime(2024, 3, 1, 14, 30, 0)\n\n# datetime -> teks\nprint(jadwal.strftime(\"%Y-%m-%d\"))         # 2024-03-01\nprint(jadwal.strftime(\"%d/%m/%Y %H:%M\"))   # 01/03/2024 14:30\nprint(jadwal.strftime(\"%d %B %Y\"))         # 01 March 2024  (nama bulan ikut locale)\n\n# teks -> datetime\nlahir = datetime.strptime(\"17/08/2005\", \"%d/%m/%Y\")\nprint(lahir)                               # 2005-08-17 00:00:00\nprint(type(lahir))                         # <class 'datetime.datetime'>\nprint(lahir.year)                          # 2005\n\n# Pola yang tidak cocok melempar ValueError, bukan mengembalikan None\ntry:\n    datetime.strptime(\"2005-08-17\", \"%d/%m/%Y\")\nexcept ValueError as e:\n    print(\"gagal:\", e)\n# gagal: time data '2005-08-17' does not match format '%d/%m/%Y'\n\n# ISO 8601: bentuk baku untuk MENYIMPAN dan menukar waktu\nteks_iso = jadwal.isoformat()\nprint(teks_iso)                            # 2024-03-01T14:30:00\nkembali = datetime.fromisoformat(teks_iso)\nprint(kembali == jadwal)                   # True"
     },
     {
+     "heading": "ISO 8601, zona waktu, dan modul time",
      "body": [
       "Ada tiga alasan ISO 8601 (\"2024-03-01T14:30:00\") jadi format baku di",
       "mana-mana:",
@@ -4973,6 +5011,7 @@
      "code": "teks = \"Cafe berhasil\"          # str  -> deretan karakter\ndata = teks.encode(\"utf-8\")     # bytes -> deretan angka 0-255\n\nprint(type(teks), len(teks))    # <class 'str'> 13\nprint(type(data), len(data))    # <class 'bytes'> 13  (semua ASCII, 1 byte/karakter)\n\naksen = \"Café\"                       # 4 karakter di layar\nprint(len(aksen))                       # 4\nprint(len(aksen.encode(\"utf-8\")))       # 5    <- é sendirian memakan 2 byte\nprint(aksen.encode(\"utf-8\"))            # b'Caf\\xc3\\xa9'\n\n# Literal bytes ditandai awalan b. Isinya HANYA boleh ASCII;\n# byte lain WAJIB ditulis sebagai \\xNN.\nsapaan = b\"Halo\"\nprint(sapaan[0])      # 72     <- indexing bytes menghasilkan INT, bukan \"H\"\nprint(sapaan[0:1])    # b'H'   <- slicing tetap bytes\n\n# str + bytes = TypeError. Python 3 sengaja MENOLAK menebak encoding-nya,\n# karena tebakan yang salah merusak data tanpa memberi tahu siapa pun.\ntry:\n    print(\"Halo \" + b\"dunia\")\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\n# Bolak-balik dengan tabel yang sama selalu aman:\nprint(data.decode(\"utf-8\") == teks)     # True\n\n# Bolak-balik dengan tabel yang SALAH sering TIDAK error - ia cuma diam:\nprint(aksen.encode(\"utf-8\").decode(\"cp1252\"))   # CafÃ©  <- mojibake, tanpa satu pun error\n\n# Kalau karakternya tidak ada di tabel tujuan, barulah menulis pun gagal:\ntry:\n    \"π\".encode(\"ascii\")            # pi\nexcept UnicodeEncodeError as e:\n    print(\"UnicodeEncodeError:\", e)\n"
     },
     {
+     "heading": "Membaca UnicodeDecodeError dan menanganinya",
      "body": [
       "Kalau tabelnya salah waktu membaca, Python berhenti dengan pesan seperti",
       "ini:",
@@ -5023,6 +5062,7 @@
      "code": "import base64\nimport hashlib\n\n# Tambahkan huruf \"b\" pada mode -> TIDAK ada penerjemahan apa pun.\n# Yang keluar-masuk adalah bytes mentah, persis seperti di disk.\n\ndata = b\"\\x89PNG\\r\\n\\x1a\\n\" + bytes([0, 1, 2, 250])\nwith open(\"contoh.bin\", \"wb\") as f:     # perhatikan: TIDAK ada encoding=\n    f.write(data)                       # f.write() di sini menuntut bytes\n\nwith open(\"contoh.bin\", \"rb\") as f:\n    isi = f.read()                      # hasilnya bytes, bukan str\n\nprint(type(isi), len(isi))              # <class 'bytes'> 12\nprint(isi[:4])                          # b'\\x89PNG'\nprint(isi[:8] == b\"\\x89PNG\\r\\n\\x1a\\n\")  # True -> 8 byte pertama = tanda pengenal PNG\n\n# Menyalin berkas apa pun (gambar, PDF, zip) selalu lewat mode biner.\n# Menyalinnya lewat mode teks akan merusaknya: Python mencoba men-decode isinya.\nwith open(\"contoh.bin\", \"rb\") as sumber, open(\"salinan.bin\", \"wb\") as tujuan:\n    tujuan.write(sumber.read())\nprint(open(\"salinan.bin\", \"rb\").read() == data)   # True\n\n# hashlib dan base64 HANYA menerima bytes. Inilah sebabnya .encode(\"utf-8\")\n# begitu sering terlihat menempel tepat sebelum keduanya di kode orang.\nsidik = hashlib.sha256(\"rahasia\".encode(\"utf-8\")).hexdigest()\nprint(sidik[:16])                       # 16 karakter pertama sidik jari isi\n\nsandi = base64.b64encode(b\"pengguna:12345\")\nprint(sandi)                            # b'cGVuZ2d1bmE6MTIzNDU='\nprint(base64.b64decode(sandi).decode(\"utf-8\"))   # pengguna:12345\n\n# base64 bukan enkripsi, cuma cara menitipkan bytes lewat jalur yang\n# hanya sanggup membawa teks (URL, JSON, header HTTP, email).\n"
     },
     {
+     "heading": "Akhir baris, newline kosong, dan BOM",
      "body": [
       "Ada satu jebakan lagi di berkas teks: akhir baris nggak sama di tiap",
       "sistem.",
@@ -5217,7 +5257,7 @@
      "code": "import re\n\nLOG = \"\"\"08:15:02 INFO  server siap di port 8080\n08:15:44 ERROR koneksi gagal setelah 3 percobaan\n08:16:10 warn  memori terpakai 87 persen\"\"\"\n\n# Pola dikompilasi SEKALI, lalu dipakai berkali-kali.\n# (?P<nama>...) = grup tangkap BERNAMA, jauh lebih terbaca daripada group(2).\nPOLA = re.compile(\n    r\"^(?P<jam>\\d{2}:\\d{2}:\\d{2})\\s+(?P<level>INFO|WARN|ERROR)\\s+(?P<pesan>.+)$\",\n    re.MULTILINE | re.IGNORECASE,\n)\n# MULTILINE : tanpa ini ^ dan $ hanya cocok di ujung SELURUH teks, bukan tiap baris\n# IGNORECASE: baris \"warn\" ikut cocok. Flag mengubah cara mencocokkan, bukan hasilnya.\n\nfor cocok in POLA.finditer(LOG):\n    print(cocok.group(0))                     # seluruh bagian yang cocok\n    print(\"  jam   :\", cocok.group(\"jam\"))\n    print(\"  level :\", cocok.group(2))        # grup ke-2 = grup bernama \"level\"\n    print(\"  angka :\", re.findall(r\"\\d+\", cocok.group(\"pesan\")))\n\nsatu = POLA.search(\"09:00:00 ERROR disk penuh\")\nprint(satu.groupdict())   # {'jam': '09:00:00', 'level': 'ERROR', 'pesan': 'disk penuh'}\n\n# Memeriksa format email SEDERHANA. fullmatch dipakai supaya tidak ada sisa\n# karakter di kiri/kanan. Titik ditulis \\. karena titik polos = \"apa saja\".\nPOLA_EMAIL = re.compile(r\"[\\w.+-]+@[\\w-]+\\.[\\w.]+\")\nfor alamat in [\"budi@contoh.co.id\", \"budi@@contoh\", \"budi contoh.id\"]:\n    print(alamat, \"->\", bool(POLA_EMAIL.fullmatch(alamat)))\n\n# search mengembalikan None kalau tidak ketemu -> cek dulu sebelum .group()\nhasil = re.search(r\"\\d+\", \"tidak ada angka di sini\")\nprint(hasil.group(0) if hasil else \"tidak ada angka\")\n\n# Merapikan spasi berlebih: satu atau lebih whitespace jadi satu spasi biasa\nkotor = \"  Belajar   Python\\tsampai\\n\\nbisa  \"\nprint(repr(re.sub(r\"\\s+\", \" \", kotor).strip()))   # 'Belajar Python sampai bisa'\n\n# Di string PENGGANTI, \\1 (atau \\g<jam>) menunjuk isi grup tangkap\nprint(re.sub(r\"(\\d{2}):(\\d{2}):(\\d{2})\", r\"\\1.\\2\", \"08:15:02 INFO server siap\"))"
     },
     {
-     "heading": "Jebakan, dan kapan JANGAN memakai regex",
+     "heading": "Jebakan, dan kapan jangan memakai regex",
      "body": [
       "Ini jebakan yang paling sering kena:",
       "  1. Lupa r\"...\". Ini penyebab nomor satu keluhan \"polaku udah benar",
@@ -5448,7 +5488,7 @@
      "code": "from itertools import product, combinations, permutations\n\nukuran = [\"S\", \"M\"]\nwarna = [\"merah\", \"biru\"]\n\nfor u in ukuran:            # cara lama: dua loop bersarang\n    for w in warna:\n        print(u, w, end=\"  \")\nprint()\n\nfor u, w in product(ukuran, warna):   # hasilnya PERSIS sama\n    print(u, w, end=\"  \")\nprint()\n\n# repeat=n = \"iterable ini dipakai n kali\", bukan \"diulang n kali\"\nprint(list(product([0, 1], repeat=2)))\n# [(0, 0), (0, 1), (1, 0), (1, 1)]\n\n# combinations: urutan TIDAK penting, satu anggota tak dipakai 2x\nprint(list(combinations(\"ABC\", 2)))\n# [('A', 'B'), ('A', 'C'), ('B', 'C')]\n\n# permutations: urutan PENTING, ('A','B') dan ('B','A') dua-duanya masuk\nprint(list(permutations(\"ABC\", 2)))\nprint(len(list(permutations(\"ABC\"))))    # 6 = 3!"
     },
     {
-     "heading": "groupby: datanya WAJIB diurutkan lebih dulu",
+     "heading": "groupby: datanya wajib diurutkan lebih dulu",
      "body": [
       "groupby() mengelompokkan elemen berurutan yang key-nya sama. Kata",
       "pentingnya \"berurutan\". groupby() nggak mengurutkan apa pun. Dia cuma",
@@ -5832,6 +5872,7 @@
      "code": "import multiprocessing\nimport time\nfrom concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor\n\ndef cacah_prima(batas):\n    # CPU-bound murni: tidak ada yang ditunggu, semuanya dihitung.\n    jumlah = 0\n    for n in range(2, batas):\n        pembagi = 2\n        while pembagi * pembagi <= n:\n            if n % pembagi == 0:\n                break\n            pembagi += 1\n        else:\n            jumlah += 1\n    return jumlah\n\ndef ukur(nama, kerjakan):\n    mulai = time.perf_counter()\n    hasil = kerjakan()\n    print(f\"{nama:<22}: {time.perf_counter() - mulai:.2f} detik -> {hasil}\")\n\nTUGAS = [100000, 100000, 100000, 100000]\n\nif __name__ == \"__main__\":          # WAJIB kalau memakai proses. Lihat catatan di bawah.\n    print(\"inti CPU tersedia:\", multiprocessing.cpu_count())\n\n    ukur(\"berurutan\", lambda: [cacah_prima(b) for b in TUGAS])\n\n    with ThreadPoolExecutor(max_workers=4) as ex:\n        ukur(\"4 thread (kena GIL)\", lambda: list(ex.map(cacah_prima, TUGAS)))\n\n    with ProcessPoolExecutor(max_workers=4) as ex:\n        ex.submit(abs, 0).result()  # nyalakan dulu prosesnya, supaya yang diukur kerjanya\n        ukur(\"4 proses (sejajar)\", lambda: list(ex.map(cacah_prima, TUGAS)))\n\n    # Semua yang dikirim ke proses lain harus bisa di-pickle. lambda tidak bisa.\n    try:\n        with ProcessPoolExecutor(max_workers=2) as ex:\n            list(ex.map(lambda x: x * 2, [1, 2, 3]))\n    except Exception as e:\n        print(\"lambda ditolak:\", type(e).__name__)\n\n# Contoh keluaran (angkanya beda di tiap mesin, yang penting POLANYA):\n#   inti CPU tersedia: 8\n#   berurutan             : 1.05 detik -> [9592, 9592, 9592, 9592]\n#   4 thread (kena GIL)   : 1.07 detik -> [9592, 9592, 9592, 9592]   <- tidak menolong\n#   4 proses (sejajar)    : 0.30 detik -> [9592, 9592, 9592, 9592]   <- inilah bedanya\n#   lambda ditolak: PicklingError"
     },
     {
+     "heading": "Memilih model konkurensi dan jebakannya",
      "body": [
       "Cara memilih, dari yang paling murah:",
       "  1. Nggak pakai apa-apa. Konkurensi menambah bug yang cuma muncul",
@@ -6044,7 +6085,7 @@
      "code": "import asyncio\nimport time\n\nasync def tidur_blocking():\n    time.sleep(0.5)               # SALAH: menahan thread yang sedang memutar loop\n\nasync def tidur_async():\n    await asyncio.sleep(0.5)      # BENAR: giliran diserahkan ke event loop\n\nasync def tiga_sekaligus(kerja):\n    mulai = time.perf_counter()\n    await asyncio.gather(kerja(), kerja(), kerja())\n    return time.perf_counter() - mulai\n\ndef baca_sinkron():               # bayangkan ini library lama yang tidak punya versi async\n    time.sleep(0.5)\n    return \"isi berkas\"\n\nasync def main():\n    for nama, kerja in [(\"time.sleep\", tidur_blocking),\n                        (\"asyncio.sleep\", tidur_async)]:\n        detik = await tiga_sekaligus(kerja)\n        print(f\"{nama:14} 3 tugas @0,5 detik -> {detik / 0.5:.0f}x waktu satu tugas\")\n\n    # Fungsi sinkron yang terpaksa dipakai: buang ke thread lain, jangan panggil langsung.\n    hasil = await asyncio.to_thread(baca_sinkron)\n    print(\"asyncio.to_thread ->\", hasil)\n\nasyncio.run(main())\n\n# time.sleep     3 tugas @0,5 detik -> 3x waktu satu tugas\n# asyncio.sleep  3 tugas @0,5 detik -> 1x waktu satu tugas\n# asyncio.to_thread -> isi berkas"
     },
     {
-     "heading": "async with, async for, dan kapan async TIDAK perlu",
+     "heading": "async with, async for, dan kapan async tidak perlu",
      "body": [
       "with dan for punya kembaran async. Bentuk ini yang bakal kamu temui di",
       "kode nyata:",
@@ -6380,6 +6421,7 @@
      "code": "import unittest\n\n\ndef normalkan(nama):\n    \"\"\"'  budi   santoso ' -> 'Budi Santoso'.\"\"\"\n    return \" \".join(nama.split()).title()\n\n\nclass TestNormalkan(unittest.TestCase):\n\n    def setUp(self):\n        # Dijalankan ULANG sebelum SETIAP method test_ di bawah.\n        self.kotor = \"  budi   santoso \"\n\n    def tearDown(self):\n        # Setelah tiap test, lulus maupun gagal (mirip baris setelah yield).\n        self.kotor = None\n\n    def test_spasi_berlebih_dirapikan(self):\n        self.assertEqual(normalkan(self.kotor), \"Budi Santoso\")\n\n    def test_kapital_dirapikan(self):\n        self.assertEqual(normalkan(\"SITI aminah\"), \"Siti Aminah\")\n\n    def test_nama_kosong_tetap_kosong(self):\n        self.assertEqual(normalkan(\"   \"), \"\")\n\n    def test_nama_depan_ada_di_hasil(self):\n        self.assertIn(\"Budi\", normalkan(self.kotor))\n\n    def test_angka_bukan_string_melempar_error(self):\n        with self.assertRaises(AttributeError):\n            normalkan(123)\n\n    def cek_ini_tidak_pernah_jalan(self):\n        # Tidak berawalan test_, jadi unittest TIDAK PERNAH memanggilnya.\n        # Buktinya: laporannya berbunyi \"Ran 5 tests\", bukan 6.\n        self.assertEqual(1, 2)\n\n\nif __name__ == \"__main__\":\n    unittest.main(verbosity=2)"
     },
     {
+     "heading": "Menjalankan unittest dan tiga jebakannya",
      "body": [
       "Contoh di atas program utuh. Simpan, lalu jalankan seperti skrip biasa.",
       "",
@@ -6513,6 +6555,7 @@
      ]
     },
     {
+     "heading": "Proyek nyata dan kebiasaan profesional",
      "body": [
       "Tahap 3: bangun project nyata",
       "",
@@ -6541,6 +6584,7 @@
      ]
     },
     {
+     "heading": "Kebiasaan harian dan Zen of Python",
      "body": [
       "Kebiasaan harian supaya makin jago:",
       "  1. Ketik ulang semua contoh di aplikasi ini. Jangan copy-paste.",

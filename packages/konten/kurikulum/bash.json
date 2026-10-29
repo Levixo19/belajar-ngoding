@@ -50,6 +50,7 @@
      "code": "#!/usr/bin/env bash\necho \"Halo Dunia!\"\necho \"Aku sedang belajar Bash.\" "
     },
     {
+     "heading": "Shebang, cara menjalankan, dan sambung baris",
      "body": [
       "Baris pertama script tadi namanya shebang:",
       "",
@@ -224,6 +225,7 @@
      "code": "#!/usr/bin/env bash\n# Semua percobaan dikerjakan di folder sendiri, dan folder itu dihapus lagi\n# di baris terakhir supaya folder kerjamu tetap bersih.\nmkdir -p coba-izin\ncd coba-izin || exit 1\n\necho \"halo\" > catatan.txt\nprintf '#!/usr/bin/env bash\\necho \"  (sapa.sh berhasil dijalankan)\"\\n' > sapa.sh\nmkdir arsip\n\nchmod 644 catatan.txt    # rw- r-- r--\nchmod 755 sapa.sh        # rwx r-x r-x\nchmod 700 arsip          # rwx --- ---\n\necho \"== ls -l ==\"\nls -l\n\necho\necho \"== stat: angka dan huruf berdampingan ==\"\nstat -c '%a  %A  %U %G  %n' catatan.txt sapa.sh arsip\n\necho\necho \"== bit x menentukan boleh-tidaknya dijalankan ==\"\n./sapa.sh\n\nchmod 644 sapa.sh\necho \"setelah chmod 644: $(stat -c '%a %A' sapa.sh)\"\n./sapa.sh || echo \"  ditolak, exit code $?  (126 = berkasnya ada, tapi tidak boleh dijalankan)\"\n\necho\necho \"== bash tetap mau membacanya, karena bit r masih menyala ==\"\nbash sapa.sh\n\ncd ..\nrm -rf coba-izin"
     },
     {
+     "heading": "Izin dalam bentuk angka dan simbolik",
      "body": [
       "Nulis sembilan huruf rwx tiap kali itu capek, jadi ada bentuk angka.",
       "Tiap bit punya nilai:",
@@ -310,6 +312,7 @@
      "code": "#!/usr/bin/env bash\n# umask, berkas rahasia, dan pola cek root.\nmkdir -p coba-umask\ncd coba-umask || exit 1\n\n# umask = daftar bit yang DIMATIKAN saat sesuatu yang baru dibuat.\numask 022\necho \"isi rahasia\" > kunci_a.txt\nmkdir map_a\n\numask 077\necho \"isi rahasia\" > kunci_b.txt\nmkdir map_b\n\necho \"umask 022 -> berkas $(stat -c %a kunci_a.txt), folder $(stat -c %a map_a)\"\necho \"umask 077 -> berkas $(stat -c %a kunci_b.txt), folder $(stat -c %a map_b)\"\n\n# Berkas rahasia: cabut hak grup dan lainnya sampai habis.\nchmod 600 kunci_a.txt\nstat -c 'kunci_a.txt: %a %A  pemilik=%U grup=%G' kunci_a.txt\n\n# Pola cek root di kepala script yang memang butuh hak penuh.\nif [[ $EUID -ne 0 ]]; then\n    echo \"Bukan root. EUID=$EUID, id -u=$(id -u), whoami=$(whoami)\"\n    echo \"Di script sungguhan, baris berikutnya adalah: exit 1\"\nfi\n\ncd ..\nrm -rf coba-umask"
     },
     {
+     "heading": "Kunci SSH, sudo, dan chown",
      "body": [
       "Untuk kunci SSH, izin 600 itu wajib. ssh menolak jalan kalau kunci",
       "privatmu terlalu longgar. Kalau kuncinya berizin 644, yang muncul",
@@ -454,6 +457,7 @@
      "code": "nama=\"Andi\"\n\necho \"Halo $nama\"     # Halo Andi     -> variabel DIPROSES\necho 'Halo $nama'     # Halo $nama    -> semua apa adanya\necho Halo $nama       # Halo Andi     -> jalan, tapi rawan\n\n# Backtick / $() menjalankan perintah lalu ambil hasilnya\nsekarang=$(date +%Y)\necho \"Tahun sekarang: $sekarang\" "
     },
     {
+     "heading": "Ringkasan quoting dan variabel khusus",
      "body": [
       "Ringkasan tanda kutip, atau quoting:",
       "",
@@ -508,7 +512,7 @@
      ]
     },
     {
-     "heading": "$( ) membuka konteks kutip BARU",
+     "heading": "$( ) membuka konteks kutip baru",
      "body": [
       "Apa pun yang ada di dalam $( ) dibaca dari nol, terpisah dari yang di",
       "luarnya. Petik ganda di dalamnya nggak menutup petik ganda di luarnya.",
@@ -673,6 +677,7 @@
      "code": "#!/usr/bin/env bash\n\nread -p \"Siapa namamu? \" nama\necho \"Halo, $nama!\"\n\n# -s menyembunyikan ketikan, cocok untuk password\nread -s -p \"Password: \" sandi\necho\necho \"Panjang password: ${#sandi} karakter\"\n\n# Membaca beberapa nilai sekaligus\nread -p \"Masukkan 2 angka: \" a b\necho \"Jumlah: $((a + b))\" "
     },
     {
+     "heading": "Opsi read, redirection, dan pipe",
      "body": [
       "Ada dua bentuk di contoh tadi yang belum waktunya dibahas. Nggak usah",
       "dipikirin dulu, dua-duanya dijelasin lengkap nanti:",
@@ -813,6 +818,7 @@
      "code": "#!/usr/bin/env bash\n\ndua_aliran() {\n    echo \"ini hasil kerja\"        # lewat stdout, deskriptor 1\n    echo \"ini pesan error\" >&2    # lewat stderr, deskriptor 2\n}\n\necho \"== apa adanya: dua-duanya sampai ke layar ==\"\ndua_aliran\n\necho\necho \"== stdout dibuang, error tetap terlihat ==\"\ndua_aliran >/dev/null\n\necho\necho \"== error dibuang, hasil tetap terlihat ==\"\ndua_aliran 2>/dev/null\n\necho\necho \"== urutan BENAR: >berkas dulu, baru 2>&1 ==\"\ndua_aliran >kumpul.log 2>&1\ncat kumpul.log\n\necho\necho \"== urutan TERBALIK: 2>&1 dulu, baru >berkas ==\"\ndua_aliran 2>&1 >bocor.log\necho \"-- isi bocor.log ternyata cuma ini: --\"\ncat bocor.log\n\nrm -f kumpul.log bocor.log"
     },
     {
+     "heading": "Mendiamkan keluaran, exec, dan tee",
      "body": [
       "Pola yang paling sering kamu temui di script orang lain:",
       "",
@@ -883,6 +889,7 @@
      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\nLOG=\"jalan.log\"\n\n# tee: satu keluaran, dua tujuan -- layar DAN berkas.\necho \"mulai memproses\" | tee \"$LOG\"\necho \"sedang bekerja\"  | tee -a \"$LOG\"\n\n# Simpan layar aslinya di deskriptor 4 supaya bisa dipakai lagi nanti.\nexec 4>&1\n\n# Sejak baris ini SEMUA keluaran pindah ke log. Tidak perlu >>log lagi.\nexec >>\"$LOG\" 2>&1\necho \"baris ini masuk log, bukan layar\"\necho \"pesan error pun ikut masuk log\" >&2\n\n# Sambungkan lagi stdout ke layar yang tadi disimpan, lalu tutup fd 4.\nexec >&4 2>&1\nexec 4>&-\n\necho\necho \"== isi $LOG ==\"\ncat \"$LOG\"\n\n# Deskriptor 3 untuk membaca berkas sedikit demi sedikit.\nprintf 'anggur\\nmangga\\n' > buah.txt\nexec 3< buah.txt\nread -r satu <&3\nread -r dua <&3\nexec 3<&-\necho\necho \"dibaca lewat fd 3: $satu lalu $dua\"\n\nrm -f \"$LOG\" buah.txt"
     },
     {
+     "heading": "Here-string, membaca berkas, dan perintah kosong",
      "body": [
       "Ada tiga jalan pintas yang udah dipakai di materi lain tanpa dijelasin.",
       "Sekarang kita bahas asalnya.",
@@ -1308,6 +1315,7 @@
      "code": "#!/usr/bin/env bash\n# Potongan yang khas ada di ~/.bashrc. Di sini ia dijalankan sebagai script\n# biasa supaya efek tiap barisnya kelihatan, tanpa mengubah setelan aslimu.\n\n# 1. PATH -- taruh folder program pribadi di DEPAN daftar bawaan\nexport PATH=\"$HOME/.local/bin:$PATH\"\n\n# 2. Alias -- nama pendek untuk perintah yang sering diketik\nalias ll='ls -alF'\nalias gs='git status'\nalias ..='cd ..'\n\n# 3. Riwayat perintah\nHISTSIZE=10000\nHISTFILESIZE=20000\nHISTCONTROL=ignorespace:erasedups\nshopt -s histappend\n\n# 4. Bentuk prompt: pengguna@mesin:folder$\nPS1='\\u@\\h:\\w\\$ '\n\n# 5. Menjalankan keluaran sebuah perintah sebagai kode\n# eval \"$(pyenv init -)\"\n\necho \"PATH kini diawali : ${PATH%%:*}\"\necho \"Definisi alias ll : $(alias ll)\"\necho \"Riwayat disimpan  : $HISTSIZE baris\"\necho \"Bentuk prompt PS1 : $PS1\""
     },
     {
+     "heading": "Alias, riwayat perintah, dan prompt PS1",
      "body": [
       "Alias adalah nama pendek untuk perintah yang panjang.",
       "",
@@ -1922,6 +1930,7 @@
      "code": "#!/usr/bin/env bash\n\n# WAJIB dideklarasikan dulu dengan declare -A\ndeclare -A umur\numur[\"andi\"]=25\numur[\"budi\"]=30\numur[\"citra\"]=28\n\necho \"Umur andi: ${umur[andi]}\"\necho \"Jumlah data: ${#umur[@]}\"\n\n# Ulangi semua pasangan (urutan TIDAK terjamin!)\nfor nama in \"${!umur[@]}\"; do\n    echo \"$nama berumur ${umur[$nama]}\"\ndone\n\n# Cek apakah kunci ada\nif [[ -v umur[\"andi\"] ]]; then\n    echo \"Data andi tersedia\"\nfi"
     },
     {
+     "heading": "Associative array, memecah string, dan mapfile",
      "body": [
       "Beberapa hal soal associative array:",
       "  - Wajib pakai declare -A sebelum dipakai. Kalau lupa, bash",
@@ -2020,6 +2029,7 @@
      "code": "#!/usr/bin/env bash\n\nsapa() {\n    echo \"Halo, $1! Selamat datang.\"\n}\n\njumlahkan() {\n    local a=$1\n    local b=$2\n    echo $((a + b))\n}\n\nsapa \"Andi\"\nsapa \"Budi\"\n\n# Ambil hasil fungsi lewat command substitution\nhasil=$(jumlahkan 7 5)\necho \"7 + 5 = $hasil\" "
     },
     {
+     "heading": "Nilai kembalian fungsi dan kata kunci local",
      "body": [
       "Ada dua cara fungsi \"mengembalikan\" nilai.",
       "",
@@ -2275,10 +2285,11 @@
      ]
     },
     {
-     "heading": "Script utuh dengan -h, -v, dan -o BERKAS",
+     "heading": "Script utuh dengan -h, -v, dan -o berkas",
      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\nNAMA=\"${0##*/}\"\n\nbantuan() {\n    cat << EOF\nPenggunaan: $NAMA [-h] [-v] [-o BERKAS] SUMBER...\n\nOpsi:\n  -h          tampilkan bantuan ini lalu keluar\n  -v          mode cerewet (verbose)\n  -o BERKAS   tulis hasil ke BERKAS (bawaan: layar)\nEOF\n}\n\njalan() {\n    local OPTIND=1 opt\n    local cerewet=0 keluaran=\"layar\"\n\n    while getopts \":hvo:\" opt; do\n        case \"$opt\" in\n            h)  bantuan; return 0 ;;\n            v)  cerewet=1 ;;\n            o)  keluaran=\"$OPTARG\" ;;\n            \\?) echo \"$NAMA: opsi tak dikenal: -$OPTARG\" >&2; return 2 ;;\n            :)  echo \"$NAMA: opsi -$OPTARG butuh sebuah nilai\" >&2; return 2 ;;\n        esac\n    done\n\n    shift $((OPTIND - 1))\n\n    echo \"  cerewet  = $cerewet\"\n    echo \"  keluaran = $keluaran\"\n    echo \"  sisa     = $# argumen posisional: $*\"\n}\n\n# Biasanya cukup: jalan \"$@\". Di sini kita panggil berkali-kali dengan\n# kombinasi berbeda supaya kamu lihat hasil penguraiannya sekaligus.\ncoba() {\n    echo \"--- $NAMA $* ---\"\n    jalan \"$@\" || echo \"  (berhenti, status $?)\"\n    echo\n}\n\ncoba laporan.txt\ncoba -h\ncoba -v laporan.txt\ncoba -o hasil.log -v laporan.txt data.csv\ncoba -vo hasil.log laporan.txt\ncoba laporan.txt -v\ncoba -x laporan.txt\ncoba -o"
     },
     {
+     "heading": "Membaca baris getopts dan dua jebakannya",
      "body": [
       "Kita baca baris kuncinya pelan-pelan:",
       "",
@@ -2364,6 +2375,7 @@
      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\nNAMA=\"${0##*/}\"\n\ngalat() { echo \"$NAMA: $*\" >&2; }\n\nurai() {\n    local keluaran=\"layar\" paksa=0 cerewet=0\n\n    while [[ $# -gt 0 ]]; do\n        case \"$1\" in\n            -o|--out)\n                [[ $# -ge 2 ]] || { galat \"$1 butuh sebuah nilai\"; return 2; }\n                keluaran=\"$2\"; shift 2 ;;\n            --out=*)\n                keluaran=\"${1#*=}\"; shift ;;\n            -f|--force)\n                paksa=1; shift ;;\n            -v|--verbose)\n                cerewet=1; shift ;;\n            -h|--help)\n                echo \"  (di sini bantuan() dipanggil, lalu return 0)\"; return 0 ;;\n            --)\n                shift; break ;;\n            -?*)\n                galat \"opsi tak dikenal: $1\"; return 2 ;;\n            *)\n                break ;;\n        esac\n    done\n\n    echo \"  keluaran = $keluaran\"\n    echo \"  paksa    = $paksa\"\n    echo \"  cerewet  = $cerewet\"\n    echo \"  sisa     = $# berkas: $*\"\n}\n\ncoba() {\n    echo \"--- $NAMA $* ---\"\n    urai \"$@\" || echo \"  (berhenti, status $?)\"\n    echo\n}\n\ncoba --verbose laporan.txt\ncoba --out hasil.log --force laporan.txt\ncoba --out=hasil.log laporan.txt\ncoba -f --out\ncoba --salah laporan.txt\ncoba --force -- -berkas-diawali-strip.txt"
     },
     {
+     "heading": "Opsi panjang, penanda dua strip, dan bantuan",
      "body": [
       "Ada satu batas getopts yang perlu kamu tahu sebelum nyari-nyari di",
       "dokumentasi: getopts cuma ngerti opsi pendek satu huruf. Nggak ada",
@@ -2542,6 +2554,7 @@
      "code": "#!/usr/bin/env bash\n# Berkas di bawah ini dibuat sendiri oleh script, lalu dibereskan lagi di akhir.\nmkdir -p contoh-pola\ncd contoh-pola || exit 1\ntouch catatan.txt tugas.txt data.csv foto1.jpg foto2.jpg foto10.jpg\n\nlihat() {                    # $1 = polanya apa adanya, sisanya = hasil mekarnya\n    printf '%-16s -> %s\\n' \"$1\" \"${*:2}\"\n}\n\necho \"Isi folder: catatan.txt tugas.txt data.csv foto1.jpg foto2.jpg foto10.jpg\"\necho\nlihat '*.txt'         *.txt\nlihat 'foto?.jpg'     foto?.jpg\nlihat 'foto[0-9].jpg' foto[0-9].jpg\nlihat '[cd]*'         [cd]*\nlihat '[!cd]*'        [!cd]*\nlihat '*.{jpg,csv}'   *.{jpg,csv}\nlihat '*.pdf'         *.pdf\n\necho\necho \"Sesudah 'shopt -s nullglob' pola tanpa hasil jadi daftar kosong:\"\nshopt -s nullglob\nlihat '*.pdf'         *.pdf\n\necho\necho \"Brace expansion tidak melihat isi folder sama sekali:\"\necho \"  {1..5}       ->\" {1..5}\necho \"  {01..03}     ->\" {01..03}\necho \"  bab-{a,b}.md ->\" bab-{a,b}.md\n\necho\nberkas=\"catatan.txt\"\nif [[ \"$berkas\" == *.txt ]]; then\n    echo \"[[ == ]] memakai glob  : '$berkas' berakhiran .txt\"\nfi\nif [[ \"$berkas\" == \"*.txt\" ]]; then\n    echo \"polanya dikutip        : cocok\"\nelse\n    echo \"polanya dikutip        : TIDAK cocok, jadi nama harfiah '*.txt'\"\nfi\ncase \"$berkas\" in\n    *.txt) echo \"case juga memakai glob : berkas teks\" ;;\n    *)     echo \"case juga memakai glob : bukan berkas teks\" ;;\nesac\n\nrm -f catatan.txt tugas.txt data.csv foto1.jpg foto2.jpg foto10.jpg\ncd ..\nrmdir contoh-pola"
     },
     {
+     "heading": "Kosakata regex dan jebakan titik",
      "body": [
       "Sekarang regex. Begitu kosakatanya kamu kuasai, regex bisa dipakai di",
       "=~, grep, sed, awk, dan hampir semua bahasa pemrograman lain yang bakal",
@@ -2863,6 +2876,7 @@
      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\nfolder=\"${1:-.}\"\n\nif [[ ! -d \"$folder\" ]]; then\n    echo \"Folder tidak ada: $folder\" >&2\n    exit 1\nfi\n\njumlah=0\ntotal_baris=0\n\nfor berkas in \"$folder\"/*.txt; do\n    # Kalau tidak ada file .txt, pola tidak berkembang\n    [[ -e \"$berkas\" ]] || continue\n\n    baris=$(wc -l < \"$berkas\")\n    nama=\"${berkas##*/}\"\n    printf \"%-25s %5d baris\\n\" \"$nama\" \"$baris\"\n\n    ((jumlah++))\n    ((total_baris += baris))\ndone\n\necho \"---\"\necho \"$jumlah file, total $total_baris baris\" "
     },
     {
+     "heading": "Nullglob, berkas sementara, dan wc -l",
      "body": [
       "Perhatikan baris ini:",
       "  [[ -e \"$berkas\" ]] || continue",
@@ -3035,6 +3049,7 @@
      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\n# Pohon contohnya dibuat sendiri supaya contoh ini bisa dijalankan apa adanya.\nkerja=$(mktemp -d)\ntrap 'rm -rf \"$kerja\"' EXIT\ncd \"$kerja\"\n\nmkdir -p proyek/src proyek/log arsip\necho \"halo\"          > proyek/src/utama.sh\necho \"dunia\"         > proyek/src/bantu.sh\necho \"judul\"         > proyek/README.md\nprintf 'a\\nb\\nc\\n' > proyek/log/server.log\n: > proyek/log/kosong.log\n: > \"arsip/laporan akhir.txt\"\necho \"isi lama\"      > arsip/lama.log\necho \"isi baru\"      > arsip/baru.log\necho \"penanda\"       > patokan\n\n# Waktunya dipatok supaya hasil -newer selalu sama, bukan ikut jam mesin.\ntouch -d '2020-01-01' arsip/lama.log \"arsip/laporan akhir.txt\"\ntouch -d '2022-01-01' patokan\ntouch -d '2024-01-01' arsip/baru.log\n\necho \"== semua berkas .log di bawah proyek ==\"\nfind proyek -type f -name '*.log' | sort\n\necho\necho \"== folder saja, cuma satu tingkat ==\"\nfind proyek -maxdepth 1 -type d | sort\n\necho\necho \"== .sh ATAU .md, tapi bukan README ==\"\nfind proyek -type f \\\n     \\( -name '*.sh' -o -name '*.md' \\) ! -name 'README.md' | sort\n\necho\necho \"== berkas berukuran nol ==\"\nfind proyek arsip -type f -empty | sort\n\necho\necho \"== lebih baru daripada berkas 'patokan' ==\"\nfind arsip -type f -newer patokan | sort"
     },
     {
+     "heading": "Menjalankan aksi lewat -exec dan xargs",
      "body": [
       "find nggak cuma bisa mencetak nama. find juga bisa menjalankan sesuatu",
       "untuk tiap hasil, dan bentuknya ada dua.",
@@ -3238,6 +3253,7 @@
      "code": "#!/usr/bin/env bash\n\n# Buat data contoh\ncat > nilai.csv << 'EOF'\nandi,80,90\nbudi,70,65\ncitra,95,88\ndedi,55,60\nEOF\n\necho \"== Semua data ==\"\ncat nilai.csv\n\necho\necho \"== Yang nilai pertamanya di atas 75 ==\"\nawk -F',' '$2 > 75 {print $1, $2}' nilai.csv\n\necho\necho \"== Rata-rata kolom 2 ==\"\nawk -F',' '{jml += $2; n++} END {printf \"%.2f\\n\", jml/n}' nilai.csv\n\necho\necho \"== Nama diurutkan ==\"\ncut -d',' -f1 nilai.csv | sort\n\nrm -f nilai.csv"
     },
     {
+     "heading": "Heredoc, here-string, dan variabel bawaan awk",
      "body": [
       "Perhatikan heredoc di contoh:",
       "  cat > nilai.csv << 'EOF'",
@@ -4026,6 +4042,7 @@
      "code": "#!/usr/bin/env bash\n#\n# backup.sh - Menyalin folder ke lokasi cadangan\n# Penggunaan: ./backup.sh <sumber> <tujuan>\n\nset -euo pipefail\n\nreadonly NAMA_SCRIPT=\"${0##*/}\"\n\npesan() {\n    echo \"[$NAMA_SCRIPT] $*\"\n}\n\ngalat() {\n    echo \"[$NAMA_SCRIPT] ERROR: $*\" >&2\n    exit 1\n}\n\nbantuan() {\n    cat << EOF\nPenggunaan: $NAMA_SCRIPT <sumber> <tujuan>\n\nMenyalin isi folder sumber ke folder tujuan.\n\nOpsi:\n  -h    Tampilkan bantuan ini\nEOF\n}\n\nutama() {\n    [[ \"${1:-}\" == \"-h\" ]] && { bantuan; exit 0; }\n    [[ $# -eq 2 ]] || galat \"Butuh 2 argumen. Lihat -h.\"\n\n    local sumber=\"$1\" tujuan=\"$2\"\n    [[ -d \"$sumber\" ]] || galat \"Folder '$sumber' tidak ada\"\n\n    mkdir -p \"$tujuan\"\n    cp -r \"$sumber/.\" \"$tujuan/\"\n    pesan \"Selesai menyalin ke $tujuan\"\n}\n\nutama \"$@\" "
     },
     {
+     "heading": "Sepuluh praktik baik dan kesalahan pemula",
      "body": [
       "Praktik baik yang dipakai di kerangka di atas:",
       "  1. Shebang #!/usr/bin/env bash di baris pertama.",
@@ -4165,10 +4182,11 @@
      ]
     },
     {
-     "heading": "bashisme.sh — mulus di bash, hancur di sh",
+     "heading": "bashisme.sh: mulus di bash, hancur di sh",
      "code": "#!/usr/bin/env bash\n# Tiap bagian di sini butuh bash. Ganti shebang-nya jadi #!/bin/sh\n# dan berkas ini rusak sebelum sempat mencetak apa pun.\n\nnama=\"levi anggara\"\nbuah=(\"apel\" \"jeruk\" \"mangga\")\n\nif [[ \"$nama\" == *anggara* ]]; then\n    echo \"1. [[ ]]   : pola cocok, tanpa perlu grep\"\nfi\n\necho \"2. array   : ${buah[1]}, jumlah ${#buah[@]}\"\necho \"3. ^^      : ${nama^^}\"\n\npesan=\"halo\"\npesan+=\" dunia\"\necho \"4. +=      : $pesan\"\n\nn=0\n((n++))\n((n += 7))\necho \"5. (( ))   : $n\"\n\nread -r depan belakang <<< \"$nama\"\necho \"6. <<<     : depan=$depan belakang=$belakang\"\n\nls /folder/tidak/ada &> /dev/null\necho \"7. &>      : pesan error tadi terbuang rapi\"\n\necho \"warna=merah\" > konfig.sh\nsource ./konfig.sh\necho \"8. source  : warna=$warna\"\nrm -f konfig.sh\n\ntab=$'\\t'\necho \"9. C-quote : ada tab sungguhan di sini ->${tab}<- selesai\" "
     },
     {
+     "heading": "Pesan galat bashism dan padanannya di sh",
      "body": [
       "Jalankan berkas di atas dengan bash: sembilan baris keluar rapi, tanpa",
       "keluhan. Sekarang ganti baris pertamanya jadi #!/bin/sh, lalu jalankan",
@@ -4250,10 +4268,11 @@
      ]
     },
     {
-     "heading": "posix.sh — pekerjaan yang sama, tanpa satu pun bashism",
+     "heading": "posix.sh: pekerjaan yang sama, tanpa satu pun bashism",
      "code": "#!/bin/sh\n# Jalan di dash, busybox ash, bash, zsh - sh mana pun.\n\nnama=\"levi anggara\"\n\ncase \"$nama\" in\n    *anggara*) echo \"1. case   : pola cocok, pengganti [[ == ]]\" ;;\nesac\n\n# Tidak ada array di sh. Argumen posisi adalah satu-satunya daftar bawaan.\nset -- apel jeruk mangga\necho \"2. set -- : $2, jumlah $#\"\n\nbesar=$(printf '%s' \"$nama\" | tr '[:lower:]' '[:upper:]')\necho \"3. tr     : $besar\"\n\npesan=\"halo\"\npesan=\"$pesan dunia\"\necho \"4. gabung : $pesan\"\n\nn=0\nn=$((n + 1))\nn=$((n + 7))\necho \"5. hitung : $n\"\n\ndepan=${nama%% *}\nbelakang=${nama#* }\necho \"6. potong : depan=$depan belakang=$belakang\"\n\nls /folder/tidak/ada > /dev/null 2>&1\necho \"7. 2>&1   : pesan error tadi terbuang rapi\"\n\necho \"warna=merah\" > konfig.sh\n. ./konfig.sh\necho \"8. titik  : warna=$warna\"\nrm -f konfig.sh\n\nif [ -n \"$warna\" ] && [ \"$warna\" = merah ]; then\n    echo \"9. [ ]    : satu = saja, dan dua [ ] disambung dengan &&\"\nfi"
     },
     {
+     "heading": "Perintah [ ] dan cara menguji portabilitas",
      "body": [
       "Dua catatan dari posix.sh:",
       "  - Perintah . ./konfig.sh: titiknya wajib diikuti ./ kalau berkasnya",
@@ -4691,6 +4710,7 @@
      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\nreadonly BERKAS=\"${CATATAN_FILE:-$HOME/.catatan.txt}\"\nreadonly NAMA=\"${0##*/}\"\n\nsiapkan() {\n    [[ -f \"$BERKAS\" ]] || touch \"$BERKAS\"\n}\n\ntambah() {\n    local isi=\"$*\"\n    [[ -n \"$isi\" ]] || { echo \"Isi catatan kosong\" >&2; return 1; }\n    echo \"$isi\" >> \"$BERKAS\"\n    echo \"Tersimpan: $isi\"\n}\n\ndaftar() {\n    local n=0\n    while IFS= read -r baris; do\n        ((n++))\n        printf \"%3d. %s\\n\" \"$n\" \"$baris\"\n    done < \"$BERKAS\"\n    [[ $n -eq 0 ]] && echo \"(belum ada catatan)\"\n    return 0\n}\n\ncari() {\n    local kata=\"$1\"\n    local n=0 ketemu=0\n    while IFS= read -r baris; do\n        ((n++))\n        if [[ \"${baris,,}\" == *\"${kata,,}\"* ]]; then\n            printf \"%3d. %s\\n\" \"$n\" \"$baris\"\n            ((ketemu++))\n        fi\n    done < \"$BERKAS\"\n    echo \"Ditemukan $ketemu catatan.\"\n}\n\nhapus() {\n    local target=\"$1\"\n    local total\n    total=$(wc -l < \"$BERKAS\")\n    if [[ ! \"$target\" =~ ^[0-9]+$ ]] || (( target < 1 || target > total )); then\n        echo \"Nomor tidak valid (1-$total)\" >&2\n        return 1\n    fi\n    sed -i \"${target}d\" \"$BERKAS\"\n    echo \"Catatan $target dihapus.\"\n}\n\nhitung() {\n    echo \"Total catatan: $(wc -l < \"$BERKAS\")\"\n}\n\nbantuan() {\n    cat << EOF\n$NAMA - pengelola catatan sederhana\n\n  $NAMA tambah <isi>\n  $NAMA daftar\n  $NAMA cari <kata>\n  $NAMA hapus <nomor>\n  $NAMA hitung\nEOF\n}\n\nsiapkan\nperintah=\"${1:-bantuan}\"\nshift || true\n\ncase \"$perintah\" in\n    tambah)  tambah \"$@\" ;;\n    daftar)  daftar ;;\n    cari)    cari \"${1:-}\" ;;\n    hapus)   hapus \"${1:-}\" ;;\n    hitung)  hitung ;;\n    *)       bantuan ;;\nesac"
     },
     {
+     "heading": "Bagian menarik script dan ide lanjutan",
      "body": [
       "Beberapa bagian script ini yang menarik untuk diperhatikan:",
       "",

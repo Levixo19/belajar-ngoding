@@ -49,6 +49,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Arti tiap baris dan aturan khas Go",
                 "body": [
                     "Kita bahas bagian demi bagian:",
                     "",
@@ -694,6 +695,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Tipe time.Duration dan perbandingan waktu",
                 "body": [
                     "Duration itu angka yang dikasih nama",
                     "",
@@ -999,6 +1001,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Kelebihan switch di Go dibanding C",
                 "body": [
                     "switch cocok kalau kamu membandingkan satu nilai dengan banyak",
                     "kemungkinan. Beberapa kelebihan switch di Go:",
@@ -1149,6 +1152,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Nilai range, urutan map, dan break berlabel",
                 "body": [
                     "range menghasilkan nilai yang beda-beda, tergantung apa yang",
                     "ditelusuri:",
@@ -1306,6 +1310,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Jebakan append, berbagi data, dan sort.Slice",
                 "body": [
                     "Hal-hal yang wajib kamu pahami soal slice:",
                     "",
@@ -1484,6 +1489,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Package strings, jebakan Trim, dan Builder",
                 "body": [
                     "Perhatikan dua hal di akhir keluarannya.",
                     "",
@@ -1847,6 +1853,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Pola comma ok dan himpunan lewat map",
                 "body": [
                     "Untuk mengecek apakah sebuah kunci ada, pakai pola comma ok:",
                     "",
@@ -2027,6 +2034,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Return bernama, closure, dan defer",
                 "body": [
                     "Beberapa hal penting soal fungsi di Go:",
                     "",
@@ -2213,6 +2221,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Kapan memakai pointer di Go",
                 "body": [
                     "Kapan pakai pointer:",
                     "  1. Fungsi perlu mengubah argumen aslinya.",
@@ -2414,6 +2423,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Value receiver, pointer receiver, dan embedding",
                 "body": [
                     "Value receiver dan pointer receiver",
                     "",
@@ -2598,6 +2608,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Prinsip interface, jebakan nil, dan method set",
                 "body": [
                     "Prinsip-prinsip interface di Go:",
                     "",
@@ -2825,6 +2836,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Konstanta berkelompok dan penghitung iota",
                 "body": [
                     "Konstanta boleh dikelompokkan dalam satu blok, sama seperti",
                     "var ( ... ) yang udah kamu pakai di Materi 2:",
@@ -2943,6 +2955,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Jebakan enum dan konstanta tanpa tipe",
                 "body": [
                     "Enum itu tipe yang nilainya cuma boleh dari daftar tertentu, misalnya",
                     "status pesanan. Go nggak punya kata kunci enum. Polanya selalu tiga",
@@ -3130,6 +3143,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Alat errors, Join, panic, dan recover",
                 "body": [
                     "Ada tiga alat untuk memeriksa error:",
                     "",
@@ -3391,6 +3405,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Empat jebakan berkas yang sering kena",
                 "body": [
                     "Empat jebakan berkas yang paling sering kena:",
                     "",
@@ -3565,6 +3580,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Fungsi yang menerima io.Reader dan io.Writer",
                 "body": [
                     "io.Reader dan io.Writer masing-masing cuma punya satu method. Kamu udah",
                     "lihat definisinya di materi Interface. Karena sekecil itu, hampir semua",
@@ -3741,6 +3757,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Argumen os.Args dan package flag",
                 "body": [
                     "Jalankan dua kali supaya bedanya kerasa:",
                     "",
@@ -3888,6 +3905,7 @@ func jalankan() error {
 }""",
             },
             {
+                "heading": "Package log, log.Fatal, dan variabel lingkungan",
                 "body": [
                     "Tiga cara menjalankannya, dan apa yang keluar:",
                     "",
@@ -4126,6 +4144,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Struct tag dan opsi omitempty",
                 "body": [
                     "Perhatikan keluaran program di atas:",
                     "  - Diskon nggak muncul di JSON pertama, karena nilainya 0 dan",
@@ -4281,6 +4300,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Nol atau tidak ada, float64, dan Decoder",
                 "body": [
                     "Membedakan \"bernilai nol\" dari \"nggak ada\"",
                     "",
@@ -4535,6 +4555,7 @@ func main() {
                 ]
             },
             {
+                "heading": "Channel, close, deadlock, dan race condition",
                 "body": [
                     "Channel adalah pipa untuk mengirim data antar goroutine.",
                     "",
@@ -4761,6 +4782,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Aturan select, timeout, dan channel sinyal",
                 "body": [
                     "Aturan main select",
                     "",
@@ -5189,6 +5211,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Method Context dan empat jebakan pembatalan",
                 "body": [
                     "Sebuah Context cuma punya empat method, dan yang sering dipakai",
                     "sehari-hari cuma dua:",
@@ -5306,6 +5329,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Aturan WithValue dan kebiasaan penulisan ctx",
                 "body": [
                     "context.WithValue menitipkan data yang ikut sepanjang satu permintaan.",
                     "Misalnya request ID untuk log, identitas pemakai yang udah login, atau",
@@ -5725,6 +5749,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Jebakan generics dan kapan tidak memakainya",
                 "body": [
                     "Jebakan yang sering kena:",
                     "",
@@ -5912,6 +5937,7 @@ func TestBagiNol(t *testing.T) {
 }"""
             },
             {
+                "heading": "File test, table-driven test, dan struktur folder",
                 "body": [
                     "Aturan file test:",
                     "  - Nama file harus diakhiri _test.go.",
@@ -6582,6 +6608,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Permintaan, jawaban, ServeMux, dan middleware",
                 "body": [
                     "Mengambil isi permintaan",
                     "",
@@ -6853,6 +6880,7 @@ func main() {
 }""",
             },
             {
+                "heading": "Jebakan klien HTTP dan batas waktu server",
                 "body": [
                     "Contoh kedua itu berhenti sendiri, jadi boleh dijalankan dari sini.",
                     "Keluarannya:",
@@ -7184,6 +7212,7 @@ func FuzzBalik(f *testing.F) {
 }""",
             },
             {
+                "heading": "Benchmark, Example, fuzzing, dan t.Parallel",
                 "body": [
                     "Menjalankan benchmark",
                     "",
@@ -7735,6 +7764,7 @@ func main() {
 }"""
             },
             {
+                "heading": "Keputusan desain dan ide pengembangan",
                 "body": [
                     "Beberapa keputusan desain di program itu, beserta alasannya:",
                     "",

@@ -73,6 +73,7 @@ JAVA_MATERIALS = [
                 ]
             },
             {
+                "heading": "Versi LTS dan cara mengecek JDK",
                 "body": [
                     "Angka versi Java",
                     "",
@@ -226,6 +227,7 @@ JAVA_MATERIALS = [
                 ],
             },
             {
+                "heading": "Tiga bentuk import dan tabrakan nama",
                 "body": [
                     "Sesudah package, datang blok import. Bagian ini yang paling sering",
                     "disalahpahami. Import nggak memuat atau menyalin kode apa pun ke",
@@ -352,6 +354,7 @@ public class Keranjang {
 }""",
             },
             {
+                "heading": "Komentar, Javadoc, dan konvensi penamaan",
                 "body": [
                     "Kita bedah kepala berkas di atas baris demi baris:",
                     "  package com.tokobuku.penjualan;",
@@ -526,6 +529,7 @@ long saldoBank = 1000000000L;  // akhiri L untuk long
 float tinggi = 170.5f;         // akhiri f untuk float"""
             },
             {
+                "heading": "Char, String, dan escape sequence",
                 "body": [
                     "Dua jenis tanda kutip di contoh tadi nggak boleh tertukar:",
                     "",
@@ -559,6 +563,7 @@ float tinggi = 170.5f;         // akhiri f untuk float"""
                 ]
             },
             {
+                "heading": "Konstanta, penamaan, var, dan konversi tipe",
                 "body": [
                     "Konstanta adalah variabel yang nilainya nggak bisa diubah lagi. Caranya",
                     "pakai kata kunci final:",
@@ -711,6 +716,7 @@ float tinggi = 170.5f;         // akhiri f untuk float"""
 }""",
             },
             {
+                "heading": "Teks jadi angka, angka jadi teks",
                 "body": [
                     "Teks jadi angka",
                     "",
@@ -791,6 +797,7 @@ float tinggi = 170.5f;         // akhiri f untuk float"""
 }""",
             },
             {
+                "heading": "Cache Integer, unboxing null, dan autoboxing",
                 "body": [
                     "Kenapa c == d bisa false padahal isinya sama-sama 1000?",
                     "",
@@ -908,6 +915,7 @@ float tinggi = 170.5f;         // akhiri f untuk float"""
                 ]
             },
             {
+                "heading": "Operator + untuk menyambung teks",
                 "body": [
                     "Tanda + punya tugas kedua: menyambung teks. Istilahnya konkatenasi.",
                     "Begitu salah satu sisinya String, + berhenti menjumlahkan dan mulai",
@@ -979,6 +987,7 @@ float tinggi = 170.5f;         // akhiri f untuk float"""
                 ]
             },
             {
+                "heading": "Operator bit dan bit flag",
                 "body": [
                     "Operator bit bekerja pada angka bit per bit, nggak pada nilainya secara",
                     "utuh. Bit adalah angka 0 atau 1 dalam bentuk biner. Di awal belajar kamu",
@@ -1388,6 +1397,7 @@ System.out.println("Rata-rata: " + rata);
                 ]
             },
             {
+                "heading": "Mencetak array dan kelas Arrays",
                 "body": [
                     "Ini jebakan pemula yang paling terkenal di Java. Karena bukan error,",
                     "nggak ada yang ngasih peringatan:",
@@ -1565,6 +1575,7 @@ public class Main {
 }"""
             },
             {
+                "heading": "Overloading, scope, dan method static",
                 "body": [
                     "Method overloading",
                     "",
@@ -1630,6 +1641,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Daftar method Math dan tipe kembaliannya",
                 "body": [
                     "Class Math",
                     "",
@@ -1812,6 +1824,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Call stack dan StackOverflowError",
                 "body": [
                     "Call stack",
                     "",
@@ -2250,6 +2263,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Panggilan super() otomatis dan field static",
                 "body": [
                     "Satu hal lagi soal constructor, supaya kamu nggak kaget di materi",
                     "Inheritance. Kalau baris pertama sebuah constructor bukan this(...) dan",
@@ -2359,6 +2373,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Error non-static dari konteks static",
                 "body": [
                     "Keluaran program Tiket:",
                     "",
@@ -2553,6 +2568,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Enum di switch dan method bawaannya",
                 "body": [
                     "Keluaran program di atas:",
                     "  Andi: Silakan masuk. (batas 100 MB)",
@@ -2698,6 +2714,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Constructor enum, EnumMap, dan EnumSet",
                 "body": [
                     "Keluarannya:",
                     "  Hemat Rp20000 cukup untuk 20 GB? false",
@@ -3087,6 +3104,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Cek tipe sebelum downcasting",
                 "body": [
                     "instanceof adalah alat pengecek yang barusan disebut sekilas.",
                     "",
@@ -3275,6 +3293,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Memperbaiki toString, equals, dan hashCode",
                 "body": [
                     "Ada tiga hal yang perlu diperbaiki dari contoh di atas.",
                     "",
@@ -3384,6 +3403,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Kenapa hashCode wajib berpasangan dengan equals?",
                 "body": [
                     "Kenapa hashCode wajib berpasangan dengan equals?",
                     "",
@@ -3555,6 +3575,7 @@ class SepedaMotor implements Kendaraan {
                 ]
             },
             {
+                "heading": "Kenapa interface punya default method",
                 "body": [
                     "Di atas disebut bahwa sejak Java 8 interface boleh punya default method",
                     "dan static method. Bagian ini perlu penjelasan sendiri, karena artinya",
@@ -3768,6 +3789,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Anotasi @Override, @Deprecated, dan argumen",
                 "body": [
                     "Program di atas jalan dan mencetak dua baris. Yang menarik justru apa",
                     "yang terjadi kalau anotasinya diutak-atik.",
@@ -3912,6 +3934,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Peran @Retention, @Target, dan anotasi framework",
                 "body": [
                     "Keluarannya:",
                     "",
@@ -4210,6 +4233,7 @@ public class Main {
                 "code": "import java.util.List;\n\ninterface Bernilai {\n    char grade();\n}\n\nrecord Nilai(String nama, int angka) implements Bernilai {\n\n    // Compact constructor: tempat validasi & perapian.\n    // Perhatikan: TIDAK ada \"this.nama = nama;\" -- Java yang mengisikannya.\n    Nilai {\n        if (angka < 0 || angka > 100) {\n            throw new IllegalArgumentException(\"nilai di luar 0-100: \" + angka);\n        }\n        nama = nama.trim();\n    }\n\n    // Constructor tambahan WAJIB memanggil constructor utama lewat this(...)\n    Nilai(String nama) {\n        this(nama, 0);\n    }\n\n    @Override\n    public char grade() {\n        return switch (angka / 10) {\n            case 10, 9 -> 'A';            // satu cabang, beberapa label\n            case 8 -> 'B';\n            case 7 -> 'C';\n            default -> {                  // badan berkurung: nilainya lewat yield\n                char sementara = angka >= 60 ? 'D' : 'E';\n                yield sementara;\n            }\n        };\n    }\n\n    // Record tidak bisa diubah; yang \"mengubah\" mengembalikan objek BARU.\n    Nilai denganAngka(int baru) {\n        return new Nilai(nama, baru);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Nilai a = new Nilai(\"  Andi  \", 92);\n        Nilai b = new Nilai(\"Andi\", 92);\n\n        System.out.println(a.nama() + \" / \" + a.angka());   // getter tanpa \"get\"\n        System.out.println(a);                              // toString otomatis\n        System.out.println(a.equals(b));                    // equals otomatis\n        System.out.println(a.grade() + \" \" + new Nilai(\"Budi\", 64).grade());\n\n        Nilai c = a.denganAngka(70);\n        System.out.println(a + \" -> \" + c);                 // a TIDAK berubah\n\n        String sql = \"\"\"\n                SELECT nama, angka\n                FROM nilai\n                WHERE angka >= 70\n                ORDER BY angka DESC\"\"\";\n\n        String json = \"\"\"\n                {\n                  \"nama\": \"Andi\",\n                  \"grade\": \"A\"\n                }\"\"\";\n\n        System.out.println(sql);\n        System.out.println(json);\n\n        for (Nilai n : List.of(a, c, new Nilai(\"Cici\"))) {\n            System.out.printf(\"%-6s %3d %c%n\", n.nama(), n.angka(), n.grade());\n        }\n\n        try {\n            new Nilai(\"Dedi\", 120);\n        } catch (IllegalArgumentException e) {\n            System.out.println(\"ditolak: \" + e.getMessage());\n        }\n    }\n}",
             },
             {
+                "heading": "Text block, printf, dan switch ekspresi",
                 "body": [
                     "Keluarannya:",
                     "",
@@ -4343,6 +4367,7 @@ public class Main {
                 ],
             },
             {
+                "heading": "Pattern matching dan sealed",
                 "body": [
                     "Sisa materi ini membahas dua fitur yang hampir selalu muncul bersama record.",
                     "",
@@ -4579,6 +4604,7 @@ final class Geometri {
 }"""
             },
             {
+                "heading": "Perbedaan throw, throws, dan exception checked",
                 "body": [
                     "Satu catch boleh menangkap beberapa jenis exception sekaligus. Pisahkan",
                     "tipenya pakai garis tegak:",
@@ -4746,6 +4772,7 @@ final class Geometri {
 }""",
             },
             {
+                "heading": "Pohon Throwable dan System.err",
                 "body": [
                     "Kenapa catch (Exception e) bisa menangkap begitu banyak jenis error?",
                     "Semua error di Java adalah objek, dan objek-objek itu satu keluarga:",
@@ -4850,6 +4877,7 @@ final class Geometri {
 }""",
             },
             {
+                "heading": "Caused by, logger, dan pola catch buruk",
                 "body": [
                     "Empat baris pertama keluar lewat System.out, lalu printStackTrace()",
                     "mencetak ini ke System.err:",
@@ -5020,6 +5048,7 @@ final class Geometri {
                 ]
             },
             {
+                "heading": "Kurung sudut, diamond, dan List di kiri",
                 "body": [
                     "Sebelum lanjut, ada dua simbol asing di baris yang barusan kamu lihat:",
                     "",
@@ -5089,6 +5118,7 @@ public class Main {
 }"""
             },
             {
+                "heading": "Memilih koleksi, mengurutkan, dan Stream",
                 "body": [
                     "Kapan pakai yang mana? Ini perbandingan yang paling sering ditanyakan:",
                     "  - ArrayList cepat kalau kamu mengambil isi lewat indeks, tapi lambat",
@@ -5282,6 +5312,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Memilih removeIf, method Map, dan menelusuri Map",
                 "body": [
                     "Kapan pakai yang mana:",
                     "  - removeIf(...) jadi pilihan pertama. Paling pendek, paling jelas, dan",
@@ -5418,6 +5449,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Koleksi immutable dan method Collections",
                 "body": [
                     "Coba lihat lagi baris ini dari contoh di atas:",
                     "",
@@ -5661,6 +5693,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Pasangan method Deque dan jebakan Stack",
                 "body": [
                     "Tiga pasang method, dan bedanya baru kerasa waktu kosong",
                     "",
@@ -5856,6 +5889,7 @@ public class Main {
 }"""
             },
             {
+                "heading": "Membandingkan String dan StringBuilder",
                 "body": [
                     "Untuk membandingkan isi String, pakai .equals(), dan jangan pakai ==.",
                     "Operator == membandingkan alamat objeknya (referensi), dan nggak",
@@ -5889,6 +5923,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Penanda printf dan String.format",
                 "body": [
                     "printf artinya mencetak pakai cetakan. Baris String.format di daftar",
                     "tadi lewat begitu aja, padahal alat ini yang pertama kamu butuhkan",
@@ -6138,6 +6173,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Tanggal immutable, perbandingan, dan plusMonths",
                 "body": [
                     "Keluaran program di atas:",
                     "  2000-05-17",
@@ -6299,6 +6335,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Period, Duration, format, dan zona waktu",
                 "body": [
                     "Keluaran program di atas:",
                     "  25 tahun 7 bulan 29 hari",
@@ -6738,6 +6775,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Comparator.comparing dan tempat pemakaiannya",
                 "body": [
                     "Comparable menempel di class-nya, jadi satu tipe cuma bisa punya satu",
                     "urutan. Padahal tiap layar sering butuh urutan yang beda. Papan",
@@ -6904,6 +6942,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Tujuh jebakan saat mengurutkan",
                 "body": [
                     "Ada tujuh jebakan yang sering bikin orang tersandung waktu mengurutkan:",
                     "  1. Jangan mengurutkan pakai pengurangan.",
@@ -7121,6 +7160,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Inner class dan referensi ke objek luar",
                 "body": [
                     "Static nested class itu class biasa yang kebetulan tinggal di dalam",
                     "class lain. Kata static di sini artinya beda dari static di field. Dia",
@@ -7226,6 +7266,7 @@ public class Sekolah {
 }""",
             },
             {
+                "heading": "Anonymous class dan variabel yang ditangkap",
                 "body": [
                     "Sekarang kita bedah new Runnable() { ... }. Sintaks ini mustahil",
                     "ditebak sendiri. Kelihatannya seperti bikin objek dari interface,",
@@ -7429,6 +7470,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Stream primitif, range, dan sum",
                 "body": [
                     "Di contoh tadi ada satu baris yang muncul begitu aja:",
                     "IntStream.range(...). Itu anggota lain keluarga stream. Kalau belum",
@@ -7632,6 +7674,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Bounded type dan type erasure",
                 "body": [
                     "Bounded type <T extends Number> dibaca begini: T boleh Number sendiri,",
                     "atau class apa pun turunan Number, misalnya Integer, Long, Double,",
@@ -7876,6 +7919,7 @@ public class Main {
 }"""
             },
             {
+                "heading": "Kenapa main perlu throws InterruptedException",
                 "body": [
                     "Ada satu baris di contoh tadi yang belum dijelaskan, dan bentuknya",
                     "bakal sering muncul:",
@@ -8172,6 +8216,7 @@ public class Main {
 }""",
             },
             {
+                "heading": "Bug counter++, volatile, dan koleksi aman-thread",
                 "body": [
                     "Kenapa counter++ rusak kalau dipakai banyak thread? Di layar dia cuma",
                     "satu baris, tapi di CPU ada tiga langkah: baca nilai, tambah 1, tulis",
@@ -8581,6 +8626,7 @@ public class Main {
 }"""
             },
             {
+                "heading": "SQL injection dan PreparedStatement",
                 "body": [
                     "Kalau kamu menekan Jalankan pada contoh di atas, yang keluar cuma",
                     "\"Error database: No suitable driver found for",
@@ -8886,6 +8932,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Prinsip clean code dan SOLID",
                 "body": [
                     "Prinsip clean code, yaitu cara menulis kode yang gampang dibaca dan",
                     "dirawat:",
@@ -9088,6 +9135,7 @@ public class Main {
                 ]
             },
             {
+                "heading": "Kebiasaan harian untuk jadi handal",
                 "body": [
                     "Kebiasaan harian supaya jadi handal:",
                     "  1. Ketik ulang semua contoh kode di aplikasi ini. Jangan copy-paste.",

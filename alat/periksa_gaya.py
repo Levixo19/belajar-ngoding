@@ -4,6 +4,7 @@
     python3 alat/periksa_gaya.py                  # ringkasan per kurikulum
     python3 alat/periksa_gaya.py html             # per materi di satu kurikulum
     python3 alat/periksa_gaya.py html "1. Apa"    # temuan rinci satu materi
+    python3 alat/periksa_gaya.py judul            # judul bagian: kapital penekanan, dash, kosakata tempelan, kembar
 
 Yang dibaca hanya PROSA: badan materi diurai dengan isi.blok_badan, pengurai
 yang sama dengan yang menggambar halaman web, lalu cuma blok teks, catatan,
@@ -89,6 +90,7 @@ CGNAT OSV SLSA ECMA IEC AES ZAP STRIDE PASTA DENY KICS KEV EPSS CISA SOAR EDR PA
 SAMM ITE ECB ML-KEM PIN SIM OPA HAR NVDA JAWS WAVE ARC POUR WAI-ARIA COBOL ABAP SOQL TIOBE PIC CICS
 ATM ECC UDF RAD AIR HARMAN NASM ABI NSA ORC SPARK GNAT FPGA ASIC UVM TON OUT EVM ERC PRINT RAISE
 NOTICE LANGUAGE VALUE MAIN BEAM APL LAPACK EPFL ZIO SDKMAN FAKE ETS SWISH INRIA GORM YARP WSGI EJS
+SOA ERB PKCE SOAP SRID QEMU NGINX AES-GCM CNAPP CSPM ROC AUC ADK PSI CPAN RED QUERY PLAN JSON-RPC FOR
 """.split())
 
 POLA = [
@@ -161,8 +163,50 @@ def skor(temuan, kata):
     return round(1000 * len(temuan) / max(kata, 1), 1)
 
 
+def keluhan_judul_bagian():
+    """Pelanggaran gaya pada field `heading` (judul bagian dan keterangan blok kode).
+
+    `teks_prosa` hanya membaca badan, jadi dulu 37 judul berhuruf kapital penekanan
+    ("pojok KIRI ATAS", "kapan async TIDAK perlu") lolos dari alat ini sama sekali. Aturan
+    yang dipakai sama dengan gerbang `alat/tambah_judul.py` untuk judul baru, tetapi hanya
+    yang soal gaya: panjang dan Title Case tidak dihitung di sini karena keterangan blok
+    kode memang berupa nama berkas dan potongan perintah.
+    """
+    from alat.tambah_judul import EMOJI, TEMPELAN, UMUM
+    temuan = []
+    for l in LANGUAGES:
+        for m in l["materials"]:
+            ada = {}
+            for i, s in enumerate(m["sections"]):
+                h = s.get("heading")
+                if not h:
+                    continue
+                lokasi = (l["key"], m["title"], i, h)
+                if re.search(r"[\u2014\u2013]| -- ", h):
+                    temuan.append(("dash",) + lokasi)
+                if EMOJI.search(h):
+                    temuan.append(("emoji",) + lokasi)
+                for w in KATA_KAPITAL.findall(h):
+                    if w.strip("-") not in AKRONIM and re.search(r"[AIUEO]", w):
+                        temuan.append(("kapital:" + w,) + lokasi)
+                if TEMPELAN.search(h):
+                    temuan.append(("tempelan",) + lokasi)
+                if h.lower() in UMUM and not s.get("code"):
+                    temuan.append(("umum",) + lokasi)
+                if h.lower() in ada:
+                    temuan.append(("kembar",) + lokasi)
+                ada[h.lower()] = i
+    return temuan
+
+
 def main():
     args = sys.argv[1:]
+    if args == ["judul"]:
+        temuan = keluhan_judul_bagian()
+        for jenis, key, judul, i, h in temuan:
+            print(f"{jenis:14} {key:10} #{i:<2} {h!r}  <- {judul[:40]}")
+        print(f"TOTAL {len(temuan)}")
+        return
     per_key = {l["key"]: l for l in LANGUAGES}
     if not args:
         total_t = total_k = 0

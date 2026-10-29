@@ -679,6 +679,7 @@ android {
 }""",
             },
             {
+                "heading": "Tiga angka SDK yang sering tertukar",
                 "body": [
                     "Tiga angka di situ sering tertukar, padahal artinya beda:",
                     "  - compileSdk adalah API level yang dipakai waktu kode",
@@ -1571,6 +1572,7 @@ cetak(KartuSapa('Budi', 'X TKJ 1'));""",
 )""",
             },
             {
+                "heading": "Urutan modifier mengubah hasilnya",
                 "body": [
                     "Modifier mengatur ukuran, jarak, latar, dan perilaku sentuh",
                     "sebuah composable. Modifier dirangkai dengan titik, dan urutannya",
@@ -1933,6 +1935,7 @@ for (const gulir of [0, 300, 7200]) {
 console.log(`Column biasa: selalu ${total} dari ${total}`);""",
             },
             {
+                "heading": "Satuan ukuran dp dan sp",
                 "body": [
                     "Keluaran:",
                     "  gulir 0 dp: baris 0-9 (10 dari 1000)",
@@ -2136,6 +2139,7 @@ fun LayarSiswa(siswa: List<Siswa>, onTambah: () -> Unit) {
 }""",
             },
             {
+                "heading": "Adapter, Fragment, dan ConstraintLayout",
                 "body": [
                     "RecyclerView menampilkan daftar panjang dengan memakai ulang",
                     "beberapa baris yang sama sambil digulir. Adapter menghubungkan",
@@ -2585,6 +2589,7 @@ fun muatLayar() {
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())""",
             },
             {
+                "heading": "Flow dingin dan StateFlow panas",
                 "body": [
                     "Fungsi suspend mengembalikan satu nilai. Flow adalah aliran",
                     "nilai yang datang dari waktu ke waktu, misalnya isi tabel yang",
@@ -3350,6 +3355,7 @@ object ModulData {
                 "code": "func cariNama(id: Int) -> String? {\n    id == 1 ? \"Rina\" : nil\n}\n\nlet nama = cariNama(id: 2)      // tipenya String?\n\nif let n = nama {\n    print(\"Halo, \\(n)\")\n} else {\n    print(\"Nama nggak ketemu\")\n}\n\nprint(nama ?? \"tamu\")           // tamu\nprint(nama?.count ?? 0)         // 0\n\nfunc sapa(_ nama: String?) {\n    guard let nama else {\n        print(\"Siapa ini?\")\n        return\n    }\n    print(\"Halo, \\(nama)\")        // di sini nama pasti String\n}",
             },
             {
+                "heading": "Membuka optional dengan if let dan guard let",
                 "body": [
                     "Swift menyebut nilai kosong nil, bukan null. Tipe yang boleh kosong",
                     "diberi tanda tanya, persis seperti Kotlin: String? boleh nil, String",
@@ -3533,6 +3539,7 @@ swift run""",
                 "code": "import SwiftUI\n\nstruct PenghitungView: View {\n    @State private var jumlah = 0\n\n    var body: some View {\n        VStack(spacing: 12) {\n            Text(\"Diklik \\(jumlah) kali\")\n                .font(.title)\n            Button(\"Tambah\") {\n                jumlah += 1\n            }\n        }\n        .padding()\n    }\n}\n\n#Preview {\n    PenghitungView()\n}",
             },
             {
+                "heading": "Struct View, @State, dan modifier",
                 "body": [
                     "Layar SwiftUI adalah struct yang memenuhi protokol View. Isinya",
                     "satu properti wajib, body, yang mengembalikan susunan view lain.",
@@ -3759,6 +3766,7 @@ open Kasir.xcworkspace
 pod deintegrate""",
             },
             {
+                "heading": "Status CocoaPods dan Carthage",
                 "body": [
                     "CocoaPods adalah pengelola dependensi iOS yang lebih tua, ditulis",
                     "dalam Ruby. Berkasnya bernama Podfile. ~> 5.12 artinya 5.12 atau",
@@ -4534,6 +4542,7 @@ void main() => runApp(
     );""",
             },
             {
+                "heading": "Notifier, ref.watch, dan Riverpod 3.0",
                 "body": [
                     "Provider adalah pustaka lama yang dibangun di atas InheritedWidget,",
                     "mekanisme bawaan Flutter untuk menitipkan data ke seluruh widget di",
@@ -4588,6 +4597,7 @@ class SaldoBloc extends Bloc<EventSaldo, int> {
 // context.read<SaldoBloc>().add(Tambah(5000));""",
             },
             {
+                "heading": "Bloc dan Cubit mengabaikan state kembar",
                 "body": [
                     "Bloc memisahkan dua arah dengan tegas. Widget cuma boleh mengirim",
                     "event (Tambah, Reset). Bloc menerima event, menghitung state baru,",
@@ -4934,6 +4944,7 @@ npx expo start""",
 }""",
             },
             {
+                "heading": "Modul native, app.json, dan expo install",
                 "body": [
                     "Expo Go adalah aplikasi taman bermain yang sudah berisi sekumpulan",
                     "modul native tertentu. Kodemu yang JavaScript dimuat ke dalamnya.",
@@ -4971,6 +4982,7 @@ eas build --platform ios
 eas submit --platform ios""",
             },
             {
+                "heading": "Biaya EAS dan akun Apple Developer",
                 "body": [
                     "eas build:configure membuat berkas eas.json berisi profil build,",
                     "misalnya development, preview, dan production. eas build --platform",
@@ -5165,6 +5177,7 @@ export default function HalamanProduk() {
 }""",
             },
             {
+                "heading": "Aturan nama berkas dan deep link",
                 "body": [
                     "Di Expo Router, setiap berkas di folder app/ adalah satu layar, dan",
                     "jalurnya jadi alamat layar itu. Aturannya:",
@@ -5686,6 +5699,7 @@ public partial class PenghitungViewModel : ObservableObject
 }""",
             },
             {
+                "heading": "MAUI, binding, dan nasib Xamarin",
                 "body": [
                     ".NET MAUI adalah kerangka Microsoft untuk membuat aplikasi Android,",
                     "iOS, macOS, dan Windows dari satu proyek C#. Tampilannya biasanya",

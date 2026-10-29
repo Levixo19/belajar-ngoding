@@ -157,6 +157,7 @@ total := lulus inject: 0 into: [:a :b | a + b].
 Transcript show: total printString; cr.""",
             },
             {
+                "heading": "Smalltalk dan ide kirim pesan",
                 "body": [
                     "OOP, singkatan dari object-oriented programming, menyatukan data dan",
                     "fungsi yang mengolahnya ke dalam objek. Tapi caranya ada tiga rasa.",
@@ -450,7 +451,7 @@ print(luas(3, 4))
 print(luas("3", 4)) -- ditolak pemeriksa tipe di mode strict""",
             },
             {
-                "heading": "Lebih jauh: tipe dependen",
+                "heading": "Tipe dependen",
                 "body": [
                     "Ada sistem tipe yang jauh lebih kuat lagi, namanya tipe dependen.",
                     "Tipenya boleh bergantung pada nilai, misalnya \"daftar yang panjangnya",
@@ -2940,6 +2941,7 @@ p.nama = @"Ani";
 [p tambahSkor:10];""",
             },
             {
+                "heading": "Sintaks Objective-C dan pesan ke nil",
                 "body": [
                     "Objective-C adalah bahasa C ditambah sistem objek bergaya Smalltalk.",
                     "Ia lahir di tahun 1980-an, dipakai NeXT, lalu jadi bahasa utama Apple",
@@ -3542,6 +3544,7 @@ sd(nilai)                  # [1] 11.23981
 length(nilai)              # [1] 3""",
             },
             {
+                "heading": "Vektorisasi, indeks 1, dan daur ulang",
                 "body": [
                     "Di Python, angka 5 dan daftar [5] itu dua hal berbeda. Di R nggak ada",
                     "beda: angka 5 adalah vektor yang panjangnya satu. Makanya nilai + 5",
@@ -4285,6 +4288,7 @@ select avg harga by sym from transaksi""",
   println(umur.getOrElse("Citra", 0)) // 0""",
             },
             {
+                "heading": "Inferensi tipe, val, dan Option",
                 "body": [
                     "Beberapa hal langsung terlihat beda dari Java:",
                     "",
@@ -4909,6 +4913,7 @@ case 5 do
 end""",
             },
             {
+                "heading": "Atom, tuple, list, map, dan tanda pin",
                 "body": [
                     "Di kebanyakan bahasa, = artinya \"isi variabel di kiri dengan nilai di",
                     "kanan\". Di Elixir, = artinya \"cocokkan bentuk di kiri dengan nilai di",
@@ -5229,6 +5234,7 @@ IO.puts("nilai sesudah crash: #{Penghitung.nilai()}")
 IO.inspect(Supervisor.count_children(sup))""",
             },
             {
+                "heading": "Strategi restart dan supervision tree",
                 "body": [
                     "Keluarannya:",
                     "",
@@ -5380,6 +5386,7 @@ erlc hitung.erl                   # menghasilkan hitung.beam
 erl -noshell -s hitung main -s init stop""",
             },
             {
+                "heading": "Asal Erlang dan sintaksnya yang asing",
                 "body": [
                     "Keluarannya:",
                     "",
@@ -5441,6 +5448,7 @@ pub fn main() {
 }""",
             },
             {
+                "heading": "Gleam tanpa null, exception, dan if",
                 "body": [
                     "Keluarannya Halo, Dunia!, lalu hasil: 5, lalu 0, lalu 2. Contoh ini sudah",
                     "dijalankan dengan Gleam 1.19.2, versi terbaru saat materi ini ditulis.",
@@ -5975,6 +5983,7 @@ for teks in ["18", "abc", "200"]:
                 "code": "let () = print_endline \"Halo, Dunia!\"\n\nlet rec faktorial n = if n = 0 then 1 else n * faktorial (n - 1)\n\nlet rata xs = List.fold_left ( +. ) 0.0 xs /. float_of_int (List.length xs)\n\nlet () =\n  Printf.printf \"%d\\n\" (faktorial 5);          (* 120 *)\n  Printf.printf \"%.2f\\n\" (rata [85.; 70.; 92.]) (* 82.33 *)",
             },
             {
+                "heading": "Tipe kuat OCaml dan jebakan operator",
                 "body": [
                     "OCaml adalah anggota keluarga ML yang paling banyak dipakai. Ia cepat,",
                     "bertipe kuat dengan inferensi penuh, dan sejak OCaml 5 (2022) mendukung",
@@ -6450,6 +6459,7 @@ Keturunan = eka ;
 Keturunan = fajar.""",
             },
             {
+                "heading": "Unifikasi dan backtracking Prolog",
                 "body": [
                     "Jawaban-jawaban ini sudah dicek dengan menjalankan program yang sama di",
                     "Tau Prolog. Perhatikan bahwa aturan yang sama bisa dipakai ke dua arah.",
@@ -6492,6 +6502,7 @@ theorem jumlah_satu (n : Nat) : jumlah [n] = n := by
   simp [jumlah]""",
             },
             {
+                "heading": "Membuktikan teorema dengan Lean 4",
                 "body": [
                     "Tes biasa memeriksa beberapa contoh: jumlah [1, 2, 3] harus 6. Lean bisa",
                     "melangkah lebih jauh, yaitu membuktikan sifat untuk semua kemungkinan",
@@ -6654,6 +6665,7 @@ _start:
     syscall""",
             },
             {
+                "heading": "Cara kerja syscall write dan exit",
                 "body": [
                     "Program ini nggak memakai pustaka apa pun, termasuk printf.",
                     "Ia langsung minta tolong ke kernel Linux lewat syscall.",
@@ -7672,6 +7684,7 @@ cobc -x -Wall halo.cob   # -x: buat program, -Wall: semua peringatan
            STOP RUN.""",
             },
             {
+                "heading": "Simbol picture dan jebakan pemotongan",
                 "body": [
                     "Keluaran (GnuCOBOL 3.2):",
                     "",
@@ -9451,6 +9464,7 @@ contract TokenKelas {
 }""",
             },
             {
+                "heading": "State, mapping, dan require di Solidity",
                 "body": [
                     "Kontrak ini dikompilasi dengan solc 0.8.37 tanpa error. Bagian",
                     "yang penting:",
@@ -9732,6 +9746,7 @@ pkgs.mkShell {
 }""",
             },
             {
+                "heading": "Nix store, derivation, dan flakes",
                 "body": [
                     "Jalankan nix-shell di folder itu, dan kamu masuk ke shell yang",
                     "punya Python, Node.js 22, dan SQLite persis versi yang",

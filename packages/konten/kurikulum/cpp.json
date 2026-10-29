@@ -43,6 +43,7 @@
      "code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Halo Dunia!\" << endl;\n    cout << \"Aku sedang belajar C++.\" << endl;\n    return 0;\n}"
     },
     {
+     "heading": "Versi C++ dan beda utamanya dari C",
      "body": [
       "Cara kompilasi dan menjalankannya:",
       "  g++ hello.cpp -o hello    (kompilasi jadi executable)",
@@ -255,6 +256,7 @@
      "code": "#include <iostream>\n#include <string>\nusing namespace std;\n\nnamespace toko {\n    double pajak = 0.11;\n\n    double hitungTotal(double harga) {\n        return harga + harga * pajak;   // di DALAM toko, cukup tulis 'pajak'\n    }\n\n    namespace detail {                  // namespace DI DALAM namespace\n        void catat(string pesan) {\n            cout << \"[toko] \" << pesan << endl;\n        }\n    }\n}\n\nnamespace gudang {\n    double pajak = 0.0;                 // nama sama dengan toko::pajak, tidak bentrok\n\n    double hitungTotal(double harga) {  // nama fungsi sama, isi beda\n        return harga;\n    }\n}\n\nint main() {\n    cout << \"Toko  : \" << toko::hitungTotal(100000) << endl;\n    cout << \"Gudang: \" << gudang::hitungTotal(100000) << endl;\n\n    toko::detail::catat(\"dua fungsi bernama sama, nol bentrok\");\n    return 0;\n}"
     },
     {
+     "heading": "Cara kerja namespace dan penulisan bersarang",
      "body": [
       "Keluarannya:",
       "  Toko  : 111000",
@@ -306,6 +308,7 @@
      "code": "#include <iostream>\n#include <string>\n\nusing std::cout;      // using-DECLARATION: menarik SATU nama saja\nusing std::endl;\nusing std::string;\n\nnamespace laporan::format {      // bentuk ringkas C++17\n    string tebal(string teks) {\n        return \"**\" + teks + \"**\";\n    }\n}\n\nnamespace fmt = laporan::format; // ALIAS: nama pendek untuk namespace panjang\n\nnamespace {                      // ANONYMOUS: milik berkas INI saja\n    int nomorBaris = 0;\n\n    string awalan() {            // fungsi bantu, tak terlihat dari berkas lain\n        return \"[log] \";\n    }\n}\n\nint hitung() { return 1; }       // fungsi di namespace GLOBAL\n\nnamespace laporan {              // namespace laporan DIBUKA LAGI\n    int hitung() { return 2; }   // menutupi hitung() yang global\n\n    void tampil() {\n        nomorBaris++;\n        cout << awalan() << nomorBaris << \". laporan::hitung=\" << hitung()\n             << \"  ::hitung=\" << ::hitung() << endl;   // :: = ambil yang global\n    }\n}\n\nint main() {\n    laporan::tampil();\n    laporan::tampil();\n    cout << fmt::tebal(\"selesai\") << endl;\n    return 0;\n}"
     },
     {
+     "heading": "Bahaya using namespace dan namespace tanpa nama",
      "body": [
       "Keluarannya:",
       "  [log] 1. laporan::hitung=2  ::hitung=1",
@@ -453,6 +456,7 @@
      "code": "#include <iostream>\nusing namespace std;\n\n// Konstanta di lingkup berkas: ditulis DI LUAR fungsi, dikenal seluruh berkas.\nconst double PI = 3.14159;         // nilainya tidak boleh diubah lagi\nconstexpr int MAKS_SISWA = 100;    // nilainya sudah pasti saat KOMPILASI\n\n// Fungsi constexpr: kalau argumennya konstanta, compiler yang menghitungnya.\nconstexpr int kuadrat(int n) {\n    return n * n;\n}\n\n// static_assert: pemeriksaan yang dikerjakan compiler, bukan saat program jalan.\n// Kalau salah, program GAGAL DIKOMPILASI - tidak menunggu bug muncul di runtime.\nstatic_assert(kuadrat(4) == 16, \"kuadrat(4) seharusnya 16\");\n\nint main() {\n    double jari = 7.0;\n    cout << \"Luas lingkaran: \" << PI * jari * jari << endl;\n\n    int nilai[MAKS_SISWA];   // ukuran array WAJIB sudah pasti saat kompilasi\n    nilai[0] = 90;\n    cout << \"Kapasitas: \" << MAKS_SISWA << \", isi pertama: \" << nilai[0] << endl;\n\n    const int batas = 5;     // const juga boleh di dalam fungsi\n    cout << \"Batas: \" << batas << endl;\n    cout << \"kuadrat(9) = \" << kuadrat(9) << endl;\n\n    // PI = 3.14;            // <- error: assignment of read-only variable 'PI'\n    // batas = 6;            // <- error yang sama\n    return 0;\n}"
     },
     {
+     "heading": "Kebocoran enum biasa dan solusi enum class",
      "body": [
       "Di kursus C kamu udah ketemu enum, yaitu cara ngasih nama ke",
       "sekumpulan angka supaya kodenya gampang dibaca. Kamu bisa nulis 'if",
@@ -781,6 +785,7 @@
      "code": "#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string kalimat = \"Belajar C++ itu seru\";\n\n    cout << \"Panjang : \" << kalimat.size() << endl;     // 20\n    cout << \"Kosong? : \" << kalimat.empty() << endl;    // 0 (artinya false)\n    cout << \"Huruf 0 : \" << kalimat[0] << endl;         // B\n    cout << \"Huruf 8 : \" << kalimat.at(8) << endl;      // C\n\n    // substr(mulai, JUMLAH huruf) -- argumen kedua PANJANG, bukan posisi akhir\n    cout << kalimat.substr(0, 7) << endl;               // Belajar\n    cout << kalimat.substr(8) << endl;                  // C++ itu seru (sampai habis)\n\n    // find mengembalikan POSISI, atau string::npos kalau tidak ketemu\n    size_t pos = kalimat.find(\"itu\");\n    if (pos != string::npos) {\n        cout << \"'itu' mulai di posisi \" << pos << endl;   // 12\n    }\n    if (kalimat.find(\"Java\") == string::npos) {\n        cout << \"'Java' tidak ada di kalimat ini\" << endl;\n    }\n\n    string sapaan = \"Halo\";\n    sapaan += \", \";            // += menempel di akhir\n    sapaan += \"Levi\";\n    cout << sapaan << endl;    // Halo, Levi\n\n    string salinan = kalimat;\n    salinan.replace(0, 7, \"Latihan\");   // ganti 7 huruf mulai posisi 0\n    cout << salinan << endl;            // Latihan C++ itu seru\n    salinan.erase(7);                   // buang semua huruf mulai posisi 7\n    cout << salinan << endl;            // Latihan\n\n    cout << (salinan == \"Latihan\") << endl;       // 1 -- ISI-nya yang dibandingkan\n    cout << (string(\"apel\") < \"jeruk\") << endl;   // 1 -- urutan kamus (a sebelum j)\n\n    return 0;\n}"
     },
     {
+     "heading": "Trim, cctype, dan konversi angka-teks",
      "body": [
       "Membuang spasi di ujung: find_first_not_of dan find_last_not_of",
       "",
@@ -891,6 +896,7 @@
      "code": "#include <iostream>\n#include <sstream>     // WAJIB. Tanpa header ini ostringstream/istringstream tidak dikenal.\n#include <string>\nusing namespace std;\n\nint main() {\n    // ostringstream = \"cout yang hasilnya disimpan\", bukan dicetak ke layar.\n    ostringstream oss;\n    oss << \"NIM \" << 2201 << \" nilai \" << 87.5;\n    string ringkasan = oss.str();      // .str() mengambil teks yang sudah terakit\n    cout << ringkasan << endl;         // NIM 2201 nilai 87.5\n\n    // istringstream = \"cin yang sumbernya sebuah string\", bukan keyboard.\n    string baris = \"Andi 20 87.5\";\n    istringstream iss(baris);\n    string nama;\n    int umur;\n    double nilai;\n    iss >> nama >> umur >> nilai;      // dipisah spasi, persis seperti cin >>\n    cout << nama << \" / \" << umur << \" / \" << nilai << endl;\n\n    // Pemisah selain spasi: getline dengan argumen KETIGA\n    string csv = \"Andi,20,Bandung\";\n    istringstream baca(csv);\n    string potongan;\n    while (getline(baca, potongan, ',')) {\n        cout << \"[\" << potongan << \"]\";\n    }\n    cout << endl;                      // [Andi][20][Bandung]\n\n    return 0;\n}"
     },
     {
+     "heading": "Jembatan c_str() dan kesalahan umum string",
      "body": [
       "Kenapa perlu stringstream, padahal udah ada to_string dan stoi?",
       "  - Untuk merakit. Satu ostringstream bisa menampung semua tipe",
@@ -1406,6 +1412,7 @@
      "code": "/* ===== File: rekening.h ===== */\n#ifndef REKENING_H\n#define REKENING_H\n\n#include <string>\n\nclass Rekening {\nprivate:\n    std::string pemilik;\n    double saldo;\n\npublic:\n    Rekening(std::string p, double s);        // DEKLARASI, ditutup titik koma\n\n    std::string getPemilik() const { return pemilik; }   // pendek: biar di sini\n    double getSaldo() const { return saldo; }\n\n    void setor(double jumlah);                // badannya ada di rekening.cpp\n    bool tarik(double jumlah);\n};\n\n#endif\n\n/* ===== File: rekening.cpp ===== */\n#include \"rekening.h\"\n\nRekening::Rekening(std::string p, double s) : pemilik(p), saldo(s) {}\n\nvoid Rekening::setor(double jumlah) {\n    if (jumlah > 0) {\n        saldo += jumlah;\n    }\n}\n\nbool Rekening::tarik(double jumlah) {\n    if (jumlah > 0 && jumlah <= saldo) {\n        saldo -= jumlah;\n        return true;\n    }\n    return false;\n}\n\n/* ===== File: main.cpp ===== */\n#include <iostream>\n#include \"rekening.h\"\n\nusing namespace std;\n\nint main() {\n    Rekening r(\"Andi\", 100000);\n\n    r.setor(50000);\n    cout << r.getPemilik() << \" punya saldo \" << r.getSaldo() << endl;\n    cout << \"Tarik 200000 berhasil? \" << r.tarik(200000) << endl;\n\n    return 0;\n}"
     },
     {
+     "heading": "Include guard dan aturan include di header",
      "body": [
       "Perhatikan rekening.cpp: constructor pun ditulis",
       "Rekening::Rekening(...). Nama class dulu (siapa pemiliknya), baru nama",
@@ -1498,6 +1505,7 @@
      "code": "// ===== bantu.h =====\n#pragma once\n\nclass Rekening {\npublic:\n    double getSaldo() const { return saldo; }   // satu baris: biarkan di sini\n    void setor(double jumlah);                  // lebih panjang: pindah ke .cpp\nprivate:\n    double saldo = 0;\n};\n\n// Fungsi BEBAS (bukan method) yang ditulis lengkap di header WAJIB 'inline'.\ninline double persen(double nilai, double p) {\n    return nilai * p / 100.0;\n}"
     },
     {
+     "heading": "Mengompilasi banyak berkas dan CMake",
      "body": [
       "Sekarang cara mengompilasi banyak berkas. Yang ditulis di perintah cuma",
       "berkas .cpp. Header nggak pernah ikut ditulis, karena isinya udah masuk",
@@ -1636,6 +1644,7 @@
      "code": "#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Rekening {\nprivate:\n    string nama;\n    double saldo;\n\npublic:\n    Rekening(string nama, double saldo) {\n        this->nama = nama;        // kiri: ATRIBUT objek. kanan: PARAMETER\n        this->saldo = saldo;\n    }\n\n    Rekening& gantiNama(string nama) {\n        this->nama = nama;\n        return *this;             // kembalikan OBJEKNYA, bukan pointernya\n    }\n\n    Rekening& setor(double jumlah) {\n        if (jumlah > 0) saldo += jumlah;   // tidak ada bentrok nama, this-> boleh dilewat\n        return *this;\n    }\n\n    void tampil() const {\n        cout << nama << \": \" << saldo << endl;\n    }\n\n    bool objekYangSama(const Rekening& lain) const {\n        return this == &lain;     // bandingkan ALAMAT, bukan isi\n    }\n};\n\nint main() {\n    Rekening r(\"Andi\", 100000);\n    r.tampil();                                            // Andi: 100000\n\n    r.gantiNama(\"Andi Wijaya\").setor(50000).setor(25000);  // berantai\n    r.tampil();                                            // Andi Wijaya: 175000\n\n    Rekening kembar(\"Andi Wijaya\", 175000);                // isinya sama persis\n    cout << r.objekYangSama(r) << \" \"\n         << r.objekYangSama(kembar) << endl;               // 1 0 (beda alamat)\n\n    return 0;\n}"
     },
     {
+     "heading": "Tiga makna kata static",
      "body": [
       "Kata static dipakai untuk tiga hal yang sebetulnya nggak berhubungan.",
       "Kalau dipisah dari awal, nanti kamu nggak gampang bingung.",
@@ -1867,6 +1876,7 @@
      "code": "#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Hewan {\nprotected:\n    string nama;\npublic:\n    Hewan(string n) : nama(n) {}\n\n    virtual void bersuara() {        // 'virtual' AKTIFKAN polymorphism!\n        cout << nama << \" bersuara.\" << endl;\n    }\n\n    virtual ~Hewan() {}               // destructor JUGA harus virtual di base class!\n};\n\nclass Kucing : public Hewan {\npublic:\n    Kucing(string n) : Hewan(n) {}\n\n    void bersuara() override {        // 'override' (C++11+): eksplisit & dicek compiler\n        cout << nama << \": Meong!\" << endl;\n    }\n};\n\nclass Anjing : public Hewan {\npublic:\n    Anjing(string n) : Hewan(n) {}\n\n    void bersuara() override {\n        cout << nama << \": Guk!\" << endl;\n    }\n};\n\nint main() {\n    Hewan *h1 = new Kucing(\"Tom\");    // pointer BERTIPE Hewan, tapi OBJEK Kucing!\n    Hewan *h2 = new Anjing(\"Bobby\");\n\n    h1->bersuara();    // Tom: Meong!  (karena virtual, method Kucing yang dipanggil)\n    h2->bersuara();    // Bobby: Guk!\n\n    delete h1;          // destructor virtual PENTING agar Kucing's destructor\n    delete h2;          // ikut terpanggil, bukan hanya Hewan's destructor\n\n    return 0;\n}"
     },
     {
+     "heading": "Destructor virtual, override, dan final",
      "body": [
       "Destructor juga harus virtual di base class, kalau class itu dipakai",
       "lewat pointer induk seperti contoh di atas.",
@@ -2049,6 +2059,7 @@
      "code": "#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\n\nint main() {\n    int total = 7;\n    int jumlah = 2;\n\n    // Dua int dibagi = pembagian INTEGER, sisanya dibuang. Ini sering bikin\n    // rata-rata jadi salah tanpa satu pun peringatan compiler.\n    cout << \"Salah : \" << total / jumlah << endl;                      // 3\n\n    // Cukup SATU sisi yang diubah jadi double; sisi lain ikut naik sendiri.\n    cout << \"Benar : \" << static_cast<double>(total) / jumlah << endl;  // 3.5\n\n    double harga = 3.99;\n    cout << \"Jadi int: \" << static_cast<int>(harga) << endl;   // 3, BUKAN 4 - dipotong,\n                                                               // bukan dibulatkan!\n\n    char huruf = 'A';\n    cout << \"Kode 'A': \" << static_cast<int>(huruf) << endl;   // 65 (nilai ASCII-nya)\n\n    vector<string> nama = {\"Andi\", \"Budi\", \"Cici\"};\n\n    // .size() TIDAK mengembalikan int (lihat penjelasan size_t di bawah).\n    // Kalau memang mau disimpan ke int, akui penyempitannya dengan static_cast.\n    int banyak = static_cast<int>(nama.size());\n    cout << \"Jumlah nama: \" << banyak << endl;\n\n    for (size_t i = 0; i < nama.size(); i++) {\n        cout << i << \". \" << nama[i] << endl;\n    }\n\n    return 0;\n}"
     },
     {
+     "heading": "Tipe size_t dan jebakan loop mundur",
      "body": [
       "size_t adalah tipe bilangan bulat tanpa tanda (unsigned) yang dipakai",
       "C++ untuk ukuran. .size() milik vector, string, dan map mengembalikan",
@@ -2093,6 +2104,7 @@
      "code": "#include <iostream>\n#include <typeinfo>       // untuk std::bad_cast\nusing namespace std;\n\nclass Hewan {\npublic:\n    virtual void bersuara() { cout << \"...\" << endl; }\n    virtual ~Hewan() {}    // sudah cukup membuat Hewan 'polymorphic'\n};\n\nclass Kucing : public Hewan {\npublic:\n    void bersuara() override { cout << \"Meong!\" << endl; }\n    void garukSofa() { cout << \"Kucing menggaruk sofa.\" << endl; }   // HANYA milik Kucing\n};\n\nclass Anjing : public Hewan {\npublic:\n    void bersuara() override { cout << \"Guk!\" << endl; }\n};\n\nvoid cobaGaruk(Hewan *h) {\n    // Turun dari Hewan* ke Kucing*. Kalau objeknya memang Kucing -> pointer valid.\n    // Kalau bukan -> nullptr. TIDAK ada error compile, TIDAK ada exception.\n    Kucing *k = dynamic_cast<Kucing*>(h);\n\n    if (k != nullptr) {            // pemeriksaan ini WAJIB, bukan opsional\n        k->garukSofa();\n    } else {\n        cout << \"Bukan Kucing - garukSofa() tidak ada di sini.\" << endl;\n    }\n}\n\nint main() {\n    Hewan *a = new Kucing();\n    Hewan *b = new Anjing();\n\n    a->bersuara();                 // Meong!\n    b->bersuara();                 // Guk!\n\n    cobaGaruk(a);                  // Kucing menggaruk sofa.\n    cobaGaruk(b);                  // Bukan Kucing - garukSofa() tidak ada di sini.\n\n    // Versi REFERENSI: tidak punya nullptr untuk dikembalikan, jadi ia MELEMPAR.\n    try {\n        Kucing &k = dynamic_cast<Kucing&>(*b);   // *b sebenarnya Anjing -> gagal\n        k.garukSofa();                            // tidak pernah sampai sini\n    } catch (const bad_cast &e) {\n        cout << \"Tertangkap bad_cast: \" << e.what() << endl;\n    }\n\n    delete a;\n    delete b;\n    return 0;\n}"
     },
     {
+     "heading": "Turun ke tipe anak dengan dynamic_cast",
      "body": [
       "Alurnya begini. Variabelnya bertipe Hewan*, tapi objek yang ditunjuk",
       "bisa Kucing, bisa juga Anjing (lihat materi Polymorphism & Virtual",
@@ -2321,7 +2333,7 @@
      ]
     },
     {
-     "heading": "Program yang SENGAJA mati - jalankan dan lihat sendiri",
+     "heading": "Program yang sengaja mati - jalankan dan lihat sendiri",
      "body": [
       "Class di bawah ini udah benar menurut materi Constructor & Destructor.",
       "Resource diambil pakai new di constructor, lalu dilepas pakai delete[]",
@@ -2335,6 +2347,7 @@
      "code": "#include <iostream>\nusing namespace std;\n\nclass Buffer {\npublic:\n    int *data;      // POINTER MENTAH - ini sumber masalahnya\n    int jumlah;\n\n    Buffer(int n) {\n        jumlah = n;\n        data = new int[n];              // resource DIAMBIL di sini\n        for (int i = 0; i < n; i++) {\n            data[i] = 0;\n        }\n        cout << \"Buffer dibuat\" << endl;\n    }\n\n    ~Buffer() {\n        cout << \"Buffer dihapus (delete[] dipanggil)\" << endl;\n        delete[] data;                  // resource DILEPAS di sini\n    }\n};\n\nint main() {\n    Buffer a(3);\n    Buffer b = a;        // copy constructor BAWAAN: b.data = a.data, alamatnya saja\n\n    b.data[0] = 99;      // mengubah lewat b ...\n    cout << \"a.data[0] = \" << a.data[0] << endl;   // ... a IKUT berubah jadi 99\n\n    cout << \"Sampai sini masih aman.\" << endl;\n    return 0;\n}   // b dihancurkan -> delete[] atas alamat X\n    // a dihancurkan -> delete[] atas alamat X LAGI -> double free -> program mati"
     },
     {
+     "heading": "Shallow copy, deep copy, dan double free",
      "body": [
       "Programnya mati di tengah jalan, dengan pesan kira-kira seperti ini:",
       "  free(): double free detected in tcache 2",
@@ -2413,6 +2426,7 @@
      "code": "#include <iostream>\nusing namespace std;\n\nclass Buffer {\nprivate:\n    int *data;\n    int jumlah;\n\npublic:\n    Buffer(int n) : data(new int[n]), jumlah(n) {\n        for (int i = 0; i < n; i++) {\n            data[i] = 0;\n        }\n    }\n\n    // 1. COPY CONSTRUCTOR - dipakai saat objek BARU lahir dari objek lain\n    Buffer(const Buffer &lain) : data(new int[lain.jumlah]), jumlah(lain.jumlah) {\n        for (int i = 0; i < jumlah; i++) {\n            data[i] = lain.data[i];     // ISINYA yang disalin, bukan alamatnya\n        }\n        cout << \"copy constructor: memori BARU dialokasikan\" << endl;\n    }\n\n    // 2. COPY ASSIGNMENT - dipakai saat objek yang SUDAH ADA ditimpa\n    Buffer& operator=(const Buffer &lain) {\n        cout << \"operator=: objek lama ditimpa\" << endl;\n        if (this == &lain) {\n            return *this;               // penjaga self-assignment\n        }\n        delete[] data;                  // buang milik sendiri dulu, kalau tidak: bocor\n        jumlah = lain.jumlah;\n        data = new int[jumlah];\n        for (int i = 0; i < jumlah; i++) {\n            data[i] = lain.data[i];\n        }\n        return *this;                   // supaya \"x = y = z\" bisa dirangkai\n    }\n\n    // 3. DESTRUCTOR\n    ~Buffer() {\n        delete[] data;\n    }\n\n    void isi(int posisi, int nilai) { data[posisi] = nilai; }\n    int lihat(int posisi) const { return data[posisi]; }\n};\n\nint main() {\n    Buffer a(3);\n    a.isi(0, 10);\n\n    Buffer b = a;                       // -> copy constructor\n    b.isi(0, 99);\n    cout << \"a = \" << a.lihat(0) << endl;    // 10, TIDAK ikut berubah\n    cout << \"b = \" << b.lihat(0) << endl;    // 99\n\n    Buffer c(3);\n    c = a;                              // -> operator=\n    cout << \"c = \" << c.lihat(0) << endl;    // 10\n\n    a = a;                              // aman berkat penjaga self-assignment\n    cout << \"a = \" << a.lihat(0) << endl;    // 10, bukan sampah\n\n    return 0;\n}"
     },
     {
+     "heading": "Aturan Tiga, = delete, dan = default",
      "body": [
       "Aturan Tiga (Rule of Three). Yang ini perlu kamu hafal:",
       "",
@@ -3129,6 +3143,7 @@
      "code": "#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\n\nint main() {\n    vector<string> antrean = {\"Andi\", \"Budi\", \"Citra\"};\n\n    // Bentuk PANJANG: it sebuah variabel biasa, isinya \"posisi\", bukan nilai\n    for (vector<string>::iterator it = antrean.begin(); it != antrean.end(); ++it) {\n        cout << *it << \" \";          // *it = NILAI yang ada di posisi itu\n    }\n    cout << endl;\n\n    // Sama persis, tapi tipe panjangnya dibiarkan ditebak compiler (C++11)\n    for (auto it = antrean.begin(); it != antrean.end(); ++it) {\n        *it += \"!\";                  // *it bisa jadi SASARAN penugasan juga\n    }\n\n    // cbegin/cend memberi const_iterator: boleh dibaca, HARAM diubah\n    for (auto it = antrean.cbegin(); it != antrean.cend(); ++it) {\n        cout << *it << \" \";\n        // *it += \"?\";   <- baris ini TIDAK akan mau dikompilasi\n    }\n    cout << endl;\n\n    // rbegin/rend menelusuri MUNDUR; ++it tetap dipakai, tapi majunya ke kiri\n    for (auto it = antrean.rbegin(); it != antrean.rend(); ++it) {\n        cout << *it << \" \";\n    }\n    cout << endl;\n\n    // Khusus vector, selisih dua iterator = jarak posisi alias indeksnya\n    auto it = antrean.begin() + 1;\n    cout << \"Indeks \" << (it - antrean.begin()) << \" berisi \" << *it << endl;\n\n    return 0;\n}"
     },
     {
+     "heading": "Iterator map dan data hantu dari operator[]",
      "body": [
       "Di map, iterator menunjuk sebuah pair, jadi:",
       "  it->first  -> KUNCInya. Bertipe const: mengubahnya akan merusak",
@@ -3176,6 +3191,7 @@
      "code": "#include <iostream>\n#include <map>\n#include <string>\nusing namespace std;\n\nint main() {\n    map<string, int> nilai = {{\"Andi\", 85}, {\"Budi\", 90}, {\"Citra\", 78}};\n\n    // Idiom baku: cari SEKALI, lalu pakai hasil pencariannya\n    auto it = nilai.find(\"Budi\");\n    if (it != nilai.end()) {\n        cout << it->first << \" nilainya \" << it->second << endl;\n        it->second += 5;             // menyunting isi map lewat iterator\n        cout << \"Setelah remedial: \" << it->second << endl;\n    }\n\n    // Kunci yang tidak ada tidak bikin crash - find cuma mengembalikan end()\n    if (nilai.find(\"Dedi\") == nilai.end()) {\n        cout << \"Dedi belum terdaftar\" << endl;\n    }\n    cout << \"Jumlah entri: \" << nilai.size() << endl;\n\n    // JEBAKAN: membaca dengan [] justru MEMBUAT entrinya\n    cout << \"Baca nilai Dedi pakai []: \" << nilai[\"Dedi\"] << endl;\n    cout << \"Jumlah entri sekarang: \" << nilai.size() << endl;\n\n    for (auto it2 = nilai.begin(); it2 != nilai.end(); ++it2) {\n        cout << it2->first << \"=\" << it2->second << \" \";\n    }\n    cout << endl;\n\n    return 0;\n}"
     },
     {
+     "heading": "Iterator jadi tidak sah setelah erase",
      "body": [
       "Menghapus elemen sambil menelusuri itu tempat orang paling sering",
       "salah. Kesalahannya nggak muncul sebagai pesan error. Yang muncul",
@@ -3418,7 +3434,7 @@
      ]
     },
     {
-     "heading": "Menyeberang antara PEMILIK dan PEMINJAM",
+     "heading": "Menyeberang antara pemilik dan peminjam",
      "body": [
       "Smart pointer memisahkan dua peran yang di C selalu tercampur. Ada",
       "yang memiliki objek, artinya bertanggung jawab menghapusnya. Ada juga",
@@ -3725,6 +3741,7 @@
      "code": "#include <iostream>\n#include <fstream>\n#include <string>\nusing namespace std;\n\nint main() {\n    // ---- MENULIS. ofstream MEMBUAT catatan.txt, atau MENIMPA isi lamanya.\n    ofstream keluar(\"catatan.txt\");\n    if (!keluar.is_open()) {             // gagal? berhenti sekarang juga\n        cout << \"Gagal membuka catatan.txt untuk menulis\" << endl;\n        return 1;\n    }\n    keluar << \"Baris pertama\" << '\\n';   // persis seperti cout <<\n    keluar << \"Angka: \" << 42 << '\\n';\n    keluar.close();   // EKSPLISIT: berkasnya langsung dibuka lagi di bawah\n\n    // ---- MENAMBAH di akhir tanpa menghapus yang lama: mode ios::app\n    ofstream tambah(\"catatan.txt\", ios::app);\n    tambah << \"Baris tambahan\" << '\\n';\n    tambah.close();\n\n    // ---- MEMBACA baris demi baris sampai habis\n    ifstream masuk(\"catatan.txt\");\n    if (!masuk.is_open()) {              // TIDAK OPSIONAL - lihat penjelasan\n        cout << \"catatan.txt tidak bisa dibuka\" << endl;\n        return 1;\n    }\n    string baris;\n    int nomor = 0;\n    while (getline(masuk, baris)) {      // berhenti sendiri saat berkas habis\n        nomor++;\n        cout << nomor << \": \" << baris << endl;\n    }\n    cout << \"Selesai, \" << nomor << \" baris terbaca.\" << endl;\n    // masuk tidak perlu di-close: destructor-nya menutup sendiri di sini\n    return 0;\n}"
     },
     {
+     "heading": "Kenapa is_open() wajib dicek dan mode buka",
      "body": [
       "Kenapa is_open() wajib dicek?",
       "",
@@ -3799,6 +3816,7 @@
      "code": "#include <iostream>\n#include <fstream>\n#include <sstream>\n#include <string>\nusing namespace std;\n\nint main() {\n    // Siapkan dulu berkas datanya supaya contoh ini bisa langsung jalan.\n    ofstream siap(\"nilai.txt\");\n    siap << \"Andi 80\\n\";\n    siap << \"Budi 95\\n\";\n    siap << \"Cici 70\\n\";\n    siap.close();\n\n    // CARA 1: kolom demi kolom dengan >>. Operator >> MELOMPATI spasi dan\n    // newline sendiri, jadi satu loop cukup membaca seluruh berkas.\n    ifstream masuk(\"nilai.txt\");\n    if (!masuk.is_open()) {\n        cout << \"nilai.txt tidak ada\" << endl;\n        return 1;\n    }\n    string nama;\n    int nilai, total = 0, banyak = 0;\n    while (masuk >> nama >> nilai) {  // habis/gagal -> kondisi jadi false\n        cout << nama << \" dapat \" << nilai << endl;\n        total += nilai;\n        banyak++;\n    }\n    cout << \"Rata-rata: \" << total / banyak << endl;\n\n    // CARA 2: baca satu BARIS, lalu pecah barisnya sendiri. Wajib kalau\n    // pemisahnya bukan spasi (CSV), atau kalau satu kolom boleh berisi\n    // spasi - >> akan memotong \"Andi Wijaya\" jadi dua kolom.\n    ofstream siap2(\"orang.csv\");\n    siap2 << \"Andi Wijaya,Bandung,80\\n\";\n    siap2 << \"Budi Santoso,Surabaya,95\\n\";\n    siap2.close();\n\n    ifstream csv(\"orang.csv\");\n    if (!csv.is_open()) {\n        cout << \"orang.csv tidak ada\" << endl;\n        return 1;\n    }\n    string baris;\n    while (getline(csv, baris)) {\n        istringstream potong(baris);  // barisnya diperlakukan sebagai stream\n        string nm, kota, angka;\n        getline(potong, nm, ',');     // argumen KETIGA = karakter pemisahnya\n        getline(potong, kota, ',');\n        getline(potong, angka);       // tanpa pemisah = sisa barisnya\n        cout << nm << \" (\" << kota << \") nilai \" << angka << endl;\n    }\n    return 0;\n}"
     },
     {
+     "heading": "Jebakan eof() dan perbandingan dengan C",
      "body": [
       "Ada empat jebakan yang paling sering bikin orang jatuh:",
       "",
@@ -3922,7 +3940,7 @@
      ]
     },
     {
-     "heading": "Kosakata C++17 yang muncul di TANDA TANGAN fungsi",
+     "heading": "Kosakata C++17 yang muncul di tanda tangan fungsi",
      "body": [
       "Fitur di atas boleh kamu lewati kalau nggak suka, karena cuma soal",
       "cara menulis. Tiga tipe berikut lain cerita. Mereka muncul di tanda",
@@ -3981,6 +3999,7 @@
      "code": "#include <iostream>\n#include <optional>\n#include <string>\n#include <string_view>\n#include <variant>\n#include <vector>\nusing namespace std;\n\nstruct Produk {\n    string nama;\n    int harga;\n};\n\n// optional<Produk> = \"mungkin berisi Produk, mungkin kosong\" - tanpa pointer, tanpa null\noptional<Produk> cari(const vector<Produk> &rak, string_view nama) {\n    for (const auto &p : rak) {\n        if (p.nama == nama) return p;\n    }\n    return nullopt;          // kosong, dan itu WAJAR - bukan error\n}\n\n// string_view: parameter yang cuma MEMBACA teks, tanpa menyalinnya\nvoid sapa(string_view teks) {\n    cout << \"Halo, \" << teks << \" (\" << teks.size() << \" huruf)\" << endl;\n}\n\nint main() {\n    vector<Produk> rak = {{\"pensil\", 2000}, {\"buku\", 15000}};\n\n    if (auto hasil = cari(rak, \"buku\")) {        // optional bernilai true kalau berisi\n        cout << hasil->nama << \" Rp\" << hasil.value().harga << endl;\n    }\n    auto kosong = cari(rak, \"tas\");\n    cout << \"has_value: \" << kosong.has_value() << endl;    // 0\n\n    optional<int> stok;                             // sengaja dibiarkan kosong\n    cout << \"Stok: \" << stok.value_or(0) << endl;   // 0 <- nilai cadangan kalau kosong\n\n    sapa(\"Andi\");            // literal langsung dipakai, tanpa membuat string baru\n\n    // variant: SATU variabel, beberapa kemungkinan tipe\n    variant<int, string> nilai = 90;\n    cout << \"sedang berisi int? \" << holds_alternative<int>(nilai) << endl;   // 1\n    nilai = string(\"belum dinilai\");\n    cout << get<string>(nilai) << endl;\n\n    // lambda mutable: SALINAN tangkapannya boleh diubah di dalam\n    int hitungan = 0;\n    auto penghitung = [hitungan]() mutable { return ++hitungan; };\n    cout << penghitung() << \" \" << penghitung() << \" \";\n    cout << penghitung() << endl;                            // 1 2 3\n    cout << \"hitungan di luar tetap \" << hitungan << endl;   // 0\n\n    // generic lambda: parameternya 'auto', satu lambda untuk banyak tipe\n    auto cetak = [](const auto &x) { cout << x << \" \"; };\n    cetak(7); cetak(3.5); cetak(\"teks\");\n    cout << endl;                                            // 7 3.5 teks\n    return 0;\n}"
     },
     {
+     "heading": "Tangkapan mutable dan parameter auto",
      "body": [
       "Ada dua bentuk lambda yang belum dibahas, dan dua-duanya muncul di",
       "contoh barusan.",
@@ -4081,6 +4100,7 @@
      "code": "#include <iostream>\n#include <string>\n#include <vector>\n#include <algorithm>\n#include <map>\n#include <queue>\n#include <functional>   // rumah greater, less, hash, function\nusing namespace std;\n\n// FUNCTOR: class biasa, yang membuatnya istimewa cuma operator()\nstruct LebihBesar {\n    bool operator()(int a, int b) const {\n        return a > b;\n    }\n};\n\n// Functor yang MENYIMPAN keadaan - fungsi biasa tidak bisa begini\nclass DiAtasAmbang {\nprivate:\n    int ambang;\npublic:\n    DiAtasAmbang(int a) : ambang(a) {}\n    bool operator()(int n) const {\n        return n > ambang;\n    }\n};\n\nint main() {\n    vector<int> angka = {5, 3, 8, 1, 9, 2};\n\n    // LebihBesar() = MEMBUAT objek; sort lalu memanggilnya berkali-kali\n    sort(angka.begin(), angka.end(), LebihBesar());\n    for (int n : angka) cout << n << \" \";\n    cout << endl;                     // 9 8 5 3 2 1\n\n    // greater<int>() bekerja persis sama - functor bawaan <functional>\n    sort(angka.begin(), angka.end(), greater<int>());\n    for (int n : angka) cout << n << \" \";\n    cout << endl;                     // 9 8 5 3 2 1\n\n    DiAtasAmbang lebihDari4(4);       // ambang DISIMPAN di dalam objek\n    cout << lebihDari4(7) << endl;    // 1 -- objek dipanggil seperti fungsi\n    cout << lebihDari4(2) << endl;    // 0\n    cout << count_if(angka.begin(), angka.end(), lebihDari4) << endl;  // 3\n\n    // Di sini greater<int> TANPA () -- yang diminta TIPE-nya, bukan objeknya\n    priority_queue<int, vector<int>, greater<int>> antrean;\n    antrean.push(30); antrean.push(10); antrean.push(20);\n    cout << antrean.top() << endl;    // 10 (terkecil dulu, bukan terbesar)\n\n    map<string, int, greater<string>> nilai;\n    nilai[\"andi\"] = 80; nilai[\"budi\"] = 90; nilai[\"citra\"] = 70;\n    for (const auto &p : nilai) cout << p.first << \" \";\n    cout << endl;                     // citra budi andi (Z ke A)\n\n    return 0;\n}"
     },
     {
+     "heading": "Functor bawaan dan lambda sebagai functor",
      "body": [
       "Functor bawaan ada di header <functional>. Semuanya class template,",
       "jadi selalu ada <tipe> di belakang namanya:",
@@ -4153,6 +4173,7 @@
      "code": "#include <iostream>\n#include <string>\n#include <map>\n#include <functional>\nusing namespace std;\n\nvoid sapa(int n) {                       // 1. fungsi biasa\n    cout << \"fungsi  : \" << n << endl;\n}\n\nstruct Cetak {                           // 2. functor\n    void operator()(int n) const {\n        cout << \"functor : \" << n << endl;\n    }\n};\n\n// Class yang MENERIMA fungsi dari luar, lalu memanggilnya saat ada kejadian\nclass Tombol {\nprivate:\n    string nama;\n    function<void(int)> saatDiklik;      // fungsi disimpan sebagai ANGGOTA\npublic:\n    Tombol(string nama, function<void(int)> aksi)\n        : nama(nama), saatDiklik(aksi) {}\n\n    void klik(int nilai) {\n        cout << \"[\" << nama << \"] \";\n        if (saatDiklik) saatDiklik(nilai);      // cek kosong dulu!\n        else cout << \"belum ada aksi\" << endl;\n    }\n};\n\nint main() {\n    function<void(int)> f;               // satu tipe, tiga isi berbeda\n    f = sapa;        f(1);\n    f = Cetak();     f(2);\n    f = [](int n) { cout << \"lambda  : \" << n << endl; };\n    f(3);\n\n    // Tabel handler: nama perintah -> apa yang dikerjakan\n    map<string, function<void(int)>> perintah;\n    perintah[\"tambah\"] = [](int n) { cout << \"menambah \" << n << endl; };\n    perintah[\"hapus\"]  = [](int n) { cout << \"menghapus \" << n << endl; };\n\n    string masuk = \"tambah\";\n    if (perintah.count(masuk)) perintah[masuk](5);\n\n    // Callback: aksinya ditentukan pemakai class, bukan class-nya sendiri\n    Tombol simpan(\"Simpan\", [](int n) {\n        cout << \"menyimpan \" << n << \" baris\" << endl;\n    });\n    simpan.klik(3);\n\n    Tombol kosong(\"Kosong\", nullptr);\n    kosong.klik(9);\n\n    return 0;\n}"
     },
     {
+     "heading": "Kesalahan umum saat memakai std::function",
      "body": [
       "Kesalahan yang sering terjadi:",
       "",
@@ -4322,7 +4343,7 @@
      "code": "#include <iostream>\n#include <utility>\nusing namespace std;\n\nclass Buffer {\nprivate:\n    int *data;\n    size_t n;\npublic:\n    Buffer(size_t ukuran) : data(new int[ukuran]), n(ukuran) {}\n    ~Buffer() { delete[] data; }\n\n    // COPY constructor: siapkan memori BARU, lalu salin isinya satu per satu (mahal)\n    Buffer(const Buffer &lain) : data(new int[lain.n]), n(lain.n) {\n        cout << \"  COPY: menyalin \" << n << \" elemen\" << endl;\n        for (size_t i = 0; i < n; i++) data[i] = lain.data[i];\n    }\n\n    // MOVE constructor: CURI pointernya, lalu KOSONGKAN sumbernya\n    Buffer(Buffer &&lain) noexcept : data(lain.data), n(lain.n) {\n        cout << \"  MOVE: tanpa menyalin apa pun\" << endl;\n        lain.data = nullptr;   // WAJIB. Tanpa ini, destructor 'lain' menghapus memori\n        lain.n = 0;            // yang sekarang sudah jadi milik kita -> crash.\n    }\n\n    // MOVE assignment: sama, tapi buang dulu milik sendiri\n    Buffer& operator=(Buffer &&lain) noexcept {\n        cout << \"  MOVE assignment\" << endl;\n        if (this != &lain) {              // jaga-jaga dari 'a = std::move(a)'\n            delete[] data;\n            data = lain.data;\n            n = lain.n;\n            lain.data = nullptr;\n            lain.n = 0;\n        }\n        return *this;\n    }\n\n    Buffer& operator=(const Buffer &) = delete;   // sengaja dilarang di contoh ini\n    size_t ukuran() const { return n; }\n};\n\nint main() {\n    Buffer a(5);\n    Buffer b = a;                 // COPY: a masih utuh\n    Buffer c = std::move(a);      // MOVE: isi a pindah ke c\n\n    cout << \"a=\" << a.ukuran() << \" b=\" << b.ukuran()\n         << \" c=\" << c.ukuran() << endl;          // a=0 b=5 c=5\n\n    Buffer d(2);\n    d = std::move(b);\n    cout << \"b=\" << b.ukuran() << \" d=\" << d.ukuran() << endl;   // b=0 d=5\n    return 0;\n}"
     },
     {
-     "heading": "Dari Aturan Tiga ke ATURAN LIMA - lalu ke Aturan NOL",
+     "heading": "Dari Aturan Tiga ke Aturan Lima, lalu ke Aturan Nol",
      "body": [
       "Materi Copy Constructor ditutup dengan janji bahwa Aturan Tiga nanti",
       "berkembang jadi Aturan Lima. Ini dia kelimanya, dan sekarang kamu",
@@ -4467,6 +4488,7 @@
      "code": "#include <iostream>\n#include <thread>\n#include <vector>\n#include <functional>\nusing namespace std;\n\n// Tiap thread menulis ke SLOT-nya sendiri, jadi tidak ada yang berebut.\nvoid jumlahkan(int mulai, int sampai, long &hasil) {\n    long total = 0;\n    for (int i = mulai; i <= sampai; i++) total += i;\n    hasil = total;\n}\n\nint main() {\n    long a = 0, b = 0;\n\n    // Argumen DISALIN masuk ke thread. Karena jumlahkan() menerima\n    // referensi, variabel aslinya harus dibungkus ref() dari <functional>.\n    thread t1(jumlahkan, 1, 500, ref(a));\n    thread t2(jumlahkan, 501, 1000, ref(b));\n\n    cout << \"main sudah membuat 2 thread, sekarang menunggu.\" << endl;\n    t1.join();   // tanpa join, hasilnya belum tentu sudah ditulis\n    t2.join();\n\n    cout << \"Bagian 1 (1..500)    : \" << a << endl;\n    cout << \"Bagian 2 (501..1000) : \" << b << endl;\n    cout << \"Total                : \" << (a + b) << endl;\n\n    // Banyak thread sekaligus: vector<thread> + lambda (materi Lambda)\n    vector<long> potongan(4, 0);\n    vector<thread> pekerja;\n    for (int i = 0; i < 4; i++) {\n        pekerja.push_back(thread([i, &potongan]() {\n            long total = 0;\n            for (int n = i * 250 + 1; n <= (i + 1) * 250; n++) total += n;\n            potongan[i] = total;   // tiap thread menyentuh indeks BERBEDA\n        }));\n    }\n    for (thread &t : pekerja) t.join();   // join SEMUA dulu, baru baca hasil\n\n    long total = 0;\n    for (long p : potongan) total += p;\n    cout << \"Total dari 4 thread  : \" << total << endl;\n    return 0;\n}"
     },
     {
+     "heading": "Data race, mutex, lock_guard, dan atomic",
      "body": [
       "Contoh di atas aman karena tiap thread punya tempat sendiri. Masalah",
       "muncul kalau dua thread menyentuh satu variabel yang sama. Baris",
@@ -4523,6 +4545,7 @@
      "code": "#include <iostream>\n#include <thread>\n#include <mutex>\n#include <atomic>\nusing namespace std;\n\nconst int PUTARAN = 20000;\n\nint tanpaKunci = 0;            // BAHAYA: dua thread menyentuhnya bersamaan\nint denganKunci = 0;           // dilindungi mutex di bawah\nmutex mu;                      // gembok milik denganKunci\natomic<int> pakaiAtomic(0);    // aman tanpa mutex sama sekali\n\n// Ini \"tanpaKunci++\" yang dipelankan, supaya celahnya kelihatan tiap kali.\nvoid naikTanpaKunci() {\n    for (int i = 0; i < PUTARAN; i++) {\n        int sementara = tanpaKunci;      // 1. BACA\n        this_thread::yield();            // celah: thread lain boleh menyela\n        tanpaKunci = sementara + 1;      // 2. TAMBAH lalu 3. TULIS balik\n    }\n}\n\nvoid naikDenganMutex() {\n    for (int i = 0; i < PUTARAN; i++) {\n        lock_guard<mutex> kunci(mu);     // constructor: MENGUNCI\n        int sementara = denganKunci;\n        this_thread::yield();            // celah yang sama - tapi kini tak ada\n        denganKunci = sementara + 1;     // yang bisa masuk untuk memanfaatkannya\n    }                                    // destructor: OTOMATIS MEMBUKA\n}\n\nvoid naikAtomic() {\n    for (int i = 0; i < PUTARAN; i++) {\n        pakaiAtomic++;                   // satu langkah utuh, tak ada celah\n    }\n}\n\nint main() {\n    int seharusnya = 2 * PUTARAN;\n\n    thread a1(naikTanpaKunci), a2(naikTanpaKunci);\n    a1.join();\n    a2.join();\n\n    thread b1(naikDenganMutex), b2(naikDenganMutex);\n    b1.join();\n    b2.join();\n\n    thread c1(naikAtomic), c2(naikAtomic);\n    c1.join();\n    c2.join();\n\n    cout << \"Seharusnya  : \" << seharusnya << endl;\n    cout << \"tanpaKunci  : \" << tanpaKunci\n         << \"   <- hilang \" << (seharusnya - tanpaKunci) << endl;\n    cout << \"denganKunci : \" << denganKunci << endl;\n    cout << \"pakaiAtomic : \" << pakaiAtomic << endl;\n    return 0;\n}"
     },
     {
+     "heading": "Deadlock, kunci terlalu lebar, dan flag -pthread",
      "body": [
       "Jalankan contoh itu beberapa kali. denganKunci dan pakaiAtomic selalu",
       "tepat 40000. tanpaKunci berakhir di sekitar 20000, artinya hampir",
@@ -4693,6 +4716,7 @@
      "code": "#include <iostream>\n#include <string>\n#include <vector>\n\n#define MAKS_KONEKSI 100                 // makro: SELALU HURUF_BESAR_BERGARIS\n\nnamespace toko_online {                  // namespace: snake_case\n\nconst int kMaksItem = 50;                // konstanta: berawalan k (gaya Google)\n\nclass KeranjangBelanja {                 // class: PascalCase\npublic:\n    void tambah_item(const std::string &nama) {   // method: snake_case (gaya STL/Boost)\n        if (jumlah_item_ < kMaksItem) {\n            items_.push_back(nama);\n            ++jumlah_item_;\n        }\n    }\n    int total_item() const { return jumlah_item_; }\n\nprivate:\n    std::vector<std::string> items_;     // atribut: berakhiran garis bawah\n    int jumlah_item_ = 0;                // gaya lain: berawalan m_ -> int m_jumlahItem;\n};\n\n}  // namespace toko_online\n\nint main() {\n    toko_online::KeranjangBelanja keranjang;   // perhatikan: tanpa 'using namespace std;'\n    keranjang.tambah_item(\"pensil\");\n    keranjang.tambah_item(\"buku\");\n    std::cout << keranjang.total_item() << \" item (batas koneksi \"\n              << MAKS_KONEKSI << \")\" << std::endl;\n    return 0;\n}"
     },
     {
+     "heading": "Kebiasaan profesional dan kebiasaan harian",
      "body": [
       "Tahap 4: kebiasaan profesional",
       "  1. Selalu pakai smart pointer. Hindari new/delete manual.",

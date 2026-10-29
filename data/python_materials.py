@@ -50,6 +50,7 @@ PYTHON_MATERIALS = [
 print("Aku sedang belajar Python.")"""
             },
             {
+                "heading": "Aturan dasar sintaks Python dan shebang",
                 "body": [
                     "print(...) itu fungsi bawaan untuk menampilkan teks ke layar.",
                     "",
@@ -167,6 +168,7 @@ a = b = c = 0
 print(a, b, c)        # 0 0 0"""
             },
             {
+                "heading": "Penamaan, konversi tipe, dan f-string",
                 "body": [
                     "Aturan memberi nama variabel:",
                     "  1. Boleh pakai huruf, angka, dan underscore (_). Nama nggak boleh",
@@ -286,6 +288,7 @@ print(a, b, c)        # 0 0 0"""
                 ],
             },
             {
+                "heading": "Fungsi print dengan banyak nilai, sep, dan end",
                 "body": [
                     "print() bisa lebih banyak dari yang kamu lihat di materi pertama.",
                     "",
@@ -352,6 +355,7 @@ print()                          # end tetap jalan -> satu baris kosong
 print("Setelah baris kosong")""",
             },
             {
+                "heading": "Masukan input() dan cara import modul",
                 "body": [
                     "Masukan: input()",
                     "",
@@ -510,6 +514,7 @@ print("Dibulatkan  :", math.floor(total))""",
                 ]
             },
             {
+                "heading": "Operator perbandingan, logika, in, dan is",
                 "body": [
                     "Operator perbandingan membandingkan dua nilai. Hasilnya selalu bool,",
                     "yaitu True atau False:",
@@ -656,6 +661,7 @@ status = "Lulus" if nilai >= 75 else "Tidak Lulus"
 print(status)   # Lulus"""
             },
             {
+                "heading": "Fitur match-case dan nilai truthy falsy",
                 "body": [
                     "Sebelum versi 3.10, Python nggak punya switch-case seperti bahasa lain.",
                     "Sejak Python 3.10, ada match-case yang mirip switch:",
@@ -799,6 +805,7 @@ else:
     print("loop selesai normal, tanpa break")"""
             },
             {
+                "heading": "Comprehension, nested loop, dan nama _",
                 "body": [
                     "List comprehension adalah cara ringkas bikin list dari sebuah loop.",
                     "Bentuk ini khas Python, dan dibahas lebih detail di materi tersendiri:",
@@ -996,6 +1003,7 @@ print(Fraction(1, 3) + Fraction(1, 6))    # 1/2
 print(Fraction(1, 10) + Fraction(2, 10) == Fraction(3, 10))   # True""",
             },
             {
+                "heading": "Operator bitwise, rantai perbandingan, dan walrus",
                 "body": [
                     "Ada tiga kelompok operator lagi yang belum dibahas, padahal ketiganya",
                     "sering kamu temui.",
@@ -1278,6 +1286,7 @@ else:
     print(baris[2:] if baris.startswith("# ") else baris)"""
             },
             {
+                "heading": "Beda find() dan index() saat teks tak ketemu",
                 "body": [
                     "find() dan index() sama-sama mencari posisi sebuah teks. Bedanya ada",
                     "di sikapnya kalau teksnya nggak ketemu. find() memberi -1, sedangkan",
@@ -1358,6 +1367,7 @@ print(f"[{nama:^20}]")   # [        Andi        ]   <- rata TENGAH selebar 20
 print(f"[{nama:*^20}]")  # [********Andi********]   <- karakter pengisi bebas"""
             },
             {
+                "heading": "Format {nilai=}, .format(), dan operator %",
                 "body": [
                     "Bentuk {nilai=} dipakai untuk mengintip isi variabel waktu kamu nyari",
                     "bug. Dia mencetak nama variabelnya sekalian, jadi kamu nggak perlu",
@@ -1610,6 +1620,7 @@ for i, (n, v) in enumerate(zip(nama, nilai), start=1):
     print(i, n, v)""",
             },
             {
+                "heading": "Hasil zip terpotong dan iterator sekali pakai",
                 "body": [
                     "zip berhenti di koleksi yang paling pendek, dan nggak ngasih tahu.",
                     "Nggak ada error, nggak ada peringatan, sisanya hilang begitu aja.",
@@ -1687,6 +1698,7 @@ c = [1, 2]
 print(id(a) == id(b), id(a) == id(c))       # True False""",
             },
             {
+                "heading": "Jebakan any, all, sort, dan reversed",
                 "body": [
                     "any() dan all() langsung berhenti begitu jawabannya udah pasti. Sifat",
                     "ini namanya short-circuit. Karena itu, isi kurungnya lebih baik",
@@ -2017,6 +2029,7 @@ for perintah in ["buka", "tulis", "simpan", "tutup"]:
 print(riwayat)                          # "buka" hilang tanpa error apa pun""",
             },
             {
+                "heading": "Jebakan defaultdict, Counter, dan deque",
                 "body": [
                     "Ada beberapa jebakan yang perlu kamu tahu:",
                     "",
@@ -2153,6 +2166,7 @@ def profil(**data):
 profil(nama="Andi", umur=20, jurusan="Informatika")"""
             },
             {
+                "heading": "Scope, docstring, dan type hint",
                 "body": [
                     "Scope variabel",
                     "",
@@ -2298,6 +2312,7 @@ print(b)               # [1, 2, 3, 4]  <- b masih memegang objek yang lama
 print(a is b)          # False""",
             },
             {
+                "heading": "Membuat salinan: [:], copy, dan deepcopy",
                 "body": [
                     "Kalau kamu memang mau objek baru, mintalah terang-terangan. Ada beberapa",
                     "bentuk yang sering muncul di kode orang, dan semuanya mengerjakan hal yang",
@@ -2609,6 +2624,7 @@ with TemporaryDirectory() as tmp:           # folder contoh, dihapus otomatis
 # Untuk folder, versi loop-nya sudah disediakan Python: os.walk().""",
             },
             {
+                "heading": "RecursionError dan kapan loop lebih baik",
                 "body": [
                     "Python membatasi seberapa dalam rekursi boleh menumpuk:",
                     "",
@@ -2820,6 +2836,7 @@ print(luas_dicatat(5))
 print(luas_dicatat(5, lebar=3))""",
             },
             {
+                "heading": "Menuang dan menampung koleksi dengan bintang",
                 "body": [
                     "luas_dicatat menampung argumen apa pun ke args dan kwargs, lalu",
                     "membongkarnya lagi waktu meneruskan ke luas. Kalau bintang di baris",
@@ -2895,6 +2912,7 @@ satu, *habis = [9]
 print(satu, habis)                  # 9 []  sisanya boleh kosong, bukan error""",
             },
             {
+                "heading": "Parameter keyword-only dan positional-only",
                 "body": [
                     "Sampai sini bintang selalu diikuti nama. Kalau bintang berdiri sendiri di",
                     "daftar parameter, artinya lain lagi: semua parameter sesudahnya wajib",
@@ -3047,6 +3065,7 @@ print(tambah.__annotations__)
 print(tambah("3", "4"))            # 34, bukan 7 dan bukan error""",
             },
             {
+                "heading": "Tipe koleksi dan gaya lama dari typing",
                 "body": [
                     "Tipe koleksi ditulis pakai kurung siku yang menyebut isinya:",
                     "",
@@ -3139,6 +3158,7 @@ kepala.sambung(2).sambung(3)
 print(kepala.nilai, kepala.berikut.nilai, kepala.berikut.berikut.nilai)  # 1 2 3""",
             },
             {
+                "heading": "Isi typing, mypy, dan jebakan anotasi",
                 "body": [
                     "Ini isi baris from typing import ... yang paling sering muncul di atas",
                     "berkas:",
@@ -3298,6 +3318,7 @@ urut = sorted(mahasiswa, key=lambda m: m[1], reverse=True)
 print(urut)       # [('Citra', 95), ('Andi', 85), ('Budi', 70)]"""
             },
             {
+                "heading": "Kenapa map dan filter dibungkus list",
                 "body": [
                     "Kenapa tiap map() dan filter() di atas dibungkus list()? Soalnya dua-duanya",
                     "nggak mengembalikan list. Yang keluar adalah iterator, yaitu objek yang",
@@ -3539,6 +3560,7 @@ print(lihat_a(), lihat_b())                 # 3 105
 print("hitung" in dir())                    # False""",
             },
             {
+                "heading": "Beda global dan nonlocal, serta pemakaian closure",
                 "body": [
                     "global vs nonlocal",
                     "",
@@ -3857,6 +3879,7 @@ m2.perkenalan()   # Halo, saya Budi, 22 tahun.
 print(m1.nama)    # Andi (akses atribut langsung)"""
             },
             {
+                "heading": "Class attribute, static method, dan class method",
                 "body": [
                     "Class attribute vs instance attribute",
                     "",
@@ -4112,6 +4135,7 @@ for h in hewan_hewan:
                 "code": "from abc import ABC, abstractmethod\n\n\nclass Penyimpan(ABC):\n    \"\"\"Kontrak: apa pun yang menyimpan catatan wajib bisa simpan & ambil.\"\"\"\n\n    @abstractmethod\n    def simpan(self, kunci, nilai):\n        pass\n\n    @abstractmethod\n    def ambil(self, kunci):\n        pass\n\n    def simpan_banyak(self, pasangan):    # method BIASA, isinya sudah lengkap\n        for kunci, nilai in pasangan:\n            self.simpan(kunci, nilai)     # memakai method yang belum ditulis\n\n\nclass PenyimpanMemori(Penyimpan):         # implementasi konkret pertama\n    def __init__(self):\n        self.data = {}\n\n    def simpan(self, kunci, nilai):\n        self.data[kunci] = nilai\n\n    def ambil(self, kunci):\n        return self.data.get(kunci)\n\n\nclass PenyimpanBaris(Penyimpan):          # implementasi konkret kedua\n    def __init__(self):\n        self.baris = []\n\n    def simpan(self, kunci, nilai):\n        self.baris.append(f\"{kunci}={nilai}\")\n\n    def ambil(self, kunci):\n        for b in self.baris:\n            k, _, v = b.partition(\"=\")\n            if k == kunci:\n                return v\n        return None\n\n\nclass PenyimpanSetengahJadi(Penyimpan):\n    def simpan(self, kunci, nilai):       # method 'ambil' LUPA ditulis\n        print(\"disimpan:\", kunci)\n\n\n# Kode di bawah ini tidak peduli gudangnya jenis apa: kontraknya menjamin\n# simpan(), ambil(), dan simpan_banyak() PASTI ada di dua-duanya.\nfor gudang in (PenyimpanMemori(), PenyimpanBaris()):\n    gudang.simpan_banyak([(\"nama\", \"Levi\"), (\"kota\", \"Bontang\")])\n    print(type(gudang).__name__, \"->\", gudang.ambil(\"kota\"))\n\ntry:\n    Penyimpan()                 # class kontrak memang TIDAK boleh jadi objek\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\ntry:\n    PenyimpanSetengahJadi()      # turunan yang belum lengkap ikut ditolak\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\n# PenyimpanMemori -> Bontang\n# PenyimpanBaris -> Bontang\n# TypeError: Can't instantiate abstract class Penyimpan without an\n#            implementation for abstract methods 'ambil', 'simpan'\n# TypeError: Can't instantiate abstract class PenyimpanSetengahJadi without\n#            an implementation for abstract method 'ambil' (kalimat persisnya\n#            berbeda antar versi Python; yang penting nama method yang kurang)",
             },
             {
+                "heading": "Jebakan ABC dan raise NotImplementedError",
                 "body": [
                     "Ada tiga hal yang perlu kamu tangkap dari program di atas:",
                     "",
@@ -4183,6 +4207,7 @@ for h in hewan_hewan:
                 "code": "from typing import Protocol, runtime_checkable\n\n\n@runtime_checkable\nclass Pencetak(Protocol):\n    \"\"\"Kontrak: apa pun yang punya cetak(teks) sudah dianggap cocok.\"\"\"\n\n    def cetak(self, teks: str) -> None: ...\n\n\nclass Layar:                  # tidak mewarisi Pencetak, dan memang tidak perlu\n    def cetak(self, teks):\n        print(\"[layar]\", teks)\n\n\nclass Penampung:              # juga tidak menyebut Pencetak sama sekali\n    def __init__(self):\n        self.isi = []\n\n    def cetak(self, teks):\n        self.isi.append(teks)\n\n\ndef laporkan(keluaran: Pencetak, baris):\n    for b in baris:\n        keluaran.cetak(b)\n\n\nlaporkan(Layar(), [\"gaji: 100\", \"bonus: 20\"])\n\np = Penampung()\nlaporkan(p, [\"gaji: 100\", \"bonus: 20\"])\nprint(p.isi)\n\n# isinstance() hanya bekerja karena Protocol-nya diberi @runtime_checkable,\n# dan yang dicek cuma NAMA method-nya ada, bukan bentuk parameternya.\nprint(isinstance(Layar(), Pencetak))     # True\nprint(isinstance(3, Pencetak))           # False: int tidak punya cetak()\n\n# [layar] gaji: 100\n# [layar] bonus: 20\n# ['gaji: 100', 'bonus: 20']\n# True\n# False",
             },
             {
+                "heading": "Protocol dibanding ABC, dan cara membaca ABC",
                 "body": [
                     "Protocol ada di modul typing sejak Python 3.8, dan arah kontraknya",
                     "kebalikan dari ABC. Di ABC, class turunan harus menyebut nama induknya.",
@@ -4319,6 +4344,7 @@ print(r.saldo)      # 150000
 r.saldo = -100      # ValueError: Saldo tidak boleh negatif!"""
             },
             {
+                "heading": "Asal @saldo.setter dan raise di dalam setter",
                 "body": [
                     "Ada dua baris di contoh itu yang perlu dibongkar, karena dua-duanya",
                     "muncul tanpa pernah diperkenalkan.",
@@ -4375,6 +4401,7 @@ print(p1 == Titik(1, 2))   # True -- lewat __eq__
 print(p1 + p2)     # (4, 6) -- lewat __add__"""
             },
             {
+                "heading": "Dunder method lain dan __slots__",
                 "body": [
                     "Dunder method lain yang umum dipakai:",
                     "  __len__(self)       -> dipanggil oleh len(objek)",
@@ -4584,6 +4611,7 @@ except Exception as e:
     print(type(e).__name__, "-", e)""",
             },
             {
+                "heading": "Lima aturan dan jebakan @dataclass",
                 "body": [
                     "Ada beberapa aturan main dan jebakan @dataclass yang perlu kamu tahu",
                     "sebelum memakainya.",
@@ -4727,6 +4755,7 @@ def pesan(st):
 print(pesan(Status.MENUNGGU))  # Pesanan sedang diproses.""",
             },
             {
+                "heading": "Anggota Enum, jebakan, IntEnum, dan StrEnum",
                 "body": [
                     "Yang perlu kamu pegang soal Enum:",
                     "",
@@ -4899,6 +4928,7 @@ print(bagi(10, 0))    # Tidak bisa membagi dengan nol! / Selesai... / None
 print(bagi(10, "a"))  # Tipe data harus angka! / Selesai... / None"""
             },
             {
+                "heading": "Menangkap banyak jenis, raise, dan EAFP",
                 "body": [
                     "Kamu bisa menangkap beberapa jenis exception sekaligus. Caranya, tulis",
                     "jenis-jenisnya di dalam kurung:",
@@ -5088,6 +5118,7 @@ print("Baris ini tidak pernah tercetak.")
 # tidak, karena program berhenti seketika saat sebuah error tidak ditangani.""",
             },
             {
+                "heading": "Silsilah exception dan menangkap secara luas",
                 "body": [
                     "Sekarang sisi menangkap error. Materi Exception Handling mengajarkan",
                     "cara menangkap satu jenis error yang sudah kamu duga. Di kode nyata,",
@@ -5346,6 +5377,7 @@ sekarang = datetime.datetime.now()
 print(sekarang.year, sekarang.month, sekarang.day)"""
             },
             {
+                "heading": "Module sendiri, idiom __main__, dan pip",
                 "body": [
                     "Bikin module sendiri itu gampang. Setiap berkas .py yang kamu tulis",
                     "sudah otomatis jadi module:",
@@ -5519,6 +5551,7 @@ print(sekarang.year, sekarang.month, sekarang.day)"""
     `-- test_produk.py""",
             },
             {
+                "heading": "Peran __init__.py, import relatif, dan __all__",
                 "body": [
                     "__init__.py itu lebih dari berkas kosong penanda. Python menjalankan",
                     "berkas ini waktu paketnya pertama kali di-import. Biasanya dia punya",
@@ -5810,6 +5843,7 @@ print("Total:", total)
                 "code": "#!/usr/bin/env python3\n# Baris pertama di atas dijelaskan di bagian terakhir materi ini.\n\"\"\"ringkas - menampilkan beberapa baris pertama sebuah berkas teks.\"\"\"\nimport argparse\n\n\ndef buat_parser():\n    p = argparse.ArgumentParser(\n        prog=\"ringkas\",\n        description=\"Menampilkan beberapa baris pertama sebuah berkas teks.\")\n    # Argumen POSISI: wajib ada, artinya ditentukan urutannya.\n    p.add_argument(\"berkas\", help=\"berkas yang akan dibaca\")\n    # OPSI: boleh ada boleh tidak, ditandai - atau --, urutannya bebas.\n    # type=int mengubah \"3\" jadi 3 sekaligus menolak isian yang bukan angka.\n    p.add_argument(\"-n\", \"--baris\", type=int, default=5,\n                   help=\"berapa baris ditampilkan (default: 5)\")\n    # store_true = saklar tanpa nilai: ditulis -> True, tidak ditulis -> False.\n    p.add_argument(\"--huruf-besar\", action=\"store_true\",\n                   help=\"ubah hasilnya jadi HURUF BESAR\")\n    return p\n\n\ndef main():\n    parser = buat_parser()\n    # Bentuk sebenarnya cuma:  args = parser.parse_args()\n    # yang membaca sys.argv[1:] sendiri. Daftarnya ditulis di sini supaya\n    # contoh ini bisa langsung dicoba tanpa mengetik argumen apa pun.\n    args = parser.parse_args([\"laporan.txt\", \"-n\", \"3\", \"--huruf-besar\"])\n\n    print(args)                          # sebuah Namespace berisi hasil parsing\n    print(\"args.berkas      :\", args.berkas)\n    print(\"args.baris       :\", args.baris, \"->\", type(args.baris))\n    print(\"args.huruf_besar :\", args.huruf_besar)   # --huruf-besar, tanda - jadi _\n\n    print()\n    print(\"Ini yang keluar kalau orang mengetik:  ringkas --help\")\n    print(\"-\" * 52)\n    parser.print_help()\n\n\nif __name__ == \"__main__\":\n    main()",
             },
             {
+                "heading": "Hasil argparse, shebang, dan python3 -m",
                 "body": [
                     "Yang barusan terjadi, dan alasan hampir nggak ada yang menulis parser",
                     "sendiri:",
@@ -6032,6 +6066,7 @@ print("ini print biasa, tidak ada urusannya dengan logging")
 # dua baris teratas ikut lenyap, tanpa satu pun baris log disunting.""",
             },
             {
+                "heading": "Level log, format, dan getLogger(__name__)",
                 "body": [
                     "Ada lima level, dari yang paling remeh sampai yang paling gawat. Angka",
                     "di tengah itu nilai aslinya. Level itu angka yang dibandingkan, bukan",
@@ -6178,6 +6213,7 @@ with open("app.log") as f:
 # (jalur berkas & nomor barisnya menyesuaikan berkasmu sendiri.)""",
             },
             {
+                "heading": "Jebakan basicConfig, level, dan f-string di log",
                 "body": [
                     "Ada beberapa jebakan yang sering kejadian:",
                     "",
@@ -6341,6 +6377,7 @@ umur = date(2024, 3, 1) - lahir
 print(umur.days, "hari")            # 6771 hari""",
             },
             {
+                "heading": "Method strftime, strptime, dan kode formatnya",
                 "body": [
                     "Di kode nyata, tanggal hampir selalu dipakai untuk salah satu dari dua",
                     "hal. Pertama, diubah jadi teks untuk disimpan atau ditampilkan. Kedua,",
@@ -6414,6 +6451,7 @@ kembali = datetime.fromisoformat(teks_iso)
 print(kembali == jadwal)                   # True""",
             },
             {
+                "heading": "ISO 8601, zona waktu, dan modul time",
                 "body": [
                     "Ada tiga alasan ISO 8601 (\"2024-03-01T14:30:00\") jadi format baku di",
                     "mana-mana:",
@@ -6727,6 +6765,7 @@ except UnicodeEncodeError as e:
 """,
             },
             {
+                "heading": "Membaca UnicodeDecodeError dan menanganinya",
                 "body": [
                     "Kalau tabelnya salah waktu membaca, Python berhenti dengan pesan seperti",
                     "ini:",
@@ -6811,6 +6850,7 @@ print(base64.b64decode(sandi).decode("utf-8"))   # pengguna:12345
 """,
             },
             {
+                "heading": "Akhir baris, newline kosong, dan BOM",
                 "body": [
                     "Ada satu jebakan lagi di berkas teks: akhir baris nggak sama di tiap",
                     "sistem.",
@@ -7031,7 +7071,7 @@ print(re.split(r",\\s*", teks))""",
                 "code": "import re\n\nLOG = \"\"\"08:15:02 INFO  server siap di port 8080\n08:15:44 ERROR koneksi gagal setelah 3 percobaan\n08:16:10 warn  memori terpakai 87 persen\"\"\"\n\n# Pola dikompilasi SEKALI, lalu dipakai berkali-kali.\n# (?P<nama>...) = grup tangkap BERNAMA, jauh lebih terbaca daripada group(2).\nPOLA = re.compile(\n    r\"^(?P<jam>\\d{2}:\\d{2}:\\d{2})\\s+(?P<level>INFO|WARN|ERROR)\\s+(?P<pesan>.+)$\",\n    re.MULTILINE | re.IGNORECASE,\n)\n# MULTILINE : tanpa ini ^ dan $ hanya cocok di ujung SELURUH teks, bukan tiap baris\n# IGNORECASE: baris \"warn\" ikut cocok. Flag mengubah cara mencocokkan, bukan hasilnya.\n\nfor cocok in POLA.finditer(LOG):\n    print(cocok.group(0))                     # seluruh bagian yang cocok\n    print(\"  jam   :\", cocok.group(\"jam\"))\n    print(\"  level :\", cocok.group(2))        # grup ke-2 = grup bernama \"level\"\n    print(\"  angka :\", re.findall(r\"\\d+\", cocok.group(\"pesan\")))\n\nsatu = POLA.search(\"09:00:00 ERROR disk penuh\")\nprint(satu.groupdict())   # {'jam': '09:00:00', 'level': 'ERROR', 'pesan': 'disk penuh'}\n\n# Memeriksa format email SEDERHANA. fullmatch dipakai supaya tidak ada sisa\n# karakter di kiri/kanan. Titik ditulis \\. karena titik polos = \"apa saja\".\nPOLA_EMAIL = re.compile(r\"[\\w.+-]+@[\\w-]+\\.[\\w.]+\")\nfor alamat in [\"budi@contoh.co.id\", \"budi@@contoh\", \"budi contoh.id\"]:\n    print(alamat, \"->\", bool(POLA_EMAIL.fullmatch(alamat)))\n\n# search mengembalikan None kalau tidak ketemu -> cek dulu sebelum .group()\nhasil = re.search(r\"\\d+\", \"tidak ada angka di sini\")\nprint(hasil.group(0) if hasil else \"tidak ada angka\")\n\n# Merapikan spasi berlebih: satu atau lebih whitespace jadi satu spasi biasa\nkotor = \"  Belajar   Python\\tsampai\\n\\nbisa  \"\nprint(repr(re.sub(r\"\\s+\", \" \", kotor).strip()))   # 'Belajar Python sampai bisa'\n\n# Di string PENGGANTI, \\1 (atau \\g<jam>) menunjuk isi grup tangkap\nprint(re.sub(r\"(\\d{2}):(\\d{2}):(\\d{2})\", r\"\\1.\\2\", \"08:15:02 INFO server siap\"))",
             },
             {
-                "heading": "Jebakan, dan kapan JANGAN memakai regex",
+                "heading": "Jebakan, dan kapan jangan memakai regex",
                 "body": [
                     "Ini jebakan yang paling sering kena:",
                     "  1. Lupa r\"...\". Ini penyebab nomor satu keluhan \"polaku udah benar",
@@ -7352,7 +7392,7 @@ print(list(permutations("ABC", 2)))
 print(len(list(permutations("ABC"))))    # 6 = 3!""",
             },
             {
-                "heading": "groupby: datanya WAJIB diurutkan lebih dulu",
+                "heading": "groupby: datanya wajib diurutkan lebih dulu",
                 "body": [
                     "groupby() mengelompokkan elemen berurutan yang key-nya sama. Kata",
                     "pentingnya \"berurutan\". groupby() nggak mengurutkan apa pun. Dia cuma",
@@ -8095,6 +8135,7 @@ if __name__ == "__main__":          # WAJIB kalau memakai proses. Lihat catatan 
 #   lambda ditolak: PicklingError""",
             },
             {
+                "heading": "Memilih model konkurensi dan jebakannya",
                 "body": [
                     "Cara memilih, dari yang paling murah:",
                     "  1. Nggak pakai apa-apa. Konkurensi menambah bug yang cuma muncul",
@@ -8403,7 +8444,7 @@ asyncio.run(main())
 # asyncio.to_thread -> isi berkas""",
             },
             {
-                "heading": "async with, async for, dan kapan async TIDAK perlu",
+                "heading": "async with, async for, dan kapan async tidak perlu",
                 "body": [
                     "with dan for punya kembaran async. Bentuk ini yang bakal kamu temui di",
                     "kode nyata:",
@@ -8871,6 +8912,7 @@ def test_pembulatan_seribu_rupiah():
                 "code": "import unittest\n\n\ndef normalkan(nama):\n    \"\"\"'  budi   santoso ' -> 'Budi Santoso'.\"\"\"\n    return \" \".join(nama.split()).title()\n\n\nclass TestNormalkan(unittest.TestCase):\n\n    def setUp(self):\n        # Dijalankan ULANG sebelum SETIAP method test_ di bawah.\n        self.kotor = \"  budi   santoso \"\n\n    def tearDown(self):\n        # Setelah tiap test, lulus maupun gagal (mirip baris setelah yield).\n        self.kotor = None\n\n    def test_spasi_berlebih_dirapikan(self):\n        self.assertEqual(normalkan(self.kotor), \"Budi Santoso\")\n\n    def test_kapital_dirapikan(self):\n        self.assertEqual(normalkan(\"SITI aminah\"), \"Siti Aminah\")\n\n    def test_nama_kosong_tetap_kosong(self):\n        self.assertEqual(normalkan(\"   \"), \"\")\n\n    def test_nama_depan_ada_di_hasil(self):\n        self.assertIn(\"Budi\", normalkan(self.kotor))\n\n    def test_angka_bukan_string_melempar_error(self):\n        with self.assertRaises(AttributeError):\n            normalkan(123)\n\n    def cek_ini_tidak_pernah_jalan(self):\n        # Tidak berawalan test_, jadi unittest TIDAK PERNAH memanggilnya.\n        # Buktinya: laporannya berbunyi \"Ran 5 tests\", bukan 6.\n        self.assertEqual(1, 2)\n\n\nif __name__ == \"__main__\":\n    unittest.main(verbosity=2)",
             },
             {
+                "heading": "Menjalankan unittest dan tiga jebakannya",
                 "body": [
                     "Contoh di atas program utuh. Simpan, lalu jalankan seperti skrip biasa.",
                     "",
@@ -9004,6 +9046,7 @@ def test_pembulatan_seribu_rupiah():
                 ]
             },
             {
+                "heading": "Proyek nyata dan kebiasaan profesional",
                 "body": [
                     "Tahap 3: bangun project nyata",
                     "",
@@ -9032,6 +9075,7 @@ def test_pembulatan_seribu_rupiah():
                 ]
             },
             {
+                "heading": "Kebiasaan harian dan Zen of Python",
                 "body": [
                     "Kebiasaan harian supaya makin jago:",
                     "  1. Ketik ulang semua contoh di aplikasi ini. Jangan copy-paste.",

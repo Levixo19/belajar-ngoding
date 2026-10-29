@@ -1118,6 +1118,7 @@
      "code": "import Phaser from 'phaser';\n\nclass Main extends Phaser.Scene {\n  constructor() {\n    super('Main');\n  }\n\n  preload() {\n    this.load.image('langit', 'aset/langit.png');\n    this.load.image('tanah', 'aset/tanah.png');\n    this.load.spritesheet('pahlawan', 'aset/pahlawan.png', { frameWidth: 32, frameHeight: 48 });\n  }\n\n  create() {\n    this.add.image(400, 300, 'langit');\n\n    const lantai = this.physics.add.staticGroup();\n    lantai.create(400, 568, 'tanah');\n\n    this.pemain = this.physics.add.sprite(100, 450, 'pahlawan');\n    this.pemain.setCollideWorldBounds(true);\n    this.physics.add.collider(this.pemain, lantai);\n\n    this.tombol = this.input.keyboard.createCursorKeys();\n  }\n\n  update(time, delta) {\n    const { left, right, up } = this.tombol;\n    if (left.isDown) this.pemain.setVelocityX(-160);\n    else if (right.isDown) this.pemain.setVelocityX(160);\n    else this.pemain.setVelocityX(0);\n\n    if (up.isDown && this.pemain.body.blocked.down) {\n      this.pemain.setVelocityY(-330);\n    }\n  }\n}\n\nnew Phaser.Game({\n  type: Phaser.AUTO,\n  width: 800,\n  height: 600,\n  physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 300 } } },\n  scene: Main,\n});"
     },
     {
+     "heading": "Membaca kode Phaser baris demi baris",
      "body": [
       "Baris demi baris yang perlu kamu pahami:",
       "  - load.spritesheet memuat satu gambar yang berisi banyak frame",
@@ -2178,6 +2179,7 @@
      "code": "// Fixed Timestep bawaan Unity 0,02 detik = 20 ms.\n// Durasi frame dibuat tetap (jam palsu) supaya hasilnya selalu sama.\nconst LANGKAH = 20;\nconst durasiFrame = [16, 16, 33, 50, 8];\n\nlet akumulator = 0;\ndurasiFrame.forEach((dt, i) => {\n  akumulator += dt;\n  let fixed = 0;\n  while (akumulator >= LANGKAH) {\n    akumulator -= LANGKAH;\n    fixed++;\n  }\n  console.log(`frame ${i + 1} (${dt} ms): FixedUpdate ${fixed}x, ` +\n    `Update 1x, sisa ${akumulator} ms`);\n});"
     },
     {
+     "heading": "Dua aturan FixedUpdate dan Update",
      "body": [
       "Keluarannya:",
       "  frame 1 (16 ms): FixedUpdate 0x, Update 1x, sisa 16 ms",
@@ -3758,6 +3760,7 @@
      "code": "@group(0) @binding(0) var<uniform> uPusat : vec2f;\n\n@fragment\nfn fs_main(@location(0) uv : vec2f) -> @location(0) vec4f {\n    let jarak = distance(uv, uPusat);\n    let terang = max(0.0, 1.0 - jarak * 2.5);\n    return vec4f(terang, terang, terang, 1.0);\n}"
     },
     {
+     "heading": "Peta bahasa shader dan SPIR-V",
      "body": [
       "Peta bahasa shader yang akan kamu temui:",
       "",

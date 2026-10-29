@@ -54,6 +54,7 @@
      "code": "console.log(\"Halo Dunia!\");\nconsole.log(\"Aku sedang belajar JavaScript.\");"
     },
     {
+     "heading": "Titik koma, aturan dasar, dan komentar",
      "body": [
       "console.log(...) adalah fungsi bawaan untuk menampilkan output, yaitu",
       "tulisan yang muncul waktu program dijalankan.",
@@ -156,6 +157,7 @@
      "code": "let umur = 20;                  // number (JS TIDAK bedakan int/float)\nlet harga = 15000.50;           // number juga\nlet nama = \"Budi\";              // string\nlet lulus = true;               // boolean\nlet kosong = null;               // null: sengaja 'tidak ada nilai'\nlet belumDiisi;                  // undefined: belum diberi nilai\nlet id = Symbol(\"id\");           // symbol: nilai unik (jarang dipakai pemula)\nlet bigNum = 123456789012345678901234567890n;  // BigInt (angka sangat besar)\n\nconsole.log(typeof umur);       // \"number\"\nconsole.log(typeof nama);       // \"string\"\nconsole.log(typeof belumDiisi); // \"undefined\"\nconsole.log(typeof null);       // \"object\" (ini QUIRK/bug lama JS, sudah diketahui)"
     },
     {
+     "heading": "Beda null dan undefined serta template literal",
      "body": [
       "Beda null dan undefined:",
       "  - undefined artinya variabelnya sudah dideklarasikan, tapi belum diisi",
@@ -268,6 +270,7 @@
      "code": "console.log(5 > 3 && 2 > 1);   // true\nconsole.log(5 > 3 || 2 > 5);   // true\nconsole.log(!(5 > 3));         // false\n\n// Short-circuit evaluation\nconst nama = null;\nconsole.log(nama || \"Tanpa Nama\");        // \"Tanpa Nama\" (jika nama falsy)\n\n// Nullish coalescing (??) - ES2020, BEDA dari ||\n// || anggap 0, \"\", false sebagai 'kosong'. ?? HANYA anggap null/undefined.\nlet stok = 0;\nconsole.log(stok || 10);   // 10   (bug! padahal stok=0 itu valid)\nconsole.log(stok ?? 10);   // 0    (benar, karena 0 bukan null/undefined)\n\n// Optional chaining (?.) - ES2020, aman akses property bersarang\nconst user = { profil: null };\nconsole.log(user.profil?.nama);   // undefined (tidak error walau profil null)"
     },
     {
+     "heading": "Operator ??=, obj?.[key], dan bitwise",
      "body": [
       "Ada tiga operator turunan yang belum muncul di atas. Ketiganya sering",
       "ketemu di kode sehari-hari.",
@@ -395,6 +398,7 @@
      "code": "// Hampir semua data yang masuk program JS berbentuk STRING: isi kotak input,\n// argumen terminal, isi berkas, balasan dari server.\nconst dariForm = \"42\";\n\nconsole.log(Number(dariForm) + 8);                 // 50\nconsole.log(dariForm + 8, typeof (dariForm + 8));  // 428 string  <- + menggabung!\n\nconsole.log(Number(\"3.14\"));      // 3.14\nconsole.log(Number(\"  7  \"));     // 7     spasi di pinggir dibuang\nconsole.log(Number(\"\"));          // 0     string KOSONG jadi nol, bukan NaN\nconsole.log(Number(\"12abc\"));     // NaN   Number menuntut teks bersih seluruhnya\nconsole.log(parseInt(\"12abc\"));   // 12    baca dari depan, berhenti saat aneh\nconsole.log(parseInt(\"abc12\"));   // NaN   depannya bukan angka\nconsole.log(parseInt(\"3.9\", 10)); // 3     parseInt MEMBUANG desimal, tidak membulatkan\nconsole.log(parseFloat(\"3.9\"));   // 3.9\nconsole.log(parseFloat(\"16px\"));  // 16    satuannya ikut dibuang\n\n// Argumen kedua parseInt adalah radix alias basis bilangan.\nconsole.log(parseInt(\"ff\", 16));  // 255   basis 16\nconsole.log(parseInt(\"1010\", 2)); // 10    basis 2\n\n// Arah sebaliknya: angka menjadi teks\nconsole.log(String(255) + 1);     // 2551  bukan 256, karena sudah jadi teks\nconsole.log((255).toString(2));   // 11111111   biner\nconsole.log((255).toString(16));  // ff         heksadesimal\n\n// Idiom singkat yang akan kamu temui di mana-mana\nconsole.log(+\"42\", typeof +\"42\"); // 42 number    unary + sama dengan Number\nconsole.log(!!\"teks\", !!0);       // true false   !! sama dengan Boolean\nconsole.log(Boolean(\"false\"));    // true   string berisi apa pun itu truthy\n\n// NaN = hasil konversi yang GAGAL, dan ia menular ke seluruh hitungan\nconst gagal = Number(\"dua\");\nconsole.log(gagal, gagal + 1, gagal * 100);   // NaN NaN NaN\nconsole.log(gagal === NaN);          // false  NaN tidak sama dengan dirinya sendiri\nconsole.log(Number.isNaN(gagal));    // true   satu-satunya cara benar memeriksanya\nconsole.log(isNaN(\"dua\"));           // true   versi global: dikonversi dulu\nconsole.log(Number.isNaN(\"dua\"));    // false  teks \"dua\" itu string, bukan NaN\n\n// Pembagian dengan nol TIDAK melempar error di JavaScript\nconsole.log(10 / 0);                   // Infinity\nconsole.log(-10 / 0);                  // -Infinity\nconsole.log(0 / 0);                    // NaN\nconsole.log(Number.isFinite(10 / 0));  // false"
     },
     {
+     "heading": "NaN, Infinity, pembulatan Math, dan angka acak",
      "body": [
       "NaN merepotkan karena dia menular. Sekali satu nilai jadi NaN, semua",
       "hitungan sesudahnya ikut jadi NaN. Yang kelihatan di layar cuma \"NaN\"",
@@ -457,6 +461,7 @@
      "code": "// Math tidak perlu di-import dan tidak pernah dibuat dengan new.\nconsole.log(Math.floor(4.7), Math.floor(-4.7));   // 4 -5    ke bawah\nconsole.log(Math.ceil(4.1), Math.ceil(-4.1));     // 5 -4    ke atas\nconsole.log(Math.round(4.5), Math.round(-4.5));   // 5 -4    0.5 selalu ke arah plus\nconsole.log(Math.trunc(4.7), Math.trunc(-4.7));   // 4 -4    desimal dibuang\nconsole.log(Math.abs(-9), Math.sqrt(144));        // 9 12\nconsole.log(Math.pow(2, 10), 2 ** 10);            // 1024 1024   sama saja\nconsole.log(Math.PI);                             // 3.141592653589793\n\nconst nilai = [80, 95, 60, 88];\nconsole.log(Math.max(...nilai), Math.min(...nilai));  // 95 60   array dibongkar\nconsole.log(Math.max(nilai));                         // NaN     tanpa spread: gagal\n\n// ---- Presisi: SEMUA angka JavaScript adalah float 64-bit ----\nconsole.log(0.1 + 0.2);            // 0.30000000000000004\nconsole.log(0.1 + 0.2 === 0.3);    // false   inilah perbandingan harga yang gagal\nconsole.log(1.005 * 100);          // 100.49999999999999\n\nconst total = 0.1 + 0.2;\nconsole.log(total.toFixed(2), typeof total.toFixed(2));  // 0.30 string  <- BUKAN number\nconsole.log(total.toFixed(2) + 1);           // 0.301  teks digabung, bukan dijumlah\nconsole.log(Number(total.toFixed(2)) + 1);   // 1.3    dikonversi balik dulu\nconsole.log(Math.round(total * 100) / 100);  // 0.3    membulatkan, hasilnya number\nconsole.log(Math.abs(total - 0.3) < 1e-9);   // true   1e-9 artinya 0.000000001\n\n// ---- Batas bilangan bulat ----\nconsole.log(Number.MAX_SAFE_INTEGER);   // 9007199254740991\nconsole.log(9007199254740993);          // 9007199254740992   meleset tanpa peringatan\nconsole.log(9007199254740993n);         // 9007199254740993n  BigInt tetap tepat"
     },
     {
+     "heading": "Presisi float, uang, dan batas bilangan bulat",
      "body": [
       "Kenapa 0.1 + 0.2 nggak sama dengan 0.3? Penyebabnya, JavaScript cuma",
       "punya satu tipe angka, yaitu float 64-bit. Nggak ada int terpisah",
@@ -877,6 +882,7 @@
      "code": "const mulai = new Date(2026, 0, 10, 9, 0);      // 10 Januari 2026, 09:00\nconst selesai = new Date(2026, 0, 12, 15, 30);  // 12 Januari 2026, 15:30\n\n// Mengurangkan dua Date menghasilkan MILIDETIK, bukan hari\nconst selisihMs = selesai - mulai;\nconsole.log(selisihMs);                          // 196200000\nconsole.log(selisihMs / (1000 * 60 * 60));       // 54.5  (jam)\nconsole.log(Math.floor(selisihMs / 86400000));   // 2     (hari; 86400000 ms = 1 hari)\n\n// Umur: selisih tahun, lalu dikurangi 1 kalau ulang tahunnya BELUM lewat tahun ini\nfunction hitungUmur(lahir, acuan) {\n    let umur = acuan.getFullYear() - lahir.getFullYear();\n    const belumUlangTahun = acuan.getMonth() < lahir.getMonth()\n        || (acuan.getMonth() === lahir.getMonth() && acuan.getDate() < lahir.getDate());\n    if (belumUlangTahun) umur--;\n    return umur;\n}\nconsole.log(hitungUmur(new Date(2005, 7, 20), new Date(2026, 2, 17)));   // 20\n\n// \"3 jam lalu\". Waktu acuan dikirim sebagai PARAMETER, bukan new Date() di dalam,\n// supaya fungsinya bisa diuji dan hasilnya bisa diramalkan.\nfunction waktuLalu(waktu, sekarang) {\n    const detik = Math.floor((sekarang - waktu) / 1000);\n    if (detik < 60) return \"baru saja\";\n    if (detik < 3600) return `${Math.floor(detik / 60)} menit lalu`;\n    if (detik < 86400) return `${Math.floor(detik / 3600)} jam lalu`;\n    return `${Math.floor(detik / 86400)} hari lalu`;\n}\nconst acuan = new Date(2026, 2, 17, 12, 0);\nconsole.log(waktuLalu(new Date(2026, 2, 17, 9, 0), acuan));    // 3 jam lalu\nconsole.log(waktuLalu(new Date(2026, 2, 14, 12, 0), acuan));   // 3 hari lalu\n\n// Menggeser tanggal: setDate() boleh diberi angka di luar 1-31, bulannya ikut maju\nconst jatuhTempo = new Date(2026, 0, 25);\njatuhTempo.setDate(jatuhTempo.getDate() + 10);          // 25 + 10 = \"35 Januari\"\nconsole.log(jatuhTempo.toLocaleDateString(\"id-ID\"));    // 4/2/2026\n\n// JEBAKAN: Date itu MUTABLE - setDate MENGUBAH objek aslinya, tidak membuat yang baru\nconst asli = new Date(2026, 0, 10);\nconst salinan = new Date(asli);                  // salin dulu sebelum digeser!\nsalinan.setDate(salinan.getDate() + 7);\nconsole.log(asli.getDate(), salinan.getDate());  // 10 17\n\n// JEBAKAN setMonth: tanggal yang tidak ada meluber ke bulan berikutnya\nconst akhirJanuari = new Date(2026, 0, 31);\nakhirJanuari.setMonth(1);                                 // minta \"31 Februari\"\nconsole.log(akhirJanuari.toLocaleDateString(\"id-ID\"));    // 3/3/2026, bukan 28/2/2026"
     },
     {
+     "heading": "Date mutable, zona waktu, dan Invalid Date",
      "body": [
       "Ada empat jebakan yang paling sering kena, plus cara menghindarinya:",
       "1. Date itu mutable, artinya isinya bisa diubah. setDate, setMonth, dan",
@@ -1154,7 +1160,7 @@
      ]
     },
     {
-     "heading": "map, filter, reduce - method array PALING PENTING di JS modern",
+     "heading": "map, filter, reduce - method array paling penting di JS modern",
      "code": "const nilai = [80, 90, 75, 85, 60, 95];\n\n// map: transformasi TIAP elemen, hasil array BARU (sama panjang)\nconst dikali2 = nilai.map(n => n * 2);\nconsole.log(dikali2);    // [160, 180, 150, 170, 120, 190]\n\n// filter: menyaring elemen sesuai kondisi, hasil array BARU (bisa lebih pendek)\nconst lulus = nilai.filter(n => n >= 75);\nconsole.log(lulus);      // [80, 90, 75, 85, 95]\n\n// reduce: gabungkan SEMUA elemen jadi SATU nilai\nconst total = nilai.reduce((acc, n) => acc + n, 0);\nconsole.log(total);      // 485\n\n// method chaining (menggabungkan beberapa method berurutan)\nconst hasil = nilai\n    .filter(n => n >= 75)\n    .map(n => n * 1.1)\n    .reduce((acc, n) => acc + n, 0);\nconsole.log(hasil.toFixed(2));\n\n// forEach: menjalankan fungsi untuk tiap elemen, TIDAK mengembalikan array baru\nnilai.forEach((n, i) => console.log(`Indeks ${i}: ${n}`));\n\n// find & some & every\nconsole.log(nilai.find(n => n > 90));      // 95 (elemen PERTAMA yang cocok)\nconsole.log(nilai.some(n => n > 90));      // true (ADA yang > 90?)\nconsole.log(nilai.every(n => n > 50));     // true (SEMUA > 50?)\n\n// sort (PERHATIAN: default sorting berdasarkan STRING, perlu compare function untuk angka!)\nconst angkaAcak = [40, 1, 100, 20];\nconsole.log(angkaAcak.sort());               // [1, 100, 20, 40]  -- SALAH! (string order)\nconsole.log(angkaAcak.sort((a, b) => a - b)); // [1, 20, 40, 100] -- BENAR (numeric)"
     },
     {
@@ -1215,7 +1221,7 @@
      "code": "const nilai = [80, 90, 75];\n\nconst total = nilai.reduce((acc, n) => acc + n, 0);\n//   iterasi 1: acc = 0   n = 80  -> kembalikan 80\n//   iterasi 2: acc = 80  n = 90  -> kembalikan 170\n//   iterasi 3: acc = 170 n = 75  -> kembalikan 245\nconsole.log(total);   // 245\n\n// Tanpa nilai awal, elemen PERTAMA dipakai sebagai acc dan iterasi dimulai\n// dari elemen kedua. Untuk array KOSONG itu langsung melempar error:\ntry {\n    [].reduce((a, b) => a + b);\n} catch (e) {\n    console.log(e.constructor.name + \":\", e.message);\n    // TypeError: Reduce of empty array with no initial value\n}\nconsole.log([].reduce((a, b) => a + b, 0));   // 0   aman, karena ada nilai awal\n\n// Nilai awalnya tidak harus angka. {} dipakai untuk MENGELOMPOKKAN data:\nconst siswa = [\n    { nama: \"Andi\", kelas: \"A\" },\n    { nama: \"Budi\", kelas: \"B\" },\n    { nama: \"Citra\", kelas: \"A\" },\n];\nconst perKelas = siswa.reduce((acc, s) => {\n    acc[s.kelas] ??= [];      // siapkan wadahnya kalau kelas ini baru muncul\n    acc[s.kelas].push(s.nama);\n    return acc;               // WAJIB dikembalikan; kalau lupa, acc jadi undefined\n}, {});\nconsole.log(perKelas);        // { A: [ 'Andi', 'Citra' ], B: [ 'Budi' ] }\n\n// [] sebagai nilai awal, untuk menyaring dan mengubah dalam satu jalan:\nconst lulus = [70, 85, 90].reduce((acc, n) => {\n    if (n >= 75) acc.push(`nilai ${n}`);\n    return acc;\n}, []);\nconsole.log(lulus);           // [ 'nilai 85', 'nilai 90' ]"
     },
     {
-     "heading": "Array.from, dan cara array DICETAK",
+     "heading": "Array.from, dan cara array dicetak",
      "body": [
       "Array.from sudah lewat sekilas di daftar atas, cuma satu baris tanpa",
       "penjelasan. Padahal baris itu menyimpan dua hal yang susah ditebak",
@@ -1438,6 +1444,7 @@
      "code": "// Primitif: yang disalin adalah NILAInya\nlet a = 10;\nlet b = a;\nb = 99;\nconsole.log(a, b);              // 10 99  -> a sama sekali tidak terpengaruh\n\n// Object: yang disalin adalah ALAMATnya\nconst user1 = { nama: \"Andi\", umur: 20 };\nconst user2 = user1;            // BUKAN salinan: dua nama, satu kotak\nuser2.umur = 21;\nconsole.log(user1.umur);        // 21  <- ikut berubah, ini yang mengagetkan\nconsole.log(user1 === user2);   // true (memang object yang SAMA)\n\n// const menahan PENUGASAN ULANG, bukan isi kotaknya\nconst angka = [10, 20, 30];\nangka.push(40);                 // BOLEH: isi berubah, alamatnya tetap\nconsole.log(angka);             // [ 10, 20, 30, 40 ]\n// angka = [1, 2];              // TypeError: Assignment to constant variable.\n\n// === membandingkan IDENTITAS, bukan isi\nconsole.log([1, 2] === [1, 2]);      // false (dua kotak berbeda)\nconsole.log({ x: 1 } === { x: 1 });  // false\nconsole.log(\"ab\" === \"ab\");          // true (primitif dibanding per nilai)\n\n// Fungsi menerima ALAMAT, jadi ia bisa mengubah object milik pemanggil\nfunction tambahBonus(pegawai) {\n    pegawai.gaji += 500000;     // mengubah object ASLI di luar fungsi\n}\nconst budi = { nama: \"Budi\", gaji: 5000000 };\ntambahBonus(budi);\nconsole.log(budi.gaji);         // 5500000\n\n// Kebiasaan yang lebih aman: jangan ubah argumen, kembalikan object BARU\nfunction denganBonus(pegawai) {\n    return { ...pegawai, gaji: pegawai.gaji + 500000 };\n}\nconst citra = { nama: \"Citra\", gaji: 5000000 };\nconst citraBaru = denganBonus(citra);\nconsole.log(citra.gaji, citraBaru.gaji);   // 5000000 5500000"
     },
     {
+     "heading": "Membandingkan isi object dan memutasi array",
      "body": [
       "Akibat pertama: === membandingkan identitas, yaitu apakah dua nilai itu",
       "kotak yang sama. Isinya nggak dilihat.",
@@ -1490,6 +1497,7 @@
      "code": "const user = {\n    nama: \"Andi\",\n    alamat: { kota: \"Jakarta\", pos: \"10110\" },\n};\n\n// SALINAN DANGKAL: hanya lapisan PERTAMA yang benar-benar disalin\nconst salinan = { ...user };\nsalinan.nama = \"Budi\";              // aman, ini lapisan pertama\nsalinan.alamat.kota = \"Bandung\";    // JEBAKAN: alamat masih kotak yang SAMA\nconsole.log(user.nama);             // Andi\nconsole.log(user.alamat.kota);      // Bandung  <- ikut berubah!\n\n// Object.assign: bentuk sebelum spread ada, masih banyak di kode lama\nconst gabung = Object.assign({}, user, { nama: \"Citra\" });\nconsole.log(gabung.nama);                    // Citra\nconsole.log(gabung.alamat === user.alamat);  // true (sama dangkalnya)\n\n// Salinan DALAM manual: salin ulang tiap lapisan yang ikut berubah\nconst rapi = { ...user, alamat: { ...user.alamat, kota: \"Surabaya\" } };\nconsole.log(user.alamat.kota, rapi.alamat.kota);   // Bandung Surabaya\n\n// structuredClone: salinan dalam bawaan (Node 17+ dan browser modern)\nconst klon = structuredClone(user);\nklon.alamat.kota = \"Medan\";\nconsole.log(user.alamat.kota, klon.alamat.kota);   // Bandung Medan\n\n// JSON.parse(JSON.stringify(x)): cara lama, ADA yang hilang di jalan\nconst asal = { tanggal: new Date(0), kosong: undefined, sapa: () => \"hai\" };\nconst lewatJson = JSON.parse(JSON.stringify(asal));\nconsole.log(typeof asal.tanggal, typeof lewatJson.tanggal);  // object string\nconsole.log(\"kosong\" in lewatJson, \"sapa\" in lewatJson);     // false false\n\n// Object.freeze: mengunci object -- tapi juga cuma SATU lapis\nconst setelan = Object.freeze({ tema: \"gelap\", font: { ukuran: 14 } });\nsetelan.tema = \"terang\";       // gagal diam-diam (non-strict), tema tetap\nsetelan.font.ukuran = 20;      // TEMBUS: lapisan dalam tidak ikut dibekukan\nconsole.log(setelan.tema, setelan.font.ukuran);   // gelap 20"
     },
     {
+     "heading": "Cara menyalin dari spread sampai structuredClone",
      "body": [
       "Rangkuman cara menyalin, diurutkan dari yang paling dangkal. Salinan",
       "dangkal cuma menyalin lapis teratas. Salinan dalam ikut menyalin",
@@ -1601,6 +1609,7 @@
      "code": "// Map dibuat kosong, atau dari daftar pasangan [key, value]\nconst stok = new Map([\n    [\"beras\", 12],\n    [\"gula\", 5],\n]);\n\nstok.set(\"kopi\", 8);       // menambah\nstok.set(\"gula\", 7);       // key yang sudah ada -> nilainya DIGANTI, bukan ditambah\n\nconsole.log(stok.get(\"gula\"));   // 7\nconsole.log(stok.get(\"teh\"));    // undefined  (key tidak ada, bukan error)\nconsole.log(stok.has(\"teh\"));    // false\nconsole.log(stok.size);          // 3   <- .size, BUKAN .length\n\nstok.delete(\"beras\");            // true kalau key-nya memang ada\nconsole.log(stok.size);          // 2\n\n// Key tidak harus string, dan tipenya ikut dibedakan\nconst label = new Map();\nlabel.set(1, \"angka satu\");\nlabel.set(\"1\", \"teks satu\");     // 1 dan \"1\" adalah DUA key berbeda\nlabel.set(true, \"ya\");\nconsole.log(label.get(1), label.get(\"1\"), label.get(true));\n\n// Bahkan object dan fungsi boleh jadi key -- ini yang MUSTAHIL di object literal\nconst budi = { nama: \"Budi\" };\nconst sapa = () => \"halo\";\nconst catatan = new Map();\ncatatan.set(budi, 90);\ncatatan.set(sapa, \"fungsi penyapa\");\nconsole.log(catatan.get(budi), catatan.get(sapa));   // 90 fungsi penyapa\n\n// Menelusuri: urutannya persis urutan penyisipan, selalu\nfor (const [nama, jumlah] of stok) {\n    console.log(`${nama}: ${jumlah}`);\n}\n\nconsole.log([...stok.keys()]);      // [ 'gula', 'kopi' ]\nconsole.log([...stok.values()]);    // [ 7, 8 ]\nconsole.log([...stok.entries()]);   // [ [ 'gula', 7 ], [ 'kopi', 8 ] ]\nconsole.log([...stok]);             // sama persis dengan .entries()\n\n// Map tidak punya .map/.filter. Ubah dulu jadi array, baru diolah seperti biasa\nconst banyak = [...stok].filter(([, jumlah]) => jumlah >= 8);\nconsole.log(banyak);                // [ [ 'kopi', 8 ] ]\n\n// Bolak-balik dengan object biasa\nconst objek = { a: 1, b: 2 };\nconst dariObjek = new Map(Object.entries(objek));\nconsole.log(dariObjek.get(\"b\"));              // 2\nconsole.log(Object.fromEntries(dariObjek));   // { a: 1, b: 2 }\n\nstok.clear();                       // kosongkan seluruh isinya\nconsole.log(stok.size);             // 0"
     },
     {
+     "heading": "Jebakan Map dan kapan lebih baik dari object",
      "body": [
       "Ada empat jebakan Map yang nggak memunculkan error:",
       "1. map[key] bukan cara mengakses isi Map. cache[\"x\"] = 1 cuma memasang",
@@ -1733,7 +1742,7 @@
      ]
     },
     {
-     "heading": "Arrow yang mengembalikan object WAJIB dibungkus kurung",
+     "heading": "Arrow yang mengembalikan object wajib dibungkus kurung",
      "body": [
       "Ada satu jebakan di arrow function yang pasti bakal kamu temui. Yang",
       "bikin repot, jebakan ini nggak memunculkan error apa pun:",
@@ -2134,7 +2143,7 @@
      "code": "class Kelas {\n    constructor(nama) {\n        this.nama = nama;\n        this.siswa = [];\n    }\n\n    tambah(orang) {\n        this.siswa.push(orang);\n        return this;\n    }\n\n    // Nama method-nya bukan string biasa melainkan Symbol.iterator, jadi\n    // ditulis di dalam kurung siku. Ini SATU-SATUNYA syarat agar for...of mau.\n    [Symbol.iterator]() {\n        const daftar = this.siswa;\n        let i = 0;                   // 'i' hidup lewat closure (materi Scope & Closure)\n        return {\n            next() {\n                if (i < daftar.length) {\n                    return { value: daftar[i++], done: false };\n                }\n                return { value: undefined, done: true };\n            },\n        };\n    }\n}\n\nconst kelas = new Kelas(\"TI-1\");\nkelas.tambah(\"Andi\").tambah(\"Budi\").tambah(\"Citra\");\n\nfor (const s of kelas) console.log(s);       // Andi / Budi / Citra\nconsole.log([...kelas]);                     // [ 'Andi', 'Budi', 'Citra' ]\nconst [ketua, wakil] = kelas;                // destructuring ikut jalan sendiri\nconsole.log(ketua, wakil);                   // Andi Budi\nconsole.log(Array.from(kelas).length);       // 3"
     },
     {
-     "heading": "function* dan yield: fungsi yang bisa DIJEDA lalu dilanjutkan",
+     "heading": "function* dan yield: fungsi yang bisa dijeda lalu dilanjutkan",
      "body": [
       "Menulis objek { next() { ... } } seperti di atas itu capek dan gampang",
       "salah. Kamu sendiri yang harus mengurus penghitung, batas, dan kapan",
@@ -2156,6 +2165,7 @@
      "code": "// Tanda * setelah kata function = fungsi ini boleh dijeda di tengah jalan.\nfunction* hitungMundur(dari) {\n    console.log(\"   (badan generator mulai berjalan)\");\n    while (dari > 0) {\n        yield dari;              // JEDA di sini, kirim 'dari' ke pemanggil\n        dari--;                  // baru dikerjakan saat next() berikutnya\n    }\n    console.log(\"   (badan generator selesai)\");\n}\n\nconst g = hitungMundur(3);       // BELUM menjalankan apa pun, baru menyiapkan\nconsole.log(\"sudah dipanggil, tapi badan generator masih diam\");\nconsole.log(g.next());   // (mulai berjalan) lalu { value: 3, done: false }\nconsole.log(g.next());   // { value: 2, done: false }\nconsole.log(g.next());   // { value: 1, done: false }\nconsole.log(g.next());   // (selesai) lalu { value: undefined, done: true }\n\n// Generator OTOMATIS iterable - tak perlu menulis Symbol.iterator lagi\nfunction* tigaWarna() {\n    yield \"merah\";\n    yield \"hijau\";\n    yield \"biru\";\n}\nfor (const w of tigaWarna()) process.stdout.write(w + \" \");\nconsole.log();                                    // merah hijau biru\nconsole.log([...tigaWarna()]);                    // [ 'merah', 'hijau', 'biru' ]\nconsole.log(Array.from(tigaWarna(), (w) => w.toUpperCase()));\n\n// Tak berhingga TAPI aman: nilai dihitung hanya saat diminta (lazy/malas)\nfunction* pembuatId() {\n    let id = 1;\n    while (true) yield id++;     // while(true) yang TIDAK menggantung\n}\nconst idNota = pembuatId();\nconsole.log(idNota.next().value, idNota.next().value, idNota.next().value);\n// 1 2 3\n\n// yield* = serahkan giliran ke iterable lain sampai habis, baru lanjut\nfunction* daftarLengkap() {\n    yield* tigaWarna();          // semua nilai dari generator lain\n    yield* [\"hitam\", \"putih\"];   // array juga iterable, jadi boleh\n    yield \"selesai\";\n}\nconsole.log([...daftarLengkap()]);"
     },
     {
+     "heading": "Jebakan generator dan tempat memakainya",
      "body": [
       "Jebakan yang sering kena:",
       "  1. Generator cuma sekali pakai. Sesudah done: true, dia habis",
@@ -2678,6 +2688,7 @@
      "code": "function ambilData(id, callback) {\n    setTimeout(() => {                     // simulasi request butuh waktu\n        console.log(`Data ${id} diambil.`);\n        callback(`Data-${id}`);\n    }, 1000);\n}\n\n// Callback sederhana\nambilData(1, (hasil) => {\n    console.log(\"Hasil:\", hasil);\n});\n\n// \"Callback Hell\": callback bersarang berkali-kali, SULIT dibaca!\nambilData(1, (data1) => {\n    ambilData(2, (data2) => {\n        ambilData(3, (data3) => {\n            console.log(data1, data2, data3);\n            // semakin dalam bersarang = semakin sulit dirawat & di-debug\n        });\n    });\n});\n// Masalah inilah yang diselesaikan oleh Promise & async/await\n// di dua materi berikutnya."
     },
     {
+     "heading": "Event loop, call stack, dan antrean callback",
      "body": [
       "Mesin di balik async JS namanya event loop. Cara kerjanya begini:",
       "  1. Call stack menjalankan kode sinkron (yang jalan berurutan) satu",
@@ -2855,7 +2866,7 @@
      "code": "function ambilData(id) {\n    return new Promise((resolve) => {\n        setTimeout(() => resolve(`Data-${id}`), 1000);\n    });\n}\n\n// Versi Promise chain (dari materi sebelumnya):\n// ambilData(1).then(d1 => { ... return ambilData(2); }).then(d2 => {...});\n\n// Versi async/await - JAUH lebih mudah dibaca:\nasync function prosesSemuaData() {\n    const data1 = await ambilData(1);\n    console.log(data1);\n\n    const data2 = await ambilData(2);\n    console.log(data2);\n\n    const data3 = await ambilData(3);\n    console.log(data3);\n\n    return \"Semua selesai!\";\n}\n\nprosesSemuaData().then((pesan) => console.log(pesan));\n\n// Menangani error dengan try-catch (BUKAN .catch()!)\nasync function amanAmbilData(id) {\n    try {\n        const hasil = await ambilData(id);\n        console.log(\"Berhasil:\", hasil);\n    } catch (error) {\n        console.log(\"Gagal:\", error.message);\n    }\n}"
     },
     {
-     "heading": "Menjalankan beberapa Promise PARALEL dengan async/await",
+     "heading": "Menjalankan beberapa Promise paralel dengan async/await",
      "code": "async function ambilSemuaParalel() {\n    // SALAH (lambat): berurutan, total waktu = jumlah semua delay\n    // const d1 = await ambilData(1);\n    // const d2 = await ambilData(2);   // BARU mulai setelah d1 selesai!\n\n    // BENAR (cepat): mulai SEMUA duluan, baru tunggu bersamaan\n    const [d1, d2, d3] = await Promise.all([\n        ambilData(1),\n        ambilData(2),\n        ambilData(3),\n    ]);\n    console.log(d1, d2, d3);\n    // Total waktu HANYA selama Promise TERLAMA, bukan dijumlah semua!\n}\n\nambilSemuaParalel();"
     },
     {
@@ -3217,6 +3228,7 @@
      "code": "async function buatUser(dataUser) {\n    const response = await fetch(\"https://api.contoh.com/users\", {\n        method: \"POST\",\n        headers: {\n            \"Content-Type\": \"application/json\",\n        },\n        body: JSON.stringify(dataUser),    // object JS -> string JSON\n    });\n\n    const hasil = await response.json();\n    return hasil;\n}\n\nbuatUser({ nama: \"Andi\", umur: 20 })\n    .then((hasil) => console.log(\"User dibuat:\", hasil));\n\n// Ringkasan method HTTP yang sering dipakai di REST API:\n//   GET    -> mengambil data\n//   POST   -> membuat data baru\n//   PUT    -> mengubah SELURUH data (ganti total)\n//   PATCH  -> mengubah SEBAGIAN data\n//   DELETE -> menghapus data"
     },
     {
+     "heading": "Catatan fetch soal text(), indentasi, dan CORS",
      "body": [
       "Ada empat hal kecil di sekitar fetch yang bisa menghemat banyak waktu:",
       "  - response.text() adalah pasangan response.json(), untuk balasan yang",
@@ -3469,6 +3481,7 @@
      "code": "// ==== File: package.json ====\n{\n    \"name\": \"contoh-module\",\n    \"version\": \"1.0.0\",\n    \"type\": \"module\"\n}\n\n// ==== File: alat/matematika.js ====\n// Perhatikan: TIDAK ADA kata 'export' yang menempel di deklarasi mana pun.\nconst PPN = 0.11;\n\nfunction hitungPajak(harga) {\n    return Math.round(harga * PPN);\n}\n\nfunction totalBayar(harga) {\n    return harga + hitungPajak(harga);\n}\n\n// Satu daftar export di KAKI berkas. Sekali lihat, ketahuan apa saja yang keluar\n// dari berkas ini - tidak perlu memindai seluruh isinya mencari kata 'export'.\n// 'hitungPajak as pajak': di dalam berkas ini namanya tetap hitungPajak,\n// tapi berkas lain melihatnya bernama 'pajak'.\nexport { PPN, hitungPajak as pajak, totalBayar };\n\n// ==== File: alat/uang.js ====\nfunction rupiah(angka) {\n    return \"Rp\" + angka;\n}\n\n// default = \"isi utama berkas ini\". Hanya boleh SATU per berkas.\nexport default rupiah;\n\n// ==== File: alat/index.js ====\n// Berkas 'barrel': tidak punya logika sendiri, cuma menyalurkan isi tetangganya\n// supaya pemakainya cukup menyebut SATU alamat, bukan tiga.\nexport * from \"./matematika.js\";                  // semua NAMED export matematika.js\nexport { default as rupiah } from \"./uang.js\";    // default uang.js -> named di sini\n\n// ==== File: utama.js ====\nimport * as alat from \"./alat/index.js\";\nimport { pajak as hitungPpn, PPN } from \"./alat/index.js\";\n\nconsole.log(\"Isi namespace :\", Object.keys(alat).join(\", \"));\nconsole.log(\"PPN           :\", PPN);\nconsole.log(\"Pajak 100000  :\", alat.pajak(100000));\nconsole.log(\"Lewat alias   :\", hitungPpn(100000));\nconsole.log(\"Total bayar   :\", alat.rupiah(alat.totalBayar(100000)));\n\n// Jalankan dengan: node utama.js\n// Isi namespace : PPN, pajak, rupiah, totalBayar\n// PPN           : 0.11\n// Pajak 100000  : 11000\n// Lewat alias   : 11000\n// Total bayar   : Rp111000"
     },
     {
+     "heading": "Enam penyebab import gagal",
      "body": [
       "Ada enam hal yang bikin import gagal padahal kelihatannya sudah benar.",
       "Semuanya bakal kamu temui, jadi kenali pesannya dari sekarang supaya",
@@ -3528,6 +3541,7 @@
      "code": "// ==== File: pengaturan.mjs ====\n// Berkas ini tidak meng-export APA PUN. Ia cuma mengerjakan sesuatu saat dimuat.\nconsole.log(\"[pengaturan] dijalankan saat berkas ini dimuat\");\nglobalThis.NAMA_APP = \"Toko Levi\";\n\n// ==== File: berat.mjs ====\nconsole.log(\"[berat] BARU dimuat sekarang, bukan di awal program\");\n\nexport function laporan(judul) {\n    return \"== \" + judul + \" ==\";\n}\n\nexport default \"aku export default milik berat.mjs\";\n\n// ==== File: utama.mjs ====\nconsole.log(\"[utama] ini baris PERTAMA yang ditulis di berkas utama.mjs\");\nconsole.log(\"[utama] NAMA_APP =\", globalThis.NAMA_APP);\n\nconst perluLaporan = true;   // ganti jadi false: berat.mjs tak akan pernah dimuat\n\nif (perluLaporan) {\n    // import() adalah FUNGSI, bukan pernyataan. Ia mengembalikan Promise, jadi\n    // hasilnya ditunggu dengan await (lihat materi async/await).\n    const modul = await import(\"./berat.mjs\");\n    console.log(modul.laporan(\"Penjualan\"));\n    console.log(modul.default);   // export default-nya ada di property .default\n} else {\n    console.log(\"[utama] berat.mjs tidak pernah disentuh\");\n}\n\n// Sengaja ditaruh PALING BAWAH. Perhatikan urutan keluarannya.\nimport \"./pengaturan.mjs\";\n\n// Jalankan dengan: node utama.mjs\n// [pengaturan] dijalankan saat berkas ini dimuat      <- paling atas, walau ditulis paling bawah\n// [utama] ini baris PERTAMA yang ditulis di berkas utama.mjs\n// [utama] NAMA_APP = Toko Levi\n// [berat] BARU dimuat sekarang, bukan di awal program\n// == Penjualan ==\n// aku export default milik berat.mjs"
     },
     {
+     "heading": "Menentukan ES Module atau CommonJS",
      "body": [
       "Pertanyaan yang menentukan semuanya: sebuah berkas .js itu ES Module",
       "atau CommonJS? Ada tiga aturan, dibaca berurutan:",
@@ -3683,6 +3697,7 @@
      "code": "// Argumen sungguhan mulai dari indeks 2, dua yang pertama milik Node sendiri.\nconst argumen = process.argv.slice(2);\n\nconsole.log(\"Jumlah argumen:\", argumen.length);\nfor (const [i, arg] of argumen.entries()) {\n    console.log(`  argumen ke-${i}: ${arg}`);\n}\nif (argumen.length === 0) {\n    console.log(\"  (kosong - coba jalankan ulang dengan menambahkan: kopi teh)\");\n}\n\n// || memberi nilai cadangan kalau variabelnya belum diset di lingkungan.\nconst port = process.env.PORT || \"3000\";\nconsole.log(\"PORT :\", port, \"| tipe:\", typeof port);   // selalu \"string\"\nconsole.log(\"Angka:\", Number(port) + 1);               // ubah dulu baru dihitung\n\n// stdout.write tidak menambah baris baru, jadi semuanya menempel di satu baris.\nfor (let i = 1; i <= 5; i++) {\n    process.stdout.write(i + \" \");\n}\nprocess.stdout.write(\"\\n\");        // baris baru ditulis SENDIRI kalau perlu\n\n// Kode keluar dibaca oleh shell dan oleh CI: 0 = sukses, selain 0 = gagal.\n// Kalau tidak dipanggil, Node otomatis keluar dengan 0 saat kodenya habis.\nprocess.exit(0);"
     },
     {
+     "heading": "Modul bawaan Node, jalur relatif, dan path.join",
      "body": [
       "Modul bawaan vs paket npm",
       "",
@@ -3898,7 +3913,7 @@
      "code": "const wadah = document.querySelector(\"#daftar-notifikasi\");\n\nconst mo = new MutationObserver((mutations) => {\n    for (const m of mutations) {\n        if (m.type === \"childList\" && m.addedNodes.length > 0) {\n            console.log(`${m.addedNodes.length} elemen baru ditambahkan`);\n        }\n        if (m.type === \"attributes\") {\n            console.log(`atribut '${m.attributeName}' berubah pada`, m.target);\n        }\n    }\n});\n\nmo.observe(wadah, {\n    childList: true,   // amati elemen anak yang ditambah/dihapus\n    attributes: true,  // amati perubahan atribut (class, style, data-*, dst)\n    subtree: true,     // ikut amati anak dari anak, bukan cuma anak langsung\n});\n\n// Berhenti mengamati kalau sudah tidak perlu - MutationObserver TIDAK\n// otomatis berhenti sendiri walau elemennya dihapus dari halaman.\n// mo.disconnect();"
     },
     {
-     "heading": "ResizeObserver: tahu kapan UKURAN elemen berubah",
+     "heading": "ResizeObserver: tahu kapan ukuran elemen berubah",
      "body": [
       "window.addEventListener('resize', ...) cuma menyala waktu jendela",
       "browser berubah ukuran. Padahal sebuah elemen bisa berubah ukuran",
@@ -4059,7 +4074,7 @@
      "code": "// Dijalankan di browser, biasanya di dalam event klik tombol.\nfunction ambilLokasiSekali() {\n    navigator.geolocation.getCurrentPosition(\n        (position) => {                          // callback SUKSES\n            const { latitude, longitude, accuracy } = position.coords;\n            console.log(`Lokasi: ${latitude}, ${longitude}`);\n            console.log(`Radius ketidakpastian: ${accuracy} meter`);\n        },\n        (error) => {                             // callback GAGAL - wajib ada\n            switch (error.code) {\n                case error.PERMISSION_DENIED:\n                    console.log(\"Kamu menolak izin lokasi.\");\n                    break;\n                case error.POSITION_UNAVAILABLE:\n                    console.log(\"Lokasi tidak bisa ditentukan saat ini.\");\n                    break;\n                case error.TIMEOUT:\n                    console.log(\"Waktu tunggu habis, coba lagi.\");\n                    break;\n            }\n        },\n        {\n            enableHighAccuracy: true,   // minta GPS kalau ada, bukan cuma Wi-Fi/IP (lebih lambat & boros baterai)\n            timeout: 5000,               // ms, sebelum callback gagal dipanggil dengan code TIMEOUT\n            maximumAge: 0,                // 0 = jangan pakai posisi lama yang di-cache, selalu ambil baru\n        }\n    );\n}"
     },
     {
-     "heading": "watchPosition: terus memantau, dan JEBAKAN kalau lupa clearWatch",
+     "heading": "watchPosition: terus memantau, dan jebakan kalau lupa clearWatch",
      "body": [
       "getCurrentPosition mengambil posisi sekali, lalu selesai. watchPosition",
       "dipanggil dengan cara yang sama, tapi callback suksesnya dipanggil",
@@ -4212,7 +4227,7 @@
      ]
     },
     {
-     "heading": "Sistem koordinat: (0,0) di pojok KIRI ATAS",
+     "heading": "Sistem koordinat: (0,0) di pojok kiri atas",
      "body": [
       "Jebakan pertama yang bikin hampir semua orang keliru: di pelajaran",
       "matematika sekolah, sumbu Y bertambah ke atas. Di canvas, sumbu Y",
@@ -4269,7 +4284,7 @@
      "code": "ctx.beginPath();\nctx.moveTo(50, 150);\nctx.lineTo(120, 150);\nctx.lineTo(85, 90);\nctx.closePath();          // garis ketiga ke titik awal, membentuk segitiga\nctx.fillStyle = \"seagreen\";\nctx.fill();\n\nctx.beginPath();\n// Lingkaran penuh: radius 40, dari sudut 0 sampai satu putaran penuh (2*PI radian).\nctx.arc(220, 130, 40, 0, Math.PI * 2);\nctx.fillStyle = \"orange\";\nctx.fill();\n\nctx.beginPath();\n// Setengah lingkaran: PI radian = 180 derajat, BUKAN 180 yang ditulis langsung.\nctx.arc(320, 130, 40, 0, Math.PI);\nctx.strokeStyle = \"purple\";\nctx.lineWidth = 3;\nctx.stroke();"
     },
     {
-     "heading": "fillStyle dan strokeStyle: state yang MENEMPEL",
+     "heading": "fillStyle dan strokeStyle: state yang menempel",
      "body": [
       "Kalau kamu pernah pakai SVG, ini beda besarnya. Di SVG, tiap bentuk",
       "punya atributnya sendiri-sendiri. Di canvas, fillStyle, strokeStyle,",
@@ -4359,7 +4374,7 @@
      "code": "toko-online/\n├── README.md            baca ini DULUAN - untuk apa proyek ini dan cara memakainya\n├── package.json         nama, dependency, dan daftar perintah \"scripts\"\n├── package-lock.json    dihasilkan npm   - jangan disunting, jangan dibaca\n├── .gitignore           daftar apa yang TIDAK ikut disimpan Git\n├── .env                 rahasia: password, API key - tidak ikut di-commit\n├── vite.config.js       setelan build tool\n├── node_modules/        dihasilkan npm   - ribuan folder milik paket orang lain\n├── dist/                dihasilkan build - hasil jadi, tertimpa tiap kali build\n├── src/                 DITULIS MANUSIA  - di sinilah kode sungguhannya\n│   ├── main.js          titik masuk program\n│   ├── keranjang.js\n│   └── komponen/\n└── tests/               DITULIS MANUSIA  - sering lebih banyak dari isi src/\n    └── keranjang.test.js"
     },
     {
-     "heading": "Berkas di akar: yang MENGATUR perkakas, bukan yang dijalankan",
+     "heading": "Berkas di akar: yang mengatur perkakas, bukan yang dijalankan",
      "body": [
       "Berkas yang namanya diawali titik, atau berakhiran .config.js, hampir",
       "selalu bukan bagian program. Berkas-berkas itu menyetel perkakas di",
@@ -4440,7 +4455,7 @@
      "code": "/**\n * Menghitung harga yang harus dibayar setelah diskon.\n *\n * @param {number} harga  Harga awal dalam rupiah.\n * @param {number} persen Besar diskon, 0 sampai 100.\n * @returns {number} Harga akhir setelah dipotong.\n */\nfunction hargaSetelahDiskon(harga, persen) {\n    return harga - (harga * persen) / 100;\n}\n\n// Di repo sungguhan, tiga fungsi di bawah DISEDIAKAN Jest atau Vitest.\n// Di sini kita menulisnya sendiri supaya jelas: mereka fungsi biasa.\nfunction describe(nama, isi) {\n    console.log(nama);\n    isi();\n}\n\nfunction it(nama, isi) {\n    try {\n        isi();\n        console.log(\"  lulus  - \" + nama);\n    } catch (e) {\n        console.log(\"  GAGAL  - \" + nama + \" -> \" + e.message);\n    }\n}\n\nfunction expect(nilai) {\n    return {\n        toBe(harapan) {\n            if (nilai !== harapan) {\n                throw new Error(nilai + \" bukan \" + harapan);\n            }\n        },\n    };\n}\n\ndescribe(\"hargaSetelahDiskon\", () => {\n    it(\"memotong 10 persen dari 200000\", () => {\n        expect(hargaSetelahDiskon(200000, 10)).toBe(180000);\n    });\n\n    it(\"mengembalikan harga apa adanya kalau diskonnya 0\", () => {\n        expect(hargaSetelahDiskon(50000, 0)).toBe(50000);\n    });\n\n    it(\"sengaja salah, supaya kelihatan bentuk kegagalannya\", () => {\n        expect(hargaSetelahDiskon(100000, 50)).toBe(60000);\n    });\n});\n\n// Keluaran:\n//   hargaSetelahDiskon\n//     lulus  - memotong 10 persen dari 200000\n//     lulus  - mengembalikan harga apa adanya kalau diskonnya 0\n//     GAGAL  - sengaja salah, supaya kelihatan bentuk kegagalannya -> 50000 bukan 60000"
     },
     {
-     "heading": "Berkas tes: bacaan TERBAIK di repo yang belum kamu kenal",
+     "heading": "Berkas tes: bacaan terbaik di repo yang belum kamu kenal",
      "body": [
       "Nama berkas tes mengikuti nama berkas yang diujinya, ditambah .test.js",
       "atau .spec.js:",
@@ -4480,7 +4495,7 @@
      ]
     },
     {
-     "heading": "Berkas .js yang isinya BUKAN JavaScript polos",
+     "heading": "Berkas .js yang isinya bukan JavaScript polos",
      "body": [
       "Cepat atau lambat kamu bakal membuka berkas .js atau .jsx, lalu nemu",
       "sesuatu yang mirip HTML di tengah sebuah fungsi:",

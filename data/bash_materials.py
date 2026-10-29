@@ -44,6 +44,7 @@ echo "Halo Dunia!"
 echo "Aku sedang belajar Bash." """
             },
             {
+                "heading": "Shebang, cara menjalankan, dan sambung baris",
                 "body": [
                     "Baris pertama script tadi namanya shebang:",
                     "",
@@ -252,6 +253,7 @@ cd ..
 rm -rf coba-izin""",
             },
             {
+                "heading": "Izin dalam bentuk angka dan simbolik",
                 "body": [
                     "Nulis sembilan huruf rwx tiap kali itu capek, jadi ada bentuk angka.",
                     "Tiap bit punya nilai:",
@@ -366,6 +368,7 @@ cd ..
 rm -rf coba-umask""",
             },
             {
+                "heading": "Kunci SSH, sudo, dan chown",
                 "body": [
                     "Untuk kunci SSH, izin 600 itu wajib. ssh menolak jalan kalau kunci",
                     "privatmu terlalu longgar. Kalau kuncinya berizin 644, yang muncul",
@@ -518,6 +521,7 @@ sekarang=$(date +%Y)
 echo "Tahun sekarang: $sekarang" """
             },
             {
+                "heading": "Ringkasan quoting dan variabel khusus",
                 "body": [
                     "Ringkasan tanda kutip, atau quoting:",
                     "",
@@ -572,7 +576,7 @@ echo "Tahun sekarang: $sekarang" """
                 ]
             },
             {
-                "heading": "$( ) membuka konteks kutip BARU",
+                "heading": "$( ) membuka konteks kutip baru",
                 "body": [
                     "Apa pun yang ada di dalam $( ) dibaca dari nol, terpisah dari yang di",
                     "luarnya. Petik ganda di dalamnya nggak menutup petik ganda di luarnya.",
@@ -764,6 +768,7 @@ read -p "Masukkan 2 angka: " a b
 echo "Jumlah: $((a + b))" """
             },
             {
+                "heading": "Opsi read, redirection, dan pipe",
                 "body": [
                     "Ada dua bentuk di contoh tadi yang belum waktunya dibahas. Nggak usah",
                     "dipikirin dulu, dua-duanya dijelasin lengkap nanti:",
@@ -933,6 +938,7 @@ cat bocor.log
 rm -f kumpul.log bocor.log""",
             },
             {
+                "heading": "Mendiamkan keluaran, exec, dan tee",
                 "body": [
                     "Pola yang paling sering kamu temui di script orang lain:",
                     "",
@@ -1037,6 +1043,7 @@ echo "dibaca lewat fd 3: $satu lalu $dua"
 rm -f "$LOG" buah.txt""",
             },
             {
+                "heading": "Here-string, membaca berkas, dan perintah kosong",
                 "body": [
                     "Ada tiga jalan pintas yang udah dipakai di materi lain tanpa dijelasin.",
                     "Sekarang kita bahas asalnya.",
@@ -1562,6 +1569,7 @@ echo "masih di     : $PWD" """,
                 "code": "#!/usr/bin/env bash\n# Potongan yang khas ada di ~/.bashrc. Di sini ia dijalankan sebagai script\n# biasa supaya efek tiap barisnya kelihatan, tanpa mengubah setelan aslimu.\n\n# 1. PATH -- taruh folder program pribadi di DEPAN daftar bawaan\nexport PATH=\"$HOME/.local/bin:$PATH\"\n\n# 2. Alias -- nama pendek untuk perintah yang sering diketik\nalias ll='ls -alF'\nalias gs='git status'\nalias ..='cd ..'\n\n# 3. Riwayat perintah\nHISTSIZE=10000\nHISTFILESIZE=20000\nHISTCONTROL=ignorespace:erasedups\nshopt -s histappend\n\n# 4. Bentuk prompt: pengguna@mesin:folder$\nPS1='\\u@\\h:\\w\\$ '\n\n# 5. Menjalankan keluaran sebuah perintah sebagai kode\n# eval \"$(pyenv init -)\"\n\necho \"PATH kini diawali : ${PATH%%:*}\"\necho \"Definisi alias ll : $(alias ll)\"\necho \"Riwayat disimpan  : $HISTSIZE baris\"\necho \"Bentuk prompt PS1 : $PS1\"",
             },
             {
+                "heading": "Alias, riwayat perintah, dan prompt PS1",
                 "body": [
                     "Alias adalah nama pendek untuk perintah yang panjang.",
                     "",
@@ -2349,6 +2357,7 @@ if [[ -v umur["andi"] ]]; then
 fi"""
             },
             {
+                "heading": "Associative array, memecah string, dan mapfile",
                 "body": [
                     "Beberapa hal soal associative array:",
                     "  - Wajib pakai declare -A sebelum dipakai. Kalau lupa, bash",
@@ -2464,6 +2473,7 @@ hasil=$(jumlahkan 7 5)
 echo "7 + 5 = $hasil" """
             },
             {
+                "heading": "Nilai kembalian fungsi dan kata kunci local",
                 "body": [
                     "Ada dua cara fungsi \"mengembalikan\" nilai.",
                     "",
@@ -2767,7 +2777,7 @@ exit 0"""
                 ],
             },
             {
-                "heading": "Script utuh dengan -h, -v, dan -o BERKAS",
+                "heading": "Script utuh dengan -h, -v, dan -o berkas",
                 "code": """#!/usr/bin/env bash
 set -euo pipefail
 
@@ -2823,6 +2833,7 @@ coba -x laporan.txt
 coba -o""",
             },
             {
+                "heading": "Membaca baris getopts dan dua jebakannya",
                 "body": [
                     "Kita baca baris kuncinya pelan-pelan:",
                     "",
@@ -2957,6 +2968,7 @@ coba --salah laporan.txt
 coba --force -- -berkas-diawali-strip.txt""",
             },
             {
+                "heading": "Opsi panjang, penanda dua strip, dan bantuan",
                 "body": [
                     "Ada satu batas getopts yang perlu kamu tahu sebelum nyari-nyari di",
                     "dokumentasi: getopts cuma ngerti opsi pendek satu huruf. Nggak ada",
@@ -3183,6 +3195,7 @@ cd ..
 rmdir contoh-pola""",
             },
             {
+                "heading": "Kosakata regex dan jebakan titik",
                 "body": [
                     "Sekarang regex. Begitu kosakatanya kamu kuasai, regex bisa dipakai di",
                     "=~, grep, sed, awk, dan hampir semua bahasa pemrograman lain yang bakal",
@@ -3625,6 +3638,7 @@ echo "---"
 echo "$jumlah file, total $total_baris baris" """
             },
             {
+                "heading": "Nullglob, berkas sementara, dan wc -l",
                 "body": [
                     "Perhatikan baris ini:",
                     "  [[ -e \"$berkas\" ]] || continue",
@@ -3839,6 +3853,7 @@ echo "== lebih baru daripada berkas 'patokan' =="
 find arsip -type f -newer patokan | sort""",
             },
             {
+                "heading": "Menjalankan aksi lewat -exec dan xargs",
                 "body": [
                     "find nggak cuma bisa mencetak nama. find juga bisa menjalankan sesuatu",
                     "untuk tiap hasil, dan bentuknya ada dua.",
@@ -4150,6 +4165,7 @@ cut -d',' -f1 nilai.csv | sort
 rm -f nilai.csv"""
             },
             {
+                "heading": "Heredoc, here-string, dan variabel bawaan awk",
                 "body": [
                     "Perhatikan heredoc di contoh:",
                     "  cat > nilai.csv << 'EOF'",
@@ -5126,6 +5142,7 @@ utama() {
 utama "$@" """
             },
             {
+                "heading": "Sepuluh praktik baik dan kesalahan pemula",
                 "body": [
                     "Praktik baik yang dipakai di kerangka di atas:",
                     "  1. Shebang #!/usr/bin/env bash di baris pertama.",
@@ -5265,7 +5282,7 @@ utama "$@" """
                 ],
             },
             {
-                "heading": "bashisme.sh — mulus di bash, hancur di sh",
+                "heading": "bashisme.sh: mulus di bash, hancur di sh",
                 "code": """#!/usr/bin/env bash
 # Tiap bagian di sini butuh bash. Ganti shebang-nya jadi #!/bin/sh
 # dan berkas ini rusak sebelum sempat mencetak apa pun.
@@ -5304,6 +5321,7 @@ tab=$'\\t'
 echo "9. C-quote : ada tab sungguhan di sini ->${tab}<- selesai" """,
             },
             {
+                "heading": "Pesan galat bashism dan padanannya di sh",
                 "body": [
                     "Jalankan berkas di atas dengan bash: sembilan baris keluar rapi, tanpa",
                     "keluhan. Sekarang ganti baris pertamanya jadi #!/bin/sh, lalu jalankan",
@@ -5385,7 +5403,7 @@ echo "9. C-quote : ada tab sungguhan di sini ->${tab}<- selesai" """,
                 ],
             },
             {
-                "heading": "posix.sh — pekerjaan yang sama, tanpa satu pun bashism",
+                "heading": "posix.sh: pekerjaan yang sama, tanpa satu pun bashism",
                 "code": """#!/bin/sh
 # Jalan di dash, busybox ash, bash, zsh - sh mana pun.
 
@@ -5428,6 +5446,7 @@ if [ -n "$warna" ] && [ "$warna" = merah ]; then
 fi""",
             },
             {
+                "heading": "Perintah [ ] dan cara menguji portabilitas",
                 "body": [
                     "Dua catatan dari posix.sh:",
                     "  - Perintah . ./konfig.sh: titiknya wajib diikuti ./ kalau berkasnya",
@@ -6042,6 +6061,7 @@ case "$perintah" in
 esac"""
             },
             {
+                "heading": "Bagian menarik script dan ide lanjutan",
                 "body": [
                     "Beberapa bagian script ini yang menarik untuk diperhatikan:",
                     "",

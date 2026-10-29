@@ -110,6 +110,7 @@ KOTLIN_MATERIALS = [
 }"""
             },
             {
+                "heading": "Kotlin dibanding Java, string, dan lambda",
                 "body": [
                     "Dibanding Java, beberapa hal langsung kelihatan beda:",
                     "  - Nggak ada class pembungkus. `fun main()` boleh berdiri sendiri di",
@@ -309,6 +310,7 @@ KOTLIN_MATERIALS = [
 }"""
             },
             {
+                "heading": "Pembagian bilangan bulat dan List hanya baca",
                 "body": [
                     "Keluaran:",
                     "  Int    : -2147483648 .. 2147483647",
@@ -524,6 +526,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Smart cast, isNullOrBlank, dan platform type",
                 "body": [
                     "Keluaran:",
                     "  [Halo, ANDI!]",
@@ -762,6 +765,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Argumen bernama, destructuring, dan extension",
                 "body": [
                     "Keluaran:",
                     "  luas      : 6.25",
@@ -992,6 +996,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Urutan cabang when dan label return",
                 "body": [
                     "Keluaran:",
                     "  kosong",
@@ -1219,6 +1224,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Mengelompokkan dan mengurutkan dua tingkat",
                 "body": [
                     "Keluaran:",
                     "  Data      : 78, 92, 65, 88, 71, 95, 59, 83",
@@ -1466,6 +1472,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Private set, require, dan companion object",
                 "body": [
                     "Keluaran:",
                     "  tarik 900rb: false",
@@ -1700,6 +1707,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Kesamaan nilai, variansi out, dan Nothing",
                 "body": [
                     "Keluaran:",
                     "  berhasil: Kopi (25000)",
@@ -1930,6 +1938,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Delegasi lawan pewarisan pada Galeri",
                 "body": [
                     "Keluaran:",
                     "  Persegi            16.00",
@@ -2171,6 +2180,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Closure, also, dan ongkos inline",
                 "body": [
                     "Keluaran:",
                     "  genap     : [2, 4, 6, 8, 10]",
@@ -2402,6 +2412,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Variansi out, reified, dan pasangan OrNull",
                 "body": [
                     "Keluaran:",
                     "  terbesar Int  : 9",
@@ -2647,6 +2658,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Urutan catch dan bahaya CancellationException",
                 "body": [
                     "Keluaran:",
                     "  bayar   20000 -> sisa 30000",
@@ -2880,6 +2892,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Posisi await dan ongkos thread",
                 "body": [
                     "Keluaran:",
                     "  A selesai (200ms)",
@@ -3108,6 +3121,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Hasil grup regex, matches, dan Locale",
                 "body": [
                     "Keluaran (bagian pentingnya):",
                     "  asli       : Kotlin membuat kode Android jauh lebih ringkas",
@@ -3331,6 +3345,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Menyusun teks, destructuring, dan jebakan split",
                 "body": [
                     "Keluaran:",
                     "  ditulis    : belajar-kotlin.csv (47 byte)",
@@ -3531,6 +3546,7 @@ tasks.test {
 }"""
             },
             {
+                "heading": "Toolchain, version catalog, dan gitignore",
                 "body": [
                     "Akhiran Kt di `mainClass.set(\"toko.MainKt\")` bukan salah ketik. Berkas",
                     "`Main.kt` yang berisi fungsi level atas dikompilasi jadi class bernama",
@@ -3766,6 +3782,7 @@ class RaporTest {
 }"""
             },
             {
+                "heading": "Nilai batas, toleransi, dan cakupan tes",
                 "body": [
                     "Lihat nilai yang dipilih di tes grade: 85 dan 84, 75 dan 74, 60 dan 59.",
                     "Menguji tepat di batas jauh lebih berguna daripada menguji nilai di",
@@ -3978,6 +3995,7 @@ fun main() {
 }"""
             },
             {
+                "heading": "Empat keputusan desain di program gudang",
                 "body": [
                     "Ada empat keputusan di program ini yang layak ditiru:",
                     "  1. Kegagalan dikembalikan lewat sealed class, nggak dilempar. Tanda",

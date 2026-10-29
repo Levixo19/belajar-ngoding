@@ -1769,6 +1769,7 @@ Hash Join  (cost=149.50..2136.43 rows=356 width=22)
         ->  Seq Scan on pelanggan c  (cost=0.00..87.00 rows=5000 width=22)""",
             },
             {
+                "heading": "Cara membaca keluaran EXPLAIN ANALYZE",
                 "body": [
                     "Cara membacanya:",
                     "  - Tiap baris yang diawali nama operasi adalah satu simpul",
@@ -3656,6 +3657,7 @@ ORDER BY `id`
 LIMIT 10, 20;""",
             },
             {
+                "heading": "Tabel perbedaan MySQL, SQLite, dan PostgreSQL",
                 "body": [
                     "Bagian yang khas MySQL, dibandingkan dengan SQLite dan PostgreSQL:",
                     "",
@@ -5052,6 +5054,7 @@ db.produk.updateOne(
 db.produk.deleteOne({ nama: "Kopi Gayo 250g" })""",
             },
             {
+                "heading": "Filter, operator update, dan padanan istilah SQL",
                 "body": [
                     "CRUD singkatan dari create, read, update, delete. Perintah",
                     "use toko pindah ke database toko, dan database maupun koleksinya",
@@ -5188,6 +5191,7 @@ db.produk.find({ kategori: "kopi" }).sort({ harga: -1 })
   .explain("executionStats")""",
             },
             {
+                "heading": "Jenis indeks dan cara membaca explain",
                 "body": [
                     "Tanpa indeks, MongoDB membaca seluruh koleksi untuk tiap kueri.",
                     "Jenis indeks yang paling sering dipakai:",
@@ -6516,6 +6520,7 @@ compaction()
 print("sesudah compaction:", sstable)""",
             },
             {
+                "heading": "Hasil LSM-tree dan perbandingan dengan B-tree",
                 "body": [
                     "Keluarannya:",
                     "",

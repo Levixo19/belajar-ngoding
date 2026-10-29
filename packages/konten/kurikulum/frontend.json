@@ -1074,6 +1074,7 @@
      "code": "Nama        Sistem                 Lisensi                 Menyalakan\nOrca        Linux GNOME            LGPL, gratis            Super+Alt+S\nNVDA        Windows                GPL-2.0, gratis         unduh dari nvaccess.org\nJAWS        Windows                berbayar                dipasang terpisah\nNarrator    Windows                bawaan Windows          Ctrl+Win+Enter\nVoiceOver   macOS, iOS, iPadOS     bawaan Apple            Cmd+F5 di Mac\nTalkBack    Android                bawaan Android          Pengaturan > Aksesibilitas\nChromeVox   ChromeOS (Chromebook)  bawaan ChromeOS         Ctrl+Alt+Z"
     },
     {
+     "heading": "Pembaca layar populer dan pasangan browsernya",
      "body": [
       "NVDA dari NV Access gratis dan open source, sebagian besar ditulis",
       "dengan Python, dan rilis terbarunya 2026.2. JAWS dari Freedom Scientific",
@@ -2346,6 +2347,7 @@
      "code": "import styled from 'styled-components';\n\nconst Tombol = styled.button`\n  padding: 0.5rem 1rem;\n  background: ${(props) => (props.$bahaya ? '#b91c1c' : '#c2410c')};\n  color: #fff;\n`;\n\n// dipakai: <Tombol $bahaya>Hapus</Tombol>"
     },
     {
+     "heading": "Kenapa CSS-in-JS runtime ditinggalkan",
      "body": [
       "Cara ini pernah populer sekali di proyek React, tapi sekarang",
       "ditinggalkan karena dua alasan. Pertama, ada biaya: gaya dihitung di",
@@ -3642,6 +3644,7 @@
      "code": "import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';\n\ntype Pengguna = { id: number; nama: string };\n\nexport function FormCari() {\n  const [kata, setKata] = useState('');                 // string, ditebak\n  const [hasil, setHasil] = useState<Pengguna | null>(null);\n  const inputRef = useRef<HTMLInputElement>(null);\n\n  function ubah(e: ChangeEvent<HTMLInputElement>) {\n    setKata(e.target.value);\n  }\n\n  function kirim(e: FormEvent<HTMLFormElement>) {\n    e.preventDefault();\n    inputRef.current?.focus();\n  }\n\n  return (\n    <form onSubmit={kirim}>\n      <input ref={inputRef} value={kata} onChange={ubah} />\n      {hasil && <p>{hasil.nama}</p>}\n    </form>\n  );\n}"
     },
     {
+     "heading": "Tipe useState, useRef, useReducer, dan hook",
      "body": [
       "useState menebak tipenya dari nilai awal. Kalau nilai awalnya null",
       "tapi nanti diisi objek, tulis tipenya: useState<Pengguna | null>.",
@@ -4585,6 +4588,7 @@
      "code": "Pustaka           Untuk                        Status\nVuetify 4         komponen Material Design     aktif\nElement Plus 2    komponen panel admin         aktif\nPrimeVue 5        komponen lengkap (PrimeTek)  aktif\nQuasar 2          satu kode: web, mobile, desktop  aktif\nVeeValidate 4     validasi form                stabil-matang\nFormKit 2         kerangka form + skema        aktif\nVuelidate 2       validasi berbasis model      menurun\nVuex 4            store lama                   usang"
     },
     {
+     "heading": "Vuetify, Quasar, VeeValidate, dan FormKit",
      "body": [
       "Vuetify adalah pustaka komponen Material Design terbesar untuk Vue,",
       "sekarang di versi 4. Element Plus, penerus Element UI dari zaman",
@@ -5490,6 +5494,7 @@
      "code": "import { createSignal, createMemo } from 'solid-js';\n\nfunction Penghitung() {\n  const [jumlah, setJumlah] = createSignal(0);\n  const ganda = createMemo(() => jumlah() * 2);\n  console.log('fungsi ini jalan sekali saja');\n\n  return (\n    <button onClick={() => setJumlah(jumlah() + 1)}>\n      {jumlah()} x 2 = {ganda()}\n    </button>\n  );\n}"
     },
     {
+     "heading": "Solid, Preact, dan resumability Qwik",
      "body": [
       "Solid kelihatan seperti React karena memakai JSX, tapi cara",
       "kerjanya mirip signal yang kamu buat di bab 03. Fungsi komponen",
@@ -5635,6 +5640,7 @@
      "code": "// jQuery\n$('#simpan').on('click', function () {\n  $('.pesan').addClass('tampil').text('Tersimpan');\n  $.ajax({ url: '/api/simpan', method: 'POST', data: { id: 7 } });\n});\n\n// DOM API bawaan, hasilnya sama\ndocument.querySelector('#simpan').addEventListener('click', () => {\n  for (const el of document.querySelectorAll('.pesan')) {\n    el.classList.add('tampil');\n    el.textContent = 'Tersimpan';\n  }\n  fetch('/api/simpan', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ id: 7 }),\n  });\n});"
     },
     {
+     "heading": "Membaca kode jQuery dan menggantinya",
      "body": [
       "jQuery lahir waktu tiap browser punya cara sendiri untuk hal yang",
       "sama. Fungsi $() menyembunyikan perbedaan itu. Sekarang",
@@ -5671,6 +5677,7 @@
      "code": "const pesanan = [\n  { menu: 'kopi', harga: 18000 },\n  { menu: 'teh', harga: 12000 },\n  { menu: 'kopi', harga: 20000 },\n];\n\n// _.groupBy(pesanan, 'menu')\nconst perMenu = Object.groupBy(pesanan, (p) => p.menu);\nconsole.log(Object.keys(perMenu), perMenu.kopi.length);\n\n// _.cloneDeep(pesanan)\nconst salinan = structuredClone(pesanan);\nsalinan[0].harga = 0;\nconsole.log(pesanan[0].harga, salinan[0].harga);\n\n// _.sortBy(pesanan, 'harga'), tanpa mengubah aslinya\nconst urut = pesanan.toSorted((a, b) => a.harga - b.harga);\nconsole.log(urut.map((p) => p.harga).join(' < '));\n\n// moment(t).format(...) dan .add(7, 'days')\nconst t = new Date(Date.UTC(2026, 9, 19, 7, 30));\nconst tujuhHari = new Date(t.getTime() + 7 * 24 * 60 * 60 * 1000);\nconst fmt = new Intl.DateTimeFormat('id-ID', {\n  dateStyle: 'full', timeStyle: 'short', timeZone: 'UTC',\n});\nconsole.log(fmt.format(t));\nconsole.log(fmt.format(tujuhHari));"
     },
     {
+     "heading": "Lodash dan alternatif pustaka tanggal",
      "body": [
       "Keluaran:",
       "  [ 'kopi', 'teh' ] 2",

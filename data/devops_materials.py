@@ -698,6 +698,7 @@ pesan_sambutan: |
                 "code": "import re\n\n# Aturan YAML 1.1 yang masih dipakai banyak pustaka, misalnya PyYAML.\nBENAR = {\"yes\", \"true\", \"on\"}\nSALAH = {\"no\", \"false\", \"off\"}\n\n\ndef tafsir_yaml11(teks):\n    kecil = teks.lower()\n    if kecil in BENAR:\n        return True\n    if kecil in SALAH:\n        return False\n    if re.fullmatch(r\"0[0-7]+\", teks):\n        return int(teks, 8)                 # angka oktal\n    if re.fullmatch(r\"\\d+:[0-5]\\d\", teks):\n        jam, menit = teks.split(\":\")\n        return int(jam) * 60 + int(menit)   # angka basis 60\n    if re.fullmatch(r\"\\d+\\.\\d+\", teks):\n        return float(teks)\n    if re.fullmatch(r\"\\d+\", teks):\n        return int(teks)\n    return teks\n\n\nfor nilai in [\"NO\", \"on\", \"1.10\", \"0755\", \"22:30\", \"nginx\"]:\n    hasil = tafsir_yaml11(nilai)\n    print(f\"{nilai:<6} -> {hasil!r}\")",
             },
             {
+                "heading": "Nilai tanpa kutip yang berubah tipe",
                 "body": [
                     "Keluarannya:",
                     "  NO     -> False",
@@ -1199,6 +1200,7 @@ sudo tail -f /var/log/nginx/error.log""",
 }""",
             },
             {
+                "heading": "Direktif dasar Nginx dan try_files",
                 "body": [
                     "Konfigurasi Nginx tersusun dari direktif yang diakhiri titik koma, dan",
                     "blok yang dibungkus kurung kurawal:",
@@ -1246,6 +1248,7 @@ sudo tail -f /var/log/nginx/error.log""",
 }""",
             },
             {
+                "heading": "Kode 502 dan 504 dari reverse proxy",
                 "body": [
                     "Sekarang aplikasimu cukup mendengarkan di 127.0.0.1:8000, dan port itu",
                     "nggak perlu dibuka ke internet. Berkas di /static/ disajikan Nginx",
@@ -1489,6 +1492,7 @@ server {
 }""",
             },
             {
+                "heading": "Metode pembagian beban dan health check",
                 "body": [
                     "Load balancer membagi permintaan ke beberapa server supaya nggak ada",
                     "satu server yang kewalahan, dan supaya situs tetap hidup kalau satu",
@@ -2113,6 +2117,7 @@ COPY . .
 CMD ["python", "app.py"]""",
             },
             {
+                "heading": "Kenapa requirements.txt disalin lebih dulu",
                 "body": [
                     "Di versi lambat, COPY . . menyalin semua berkas proyek, termasuk",
                     "app.py. Kamu mengubah satu baris di app.py, maka cache COPY batal, dan",
@@ -2334,6 +2339,7 @@ USER toko
 CMD ["python", "app.py"]""",
             },
             {
+                "heading": "Multi-stage build dan aturan image aman",
                 "body": [
                     "Ini multi-stage build: satu Dockerfile dengan beberapa FROM. Tahap",
                     "pertama dipakai untuk membangun, tahap terakhir jadi image yang",
@@ -2440,6 +2446,7 @@ volumes:
   pgdata:""",
             },
             {
+                "heading": "Membaca isi compose.yaml dari atas",
                 "body": [
                     "Kita baca dari atas:",
                     "  - services berisi tiga layanan. Satu layanan kira-kira sama dengan",
@@ -3976,6 +3983,7 @@ deploy-produksi:
                 "bahasa": "groovy",
             },
             {
+                "heading": "Blok Jenkinsfile, versi LTS, dan plugin",
                 "body": [
                     "Blok agent memilih tempat build jalan, stages berisi tahap, when membatasi",
                     "stage ke cabang main, input menunggu persetujuan manusia, dan post",
@@ -4063,6 +4071,7 @@ GoCD                 server open source          menurun, rilis 26.1.0""",
                 "bahasa": "teks",
             },
             {
+                "heading": "Tujuh layanan CI dari CircleCI sampai GoCD",
                 "body": [
                     "  - CircleCI: layanan CI di cloud dengan orbs, paket konfigurasi siap pakai.",
                     "    Pada Januari 2023 CircleCI meminta semua pelanggan memutar ulang secret",
@@ -7087,6 +7096,7 @@ spec:
       targetPort: 8080  # port container di pod""",
             },
             {
+                "heading": "Empat jenis Service dan kube-proxy",
                 "body": [
                     "Service di atas mendapat alamat IP virtual dan nama DNS di dalam",
                     "klaster: web, atau lengkapnya web.default.svc.cluster.local (default",
@@ -7787,6 +7797,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}""",
             },
             {
+                "heading": "Sintaks templat Helm dan versi chart",
                 "body": [
                     "Templat Helm memakai bahasa templat Go. Bagian di antara {{ dan }}",
                     "diganti nilai saat render. Objek yang paling sering dipakai: .Values",

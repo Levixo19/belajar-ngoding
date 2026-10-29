@@ -561,6 +561,7 @@
      "code": "import re\n\n# Aturan YAML 1.1 yang masih dipakai banyak pustaka, misalnya PyYAML.\nBENAR = {\"yes\", \"true\", \"on\"}\nSALAH = {\"no\", \"false\", \"off\"}\n\n\ndef tafsir_yaml11(teks):\n    kecil = teks.lower()\n    if kecil in BENAR:\n        return True\n    if kecil in SALAH:\n        return False\n    if re.fullmatch(r\"0[0-7]+\", teks):\n        return int(teks, 8)                 # angka oktal\n    if re.fullmatch(r\"\\d+:[0-5]\\d\", teks):\n        jam, menit = teks.split(\":\")\n        return int(jam) * 60 + int(menit)   # angka basis 60\n    if re.fullmatch(r\"\\d+\\.\\d+\", teks):\n        return float(teks)\n    if re.fullmatch(r\"\\d+\", teks):\n        return int(teks)\n    return teks\n\n\nfor nilai in [\"NO\", \"on\", \"1.10\", \"0755\", \"22:30\", \"nginx\"]:\n    hasil = tafsir_yaml11(nilai)\n    print(f\"{nilai:<6} -> {hasil!r}\")"
     },
     {
+     "heading": "Nilai tanpa kutip yang berubah tipe",
      "body": [
       "Keluarannya:",
       "  NO     -> False",
@@ -1013,6 +1014,7 @@
      "code": "server {\n    listen 80;\n    server_name toko.id www.toko.id;\n\n    root /srv/toko/public;\n    index index.html;\n\n    location / {\n        try_files $uri $uri/ =404;\n    }\n}"
     },
     {
+     "heading": "Direktif dasar Nginx dan try_files",
      "body": [
       "Konfigurasi Nginx tersusun dari direktif yang diakhiri titik koma, dan",
       "blok yang dibungkus kurung kurawal:",
@@ -1045,6 +1047,7 @@
      "code": "server {\n    listen 80;\n    server_name toko.id;\n\n    location /static/ {\n        root /srv/toko;\n    }\n\n    location / {\n        proxy_pass http://127.0.0.1:8000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}"
     },
     {
+     "heading": "Kode 502 dan 504 dari reverse proxy",
      "body": [
       "Sekarang aplikasimu cukup mendengarkan di 127.0.0.1:8000, dan port itu",
       "nggak perlu dibuka ke internet. Berkas di /static/ disajikan Nginx",
@@ -1249,6 +1252,7 @@
      "code": "upstream aplikasi {\n    server 10.0.1.11:8000 weight=5;\n    server 10.0.1.12:8000;\n    server 10.0.1.13:8000 max_fails=3 fail_timeout=30s;\n    server 10.0.1.14:8000 backup;\n}\n\nserver {\n    listen 443 ssl;\n    server_name toko.id;\n    # ... baris sertifikat seperti di atas ...\n\n    location / {\n        proxy_pass http://aplikasi;\n    }\n}"
     },
     {
+     "heading": "Metode pembagian beban dan health check",
      "body": [
       "Load balancer membagi permintaan ke beberapa server supaya nggak ada",
       "satu server yang kewalahan, dan supaya situs tetap hidup kalau satu",
@@ -1771,6 +1775,7 @@
      "code": "# LAMBAT: setiap perubahan kode memicu pip install ulang\nFROM python:3.14-slim\nWORKDIR /app\nCOPY . .\nRUN pip install --no-cache-dir -r requirements.txt\nCMD [\"python\", \"app.py\"]\n\n# CEPAT: pip install cuma diulang kalau requirements.txt berubah\nFROM python:3.14-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nCMD [\"python\", \"app.py\"]"
     },
     {
+     "heading": "Kenapa requirements.txt disalin lebih dulu",
      "body": [
       "Di versi lambat, COPY . . menyalin semua berkas proyek, termasuk",
       "app.py. Kamu mengubah satu baris di app.py, maka cache COPY batal, dan",
@@ -1979,6 +1984,7 @@
      "code": "# tahap 1: membangun\nFROM python:3.14-slim AS pembangun\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --prefix=/pasang -r requirements.txt\n\n# tahap 2: image akhir, tanpa alat bangun\nFROM python:3.14-slim\nWORKDIR /app\nCOPY --from=pembangun /pasang /usr/local\nCOPY . .\nRUN useradd --create-home toko\nUSER toko\nCMD [\"python\", \"app.py\"]"
     },
     {
+     "heading": "Multi-stage build dan aturan image aman",
      "body": [
       "Ini multi-stage build: satu Dockerfile dengan beberapa FROM. Tahap",
       "pertama dipakai untuk membangun, tahap terakhir jadi image yang",
@@ -2060,6 +2066,7 @@
      "code": "services:\n  web:\n    build: .\n    ports:\n      - \"8000:8000\"\n    environment:\n      DATABASE_URL: postgresql://toko:rahasia@db:5432/toko\n      REDIS_URL: redis://cache:6379/0\n    depends_on:\n      - db\n      - cache\n\n  db:\n    image: postgres:17\n    environment:\n      POSTGRES_USER: toko\n      POSTGRES_PASSWORD: rahasia\n      POSTGRES_DB: toko\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n\n  cache:\n    image: redis:8\n\nvolumes:\n  pgdata:"
     },
     {
+     "heading": "Membaca isi compose.yaml dari atas",
      "body": [
       "Kita baca dari atas:",
       "  - services berisi tiga layanan. Satu layanan kira-kira sama dengan",
@@ -3245,6 +3252,7 @@
      "bahasa": "groovy"
     },
     {
+     "heading": "Blok Jenkinsfile, versi LTS, dan plugin",
      "body": [
       "Blok agent memilih tempat build jalan, stages berisi tahap, when membatasi",
       "stage ke cabang main, input menunggu persetujuan manusia, dan post",
@@ -3323,6 +3331,7 @@
      "bahasa": "teks"
     },
     {
+     "heading": "Tujuh layanan CI dari CircleCI sampai GoCD",
      "body": [
       "  - CircleCI: layanan CI di cloud dengan orbs, paket konfigurasi siap pakai.",
       "    Pada Januari 2023 CircleCI meminta semua pelanggan memutar ulang secret",
@@ -5827,6 +5836,7 @@
      "code": "apiVersion: v1\nkind: Service\nmetadata:\n  name: web\nspec:\n  type: ClusterIP\n  selector:\n    app: web          # pod berlabel app=web jadi tujuan\n  ports:\n    - port: 80        # port milik Service\n      targetPort: 8080  # port container di pod"
     },
     {
+     "heading": "Empat jenis Service dan kube-proxy",
      "body": [
       "Service di atas mendapat alamat IP virtual dan nama DNS di dalam",
       "klaster: web, atau lengkapnya web.default.svc.cluster.local (default",
@@ -6407,6 +6417,7 @@
      "code": "# templates/deployment.yaml (dipendekkan)\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: {{ include \"toko.fullname\" . }}\nspec:\n  replicas: {{ .Values.replicaCount }}\n  template:\n    spec:\n      containers:\n        - name: {{ .Chart.Name }}\n          image: \"{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}\"\n          env:\n            - name: DB_HOST\n              value: {{ required \"db.host wajib diisi\" .Values.db.host | quote }}\n          resources:\n            {{- toYaml .Values.resources | nindent 12 }}"
     },
     {
+     "heading": "Sintaks templat Helm dan versi chart",
      "body": [
       "Templat Helm memakai bahasa templat Go. Bagian di antara {{ dan }}",
       "diganti nilai saat render. Objek yang paling sering dipakai: .Values",

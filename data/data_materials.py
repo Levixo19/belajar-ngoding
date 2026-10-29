@@ -664,6 +664,7 @@ for t, y in zip(suhu, es_teh):
 print(f"40 derajat: garis menebak {garis.slope * 40 + garis.intercept:.0f}")""",
             },
             {
+                "heading": "Membaca r, kemiringan, dan intersep",
                 "body": [
                     "Keluarannya:",
                     "  korelasi r = 0.942",
@@ -882,6 +883,7 @@ for n in (1, 2, 3):
     jalankan(n)""",
             },
             {
+                "heading": "Kebiasaan Restart Kernel and Run All",
                 "body": [
                     "Keluarannya:",
                     "  Urutan 1, 2, 3:",
@@ -1200,6 +1202,7 @@ conda deactivate""",
 =COUNTIF(F:F; "grosir")""",
             },
             {
+                "heading": "Membaca lima rumus satu per satu",
                 "body": [
                     "Artinya, berurutan dari atas:",
                     "",
@@ -1631,6 +1634,7 @@ print("A x B =", matmul(A, B))
 print("B x A =", matmul(B, A))""",
             },
             {
+                "heading": "Aturan ukuran matriks dan operator @",
                 "body": [
                     "Keluarannya:",
                     "  tagihan: [51000, 89000]",
@@ -1711,6 +1715,7 @@ for laju in (0.001, 0.02, 0.15):
     print(f"laju {laju:<5}: w = {w:.4f}, galat = {galat(w):.4f}")""",
             },
             {
+                "heading": "Laju belajar kecil, pas, dan terlalu besar",
                 "body": [
                     "Keluarannya:",
                     "  turunan numerik di w=1: -14.850",
@@ -2190,6 +2195,7 @@ print(df[df["cabang"] == "Depok"]["qty"].sum())""",
                 "code": "import io\n\nimport pandas as pd\n\nkotor = \"\"\"nama,kota,harga,tanggal\n budi santoso ,jakarta,Rp15.000,17/08/2026\nSiti Aminah,Jakarta ,Rp22.500,18/08/2026\nBUDI SANTOSO,JKT,Rp15.000,17/08/2026\nRina,Bandung,,19/08/2026\nAgus,bandung,Rp9.000.000,20/08/2026\n\"\"\"\ndf = pd.read_csv(io.StringIO(kotor))\nprint(df.isna().sum())\n\ndf[\"nama\"] = df[\"nama\"].str.strip().str.title()\ndf[\"kota\"] = df[\"kota\"].str.strip().str.title().replace({\"Jkt\": \"Jakarta\"})\ndf[\"harga\"] = pd.to_numeric(\n    df[\"harga\"].str.replace(\"Rp\", \"\").str.replace(\".\", \"\"), errors=\"coerce\")\ndf[\"tanggal\"] = pd.to_datetime(df[\"tanggal\"], format=\"%d/%m/%Y\")\ndf = df.drop_duplicates()\nprint(df)\nprint(df.dtypes)",
             },
             {
+                "heading": "Langkah pembersihan dan arti NaN",
                 "body": [
                     "Keluarannya (pandas 3.0.6):",
                     "  nama       0",
@@ -2432,6 +2438,7 @@ print(kiri)
 print(len(pelanggan), len(dalam), len(kiri))""",
             },
             {
+                "heading": "Inner lawan left merge dan baris berlipat",
                 "body": [
                     "Keluarannya:",
                     "     id   nama  id_pelanggan  total",
@@ -2612,6 +2619,7 @@ print("Sumbu mulai dari 40:")
 batang(omzet, 40)""",
             },
             {
+                "heading": "Sumbu mulai dari nol dan tipuan lain",
                 "body": [
                     "Keluarannya:",
                     "  Sumbu mulai dari 0:",
@@ -2735,6 +2743,7 @@ fig = px.line(x=bulan, y=omzet, markers=True, title="Omzet per bulan")
 fig.write_html("omzet.html")""",
             },
             {
+                "heading": "Plotly ke HTML, Altair, dan Bokeh",
                 "body": [
                     "Berkas omzet.html bisa dibuka di browser mana pun: arahkan",
                     "kursor ke titik untuk melihat angkanya, seret untuk zoom, dan",
@@ -2914,6 +2923,7 @@ demo = gr.Interface(fn=kategori_ulasan, inputs="text", outputs="text")
 demo.launch()""",
             },
             {
+                "heading": "Pola fungsi di Gradio, callback di Dash",
                 "body": [
                     "Gradio dibuat untuk satu pola: ada fungsi (biasanya model",
                     "machine learning), ada masukan, ada keluaran. gr.Interface",
@@ -3116,6 +3126,7 @@ print(f"P(16 atau lebih) = {p_atas:.4f}")
 print(f"p-value dua sisi = {p_dua_sisi:.4f}")""",
             },
             {
+                "heading": "Hipotesis nol dan salah kaprah p-value",
                 "body": [
                     "Keluarannya:",
                     "  P(16 atau lebih) = 0.0059",
@@ -3588,6 +3599,7 @@ print(f"dicek tiap 250 pengunjung : {ngintip} dari 200 'menang'")
 print(f"dicek sekali di akhir     : {sabar} dari 200 'menang'")""",
             },
             {
+                "heading": "Eksperimen A/A dan alarm palsu",
                 "body": [
                     "Keluarannya:",
                     "  dicek tiap 250 pengunjung : 37 dari 200 'menang'",
@@ -3779,6 +3791,7 @@ for nama, tebakan in [("naif", naif), ("rata-rata 7 hari", rata7),
     print(f"{nama:17} MAE = {mae(tebakan, uji):6.2f} cup")""",
             },
             {
+                "heading": "Baseline, MAE, dan kebocoran data",
                 "body": [
                     "Keluarannya:",
                     "  naif              MAE =  36.43 cup",
@@ -5904,6 +5917,7 @@ GROUP BY d.kota
 ORDER BY d.kota;""",
             },
             {
+                "heading": "Fakta menunjuk versi dimensi yang berlaku",
                 "body": [
                     "Keluarannya:",
                     "  Bandung|350000",
@@ -6550,6 +6564,7 @@ def ekspor_pesanan():
 ekspor_pesanan()""",
             },
             {
+                "heading": "XCom dan templat tanggal ds",
                 "body": [
                     "{{ ds }} di dalam bash_command adalah templat Jinja. Waktu task",
                     "dijalankan, Airflow menggantinya dengan logical date run itu dalam",
@@ -6795,6 +6810,7 @@ join {{ ref('stg_pelanggan') }} as c
 group by c.kota""",
             },
             {
+                "heading": "Fungsi ref dan jenis materialization",
                 "body": [
                     "Kurung kurawal ganda itu sintaks Jinja, bahasa templat yang juga",
                     "dipakai Airflow untuk {{ ds }}. Ada dua fungsi yang paling penting:",
@@ -6917,6 +6933,7 @@ dbt test --select stg_pesanan
 dbt docs generate && dbt docs serve""",
             },
             {
+                "heading": "Dua mesin dbt: dbt-core dan Fusion",
                 "body": [
                     "dbt init membuat kerangka proyek. dbt run membangun model, dbt test",
                     "menjalankan uji, dan dbt build mengerjakan keduanya sesuai urutan",

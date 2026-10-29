@@ -187,6 +187,7 @@
      "code": "POST /pesanan HTTP/1.1\nHost: toko.test\nContent-Type: application/json\nContent-Length: 31\n\n{\"menu\": \"es teh\", \"jumlah\": 2}\n\nHTTP/1.1 201 Created\nContent-Type: application/json\nLocation: /pesanan/88\n\n{\"id\": 88, \"status\": \"diproses\"}"
     },
     {
+     "heading": "Susunan pesan HTTP dan metode",
      "body": [
       "Bagian atas itu permintaan, bagian bawah responsnya. Keduanya",
       "punya susunan yang sama:",
@@ -767,6 +768,7 @@
      "code": "import json\n\nbuku = {1: {\"id\": 1, \"judul\": \"Laskar Pelangi\"}}\nid_berikut = 2\n\n\ndef tangani(metode, path, body=None):\n    global id_berikut\n    bagian = path.strip(\"/\").split(\"/\")\n    if bagian[0] != \"buku\" or len(bagian) > 2:\n        return 404, None\n    if len(bagian) == 1:                      # koleksi: /buku\n        if metode == \"GET\":\n            return 200, list(buku.values())\n        if metode == \"POST\":\n            data = {\"id\": id_berikut, **body}\n            buku[id_berikut] = data\n            id_berikut += 1\n            return 201, data\n        return 405, None\n    id_buku = int(bagian[1])                  # satu item: /buku/2\n    if metode == \"GET\":\n        return (200, buku[id_buku]) if id_buku in buku else (404, None)\n    if metode == \"PUT\":\n        baru = id_buku not in buku\n        buku[id_buku] = {\"id\": id_buku, **body}\n        return (201 if baru else 200), buku[id_buku]\n    if metode == \"DELETE\":\n        if buku.pop(id_buku, None) is None:\n            return 404, None\n        return 204, None\n    return 405, None\n\n\nfor metode, path, body in [\n    (\"POST\", \"/buku\", {\"judul\": \"Bumi Manusia\"}),\n    (\"POST\", \"/buku\", {\"judul\": \"Bumi Manusia\"}),\n    (\"PUT\", \"/buku/2\", {\"judul\": \"Bumi Manusia, cetakan 2\"}),\n    (\"PUT\", \"/buku/2\", {\"judul\": \"Bumi Manusia, cetakan 2\"}),\n    (\"DELETE\", \"/buku/3\", None),\n    (\"DELETE\", \"/buku/3\", None),\n    (\"GET\", \"/buku\", None),\n]:\n    status, isi = tangani(metode, path, body)\n    if isinstance(isi, list):        # untuk daftar, cukup tampilkan id-nya\n        isi = [b[\"id\"] for b in isi]\n    print(f\"{metode:6} {path:8} -> {status} {json.dumps(isi)}\")"
     },
     {
+     "heading": "Sifat idempoten pada tiap metode",
      "body": [
       "Keluaran:",
       "POST   /buku    -> 201 {\"id\": 2, \"judul\": \"Bumi Manusia\"}",
@@ -1106,6 +1108,7 @@
      "code": "openapi: 3.1.1\ninfo:\n  title: API Toko Buku\n  version: 1.0.0\npaths:\n  /buku:\n    get:\n      summary: Daftar buku\n      responses:\n        \"200\":\n          description: Daftar buku per halaman\n    post:\n      summary: Tambah buku\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              $ref: \"#/components/schemas/Buku\"\n      responses:\n        \"201\":\n          description: Buku berhasil dibuat\n        \"422\":\n          description: Data nggak sah\n  /buku/{id}:\n    get:\n      summary: Detail buku\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: integer\n      responses:\n        \"200\":\n          description: Satu buku\n        \"404\":\n          description: Buku nggak ada\ncomponents:\n  schemas:\n    Buku:\n      type: object\n      required: [judul]\n      properties:\n        judul:\n          type: string\n          minLength: 1"
     },
     {
+     "heading": "Isi dokumen OpenAPI dan dua cara membuatnya",
      "body": [
       "Bagian-bagiannya:",
       "  - openapi: versi spesifikasi yang dipakai berkas ini.",
@@ -1997,6 +2000,7 @@
      "code": "import { NestFactory } from \"@nestjs/core\";\nimport { ValidationPipe } from \"@nestjs/common\";\nimport { DocumentBuilder, SwaggerModule } from \"@nestjs/swagger\";\nimport { AppModule } from \"./app.module.js\";\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  app.useGlobalPipes(\n    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),\n  );\n\n  const konfig = new DocumentBuilder().setTitle(\"API Toko Buku\").setVersion(\"1.0.0\").build();\n  SwaggerModule.setup(\"docs\", app, SwaggerModule.createDocument(app, konfig));\n\n  await app.listen(process.env.PORT ?? 3000);\n}\nbootstrap();"
     },
     {
+     "heading": "Pipe, ValidationPipe, dan SwaggerModule",
      "body": [
       "Pipe adalah langkah yang mengubah atau memeriksa data sebelum",
       "sampai ke method controller. ParseIntPipe yang kamu lihat di",
@@ -3446,6 +3450,7 @@
      "code": "curl https://start.spring.io/starter.zip \\\n  -d type=maven-project -d javaVersion=21 \\\n  -d dependencies=web,validation,data-jpa,postgresql \\\n  -d name=toko -o toko.zip\nunzip toko.zip -d toko && cd toko\n./mvnw spring-boot:run"
     },
     {
+     "heading": "Spring Initializr dan @SpringBootApplication",
      "body": [
       "Perintah curl itu memanggil Spring Initializr, situs pembuat kerangka",
       "proyek yang juga bisa kamu buka lewat browser di start.spring.io. Setiap",
@@ -3915,6 +3920,7 @@
      "code": "using Microsoft.AspNetCore.Builder;\nusing Microsoft.AspNetCore.Http;\nusing Microsoft.Extensions.DependencyInjection;\n\nvar builder = WebApplication.CreateBuilder(args);\nbuilder.Services.AddSingleton<IProdukRepo, ProdukRepoMemori>();\n\nvar app = builder.Build();\n\napp.MapGet(\"/api/produk\", (IProdukRepo repo) => repo.Semua());\n\napp.MapGet(\"/api/produk/{id:int}\", (int id, IProdukRepo repo) =>\n    repo.Cari(id) is Produk p ? Results.Ok(p) : Results.NotFound());\n\napp.MapPost(\"/api/produk\", (ProdukBaru baru, IProdukRepo repo) =>\n{\n    if (string.IsNullOrWhiteSpace(baru.Nama))\n    {\n        return Results.ValidationProblem(new Dictionary<string, string[]>\n        {\n            [\"nama\"] = [\"Nama wajib diisi.\"]\n        });\n    }\n    var p = repo.Tambah(baru);\n    return Results.Created($\"/api/produk/{p.Id}\", p);\n});\n\napp.Run();\n\nrecord Produk(int Id, string Nama, int Harga);\nrecord ProdukBaru(string Nama, int Harga);\n\ninterface IProdukRepo\n{\n    IEnumerable<Produk> Semua();\n    Produk? Cari(int id);\n    Produk Tambah(ProdukBaru baru);\n}\n\nclass ProdukRepoMemori : IProdukRepo\n{\n    private readonly List<Produk> _data = [new(1, \"Teh Botol\", 5000)];\n\n    public IEnumerable<Produk> Semua() => _data;\n\n    public Produk? Cari(int id) => _data.FirstOrDefault(p => p.Id == id);\n\n    public Produk Tambah(ProdukBaru baru)\n    {\n        var p = new Produk(_data.Count + 1, baru.Nama, baru.Harga);\n        _data.Add(p);\n        return p;\n    }\n}"
     },
     {
+     "heading": "Dua tahap Program.cs dan parameter binding",
      "body": [
       "Templat resmi menyalakan implicit usings, jadi baris using di atas",
       "biasanya nggak perlu ditulis. Di sini ditulis supaya kelihatan dari mana",
@@ -5184,6 +5190,7 @@
      "code": "func main() {\n\ttoko := &Toko{\n\t\tproduk:  map[int]Produk{1: {ID: 1, Nama: \"Teh Botol\", Harga: 5000}},\n\t\tberikut: 1,\n\t}\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"GET /produk/{id}\", toko.ambil)\n\tmux.HandleFunc(\"POST /produk\", toko.tambah)\n\n\t// Di server sungguhan: http.ListenAndServe(\":8080\", mux)\n\tcoba := func(metode, alamat, body string) {\n\t\treq := httptest.NewRequest(metode, alamat, strings.NewReader(body))\n\t\trec := httptest.NewRecorder()\n\t\tmux.ServeHTTP(rec, req)\n\t\tfmt.Printf(\"%s %s -> %d %s\", metode, alamat, rec.Code, rec.Body.String())\n\t}\n\tcoba(\"GET\", \"/produk/1\", \"\")\n\tcoba(\"GET\", \"/produk/9\", \"\")\n\tcoba(\"GET\", \"/produk/abc\", \"\")\n\tcoba(\"POST\", \"/produk\", `{\"nama\":\"Kopi\",\"harga\":18000}`)\n\tcoba(\"DELETE\", \"/produk/1\", \"\")\n}"
     },
     {
+     "heading": "Pola rute, handler, dan sync.Mutex",
      "body": [
       "Jalankan dengan go run main.go. Kompilasi pertama butuh belasan detik",
       "karena paket net/http ikut dikompilasi, jalankan berikutnya hampir",
@@ -5373,6 +5380,7 @@
      "code": "-- query.sql, dibaca sqlc\n-- name: ProdukMurah :many\nSELECT id, nama, harga FROM produk WHERE harga < $1 ORDER BY harga;"
     },
     {
+     "heading": "Cara kerja sqlc dan jebakan ORM dengan Raw",
      "body": [
       "Banyak programmer Go memilih menulis SQL sendiri. sqlc (1.31.1) membaca",
       "berkas SQL seperti di atas beserta skema tabelnya, lalu membangkitkan",

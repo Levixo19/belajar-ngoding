@@ -47,6 +47,7 @@ JAVASCRIPT_MATERIALS = [
 console.log("Aku sedang belajar JavaScript.");"""
             },
             {
+                "heading": "Titik koma, aturan dasar, dan komentar",
                 "body": [
                     "console.log(...) adalah fungsi bawaan untuk menampilkan output, yaitu",
                     "tulisan yang muncul waktu program dijalankan.",
@@ -161,6 +162,7 @@ console.log(typeof belumDiisi); // "undefined"
 console.log(typeof null);       // "object" (ini QUIRK/bug lama JS, sudah diketahui)"""
             },
             {
+                "heading": "Beda null dan undefined serta template literal",
                 "body": [
                     "Beda null dan undefined:",
                     "  - undefined artinya variabelnya sudah dideklarasikan, tapi belum diisi",
@@ -289,6 +291,7 @@ const user = { profil: null };
 console.log(user.profil?.nama);   // undefined (tidak error walau profil null)"""
             },
             {
+                "heading": "Operator ??=, obj?.[key], dan bitwise",
                 "body": [
                     "Ada tiga operator turunan yang belum muncul di atas. Ketiganya sering",
                     "ketemu di kode sehari-hari.",
@@ -500,6 +503,7 @@ console.log(0 / 0);                    // NaN
 console.log(Number.isFinite(10 / 0));  // false""",
             },
             {
+                "heading": "NaN, Infinity, pembulatan Math, dan angka acak",
                 "body": [
                     "NaN merepotkan karena dia menular. Sekali satu nilai jadi NaN, semua",
                     "hitungan sesudahnya ikut jadi NaN. Yang kelihatan di layar cuma \"NaN\"",
@@ -590,6 +594,7 @@ console.log(9007199254740993);          // 9007199254740992   meleset tanpa peri
 console.log(9007199254740993n);         // 9007199254740993n  BigInt tetap tepat""",
             },
             {
+                "heading": "Presisi float, uang, dan batas bilangan bulat",
                 "body": [
                     "Kenapa 0.1 + 0.2 nggak sama dengan 0.3? Penyebabnya, JavaScript cuma",
                     "punya satu tipe angka, yaitu float 64-bit. Nggak ada int terpisah",
@@ -1289,6 +1294,7 @@ akhirJanuari.setMonth(1);                                 // minta "31 Februari"
 console.log(akhirJanuari.toLocaleDateString("id-ID"));    // 3/3/2026, bukan 28/2/2026""",
             },
             {
+                "heading": "Date mutable, zona waktu, dan Invalid Date",
                 "body": [
                     "Ada empat jebakan yang paling sering kena, plus cara menghindarinya:",
                     "1. Date itu mutable, artinya isinya bisa diubah. setDate, setMonth, dan",
@@ -1635,7 +1641,7 @@ console.log(slug("  Belajar Regex: Mudah, Kok!  "));   // belajar-regex-mudah-ko
                 ]
             },
             {
-                "heading": "map, filter, reduce - method array PALING PENTING di JS modern",
+                "heading": "map, filter, reduce - method array paling penting di JS modern",
                 "code": """const nilai = [80, 90, 75, 85, 60, 95];
 
 // map: transformasi TIAP elemen, hasil array BARU (sama panjang)
@@ -1805,7 +1811,7 @@ const lulus = [70, 85, 90].reduce((acc, n) => {
 console.log(lulus);           // [ 'nilai 85', 'nilai 90' ]"""
             },
             {
-                "heading": "Array.from, dan cara array DICETAK",
+                "heading": "Array.from, dan cara array dicetak",
                 "body": [
                     "Array.from sudah lewat sekilas di daftar atas, cuma satu baris tanpa",
                     "penjelasan. Padahal baris itu menyimpan dua hal yang susah ditebak",
@@ -2178,6 +2184,7 @@ const citraBaru = denganBonus(citra);
 console.log(citra.gaji, citraBaru.gaji);   // 5000000 5500000""",
             },
             {
+                "heading": "Membandingkan isi object dan memutasi array",
                 "body": [
                     "Akibat pertama: === membandingkan identitas, yaitu apakah dua nilai itu",
                     "kotak yang sama. Isinya nggak dilihat.",
@@ -2266,6 +2273,7 @@ setelan.font.ukuran = 20;      // TEMBUS: lapisan dalam tidak ikut dibekukan
 console.log(setelan.tema, setelan.font.ukuran);   // gelap 20""",
             },
             {
+                "heading": "Cara menyalin dari spread sampai structuredClone",
                 "body": [
                     "Rangkuman cara menyalin, diurutkan dari yang paling dangkal. Salinan",
                     "dangkal cuma menyalin lapis teratas. Salinan dalam ikut menyalin",
@@ -2430,6 +2438,7 @@ stok.clear();                       // kosongkan seluruh isinya
 console.log(stok.size);             // 0""",
             },
             {
+                "heading": "Jebakan Map dan kapan lebih baik dari object",
                 "body": [
                     "Ada empat jebakan Map yang nggak memunculkan error:",
                     "1. map[key] bukan cara mengakses isi Map. cache[\"x\"] = 1 cuma memasang",
@@ -2669,7 +2678,7 @@ jalankan(() => console.log("callback dipanggil")); // callback dipanggil"""
                 ]
             },
             {
-                "heading": "Arrow yang mengembalikan object WAJIB dibungkus kurung",
+                "heading": "Arrow yang mengembalikan object wajib dibungkus kurung",
                 "body": [
                     "Ada satu jebakan di arrow function yang pasti bakal kamu temui. Yang",
                     "bikin repot, jebakan ini nggak memunculkan error apa pun:",
@@ -3379,7 +3388,7 @@ console.log(ketua, wakil);                   // Andi Budi
 console.log(Array.from(kelas).length);       // 3""",
             },
             {
-                "heading": "function* dan yield: fungsi yang bisa DIJEDA lalu dilanjutkan",
+                "heading": "function* dan yield: fungsi yang bisa dijeda lalu dilanjutkan",
                 "body": [
                     "Menulis objek { next() { ... } } seperti di atas itu capek dan gampang",
                     "salah. Kamu sendiri yang harus mengurus penghitung, batas, dan kapan",
@@ -3444,6 +3453,7 @@ function* daftarLengkap() {
 console.log([...daftarLengkap()]);""",
             },
             {
+                "heading": "Jebakan generator dan tempat memakainya",
                 "body": [
                     "Jebakan yang sering kena:",
                     "  1. Generator cuma sekali pakai. Sesudah done: true, dia habis",
@@ -4279,6 +4289,7 @@ ambilData(1, (data1) => {
 // di dua materi berikutnya."""
             },
             {
+                "heading": "Event loop, call stack, dan antrean callback",
                 "body": [
                     "Mesin di balik async JS namanya event loop. Cara kerjanya begini:",
                     "  1. Call stack menjalankan kode sinkron (yang jalan berurutan) satu",
@@ -4560,7 +4571,7 @@ async function amanAmbilData(id) {
 }"""
             },
             {
-                "heading": "Menjalankan beberapa Promise PARALEL dengan async/await",
+                "heading": "Menjalankan beberapa Promise paralel dengan async/await",
                 "code": """async function ambilSemuaParalel() {
     // SALAH (lambat): berurutan, total waktu = jumlah semua delay
     // const d1 = await ambilData(1);
@@ -5150,6 +5161,7 @@ buatUser({ nama: "Andi", umur: 20 })
 //   DELETE -> menghapus data"""
             },
             {
+                "heading": "Catatan fetch soal text(), indentasi, dan CORS",
                 "body": [
                     "Ada empat hal kecil di sekitar fetch yang bisa menghemat banyak waktu:",
                     "  - response.text() adalah pasangan response.json(), untuk balasan yang",
@@ -5491,6 +5503,7 @@ console.log("Total bayar   :", alat.rupiah(alat.totalBayar(100000)));
 // Total bayar   : Rp111000""",
             },
             {
+                "heading": "Enam penyebab import gagal",
                 "body": [
                     "Ada enam hal yang bikin import gagal padahal kelihatannya sudah benar.",
                     "Semuanya bakal kamu temui, jadi kenali pesannya dari sekarang supaya",
@@ -5589,6 +5602,7 @@ import "./pengaturan.mjs";
 // aku export default milik berat.mjs""",
             },
             {
+                "heading": "Menentukan ES Module atau CommonJS",
                 "body": [
                     "Pertanyaan yang menentukan semuanya: sebuah berkas .js itu ES Module",
                     "atau CommonJS? Ada tiga aturan, dibaca berurutan:",
@@ -5768,6 +5782,7 @@ process.stdout.write("\\n");        // baris baru ditulis SENDIRI kalau perlu
 process.exit(0);""",
             },
             {
+                "heading": "Modul bawaan Node, jalur relatif, dan path.join",
                 "body": [
                     "Modul bawaan vs paket npm",
                     "",
@@ -6099,7 +6114,7 @@ mo.observe(wadah, {
 // mo.disconnect();""",
             },
             {
-                "heading": "ResizeObserver: tahu kapan UKURAN elemen berubah",
+                "heading": "ResizeObserver: tahu kapan ukuran elemen berubah",
                 "body": [
                     "window.addEventListener('resize', ...) cuma menyala waktu jendela",
                     "browser berubah ukuran. Padahal sebuah elemen bisa berubah ukuran",
@@ -6326,7 +6341,7 @@ function ambilLokasiSekali() {
 }""",
             },
             {
-                "heading": "watchPosition: terus memantau, dan JEBAKAN kalau lupa clearWatch",
+                "heading": "watchPosition: terus memantau, dan jebakan kalau lupa clearWatch",
                 "body": [
                     "getCurrentPosition mengambil posisi sekali, lalu selesai. watchPosition",
                     "dipanggil dengan cara yang sama, tapi callback suksesnya dipanggil",
@@ -6518,7 +6533,7 @@ tombolTempel.addEventListener("click", async () => {
                 ],
             },
             {
-                "heading": "Sistem koordinat: (0,0) di pojok KIRI ATAS",
+                "heading": "Sistem koordinat: (0,0) di pojok kiri atas",
                 "body": [
                     "Jebakan pertama yang bikin hampir semua orang keliru: di pelajaran",
                     "matematika sekolah, sumbu Y bertambah ke atas. Di canvas, sumbu Y",
@@ -6606,7 +6621,7 @@ ctx.lineWidth = 3;
 ctx.stroke();""",
             },
             {
-                "heading": "fillStyle dan strokeStyle: state yang MENEMPEL",
+                "heading": "fillStyle dan strokeStyle: state yang menempel",
                 "body": [
                     "Kalau kamu pernah pakai SVG, ini beda besarnya. Di SVG, tiap bentuk",
                     "punya atributnya sendiri-sendiri. Di canvas, fillStyle, strokeStyle,",
@@ -6740,7 +6755,7 @@ requestAnimationFrame(gambarFrame);   // mulai loop-nya""",
     └── keranjang.test.js""",
             },
             {
-                "heading": "Berkas di akar: yang MENGATUR perkakas, bukan yang dijalankan",
+                "heading": "Berkas di akar: yang mengatur perkakas, bukan yang dijalankan",
                 "body": [
                     "Berkas yang namanya diawali titik, atau berakhiran .config.js, hampir",
                     "selalu bukan bagian program. Berkas-berkas itu menyetel perkakas di",
@@ -6876,7 +6891,7 @@ describe("hargaSetelahDiskon", () => {
 //     GAGAL  - sengaja salah, supaya kelihatan bentuk kegagalannya -> 50000 bukan 60000""",
             },
             {
-                "heading": "Berkas tes: bacaan TERBAIK di repo yang belum kamu kenal",
+                "heading": "Berkas tes: bacaan terbaik di repo yang belum kamu kenal",
                 "body": [
                     "Nama berkas tes mengikuti nama berkas yang diujinya, ditambah .test.js",
                     "atau .spec.js:",
@@ -6916,7 +6931,7 @@ describe("hargaSetelahDiskon", () => {
                 ],
             },
             {
-                "heading": "Berkas .js yang isinya BUKAN JavaScript polos",
+                "heading": "Berkas .js yang isinya bukan JavaScript polos",
                 "body": [
                     "Cepat atau lambat kamu bakal membuka berkas .js atau .jsx, lalu nemu",
                     "sesuatu yang mirip HTML di tengah sebuah fungsi:",

@@ -1323,6 +1323,7 @@ TalkBack    Android                bawaan Android          Pengaturan > Aksesibi
 ChromeVox   ChromeOS (Chromebook)  bawaan ChromeOS         Ctrl+Alt+Z""",
             },
             {
+                "heading": "Pembaca layar populer dan pasangan browsernya",
                 "body": [
                     "NVDA dari NV Access gratis dan open source, sebagian besar ditulis",
                     "dengan Python, dan rilis terbarunya 2026.2. JAWS dari Freedom Scientific",
@@ -2954,6 +2955,7 @@ const Tombol = styled.button`
 // dipakai: <Tombol $bahaya>Hapus</Tombol>""",
             },
             {
+                "heading": "Kenapa CSS-in-JS runtime ditinggalkan",
                 "body": [
                     "Cara ini pernah populer sekali di proyek React, tapi sekarang",
                     "ditinggalkan karena dua alasan. Pertama, ada biaya: gaya dihitung di",
@@ -4599,6 +4601,7 @@ export function FormCari() {
 }""",
             },
             {
+                "heading": "Tipe useState, useRef, useReducer, dan hook",
                 "body": [
                     "useState menebak tipenya dari nilai awal. Kalau nilai awalnya null",
                     "tapi nanti diisi objek, tulis tipenya: useState<Pengguna | null>.",
@@ -6099,6 +6102,7 @@ Vuelidate 2       validasi berbasis model      menurun
 Vuex 4            store lama                   usang""",
             },
             {
+                "heading": "Vuetify, Quasar, VeeValidate, dan FormKit",
                 "body": [
                     "Vuetify adalah pustaka komponen Material Design terbesar untuk Vue,",
                     "sekarang di versi 4. Element Plus, penerus Element UI dari zaman",
@@ -7282,6 +7286,7 @@ function Penghitung() {
 }""",
             },
             {
+                "heading": "Solid, Preact, dan resumability Qwik",
                 "body": [
                     "Solid kelihatan seperti React karena memakai JSX, tapi cara",
                     "kerjanya mirip signal yang kamu buat di bab 03. Fungsi komponen",
@@ -7455,6 +7460,7 @@ document.querySelector('#simpan').addEventListener('click', () => {
 });""",
             },
             {
+                "heading": "Membaca kode jQuery dan menggantinya",
                 "body": [
                     "jQuery lahir waktu tiap browser punya cara sendiri untuk hal yang",
                     "sama. Fungsi $() menyembunyikan perbedaan itu. Sekarang",
@@ -7517,6 +7523,7 @@ console.log(fmt.format(t));
 console.log(fmt.format(tujuhHari));""",
             },
             {
+                "heading": "Lodash dan alternatif pustaka tanggal",
                 "body": [
                     "Keluaran:",
                     "  [ 'kopi', 'teh' ] 2",

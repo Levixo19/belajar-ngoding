@@ -2209,6 +2209,7 @@
      "code": "# Posisi kategori di edisi 2025, dibandingkan edisi 2021.\n# None artinya kategori itu belum ada di 2021.\ndaftar = [\n    (\"A01\", \"Broken Access Control\", 1),\n    (\"A02\", \"Security Misconfiguration\", 5),\n    (\"A03\", \"Software Supply Chain Failures\", None),\n    (\"A04\", \"Cryptographic Failures\", 2),\n    (\"A05\", \"Injection\", 3),\n    (\"A06\", \"Insecure Design\", 4),\n    (\"A07\", \"Authentication Failures\", 7),\n    (\"A08\", \"Software or Data Integrity Failures\", 8),\n    (\"A09\", \"Security Logging and Alerting Failures\", 9),\n    (\"A10\", \"Mishandling of Exceptional Conditions\", None),\n]\n\nfor kode, nama, dulu in daftar:\n    kini = int(kode[1:])\n    if dulu is None:\n        arah = \"baru\"\n    elif dulu > kini:\n        arah = f\"naik dari #{dulu}\"\n    elif dulu < kini:\n        arah = f\"turun dari #{dulu}\"\n    else:\n        arah = \"tetap\"\n    print(f\"{kode}  {nama:<40} {arah}\")"
     },
     {
+     "heading": "Dua kategori baru dan SSRF yang dilebur",
      "body": [
       "Keluarannya:",
       "  A01  Broken Access Control                    tetap",
@@ -2334,6 +2335,7 @@
      "code": "pesanan = {\n    1042: {\"pemilik\": \"ani\", \"isi\": \"2 kopi susu\", \"alamat\": \"Jl. Melati 7\"},\n    1043: {\"pemilik\": \"budi\", \"isi\": \"1 roti bakar\", \"alamat\": \"Jl. Kenanga 12\"},\n}\n\n\ndef lihat_rentan(pengguna, id_pesanan):\n    # Cuma memeriksa \"sudah login atau belum\", lalu percaya pada id dari URL.\n    data = pesanan.get(id_pesanan)\n    if data is None:\n        return 404, \"tidak ada\"\n    return 200, data[\"alamat\"]\n\n\ndef lihat_aman(pengguna, id_pesanan):\n    data = pesanan.get(id_pesanan)\n    # Pesanan milik orang lain diperlakukan sama dengan pesanan yang tidak ada.\n    if data is None or data[\"pemilik\"] != pengguna:\n        return 404, \"tidak ada\"\n    return 200, data[\"alamat\"]\n\n\nfor fungsi in (lihat_rentan, lihat_aman):\n    print(fungsi.__name__)\n    for id_pesanan in (1042, 1043, 9999):\n        status, isi = fungsi(\"ani\", id_pesanan)\n        print(f\"  ani minta /pesanan/{id_pesanan} -> {status} {isi}\")"
     },
     {
+     "heading": "Syarat pemilik di query dan jawaban 404",
      "body": [
       "Keluarannya:",
       "  lihat_rentan",
@@ -2556,6 +2558,7 @@
      "code": "import html\n\nkomentar = '<script>alert(1)</script> Kopinya enak & murah'\n\nrentan = \"<p>\" + komentar + \"</p>\"\naman = \"<p>\" + html.escape(komentar) + \"</p>\"\n\nprint(rentan)\nprint(aman)\n\n# Di dalam atribut, tanda kutip juga harus di-escape.\nnama = 'Sari\" onmouseover=\"alert(1)'\nprint('<input value=\"' + html.escape(nama, quote=True) + '\">')"
     },
     {
+     "heading": "Tiga jenis XSS dan encoding keluaran",
      "body": [
       "Keluarannya:",
       "  <p><script>alert(1)</script> Kopinya enak & murah</p>",
@@ -3013,6 +3016,7 @@
      "code": "HEADER_AMAN = {\n    \"Content-Security-Policy\": \"default-src 'self'; frame-ancestors 'none'\",\n    \"Strict-Transport-Security\": \"max-age=31536000; includeSubDomains\",\n    \"X-Content-Type-Options\": \"nosniff\",\n    \"Referrer-Policy\": \"strict-origin-when-cross-origin\",\n}\n\n\ndef pasang_header(respons):\n    # Middleware: dipanggil untuk setiap respons sebelum dikirim.\n    for nama, nilai in HEADER_AMAN.items():\n        respons[\"header\"].setdefault(nama, nilai)\n    respons[\"header\"].pop(\"Server\", None)  # jangan umumkan versi server\n    return respons\n\n\nrespons = {\"status\": 200, \"header\": {\"Server\": \"nginx/1.18.0\",\n                                     \"Content-Type\": \"text/html\"}}\nfor nama, nilai in pasang_header(respons)[\"header\"].items():\n    print(f\"{nama}: {nilai}\")"
     },
     {
+     "heading": "Arti nilai CSP, HSTS, dan frame-ancestors",
      "body": [
       "Keluarannya:",
       "  Content-Type: text/html",
@@ -3189,6 +3193,7 @@
      "code": "SKEMA = {\n    \"nama\": {\"tipe\": str, \"maks\": 50},\n    \"jumlah\": {\"tipe\": int, \"min\": 1, \"maks\": 99},\n    \"catatan\": {\"tipe\": str, \"maks\": 200, \"opsional\": True},\n}\n\n\ndef validasi(data):\n    galat = []\n    for kunci in data:\n        if kunci not in SKEMA:\n            galat.append(f\"{kunci}: field tidak dikenal\")\n    for kunci, aturan in SKEMA.items():\n        if kunci not in data:\n            if not aturan.get(\"opsional\"):\n                galat.append(f\"{kunci}: wajib ada\")\n            continue\n        nilai = data[kunci]\n        if type(nilai) is not aturan[\"tipe\"]:\n            galat.append(f\"{kunci}: harus {aturan['tipe'].__name__}\")\n        elif isinstance(nilai, str) and len(nilai) > aturan[\"maks\"]:\n            galat.append(f\"{kunci}: paling panjang {aturan['maks']} huruf\")\n        elif isinstance(nilai, int) and not aturan[\"min\"] <= nilai <= aturan[\"maks\"]:\n            galat.append(f\"{kunci}: harus {aturan['min']} sampai {aturan['maks']}\")\n    return galat\n\n\npermintaan = [\n    {\"nama\": \"Kopi susu\", \"jumlah\": 2},\n    {\"nama\": \"Kopi susu\", \"jumlah\": -5},\n    {\"nama\": \"Kopi susu\", \"jumlah\": \"2\", \"is_admin\": True},\n]\nfor data in permintaan:\n    galat = validasi(data)\n    print(\"DITERIMA\" if not galat else \"DITOLAK: \" + \"; \".join(galat))"
     },
     {
+     "heading": "Mass assignment dan batas ukuran permintaan",
      "body": [
       "Keluarannya:",
       "  DITERIMA",
@@ -3227,6 +3232,7 @@
      "code": "import hashlib\nimport hmac\n\n# Kunci dibuat sekali dengan secrets.token_urlsafe(32), ditampilkan ke pemilik,\n# lalu yang disimpan cuma hash-nya. Di sini ditulis tetap supaya hasilnya sama.\nkunci_asli = \"tk_live_Q2hhbmdlTWVJblByb2R1Y3Rpb24hIQ\"\ntersimpan = {\n    \"awalan\": kunci_asli[:12],\n    \"sha256\": hashlib.sha256(kunci_asli.encode()).hexdigest(),\n    \"izin\": [\"pesanan:baca\"],\n}\n\n\ndef periksa(kunci_dikirim):\n    hash_dikirim = hashlib.sha256(kunci_dikirim.encode()).hexdigest()\n    # compare_digest membandingkan tanpa bocor lewat lama waktu.\n    return hmac.compare_digest(hash_dikirim, tersimpan[\"sha256\"])\n\n\nprint(\"awalan untuk dikenali:\", tersimpan[\"awalan\"])\nprint(\"kunci benar :\", periksa(kunci_asli))\nprint(\"kunci salah :\", periksa(\"tk_live_tebak-tebakan\"))"
     },
     {
+     "heading": "Aturan mengelola kunci API",
      "body": [
       "Keluarannya:",
       "  awalan untuk dikenali: tk_live_Q2hh",
@@ -3563,6 +3569,7 @@
      "code": "# Aplikasi toko cuma boleh membaca rahasia miliknya sendiri.\npath \"secret/data/toko/*\" {\n  capabilities = [\"read\"]\n}\n\npath \"database/creds/toko-baca\" {\n  capabilities = [\"read\"]\n}"
     },
     {
+     "heading": "Memilih Vault, OpenBao, atau layanan cloud",
      "body": [
       "Mode dev menyimpan semuanya di memori, langsung dalam keadaan",
       "terbuka, dan mencetak root token di layar. Cocok untuk",
