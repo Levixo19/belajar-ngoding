@@ -32,6 +32,7 @@ import { Statistik } from "./layar/Statistik.tsx";
 import { Belajar } from "./layar/Belajar.tsx";
 import { Coba, Latihan } from "./layar/Kerja.tsx";
 import { Kuis } from "./layar/Kuis.tsx";
+import { Pengantar } from "./layar/Pengantar.tsx";
 import { Tebak } from "./layar/Tebak.tsx";
 import { ingat, terapkanTampilan } from "./lokal.ts";
 import { pasangJedaMata } from "./istirahat.ts";
@@ -158,8 +159,8 @@ function Aplikasi() {
   if (!awal) {
     return (
       <Cangkang rute={nama} bahasa={[]}>
-        <div className="deret">
-          <div className="pusaran" />
+        <div className="deret" role="status">
+          <div className="pusaran" aria-hidden="true" />
           <span>Memuat…</span>
         </div>
       </Cangkang>
@@ -205,6 +206,10 @@ function Isi({
 
   if (nama === "pustaka") {
     return <Pustaka params={alamat.params} />;
+  }
+
+  if (nama === "pengantar") {
+    return <Pengantar bahasa={awal.bahasa} />;
   }
 
   if (nama === "langit") {

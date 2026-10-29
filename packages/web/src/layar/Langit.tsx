@@ -24,6 +24,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { ambil } from "../api.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { Pilihan } from "../komponen/Pilihan.tsx";
 import { bacaAlamat } from "../komponen/lensa-teks.ts";
 import type { MateriBintang } from "../komponen/rasi-geometri.ts";
 import { tanpaNomor } from "../util.tsx";
@@ -320,8 +321,8 @@ export function Langit() {
   if (galat) return <Keadaan jenis="salah" judul="Gagal memuat Langit" ket={galat} />;
   if (!data) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat peta langit…</span>
       </div>
     );
@@ -398,19 +399,18 @@ export function Langit() {
         <div className="langit-alat">
           <label className="langit-label">
             Hubungkan lewat profesi
-            <select
-              className="langit-pilih"
-              aria-label="Hubungkan rasi lewat profesi"
-              value={profesiId ?? ""}
-              onChange={(e) => pilihProfesi(e.target.value)}
-            >
-              <option value="">Tanpa profesi</option>
-              {data.profesi.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nama}
-                </option>
-              ))}
-            </select>
+            <Pilihan
+              kelasPemicu="langit-pilih"
+              label="Hubungkan rasi lewat profesi"
+              namaTombol="Hubungkan rasi lewat profesi"
+              gaya={{ minWidth: "13rem" }}
+              nilai={profesiId ?? ""}
+              opsi={[
+                { id: "", nama: "Tanpa profesi" },
+                ...data.profesi.map((p) => ({ id: p.id, nama: p.nama })),
+              ]}
+              onUbah={pilihProfesi}
+            />
           </label>
           <a className="tbl tbl-kecil tbl-hantu" href="#/karier">
             Buka Peta Karier

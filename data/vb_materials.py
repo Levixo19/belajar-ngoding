@@ -83,6 +83,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Bagian program VB dan aturan dasarnya",
                 "body": [
                     "Kita bahas bagian demi bagian:",
                     "",
@@ -276,6 +277,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Dua operator pembagian dan tanda sama dengan",
                 "body": [
                     "Keluaran:",
                     "  Integer : -2147483648 .. 2147483647",
@@ -483,6 +485,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "AndAlso lawan And, dan operator Like",
                 "body": [
                     "Keluaran:",
                     "  17 / 5   = 3.4",
@@ -693,6 +696,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Case To, Return, dan perataan interpolasi",
                 "body": [
                     "Keluaran:",
                     "   92 -> A",
@@ -907,6 +911,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Keluar dari perulangan bersarang dan tuple",
                 "body": [
                     "Keluaran:",
                     "  1 To 5      : 1 2 3 4 5",
@@ -1135,6 +1140,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Ukuran array Dim dan Clone sebelum Sort",
                 "body": [
                     "Keluaran:",
                     "  Dim kosong(4) -> 5 elemen, indeks 0..4",
@@ -1366,6 +1372,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "ByVal lawan ByRef dan argumen bernama",
                 "body": [
                     "Keluaran:",
                     "  sesudah ByVal : 5",
@@ -1563,6 +1570,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Pemisah ribuan dan nama yang bentrok kata kunci",
                 "body": [
                     "Keluaran:",
                     "  asli       : Visual Basic membuat kode bisnis mudah dibaca",
@@ -1821,6 +1829,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Property hanya-baca, NameOf, dan pesan error",
                 "body": [
                     "Keluaran:",
                     "  tarik 900rb: False",
@@ -2059,6 +2068,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Polimorfisme dan MustOverride Implements",
                 "body": [
                     "Keluaran:",
                     "  Persegi            16.00     16.00",
@@ -2305,6 +2315,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Structure lawan class, enum, dan Flags",
                 "body": [
                     "Keluaran:",
                     "  structure : s1=(1, 2) s2=(1, 2) jarak=2.236",
@@ -2558,6 +2569,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Pembagian Double oleh nol dan Finally",
                 "body": [
                     "Keluaran:",
                     "  bayar   20000 -> sisa 30000",
@@ -2782,6 +2794,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Group By, tipe anonim, dan jebakan Count",
                 "body": [
                     "Keluaran:",
                     "  -- Lulus, nilai tertinggi dulu --",
@@ -3012,6 +3025,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Tipe anonim, urutan Catch, dan akhiran baris",
                 "body": [
                     "Keluaran:",
                     "  ditulis   : belajar-vb.csv",
@@ -3222,6 +3236,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Return, ejaan variabel, dan koleksi kosong",
                 "body": [
                     "Keluaran:",
                     "  Dim a(4)      -> 5 elemen (indeks 0..4)",
@@ -3490,6 +3505,7 @@ Module Program
 End Module"""
             },
             {
+                "heading": "Empat keputusan desain dan TryGetValue",
                 "body": [
                     "Empat keputusan yang layak ditiru:",
                     "  1. Semua exception buatan sendiri mewarisi satu induk,",

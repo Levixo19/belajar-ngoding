@@ -42,6 +42,7 @@ int main() {
 }"""
             },
             {
+                "heading": "Versi C++ dan beda utamanya dari C",
                 "body": [
                     "Cara kompilasi dan menjalankannya:",
                     "  g++ hello.cpp -o hello    (kompilasi jadi executable)",
@@ -306,6 +307,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Cara kerja namespace dan penulisan bersarang",
                 "body": [
                     "Keluarannya:",
                     "  Toko  : 111000",
@@ -397,6 +399,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Bahaya using namespace dan namespace tanpa nama",
                 "body": [
                     "Keluarannya:",
                     "  [log] 1. laporan::hitung=2  ::hitung=1",
@@ -575,6 +578,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Kebocoran enum biasa dan solusi enum class",
                 "body": [
                     "Di kursus C kamu udah ketemu enum, yaitu cara ngasih nama ke",
                     "sekumpulan angka supaya kodenya gampang dibaca. Kamu bisa nulis 'if",
@@ -1062,6 +1066,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Trim, cctype, dan konversi angka-teks",
                 "body": [
                     "Membuang spasi di ujung: find_first_not_of dan find_last_not_of",
                     "",
@@ -1235,6 +1240,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Jembatan c_str() dan kesalahan umum string",
                 "body": [
                     "Kenapa perlu stringstream, padahal udah ada to_string dan stoi?",
                     "  - Untuk merakit. Satu ostringstream bisa menampung semua tipe",
@@ -1972,6 +1978,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Include guard dan aturan include di header",
                 "body": [
                     "Perhatikan rekening.cpp: constructor pun ditulis",
                     "Rekening::Rekening(...). Nama class dulu (siapa pemiliknya), baru nama",
@@ -2078,6 +2085,7 @@ inline double persen(double nilai, double p) {
 }""",
             },
             {
+                "heading": "Mengompilasi banyak berkas dan CMake",
                 "body": [
                     "Sekarang cara mengompilasi banyak berkas. Yang ditulis di perintah cuma",
                     "berkas .cpp. Header nggak pernah ikut ditulis, karena isinya udah masuk",
@@ -2262,6 +2270,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Tiga makna kata static",
                 "body": [
                     "Kata static dipakai untuk tiga hal yang sebetulnya nggak berhubungan.",
                     "Kalau dipisah dari awal, nanti kamu nggak gampang bingung.",
@@ -2661,6 +2670,7 @@ int main() {
 }"""
             },
             {
+                "heading": "Destructor virtual, override, dan final",
                 "body": [
                     "Destructor juga harus virtual di base class, kalau class itu dipakai",
                     "lewat pointer induk seperti contoh di atas.",
@@ -2922,6 +2932,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Tipe size_t dan jebakan loop mundur",
                 "body": [
                     "size_t adalah tipe bilangan bulat tanpa tanda (unsigned) yang dipakai",
                     "C++ untuk ukuran. .size() milik vector, string, dan map mengembalikan",
@@ -3020,6 +3031,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Turun ke tipe anak dengan dynamic_cast",
                 "body": [
                     "Alurnya begini. Variabelnya bertipe Hewan*, tapi objek yang ditunjuk",
                     "bisa Kucing, bisa juga Anjing (lihat materi Polymorphism & Virtual",
@@ -3324,7 +3336,7 @@ int main() {
                 ],
             },
             {
-                "heading": "Program yang SENGAJA mati - jalankan dan lihat sendiri",
+                "heading": "Program yang sengaja mati - jalankan dan lihat sendiri",
                 "body": [
                     "Class di bawah ini udah benar menurut materi Constructor & Destructor.",
                     "Resource diambil pakai new di constructor, lalu dilepas pakai delete[]",
@@ -3371,6 +3383,7 @@ int main() {
     // a dihancurkan -> delete[] atas alamat X LAGI -> double free -> program mati""",
             },
             {
+                "heading": "Shallow copy, deep copy, dan double free",
                 "body": [
                     "Programnya mati di tengah jalan, dengan pesan kira-kira seperti ini:",
                     "  free(): double free detected in tcache 2",
@@ -3513,6 +3526,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Aturan Tiga, = delete, dan = default",
                 "body": [
                     "Aturan Tiga (Rule of Three). Yang ini perlu kamu hafal:",
                     "",
@@ -4591,6 +4605,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Iterator map dan data hantu dari operator[]",
                 "body": [
                     "Di map, iterator menunjuk sebuah pair, jadi:",
                     "  it->first  -> KUNCInya. Bertipe const: mengubahnya akan merusak",
@@ -4670,6 +4685,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Iterator jadi tidak sah setelah erase",
                 "body": [
                     "Menghapus elemen sambil menelusuri itu tempat orang paling sering",
                     "salah. Kesalahannya nggak muncul sebagai pesan error. Yang muncul",
@@ -5051,7 +5067,7 @@ int main() {
                 ]
             },
             {
-                "heading": "Menyeberang antara PEMILIK dan PEMINJAM",
+                "heading": "Menyeberang antara pemilik dan peminjam",
                 "body": [
                     "Smart pointer memisahkan dua peran yang di C selalu tercampur. Ada",
                     "yang memiliki objek, artinya bertanggung jawab menghapusnya. Ada juga",
@@ -5509,6 +5525,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Kenapa is_open() wajib dicek dan mode buka",
                 "body": [
                     "Kenapa is_open() wajib dicek?",
                     "",
@@ -5636,6 +5653,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Jebakan eof() dan perbandingan dengan C",
                 "body": [
                     "Ada empat jebakan yang paling sering bikin orang jatuh:",
                     "",
@@ -5788,7 +5806,7 @@ int main() {
                 ]
             },
             {
-                "heading": "Kosakata C++17 yang muncul di TANDA TANGAN fungsi",
+                "heading": "Kosakata C++17 yang muncul di tanda tangan fungsi",
                 "body": [
                     "Fitur di atas boleh kamu lewati kalau nggak suka, karena cuma soal",
                     "cara menulis. Tiga tipe berikut lain cerita. Mereka muncul di tanda",
@@ -5905,6 +5923,7 @@ int main() {
 }"""
             },
             {
+                "heading": "Tangkapan mutable dan parameter auto",
                 "body": [
                     "Ada dua bentuk lambda yang belum dibahas, dan dua-duanya muncul di",
                     "contoh barusan.",
@@ -6061,6 +6080,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Functor bawaan dan lambda sebagai functor",
                 "body": [
                     "Functor bawaan ada di header <functional>. Semuanya class template,",
                     "jadi selalu ada <tipe> di belakang namanya:",
@@ -6190,6 +6210,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Kesalahan umum saat memakai std::function",
                 "body": [
                     "Kesalahan yang sering terjadi:",
                     "",
@@ -6444,7 +6465,7 @@ int main() {
 }"""
             },
             {
-                "heading": "Dari Aturan Tiga ke ATURAN LIMA - lalu ke Aturan NOL",
+                "heading": "Dari Aturan Tiga ke Aturan Lima, lalu ke Aturan Nol",
                 "body": [
                     "Materi Copy Constructor ditutup dengan janji bahwa Aturan Tiga nanti",
                     "berkembang jadi Aturan Lima. Ini dia kelimanya, dan sekarang kamu",
@@ -6634,6 +6655,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Data race, mutex, lock_guard, dan atomic",
                 "body": [
                     "Contoh di atas aman karena tiap thread punya tempat sendiri. Masalah",
                     "muncul kalau dua thread menyentuh satu variabel yang sama. Baris",
@@ -6748,6 +6770,7 @@ int main() {
 }""",
             },
             {
+                "heading": "Deadlock, kunci terlalu lebar, dan flag -pthread",
                 "body": [
                     "Jalankan contoh itu beberapa kali. denganKunci dan pakaiAtomic selalu",
                     "tepat 40000. tanpaKunci berakhir di sekitar 20000, artinya hampir",
@@ -6952,6 +6975,7 @@ int main() {
 }"""
             },
             {
+                "heading": "Kebiasaan profesional dan kebiasaan harian",
                 "body": [
                     "Tahap 4: kebiasaan profesional",
                     "  1. Selalu pakai smart pointer. Hindari new/delete manual.",

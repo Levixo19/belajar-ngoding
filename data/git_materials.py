@@ -750,7 +750,7 @@ GIT_MATERIALS = [
         "title": "6. Mengubah Nama, Memindah, dan Menghapus Berkas Terlacak",
         "sections": [
             {
-                "heading": "Git melacak ISI, bukan nama",
+                "heading": "Git melacak isi, bukan nama",
                 "body": [
                     "Coba ganti nama sebuah berkas pakai mv biasa. git status bakal nunjukin",
                     "dua hal: berkas lama dihapus, dan ada berkas baru yang untracked.",

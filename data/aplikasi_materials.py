@@ -50,6 +50,7 @@ APLIKASI_MATERIALS = [
 }"""
             },
             {
+                "heading": "Empat pertanyaan yang tidak dijawab skrip",
                 "body": [
                     "Program di atas benar. Tapi coba pikirin pertanyaan ini:",
                     "",
@@ -425,6 +426,7 @@ public String sesuaikanStok(@PathVariable Long id,
 }"""
             },
             {
+                "heading": "Batas logika entitas dan aturan nama getter",
                 "body": [
                     "Lihat method isStokMenipis(). Ini contoh logika yang pantas ada di",
                     "entitas. Method itu cuma menjawab pertanyaan tentang dirinya sendiri,",
@@ -598,6 +600,7 @@ public String sesuaikanStok(@PathVariable Long id,
 }""",
             },
             {
+                "heading": "Isi enum, perbandingan ==, dan ordinal()",
                 "body": [
                     "Enum juga bisa punya isi",
                     "",
@@ -751,6 +754,7 @@ public String sesuaikanStok(@PathVariable Long id,
 }""",
             },
             {
+                "heading": "Checked atau unchecked untuk aturan bisnis",
                 "body": [
                     "Kenapa extends RuntimeException, dan nggak extends Exception?",
                     "",
@@ -870,6 +874,7 @@ public String sesuaikanStok(@PathVariable Long id,
 }"""
             },
             {
+                "heading": "Interface DAO dan peran Hibernate",
                 "body": [
                     "Kenapa dibikin interface dulu, dan nggak langsung kelas?",
                     "",
@@ -1598,6 +1603,7 @@ class StokService {
 }""",
             },
             {
+                "heading": "Anotasi bean, component scan, dan pasangan Impl",
                 "body": [
                     "Jalankan program di atas. Keluarannya:",
                     "",
@@ -1735,6 +1741,7 @@ public class RequestService {
 }""",
             },
             {
+                "heading": "Constructor injection lawan @Autowired di field",
                 "body": [
                     "Injeksi lewat constructor",
                     "",
@@ -1834,6 +1841,7 @@ public class KonfigurasiAplikasi {
 }""",
             },
             {
+                "heading": "Dua wadah dan anotasi yang tidak aktif",
                 "body": [
                     "Wadahnya ada dua",
                     "",
@@ -2033,6 +2041,7 @@ public class KonfigurasiAplikasi {
 }"""
             },
             {
+                "heading": "Periksa dulu, ubah belakangan, dan transaksi",
                 "body": [
                     "Coba lihat susunannya. Semua pemeriksaan dikerjakan duluan, di",
                     "perulangan pertama. Perubahan baru dikerjakan sesudahnya, di",
@@ -2196,6 +2205,7 @@ POST  /items/{id}/junk       tandai rusak
 POST  /requests/{id}/approve setujui permintaan"""
             },
             {
+                "heading": "Endpoint, gaya REST, dan Post-Redirect-Get",
                 "body": [
                     "Tiap baris di daftar itu, yaitu satu method ditambah satu path,",
                     "namanya endpoint. Kata ini bakal sering kamu temui, di dokumentasi,",
@@ -2382,6 +2392,7 @@ public class ItemController {
 }""",
             },
             {
+                "heading": "Parameter lewat @PathVariable dan @RequestParam",
                 "body": [
                     "Jalan masuk: dari alamat ke parameter Java",
                     "",
@@ -2429,6 +2440,7 @@ public class ItemController {
                 ],
             },
             {
+                "heading": "Model, view resolver, dan nama atribut",
                 "body": [
                     "Jalan keluar: jembatan ke halaman",
                     "",
@@ -2526,6 +2538,7 @@ public class JembatanTampilan {
 }""",
             },
             {
+                "heading": "Redirect, flash attribute, dan pola MVC",
                 "body": [
                     "Coba lihat baris ${histori} di keluarannya. Kurung sikunya kosong,",
                     "dan nggak ada yang protes. Persis begitu juga yang terjadi di halaman",
@@ -2673,6 +2686,7 @@ public class JembatanTampilan {
                 ],
             },
             {
+                "heading": "Kenapa formulir memakai DTO, bukan entitas",
                 "body": [
                     "Objek formulir, alias DTO",
                     "",
@@ -2790,6 +2804,7 @@ public class JembatanTampilan {
 }""",
             },
             {
+                "heading": "Pengikatan formulir, @Valid, dan BindingResult",
                 "body": [
                     "@ModelAttribute: dari isi formulir jadi objek Java",
                     "",
@@ -2903,6 +2918,7 @@ public class ItemController {
 }""",
             },
             {
+                "heading": "Pesan kesalahan per field di JSP",
                 "body": [
                     "Menampilkan kesalahannya di tempat yang benar",
                     "",
@@ -3040,6 +3056,7 @@ public class ValidasiForm {
 }""",
             },
             {
+                "heading": "Memetakan DTO ke entitas dengan MapStruct",
                 "body": [
                     "Coba lihat kasus ketiga di keluarannya. Penggunanya mengisi nama",
                     "dengan benar, Spring nggak protes apa pun, tapi yang muncul di layar",
@@ -3288,6 +3305,7 @@ Kolom sesudah alamat IP itu nama pengguna yang sedang login. Kolom itulah
 yang membuat deretan 401 dan 403 bisa ditelusuri sampai ke orangnya.""",
             },
             {
+                "heading": "Angka status HTTP yang sering muncul",
                 "body": [
                     "Angka yang bakal sering kamu temui",
                     "",
@@ -3391,6 +3409,7 @@ yang membuat deretan 401 dan 403 bisa ditelusuri sampai ke orangnya.""",
                 ],
             },
             {
+                "heading": "Dari try/catch ke @ControllerAdvice",
                 "body": [
                     "Masalah try/catch di tiap controller",
                     "",
@@ -3477,6 +3496,7 @@ public class PenanganGalatGlobal {
 }""",
             },
             {
+                "heading": "Peta exception ke kode status",
                 "body": [
                     "Peta yang perlu kamu hafal",
                     "",
@@ -3729,6 +3749,7 @@ public class ItemService {
 }""",
             },
             {
+                "heading": "Deklarasi logger dan cara menulis baris log",
                 "body": [
                     "Bedah baris deklarasinya",
                     "",
@@ -4094,6 +4115,7 @@ public class ItemService {
 </table>"""
             },
             {
+                "heading": "Cara JSP menemukan nilai lewat getter",
                 "body": [
                     "  ${item.nama}   diganti nilai dari objek yang dikirim controller",
                     "  <c:forEach>    mengulang blok untuk tiap baris daftar",
@@ -4341,7 +4363,7 @@ public class ItemApiController {
 }""",
             },
             {
-                "heading": "Jackson bukan sihir: nama field JSON diambil dari GETTER",
+                "heading": "Jackson bukan sihir: nama field JSON diambil dari getter",
                 "body": [
                     "Nggak ada satu baris pun di controller tadi yang menyusun teks JSON.",
                     "Yang mengerjakannya pustaka bernama Jackson, dan Spring sendiri yang",
@@ -4580,6 +4602,7 @@ HTTP/1.1 415""",
 </dependencies>"""
             },
             {
+                "heading": "Struktur folder Maven dan jalur import",
                 "body": [
                     "Tiap pustaka yang dibutuhkan ditulis sebagai satu <dependency>. Tiga",
                     "baris di dalamnya (groupId, artifactId, version) bisa menarik puluhan",
@@ -5024,6 +5047,7 @@ HTTP/1.1 415""",
 </web-app>""",
             },
             {
+                "heading": "Filter dan rantai perhentian permintaan",
                 "body": [
                     "Sekarang diagram lapisan di materi Lapisan-lapisan Aplikasi Web bisa",
                     "dilengkapi. Di sana, Tomcat dan filter cuma digambar sebagai satu",
@@ -5872,6 +5896,7 @@ public class SimulasiSesi {
 }""",
             },
             {
+                "heading": "Identitas pelaku diambil dari sesi",
                 "body": [
                     "Sekarang soal yang tertunda sejak materi Service. Di sana ada method",
                     "ini:",
@@ -6247,6 +6272,7 @@ public class SimulasiSandi {
                 ]
             },
             {
+                "heading": "Bug hak akses yang tidak pernah aktif",
                 "body": [
                     "Kisah nyata: bug yang membuka semua pintu",
                     "",
@@ -6427,6 +6453,7 @@ Sekaligus pastikan yang boleh TIDAK ikut terkunci:
                 ]
             },
             {
+                "heading": "Memastikan database yang dipakai aplikasi",
                 "body": [
                     "Satu lagi: jangan sampai salah database",
                     "",
@@ -6679,6 +6706,7 @@ public class IsiPlaceholder {
 }""",
             },
             {
+                "heading": "Rahasia, Git, dan berkas .gitignore",
                 "body": [
                     "Seluruh folder proyek masuk Git",
                     "",
@@ -7039,6 +7067,7 @@ try {
 }""",
             },
             {
+                "heading": "Memancing race condition dan jebakan synchronized",
                 "body": [
                     "Kenapa bug ini selalu lolos pengujian",
                     "",
@@ -7357,6 +7386,7 @@ volumes:
 DB_PASSWORD=sandi-untuk-di-laptop-saja""",
             },
             {
+                "heading": "Perintah Docker yang dipakai sehari-hari",
                 "body": [
                     "Perintah yang dipakai sehari-hari",
                     "",
@@ -7516,6 +7546,7 @@ jdbc.url=jdbc:oracle:thin:@//10.10.1.187:1521/XE""",
                 ]
             },
             {
+                "heading": "Akibat shutdown.sh dan tiga bentuk deploy",
                 "body": [
                     "Akibat shutdown.sh yang belum pernah disebut",
                     "",
@@ -8041,6 +8072,7 @@ class ItemControllerTest {
 }""",
             },
             {
+                "heading": "Uji integrasi dan kapan uji berbohong",
                 "body": [
                     "Uji integrasi: waktu bonekanya disingkirkan",
                     "",

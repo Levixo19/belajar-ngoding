@@ -49,6 +49,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Kompilasi dan arti tiap baris program",
                 "body": [
                     "Program tadi perlu dua langkah supaya jalan. Pertama dikompilasi, lalu",
                     "hasilnya dijalankan:",
@@ -201,6 +202,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Format specifier, const, dan casting",
                 "body": [
                     "Format specifier adalah kode berawalan % di printf dan scanf. Kode ini",
                     "wajib cocok dengan tipe datanya:",
@@ -376,6 +378,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Signed, unsigned, dan komplemen dua",
                 "body": [
                     "Secara bawaan, semua tipe bilangan bulat di C bertanda (signed),",
                     "artinya bisa negatif. Kata unsigned membuang kemampuan itu. Gantinya,",
@@ -621,7 +624,7 @@ int main(void) {
                 ]
             },
             {
-                "heading": "Operator bitwise (KHAS pemrograman level rendah)",
+                "heading": "Operator bitwise (khas pemrograman level rendah)",
                 "code": """#include <stdio.h>
 
 int main(void) {
@@ -786,6 +789,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Tabel prioritas dan asosiativitas operator",
                 "body": [
                     "Kalau satu ekspresi memuat banyak operator, C nggak membacanya begitu",
                     "aja dari kiri ke kanan. Ada prioritas, yaitu operator mana yang",
@@ -936,6 +940,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Tiga jebakan ekspresi yang lolos compiler",
                 "body": [
                     "Ada tiga jebakan yang lahir langsung dari materi ini. Ketiganya sah",
                     "secara sintaks, jadi compiler nggak menolaknya. Dua yang pertama cuma",
@@ -1051,6 +1056,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Membaca string berspasi dan format printf",
                 "body": [
                     "scanf(\"%s\", ...) berhenti di spasi pertama. Jadi nama yang mengandung",
                     "spasi seperti 'Andi Wijaya' cuma terbaca 'Andi'. Untuk membaca satu",
@@ -1427,6 +1433,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Batas sizeof dan array berukuran variabel",
                 "body": [
                     "Rumus sizeof(nilai)/sizeof(nilai[0]) cuma bekerja untuk array yang",
                     "dideklarasikan langsung. Rumus ini nggak bekerja untuk hasil malloc,",
@@ -1540,6 +1547,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Jebakan string dan fungsi string.h lainnya",
                 "body": [
                     "Ada tiga hal soal string di C yang perlu kamu waspadai:",
                     "  1. strcpy dan strcat nggak mengecek ukuran tujuan, jadi gampang",
@@ -1765,7 +1773,7 @@ int main(void) {
 }""",
             },
             {
-                "heading": "<ctype.h>: memeriksa dan mengubah SATU karakter",
+                "heading": "<ctype.h>: memeriksa dan mengubah satu karakter",
                 "body": [
                     "Isi <ctype.h> adalah fungsi yang menjawab pertanyaan tentang satu",
                     "karakter, dan fungsi yang mengubah satu karakter. Namanya seragam: yang",
@@ -2384,6 +2392,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Kapan rekursi cocok dan kapan mahal",
                 "body": [
                     "Rekursi lebih jelas daripada loop kalau datanya bercabang:",
                     "  - Pohon: binary tree, folder di dalam folder, elemen HTML di dalam",
@@ -2541,6 +2550,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Kelas penyimpanan dan variabel global",
                 "body": [
                     "Kelas penyimpanan (storage class) menentukan di mana sebuah nilai",
                     "tinggal. Tempat itulah yang menentukan berapa lama nilainya hidup:",
@@ -2813,7 +2823,7 @@ int main(void) {
 }"""
             },
             {
-                "heading": "Pass by Reference dengan pointer (SOLUSI masalah materi 9)",
+                "heading": "Pass by Reference dengan pointer (solusi masalah materi 9)",
                 "code": """#include <stdio.h>
 
 // Menerima ALAMAT (pointer), bukan salinan nilai
@@ -2940,7 +2950,7 @@ int main(void) {
 }"""
             },
             {
-                "heading": "Array sebagai parameter fungsi (SELALU 'meluruh' jadi pointer!)",
+                "heading": "Array sebagai parameter fungsi (selalu 'meluruh' jadi pointer!)",
                 "code": """#include <stdio.h>
 
 // Ketiga cara ini SAMA PERSIS bagi compiler (array parameter = pointer):
@@ -2961,7 +2971,7 @@ int main(void) {
 }"""
             },
             {
-                "heading": "Array 2 dimensi sebagai parameter (dimensi KEDUA wajib!)",
+                "heading": "Array 2 dimensi sebagai parameter (dimensi kedua wajib!)",
                 "body": [
                     "Peluruhan tadi punya akibat yang mengejutkan pada matriks. Yang meluruh",
                     "jadi pointer cuma dimensi pertama. Dimensi kedua wajib tetap ditulis.",
@@ -3159,6 +3169,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Janji const pada pointer dan parameter",
                 "body": [
                     "const pada sebuah parameter adalah janji yang ikut diperiksa compiler:",
                     "\"fungsi ini nggak akan mengubah data yang kamu kirim\". Makanya",
@@ -3300,6 +3311,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Jebakan memset, memcpy, volatile, dan restrict",
                 "body": [
                     "Ini jebakan yang sering menjebak orang:",
                     "",
@@ -4291,7 +4303,7 @@ int main(void) {
                 ]
             },
             {
-                "heading": "Contoh enum (enumeration) - PALING sering dipakai",
+                "heading": "Contoh enum (enumeration) - paling sering dipakai",
                 "code": """#include <stdio.h>
 
 // enum: cara membuat KONSTANTA BERNAMA yang lebih jelas dari angka mentah
@@ -4443,6 +4455,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Alasan memilih fgets dan stdin sebagai berkas",
                 "body": [
                     "Kenapa fgets() lebih disarankan daripada fscanf(\"%s\", ...)? Ada dua",
                     "alasan:",
@@ -4592,6 +4605,7 @@ int main(int argc, char *argv[]) {
 }""",
             },
             {
+                "heading": "Stream standar dan buffering",
                 "body": [
                     "Kompilasi, lalu jalankan dengan beberapa kata di belakangnya. Misalnya",
                     "hasil kompilasinya kamu beri nama ./argumen, lalu kamu mengetik",
@@ -4708,6 +4722,7 @@ int main(int argc, char *argv[]) {
 }""",
             },
             {
+                "heading": "Kode keluar sebagai laporan ke sistem",
                 "body": [
                     "Kompilasi programnya, anggap hasilnya bernama ./tampil, lalu coba",
                     "empat hal ini:",
@@ -4956,6 +4971,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Mode biner, fread, fwrite, dan fseek",
                 "body": [
                     "Sampai sini semua berkas kita berkas teks. Ada mode kedua, yaitu",
                     "biner. Bedanya cuma satu huruf tambahan di string mode:",
@@ -5097,6 +5113,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Portabilitas berkas biner dan jebakan feof",
                 "body": [
                     "Berkas mahasiswa.dat itu nggak bisa dibuka dengan editor teks. Kalau",
                     "diintip dengan hexdump -C mahasiswa.dat di mesin x86-64, 32 byte",
@@ -5349,6 +5366,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Pola errno, perror, dan goto cleanup",
                 "body": [
                     "Kompilasi lalu jalankan. Hasilnya kira-kira begini:",
                     "",
@@ -5746,6 +5764,7 @@ int main(void) {
 }"""
             },
             {
+                "heading": "Kompilasi bersyarat, include guard, dan inline",
                 "body": [
                     "Preprocessor juga bisa memilih bagian kode mana yang ikut dikompilasi.",
                     "Namanya conditional compilation (kompilasi bersyarat):",
@@ -5948,6 +5967,7 @@ int main(void) {
 }""",
             },
             {
+                "heading": "Stringify, token paste, dan bungkus do-while",
                 "body": [
                     "Ada tiga alat yang cuma bisa dipakai di dalam #define, dan nggak",
                     "berlaku di tempat lain:",
@@ -6055,7 +6075,7 @@ int main(void) {
 }""",
             },
             {
-                "heading": "Kapan makro justru TIDAK dipakai, dan pola static inline",
+                "heading": "Kapan makro justru tidak dipakai, dan pola static inline",
                 "body": [
                     "Makro itu penggantian teks mentah. Makro nggak punya tipe, nggak",
                     "kelihatan di gdb, dan argumennya bisa dihitung dua kali: MAX(a++, b)",
@@ -6376,7 +6396,7 @@ int main(void) {
 }""",
             },
             {
-                "heading": "typedef untuk tipe FUNGSI, dan struct berisi function pointer",
+                "heading": "typedef untuk tipe fungsi, dan struct berisi function pointer",
                 "body": [
                     "Sintaks function pointer dari materi Function Pointer jadi hampir",
                     "nggak terbaca begitu dia masuk ke daftar parameter atau ke dalam",
@@ -7142,6 +7162,7 @@ clean:
 	rm -f $(OBJ) program""",
             },
             {
+                "heading": "Kompilasi terpisah dan dua keluarga galat",
                 "body": [
                     "Kompilasi terpisah",
                     "",
@@ -7247,6 +7268,7 @@ clean:
                 ],
             },
             {
+                "heading": "Makefile: target, variabel, dan aturan pola",
                 "body": [
                     "make cuma bisa satu hal, dan hal itu sederhana: membandingkan waktu",
                     "terakhir sebuah berkas diubah. Kalau target lebih tua daripada salah",
@@ -7340,6 +7362,7 @@ clean:
                 ],
             },
             {
+                "heading": "Versi standar C, pustaka, dan build system",
                 "body": [
                     "Versi standar C",
                     "",
@@ -7558,6 +7581,7 @@ program-statis: main.o libstatistik.a
                 ]
             },
             {
+                "heading": "Flag warning dan perintah dasar gdb",
                 "body": [
                     "Biasakan selalu mengompilasi dengan flag warning dan flag debug:",
                     "",
@@ -7734,6 +7758,7 @@ program-statis: main.o libstatistik.a
                 ]
             },
             {
+                "heading": "Memilih jalur spesialisasi",
                 "body": [
                     "Tahap 3: pilih jalur spesialisasi",
                     "",
@@ -7765,6 +7790,7 @@ program-statis: main.o libstatistik.a
                 ]
             },
             {
+                "heading": "Kebiasaan profesional dan kebiasaan harian",
                 "body": [
                     "Tahap 4: kebiasaan profesional",
                     "  1. Selalu kompilasi dengan -Wall -Wextra, dan bereskan semua",

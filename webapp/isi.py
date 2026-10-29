@@ -507,6 +507,10 @@ def bagian_materi(materi, lang):
             bhs_run, bhs_tok = bahasa_blok(bagian, lang)
             keluar.append({
                 "jenis": "kode",
+                # Indeks DATA bagian ini. Indeks blok di `keluar` TIDAK sama:
+                # bagian yang punya body dan code melahirkan dua blok, jadi yang
+                # dikirim ke `/api/materi/contoh` (Ruang Coba) harus yang ini.
+                "bagian": indeks_bagian,
                 # Bahasa blok ini sendiri (bisa berbeda dari kurikulumnya) dan
                 # apakah toolchain-nya terpasang: dua syarat tombol Jalankan.
                 "bahasa": bhs_run,

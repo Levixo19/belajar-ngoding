@@ -969,6 +969,7 @@ for ambang in calon:
 print("potongan terbaik: umur <", min(calon, key=nilai_potongan))""",
             },
             {
+                "heading": "Overfitting pohon dan random forest",
                 "body": [
                     "Keluarannya:",
                     "  umur < 20.0: gini 0.429",
@@ -1138,6 +1139,7 @@ for lipatan in range(k):
     print(f"lipatan {lipatan + 1}: validasi {validasi}, latih {len(latih)} baris")""",
             },
             {
+                "heading": "Variasi k-fold untuk data khusus",
                 "body": [
                     "Keluarannya:",
                     "  lipatan 1: validasi [0, 1], latih 8 baris",
@@ -1792,6 +1794,7 @@ print(f"regresi, tebakan dekat: {mean_squared_error([3.0, 5.0], [2.9, 5.2]):.3f}
 print(f"regresi, tebakan jauh : {mean_squared_error([3.0, 5.0], [1.0, 8.0]):.3f}")""",
             },
             {
+                "heading": "Cross-entropy dan gradient descent",
                 "body": [
                     "Keluarannya:",
                     "  label 1, model bilang 0.9: loss 0.105",
@@ -3170,6 +3173,7 @@ print(potongan)
 print([kosakata[p] for p in potongan])""",
             },
             {
+                "heading": "Token model sungguhan dan cara menghitungnya",
                 "body": [
                     "Keluarannya:",
                     "",
@@ -3890,6 +3894,7 @@ for model in HARGA:
     print(f"{model:<18} ${satu:.4f} per chat   ${satu * chat_per_bulan:>8,.2f} per bulan")""",
             },
             {
+                "heading": "Token berpikir, riwayat chat, dan caching",
                 "body": [
                     "Keluarannya:",
                     "",
@@ -6620,6 +6625,7 @@ LIMIT 5;
 """,
             },
             {
+                "heading": "Operator jarak dan indeks pgvector",
                 "body": [
                     "pgvector menambahkan tipe kolom vector dan operator jarak ke",
                     "PostgreSQL. Versi terbarunya saat materi ini ditulis 0.8.7",
@@ -6731,6 +6737,7 @@ FAISS      pustaka C++/Python    faiss-cpu 1.15.1    MIT
 LanceDB    tertanam (Rust)       0.40.0              Apache-2.0""",
             },
             {
+                "heading": "Tujuh pilihan database vektor",
                 "body": [
                     "Survei Stack Overflow 2025 menanyakan penyimpanan data yang",
                     "dipakai untuk agen AI. Hasilnya: Redis 42,9%, Supabase 20,9%,",

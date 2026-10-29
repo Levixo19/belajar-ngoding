@@ -1371,6 +1371,7 @@
      "code": "Seq Scan on pesanan  (cost=0.00..1986.00 rows=20 width=14) (actual time=0.074..16.050 rows=20.00 loops=1)\n  Filter: (pelanggan_id = 7)\n  Rows Removed by Filter: 99980\n  Buffers: shared hit=736\nPlanning Time: 0.597 ms\nExecution Time: 16.325 ms\n\nBitmap Heap Scan on pesanan  (cost=4.45..74.81 rows=20 width=14) (actual time=0.121..0.176 rows=20.00 loops=1)\n  Recheck Cond: (pelanggan_id = 7)\n  Heap Blocks: exact=20\n  Buffers: shared hit=23 read=2\n  ->  Bitmap Index Scan on idx_pesanan_pelanggan  (cost=0.00..4.44 rows=20 width=0) (actual time=0.094..0.095 rows=20.00 loops=1)\n        Index Cond: (pelanggan_id = 7)\n        Index Searches: 1\n        Buffers: shared hit=3 read=2\nPlanning Time: 0.242 ms\nExecution Time: 0.222 ms\n\nHash Join  (cost=149.50..2136.43 rows=356 width=22)\n  Hash Cond: (p.pelanggan_id = c.id)\n  ->  Seq Scan on pesanan p  (cost=0.00..1986.00 rows=356 width=16)\n        Filter: (dibuat = '2026-03-01'::date)\n  ->  Hash  (cost=87.00..87.00 rows=5000 width=22)\n        ->  Seq Scan on pelanggan c  (cost=0.00..87.00 rows=5000 width=22)"
     },
     {
+     "heading": "Cara membaca keluaran EXPLAIN ANALYZE",
      "body": [
       "Cara membacanya:",
       "  - Tiap baris yang diawali nama operasi adalah satu simpul",
@@ -2907,6 +2908,7 @@
      "code": "CREATE TABLE `pelanggan` (\n  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,\n  `nama` VARCHAR(100) NOT NULL,\n  `kota` VARCHAR(50) NOT NULL,\n  `email` VARCHAR(190) NOT NULL,\n  `poin` INT NOT NULL DEFAULT 0,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `uk_email` (`email`),\n  KEY `idx_kota` (`kota`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;\n\nINSERT INTO `pelanggan` (`nama`, `kota`, `email`, `poin`)\nVALUES ('Sari', 'Bandung', 'sari@contoh.id', 10) AS baru\nON DUPLICATE KEY UPDATE `poin` = `pelanggan`.`poin` + baru.`poin`;\n\nSELECT `id`, `nama` FROM `pelanggan`\nWHERE `kota` = 'Bandung'\nORDER BY `id`\nLIMIT 10, 20;"
     },
     {
+     "heading": "Tabel perbedaan MySQL, SQLite, dan PostgreSQL",
      "body": [
       "Bagian yang khas MySQL, dibandingkan dengan SQLite dan PostgreSQL:",
       "",
@@ -4090,6 +4092,7 @@
      "code": "use toko\n\ndb.produk.insertOne({\n  nama: \"Kopi Gayo 250g\",\n  harga: 85000,\n  stok: 12,\n  tag: [\"kopi\", \"arabika\"],\n  toko: { kota: \"Medan\", rating: 4.8 }\n})\n\ndb.produk.find({ harga: { $lt: 100000 } })\ndb.produk.findOne({ \"toko.kota\": \"Medan\" })\n\ndb.produk.updateOne(\n  { nama: \"Kopi Gayo 250g\" },\n  { $set: { harga: 82000 }, $push: { tag: \"promo\" }, $inc: { stok: -1 } }\n)\n\ndb.produk.deleteOne({ nama: \"Kopi Gayo 250g\" })"
     },
     {
+     "heading": "Filter, operator update, dan padanan istilah SQL",
      "body": [
       "CRUD singkatan dari create, read, update, delete. Perintah",
       "use toko pindah ke database toko, dan database maupun koleksinya",
@@ -4202,6 +4205,7 @@
      "code": "db.produk.createIndex({ kategori: 1 })\ndb.produk.createIndex({ kategori: 1, harga: -1 })\ndb.sesi.createIndex({ dibuat: 1 }, { expireAfterSeconds: 3600 })\ndb.artikel.createIndex({ judul: \"text\", isi: \"text\" })\n\ndb.produk.find({ kategori: \"kopi\" }).sort({ harga: -1 })\n  .explain(\"executionStats\")"
     },
     {
+     "heading": "Jenis indeks dan cara membaca explain",
      "body": [
       "Tanpa indeks, MongoDB membaca seluruh koleksi untuk tiap kueri.",
       "Jenis indeks yang paling sering dipakai:",
@@ -5305,6 +5309,7 @@
      "code": "memtable = {}\nsstable = []   # tiap SSTable: daftar (kunci, nilai) terurut\nBATAS = 3      # memtable di-flush begitu berisi 3 kunci\nHAPUS = None   # tombstone: penanda kunci sudah dihapus\n\n\ndef put(kunci, nilai):\n    global memtable\n    memtable[kunci] = nilai\n    if len(memtable) >= BATAS:\n        sstable.append(sorted(memtable.items()))   # flush ke disk\n        memtable = {}\n\n\ndef get(kunci):\n    if kunci in memtable:\n        return memtable[kunci]\n    for tabel in reversed(sstable):                # yang terbaru dulu\n        for k, v in tabel:\n            if k == kunci:\n                return v\n    return None\n\n\ndef compaction():\n    gabung = {}\n    for tabel in sstable:                          # yang lama ditimpa\n        gabung.update(tabel)\n    hidup = [(k, v) for k, v in sorted(gabung.items()) if v is not HAPUS]\n    sstable[:] = [hidup]\n\n\nput(\"a\", 1)\nput(\"b\", 2)\nput(\"c\", 3)\nput(\"a\", 10)\nput(\"b\", HAPUS)\nput(\"d\", 4)\nfor nomor, tabel in enumerate(sstable, 1):\n    print(f\"SSTable {nomor}:\", tabel)\nprint(\"get a:\", get(\"a\"), \"| get b:\", get(\"b\"), \"| get c:\", get(\"c\"))\ncompaction()\nprint(\"sesudah compaction:\", sstable)"
     },
     {
+     "heading": "Hasil LSM-tree dan perbandingan dengan B-tree",
      "body": [
       "Keluarannya:",
       "",

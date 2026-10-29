@@ -216,7 +216,14 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
                  ("banding-langit.mjs", r"(\d+) perbandingan", 30),
                  ("banding-sampul.mjs", r"(\d+) perbandingan", 700),
                  ("banding-gerak.mjs", r"(\d+) perbandingan", 150),
-                 ("banding-lensa.mjs", r"(\d+) perbandingan", 100000))
+                 ("banding-lensa.mjs", r"(\d+) perbandingan", 100000),
+                 ("banding-hero.mjs", r"(\d+) perbandingan", 1000),
+                 ("banding-orbit.mjs", r"(\d+) perbandingan", 3000),
+                 ("banding-skyline.mjs", r"(\d+) perbandingan", 8000),
+                 ("banding-pohon.mjs", r"(\d+) perbandingan", 20000),
+                 ("banding-tetes.mjs", r"(\d+) perbandingan", 150000),
+                 ("banding-penutup.mjs", r"(\d+) perbandingan", 3000),
+                 ("banding-dasbor-hidup.mjs", r"(\d+) perbandingan", 6000))
 
     def test_layanan_catatan(self):
         """Uji `packages/catatan` -- lapisan murninya selalu, Mongo kalau ada.
@@ -295,7 +302,9 @@ class TestAlgoritmaTypeScript(unittest.TestCase):
 
         with open(os.path.join(WEB, "package.json"), encoding="utf-8") as f:
             skrip = json.load(f)["scripts"].get("banding", "")
-        di_npm = set(re.findall(r"banding-[a-z]+\.mjs", skrip))
+        # `[a-z-]`, bukan `[a-z]`: nama dua kata (`banding-dasbor-hidup.mjs`) tidak tertangkap
+        # `[a-z]+`, dan pembanding yang sah dilaporkan "tidak ada di skrip npm".
+        di_npm = set(re.findall(r"banding-[a-z-]+\.mjs", skrip))
         self.assertEqual(sorted(ada - di_npm), [],
                          "pembanding tidak ada di skrip npm `banding`")
         # Dan skripnya harus benar-benar BISA DIJALANKAN. Versi pertama

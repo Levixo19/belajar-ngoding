@@ -77,6 +77,7 @@
      ]
     },
     {
+     "heading": "Versi LTS dan cara mengecek JDK",
      "body": [
       "Angka versi Java",
       "",
@@ -230,6 +231,7 @@
      ]
     },
     {
+     "heading": "Tiga bentuk import dan tabrakan nama",
      "body": [
       "Sesudah package, datang blok import. Bagian ini yang paling sering",
       "disalahpahami. Import nggak memuat atau menyalin kode apa pun ke",
@@ -297,6 +299,7 @@
      "code": "package com.tokobuku.penjualan;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n/**\n * Menyimpan barang yang dibeli satu pelanggan dalam satu transaksi.\n *\n * @author Levi\n */\npublic class Keranjang {\n\n    /** Batas jumlah barang yang boleh masuk sekali belanja. */\n    public static final int BATAS_BARANG = 20;\n\n    private final List<String> barang = new ArrayList<>();\n\n    /**\n     * Menambahkan satu barang ke keranjang.\n     *\n     * @param nama nama barang yang dibeli, tidak boleh kosong\n     * @return true kalau barangnya berhasil masuk\n     * @throws IllegalStateException kalau isinya sudah mencapai {@link #BATAS_BARANG}\n     */\n    public boolean tambah(String nama) {\n        if (barang.size() >= BATAS_BARANG) {\n            throw new IllegalStateException(\"Keranjang penuh\");\n        }\n        return barang.add(nama);\n    }\n}"
     },
     {
+     "heading": "Komentar, Javadoc, dan konvensi penamaan",
      "body": [
       "Kita bedah kepala berkas di atas baris demi baris:",
       "  package com.tokobuku.penjualan;",
@@ -465,6 +468,7 @@
      "code": "int umur = 20;\ndouble harga = 15000.50;\nchar grade = 'A';\nboolean lulus = true;\nString nama = \"Budi\";\nlong saldoBank = 1000000000L;  // akhiri L untuk long\nfloat tinggi = 170.5f;         // akhiri f untuk float"
     },
     {
+     "heading": "Char, String, dan escape sequence",
      "body": [
       "Dua jenis tanda kutip di contoh tadi nggak boleh tertukar:",
       "",
@@ -498,6 +502,7 @@
      ]
     },
     {
+     "heading": "Konstanta, penamaan, var, dan konversi tipe",
      "body": [
       "Konstanta adalah variabel yang nilainya nggak bisa diubah lagi. Caranya",
       "pakai kata kunci final:",
@@ -618,6 +623,7 @@
      "code": "public class Main {\n    public static void main(String[] args) {\n        // Autoboxing: int -> Integer, terjadi otomatis\n        int angka = 42;\n        Integer kotak = angka;\n\n        // Unboxing: Integer -> int, juga otomatis\n        int kembali = kotak;\n        System.out.println(kotak + \" \" + kembali);      // 42 42\n\n        // Teks -> angka\n        int umur = Integer.parseInt(\"20\");\n        double harga = Double.parseDouble(\"15000.5\");\n        long saldo = Long.parseLong(\"9000000000\");\n        boolean aktif = Boolean.parseBoolean(\"true\");\n        System.out.println(umur + 1);                   // 21\n        System.out.println(harga * 2);                  // 30001.0\n        System.out.println(saldo);                      // 9000000000\n        System.out.println(aktif);                      // true\n\n        // Angka -> teks (tiga cara yang sama-sama benar)\n        System.out.println(String.valueOf(umur));       // 20\n        System.out.println(Integer.toString(umur));     // 20\n        System.out.println(\"\" + umur);                  // 20\n\n        // Teks yang bukan angka: program berhenti kalau tidak ditangkap\n        try {\n            Integer.parseInt(\"20 tahun\");\n        } catch (NumberFormatException e) {\n            System.out.println(\"Gagal baca: \" + e.getMessage());\n        }\n    }\n}"
     },
     {
+     "heading": "Teks jadi angka, angka jadi teks",
      "body": [
       "Teks jadi angka",
       "",
@@ -676,6 +682,7 @@
      "code": "public class Main {\n    public static void main(String[] args) {\n        Integer a = 127, b = 127;\n        Integer c = 1000, d = 1000;\n\n        System.out.println(a == b);        // true  <- kebetulan, bukan aturan\n        System.out.println(c == d);        // false <- isi sama, objeknya beda!\n        System.out.println(c.equals(d));   // true  <- ini cara yang benar\n\n        int e = 1000, f = 1000;\n        System.out.println(e == f);        // true, karena int bukan objek\n\n        Integer belumDiisi = null;\n        System.out.println(belumDiisi == null);   // true, ini perbandingan aman\n\n        try {\n            int nilai = belumDiisi;   // diam-diam jadi belumDiisi.intValue()\n            System.out.println(nilai);\n        } catch (NullPointerException ex) {\n            System.out.println(\"NPE: unboxing Integer yang bernilai null\");\n        }\n    }\n}"
     },
     {
+     "heading": "Cache Integer, unboxing null, dan autoboxing",
      "body": [
       "Kenapa c == d bisa false padahal isinya sama-sama 1000?",
       "",
@@ -793,6 +800,7 @@
      ]
     },
     {
+     "heading": "Operator + untuk menyambung teks",
      "body": [
       "Tanda + punya tugas kedua: menyambung teks. Istilahnya konkatenasi.",
       "Begitu salah satu sisinya String, + berhenti menjumlahkan dan mulai",
@@ -864,6 +872,7 @@
      ]
     },
     {
+     "heading": "Operator bit dan bit flag",
      "body": [
       "Operator bit bekerja pada angka bit per bit, nggak pada nilainya secara",
       "utuh. Bit adalah angka 0 atau 1 dalam bentuk biner. Di awal belajar kamu",
@@ -1203,6 +1212,7 @@
      ]
     },
     {
+     "heading": "Mencetak array dan kelas Arrays",
      "body": [
       "Ini jebakan pemula yang paling terkenal di Java. Karena bukan error,",
       "nggak ada yang ngasih peringatan:",
@@ -1322,6 +1332,7 @@
      "code": "public class Kalkulator {\n    public static void main(String[] args) {\n        int hasil = tambah(10, 5);\n        System.out.println(\"10 + 5 = \" + hasil);\n        tampilkanInfo(\"Java\");\n    }\n\n    static int tambah(int a, int b) {\n        return a + b;\n    }\n\n    static void tampilkanInfo(String bahasa) {\n        System.out.println(\"Belajar \" + bahasa + \" itu seru!\");\n    }\n}"
     },
     {
+     "heading": "Overloading, scope, dan method static",
      "body": [
       "Method overloading",
       "",
@@ -1387,6 +1398,7 @@
      ]
     },
     {
+     "heading": "Daftar method Math dan tipe kembaliannya",
      "body": [
       "Class Math",
       "",
@@ -1508,6 +1520,7 @@
      "code": "public class Rekursi {\n    public static void main(String[] args) {\n        System.out.println(\"Hasil faktorial(4) = \" + faktorial(4, 0));\n        System.out.println();\n        System.out.println(\"Hasil jumlah(4)    = \" + jumlah(4));\n    }\n\n    // Parameter \"dalam\" HANYA untuk mencetak jejak supaya tumpukannya\n    // terlihat. Rekursinya sendiri tidak membutuhkannya.\n    static int faktorial(int n, int dalam) {\n        String spasi = \"  \".repeat(dalam);\n        System.out.println(spasi + \"masuk faktorial(\" + n + \")\");\n\n        if (n <= 1) {                                  // 1. base case\n            System.out.println(spasi + \"-> base case, kembalikan 1\");\n            return 1;\n        }\n\n        int lebihKecil = faktorial(n - 1, dalam + 1);  // 2. langkah mengecil\n        int hasil = n * lebihKecil;\n        System.out.println(spasi + \"-> \" + n + \" * \" + lebihKecil + \" = \" + hasil);\n        return hasil;\n    }\n\n    static int jumlah(int n) {\n        if (n == 0) return 0;          // base case\n        return n + jumlah(n - 1);      // n mengecil satu demi satu\n    }\n}"
     },
     {
+     "heading": "Call stack dan StackOverflowError",
      "body": [
       "Call stack",
       "",
@@ -1830,6 +1843,7 @@
      "code": "public class Kotak {\n    private int lebar;\n    private int tinggi;\n\n    // Constructor utama: satu-satunya yang benar-benar mengisi field.\n    public Kotak(int lebar, int tinggi) {\n        this.lebar = lebar;\n        this.tinggi = tinggi;\n    }\n\n    // Kotak persegi: cukup satu ukuran, sisanya dilempar ke constructor utama.\n    public Kotak(int sisi) {\n        this(sisi, sisi);\n    }\n\n    // Tanpa argumen: kotak 1 x 1. Ini HARUS ditulis sendiri sekarang, karena\n    // hadiah constructor default sudah hilang begitu ada constructor di atas.\n    public Kotak() {\n        this(1, 1);\n    }\n\n    public void tampilkan() {\n        System.out.println(lebar + \" x \" + tinggi + \" -> luas \" + (lebar * tinggi));\n    }\n\n    public static void main(String[] args) {\n        Kotak a = new Kotak(3, 4);\n        Kotak b = new Kotak(5);\n        Kotak c = new Kotak();\n\n        a.tampilkan();   // 3 x 4 -> luas 12\n        b.tampilkan();   // 5 x 5 -> luas 25\n        c.tampilkan();   // 1 x 1 -> luas 1\n    }\n}"
     },
     {
+     "heading": "Panggilan super() otomatis dan field static",
      "body": [
       "Satu hal lagi soal constructor, supaya kamu nggak kaget di materi",
       "Inheritance. Kalau baris pertama sebuah constructor bukan this(...) dan",
@@ -1896,6 +1910,7 @@
      "code": "public class Tiket {\n    // Konstanta: static + final, namanya HURUF_BESAR.\n    public static final double HARGA = 50000;\n    private static final String AWALAN = \"TKT-\";\n\n    // Field static: SATU nilai, dipakai bersama semua objek Tiket.\n    private static int jumlahTerjual = 0;\n\n    // Field instance: tiap objek punya salinannya sendiri.\n    private final String kode;\n\n    // Blok inisialisasi static: jalan sekali, sebelum main.\n    static {\n        System.out.println(\"Loket dibuka.\");\n    }\n\n    public Tiket() {\n        jumlahTerjual++;                    // menaikkan angka milik CLASS\n        this.kode = AWALAN + jumlahTerjual; // mengisi field milik OBJEK ini\n    }\n\n    public String getKode() {\n        return kode;\n    }\n\n    // Method static: dipanggil lewat nama class, tanpa perlu objek.\n    public static int getJumlahTerjual() {\n        return jumlahTerjual;\n    }\n\n    public static double totalPendapatan() {\n        return jumlahTerjual * HARGA;\n    }\n\n    public static void main(String[] args) {\n        Tiket a = new Tiket();\n        Tiket b = new Tiket();\n\n        System.out.println(a.getKode());\n        System.out.println(b.getKode());\n        System.out.println(\"Terjual   : \" + Tiket.getJumlahTerjual());\n        System.out.println(\"Pendapatan: \" + Tiket.totalPendapatan());\n    }\n}"
     },
     {
+     "heading": "Error non-static dari konteks static",
      "body": [
       "Keluaran program Tiket:",
       "",
@@ -2025,6 +2040,7 @@
      "code": "enum Status {\n    AKTIF, NONAKTIF, DIBLOKIR\n}\n\nclass Akun {\n    String nama;\n    Status status;\n\n    Akun(String nama, Status status) {\n        this.nama = nama;\n        this.status = status;\n    }\n}\n\npublic class Main {\n    // switch bentuk klasik: case ditulis TANPA \"Status.\"\n    static String pesan(Status s) {\n        switch (s) {\n            case AKTIF:\n                return \"Silakan masuk.\";\n            case NONAKTIF:\n                return \"Akun belum diaktifkan.\";\n            default:\n                return \"Akun diblokir.\";\n        }\n    }\n\n    // switch bentuk panah (Java 14+), dipakai sebagai ekspresi\n    static int batasUnggah(Status s) {\n        return switch (s) {\n            case AKTIF -> 100;\n            case NONAKTIF -> 10;\n            case DIBLOKIR -> 0;\n        };\n    }\n\n    public static void main(String[] args) {\n        Akun a = new Akun(\"Andi\", Status.AKTIF);\n        Akun b = new Akun(\"Budi\", Status.DIBLOKIR);\n\n        System.out.println(a.nama + \": \" + pesan(a.status)\n                + \" (batas \" + batasUnggah(a.status) + \" MB)\");\n        System.out.println(b.nama + \": \" + pesan(b.status)\n                + \" (batas \" + batasUnggah(b.status) + \" MB)\");\n\n        // dibandingkan dengan ==, bukan equals\n        if (b.status == Status.DIBLOKIR) {\n            System.out.println(\"Kirim laporan ke admin.\");\n        }\n\n        // values(): semua konstanta, urut sesuai urutan deklarasi\n        for (Status s : Status.values()) {\n            System.out.println(s.ordinal() + \" \" + s.name());\n        }\n\n        // teks -> enum\n        Status dariTeks = Status.valueOf(\"NONAKTIF\");\n        System.out.println(\"dariTeks = \" + dariTeks);\n\n        try {\n            Status.valueOf(\"aktif\");   // huruf kecil -> tidak ada\n        } catch (IllegalArgumentException e) {\n            System.out.println(\"valueOf gagal: teksnya harus persis sama.\");\n        }\n    }\n}"
     },
     {
+     "heading": "Enum di switch dan method bawaannya",
      "body": [
       "Keluaran program di atas:",
       "  Andi: Silakan masuk. (batas 100 MB)",
@@ -2083,6 +2099,7 @@
      "code": "import java.util.EnumMap;\nimport java.util.EnumSet;\nimport java.util.Map;\n\ninterface Berbayar {\n    int biaya();\n}\n\nenum Paket implements Berbayar {\n    HEMAT(\"Hemat\", 10),\n    STANDAR(\"Standar\", 25),\n    PREMIUM(\"Premium\", 60);        // titik koma WAJIB sebelum field & constructor\n\n    private final String label;\n    private final int kuotaGb;\n\n    Paket(String label, int kuotaGb) {   // constructor enum selalu private\n        this.label = label;\n        this.kuotaGb = kuotaGb;\n    }\n\n    public String getLabel() {\n        return label;\n    }\n\n    public boolean muat(int pakaiGb) {   // method biasa, sama untuk semua konstanta\n        return pakaiGb <= kuotaGb;\n    }\n\n    @Override\n    public int biaya() {                 // memenuhi kontrak interface\n        return kuotaGb * 2000;\n    }\n}\n\nenum Operasi {\n    TAMBAH(\"+\") {\n        public int hitung(int a, int b) { return a + b; }\n    },\n    KALI(\"*\") {\n        public int hitung(int a, int b) { return a * b; }\n    };\n\n    private final String simbol;\n\n    Operasi(String simbol) {\n        this.simbol = simbol;\n    }\n\n    public abstract int hitung(int a, int b);   // isinya beda tiap konstanta\n\n    public String getSimbol() {\n        return simbol;\n    }\n}\n\nclass Pesanan {\n    enum Status { BARU, DIKIRIM, SELESAI }   // enum di DALAM class\n\n    Status status = Status.BARU;\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        for (Paket p : Paket.values()) {\n            System.out.println(p.getLabel() + \" Rp\" + p.biaya()\n                    + \" cukup untuk 20 GB? \" + p.muat(20));\n        }\n\n        for (Operasi o : Operasi.values()) {\n            System.out.println(\"6 \" + o.getSimbol() + \" 3 = \" + o.hitung(6, 3));\n        }\n\n        // EnumMap: kuncinya enum; urutannya selalu urutan deklarasi\n        Map<Paket, Integer> pelanggan = new EnumMap<>(Paket.class);\n        pelanggan.put(Paket.PREMIUM, 12);\n        pelanggan.put(Paket.HEMAT, 340);\n        System.out.println(pelanggan);\n\n        // EnumSet: himpunan konstanta\n        EnumSet<Paket> murah = EnumSet.of(Paket.HEMAT, Paket.STANDAR);\n        System.out.println(\"PREMIUM termasuk murah? \" + murah.contains(Paket.PREMIUM));\n\n        // dari luar, enum bersarang disebut lewat nama class-nya\n        Pesanan pesanan = new Pesanan();\n        System.out.println(pesanan.status + \" lalu \" + Pesanan.Status.SELESAI);\n    }\n}"
     },
     {
+     "heading": "Constructor enum, EnumMap, dan EnumSet",
      "body": [
       "Keluarannya:",
       "  Hemat Rp20000 cukup untuk 20 GB? false",
@@ -2387,6 +2404,7 @@
      ]
     },
     {
+     "heading": "Cek tipe sebelum downcasting",
      "body": [
       "instanceof adalah alat pengecek yang barusan disebut sekilas.",
       "",
@@ -2513,6 +2531,7 @@
      "code": "import java.util.HashSet;\nimport java.util.Set;\n\nclass Titik {\n    int x;\n    int y;\n\n    Titik(int x, int y) {\n        this.x = x;\n        this.y = y;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Titik a = new Titik(3, 4);\n        Titik b = new Titik(3, 4);\n\n        System.out.println(a);                              // Titik@1b6d3586\n        System.out.println(a.getClass().getSimpleName());   // Titik\n\n        System.out.println(a == b);         // false, memang dua objek berbeda\n        System.out.println(a.equals(b));    // false <- ini yang mengagetkan\n\n        Set<Titik> kumpulan = new HashSet<>();\n        kumpulan.add(a);\n        kumpulan.add(b);\n        System.out.println(kumpulan.size());   // 2, padahal isinya sama persis\n    }\n}"
     },
     {
+     "heading": "Memperbaiki toString, equals, dan hashCode",
      "body": [
       "Ada tiga hal yang perlu diperbaiki dari contoh di atas.",
       "",
@@ -2569,6 +2588,7 @@
      "code": "import java.util.HashMap;\nimport java.util.HashSet;\nimport java.util.Map;\nimport java.util.Objects;\nimport java.util.Set;\n\nclass Titik {\n    private final int x;\n    private final int y;\n\n    Titik(int x, int y) {\n        this.x = x;\n        this.y = y;\n    }\n\n    @Override\n    public String toString() {\n        return \"Titik(\" + x + \", \" + y + \")\";\n    }\n\n    @Override\n    public boolean equals(Object lain) {\n        if (this == lain) return true;                 // objek yang sama persis\n        if (!(lain instanceof Titik)) return false;    // null pun jatuh ke sini\n        Titik t = (Titik) lain;\n        return x == t.x && y == t.y;                   // primitif: cukup ==\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(x, y);                     // field yang sama dengan di equals\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Titik a = new Titik(3, 4);\n        Titik b = new Titik(3, 4);\n\n        System.out.println(a);              // Titik(3, 4)\n        System.out.println(a.equals(b));    // true\n        System.out.println(a == b);         // tetap false: dua objek berbeda\n\n        Set<Titik> kumpulan = new HashSet<>();\n        kumpulan.add(a);\n        kumpulan.add(b);\n        System.out.println(kumpulan.size());   // 1\n\n        Map<Titik, String> label = new HashMap<>();\n        label.put(a, \"pojok\");\n        System.out.println(label.get(new Titik(3, 4)));            // pojok\n        System.out.println(kumpulan.contains(new Titik(3, 4)));    // true\n    }\n}"
     },
     {
+     "heading": "Kenapa hashCode wajib berpasangan dengan equals?",
      "body": [
       "Kenapa hashCode wajib berpasangan dengan equals?",
       "",
@@ -2717,6 +2737,7 @@
      ]
     },
     {
+     "heading": "Kenapa interface punya default method",
      "body": [
       "Di atas disebut bahwa sejak Java 8 interface boleh punya default method",
       "dan static method. Bagian ini perlu penjelasan sendiri, karena artinya",
@@ -2850,6 +2871,7 @@
      "code": "import java.util.ArrayList;\nimport java.util.List;\n\nclass Hewan {\n    void bersuara() {\n        System.out.println(\"Hewan bersuara\");\n    }\n\n    @Deprecated\n    void suara() {                  // nama lama; masih jalan, tapi jangan dipakai lagi\n        bersuara();\n    }\n}\n\nclass Kucing extends Hewan {\n    @Override                       // \"aku BERMAKSUD menimpa method milik induk\"\n    void bersuara() {\n        System.out.println(\"Meow!\");\n    }\n}\n\n@FunctionalInterface                // \"interface ini hanya boleh punya SATU abstract method\"\ninterface Sapaan {\n    String sapa(String nama);\n}\n\npublic class Main {\n    @SuppressWarnings(\"unchecked\")  // \"aku sudah tahu risikonya, jangan tegur aku\"\n    static List<String> daftarLama() {\n        List mentah = new ArrayList();   // List tanpa <String>: compiler curiga\n        mentah.add(\"Tom\");\n        return (List<String>) mentah;\n    }\n\n    public static void main(String[] args) {\n        Hewan h = new Kucing();\n        h.bersuara();                     // Meow!\n        System.out.println(daftarLama()); // [Tom]\n    }\n}"
     },
     {
+     "heading": "Anotasi @Override, @Deprecated, dan argumen",
      "body": [
       "Program di atas jalan dan mencetak dua baris. Yang menarik justru apa",
       "yang terjadi kalau anotasinya diutak-atik.",
@@ -2946,6 +2968,7 @@
      "code": "import java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.RetentionPolicy;\nimport java.lang.annotation.Target;\nimport java.lang.reflect.Method;\n\n@Retention(RetentionPolicy.RUNTIME)   // ikut terbawa sampai program BERJALAN\n@Target(ElementType.METHOD)           // hanya boleh menempel di method\n@interface Langkah {\n    String nama();\n    int urutan();\n}\n\nclass Laporan {\n    @Langkah(nama = \"Ambil data penjualan\", urutan = 1)\n    public void ambil() {\n        System.out.println(\"   ...membaca 120 baris transaksi\");\n    }\n\n    @Langkah(nama = \"Hitung total\", urutan = 2)\n    public void hitung() {\n        System.out.println(\"   ...total = 4.500.000\");\n    }\n\n    public void bantuanInternal() {       // tanpa @Langkah, tidak ikut dipanggil\n        System.out.println(\"   ...baris ini tidak pernah muncul\");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        Method[] rencana = new Method[3];    // slot 1 dan 2 yang dipakai\n\n        // Inilah yang dikerjakan framework: memeriksa isi class, mencari tanda.\n        for (Method m : Laporan.class.getDeclaredMethods()) {\n            if (m.isAnnotationPresent(Langkah.class)) {\n                Langkah tanda = m.getAnnotation(Langkah.class);\n                rencana[tanda.urutan()] = m;\n            }\n        }\n\n        Laporan laporan = new Laporan();\n        for (int i = 1; i < rencana.length; i++) {\n            Langkah tanda = rencana[i].getAnnotation(Langkah.class);\n            System.out.println(i + \". \" + tanda.nama());\n            rencana[i].invoke(laporan);      // panggil method-nya\n        }\n    }\n}"
     },
     {
+     "heading": "Peran @Retention, @Target, dan anotasi framework",
      "body": [
       "Keluarannya:",
       "",
@@ -3244,6 +3267,7 @@
      "code": "import java.util.List;\n\ninterface Bernilai {\n    char grade();\n}\n\nrecord Nilai(String nama, int angka) implements Bernilai {\n\n    // Compact constructor: tempat validasi & perapian.\n    // Perhatikan: TIDAK ada \"this.nama = nama;\" -- Java yang mengisikannya.\n    Nilai {\n        if (angka < 0 || angka > 100) {\n            throw new IllegalArgumentException(\"nilai di luar 0-100: \" + angka);\n        }\n        nama = nama.trim();\n    }\n\n    // Constructor tambahan WAJIB memanggil constructor utama lewat this(...)\n    Nilai(String nama) {\n        this(nama, 0);\n    }\n\n    @Override\n    public char grade() {\n        return switch (angka / 10) {\n            case 10, 9 -> 'A';            // satu cabang, beberapa label\n            case 8 -> 'B';\n            case 7 -> 'C';\n            default -> {                  // badan berkurung: nilainya lewat yield\n                char sementara = angka >= 60 ? 'D' : 'E';\n                yield sementara;\n            }\n        };\n    }\n\n    // Record tidak bisa diubah; yang \"mengubah\" mengembalikan objek BARU.\n    Nilai denganAngka(int baru) {\n        return new Nilai(nama, baru);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Nilai a = new Nilai(\"  Andi  \", 92);\n        Nilai b = new Nilai(\"Andi\", 92);\n\n        System.out.println(a.nama() + \" / \" + a.angka());   // getter tanpa \"get\"\n        System.out.println(a);                              // toString otomatis\n        System.out.println(a.equals(b));                    // equals otomatis\n        System.out.println(a.grade() + \" \" + new Nilai(\"Budi\", 64).grade());\n\n        Nilai c = a.denganAngka(70);\n        System.out.println(a + \" -> \" + c);                 // a TIDAK berubah\n\n        String sql = \"\"\"\n                SELECT nama, angka\n                FROM nilai\n                WHERE angka >= 70\n                ORDER BY angka DESC\"\"\";\n\n        String json = \"\"\"\n                {\n                  \"nama\": \"Andi\",\n                  \"grade\": \"A\"\n                }\"\"\";\n\n        System.out.println(sql);\n        System.out.println(json);\n\n        for (Nilai n : List.of(a, c, new Nilai(\"Cici\"))) {\n            System.out.printf(\"%-6s %3d %c%n\", n.nama(), n.angka(), n.grade());\n        }\n\n        try {\n            new Nilai(\"Dedi\", 120);\n        } catch (IllegalArgumentException e) {\n            System.out.println(\"ditolak: \" + e.getMessage());\n        }\n    }\n}"
     },
     {
+     "heading": "Text block, printf, dan switch ekspresi",
      "body": [
       "Keluarannya:",
       "",
@@ -3377,6 +3401,7 @@
      ]
     },
     {
+     "heading": "Pattern matching dan sealed",
      "body": [
       "Sisa materi ini membahas dua fitur yang hampir selalu muncul bersama record.",
       "",
@@ -3552,6 +3577,7 @@
      "code": "public class Main {\n    public static void main(String[] args) {\n        try {\n            int hasil = 10 / 0;\n            System.out.println(hasil);\n        } catch (ArithmeticException e) {\n            System.out.println(\"Tidak bisa membagi dengan nol!\");\n        } finally {\n            System.out.println(\"Blok finally selalu jalan.\");\n        }\n        System.out.println(\"Program tetap lanjut.\");\n    }\n}"
     },
     {
+     "heading": "Perbedaan throw, throws, dan exception checked",
      "body": [
       "Satu catch boleh menangkap beberapa jenis exception sekaligus. Pisahkan",
       "tipenya pakai garis tegak:",
@@ -3699,6 +3725,7 @@
      "code": "public class Jejak {\n    // Program ini SENGAJA gagal. Jalankan, lalu cocokkan nomor barisnya\n    // dengan jejak yang barusan kamu baca.\n\n    static int hargaDari(String teks) {\n        return Integer.parseInt(teks);\n    }\n\n    static int totalBelanja(String[] daftar) {\n        int total = 0;\n        for (String t : daftar) {\n            total += hargaDari(t);\n        }\n        return total;\n    }\n\n    public static void main(String[] args) {\n        String[] harga = {\"12000\", \"9500\", \"8.000\", \"3000\"};\n        System.out.println(\"Total: \" + totalBelanja(harga));\n    }\n}"
     },
     {
+     "heading": "Pohon Throwable dan System.err",
      "body": [
       "Kenapa catch (Exception e) bisa menangkap begitu banyak jenis error?",
       "Semua error di Java adalah objek, dan objek-objek itu satu keluarga:",
@@ -3779,6 +3806,7 @@
      "code": "public class Konfigurasi {\n\n    static int bacaPort(String teks) {\n        try {\n            return Integer.parseInt(teks);\n        } catch (NumberFormatException e) {\n            // Argumen kedua = sebab aslinya. Lupa mengisinya = jejak asli hilang.\n            throw new RuntimeException(\"gagal memuat konfigurasi\", e);\n        }\n    }\n\n    public static void main(String[] args) {\n        try {\n            bacaPort(\"delapan puluh\");\n        } catch (RuntimeException e) {\n            System.out.println(\"getMessage()  : \" + e.getMessage());\n            System.out.println(\"toString()    : \" + e);\n            System.out.println(\"getCause()    : \" + e.getCause());\n            System.out.println(\"baris pertama : \" + e.getStackTrace()[0]);\n\n            // printStackTrace() mencetak ke System.err, bukan System.out.\n            e.printStackTrace();\n        }\n    }\n}"
     },
     {
+     "heading": "Caused by, logger, dan pola catch buruk",
      "body": [
       "Empat baris pertama keluar lewat System.out, lalu printStackTrace()",
       "mencetak ini ke System.err:",
@@ -3949,6 +3977,7 @@
      ]
     },
     {
+     "heading": "Kurung sudut, diamond, dan List di kiri",
      "body": [
       "Sebelum lanjut, ada dua simbol asing di baris yang barusan kamu lihat:",
       "",
@@ -3992,6 +4021,7 @@
      "code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // List\n        List<String> buah = new ArrayList<>(List.of(\"Apel\", \"Mangga\", \"Jeruk\"));\n        buah.add(\"Durian\");\n        for (String b : buah) {\n            System.out.print(b + \" \");\n        }\n        System.out.println();   // Apel Mangga Jeruk Durian\n\n        // Set (hapus duplikat)\n        Set<Integer> angka = new HashSet<>();\n        angka.add(1); angka.add(2); angka.add(2); angka.add(3);\n        System.out.println(angka);   // [1, 2, 3]\n\n        // Map\n        Map<String, Integer> nilai = new HashMap<>();\n        nilai.put(\"Andi\", 85);\n        nilai.put(\"Budi\", 90);\n        System.out.println(nilai.get(\"Andi\"));   // 85\n        for (Map.Entry<String, Integer> e : nilai.entrySet()) {\n            System.out.println(e.getKey() + \" -> \" + e.getValue());\n        }\n    }\n}"
     },
     {
+     "heading": "Memilih koleksi, mengurutkan, dan Stream",
      "body": [
       "Kapan pakai yang mana? Ini perbandingan yang paling sering ditanyakan:",
       "  - ArrayList cepat kalau kamu mengambil isi lewat indeks, tapi lambat",
@@ -4134,6 +4164,7 @@
      "code": "import java.util.*;\n\npublic class Main {\n    static List<String> buah() {\n        // Dibungkus new ArrayList<> supaya isinya boleh diubah (lihat bagian akhir materi).\n        return new ArrayList<>(List.of(\"Apel\", \"Mangga\", \"Jeruk\", \"Durian\"));\n    }\n\n    public static void main(String[] args) {\n        // Bentuk panjang for-each: inilah yang sebenarnya dijalankan.\n        for (Iterator<String> it = buah().iterator(); it.hasNext(); ) {\n            String b = it.next();\n            System.out.print(b + \" \");\n        }\n        System.out.println();\n\n        // SALAH: menghapus lewat list-nya sementara for-each masih berjalan.\n        List<String> salah = buah();\n        try {\n            for (String b : salah) {\n                if (b.startsWith(\"M\")) {\n                    salah.remove(b);      // iterator langsung basi\n                }\n            }\n        } catch (ConcurrentModificationException e) {\n            System.out.println(\"Meledak: \" + e.getClass().getSimpleName());\n        }\n\n        // Obat 1: hapus lewat iterator-nya sendiri, bukan lewat list-nya.\n        List<String> a = buah();\n        for (Iterator<String> it = a.iterator(); it.hasNext(); ) {\n            if (it.next().startsWith(\"M\")) {\n                it.remove();\n            }\n        }\n        System.out.println(\"it.remove()  -> \" + a);\n\n        // Obat 2: removeIf, satu baris dan maksudnya langsung terbaca.\n        List<String> b = buah();\n        b.removeIf(x -> x.startsWith(\"M\"));\n        System.out.println(\"removeIf     -> \" + b);\n\n        // Obat 3: telusuri SALINAN-nya, ubah yang asli.\n        List<String> c = buah();\n        for (String x : new ArrayList<>(c)) {\n            if (x.startsWith(\"M\")) {\n                c.remove(x);\n            }\n        }\n        System.out.println(\"salin dulu   -> \" + c);\n    }\n}"
     },
     {
+     "heading": "Memilih removeIf, method Map, dan menelusuri Map",
      "body": [
       "Kapan pakai yang mana:",
       "  - removeIf(...) jadi pilihan pertama. Paling pendek, paling jelas, dan",
@@ -4214,6 +4245,7 @@
      "code": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        String kalimat = \"roti susu roti kopi susu roti\";\n\n        // IDIOM 1 - menghitung frekuensi.\n        // merge(k, 1, Integer::sum): belum ada -> pakai 1; sudah ada -> lama + 1.\n        // TreeMap dipakai supaya urutan cetaknya pasti (HashMap tidak menjanjikan urutan).\n        Map<String, Integer> hitung = new TreeMap<>();\n        for (String kata : kalimat.split(\" \")) {\n            hitung.merge(kata, 1, Integer::sum);\n        }\n        System.out.println(hitung);            // {kopi=1, roti=3, susu=2}\n\n        // Versi tanpa merge, supaya kelihatan apa yang digantikannya:\n        Map<String, Integer> manual = new TreeMap<>();\n        for (String kata : kalimat.split(\" \")) {\n            manual.put(kata, manual.getOrDefault(kata, 0) + 1);\n        }\n        System.out.println(manual.equals(hitung));   // true\n\n        // IDIOM 2 - mengelompokkan jadi Map<K, List<V>>.\n        String[] nama = {\"Andi\", \"Budi\", \"Ani\", \"Cici\", \"Bayu\"};\n        Map<Character, List<String>> grup = new TreeMap<>();\n        for (String n : nama) {\n            grup.computeIfAbsent(n.charAt(0), k -> new ArrayList<>()).add(n);\n        }\n        System.out.println(grup);   // {A=[Andi, Ani], B=[Budi, Bayu], C=[Cici]}\n\n        // Tiga pintu menelusuri Map, plus forEach.\n        System.out.println(hitung.keySet());     // [kopi, roti, susu]\n        System.out.println(hitung.values());     // [1, 3, 2]\n        for (Map.Entry<String, Integer> e : hitung.entrySet()) {\n            System.out.print(e.getKey() + \"=\" + e.getValue() + \" \");\n        }\n        System.out.println();\n        hitung.forEach((k, v) -> System.out.print(k + \":\" + v + \" \"));\n        System.out.println();\n\n        // Collections = kelas UTILITAS berisi method static.\n        // Bedakan dari Collection (tanpa s) yang merupakan interface.\n        List<Integer> angka = new ArrayList<>(List.of(5, 3, 9, 3, 1));\n        Collections.sort(angka);\n        System.out.println(angka);                            // [1, 3, 3, 5, 9]\n        Collections.reverse(angka);\n        System.out.println(angka);                            // [9, 5, 3, 3, 1]\n        System.out.println(Collections.max(angka) + \" \" + Collections.min(angka)\n                + \" \" + Collections.frequency(angka, 3));     // 9 1 2\n\n        // Menyalin & menggabung.\n        List<Integer> gabung = new ArrayList<>(angka);   // constructor penyalin\n        gabung.addAll(List.of(100, 200));\n        System.out.println(gabung);       // [9, 5, 3, 3, 1, 100, 200]\n        System.out.println(angka);        // [9, 5, 3, 3, 1] - yang asli utuh\n    }\n}"
     },
     {
+     "heading": "Koleksi immutable dan method Collections",
      "body": [
       "Coba lihat lagi baris ini dari contoh di atas:",
       "",
@@ -4407,6 +4439,7 @@
      "code": "import java.util.ArrayDeque;\nimport java.util.ArrayList;\nimport java.util.Deque;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        // ANTREAN (FIFO): masuk di belakang, keluar dari depan.\n        Deque<String> antrean = new ArrayDeque<>();\n        antrean.addLast(\"Ani\");                    // datang pertama\n        antrean.addLast(\"Budi\");\n        antrean.addLast(\"Cici\");\n        System.out.println(\"Antrean : \" + antrean);\n        System.out.println(\"Dilayani: \" + antrean.removeFirst());\n        System.out.println(\"Berikut : \" + antrean.peekFirst());   // dilihat, tidak diambil\n        System.out.println(\"Sisa    : \" + antrean);\n\n        // TUMPUKAN (LIFO): masuk di DEPAN, keluar juga dari depan.\n        Deque<String> tumpukan = new ArrayDeque<>();\n        tumpukan.addFirst(\"piring 1\");\n        tumpukan.addFirst(\"piring 2\");\n        tumpukan.addFirst(\"piring 3\");\n        System.out.println();\n        System.out.println(\"Tumpukan: \" + tumpukan);\n        System.out.println(\"Diambil : \" + tumpukan.removeFirst());\n        System.out.println(\"Sisa    : \" + tumpukan);\n\n        // SAAT KOSONG: dua cara bertanya, dua akibat yang berbeda.\n        Deque<String> habis = new ArrayDeque<>();\n        System.out.println();\n        System.out.println(\"peekFirst() saat kosong: \" + habis.peekFirst());\n        try {\n            habis.removeFirst();\n        } catch (java.util.NoSuchElementException e) {\n            System.out.println(\"removeFirst() saat kosong: \" + e.getClass().getSimpleName());\n        }\n\n        // Dipakai sebagai loop: selama masih ada yang antre, layani.\n        Deque<String> loket = new ArrayDeque<>(List.of(\"Dita\", \"Eka\", \"Fajar\"));\n        System.out.println();\n        while (!loket.isEmpty()) {\n            System.out.println(\"Memanggil: \" + loket.removeFirst());\n        }\n\n        // Pembanding: ArrayList memang bisa, tapi remove(0) menggeser sisanya.\n        List<Integer> daftar = new ArrayList<>(List.of(1, 2, 3, 4, 5));\n        daftar.remove(0);\n        System.out.println();\n        System.out.println(\"ArrayList setelah remove(0): \" + daftar);\n    }\n}"
     },
     {
+     "heading": "Pasangan method Deque dan jebakan Stack",
      "body": [
       "Tiga pasang method, dan bedanya baru kerasa waktu kosong",
       "",
@@ -4581,6 +4614,7 @@
      "code": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n\n        System.out.print(\"Nama: \");\n        String nama = sc.nextLine();\n\n        System.out.print(\"Umur: \");\n        int umur = sc.nextInt();\n\n        System.out.println(\"Halo \" + nama.toUpperCase());\n        System.out.println(\"Umur kamu \" + umur + \" tahun.\");\n        System.out.println(\"Panjang nama: \" + nama.length());\n\n        // String.format\n        System.out.println(String.format(\"Nama: %s, Umur: %d\", nama, umur));\n\n        sc.close();\n    }\n}"
     },
     {
+     "heading": "Membandingkan String dan StringBuilder",
      "body": [
       "Untuk membandingkan isi String, pakai .equals(), dan jangan pakai ==.",
       "Operator == membandingkan alamat objeknya (referensi), dan nggak",
@@ -4614,6 +4648,7 @@
      ]
     },
     {
+     "heading": "Penanda printf dan String.format",
      "body": [
       "printf artinya mencetak pakai cetakan. Baris String.format di daftar",
       "tadi lewat begitu aja, padahal alat ini yang pertama kamu butuhkan",
@@ -4786,6 +4821,7 @@
      "code": "import java.time.DayOfWeek;\nimport java.time.LocalDate;\nimport java.time.LocalDateTime;\nimport java.time.LocalTime;\nimport java.time.Month;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Tiga pintu pembuatan. now() sengaja dihindari supaya hasilnya tetap.\n        LocalDate lahir = LocalDate.of(2000, 5, 17);\n        LocalDate jatuhTempo = LocalDate.parse(\"2026-01-15\");\n        LocalTime jamBuka = LocalTime.of(8, 30);\n        LocalDateTime rapat = LocalDateTime.of(2026, 1, 15, 13, 45);\n\n        System.out.println(lahir);\n        System.out.println(jatuhTempo);\n        System.out.println(jamBuka);\n        System.out.println(rapat);\n\n        // Mengambil bagian-bagiannya\n        System.out.println(lahir.getYear() + \"|\" + lahir.getMonthValue()\n                + \"|\" + lahir.getDayOfMonth());\n\n        Month bulan = lahir.getMonth();\n        DayOfWeek hari = lahir.getDayOfWeek();\n        System.out.println(bulan + \" ke-\" + bulan.getValue());\n        System.out.println(hari + \" ke-\" + hari.getValue());\n        System.out.println(\"hari ke-\" + lahir.getDayOfYear()\n                + \" kabisat=\" + lahir.isLeapYear());\n\n        // IMMUTABLE: hasilnya objek BARU, yang lama tidak tersentuh\n        LocalDate tenggat = jatuhTempo.plusDays(10);\n        System.out.println(jatuhTempo + \" -> \" + tenggat);\n\n        jatuhTempo.plusDays(10);         // hasilnya dibuang: bug klasik\n        System.out.println(jatuhTempo);\n\n        // Perubahan dirangkai: bulan depan, lalu tanggal 1\n        System.out.println(jatuhTempo.plusMonths(1).withDayOfMonth(1));\n\n        // Membandingkan\n        LocalDate salinan = LocalDate.of(2000, 5, 17);\n        System.out.println(lahir.isBefore(jatuhTempo));\n        System.out.println(lahir.isAfter(jatuhTempo));\n        System.out.println(lahir.isEqual(salinan));\n        System.out.println(lahir.equals(salinan));\n        System.out.println(lahir == salinan);\n\n        // Geser bulan MENJEPIT tanggal yang tidak ada, dan itu tidak bisa dibalik\n        LocalDate akhirJanuari = LocalDate.of(2026, 1, 31);\n        System.out.println(akhirJanuari.plusMonths(1));\n        System.out.println(akhirJanuari.plusMonths(1).minusMonths(1));\n    }\n}"
     },
     {
+     "heading": "Tanggal immutable, perbandingan, dan plusMonths",
      "body": [
       "Keluaran program di atas:",
       "  2000-05-17",
@@ -4885,6 +4921,7 @@
      "code": "import java.time.Duration;\nimport java.time.Instant;\nimport java.time.LocalDate;\nimport java.time.LocalDateTime;\nimport java.time.Period;\nimport java.time.ZoneId;\nimport java.time.ZonedDateTime;\nimport java.time.format.DateTimeFormatter;\nimport java.time.format.DateTimeParseException;\nimport java.time.temporal.ChronoUnit;\n\npublic class Main {\n    public static void main(String[] args) {\n        LocalDate lahir = LocalDate.of(2000, 5, 17);\n        LocalDate acuan = LocalDate.of(2026, 1, 15);\n\n        // Period: selisih TANGGAL, dipecah jadi tahun + bulan + hari\n        Period umur = Period.between(lahir, acuan);\n        System.out.println(umur.getYears() + \" tahun \" + umur.getMonths()\n                + \" bulan \" + umur.getDays() + \" hari\");\n        System.out.println(umur);\n\n        // ChronoUnit: satu satuan saja, hasilnya long\n        System.out.println(ChronoUnit.DAYS.between(lahir, acuan) + \" hari\");\n        System.out.println(ChronoUnit.MONTHS.between(lahir, acuan) + \" bulan\");\n\n        // Duration: selisih WAKTU, satuan jam ke bawah\n        LocalDateTime masuk = LocalDateTime.of(2026, 1, 15, 8, 30);\n        LocalDateTime pulang = LocalDateTime.of(2026, 1, 15, 17, 15);\n        Duration kerja = Duration.between(masuk, pulang);\n        System.out.println(kerja.toHours() + \" jam \" + kerja.toMinutesPart() + \" menit\");\n        System.out.println(kerja.toMinutes() + \" menit\");\n        System.out.println(kerja);\n\n        // Format: objek -> teks\n        DateTimeFormatter polaIndo = DateTimeFormatter.ofPattern(\"dd/MM/yyyy\");\n        DateTimeFormatter polaLog = DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\");\n        System.out.println(acuan.format(polaIndo));\n        System.out.println(masuk.format(polaLog));\n        System.out.println(acuan.format(DateTimeFormatter.ISO_LOCAL_DATE));\n\n        // Parse: teks -> objek, polanya WAJIB sama persis\n        LocalDate dariForm = LocalDate.parse(\"06/09/2026\", polaIndo);\n        System.out.println(dariForm);\n\n        try {\n            LocalDate.parse(\"06/09/2026\");   // tanpa formatter -> dianggap ISO\n        } catch (DateTimeParseException e) {\n            System.out.println(\"gagal: \" + e.getMessage());\n        }\n\n        // Instant: titik waktu absolut, selalu UTC, untuk log & stempel data\n        Instant stempel = Instant.parse(\"2026-01-15T02:30:00Z\");\n        System.out.println(stempel);\n        System.out.println(stempel.toEpochMilli());\n        System.out.println(stempel.plus(90, ChronoUnit.MINUTES));\n\n        // Zona waktu: SAAT yang sama, dibaca dari Jakarta\n        ZonedDateTime diJakarta = stempel.atZone(ZoneId.of(\"Asia/Jakarta\"));\n        System.out.println(diJakarta);\n        System.out.println(diJakarta.toLocalDateTime().format(polaLog));\n    }\n}"
     },
     {
+     "heading": "Period, Duration, format, dan zona waktu",
      "body": [
       "Keluaran program di atas:",
       "  25 tahun 7 bulan 29 hari",
@@ -5256,6 +5293,7 @@
      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\nclass Mahasiswa implements Comparable<Mahasiswa> {\n    private final int nim;\n    private final String nama;\n    private final double ipk;\n\n    Mahasiswa(int nim, String nama, double ipk) {\n        this.nim = nim;\n        this.nama = nama;\n        this.ipk = ipk;\n    }\n\n    public int getNim()     { return nim; }\n    public String getNama() { return nama; }\n    public double getIpk()  { return ipk; }\n\n    // Urutan ALAMI Mahasiswa: NIM dari kecil ke besar.\n    // Satu tipe cuma boleh punya SATU urutan alami, jadi pilih yang paling tidak dipertanyakan.\n    @Override\n    public int compareTo(Mahasiswa lain) {\n        return Integer.compare(this.nim, lain.nim);   // BUKAN this.nim - lain.nim\n    }\n\n    @Override\n    public String toString() {\n        return nim + \"-\" + nama;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Yang penting dari nilai kembalian compareTo hanyalah tandanya:\n        System.out.println(\"10 vs 20 -> \" + Integer.compare(10, 20));   // negatif: kiri lebih dulu\n        System.out.println(\"20 vs 20 -> \" + Integer.compare(20, 20));   // nol    : dianggap sama\n        System.out.println(\"30 vs 20 -> \" + Integer.compare(30, 20));   // positif: kiri lebih belakang\n        System.out.println(\"Andi vs Zaki -> \" + \"Andi\".compareTo(\"Zaki\"));  // -25, bukan -1\n\n        List<Mahasiswa> daftar = new ArrayList<>();\n        daftar.add(new Mahasiswa(103, \"Citra\", 3.4));\n        daftar.add(new Mahasiswa(101, \"Andi\", 3.8));\n        daftar.add(new Mahasiswa(102, \"Budi\", 2.9));\n\n        Collections.sort(daftar);      // sekarang dikompilasi: Mahasiswa punya urutan alami\n        System.out.println(daftar);    // [101-Andi, 102-Budi, 103-Citra]\n\n        daftar.sort(null);             // null artinya \"pakai urutan alaminya\", hasilnya sama\n        System.out.println(daftar);\n\n        // Urutan alami juga dipakai diam-diam oleh max/min, TreeSet, TreeMap, dan PriorityQueue.\n        System.out.println(Collections.max(daftar));   // 103-Citra\n        System.out.println(Collections.min(daftar));   // 101-Andi\n    }\n}"
     },
     {
+     "heading": "Comparator.comparing dan tempat pemakaiannya",
      "body": [
       "Comparable menempel di class-nya, jadi satu tipe cuma bisa punya satu",
       "urutan. Padahal tiap layar sering butuh urutan yang beda. Papan",
@@ -5337,6 +5375,7 @@
      "code": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.Comparator;\nimport java.util.List;\nimport java.util.TreeSet;\nimport java.util.stream.Collectors;\n\nclass Mahasiswa {\n    private final String nama;\n    private final String jurusan;\n    private final double ipk;\n    private final String email;      // sengaja BOLEH null: data nyata memang berlubang\n\n    Mahasiswa(String nama, String jurusan, double ipk, String email) {\n        this.nama = nama;\n        this.jurusan = jurusan;\n        this.ipk = ipk;\n        this.email = email;\n    }\n\n    public String getNama()    { return nama; }\n    public String getJurusan() { return jurusan; }\n    public double getIpk()     { return ipk; }\n    public String getEmail()   { return email; }\n\n    @Override\n    public String toString() { return nama + \"/\" + jurusan + \"/\" + ipk; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // List.of menghasilkan list yang TIDAK bisa diubah; dibungkus ArrayList supaya bisa disort.\n        List<Mahasiswa> daftar = new ArrayList<>(List.of(\n                new Mahasiswa(\"Citra\", \"Sipil\", 3.85, \"citra@kampus.id\"),\n                new Mahasiswa(\"Andi\",  \"Mesin\", 3.20, null),\n                new Mahasiswa(\"Budi\",  \"Mesin\", 3.20, \"budi@kampus.id\"),\n                new Mahasiswa(\"Dewi\",  \"Sipil\", 2.95, \"dewi@kampus.id\")));\n\n        // 1. Satu kunci. Dua baris ini artinya sama persis; yang bawah lebih sulit ditulis salah.\n        daftar.sort((a, b) -> a.getNama().compareTo(b.getNama()));\n        daftar.sort(Comparator.comparing(Mahasiswa::getNama));\n        System.out.println(\"nama A-Z    : \" + daftar);\n\n        // 2. Kunci angka pakai comparingDouble, arahnya dibalik dengan reversed().\n        //    Andi & Budi seri di 3.2, dan urutan mereka tetap seperti sebelumnya: sort itu STABIL,\n        //    elemen yang dianggap sama tidak pernah ditukar posisinya.\n        daftar.sort(Comparator.comparingDouble(Mahasiswa::getIpk).reversed());\n        System.out.println(\"IPK turun   : \" + daftar);\n\n        // 3. Dua kunci: jurusan A-Z, lalu di DALAM tiap jurusan IPK dari besar ke kecil.\n        //    Perhatikan reversed() menempel pada kunci KEDUA saja, bukan pada rangkaiannya.\n        Comparator<Mahasiswa> perJurusan = Comparator\n                .comparing(Mahasiswa::getJurusan)\n                .thenComparing(Comparator.comparingDouble(Mahasiswa::getIpk).reversed());\n        daftar.sort(perJurusan);\n        System.out.println(\"jurusan+IPK : \" + daftar);\n\n        // 4. Kunci yang boleh null WAJIB dibungkus, kalau tidak -> NullPointerException.\n        daftar.sort(Comparator.comparing(Mahasiswa::getEmail,\n                Comparator.nullsLast(Comparator.naturalOrder())));\n        System.out.println(\"email       : \" + daftar);   // Andi (email null) terlempar ke belakang\n\n        // 5. Comparator itu objek biasa: dibuat sekali, dipakai di mana pun urutan dibutuhkan.\n        Comparator<Mahasiswa> ipkNaik = Comparator.comparingDouble(Mahasiswa::getIpk);\n        System.out.println(\"tertinggi   : \" + Collections.max(daftar, ipkNaik));\n        System.out.println(\"terendah    : \" + daftar.stream().min(ipkNaik).orElseThrow());\n        // Kunci kedua (nama) membuat hasilnya PASTI walau ada seri — tidak lagi bergantung pada\n        // urutan list sebelum diurutkan.\n        System.out.println(\"3 teratas   : \" + daftar.stream()\n                .sorted(ipkNaik.reversed().thenComparing(Mahasiswa::getNama))\n                .limit(3)\n                .map(Mahasiswa::getNama)\n                .collect(Collectors.toList()));\n\n        // 6. TreeSet dan TreeMap menerima comparator lewat constructor-nya.\n        TreeSet<Mahasiswa> perNama = new TreeSet<>(Comparator.comparing(Mahasiswa::getNama));\n        perNama.addAll(daftar);\n        System.out.println(\"TreeSet nama: \" + perNama.size() + \" isi, pertama \" + perNama.first());\n\n        // 7. JEBAKAN: bagi TreeSet, comparator yang mengembalikan 0 berarti \"objek ini SAMA\".\n        //    Andi dan Budi sama-sama 3.2, jadi satu di antaranya DIBUANG tanpa error apa pun.\n        TreeSet<Mahasiswa> perIpk = new TreeSet<>(ipkNaik);\n        perIpk.addAll(daftar);\n        System.out.println(\"TreeSet IPK : \" + perIpk.size() + \" isi -> \" + perIpk);\n    }\n}"
     },
     {
+     "heading": "Tujuh jebakan saat mengurutkan",
      "body": [
       "Ada tujuh jebakan yang sering bikin orang tersandung waktu mengurutkan:",
       "  1. Jangan mengurutkan pakai pengurangan.",
@@ -5515,6 +5554,7 @@
      "code": "public class Tumpukan {\n    // Node cuma punya arti di dalam Tumpukan, jadi ia tinggal di dalamnya.\n    // static = tidak butuh objek Tumpukan untuk dibuat.\n    private static class Node {\n        final String isi;\n        final Node bawah;\n\n        Node(String isi, Node bawah) {\n            this.isi = isi;\n            this.bawah = bawah;\n        }\n    }\n\n    private Node puncak = null;\n\n    void dorong(String isi) {\n        puncak = new Node(isi, puncak);\n    }\n\n    String ambil() {\n        String isi = puncak.isi;\n        puncak = puncak.bawah;\n        return isi;\n    }\n\n    boolean kosong() {\n        return puncak == null;\n    }\n\n    public static void main(String[] args) {\n        Tumpukan t = new Tumpukan();\n        t.dorong(\"A\");\n        t.dorong(\"B\");\n        t.dorong(\"C\");\n        while (!t.kosong()) {\n            System.out.print(t.ambil() + \" \");\n        }\n        System.out.println();   // C B A\n    }\n}"
     },
     {
+     "heading": "Inner class dan referensi ke objek luar",
      "body": [
       "Static nested class itu class biasa yang kebetulan tinggal di dalam",
       "class lain. Kata static di sini artinya beda dari static di field. Dia",
@@ -5564,6 +5604,7 @@
      "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Sekolah {\n    private final String nama;\n    private final List<String> murid = new ArrayList<>();\n\n    Sekolah(String nama) {\n        this.nama = nama;\n    }\n\n    // INNER class (tanpa static): tiap objek Absen menempel pada SATU objek\n    // Sekolah, jadi ia boleh langsung memakai field milik objek luar itu.\n    class Absen {\n        private final String nama = \"Daftar hadir\";   // menutupi nama milik Sekolah\n\n        void cetak() {\n            // `nama` polos = milik Absen. Milik Sekolah: Sekolah.this.nama\n            System.out.println(nama + \" \" + Sekolah.this.nama + \": \" + murid);\n        }\n    }\n\n    void daftar(String m) {\n        murid.add(m);\n    }\n\n    public static void main(String[] args) {\n        Sekolah s = new Sekolah(\"SMA 1\");\n        s.daftar(\"Andi\");\n        s.daftar(\"Budi\");\n\n        // Inner class dibuat LEWAT objek luarnya, bukan `new Absen()` polos.\n        Sekolah.Absen a = s.new Absen();\n        a.cetak();                       // Daftar hadir SMA 1: [Andi, Budi]\n\n        // LOCAL class: class yang dideklarasikan di dalam sebuah method.\n        class Penghitung {\n            int hitung() {\n                return s.murid.size();   // menangkap s, yang effectively final\n            }\n        }\n        System.out.println(new Penghitung().hitung());    // 2\n\n        // ANONYMOUS class: class tanpa nama, langsung dibuat satu objeknya.\n        Runnable tugas = new Runnable() {\n            private int dijalankan = 0;  // anonymous class boleh punya field sendiri\n\n            @Override\n            public void run() {\n                dijalankan++;\n                System.out.println(\"Jalan ke-\" + dijalankan + \" di \" + s.nama);\n            }\n        };\n        tugas.run();                     // Jalan ke-1 di SMA 1\n        tugas.run();                     // Jalan ke-2 di SMA 1\n    }\n}"
     },
     {
+     "heading": "Anonymous class dan variabel yang ditangkap",
      "body": [
       "Sekarang kita bedah new Runnable() { ... }. Sintaks ini mustahil",
       "ditebak sendiri. Kelihatannya seperti bikin objek dari interface,",
@@ -5728,6 +5769,7 @@
      ]
     },
     {
+     "heading": "Stream primitif, range, dan sum",
      "body": [
       "Di contoh tadi ada satu baris yang muncul begitu aja:",
       "IntStream.range(...). Itu anggota lain keluarga stream. Kalau belum",
@@ -5859,6 +5901,7 @@
      ]
     },
     {
+     "heading": "Bounded type dan type erasure",
      "body": [
       "Bounded type <T extends Number> dibaca begini: T boleh Number sendiri,",
       "atau class apa pun turunan Number, misalnya Integer, Long, Double,",
@@ -6041,6 +6084,7 @@
      "code": "class TugasCetak implements Runnable {\n    private String label;\n\n    TugasCetak(String label) {\n        this.label = label;\n    }\n\n    @Override\n    public void run() {\n        for (int i = 1; i <= 3; i++) {\n            System.out.println(label + \" - langkah \" + i);\n        }\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) throws InterruptedException {\n        Thread t1 = new Thread(new TugasCetak(\"Thread-A\"));\n        Thread t2 = new Thread(new TugasCetak(\"Thread-B\"));\n\n        t1.start();   // BUKAN t1.run() ! start() membuat thread baru\n        t2.start();\n\n        t1.join();    // tunggu t1 selesai sebelum lanjut\n        t2.join();\n        System.out.println(\"Semua thread selesai.\");\n    }\n}"
     },
     {
+     "heading": "Kenapa main perlu throws InterruptedException",
      "body": [
       "Ada satu baris di contoh tadi yang belum dijelaskan, dan bentuknya",
       "bakal sering muncul:",
@@ -6251,6 +6295,7 @@
      "code": "import java.util.ArrayList;\nimport java.util.List;\nimport java.util.concurrent.*;\n\npublic class Main {\n    // Callable<T> MENGEMBALIKAN nilai, dan boleh melempar checked exception.\n    static Callable<Integer> tugasKuadrat(int n) {\n        return () -> {\n            Thread.sleep(50);                  // pura-pura kerja lama\n            if (n == 0) {\n                throw new IllegalArgumentException(\"n tidak boleh 0\");\n            }\n            return n * n;\n        };\n    }\n\n    public static void main(String[] args) throws InterruptedException {\n        ExecutorService pool = Executors.newFixedThreadPool(3);\n\n        List<Future<Integer>> antrean = new ArrayList<>();\n        for (int n = 1; n <= 4; n++) {\n            antrean.add(pool.submit(tugasKuadrat(n)));   // submit -> dapat Future\n        }\n\n        int total = 0;\n        for (Future<Integer> f : antrean) {\n            try {\n                total += f.get();              // MENUNGGU sampai tugas itu selesai\n            } catch (ExecutionException e) {\n                System.out.println(\"gagal: \" + e.getCause().getMessage());\n            }\n        }\n        System.out.println(\"total kuadrat 1..4 = \" + total);\n\n        // Error di dalam tugas tidak langsung meledak; ia menunggu di get().\n        Future<Integer> rusak = pool.submit(tugasKuadrat(0));\n        try {\n            rusak.get();\n        } catch (ExecutionException e) {\n            System.out.println(\"penyebab asli   : \" + e.getCause());\n        }\n\n        // get(timeout): berhenti menunggu; tugasnya sendiri TIDAK ikut berhenti.\n        Future<Integer> lambat = pool.submit(() -> {\n            Thread.sleep(3000);\n            return 99;\n        });\n        try {\n            lambat.get(100, TimeUnit.MILLISECONDS);\n        } catch (TimeoutException e) {\n            System.out.println(\"kelamaan, cancel: \" + lambat.cancel(true));\n            System.out.println(\"isDone sesudahnya: \" + lambat.isDone());\n        } catch (ExecutionException e) {\n            System.out.println(\"gagal: \" + e.getCause());\n        }\n\n        // shutdown(): tolak tugas baru, sisa antrean tetap dituntaskan.\n        pool.shutdown();\n        boolean beres = pool.awaitTermination(5, TimeUnit.SECONDS);\n        System.out.println(\"pool berhenti rapi: \" + beres);\n    }\n}"
     },
     {
+     "heading": "Bug counter++, volatile, dan koleksi aman-thread",
      "body": [
       "Kenapa counter++ rusak kalau dipakai banyak thread? Di layar dia cuma",
       "satu baris, tapi di CPU ada tiga langkah: baca nilai, tambah 1, tulis",
@@ -6504,6 +6549,7 @@
      "code": "import java.sql.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        String url = \"jdbc:mysql://localhost:3306/belajar_db\";\n        String user = \"root\";\n        String pass = \"password\";\n\n        String sql = \"SELECT nim, nama, ipk FROM mahasiswa WHERE ipk > ?\";\n\n        try (Connection conn = DriverManager.getConnection(url, user, pass);\n             PreparedStatement stmt = conn.prepareStatement(sql)) {\n\n            stmt.setDouble(1, 3.0);   // isi tanda '?' pertama\n\n            try (ResultSet rs = stmt.executeQuery()) {\n                while (rs.next()) {\n                    int nim = rs.getInt(\"nim\");\n                    String nama = rs.getString(\"nama\");\n                    double ipk = rs.getDouble(\"ipk\");\n                    System.out.println(nim + \" - \" + nama + \" - \" + ipk);\n                }\n            }\n        } catch (SQLException e) {\n            System.out.println(\"Error database: \" + e.getMessage());\n        }\n    }\n}"
     },
     {
+     "heading": "SQL injection dan PreparedStatement",
      "body": [
       "Kalau kamu menekan Jalankan pada contoh di atas, yang keluar cuma",
       "\"Error database: No suitable driver found for",
@@ -6725,6 +6771,7 @@
      ]
     },
     {
+     "heading": "Prinsip clean code dan SOLID",
      "body": [
       "Prinsip clean code, yaitu cara menulis kode yang gampang dibaca dan",
       "dirawat:",
@@ -6927,6 +6974,7 @@
      ]
     },
     {
+     "heading": "Kebiasaan harian untuk jadi handal",
      "body": [
       "Kebiasaan harian supaya jadi handal:",
       "  1. Ketik ulang semua contoh kode di aplikasi ini. Jangan copy-paste.",

@@ -287,6 +287,7 @@ Location: /pesanan/88
 {"id": 88, "status": "diproses"}""",
             },
             {
+                "heading": "Susunan pesan HTTP dan metode",
                 "body": [
                     "Bagian atas itu permintaan, bagian bawah responsnya. Keduanya",
                     "punya susunan yang sama:",
@@ -988,6 +989,7 @@ for metode, path, body in [
     print(f"{metode:6} {path:8} -> {status} {json.dumps(isi)}")""",
             },
             {
+                "heading": "Sifat idempoten pada tiap metode",
                 "body": [
                     "Keluaran:",
                     "POST   /buku    -> 201 {\"id\": 2, \"judul\": \"Bumi Manusia\"}",
@@ -1383,6 +1385,7 @@ components:
           minLength: 1""",
             },
             {
+                "heading": "Isi dokumen OpenAPI dan dua cara membuatnya",
                 "body": [
                     "Bagian-bagiannya:",
                     "  - openapi: versi spesifikasi yang dipakai berkas ini.",
@@ -2632,6 +2635,7 @@ async function bootstrap() {
 bootstrap();""",
             },
             {
+                "heading": "Pipe, ValidationPipe, dan SwaggerModule",
                 "body": [
                     "Pipe adalah langkah yang mengubah atau memeriksa data sebelum",
                     "sampai ke method controller. ParseIntPipe yang kamu lihat di",
@@ -4553,6 +4557,7 @@ public class Main {
                 "code": "curl https://start.spring.io/starter.zip \\\n  -d type=maven-project -d javaVersion=21 \\\n  -d dependencies=web,validation,data-jpa,postgresql \\\n  -d name=toko -o toko.zip\nunzip toko.zip -d toko && cd toko\n./mvnw spring-boot:run",
             },
             {
+                "heading": "Spring Initializr dan @SpringBootApplication",
                 "body": [
                     "Perintah curl itu memanggil Spring Initializr, situs pembuat kerangka",
                     "proyek yang juga bisa kamu buka lewat browser di start.spring.io. Setiap",
@@ -5201,6 +5206,7 @@ class ProdukRepoMemori : IProdukRepo
 }""",
             },
             {
+                "heading": "Dua tahap Program.cs dan parameter binding",
                 "body": [
                     "Templat resmi menyalakan implicit usings, jadi baris using di atas",
                     "biasanya nggak perlu ditulis. Di sini ditulis supaya kelihatan dari mana",
@@ -6743,6 +6749,7 @@ func (t *Toko) tambah(w http.ResponseWriter, r *http.Request) {
 }""",
             },
             {
+                "heading": "Pola rute, handler, dan sync.Mutex",
                 "body": [
                     "Jalankan dengan go run main.go. Kompilasi pertama butuh belasan detik",
                     "karena paket net/http ikut dikompilasi, jalankan berikutnya hampir",
@@ -6983,6 +6990,7 @@ db.Preload("Kategori").Where("harga < ?", 10000).Order("harga").Find(&murah)""",
 SELECT id, nama, harga FROM produk WHERE harga < $1 ORDER BY harga;""",
             },
             {
+                "heading": "Cara kerja sqlc dan jebakan ORM dengan Raw",
                 "body": [
                     "Banyak programmer Go memilih menulis SQL sendiri. sqlc (1.31.1) membaca",
                     "berkas SQL seperti di atas beserta skema tabelnya, lalu membangkitkan",

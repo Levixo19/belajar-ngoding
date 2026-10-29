@@ -335,7 +335,7 @@ data/              konten kurikulum, 3 berkas per kurikulum
 alat/              alat baris perintah: ekspor, pemeriksa, penulis naskah
 contoh/            bukan bagian aplikasi; tidak ada yang mengimpornya
 tests/             suite Python; sisi TS diuji lewat uji/ di tiap paket
-  test_kontrak.py  41 endpoint: BENTUK jawabannya, bukan nilainya
+  test_kontrak.py  42 endpoint: BENTUK jawabannya, bukan nilainya
 ```
 
 **DUA antarmuka hidup berdampingan.** Yang dilayani `belajar-web.py` tetap

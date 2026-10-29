@@ -1544,6 +1544,7 @@ new Phaser.Game({
 });""",
             },
             {
+                "heading": "Membaca kode Phaser baris demi baris",
                 "body": [
                     "Baris demi baris yang perlu kamu pahami:",
                     "  - load.spritesheet memuat satu gambar yang berisi banyak frame",
@@ -3001,6 +3002,7 @@ durasiFrame.forEach((dt, i) => {
 });""",
             },
             {
+                "heading": "Dua aturan FixedUpdate dan Update",
                 "body": [
                     "Keluarannya:",
                     "  frame 1 (16 ms): FixedUpdate 0x, Update 1x, sisa 16 ms",
@@ -5005,6 +5007,7 @@ fn fs_main(@location(0) uv : vec2f) -> @location(0) vec4f {
 }""",
             },
             {
+                "heading": "Peta bahasa shader dan SPIR-V",
                 "body": [
                     "Peta bahasa shader yang akan kamu temui:",
                     "",

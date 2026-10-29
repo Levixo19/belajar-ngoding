@@ -69,6 +69,7 @@
      "code": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine(\"Halo Dunia!\");\n        Console.WriteLine(\"Aku sedang belajar C#.\");\n    }\n}"
     },
     {
+     "heading": "Arti tiap baris dan aturan dasar C#",
      "body": [
       "Kita bahas bagian demi bagian:",
       "",
@@ -212,6 +213,7 @@
      "code": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine($\"int   : {int.MinValue} .. {int.MaxValue}\");\n        Console.WriteLine($\"long  : {long.MinValue} .. {long.MaxValue}\");\n        Console.WriteLine($\"byte  : {byte.MinValue} .. {byte.MaxValue}\");\n\n        const double PI = 3.14159;\n        Console.WriteLine($\"PI    : {PI}\");\n\n        // Bukti double tidak menyimpan 0.1 dengan persis\n        Console.WriteLine(0.1 + 0.2 == 0.3);          // False\n        Console.WriteLine(0.1m + 0.2m == 0.3m);       // True\n    }\n}"
     },
     {
+     "heading": "Beda const dan readonly, serta konversi tipe",
      "body": [
       "const dan readonly sering ketuker. Dua-duanya bikin nilai yang nggak",
       "bisa diubah, bedanya di kapan nilai itu ditetapkan:",
@@ -372,6 +374,7 @@
      "code": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        int nilai = 78;\n\n        // Ternary: kondisi ? kalau benar : kalau salah\n        string status = nilai >= 75 ? \"Lulus\" : \"Tidak Lulus\";\n        Console.WriteLine(status);\n\n        // Null-coalescing: pakai kiri kalau bukan null, kalau null pakai kanan\n        string? masukan = null;\n        string nama = masukan ?? \"Tanpa Nama\";\n        Console.WriteLine(nama);\n\n        // Null-coalescing assignment: isi HANYA kalau masih null\n        string? catatan = null;\n        catatan ??= \"belum ada catatan\";\n        Console.WriteLine(catatan);\n\n        // Null-conditional: panggil HANYA kalau bukan null\n        string? kosong = null;\n        Console.WriteLine(kosong?.Length ?? -1);   // -1\n    }\n}"
     },
     {
+     "heading": "Operator null-conditional dan urutan operasi",
      "body": [
       "Empat operator di atas bikin kode C# modern jauh lebih pendek daripada",
       "C# lama:",
@@ -527,6 +530,7 @@
      "code": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        // Biasa: backslash harus digandakan\n        string a = \"C:\\\\Users\\\\Andi\\\\Dokumen\";\n\n        // Verbatim (@): apa adanya, backslash tidak istimewa\n        string b = @\"C:\\Users\\Andi\\Dokumen\";\n\n        // Verbatim juga menyimpan baris baru apa adanya\n        string c = @\"baris satu\nbaris dua\";\n\n        Console.WriteLine(a);\n        Console.WriteLine(b);\n        Console.WriteLine(c);\n    }\n}"
     },
     {
+     "heading": "Tiga bentuk string dan StringBuilder",
      "body": [
       "Ada tiga bentuk penulisan string:",
       "",
@@ -923,6 +927,7 @@
      "code": "using System;\n\nclass Program\n{\n    static void Main()\n    {\n        int[] nilai = { 78, 92, 65, 88, 71, 95, 59 };\n\n        int total = 0, tertinggi = nilai[0], terendah = nilai[0];\n        foreach (int n in nilai)\n        {\n            total += n;\n            if (n > tertinggi) tertinggi = n;\n            if (n < terendah) terendah = n;\n        }\n\n        Console.WriteLine($\"Jumlah data : {nilai.Length}\");\n        Console.WriteLine($\"Total       : {total}\");\n        Console.WriteLine($\"Rata-rata   : {(double)total / nilai.Length:F2}\");\n        Console.WriteLine($\"Tertinggi   : {tertinggi}\");\n        Console.WriteLine($\"Terendah    : {terendah}\");\n\n        int[] urut = (int[])nilai.Clone();\n        Array.Sort(urut);\n        Console.WriteLine($\"Terurut     : {string.Join(\", \", urut)}\");\n        Console.WriteLine($\"Dua terbesar: {string.Join(\", \", urut[^2..])}\");\n    }\n}"
     },
     {
+     "heading": "Salinan array dan tipe referensi",
      "body": [
       "Perhatikan `(double)total / nilai.Length`. Tanpa (double), yang dibagi",
       "dua int, dan hasilnya dipotong jadi bilangan bulat. Ini jebakan yang",
@@ -1061,6 +1066,7 @@
      "code": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static void Main()\n    {\n        string kalimat = \"satu dua dua tiga tiga tiga empat\";\n        string[] kata = kalimat.Split(' ');\n\n        var hitung = new Dictionary<string, int>();\n        foreach (string k in kata)\n        {\n            // Kunci baru otomatis dimulai dari 0 lewat out\n            hitung.TryGetValue(k, out int n);\n            hitung[k] = n + 1;\n        }\n\n        foreach (KeyValuePair<string, int> pasangan in hitung)\n            Console.WriteLine($\"{pasangan.Key,-6} : {pasangan.Value}\");\n\n        Console.WriteLine($\"Kata unik  : {hitung.Count}\");\n        Console.WriteLine($\"Total kata : {kata.Length}\");\n    }\n}"
     },
     {
+     "heading": "Menelusuri Dictionary dan memilih koleksi",
      "body": [
       "Pasangan `TryGetValue(k, out int n)` lalu `hitung[k] = n + 1` itu cara",
       "yang biasa dipakai di C# untuk menghitung frekuensi. Kalau kuncinya",
@@ -1221,6 +1227,7 @@
      "code": "using System;\n\nclass Program\n{\n    // ref  : boleh dibaca dan diubah, wajib sudah berisi sebelum dipanggil\n    static void Tukar(ref int a, ref int b)\n    {\n        (a, b) = (b, a);\n    }\n\n    // out  : WAJIB diisi di dalam method, isi sebelumnya tidak dibaca\n    static void Bagi(int a, int b, out int hasil, out int sisa)\n    {\n        hasil = a / b;\n        sisa = a % b;\n    }\n\n    // in   : hanya dibaca, tidak boleh diubah\n    static double Luas(in double sisi) => sisi * sisi;\n\n    static void Main()\n    {\n        int x = 3, y = 8;\n        Tukar(ref x, ref y);\n        Console.WriteLine($\"x={x} y={y}\");\n\n        Bagi(17, 5, out int h, out int s);\n        Console.WriteLine($\"17 / 5 = {h} sisa {s}\");\n\n        Console.WriteLine($\"Luas = {Luas(2.5)}\");\n    }\n}"
     },
     {
+     "heading": "Kapan pakai ref, out, atau tuple",
      "body": [
       "Keluaran:",
       "  x=8 y=3",
@@ -1260,6 +1267,7 @@
      "code": "using System;\n\nclass Program\n{\n    static int Luas(int sisi) => sisi * sisi;\n    static int Luas(int panjang, int lebar) => panjang * lebar;\n    static double Luas(double jari) => 3.14159 * jari * jari;\n\n    static void Main()\n    {\n        Console.WriteLine(Luas(5));          // 25   -> persegi\n        Console.WriteLine(Luas(4, 6));       // 24   -> persegi panjang\n        Console.WriteLine(Luas(2.0));        // 12.56636 -> lingkaran\n    }\n}"
     },
     {
+     "heading": "Aturan overload dan rekursi",
      "body": [
       "Overloading artinya beberapa method punya nama yang sama, tapi jumlah",
       "atau tipe parameternya beda. Compiler memilih yang paling cocok waktu",
@@ -1391,6 +1399,7 @@
      "code": "using System;\n\nclass Program\n{\n    static string Rapikan(string? masukan)\n    {\n        // 1. Pulang lebih awal (guard clause)\n        if (string.IsNullOrWhiteSpace(masukan))\n            return \"(kosong)\";\n\n        // Di sini compiler TAHU masukan bukan null lagi\n        return masukan.Trim().ToUpper();\n    }\n\n    static void Main()\n    {\n        string?[] data = { \"  andi \", null, \"\", \"   \", \"budi\" };\n\n        foreach (string? s in data)\n            Console.WriteLine($\"[{Rapikan(s)}]\");\n\n        // 2. Null-conditional + null-coalescing berantai\n        string? kota = null;\n        Console.WriteLine(kota?.Trim()?.ToUpper() ?? \"TIDAK DIISI\");\n\n        // 3. Pattern matching terhadap null\n        object? apa = null;\n        Console.WriteLine(apa is null ? \"null\" : \"ada isinya\");\n    }\n}"
     },
     {
+     "heading": "Flow analysis dan operator null-forgiving",
      "body": [
       "Keluaran:",
       "  [ANDI]",
@@ -1511,6 +1520,7 @@
      "code": "using System;\n\nclass Murid\n{\n    // Field privat: data mentah, tidak boleh disentuh dari luar\n    private readonly string _nama;\n    private int _nilai;\n\n    // Property: pintu masuk terkendali\n    public string Nama => _nama;\n\n    public int Nilai\n    {\n        get => _nilai;\n        set\n        {\n            if (value < 0 || value > 100)\n                throw new ArgumentOutOfRangeException(nameof(value),\n                    \"Nilai harus 0..100\");\n            _nilai = value;\n        }\n    }\n\n    // Property terhitung: tidak menyimpan apa-apa\n    public string Grade => _nilai switch\n    {\n        >= 85 => \"A\",\n        >= 75 => \"B\",\n        >= 60 => \"C\",\n        _     => \"D\",\n    };\n\n    public Murid(string nama, int nilai)\n    {\n        _nama = nama;\n        Nilai = nilai;          // lewat property supaya ikut divalidasi\n    }\n\n    public override string ToString() => $\"{_nama,-8} {_nilai,3}  {Grade}\";\n}\n\nclass Program\n{\n    static void Main()\n    {\n        var kelas = new[]\n        {\n            new Murid(\"Andi\", 92),\n            new Murid(\"Budi\", 78),\n            new Murid(\"Cici\", 64),\n        };\n\n        foreach (Murid m in kelas) Console.WriteLine(m);\n\n        try\n        {\n            kelas[0].Nilai = 150;\n        }\n        catch (ArgumentOutOfRangeException e)\n        {\n            Console.WriteLine($\"Ditolak: {e.ParamName}\");\n        }\n    }\n}"
     },
     {
+     "heading": "Setter yang memvalidasi, ToString, dan nameof",
      "body": [
       "Ada empat hal yang perlu kamu perhatikan di class itu:",
       "  1. Field privat diawali garis bawah, misalnya _nama. Compiler nggak",
@@ -1628,6 +1638,7 @@
      "code": "using System;\n\nclass Rekening\n{\n    private static int _urutan = 0;      // milik CLASS, bukan objek\n\n    public string Nomor { get; }\n    public string Pemilik { get; }\n    public decimal Saldo { get; private set; }\n\n    // Constructor utama\n    public Rekening(string pemilik, decimal saldoAwal)\n    {\n        if (string.IsNullOrWhiteSpace(pemilik))\n            throw new ArgumentException(\"Pemilik wajib diisi\", nameof(pemilik));\n\n        _urutan++;\n        Nomor = $\"AC{_urutan:D4}\";\n        Pemilik = pemilik;\n        Saldo = saldoAwal;\n    }\n\n    // Constructor lain yang MEMANGGIL yang utama lewat : this(...)\n    public Rekening(string pemilik) : this(pemilik, 0m) { }\n\n    public void Setor(decimal jumlah)\n    {\n        if (jumlah <= 0) throw new ArgumentException(\"Harus positif\");\n        Saldo += jumlah;\n    }\n\n    public bool Tarik(decimal jumlah)\n    {\n        if (jumlah <= 0 || jumlah > Saldo) return false;\n        Saldo -= jumlah;\n        return true;\n    }\n\n    public override string ToString() => $\"{Nomor} {Pemilik,-8} {Saldo,12:N0}\";\n}\n\nclass Program\n{\n    static void Main()\n    {\n        var a = new Rekening(\"Andi\", 500000m);\n        var b = new Rekening(\"Budi\");\n\n        a.Setor(250000m);\n        Console.WriteLine($\"Tarik 900rb dari Andi: {a.Tarik(900000m)}\");\n        Console.WriteLine($\"Tarik 300rb dari Andi: {a.Tarik(300000m)}\");\n        b.Setor(100000m);\n\n        Console.WriteLine(a);\n        Console.WriteLine(b);\n    }\n}"
     },
     {
+     "heading": "Private set, statis, dan primary constructor",
      "body": [
       "Keluaran:",
       "  Tarik 900rb dari Andi: False",
@@ -1759,6 +1770,7 @@
      "code": "using System;\n\nabstract class Bangun\n{\n    public string Nama { get; }\n    protected Bangun(string nama) => Nama = nama;\n\n    // Tanpa badan: turunan WAJIB mengisinya\n    public abstract double Luas();\n    public abstract double Keliling();\n\n    // Punya badan, tapi boleh diganti\n    public virtual string Ringkas()\n        => $\"{Nama,-12} luas {Luas(),8:F2}  keliling {Keliling(),8:F2}\";\n}\n\nclass Persegi : Bangun\n{\n    private readonly double _sisi;\n    public Persegi(double sisi) : base(\"Persegi\") => _sisi = sisi;\n\n    public override double Luas() => _sisi * _sisi;\n    public override double Keliling() => 4 * _sisi;\n}\n\nclass Lingkaran : Bangun\n{\n    private const double PI = 3.14159265;\n    private readonly double _jari;\n    public Lingkaran(double jari) : base(\"Lingkaran\") => _jari = jari;\n\n    public override double Luas() => PI * _jari * _jari;\n    public override double Keliling() => 2 * PI * _jari;\n    public override string Ringkas() => base.Ringkas() + $\"  (r={_jari})\";\n}\n\nclass Program\n{\n    static void Main()\n    {\n        Bangun[] semua = { new Persegi(4), new Lingkaran(3), new Persegi(2.5) };\n\n        double totalLuas = 0;\n        foreach (Bangun b in semua)\n        {\n            Console.WriteLine(b.Ringkas());\n            totalLuas += b.Luas();\n        }\n        Console.WriteLine($\"{\"TOTAL\",-12} luas {totalLuas,8:F2}\");\n    }\n}"
     },
     {
+     "heading": "Polimorfisme dan aturan abstract class",
      "body": [
       "Keluaran:",
       "  Persegi      luas    16.00  keliling    16.00",
@@ -1881,6 +1893,7 @@
      "code": "using System;\nusing System.Collections.Generic;\n\nclass Buku : IComparable<Buku>, IEquatable<Buku>\n{\n    public string Judul { get; }\n    public int Tahun { get; }\n\n    public Buku(string judul, int tahun) => (Judul, Tahun) = (judul, tahun);\n\n    // IComparable: menentukan urutan bawaan -> dipakai Array.Sort & List.Sort\n    public int CompareTo(Buku? lain)\n    {\n        if (lain is null) return 1;\n        int t = Tahun.CompareTo(lain.Tahun);\n        return t != 0 ? t : string.Compare(Judul, lain.Judul, StringComparison.Ordinal);\n    }\n\n    // IEquatable: menentukan arti \"sama\" -> dipakai Contains, HashSet, Distinct\n    public bool Equals(Buku? lain)\n        => lain is not null && Judul == lain.Judul && Tahun == lain.Tahun;\n\n    public override bool Equals(object? o) => Equals(o as Buku);\n    public override int GetHashCode() => HashCode.Combine(Judul, Tahun);\n    public override string ToString() => $\"{Tahun} {Judul}\";\n}\n\nclass Program\n{\n    static void Main()\n    {\n        var rak = new List<Buku>\n        {\n            new(\"Pemrograman C#\", 2021),\n            new(\"Algoritma\", 2018),\n            new(\"Basis Data\", 2021),\n        };\n\n        rak.Sort();                       // memakai CompareTo\n        foreach (Buku b in rak) Console.WriteLine(b);\n\n        Console.WriteLine(rak.Contains(new Buku(\"Algoritma\", 2018)));  // True\n    }\n}"
     },
     {
+     "heading": "IComparable, Equals, dan GetHashCode",
      "body": [
       "Keluaran:",
       "  2018 Algoritma",
@@ -2001,6 +2014,7 @@
      "code": "using System;\n\nstruct TitikS { public int X, Y; }\nclass  TitikC { public int X, Y; }\n\nrecord Barang(string Nama, decimal Harga);\n\nclass Program\n{\n    static void Main()\n    {\n        // STRUCT: disalin isinya\n        var s1 = new TitikS { X = 1, Y = 2 };\n        var s2 = s1;\n        s2.X = 99;\n        Console.WriteLine($\"struct : s1.X={s1.X}  s2.X={s2.X}\");\n\n        // CLASS: disalin alamatnya\n        var c1 = new TitikC { X = 1, Y = 2 };\n        var c2 = c1;\n        c2.X = 99;\n        Console.WriteLine($\"class  : c1.X={c1.X}  c2.X={c2.X}\");\n\n        // RECORD: kesetaraan berbasis NILAI\n        var b1 = new Barang(\"Kopi\", 25000m);\n        var b2 = new Barang(\"Kopi\", 25000m);\n        Console.WriteLine($\"record == : {b1 == b2}\");\n        Console.WriteLine($\"ToString  : {b1}\");\n\n        // with: salinan dengan sebagian diubah\n        var b3 = b1 with { Harga = 27000m };\n        Console.WriteLine($\"with      : {b3}\");\n\n        var (nama, harga) = b1;            // deconstruct\n        Console.WriteLine($\"pecah     : {nama} / {harga}\");\n    }\n}"
     },
     {
+     "heading": "Struct, class, dan varian record",
      "body": [
       "Keluaran:",
       "  struct : s1.X=1  s2.X=99",
@@ -2117,6 +2131,7 @@
      "code": "using System;\n\n[Flags]\nenum Izin\n{\n    Tidak  = 0,\n    Baca   = 1,      // 0001\n    Tulis  = 2,      // 0010\n    Hapus  = 4,      // 0100\n    Jalan  = 8,      // 1000\n    Penuh  = Baca | Tulis | Hapus | Jalan,\n}\n\nclass Program\n{\n    static void Main()\n    {\n        Izin editor = Izin.Baca | Izin.Tulis;\n\n        Console.WriteLine(editor);                       // Baca, Tulis\n        Console.WriteLine((int)editor);                  // 3\n        Console.WriteLine(editor.HasFlag(Izin.Tulis));   // True\n        Console.WriteLine(editor.HasFlag(Izin.Hapus));   // False\n\n        editor |= Izin.Hapus;                            // tambah\n        Console.WriteLine(editor);                       // Baca, Tulis, Hapus\n\n        editor &= ~Izin.Baca;                            // buang\n        Console.WriteLine(editor);                       // Tulis, Hapus\n\n        Console.WriteLine(Izin.Penuh);                   // Penuh\n    }\n}"
     },
     {
+     "heading": "Operasi bit pada enum dan jebakan HasFlag",
      "body": [
       "Enum yang diberi atribut [Flags] bisa menyimpan banyak pilihan",
       "sekaligus dalam satu angka. Caranya lewat bit, yaitu digit 0 dan 1 di",
@@ -2242,6 +2257,7 @@
      "code": "using System;\n\nclass SaldoKurangException : Exception\n{\n    public decimal Kurang { get; }\n\n    public SaldoKurangException(decimal kurang)\n        : base($\"Saldo kurang {kurang:N0}\")\n        => Kurang = kurang;\n}\n\nclass Dompet\n{\n    public decimal Saldo { get; private set; }\n\n    public Dompet(decimal awal) => Saldo = awal;\n\n    public void Bayar(decimal jumlah)\n    {\n        if (jumlah <= 0)\n            throw new ArgumentOutOfRangeException(nameof(jumlah),\n                \"Jumlah harus lebih dari nol\");\n\n        if (jumlah > Saldo)\n            throw new SaldoKurangException(jumlah - Saldo);\n\n        Saldo -= jumlah;\n    }\n}\n\nclass Program\n{\n    static void Main()\n    {\n        var d = new Dompet(50000m);\n        decimal[] tagihan = { 20000m, -5m, 100000m, 30000m };\n\n        foreach (decimal t in tagihan)\n        {\n            try\n            {\n                d.Bayar(t);\n                Console.WriteLine($\"Bayar {t,8:N0} -> sisa {d.Saldo,8:N0}\");\n            }\n            catch (SaldoKurangException e)\n            {\n                Console.WriteLine($\"Bayar {t,8:N0} -> GAGAL, kurang {e.Kurang:N0}\");\n            }\n            catch (ArgumentOutOfRangeException)\n            {\n                Console.WriteLine($\"Bayar {t,8:N0} -> DITOLAK, nilai tidak sah\");\n            }\n        }\n    }\n}"
     },
     {
+     "heading": "Empat kebiasaan buruk saat menangani exception",
      "body": [
       "Keluaran:",
       "  Bayar   20,000 -> sisa   30,000",
@@ -2499,6 +2515,7 @@
      "code": "using System;\nusing System.Collections.Generic;\n\nclass Program\n{\n    static List<int> Saring(List<int> data, Predicate<int> syarat)\n    {\n        var hasil = new List<int>();\n        foreach (int n in data)\n            if (syarat(n)) hasil.Add(n);\n        return hasil;\n    }\n\n    static List<TOut> Ubah<TIn, TOut>(List<TIn> data, Func<TIn, TOut> ubah)\n    {\n        var hasil = new List<TOut>();\n        foreach (TIn x in data) hasil.Add(ubah(x));\n        return hasil;\n    }\n\n    static void Main()\n    {\n        var angka = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };\n\n        Console.WriteLine(string.Join(\" \", Saring(angka, n => n % 2 == 0)));\n        Console.WriteLine(string.Join(\" \", Saring(angka, n => n > 7)));\n        Console.WriteLine(string.Join(\" \", Ubah(angka, n => n * n)));\n        Console.WriteLine(string.Join(\" \", Ubah(angka, n => $\"#{n}\")));\n\n        // Multicast: satu delegate memanggil BEBERAPA method\n        Action<string> catat = s => Console.WriteLine($\"[log] {s}\");\n        catat += s => Console.WriteLine($\"[layar] {s}\");\n        catat(\"selesai\");\n    }\n}"
     },
     {
+     "heading": "Event sebagai delegate yang dipagari",
      "body": [
       "Keluaran:",
       "  2 4 6 8 10",
@@ -2630,6 +2647,7 @@
      "code": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nrecord Murid(string Nama, string Kelas, int Nilai);\n\nclass Program\n{\n    static void Main()\n    {\n        var data = new List<Murid>\n        {\n            new(\"Andi\",  \"A\", 88), new(\"Budi\", \"B\", 72),\n            new(\"Cici\",  \"A\", 95), new(\"Dedi\", \"B\", 64),\n            new(\"Euis\",  \"A\", 79), new(\"Fajar\", \"B\", 91),\n        };\n\n        Console.WriteLine(\"-- Lulus, nilai tertinggi dulu --\");\n        foreach (var m in data.Where(m => m.Nilai >= 75)\n                              .OrderByDescending(m => m.Nilai))\n            Console.WriteLine($\"  {m.Nama,-6} {m.Nilai}\");\n\n        Console.WriteLine($\"\\nRata-rata : {data.Average(m => m.Nilai):F2}\");\n        Console.WriteLine($\"Tertinggi : {data.Max(m => m.Nilai)}\");\n        Console.WriteLine($\"Jumlah    : {data.Count(m => m.Nilai >= 75)} lulus\");\n        Console.WriteLine($\"Ada yang <65? {data.Any(m => m.Nilai < 65)}\");\n        Console.WriteLine($\"Semua >60?    {data.All(m => m.Nilai > 60)}\");\n\n        Console.WriteLine(\"\\n-- Per kelas --\");\n        foreach (var g in data.GroupBy(m => m.Kelas).OrderBy(g => g.Key))\n            Console.WriteLine($\"  Kelas {g.Key}: {g.Count()} murid, \"\n                            + $\"rata-rata {g.Average(m => m.Nilai):F1}, \"\n                            + $\"terbaik {g.OrderByDescending(m => m.Nilai).First().Nama}\");\n    }\n}"
     },
     {
+     "heading": "Deferred execution pada query LINQ",
      "body": [
       "Keluaran:",
       "  -- Lulus, nilai tertinggi dulu --",
@@ -2759,6 +2777,7 @@
      "code": "using System;\nusing System.IO;\nusing System.Linq;\n\nclass Program\n{\n    static void Main()\n    {\n        string berkas = Path.Combine(Path.GetTempPath(), \"nilai-belajar.csv\");\n\n        string[] isi =\n        {\n            \"nama,kelas,nilai\",\n            \"Andi,A,88\",\n            \"Budi,B,72\",\n            \"Cici,A,95\",\n        };\n        File.WriteAllLines(berkas, isi);\n\n        var baris = File.ReadAllLines(berkas).Skip(1);      // lewati judul\n        var data = baris.Select(b => b.Split(','))\n                        .Select(k => (Nama: k[0], Kelas: k[1], Nilai: int.Parse(k[2])))\n                        .ToList();\n\n        foreach (var m in data.OrderByDescending(m => m.Nilai))\n            Console.WriteLine($\"{m.Nama,-6} {m.Kelas}  {m.Nilai,3}\");\n\n        Console.WriteLine($\"Rata-rata: {data.Average(m => m.Nilai):F2}\");\n\n        File.Delete(berkas);\n        Console.WriteLine($\"Berkas masih ada? {File.Exists(berkas)}\");\n    }\n}"
     },
     {
+     "heading": "Jebakan Split dan urutan catch",
      "body": [
       "Keluaran:",
       "  Cici   A   95",
@@ -2998,6 +3017,7 @@
      "code": "using System;\nusing System.Diagnostics;\nusing System.Threading.Tasks;\n\nclass Program\n{\n    static async Task<string> AmbilAsync(string nama, int ms)\n    {\n        await Task.Delay(ms);            // pura-pura memanggil jaringan\n        return $\"{nama} selesai ({ms}ms)\";\n    }\n\n    static async Task Main()\n    {\n        var jam = Stopwatch.StartNew();\n\n        // BERURUTAN: satu selesai, baru berikutnya mulai\n        Console.WriteLine(await AmbilAsync(\"A\", 200));\n        Console.WriteLine(await AmbilAsync(\"B\", 200));\n        Console.WriteLine($\"Berurutan  ~{jam.ElapsedMilliseconds / 100 * 100} ms\");\n\n        // BERSAMAAN: keduanya berjalan, lalu ditunggu bersama\n        jam.Restart();\n        Task<string> t1 = AmbilAsync(\"C\", 200);\n        Task<string> t2 = AmbilAsync(\"D\", 200);\n        string[] hasil = await Task.WhenAll(t1, t2);\n        foreach (string h in hasil) Console.WriteLine(h);\n        Console.WriteLine($\"Bersamaan  ~{jam.ElapsedMilliseconds / 100 * 100} ms\");\n    }\n}"
     },
     {
+     "heading": "Task.WhenAll untuk panggilan bersamaan",
      "body": [
       "Keluaran (angkanya dibulatkan ke ratusan ms):",
       "  A selesai (200ms)",
@@ -3123,6 +3143,7 @@
      "code": "TokoSaya/\n├── TokoSaya.sln                 daftar proyek\n├── src/\n│   ├── Toko.Domain/             aturan bisnis, tanpa ketergantungan\n│   │   ├── Toko.Domain.csproj\n│   │   ├── Produk.cs\n│   │   └── Pesanan.cs\n│   ├── Toko.Data/               akses database\n│   │   ├── Toko.Data.csproj\n│   │   └── ProdukRepository.cs\n│   └── Toko.App/                titik masuk\n│       ├── Toko.App.csproj\n│       └── Program.cs\n└── tests/\n    └── Toko.Tests/\n        ├── Toko.Tests.csproj\n        └── ProdukTests.cs"
     },
     {
+     "heading": "Perintah dotnet dan arah ketergantungan",
      "body": [
       "Perintah dotnet yang dipakai sehari-hari:",
       "",
@@ -3252,6 +3273,7 @@
      "code": "using System;\n\nstatic class Rapor\n{\n    public static string Grade(int nilai) => nilai switch\n    {\n        < 0 or > 100 => throw new ArgumentOutOfRangeException(nameof(nilai)),\n        >= 85 => \"A\",\n        >= 75 => \"B\",\n        >= 60 => \"C\",\n        _     => \"D\",\n    };\n}\n\nclass Program\n{\n    static int gagal = 0;\n\n    static void Periksa(string nama, object harap, object aktual)\n    {\n        bool ok = Equals(harap, aktual);\n        if (!ok) gagal++;\n        Console.WriteLine($\"[{(ok ? \"OK  \" : \"GAGAL\")}] {nama,-28} \"\n                        + $\"harap={harap} aktual={aktual}\");\n    }\n\n    static void Main()\n    {\n        Periksa(\"nilai 85 -> A\", \"A\", Rapor.Grade(85));\n        Periksa(\"nilai 84 -> B\", \"B\", Rapor.Grade(84));\n        Periksa(\"nilai 60 -> C\", \"C\", Rapor.Grade(60));\n        Periksa(\"nilai  0 -> D\", \"D\", Rapor.Grade(0));\n\n        bool melempar = false;\n        try { Rapor.Grade(101); }\n        catch (ArgumentOutOfRangeException) { melempar = true; }\n        Periksa(\"nilai 101 -> melempar\", true, melempar);\n\n        Console.WriteLine(gagal == 0 ? \"SEMUA LULUS\" : $\"{gagal} GAGAL\");\n    }\n}"
     },
     {
+     "heading": "Menguji nilai batas dan melacak bug",
      "body": [
       "Keluaran:",
       "  [OK  ] nilai 85 -> A                harap=A aktual=A",
@@ -3366,6 +3388,7 @@
      "code": "root = true\n\n[*.cs]\nindent_style = space\nindent_size = 4\nend_of_line = lf\ninsert_final_newline = true\ncharset = utf-8\n\n# Gaya\ncsharp_new_line_before_open_brace = all\ncsharp_style_var_when_type_is_apparent = true:suggestion\ndotnet_sort_system_directives_first = true\n\n# Naikkan dari saran jadi PERINGATAN supaya benar-benar terlihat\ndotnet_diagnostic.CA2000.severity = warning   # objek IDisposable tak dilepas\ndotnet_diagnostic.CA1062.severity = warning   # argumen publik tak diperiksa null\ndotnet_diagnostic.CS8618.severity = warning   # field non-nullable tak diisi"
     },
     {
+     "heading": "Analyzer dan kebiasaan kode yang mudah dirawat",
      "body": [
       "Analyzer adalah pemeriksa yang berjalan waktu kompilasi. Dia nemuin",
       "kode yang sintaksnya benar, tapi hampir pasti bukan yang kamu maksud.",
@@ -3478,6 +3501,7 @@
      "code": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\n// ---------------------------------------------------------------- MODEL\nrecord Pengeluaran(string Keterangan, string Kategori, decimal Jumlah);\n\n// -------------------------------------------------------------- LAYANAN\nclass BukuKas\n{\n    private readonly List<Pengeluaran> _catatan = new();\n\n    public IReadOnlyList<Pengeluaran> Semua => _catatan;\n\n    public void Tambah(Pengeluaran p)\n    {\n        if (string.IsNullOrWhiteSpace(p.Keterangan))\n            throw new ArgumentException(\"Keterangan wajib diisi\");\n        if (p.Jumlah <= 0)\n            throw new ArgumentOutOfRangeException(nameof(p),\n                \"Jumlah harus lebih dari nol\");\n        _catatan.Add(p);\n    }\n\n    public decimal Total() => _catatan.Sum(p => p.Jumlah);\n\n    public IEnumerable<(string Kategori, decimal Total, int Banyak)> PerKategori()\n        => _catatan.GroupBy(p => p.Kategori)\n                   .Select(g => (g.Key, g.Sum(p => p.Jumlah), g.Count()))\n                   .OrderByDescending(x => x.Item2);\n\n    public Pengeluaran? Terbesar()\n        => _catatan.OrderByDescending(p => p.Jumlah).FirstOrDefault();\n}\n\n// ------------------------------------------------------------ ANTARMUKA\nclass Program\n{\n    static void Main()\n    {\n        var kas = new BukuKas();\n\n        var masukan = new[]\n        {\n            new Pengeluaran(\"Kopi pagi\",   \"Makan\",     25000m),\n            new Pengeluaran(\"Bensin\",      \"Transport\", 100000m),\n            new Pengeluaran(\"Makan siang\", \"Makan\",     35000m),\n            new Pengeluaran(\"Buku\",        \"Belajar\",   120000m),\n            new Pengeluaran(\"Ojek\",        \"Transport\", 18000m),\n        };\n\n        foreach (var p in masukan) kas.Tambah(p);\n\n        // Sengaja gagal, untuk menunjukkan validasinya bekerja\n        try { kas.Tambah(new Pengeluaran(\"\", \"Lain\", 1000m)); }\n        catch (ArgumentException e) { Console.WriteLine($\"Ditolak: {e.Message}\"); }\n\n        Console.WriteLine();\n        Console.WriteLine($\"{\"Keterangan\",-14}{\"Kategori\",-11}{\"Jumlah\",12}\");\n        Console.WriteLine(new string('-', 37));\n        foreach (var p in kas.Semua)\n            Console.WriteLine($\"{p.Keterangan,-14}{p.Kategori,-11}{p.Jumlah,12:N0}\");\n\n        Console.WriteLine(new string('-', 37));\n        Console.WriteLine($\"{\"TOTAL\",-25}{kas.Total(),12:N0}\");\n\n        Console.WriteLine();\n        Console.WriteLine(\"Rekap per kategori:\");\n        foreach (var (kategori, total, banyak) in kas.PerKategori())\n            Console.WriteLine($\"  {kategori,-11}{total,10:N0}  ({banyak} transaksi)\");\n\n        Console.WriteLine();\n        Console.WriteLine($\"Terbesar: {kas.Terbesar()?.Keterangan ?? \"-\"}\");\n    }\n}"
     },
     {
+     "heading": "Empat keputusan desain di aplikasi konsol",
      "body": [
       "Empat keputusan di program itu yang layak kamu tiru:",
       "  1. Properti Semua bertipe `IReadOnlyList<Pengeluaran>`, bukan",

@@ -3,7 +3,7 @@
  "bendera": "is",
  "pola": [
   {
-   "pola": "';' expected",
+   "pola": "error: ';' expected",
    "ganti": "Ada baris yang lupa diakhiri titik koma (;). Di Java setiap pernyataan wajib ditutup titik koma."
   },
   {
@@ -39,7 +39,7 @@
    "ganti": "Ada kurung kurawal { yang belum ditutup. Hitung kembali pasangan { dan }."
   },
   {
-   "pola": "NullPointerException",
+   "pola": "NullPointerException(?!.*MainKt)",
    "ganti": "Program memakai objek yang isinya null (belum diisi). Pastikan objeknya sudah dibuat dengan 'new' sebelum dipakai."
   },
   {
@@ -55,7 +55,7 @@
    "ganti": "Pembagian dengan nol. Periksa dulu apakah pembaginya nol."
   },
   {
-   "pola": "NoSuchElementException",
+   "pola": "NoSuchElementException(?!.*MainKt)",
    "ganti": "Scanner membaca input yang sudah habis. Latihan ini mungkin tidak mengirim input sebanyak yang kamu baca."
   },
   {
@@ -285,6 +285,818 @@
   {
    "pola": "blok '\\{ … \\}' tanpa pemilih",
    "ganti": "Ada kurung kurawal yang tidak didahului pemilih. CSS perlu tahu elemen mana yang diatur: `p { ... }`, `.kartu { ... }`, `#judul { ... }`."
+  },
+  {
+   "pola": "undefined local variable or method [`']([^'`\\s]+)[`']",
+   "ganti": "Nama '$1' tidak dikenal: bukan variabel yang sudah diisi, dan bukan nama method. Periksa ejaan dan huruf besar/kecilnya, atau pastikan variabelnya sudah diberi nilai sebelum baris ini."
+  },
+  {
+   "pola": "uninitialized constant (\\S+)",
+   "ganti": "'$1' diawali huruf besar, jadi Ruby mengiranya nama kelas atau konstanta, dan ia belum ada. Periksa ejaannya, atau pastikan kelasnya sudah didefinisikan di atas baris ini."
+  },
+  {
+   "pola": "undefined method [`']([^'`\\s]+)[`'] for nil",
+   "ganti": "Method '$1' dipanggil pada nilai nil (kosong), bukan pada objek. Paling sering karena variabelnya belum diisi, hash atau array yang kunci atau indeksnya tidak ada, atau gets yang tidak mendapat input. Periksa dari mana nilainya datang, atau pakai &. supaya nil dilewati."
+  },
+  {
+   "pola": "undefined method [`']([^'`\\s]+)[`'] for an instance of (\\S+)",
+   "ganti": "Objek bertipe $2 tidak punya method '$1'. Periksa ejaannya, atau tipe nilainya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "undefined method [`']([^'`\\s]+)[`'] for (?:class|module) (\\S+)",
+   "ganti": "'$2' tidak punya method kelas '$1'. Periksa ejaannya, atau method itu ditulis tanpa self. sehingga cuma bisa dipanggil lewat objek, bukan lewat nama kelasnya."
+  },
+  {
+   "pola": "(private|protected) method [`']([^'`\\s]+)[`'] called for",
+   "ganti": "Method '$2' berstatus $1, jadi tidak bisa dipanggil dari luar kelasnya. Pindahkan ke bagian public, atau panggil lewat method public lain di kelas itu."
+  },
+  {
+   "pola": "invalid value for (Integer|Float)\\(\\): \\\"([^\\\"\\n]*)\\\"",
+   "ganti": "$1() menolak teks \"$2\" karena bukan angka yang sah. Periksa isinya, mungkin ada huruf atau spasi nyasar. to_i dan to_f tidak melempar error, tapi diam-diam menghasilkan 0 untuk teks seperti itu."
+  },
+  {
+   "pola": "can't convert nil into (\\w+)",
+   "ganti": "nil (kosong) tidak bisa diubah jadi $1. Periksa dari mana nilainya datang: mungkin variabelnya belum diisi, atau gets tidak mendapat input."
+  },
+  {
+   "pola": "wrong number of arguments \\(given (\\d+), expected ([^)]+)\\)",
+   "ganti": "Method dipanggil dengan $1 argumen, padahal definisinya meminta $2. Samakan jumlah argumen saat memanggil dengan parameter di def-nya."
+  },
+  {
+   "pola": "missing keywords?: :(\\w+)",
+   "ganti": "Parameter bernama (keyword) '$1' wajib diisi tapi tidak diberikan saat memanggil. Tulis $1: nilai di pemanggilnya."
+  },
+  {
+   "pola": "no block given \\(yield\\)",
+   "ganti": "Method ini memakai yield, tapi dipanggil tanpa blok. Panggil dengan blok (do ... end atau { ... }), atau cek dulu dengan block_given?."
+  },
+  {
+   "pola": "index (-?\\d+) outside of array bounds",
+   "ganti": "Indeks $1 di luar jangkauan array, dan fetch menolak indeks yang tidak ada (berbeda dengan [] yang diam-diam memberi nil). Ingat indeks pertama 0 dan yang terakhir panjang - 1."
+  },
+  {
+   "pola": "no implicit conversion of (\\w+) into (\\w+)",
+   "ganti": "Ruby tidak mengubah $1 jadi $2 secara otomatis. Ubah sendiri, misalnya angka.to_s sebelum disambung ke teks, atau teks.to_i untuk dihitung."
+  },
+  {
+   "pola": "\\bnil can't be coerced into (\\w+)",
+   "ganti": "Ada nilai nil (kosong) yang ikut dihitung dengan $1. Periksa variabel atau hasil method yang dipakai di perhitungan itu: mungkin belum diisi, atau hash atau array-nya tidak punya kunci atau indeks tersebut."
+  },
+  {
+   "pola": "\\b(?!nil\\b)(\\w+) can't be coerced into (\\w+)",
+   "ganti": "$1 tidak bisa dihitung bersama $2. Samakan tipenya dulu, misalnya teks.to_i atau angka.to_s."
+  },
+  {
+   "pola": "comparison of (\\w+) with (\\S+) failed",
+   "ganti": "Ruby tidak bisa membandingkan $1 dengan $2, jadi tidak tahu mana yang lebih besar. Isi array atau nilai yang dibandingkan harus sejenis: semuanya angka, atau semuanya teks."
+  },
+  {
+   "pola": "can't modify frozen (\\w+)",
+   "ganti": "Objek $1 ini sudah dibekukan (frozen), jadi isinya tidak boleh diubah di tempat. Buat salinannya dengan dup lalu ubah salinan itu."
+  },
+  {
+   "pola": "cannot load such file -- (\\S+)",
+   "ganti": "Berkas atau pustaka '$1' tidak ditemukan oleh require. Periksa ejaannya. Di aplikasi ini hanya pustaka bawaan Ruby yang bisa dipakai, dan berkas lain harus dipanggil dengan require_relative."
+  },
+  {
+   "pola": "No such file or directory @ \\w+ - (\\S+)",
+   "ganti": "Berkas atau folder '$1' tidak ada. Periksa ejaan nama dan letaknya; program ini berjalan di folder sementara yang hanya berisi berkasnya sendiri."
+  },
+  {
+   "pola": "stack level too deep",
+   "ganti": "Method memanggil dirinya sendiri terus-menerus sampai tumpukan panggilan penuh. Rekursi wajib punya kondisi berhenti, dan tiap panggilan harus mendekatinya."
+  },
+  {
+   "pola": "expected (?:an [`']end[`'] to close|a block beginning with [`']do[`'] to end with [`']end[`'])",
+   "ganti": "Ada blok (def, if, class, do, atau while) yang belum ditutup dengan end. Hitung pasangan pembuka dan end-nya; Ruby menunjuk tempat blok itu dibuka."
+  },
+  {
+   "pola": "expected a(?: matching)? [`']([)\\]}])[`']",
+   "ganti": "Ada kurung yang belum ditutup: Ruby mengharapkan $1 untuk menutupnya. Hitung lagi pasangan kurungnya."
+  },
+  {
+   "pola": "unexpected [`']([a-z]+)[`'], ignoring it",
+   "ganti": "Kata kunci $1 muncul di tempat yang tidak membukanya. Biasanya ada end yang kelebihan, atau else dan elsif yang dobel. Hitung lagi pasangan if, def, dan do dengan end-nya."
+  },
+  {
+   "pola": "unterminated string meets end of file",
+   "ganti": "Ada teks yang tanda kutipnya belum ditutup."
+  },
+  {
+   "pola": "cannot find (?:value|function) `(\\w+)` in this scope",
+   "ganti": "Nama '$1' tidak dikenal di sini. Periksa ejaan dan huruf besar/kecilnya, dan pastikan variabelnya dibuat dengan let sebelum dipakai serta masih berada di dalam blok yang sama."
+  },
+  {
+   "pola": "(?:cannot find type|use of undeclared type) `(\\w+)`",
+   "ganti": "Tipe '$1' belum dikenal di sini. Tipe dari pustaka standar, misalnya HashMap, harus diimpor dulu dengan use (use std::collections::HashMap;), dan ejaannya harus tepat."
+  },
+  {
+   "pola": "cannot find macro `(\\w+)` in this scope",
+   "ganti": "Makro '$1!' tidak dikenal. Periksa ejaan namanya (println!, format!, vec!), dan ingat makro selalu diakhiri tanda seru."
+  },
+  {
+   "pola": "unresolved import `([^`]+)`",
+   "ganti": "Impor '$1' tidak ditemukan. Periksa ejaan jalurnya dan huruf besar/kecilnya. Di aplikasi ini hanya pustaka standar (std) yang tersedia."
+  },
+  {
+   "pola": "error\\[E0308\\]: mismatched types.*?expected ([^\\n]+?), found ([^\\n]+)",
+   "ganti": "Tipe tidak cocok: di sini Rust menuntut $1 tetapi menemukan $2. Ubah nilainya supaya tipenya sama, atau ubah tipe yang ditulis. Rust tidak mengonversi tipe secara otomatis."
+  },
+  {
+   "pola": "implicitly returns `\\(\\)` as its body has no tail or `return` expression",
+   "ganti": "Badan fungsi tidak mengembalikan nilai apa pun, padahal tipe kembaliannya sudah ditulis. Hapus titik koma di baris terakhir supaya nilainya dikembalikan, atau tambahkan return."
+  },
+  {
+   "pola": "(?:borrow of|use of) moved value: `(\\w+)`",
+   "ganti": "Nilai '$1' sudah dipindahkan (move) ke tempat lain, jadi tidak bisa dipakai lagi di sini. Di Rust nilai seperti String punya satu pemilik: pinjamkan dengan &$1, atau salin dengan $1.clone() kalau memang perlu dua."
+  },
+  {
+   "pola": "cannot assign twice to immutable variable `(\\w+)`",
+   "ganti": "Variabel '$1' dibuat tanpa mut, jadi nilainya tidak bisa diubah lagi. Tulis let mut $1 = ... kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "cannot borrow `([^`]+)` as mutable, as it is not declared as mutable",
+   "ganti": "Variabel '$1' tidak dideklarasikan mut, padahal operasi ini mengubah isinya. Tulis let mut $1 = ... di deklarasinya."
+  },
+  {
+   "pola": "cannot borrow `([^`]+)` as mutable, as it is behind a `&` reference",
+   "ganti": "Nilai ini hanya dipinjam untuk dibaca (&), jadi isinya tidak boleh diubah. Ubah parameternya jadi &mut dan kirim dengan &mut saat memanggil."
+  },
+  {
+   "pola": "cannot borrow `(\\w+)` as mutable more than once at a time",
+   "ganti": "Variabel '$1' dipinjam sebagai &mut dua kali dalam waktu yang sama. Rust hanya mengizinkan satu peminjam yang bisa mengubah pada satu waktu: selesaikan pemakaian yang pertama dulu sebelum meminjam lagi."
+  },
+  {
+   "pola": "`(\\w+)` does not live long enough",
+   "ganti": "Nilai '$1' sudah dibuang (keluar dari blok tempat ia dibuat) padahal masih ada referensi yang menunjuk ke sana. Buat nilainya di blok yang lebih luas, atau kembalikan nilainya, bukan referensinya."
+  },
+  {
+   "pola": "no method named `(\\w+)` found",
+   "ganti": "Tidak ada method bernama '$1' untuk tipe itu. Periksa ejaannya, atau tipe nilainya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "this (?:function|method) takes (\\d+) arguments? but (\\d+) arguments? (?:was|were) supplied",
+   "ganti": "Fungsi menuntut $1 argumen, tetapi dipanggil dengan $2. Samakan jumlah argumen saat memanggil dengan parameter di definisinya."
+  },
+  {
+   "pola": "missing lifetime specifier",
+   "ganti": "Fungsi mengembalikan referensi (&), tapi Rust tidak tahu referensi itu dipinjam dari parameter yang mana. Tambahkan lifetime seperti <'a> pada nama fungsi dan 'a pada referensi yang saling terkait."
+  },
+  {
+   "pola": "error\\[E0277\\]: cannot add `([^`]+)` to `([^`]+)`",
+   "ganti": "Rust tidak bisa menjumlahkan $1 dengan $2 karena tipenya berbeda. Samakan tipenya dulu, misalnya ubah teks jadi angka dengan parse(), atau angka jadi teks dengan to_string()."
+  },
+  {
+   "pola": "`([^`]+)` doesn't implement `std::fmt::Display`",
+   "ganti": "Tipe $1 belum punya cara menampilkan dirinya, jadi tidak bisa dicetak dengan {}. Cetak dengan {:?} setelah menambah #[derive(Debug)], atau implementasikan Display sendiri."
+  },
+  {
+   "pola": "can't compare `([^`]+)` with `([^`]+)`",
+   "ganti": "Rust tidak bisa membandingkan $1 dengan $2 karena tipenya berbeda. Bandingkan dua nilai yang sejenis."
+  },
+  {
+   "pola": "the type `(?:str|String)` cannot be indexed by",
+   "ganti": "Teks tidak bisa diambil hurufnya dengan s[0]. Pakai s.chars().nth(0) untuk huruf ke-n, atau potong dengan s[0..1] kalau yang dimaksud byte."
+  },
+  {
+   "pola": "error\\[E0369\\]",
+   "ganti": "Operator (+, ==, dan sejenisnya) dipakai pada tipe yang belum tahu caranya. Untuk == tambahkan #[derive(PartialEq)] di atas struct-nya; untuk + implementasikan trait std::ops::Add."
+  },
+  {
+   "pola": "non-exhaustive patterns: ([^\\n]+?) not covered",
+   "ganti": "match belum mencakup semua kemungkinan: $1 belum ditangani. Tambahkan cabangnya, atau cabang penampung _ => ... di akhir."
+  },
+  {
+   "pola": "no field `(\\w+)` on type `([^`]+)`",
+   "ganti": "Tipe $2 tidak punya field bernama '$1'. Periksa ejaannya di definisi struct-nya."
+  },
+  {
+   "pola": "missing field `(\\w+)` in initializer of `([^`]+)`",
+   "ganti": "Saat membuat $2, field '$1' belum diisi. Setiap field struct wajib diberi nilai."
+  },
+  {
+   "pola": "used binding `(\\w+)` isn't initialized",
+   "ganti": "Variabel '$1' dipakai sebelum diberi nilai. Beri nilai awal saat dibuat, misalnya let $1 = 0;"
+  },
+  {
+   "pola": "`main` function not found",
+   "ganti": "Program Rust wajib punya fungsi fn main() { ... } sebagai titik mulai, dan fungsi itu tidak ditemukan."
+  },
+  {
+   "pola": "expected `;`, found `([^`]+)`",
+   "ganti": "Ada pernyataan yang lupa diakhiri titik koma (;), tepat sebelum '$1'."
+  },
+  {
+   "pola": "this file contains an unclosed delimiter",
+   "ganti": "Ada kurung kurawal, kurung, atau kurung siku yang dibuka tapi tidak pernah ditutup. Hitung lagi pasangannya; Rust menandai pembuka yang belum punya penutup."
+  },
+  {
+   "pola": "unexpected closing delimiter: `(.)`",
+   "ganti": "Ada '$1' penutup yang tidak punya pasangan pembuka."
+  },
+  {
+   "pola": "index out of bounds: the len is (\\d+) but the index is (\\d+)",
+   "ganti": "Program mengakses indeks $2 padahal isinya cuma $1 elemen. Indeks pertama 0 dan yang terakhir panjang - 1."
+  },
+  {
+   "pola": "attempt to (?:divide by zero|calculate the remainder with a divisor of zero)",
+   "ganti": "Pembagian dengan nol. Periksa dulu apakah pembaginya nol."
+  },
+  {
+   "pola": "called `Option::unwrap\\(\\)` on a `None` value",
+   "ganti": "unwrap() dipanggil pada Option yang isinya None (kosong), jadi program panik. Tangani kasus kosongnya dengan match atau if let, atau pakai unwrap_or(nilai_cadangan)."
+  },
+  {
+   "pola": "called `Result::unwrap\\(\\)` on an `Err` value: ([^\\n]+)",
+   "ganti": "unwrap() dipanggil pada Result yang berisi Err ($1), jadi program panik. Tangani errornya dengan match atau if let. Untuk parse angka, Err berarti teksnya bukan angka yang sah."
+  },
+  {
+   "pola": "Parse error:\\s+Unclosed '(.)' on line (\\d+)",
+   "ganti": "Tanda '$1' yang dibuka di baris $2 tidak pernah ditutup. Hitung lagi pasangan buka-tutupnya."
+  },
+  {
+   "pola": "Parse error:\\s+Unmatched '(.)'",
+   "ganti": "Ada '$1' penutup yang tidak punya pasangan pembuka."
+  },
+  {
+   "pola": "syntax error, unexpected [^\\n]*?, expecting \\\",\\\" or \\\";\\\"",
+   "ganti": "Sepertinya ada baris sebelumnya yang lupa diakhiri titik koma (;), atau ada koma yang kurang di antara dua nilai. PHP menunjuk tempat ia baru sadar ada yang salah, biasanya satu baris sesudah kesalahannya."
+  },
+  {
+   "pola": "syntax error, unexpected token \\\"[^\\\"]*\\\", expecting end of file",
+   "ganti": "Ada kata atau tanda yang muncul di tempat yang tidak boleh. Biasanya ada kurung kurawal } yang kelebihan dan menutup blok terlalu awal, atau else tanpa if pasangannya. Hitung lagi pasangan { dan }."
+  },
+  {
+   "pola": "syntax error, unexpected token \\\"[^\\\"]*\\\", expecting \\\"([)\\]}])\\\"",
+   "ganti": "PHP mengharapkan tanda $1 di sini, jadi ada kurung buka yang belum ditutup. Hitung lagi pasangan kurungnya."
+  },
+  {
+   "pola": "syntax error, unexpected token \\\"([^\\\"]*)\\\"(?!,)",
+   "ganti": "PHP tidak mengira ada \"$1\" di sini. Periksa baris itu dan baris sebelumnya: biasanya ada titik koma, kurung, atau nilai yang kurang, atau ekspresinya belum lengkap."
+  },
+  {
+   "pola": "syntax error, unexpected (?:variable|identifier|integer|float|double-quoted string|single-quoted string) \\\"([^\\\"]*)\\\"",
+   "ganti": "PHP tidak mengira ada \"$1\" di sini. Biasanya baris sebelumnya lupa diakhiri titik koma (;), atau ada koma, operator, atau tanda kutip yang kurang di antara dua nilai."
+  },
+  {
+   "pola": "syntax error, unexpected end of file(?!, expecting \\\",\\\" or \\\";\\\")",
+   "ganti": "File berakhir padahal masih ada yang belum ditutup: tanda kutip, kurung, atau kurung kurawal. Hitung lagi pasangan buka-tutupnya."
+  },
+  {
+   "pola": "Undefined variable \\$(\\w+)",
+   "ganti": "Variabel $$$1 dipakai sebelum diberi nilai. Di PHP variabel baru ada setelah diisi, dan huruf besar/kecil dibedakan ($$nama dan $$Nama itu berbeda). Periksa ejaannya."
+  },
+  {
+   "pola": "Call to undefined function ([^\\s(]+)\\(\\)",
+   "ganti": "Fungsi '$1' tidak dikenal. Periksa ejaan namanya, atau fungsi itu memang belum dibuat atau berasal dari ekstensi yang tidak terpasang."
+  },
+  {
+   "pola": "Call to undefined method (\\w+)::(\\w+)\\(\\)",
+   "ganti": "Kelas $1 tidak punya method $2(). Periksa ejaannya, atau method itu belum ditulis di kelasnya."
+  },
+  {
+   "pola": "Call to (private|protected) method (\\w+)::(\\w+)\\(\\)",
+   "ganti": "Method $3() di kelas $2 bersifat $1, jadi tidak bisa dipanggil dari luar kelasnya. Ubah jadi public, atau panggil lewat method public lain."
+  },
+  {
+   "pola": "Call to a member function (\\w+)\\(\\) on (\\w+)",
+   "ganti": "Method $1() dipanggil dari nilai $2, padahal harus dari objek. Pastikan variabelnya sudah berisi objek (bukan null) sebelum dipanggil."
+  },
+  {
+   "pola": "Class \\\"([^\\\"]+)\\\" not found",
+   "ganti": "Kelas \"$1\" tidak ditemukan. Periksa ejaan namanya, atau kelasnya belum didefinisikan di atas baris ini."
+  },
+  {
+   "pola": "Non-static method ([\\w:]+)\\(\\) cannot be called statically",
+   "ganti": "Method $1() bukan method static, jadi harus dipanggil lewat objek ($$objek->method()), bukan lewat nama kelas dengan ::."
+  },
+  {
+   "pola": "Cannot instantiate abstract class (\\w+)",
+   "ganti": "Kelas $1 abstract: ia cuma kerangka dan tidak bisa dibuat objeknya langsung. Buat kelas turunan yang melengkapinya, lalu buat objek dari turunan itu."
+  },
+  {
+   "pola": "Value of type (\\w+) is not callable",
+   "ganti": "Nilai bertipe $1 dipanggil seperti fungsi (dengan tanda kurung) padahal bukan fungsi. Periksa apakah variabelnya tertimpa nilai lain."
+  },
+  {
+   "pola": "Unsupported operand types: (\\w+) (\\S+) (\\w+)",
+   "ganti": "Operator $2 tidak bisa dipakai antara $1 dan $3. Hitungan butuh angka: ubah dulu isinya (misalnya dengan (int) atau intval()), dan periksa apakah salah satu sisinya array atau teks yang bukan angka."
+  },
+  {
+   "pola": "DivisionByZeroError: (?:Division|Modulo) by zero",
+   "ganti": "Pembagian atau sisa bagi dengan nol. Periksa dulu apakah pembaginya nol, misalnya dengan if ($$pembagi != 0)."
+  },
+  {
+   "pola": "Too few arguments to function ([^\\s(]+)\\(\\), (\\d+) passed[^\\n]*? and (?:exactly|at least) (\\d+) expected",
+   "ganti": "Fungsi $1() dipanggil dengan $2 argumen, padahal parameternya meminta $3. Lengkapi argumen saat memanggil, atau beri nilai bawaan pada parameter di definisinya."
+  },
+  {
+   "pola": "(\\w+)\\(\\): Argument #(\\d+) \\(\\$(\\w+)\\) must be of type ([^,\\n]+), (\\w+) given",
+   "ganti": "Fungsi $1() meminta argumen $$$3 bertipe $4, tapi yang dikirim bertipe $5. Kirim nilai dengan tipe yang benar, atau ubah dulu dengan (int), (string), dan semacamnya."
+  },
+  {
+   "pola": "(\\w+)\\(\\): Return value must be of type ([^,\\n]+), (\\w+) returned",
+   "ganti": "Fungsi $1() dijanjikan mengembalikan $2, tapi malah mengembalikan $3. Samakan nilai di return dengan tipe yang ditulis."
+  },
+  {
+   "pola": "ValueError: (\\w+)\\(\\): Argument #(\\d+) \\(\\$(\\w+)\\)",
+   "ganti": "Fungsi $1() menolak nilai yang dikirim untuk argumen $$$3 karena di luar batas yang diizinkan. Baca keterangan di pesan aslinya, lalu periksa nilai yang kamu kirim."
+  },
+  {
+   "pola": "Uncaught (\\w*Exception)",
+   "ganti": "Ada exception ($1) yang dilempar dengan throw tapi tidak ada catch yang menangkapnya, jadi program berhenti. Baca pesannya, lalu tangani dengan try/catch kalau kasusnya memang bisa diduga."
+  },
+  {
+   "pola": "Undefined array key (-?\\d+|\\\"[^\\\"]*\\\")",
+   "ganti": "Array ini tidak punya kunci $1, jadi PHP memberi null disertai peringatan. Periksa ejaan kuncinya, atau cek lebih dulu dengan isset() atau operator ??."
+  },
+  {
+   "pola": "Attempt to read property \\\"(\\w+)\\\" on (\\w+)",
+   "ganti": "Program membaca properti '$1' dari nilai $2, bukan dari objek. Pastikan variabelnya sudah berisi objek sebelum dipakai."
+  },
+  {
+   "pola": "Trying to access array offset on (?:value of type )?(\\w+)",
+   "ganti": "Program membaca isi nilai bertipe $1 dengan kurung siku [ ], padahal itu bukan array. Pastikan variabelnya sudah berisi array sebelum diakses."
+  },
+  {
+   "pola": "Uninitialized string offset (-?\\d+)",
+   "ganti": "Indeks $1 melewati panjang teks. Huruf pertama berindeks 0 dan yang terakhir panjang - 1."
+  },
+  {
+   "pola": "Undefined property: (\\w+)::\\$(\\w+)",
+   "ganti": "Objek bertipe $1 tidak punya properti '$2'. Periksa ejaannya, atau properti itu belum dideklarasikan di kelasnya."
+  },
+  {
+   "pola": "Cannot access (private|protected) property (\\w+)::\\$(\\w+)",
+   "ganti": "Properti $3 di kelas $2 bersifat $1, jadi tidak bisa dibaca dari luar kelasnya. Tambahkan method getter yang public, atau ubah visibilitasnya kalau memang boleh."
+  },
+  {
+   "pola": "Cannot modify readonly property (\\w+)::\\$(\\w+)",
+   "ganti": "Properti $2 di kelas $1 bertanda readonly: setelah diisi di constructor, nilainya tidak boleh diubah lagi. Buat objek baru kalau memang butuh nilai berbeda."
+  },
+  {
+   "pola": "Cannot redeclare (?:function )?(\\w+)\\(\\)",
+   "ganti": "Fungsi '$1' dibuat dua kali. Nama fungsi harus unik: hapus salah satu atau ganti namanya."
+  },
+  {
+   "pola": "Undefined constant \\\"(\\w+)\\\"",
+   "ganti": "Konstanta '$1' tidak dikenal. Kalau maksudmu teks, tulis dengan tanda kutip (\"$1\"). Kalau konstanta, periksa ejaan dan define()-nya."
+  },
+  {
+   "pola": "Unhandled match case (\\S+)",
+   "ganti": "Ekspresi match tidak punya cabang untuk nilai $1. Tambahkan cabang untuk nilai itu, atau cabang penampung default => ... di akhir."
+  },
+  {
+   "pola": "Array to string conversion",
+   "ganti": "Array dicetak sebagai teks, hasilnya cuma kata 'Array'. Cetak isinya dengan print_r() atau var_dump(), atau loop dengan foreach."
+  },
+  {
+   "pola": "foreach\\(\\) argument must be of type array\\|object, (\\w+) given",
+   "ganti": "foreach butuh array atau objek, tapi yang diberikan bertipe $1. Pastikan variabelnya benar-benar array sebelum di-loop."
+  },
+  {
+   "pola": "Failed to open stream: No such file or directory",
+   "ganti": "Berkas yang dibuka tidak ada di tempat yang disebut. Periksa nama dan letaknya; di aplikasi ini hanya berkas programmu sendiri yang tersedia."
+  },
+  {
+   "pola": "unresolved reference '(\\w+)' on receiver of type '([^']+)'",
+   "ganti": "Tipe $2 tidak punya method atau properti '$1'. Periksa ejaannya, atau tipe nilainya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "unresolved reference '(\\w+)'(?! on receiver)",
+   "ganti": "Nama '$1' tidak dikenal. Periksa ejaan dan huruf besar/kecilnya, pastikan sudah dideklarasikan (val, var, atau fun), dan kalau berasal dari pustaka, pastikan sudah di-import."
+  },
+  {
+   "pola": "(?:initializer|return) type mismatch: expected '([^']+)', actual '([^']+)'",
+   "ganti": "Nilai bertipe $2 dimasukkan ke tempat yang menuntut $1. Samakan tipenya, misalnya dengan toInt() atau toString(), atau ubah tipe yang ditulis."
+  },
+  {
+   "pola": "assignment type mismatch: actual type is '([^']+)', but '([^']+)' was expected",
+   "ganti": "Variabel bertipe $2 diisi dengan nilai bertipe $1. Tipe variabel di Kotlin tetap setelah dibuat: samakan nilainya, atau deklarasikan variabelnya dengan tipe yang sesuai."
+  },
+  {
+   "pola": "argument type mismatch: actual type is '([^']+)', but '([^']+)' was expected",
+   "ganti": "Argumen bertipe $1 dikirim ke tempat yang menuntut $2. Kirim nilai dengan tipe yang benar, atau ubah dulu tipenya (toInt(), toString(), dan sebagainya)."
+  },
+  {
+   "pola": "condition type mismatch: inferred type is '([^']+)' but 'Boolean' was expected",
+   "ganti": "Kondisi if atau while harus bertipe Boolean, tapi yang ditulis bertipe $1. Kotlin tidak menganggap angka sebagai benar atau salah: tulis perbandingannya, misalnya x != 0."
+  },
+  {
+   "pola": "'val' cannot be reassigned",
+   "ganti": "Variabel ini dibuat dengan val, jadi nilainya tidak bisa diisi ulang. Pakai var kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "only safe \\(\\?\\.\\) or non-null asserted \\(!!\\.\\) calls are allowed on a nullable receiver of type '([^']+)'",
+   "ganti": "Nilai bertipe $1 bisa null, dan Kotlin menolak memanggil method atau propertinya langsung. Pakai ?. (panggilan aman), ?: (nilai cadangan), atau periksa dulu dengan if (x != null)."
+  },
+  {
+   "pola": "null cannot be a value of a non-null type '([^']+)'",
+   "ganti": "null tidak boleh dimasukkan ke tipe $1. Tambahkan tanda tanya pada tipenya ($1?) kalau nilainya memang boleh kosong."
+  },
+  {
+   "pola": "no value passed for parameter '(\\w+)'",
+   "ganti": "Parameter '$1' wajib diisi tapi tidak diberi nilai saat fungsi dipanggil. Lengkapi argumennya, atau beri nilai bawaan di definisi fungsi ($1: Tipe = nilai)."
+  },
+  {
+   "pola": "too many arguments for '([^']+)'",
+   "ganti": "Fungsi dipanggil dengan argumen lebih banyak daripada parameternya ($1). Kurangi argumennya, atau tambahkan parameter di definisinya."
+  },
+  {
+   "pola": "no parameter with name '(\\w+)' found",
+   "ganti": "Fungsi tidak punya parameter bernama '$1'. Periksa ejaan nama parameter di pemanggilnya."
+  },
+  {
+   "pola": "variable '(\\w+)' must be initialized",
+   "ganti": "Variabel '$1' dipakai sebelum diberi nilai. Beri nilai awal saat dideklarasikan, misalnya val $1 = 0."
+  },
+  {
+   "pola": "this variable must either have an explicit type or be initialized",
+   "ganti": "Variabel tanpa nilai awal harus ditulis tipenya (val x: Int), karena Kotlin tidak bisa menebak tipenya."
+  },
+  {
+   "pola": "error: conflicting declarations",
+   "ganti": "Ada dua variabel atau fungsi dengan nama yang sama di lingkup yang sama. Hapus salah satunya, atau pakai nama lain."
+  },
+  {
+   "pola": "cannot create an instance of an abstract class",
+   "ganti": "Kelas ini abstract: ia cuma kerangka dan tidak bisa dibuat objeknya langsung. Buat kelas turunan yang melengkapinya, lalu buat objek dari turunan itu."
+  },
+  {
+   "pola": "cannot access '([^']+)': it is (private|protected) in '([^']+)'",
+   "ganti": "'$1' bersifat $2 di kelas $3, jadi tidak bisa diakses dari luar. Ubah visibilitasnya, atau sediakan fungsi publik untuk mengaksesnya."
+  },
+  {
+   "pola": "syntax error: Expecting '([^']+)'",
+   "ganti": "Kotlin mengharapkan '$1' di sini tapi tidak menemukannya. Hitung lagi pasangan kurung, kurung kurawal, dan tanda kutipnya."
+  },
+  {
+   "pola": "syntax error: Expecting an expression",
+   "ganti": "Ada tempat yang butuh nilai atau ekspresi tapi kosong, misalnya sesudah tanda = atau operator."
+  },
+  {
+   "pola": "UninitializedPropertyAccessException: lateinit property (\\w+) has not been initialized",
+   "ganti": "Properti lateinit '$1' dibaca sebelum diisi. Isi dulu (misalnya di init atau constructor), atau pakai tipe nullable dengan nilai awal null."
+  },
+  {
+   "pola": "NullPointerException.*?\\bat MainKt",
+   "ganti": "Program memakai nilai null lewat !! (atau dari kode Java). Hindari !!: pakai ?. (panggilan aman) atau ?: (nilai cadangan), atau periksa dulu dengan if (x != null)."
+  },
+  {
+   "pola": "\\bIndexOutOfBoundsException: Index (\\d+) out of bounds for length (\\d+).*?\\bat MainKt",
+   "ganti": "Program mengakses indeks $1 padahal isinya cuma $2 elemen. Indeks pertama 0 dan yang terakhir size - 1. getOrNull(indeks) mengembalikan null alih-alih melempar error."
+  },
+  {
+   "pola": "NoSuchElementException.*?\\bat MainKt",
+   "ganti": "first(), last(), atau single() dipanggil pada koleksi yang kosong atau tidak punya elemen yang cocok. Periksa isinya dulu, atau pakai firstOrNull() yang mengembalikan null."
+  },
+  {
+   "pola": "ClassCastException: class (\\S+) cannot be cast to class (\\S+).*?\\bat MainKt",
+   "ganti": "Objek bertipe $1 dipaksa jadi $2 dengan as, padahal tidak bisa. Periksa tipenya dulu dengan is, atau pakai as? yang mengembalikan null alih-alih melempar error."
+  },
+  {
+   "pola": "Illegal(Argument|State)Exception.*?\\bat MainKt",
+   "ganti": "require(), check(), atau checkNotNull() melempar Illegal$1Exception karena syarat yang dipasang di kode tidak terpenuhi. Baca pesan sesudah titik dua untuk tahu syarat mana yang dilanggar."
+  },
+  {
+   "pola": "StackOverflowError.*?\\bat MainKt",
+   "ganti": "Fungsi memanggil dirinya sendiri terus-menerus sampai tumpukan panggilan penuh. Rekursi wajib punya kondisi berhenti, dan tiap panggilan harus mendekatinya."
+  },
+  {
+   "pola": "error TS1005: '([^']+)' expected",
+   "ganti": "TypeScript mengharapkan '$1' di sini, tapi tidak ada. Periksa baris itu dan baris sebelumnya: biasanya ada koma, kurung, kurung kurawal, atau titik koma yang kurang."
+  },
+  {
+   "pola": "error TS1109: Expression expected",
+   "ganti": "Ada tempat yang butuh nilai atau ekspresi tapi kosong, misalnya sesudah tanda = atau operator."
+  },
+  {
+   "pola": "error TS1128: Declaration or statement expected",
+   "ganti": "Ada kode atau tanda yang tidak pada tempatnya, sering kurung kurawal } yang kelebihan atau pernyataan yang jatuh di luar fungsi."
+  },
+  {
+   "pola": "error TS1002: Unterminated string literal",
+   "ganti": "Ada teks yang tanda kutipnya belum ditutup."
+  },
+  {
+   "pola": "error TS1308: 'await' expressions are only allowed within async",
+   "ganti": "await hanya boleh dipakai di dalam fungsi async. Tambahkan kata async di depan fungsinya."
+  },
+  {
+   "pola": "error TS2304: Cannot find name '([^']+)'",
+   "ganti": "Nama '$1' tidak dikenal. Periksa ejaan dan huruf besar/kecilnya, atau pastikan variabel, fungsi, atau tipenya sudah dideklarasikan sebelum dipakai."
+  },
+  {
+   "pola": "error TS2307: Cannot find module '([^']+)'",
+   "ganti": "Modul '$1' tidak ditemukan. Periksa ejaan jalurnya; di aplikasi ini hanya satu berkas yang berjalan dan paket dari luar tidak terpasang."
+  },
+  {
+   "pola": "error TS2322: Type '([^']+)' is not assignable to type '([^']+)'",
+   "ganti": "Nilai bertipe $1 dimasukkan ke tempat yang menuntut $2. Samakan tipenya: ubah nilainya (misalnya Number(teks) atau String(angka)), atau ubah tipe yang ditulis di deklarasinya."
+  },
+  {
+   "pola": "error TS2345: Argument of type '([^']+)' is not assignable to parameter of type '([^']+)'",
+   "ganti": "Fungsi dipanggil dengan argumen bertipe $1, padahal parameternya menuntut $2. Kirim nilai dengan tipe yang benar, atau ubah dulu tipenya."
+  },
+  {
+   "pola": "error TS2554: Expected (\\d+(?:-\\d+)?) arguments?, but got (\\d+)",
+   "ganti": "Fungsi dipanggil dengan $2 argumen, padahal parameternya $1. Samakan jumlah argumen saat memanggil dengan definisinya."
+  },
+  {
+   "pola": "error TS2551: Property '([^']+)' does not exist on type '[^']+'\\. Did you mean '([^']+)'\\?",
+   "ganti": "Properti '$1' tidak ada. Mungkin maksudmu '$2'; periksa ejaannya, termasuk huruf besar/kecilnya."
+  },
+  {
+   "pola": "error TS2339: Property '([^']+)' does not exist on type '([^']+)'",
+   "ganti": "Tipe $2 tidak punya properti atau method '$1'. Periksa ejaannya, atau tipe nilainya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "error TS2353: Object literal may only specify known properties, and '([^']+)' does not exist in type '([^']+)'",
+   "ganti": "Properti '$1' tidak ada di tipe $2, jadi tidak boleh ditulis di objek ini. Periksa ejaannya, atau tambahkan propertinya ke tipe."
+  },
+  {
+   "pola": "error TS2741: Property '([^']+)' is missing in type '[^']+' but required in type '([^']+)'",
+   "ganti": "Objek ini belum punya properti '$1' yang wajib ada menurut tipe $2. Tambahkan propertinya, atau jadikan opsional di tipenya dengan tanda ?."
+  },
+  {
+   "pola": "error TS7006: Parameter '([^']+)' implicitly has an 'any' type",
+   "ganti": "Parameter '$1' belum diberi tipe, dan mode ketat (strict) melarang tipe any yang diam-diam. Tulis tipenya, misalnya ($1: number)."
+  },
+  {
+   "pola": "error TS7053: Element implicitly has an 'any' type because expression of type '([^']+)' can't be used to index",
+   "ganti": "Kunci $1 tidak dikenal oleh tipe objek ini, jadi TypeScript tidak tahu tipe hasilnya. Pakai kunci yang memang ada di tipenya, atau beri tipe objek yang mengizinkan kunci lain, misalnya Record<string, number>."
+  },
+  {
+   "pola": "error TS\\d+: '([^']+)' is possibly '(null|undefined)'",
+   "ganti": "'$1' bisa berisi $2, dan TypeScript menolak memakainya langsung. Periksa dulu dengan if ($1), atau pakai ?. (misalnya $1?.length)."
+  },
+  {
+   "pola": "error TS2588: Cannot assign to '([^']+)' because it is a constant",
+   "ganti": "'$1' dibuat dengan const, jadi tidak bisa diisi ulang. Pakai let kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "error TS2540: Cannot assign to '([^']+)' because it is a read-only property",
+   "ganti": "Properti '$1' bertanda readonly, jadi tidak bisa diisi ulang setelah objeknya dibuat. Hapus readonly dari tipenya kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "error TS2448: Block-scoped variable '([^']+)' used before its declaration",
+   "ganti": "Variabel '$1' dipakai sebelum dideklarasikan. Pindahkan deklarasi let atau const-nya ke atas baris yang memakainya."
+  },
+  {
+   "pola": "error TS2454: Variable '([^']+)' is used before being assigned",
+   "ganti": "Variabel '$1' dipakai sebelum diberi nilai. Beri nilai awal saat dideklarasikan."
+  },
+  {
+   "pola": "error TS2451: Cannot redeclare block-scoped variable '([^']+)'",
+   "ganti": "Variabel '$1' dideklarasikan dua kali di lingkup yang sama. Hapus salah satu let atau const-nya, atau pakai nama lain."
+  },
+  {
+   "pola": "error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value",
+   "ganti": "Fungsi punya tipe kembalian, tapi badannya tidak mengembalikan nilai apa pun. Tambahkan return, atau ubah tipe kembaliannya jadi void."
+  },
+  {
+   "pola": "error TS2366: Function lacks ending return statement",
+   "ganti": "Ada jalur di dalam fungsi yang berakhir tanpa return, padahal tipe kembaliannya sudah dijanjikan. Pastikan semua cabang if dan else mengembalikan nilai."
+  },
+  {
+   "pola": "error TS2349: This expression is not callable",
+   "ganti": "Nilai ini dipanggil seperti fungsi (dengan tanda kurung) padahal bukan fungsi. Periksa apakah variabelnya tertimpa angka atau teks, atau ejaan nama fungsinya."
+  },
+  {
+   "pola": "error TS236[23]: The (?:left|right)-hand side of an arithmetic operation must be of type",
+   "ganti": "Salah satu sisi operator aritmatika bukan angka, misalnya teks. Ubah dulu nilainya jadi angka dengan Number(...)."
+  },
+  {
+   "pola": "error TS2367: This comparison appears to be unintentional because the types '([^']+)' and '([^']+)' have no overlap",
+   "ganti": "Perbandingan ini tidak mungkin pernah benar: tipe $1 dan $2 tidak punya nilai yang sama. Samakan tipe yang dibandingkan, atau periksa apakah salah satu sisinya keliru."
+  },
+  {
+   "pola": "error TS2564: Property '([^']+)' has no initializer and is not definitely assigned in the constructor",
+   "ganti": "Properti '$1' di kelas belum diberi nilai awal dan tidak diisi di constructor. Beri nilai awal, isi di constructor, atau tandai opsional ($1?) kalau boleh kosong."
+  },
+  {
+   "pola": "error TS2420: Class '([^']+)' incorrectly implements interface '([^']+)'",
+   "ganti": "Kelas $1 belum memenuhi isi interface $2. Baca baris di bawahnya untuk tahu properti atau method mana yang kurang."
+  },
+  {
+   "pola": "error TS2769: No overload matches this call",
+   "ganti": "Fungsi ini punya beberapa bentuk pemanggilan, dan argumenmu tidak cocok dengan satu pun. Baca baris di bawahnya: TypeScript menyebut bentuk terakhir yang dicoba beserta tipe yang diharapkan."
+  },
+  {
+   "pola": "The name '([^']+)' does not exist in the current context",
+   "ganti": "Nama '$1' tidak dikenal di sini. Periksa ejaan dan huruf besar/kecilnya (C# membedakannya), dan pastikan variabelnya sudah dideklarasikan sebelum dipakai serta masih berada di dalam bloknya."
+  },
+  {
+   "pola": "error CS1002: ; expected",
+   "ganti": "Ada pernyataan yang lupa diakhiri titik koma (;)."
+  },
+  {
+   "pola": "error CS1026: \\) expected",
+   "ganti": "Ada kurung buka ( yang belum ditutup. Hitung lagi pasangan ( dan )."
+  },
+  {
+   "pola": "error CS1513: \\} expected",
+   "ganti": "Ada kurung kurawal { yang belum ditutup. Hitung lagi pasangan { dan }."
+  },
+  {
+   "pola": "error CS1003: Syntax error, '([^']+)' expected",
+   "ganti": "C# mengharapkan '$1' di sini tapi tidak menemukannya. Periksa baris itu dan baris sebelumnya: sering ada titik koma, koma, atau kurung yang kurang."
+  },
+  {
+   "pola": "error CS1001: Identifier expected",
+   "ganti": "C# menunggu sebuah nama di sini. Nama variabel tidak boleh diawali angka dan tidak boleh memakai kata kunci seperti if atau class."
+  },
+  {
+   "pola": "error CS1022: Type or namespace definition, or end-of-file expected",
+   "ganti": "Ada kode atau tanda yang tidak pada tempatnya di luar kelas, sering kurung kurawal } yang kelebihan. Hitung lagi pasangan { dan }."
+  },
+  {
+   "pola": "Cannot implicitly convert type '([^']+)' to '([^']+)'\\. An explicit conversion exists",
+   "ganti": "Nilai bertipe $1 tidak otomatis menjadi $2 karena sebagian datanya bisa hilang. Tulis konversinya sendiri, misalnya cast ($2)nilai atau Convert.To...()."
+  },
+  {
+   "pola": "Cannot implicitly convert type '([^']+)' to '([^']+)'(?!\\. An explicit)",
+   "ganti": "Nilai bertipe $1 dimasukkan ke tempat yang menuntut $2, dan C# tidak mengubahnya otomatis. Samakan tipenya, atau konversi dulu, misalnya int.Parse(teks) untuk teks ke angka dan angka.ToString() untuk sebaliknya."
+  },
+  {
+   "pola": "The type or namespace name '([^']+)' could not be found",
+   "ganti": "Tipe atau namespace '$1' tidak dikenal. Periksa ejaannya, atau tambahkan using untuk namespace yang memuatnya di baris paling atas."
+  },
+  {
+   "pola": "'([^']+)' does not contain a definition for '([^']+)'",
+   "ganti": "Tipe $1 tidak punya method atau properti '$2'. Periksa ejaannya (huruf besar/kecil berpengaruh), atau tipe nilainya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "Use of unassigned local variable '([^']+)'",
+   "ganti": "Variabel '$1' dipakai sebelum diberi nilai. Beri nilai awal saat dideklarasikan, misalnya $1 = 0."
+  },
+  {
+   "pola": "There is no argument given that corresponds to the required parameter '([^']+)' of '([^']+)'",
+   "ganti": "Pemanggilan $2 belum memberi nilai untuk parameter '$1'. Lengkapi argumennya, atau beri nilai bawaan pada parameter di definisinya."
+  },
+  {
+   "pola": "Argument (\\d+): cannot convert from '([^']+)' to '([^']+)'",
+   "ganti": "Argumen ke-$1 bertipe $2, padahal parameternya menuntut $3. Kirim nilai dengan tipe yang benar, atau konversi dulu."
+  },
+  {
+   "pola": "'([^']+)': not all code paths return a value",
+   "ganti": "Method $1 punya tipe kembalian, tapi ada jalur yang berakhir tanpa return. Pastikan semua cabang if dan else mengembalikan nilai."
+  },
+  {
+   "pola": "A local variable or function named '([^']+)' is already defined in this scope",
+   "ganti": "Variabel '$1' dideklarasikan dua kali di lingkup yang sama. Hapus salah satu deklarasinya, atau pakai nama lain. Untuk mengubah nilai cukup tulis $1 = nilai tanpa tipe di depannya."
+  },
+  {
+   "pola": "A local or parameter named '([^']+)' cannot be declared in this scope",
+   "ganti": "Nama '$1' sudah dipakai oleh variabel di blok yang membungkus blok ini, dan C# tidak mengizinkan nama yang sama di blok bersarang. Pakai nama lain, atau hapus tipe di depannya kalau maksudmu mengubah nilai."
+  },
+  {
+   "pola": "An object reference is required for the non-static field, method, or property '([^']+)'",
+   "ganti": "'$1' milik objek, tapi dipakai dari method static tanpa objek. Buat objeknya dulu dengan new, atau jadikan anggotanya static."
+  },
+  {
+   "pola": "Operator '([^']+)' cannot be applied to operands of type '([^']+)' and '([^']+)'",
+   "ganti": "Operator $1 tidak bisa dipakai antara tipe $2 dan $3. Samakan tipenya dulu, dan periksa operator yang kamu maksud (= untuk mengisi, == untuk membandingkan)."
+  },
+  {
+   "pola": "'([^']+)' is inaccessible due to its protection level",
+   "ganti": "'$1' bersifat private atau protected, jadi tidak bisa diakses dari luar kelasnya. Ubah jadi public, atau sediakan method atau properti public untuk mengaksesnya."
+  },
+  {
+   "pola": "Program does not contain a static 'Main' method",
+   "ganti": "Program tidak punya titik mulai. Tulis method static void Main() di dalam sebuah kelas, atau tulis kodenya langsung di berkas tanpa kelas."
+  },
+  {
+   "pola": "A readonly field cannot be assigned to",
+   "ganti": "Field readonly hanya boleh diisi saat dideklarasikan atau di constructor. Hapus readonly kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "Cannot create an instance of the abstract type or interface '([^']+)'",
+   "ganti": "'$1' abstract atau interface: ia cuma kerangka dan tidak bisa dibuat objeknya langsung. Buat kelas turunan yang melengkapinya, lalu buat objek dari kelas itu."
+  },
+  {
+   "pola": "The left-hand side of an assignment must be a variable, property or indexer",
+   "ganti": "Sisi kiri tanda = harus berupa variabel. Nilai const dan hasil perhitungan tidak bisa diisi; ubah const jadi variabel biasa kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "Since '([^']+)' returns void, a return keyword must not be followed by",
+   "ganti": "Method '$1' bertipe void, jadi tidak boleh mengembalikan nilai. Ganti void dengan tipe kembaliannya (misalnya int), atau hapus nilai di sebelah return."
+  },
+  {
+   "pola": "error BC30451: '([^']+)' is not declared",
+   "ganti": "Nama '$1' tidak dikenal di sini. Periksa ejaannya, dan pastikan variabelnya sudah dideklarasikan dengan Dim sebelum dipakai serta masih berada di Sub atau Function yang sama."
+  },
+  {
+   "pola": "Option Strict On disallows implicit conversions from '([^']+)' to '([^']+)'",
+   "ganti": "Nilai bertipe $1 dimasukkan ke tempat yang menuntut $2, dan Option Strict On melarang konversi otomatis. Tulis konversinya sendiri, misalnya CInt(...), CDbl(...), atau .ToString()."
+  },
+  {
+   "pola": "error BC\\d+: '([^']+)' expected",
+   "ganti": "VB mengharapkan '$1' di sini tapi tidak menemukannya. Hitung lagi pasangan pembuka dan penutupnya (Sub dan End Sub, If dan End If, kurung)."
+  },
+  {
+   "pola": "error BC\\d+: '(\\w+)' must end with a matching '([^']+)'",
+   "ganti": "Blok $1 belum ditutup: tambahkan $2 di akhir blok itu."
+  },
+  {
+   "pola": "error BC\\d+: '([^']+)' must be preceded by a matching '([^']+)'",
+   "ganti": "$1 muncul tanpa pasangannya: ia harus didahului $2 di atasnya. Biasanya ada baris pembuka yang terhapus, atau penutupnya kelebihan."
+  },
+  {
+   "pola": "error BC30491: Expression does not produce a value",
+   "ganti": "Ada pemanggilan Sub (yang tidak mengembalikan nilai) dipakai seolah menghasilkan nilai, atau ekspresi yang belum lengkap di baris itu. Ubah Sub jadi Function kalau memang perlu mengembalikan nilai."
+  },
+  {
+   "pola": "error BC30456: '([^']+)' is not a member of '([^']+)'",
+   "ganti": "Tipe $2 tidak punya anggota bernama '$1'. Periksa ejaannya, atau tipe nilainya memang bukan yang kamu kira."
+  },
+  {
+   "pola": "error BC30002: Type '([^']+)' is not defined",
+   "ganti": "Tipe '$1' tidak dikenal. Periksa ejaannya, atau tambahkan Imports untuk namespace yang memuatnya."
+  },
+  {
+   "pola": "error BC30455: Argument not specified for parameter '([^']+)'",
+   "ganti": "Pemanggilan belum memberi nilai untuk parameter '$1'. Lengkapi argumennya, atau jadikan parameternya Optional dengan nilai bawaan."
+  },
+  {
+   "pola": "error BC30057: Too many arguments to '([^']+)'",
+   "ganti": "Pemanggilan memberi argumen lebih banyak daripada parameter yang ada di '$1'. Kurangi argumennya, atau tambahkan parameter di definisinya."
+  },
+  {
+   "pola": "error BC30288: Local variable '([^']+)' is already declared in the current block",
+   "ganti": "Variabel '$1' dideklarasikan dua kali di blok yang sama. Hapus salah satu Dim-nya, atau pakai nama lain. Untuk mengubah nilai cukup tulis $1 = nilai tanpa Dim."
+  },
+  {
+   "pola": "error BC30389: '([^']+)' is not accessible in this context because it is '(\\w+)'",
+   "ganti": "'$1' bersifat $2, jadi tidak bisa diakses dari luar kelasnya. Ubah jadi Public, atau sediakan Property atau fungsi Public untuk mengaksesnya."
+  },
+  {
+   "pola": "error BC30800: Method arguments must be enclosed in parentheses",
+   "ganti": "Pemanggilan Sub atau Function di VB.NET harus memakai kurung: tulis Console.WriteLine(\"a\"), bukan Console.WriteLine \"a\"."
+  },
+  {
+   "pola": "error BC30182: Type expected",
+   "ganti": "VB menunggu nama tipe sesudah As. Tulis misalnya Dim x As Integer."
+  },
+  {
+   "pola": "error BC30074: Constant cannot be the target of an assignment",
+   "ganti": "Nilai Const tidak bisa diisi ulang. Pakai Dim kalau nilainya memang harus berubah."
+  },
+  {
+   "pola": "error BC30203: Identifier expected",
+   "ganti": "VB menunggu sebuah nama di sini. Nama variabel tidak boleh diawali angka dan tidak boleh memakai kata kunci seperti If atau Class."
+  },
+  {
+   "pola": "error BC30205: End of statement expected",
+   "ganti": "Ada sisa teks di akhir baris. Di VB satu pernyataan ditulis satu baris; periksa apakah ada operator atau koma yang kurang."
+  },
+  {
+   "pola": "error BC30188: Declaration expected",
+   "ganti": "Di dalam Module atau Class hanya boleh ada deklarasi (Sub, Function, Dim). Pernyataan seperti Console.WriteLine harus berada di dalam Sub atau Function."
+  },
+  {
+   "pola": "Conversion from string \\\"([^\\\"]*)\\\" to type '([^']+)' is not valid",
+   "ganti": "Teks \"$1\" tidak bisa diubah jadi $2 karena bukan nilai yang sah. Periksa isinya, atau pakai $2.TryParse yang tidak melempar error."
+  },
+  {
+   "pola": "NullReferenceException",
+   "ganti": "Program memakai objek yang isinya null (belum diisi). Periksa dulu dengan If x IsNot Nothing atau if (x != null), atau pakai ?. supaya null dilewati."
+  },
+  {
+   "pola": "IndexOutOfRangeException",
+   "ganti": "Indeks array di luar jangkauan. Ingat indeks pertama adalah 0 dan yang terakhir adalah Length - 1."
+  },
+  {
+   "pola": "DivideByZeroException",
+   "ganti": "Pembagian bilangan bulat dengan nol. Periksa dulu apakah pembaginya nol."
+  },
+  {
+   "pola": "FormatException: The input string '([^']*)' was not in a correct format",
+   "ganti": "Teks '$1' tidak bisa diubah jadi angka karena bukan angka yang sah. Periksa isinya (spasi atau huruf nyasar), atau pakai TryParse yang tidak melempar error."
+  },
+  {
+   "pola": "InvalidCastException: Unable to cast object of type '([^']+)' to type '([^']+)'",
+   "ganti": "Objek bertipe $1 dipaksa jadi $2, padahal tidak bisa. Periksa tipe nilai aslinya sebelum konversi."
+  },
+  {
+   "pola": "KeyNotFoundException: The given key '([^']*)' was not present in the dictionary",
+   "ganti": "Kunci '$1' tidak ada di Dictionary. Periksa ejaannya, atau cek dulu dengan ContainsKey() atau TryGetValue()."
+  },
+  {
+   "pola": "ArgumentOutOfRangeException: Index was out of range",
+   "ganti": "Indeks di luar jangkauan koleksi (List atau sejenisnya). Ingat indeks pertama 0 dan yang terakhir Count - 1."
+  },
+  {
+   "pola": "InvalidOperationException: Sequence contains no elements",
+   "ganti": "First(), Last(), atau Max() dipanggil pada koleksi yang kosong. Periksa dulu isinya dengan Any(), atau pakai FirstOrDefault()."
+  },
+  {
+   "pola": "ArgumentNullException: Value cannot be null\\. \\(Parameter '([^']*)'\\)",
+   "ganti": "Nilai null dikirim ke parameter '$1' padahal tidak boleh. Periksa asal nilainya sebelum dikirim."
+  },
+  {
+   "pola": "OverflowException: Arithmetic operation resulted in an overflow",
+   "ganti": "Hasil hitungan melebihi batas tipe datanya (Byte maksimum 255, Integer sekitar 2 miliar). Pakai tipe yang lebih besar, misalnya Long."
   }
  ],
  "rapikan": {

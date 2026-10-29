@@ -76,6 +76,7 @@ echo "Halo Dunia!\\n";
 echo "Aku sedang belajar PHP.\\n";"""
             },
             {
+                "heading": "Tag pembuka, echo, dan tag penutup",
                 "body": [
                     "Kita bahas program tadi bagian demi bagian:",
                     "",
@@ -241,6 +242,7 @@ var_dump((bool) "0");
 var_dump((bool) "false");"""
             },
             {
+                "heading": "Konversi eksplisit dan nilai false di PHP",
                 "body": [
                     "Keluaran:",
                     "  variabel   tipe     nilai",
@@ -431,6 +433,7 @@ echo str_repeat("-", 32) . "\\n";
 printf("%-12s%5s%15s\\n", 'TOTAL', '', number_format($total, 0, ',', '.'));"""
             },
             {
+                "heading": "Kurung kurawal, number_format, dan strpos",
                 "body": [
                     "Keluaran:",
                     "  Kutip tunggal: Halo $nama",
@@ -629,6 +632,7 @@ echo '2 ** 10    = ' . (2 ** 10) . "\\n";
 echo '5 <=> 3    = ' . (5 <=> 3) . "\\n";"""
             },
             {
+                "heading": "Cara kerja ?? dan operator spaceship",
                 "body": [
                     "Keluaran di PHP 8:",
                     "  == (longgar, dengan konversi)",
@@ -845,6 +849,7 @@ for ($i = 1; $i <= 20; $i++) {
 }"""
             },
             {
+                "heading": "Jebakan foreach dengan referensi dan match(true)",
                 "body": [
                     "Keluaran:",
                     "   92 -> A",
@@ -1038,6 +1043,7 @@ foreach ($hitung as $k => $n) {
 }"""
             },
             {
+                "heading": "Fungsi pengurutan dan pola namanya",
                 "body": [
                     "Keluaran:",
                     "  Data      : 78, 92, 65, 88, 71, 95, 59, 83",
@@ -1478,6 +1484,7 @@ try {
 }"""
             },
             {
+                "heading": "Property readonly, static, dan getter",
                 "body": [
                     "Keluaran:",
                     "  tarik 900rb : false",
@@ -1720,6 +1727,7 @@ var_dump($semua[0] instanceof Bangun);
 var_dump($semua[0] instanceof BangunDasar);"""
             },
             {
+                "heading": "Interface, abstract class, dan trait",
                 "body": [
                     "Keluaran:",
                     "  Persegi            16.00",
@@ -1928,6 +1936,7 @@ var_dump(Status::from('terbit'));
 var_dump(Status::tryFrom('tidak-ada'));"""
             },
             {
+                "heading": "Aturan alur di enum dan from lawan tryFrom",
                 "body": [
                     "Keluaran:",
                     "  case        value     label             sunting?  berikutnya",
@@ -2150,6 +2159,7 @@ try {
 }"""
             },
             {
+                "heading": "Hal yang dihindari saat menangkap exception",
                 "body": [
                     "Keluaran:",
                     "  bayar   20000 -> sisa 30000",
@@ -2363,6 +2373,7 @@ unlink($berkas);
 echo 'berkas masih ada? ' . var_export(file_exists($berkas), true) . "\\n";"""
             },
             {
+                "heading": "CSV serba string, array_combine, dan callable",
                 "body": [
                     "Keluaran:",
                     "  Cici   A  95",
@@ -2586,6 +2597,7 @@ function e(?string $s): string
 </html>"""
             },
             {
+                "heading": "Lima hal pada form dan token CSRF",
                 "body": [
                     "Pola di atas disebut POST ke diri sendiri: satu berkas menampilkan form",
                     "sekaligus memprosesnya. Untuk form sederhana, pola ini cukup dan",
@@ -2820,6 +2832,7 @@ $total = $pdo->query('SELECT COUNT(*) FROM murid')->fetchColumn();
 echo "Total murid: $total\\n";"""
             },
             {
+                "heading": "PDOStatement, transaksi, dan kredensial",
                 "body": [
                     "Keluaran:",
                     "  Lulus (>= 75):",
@@ -3028,6 +3041,7 @@ echo "Total murid: $total\\n";"""
 }"""
             },
             {
+                "heading": "Document root, .gitignore, dan alat bantu",
                 "body": [
                     "Bagian struktur yang paling sering salah, dan paling mahal akibatnya:",
                     "cuma folder public/ yang boleh dijangkau web server. Document root,",
@@ -3239,6 +3253,7 @@ echo 'Panjang token CSRF   : ' . strlen($csrf) . "\\n";
 echo 'Hash sandi contoh    : ' . substr(password_hash('rahasia', PASSWORD_DEFAULT), 0, 7) . "...\\n";"""
             },
             {
+                "heading": "Escape HTML dan hash sandi dengan bcrypt",
                 "body": [
                     "Keluaran:",
                     "  Tanpa escape (BAHAYA): <script>alert(1)</script>",
@@ -3408,6 +3423,7 @@ echo 'UTC     : ' . $selesai->format('Y-m-d H:i T') . "\\n";
 echo 'Jakarta : ' . $jakarta->format('Y-m-d H:i T') . "\\n";"""
             },
             {
+                "heading": "DateInterval, zona waktu, dan limpahan bulan",
                 "body": [
                     "Keluaran:",
                     "  mulai   : Thursday, 15 January 2026 09:00",
@@ -3607,6 +3623,7 @@ foreach (['2026-09-22', '22/09/2026', '2026-13-40'] as $teks) {
 }"""
             },
             {
+                "heading": "Grup bernama dan catastrophic backtracking",
                 "body": [
                     "Keluaran:",
                     "  jam       taraf pesan",
@@ -3852,6 +3869,7 @@ foreach ($k as $nama => $nilai) {
 echo 'jumlah murid: ' . count($k) . "\\n";"""
             },
             {
+                "heading": "Generator malas dan iterator_to_array",
                 "body": [
                     "Keluaran:",
                     "  10 fibonacci pertama : 0, 1, 1, 2, 3, 5, 8, 13, 21, 34",
@@ -4070,6 +4088,7 @@ echo 'k1 : ' . implode(', ', $k1->isi->getArrayCopy()) . "\\n";
 echo 'k2 : ' . implode(', ', $k2->isi->getArrayCopy()) . "\\n";"""
             },
             {
+                "heading": "Hasil new static, __clone, dan keadaan statis",
                 "body": [
                     "Keluaran:",
                     "  kelas $a : Produk",
@@ -4325,6 +4344,7 @@ final class RaporTest extends TestCase
 }"""
             },
             {
+                "heading": "Nilai batas, setUp, dan perintah PHPUnit",
                 "body": [
                     "Lihat nilai-nilai yang dipilih di data provider: 85 dan 84, 75 dan 74,",
                     "60 dan 59. Menguji tepat di batas paling berharga, karena di situlah",

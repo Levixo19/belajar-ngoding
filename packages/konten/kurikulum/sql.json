@@ -63,6 +63,7 @@
      ]
     },
     {
+     "heading": "Aturan menulis perintah SQL",
      "body": [
       "Di MySQL, database baru dibikin pakai CREATE DATABASE, lalu dipilih",
       "pakai USE supaya perintah berikutnya bekerja di situ:",
@@ -306,6 +307,7 @@
      "code": "-- Dua cara menyimpan harga: yang salah dan yang aman.\nCREATE TABLE keranjang (\n    id          INTEGER PRIMARY KEY,\n    barang      TEXT    NOT NULL,\n    harga_float REAL,      -- SALAH untuk uang: pendekatan biner\n    harga_sen   INTEGER    -- aman: simpan dalam satuan terkecil (sen)\n);\n\nINSERT INTO keranjang (barang, harga_float, harga_sen) VALUES\n    ('permen', 0.1, 10),\n    ('korek',  0.2, 20);\n\nSELECT 'total float   : ' || SUM(harga_float)         FROM keranjang;\nSELECT 'sama dgn 0.3? : ' || (SUM(harga_float) = 0.3) FROM keranjang;\nSELECT 'selisihnya    : ' || (SUM(harga_float) - 0.3) FROM keranjang;\nSELECT 'total sen     : ' || SUM(harga_sen) || ' sen' FROM keranjang;\n\n-- Kebocoran yang sama lewat pintu lain: mengubah rupiah ke sen dikali 100.\nSELECT '19.99 * 100 lalu dibulatkan ke bawah: ' || CAST(19.99 * 100 AS INTEGER);\n\n-- Yang tercetak:\n--   total float   : 0.3          <- KELIHATAN benar\n--   sama dgn 0.3? : 0            <- ternyata tidak sama (0 = false)\n--   selisihnya    : 5.55111512312578e-17\n--   total sen     : 30 sen\n--   19.99 * 100 lalu dibulatkan ke bawah: 1998    <- satu sen menguap\n--\n-- Di MySQL/PostgreSQL, DECIMAL(10,2) menyimpan angkanya persis dan bebas dari\n-- masalah ini. SQLite TIDAK punya DECIMAL sejati - kata DECIMAL diterima tapi\n-- isinya tetap disimpan sebagai float, jadi di SQLite pilihannya memang\n-- menyimpan sen sebagai INTEGER."
     },
     {
+     "heading": "Tipe waktu dan kolom yang terisi sendiri",
      "body": [
       "Waktu",
       "",
@@ -411,6 +413,7 @@
      ]
     },
     {
+     "heading": "Constraint dan aksi referensial",
      "body": [
       "Constraint adalah aturan yang dijaga oleh database, bukan oleh kode",
       "aplikasimu. Bedanya besar. Aplikasi bisa punya banyak versi dan banyak",
@@ -753,6 +756,7 @@
      "code": "-- MySQL\nALTER TABLE pelanggan RENAME TO customer;\nALTER TABLE customer RENAME COLUMN nama TO nama_lengkap;\nALTER TABLE customer MODIFY email VARCHAR(200) NOT NULL;\nALTER TABLE pesanan ADD CONSTRAINT fk_pesanan_customer\n    FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASCADE;\nALTER TABLE pesanan DROP FOREIGN KEY fk_pesanan_customer;\n\n-- PostgreSQL: maksud yang sama, kata kuncinya berbeda\nALTER TABLE customer ALTER COLUMN email TYPE VARCHAR(200);\nALTER TABLE customer ALTER COLUMN email SET NOT NULL;\nALTER TABLE pesanan DROP CONSTRAINT fk_pesanan_customer;"
     },
     {
+     "heading": "Tanda kutip dan beda dialek SQL",
      "body": [
       "Hal yang paling sering bikin bingung waktu membaca SQL orang lain adalah",
       "tanda kutip. Ada empat macam, dan artinya beda-beda:",
@@ -969,6 +973,7 @@
      "code": "-- Data Informatika saja\nSELECT * FROM mahasiswa WHERE jurusan = 'Informatika';\n\n-- IPK di atas 3.5\nSELECT * FROM mahasiswa WHERE ipk > 3.5;\n\n-- Bukan Informatika\nSELECT * FROM mahasiswa WHERE jurusan != 'Informatika';\n\n-- Angkatan 2022 atau 2023\nSELECT * FROM mahasiswa WHERE angkatan IN (2022, 2023);\n\n-- Nama diawali huruf C\nSELECT * FROM mahasiswa WHERE nama LIKE 'C%';\n\n-- IPK antara 3.0 dan 3.8\nSELECT * FROM mahasiswa WHERE ipk BETWEEN 3.0 AND 3.8;\n\n-- Kolom ipk tidak kosong\nSELECT * FROM mahasiswa WHERE ipk IS NOT NULL;"
     },
     {
+     "heading": "AND, OR, LIKE, dan ORDER BY",
      "body": [
       "Beberapa syarat bisa digabung pakai operator logika AND, OR, dan NOT.",
       "AND artinya semua syarat harus benar, OR artinya cukup salah satu, dan",
@@ -1137,6 +1142,7 @@
      "code": "CREATE TABLE produk (\n    id    INTEGER      PRIMARY KEY,\n    nama  VARCHAR(50),\n    harga DECIMAL(10,2),\n    stok  INT\n);\n\nINSERT INTO produk VALUES\n(1, 'Kopi Kapal Api',  3000, 100),\n(2, 'Teh Botol',       5000,  40),\n(3, 'Beras 5kg',      68000,  50);\n\n-- 1. Kolom hasil hitungan. Ekspresi apa pun boleh berdiri di SELECT.\nSELECT nama, harga, stok, harga * stok AS nilai_stok FROM produk;\n\n-- 2. Dua bilangan bulat dibagi -> hasilnya ikut dipotong jadi bulat.\nSELECT 5 / 2 AS bulat, 5.0 / 2 AS desimal, 5 * 1.0 / 2 AS dipaksa_desimal;\n--        2      2.5              2.5\n\n-- 3. Akibatnya pada persentase. Total stok = 190.\nSELECT nama,\n       stok / 190 * 100             AS persen_salah,   -- ketiganya 0\n       stok * 100.0 / 190           AS persen_benar,\n       ROUND(stok * 100.0 / 190, 2) AS persen_rapi\nFROM produk;\n\n-- 4. CAST memaksa tipe. Ini cara resmi keluar dari pembagian bulat.\nSELECT stok, CAST(stok AS REAL) / 3 AS per_tiga_hari\nFROM produk WHERE id = 1;\n\n-- 5. Sisi kanan tanda '=' berisi nilai LAMA baris itu: harga naik 10%.\nUPDATE produk SET harga = harga * 1.10 WHERE nama = 'Teh Botol';\nSELECT nama, harga FROM produk WHERE id = 2;   -- 5000 -> 5500\n\n-- 6. Fungsi numerik yang paling sering muncul.\nSELECT ABS(-7) AS mutlak, ROUND(3.14159, 2) AS dua_desimal, 17 % 5 AS sisa;"
     },
     {
+     "heading": "NULL dan logika tiga nilai",
      "body": [
       "NULL bukan angka 0, dan bukan juga teks kosong ''. NULL artinya \"nggak",
       "diketahui\".",
@@ -1239,6 +1245,7 @@
      ]
     },
     {
+     "heading": "Menulis percabangan dengan CASE",
      "body": [
       "CASE adalah satu-satunya cara menulis logika if-else di dalam sebuah",
       "query. Pakai CASE, kamu bisa mengubah kode angka jadi keterangan,",
@@ -1844,6 +1851,7 @@
      "code": "CREATE TABLE pelanggan (\n    id            INTEGER PRIMARY KEY,\n    nama_depan    TEXT,\n    nama_belakang TEXT,\n    kota          TEXT,\n    email         TEXT\n);\n\nINSERT INTO pelanggan VALUES\n(1, 'Andi',  'Saputra', 'Bandung',  'andi.s@contoh.id'),\n(2, 'Budi',  NULL,      'Surabaya', 'BUDI@Contoh.ID'),\n(3, 'Citra', 'Halim',   'Bandung',  'citra_h@contoh.id');\n\n.mode column\n.headers on\n\n-- Sambung dengan || : baris 2 keluar KOSONG karena nama_belakang-nya NULL\nSELECT id, nama_depan || ' ' || nama_belakang AS nama_lengkap FROM pelanggan;\n\n-- COALESCE menambal lubang NULL itu, trim membuang sisa spasinya\nSELECT id, trim(nama_depan || ' ' || COALESCE(nama_belakang, '')) AS nama_lengkap\nFROM pelanggan;\n\n-- Cari posisi sebuah karakter, lalu potong kiri & kanan dari posisi itu\nSELECT email,\n       instr(email, '@')                       AS posisi_at,\n       substr(email, 1, instr(email, '@') - 1) AS bagian_user,\n       substr(email, instr(email, '@') + 1)    AS domain\nFROM pelanggan;\n\n-- Nomor rata kanan berisi nol: LPAD di MySQL/PostgreSQL, printf di SQLite\nSELECT printf('%04d', id) AS kode, upper(substr(kota, 1, 3)) AS singkatan\nFROM pelanggan;\n\n-- Perhatikan: di SQLite LIKE TIDAK peka huruf, jadi 'BUDI@Contoh.ID' ikut kena.\n-- Di PostgreSQL baris ini tidak mengembalikan apa-apa.\nSELECT nama_depan, email FROM pelanggan WHERE email LIKE '%budi%';\n\n-- Bentuk yang berperilaku sama di semua database: turunkan dulu ke huruf kecil\nSELECT nama_depan, email FROM pelanggan WHERE lower(email) LIKE '%budi%';\n\n-- Agregat teks: banyak baris diringkas jadi satu kalimat\nSELECT kota, COUNT(*) AS jumlah, group_concat(nama_depan, ', ') AS daftar\nFROM pelanggan\nGROUP BY kota;"
     },
     {
+     "heading": "Padanan fungsi teks di tiap database",
      "body": [
       "Banyak database pakai nama berbeda untuk pekerjaan yang sama. Yang perlu",
       "kamu ingat adalah kebutuhannya. Nama fungsinya bisa dicari belakangan.",
@@ -2002,6 +2010,7 @@
      "code": "CREATE TABLE langganan (\n    id             INTEGER PRIMARY KEY,\n    nama           TEXT,\n    tanggal_daftar TEXT,   -- SQLite tidak punya tipe DATE; wajib ISO 'YYYY-MM-DD'\n    tanggal_akhir  TEXT\n);\n\nINSERT INTO langganan VALUES\n(1, 'Andi',  '2023-11-05', '2024-11-05'),\n(2, 'Budi',  '2024-01-20', '2024-07-20'),\n(3, 'Citra', '2024-03-31', '2025-03-31');\n\n.mode column\n.headers on\n\n-- Ambil bagian tanggal. Padanan di database lain:\n--   EXTRACT(YEAR FROM t) standar  |  YEAR(t) MySQL  |  DATE_TRUNC('month', t) PostgreSQL\nSELECT nama,\n       strftime('%Y', tanggal_daftar)       AS tahun,\n       strftime('%Y-%m', tanggal_daftar)    AS bulan,\n       strftime('%d-%m-%Y', tanggal_daftar) AS tampilan_indonesia\nFROM langganan;\n\n-- Menggeser tanggal. Padanan INTERVAL: t + INTERVAL '1 month' (PostgreSQL),\n-- DATE_ADD(t, INTERVAL 1 MONTH) (MySQL), DATEADD(MONTH, 1, t) (SQL Server).\nSELECT nama,\n       date(tanggal_daftar, '+30 days') AS tenggat_bayar,\n       date(tanggal_daftar, '+1 month') AS perpanjangan,\n       julianday(tanggal_akhir) - julianday(tanggal_daftar) AS lama_hari\nFROM langganan;\n\n-- Laporan bulanan: kelompokkan lewat hasil pemotongan, bukan lewat kolom mentahnya\nSELECT strftime('%Y-%m', tanggal_daftar) AS bulan, COUNT(*) AS pendaftar\nFROM langganan\nGROUP BY bulan\nORDER BY bulan;\n\n-- Rentang setengah terbuka: batas bawah ikut, batas atas tidak\nSELECT nama FROM langganan\nWHERE tanggal_daftar >= '2024-01-01' AND tanggal_daftar < '2025-01-01';\n\n-- Jebakan: 31 Maret + 1 bulan. SQLite MELUBER ke 1 Mei karena 31 April tidak ada,\n-- sedangkan MySQL & PostgreSQL MENJEPITnya ke 30 April. Jawabannya beda per database.\nSELECT date('2024-03-31', '+1 month') AS sqlite_meluber;"
     },
     {
+     "heading": "Tiga jebakan menyimpan dan menyaring tanggal",
      "body": [
       "Ada tiga jebakan tanggal yang paling sering bikin pusing di kode nyata.",
       "",
@@ -2176,6 +2185,7 @@
      "code": "CREATE TABLE mahasiswa (\n    nim     INTEGER PRIMARY KEY,\n    nama    VARCHAR(50),\n    jurusan VARCHAR(30),\n    ipk     DECIMAL(3,2)\n);\n\nINSERT INTO mahasiswa VALUES\n(101, 'Andi',  'Informatika',      3.75),\n(102, 'Budi',  'Informatika',      3.20),\n(103, 'Citra', 'Sistem Informasi', 3.90),\n(104, 'Dedi',  'Sistem Informasi', 3.10),\n(105, 'Eka',   'Informatika',      3.55);\n\n-- 1) BERKORELASI: kurungnya menyebut m.jurusan milik query luar,\n--    jadi ia dijalankan ulang untuk tiap baris (5 baris = 5 kali).\nSELECT m.nama, m.jurusan, m.ipk\nFROM mahasiswa m\nWHERE m.ipk = (SELECT MAX(x.ipk) FROM mahasiswa x WHERE x.jurusan = m.jurusan)\nORDER BY m.jurusan;\n-- Andi|Informatika|3.75\n-- Citra|Sistem Informasi|3.9\n\n-- 2) Versi JOIN: maksimum tiap jurusan dihitung SEKALI di derived table,\n--    baru dipasangkan. Kata 'maks' sesudah kurung tutup itu aliasnya.\nSELECT m.nama, m.jurusan, m.ipk\nFROM mahasiswa m\nJOIN (\n    SELECT jurusan, MAX(ipk) AS ipk_tertinggi\n    FROM mahasiswa\n    GROUP BY jurusan\n) maks ON maks.jurusan = m.jurusan AND maks.ipk_tertinggi = m.ipk\nORDER BY m.jurusan;\n\n-- 3) Subquery skalar di daftar SELECT: satu baris satu kolom, per baris luar.\nSELECT m.nama,\n       (SELECT COUNT(*) FROM mahasiswa s WHERE s.jurusan = m.jurusan) AS sejurusan\nFROM mahasiswa m\nORDER BY m.nim;\n-- Andi|3   Budi|3   Citra|2   Dedi|2   Eka|3\n\n-- 4) Versi window function: tabelnya dibaca sekali, tanpa subquery berulang.\nSELECT nama, jurusan, ipk\nFROM (\n    SELECT nama, jurusan, ipk,\n           RANK() OVER (PARTITION BY jurusan ORDER BY ipk DESC) AS rk\n    FROM mahasiswa\n) hasil\nWHERE rk = 1\nORDER BY jurusan;"
     },
     {
+     "heading": "Cara kerja EXISTS dan jebakan NOT IN",
      "body": [
       "EXISTS (subquery) bernilai benar kalau subquery-nya menghasilkan minimal",
       "satu baris. Yang dicek adalah ada atau nggaknya baris, bukan isi",
@@ -2354,6 +2364,7 @@
      "code": "-- Skrip ini membuat tabelnya sendiri, jadi bisa langsung dijalankan.\nCREATE TABLE pesanan (\n    id      INTEGER PRIMARY KEY,\n    email   TEXT    NOT NULL,\n    tanggal TEXT    NOT NULL,\n    total   INTEGER NOT NULL\n);\n\nCREATE TABLE arsip (\n    id      INTEGER PRIMARY KEY,\n    email   TEXT    NOT NULL,\n    tanggal TEXT    NOT NULL,\n    total   INTEGER NOT NULL\n);\n\nCREATE TABLE pelanggan (\n    email   TEXT PRIMARY KEY,\n    nama    TEXT NOT NULL,\n    belanja INTEGER NOT NULL DEFAULT 0\n);\n\nINSERT INTO pesanan (id, email, tanggal, total) VALUES\n    (1, 'andi@mail.com', '2023-11-02', 150000),\n    (2, 'budi@mail.com', '2023-12-20',  90000),\n    (3, 'andi@mail.com', '2024-03-14', 250000);\n\n-- 1. INSERT dari hasil query. Perhatikan: tidak ada kata VALUES sama sekali.\nINSERT INTO arsip (id, email, tanggal, total)\nSELECT id, email, tanggal, total\nFROM pesanan\nWHERE tanggal < '2024-01-01';\n\n-- Baru boleh dihapus SESUDAH salinannya dipastikan masuk.\nDELETE FROM pesanan WHERE tanggal < '2024-01-01';\n\nSELECT 'sisa pesanan', COUNT(*) FROM pesanan;\nSELECT 'baris terarsip', COUNT(*) FROM arsip;\n\n-- 2. CTAS: tabel baru yang kolomnya diambil dari bentuk hasil SELECT.\nCREATE TABLE ringkasan AS\nSELECT email, COUNT(*) AS jumlah, SUM(total) AS nilai\nFROM arsip\nGROUP BY email;\n\nSELECT 'ringkasan', email, jumlah, nilai FROM ringkasan;\n\n-- 3. UPSERT: simpan kalau email-nya baru, tambahkan kalau sudah ada.\n--    Dijalankan dua kali dengan email yang sama, dan barisnya tetap satu.\nINSERT INTO pelanggan (email, nama, belanja)\nVALUES ('andi@mail.com', 'Andi', 150000)\nON CONFLICT (email) DO UPDATE SET belanja = pelanggan.belanja + excluded.belanja;\n\nINSERT INTO pelanggan (email, nama, belanja)\nVALUES ('andi@mail.com', 'Andi', 250000)\nON CONFLICT (email) DO UPDATE SET belanja = pelanggan.belanja + excluded.belanja;\n\nSELECT 'pelanggan', email, nama, belanja FROM pelanggan;\n\n-- 4. RETURNING: id baris baru langsung dikembalikan, tanpa SELECT susulan.\nINSERT INTO pesanan (email, tanggal, total)\nVALUES ('citra@mail.com', '2024-04-01', 75000)\nRETURNING id, email, total;"
     },
     {
+     "heading": "UPDATE dan DELETE lintas tabel",
      "body": [
       "UPDATE dan DELETE yang udah kamu pelajari selalu pakai nilai yang",
       "diketik tangan. Di kode nyata, jauh lebih sering nilainya diambil dari",
@@ -2411,6 +2422,7 @@
      ]
     },
     {
+     "heading": "Kenapa UPSERT lebih aman daripada cek manual",
      "body": [
       "UPSERT artinya \"simpan kalau baru, perbarui kalau udah ada\". Sebelum",
       "tahu UPSERT, biasanya orang menulisnya di aplikasi dengan tiga langkah:",
@@ -2454,6 +2466,7 @@
      "code": "-- Kumpulan bentuk UPSERT per dialek. Ini BUKAN satu skrip yang dijalankan\n-- berurutan: pilih SATU yang cocok dengan database yang kamu pakai.\n-- Menjalankan semuanya sekaligus pasti error, karena tiap dialek hanya\n-- mengerti bentuknya sendiri.\n\n-- PostgreSQL & SQLite: perbarui kalau email-nya sudah terdaftar\nINSERT INTO pelanggan (email, nama, belanja)\nVALUES ('andi@mail.com', 'Andi', 150000)\nON CONFLICT (email) DO UPDATE\nSET nama    = excluded.nama,\n    belanja = pelanggan.belanja + excluded.belanja;\n\n-- Diamkan saja kalau sudah ada; tidak dihitung sebagai error\nINSERT INTO pelanggan (email, nama)\nVALUES ('andi@mail.com', 'Andi')\nON CONFLICT (email) DO NOTHING;\n\n-- MySQL / MariaDB, bentuk klasik\nINSERT INTO pelanggan (email, nama, belanja)\nVALUES ('andi@mail.com', 'Andi', 150000)\nON DUPLICATE KEY UPDATE\n    nama    = VALUES(nama),\n    belanja = belanja + VALUES(belanja);\n\n-- Bentuk pendek. INSERT OR IGNORE aman: baris lama dibiarkan apa adanya.\nINSERT OR IGNORE INTO pelanggan (email, nama) VALUES ('andi@mail.com', 'Andi');\n\n-- INSERT OR REPLACE (dan REPLACE INTO di MySQL) BUKAN update. Baris lamanya\n-- DIHAPUS lalu ditulis ulang dari nol, sehingga: kolom yang tidak kamu sebut\n-- kembali ke DEFAULT/NULL (belanja hilang!), ON DELETE CASCADE ikut menyala\n-- dan menyeret baris tabel lain, dan id/rowid-nya bisa berganti.\n-- Hampir selalu bukan yang kamu mau -- pakai ON CONFLICT DO UPDATE.\nINSERT OR REPLACE INTO pelanggan (email, nama) VALUES ('andi@mail.com', 'Andi');"
     },
     {
+     "heading": "RETURNING, hapus bertahap, dan TRUNCATE",
      "body": [
       "Sesudah INSERT, hampir selalu kamu butuh id baris yang baru dibikin,",
       "misalnya untuk dipasang sebagai FOREIGN KEY di tabel berikutnya. Jangan",
@@ -2580,6 +2593,7 @@
      ]
     },
     {
+     "heading": "Normalisasi dan hubungan antar tabel",
      "body": [
       "Normalisasi adalah cara merapikan struktur tabel supaya nggak boros dan",
       "nggak ada data yang diulang-ulang (redundansi). Data yang diulang di",
@@ -2728,6 +2742,7 @@
      "code": "-- Tabel pengguna sebuah aplikasi, lengkap dengan satu akun admin.\nCREATE TABLE pengguna (\n    id     INTEGER PRIMARY KEY,\n    email  TEXT NOT NULL,\n    sandi  TEXT NOT NULL\n);\n\nINSERT INTO pengguna (id, email, sandi) VALUES\n    (1, 'levi@contoh.id',  'kunci-levi'),\n    (2, 'dina@contoh.id',  'kunci-dina'),\n    (3, 'admin@contoh.id', 'kunci-admin');\n\n-- 1. Login wajar: email dan sandi benar.\nSELECT '=== sandi benar ===';\nSELECT id, email FROM pengguna\nWHERE email = 'levi@contoh.id' AND sandi = 'kunci-levi';\n\n-- 2. Login gagal: sandi salah, tidak ada baris keluar. Ini yang diharapkan.\nSELECT '=== sandi salah ===';\nSELECT id, email FROM pengguna\nWHERE email = 'levi@contoh.id' AND sandi = 'asal-tebak';\n\n-- 3. Kolom sandi diisi persis teks ini:   ' OR '1'='1\n--    Setelah disambung, kutip penutupnya jatuh di tempat yang salah dan\n--    sisa ketikannya berhenti jadi NILAI lalu berubah jadi PERINTAH.\nSELECT '=== sandi diisi tanda kutip lalu OR ===';\nSELECT id, email FROM pengguna\nWHERE email = 'levi@contoh.id' AND sandi = '' OR '1'='1';"
     },
     {
+     "heading": "Kenapa placeholder menutup SQL injection",
      "body": [
       "Database membaca query ketiga tadi sebagai: (email cocok dan sandi",
       "kosong) atau ('1' sama dengan '1'). Bagian kanan selalu benar, jadi",
@@ -2812,6 +2827,7 @@
      "code": "-- Sintaks MySQL. SQLite tidak punya sistem user sama sekali:\n-- hak aksesnya adalah hak akses BERKAS database di sistem operasi.\n\n-- 1. Buat user khusus untuk aplikasi (bukan memakai root!).\nCREATE USER 'app_toko'@'localhost' IDENTIFIED BY 'sandi-panjang-acak';\n\n-- 2. Beri hak SECUKUPNYA saja, di satu database saja.\nGRANT SELECT, INSERT, UPDATE ON toko.* TO 'app_toko'@'localhost';\n\n-- Cara membacanya:  GRANT <hak apa> ON <di mana> TO <siapa>\n--   SELECT, INSERT, UPDATE -> hak apa saja yang diberikan\n--   toko.*                 -> semua tabel di database 'toko'\n--   'app_toko'@'localhost' -> nama user @ dari mana ia boleh menyambung\n--                             ('%' berarti dari mesin mana pun)\n\n-- Hak bisa dipersempit sampai satu tabel, bahkan satu kolom.\nGRANT SELECT ON toko.produk TO 'app_toko'@'localhost';\nGRANT SELECT (id, nama) ON toko.pelanggan TO 'app_toko'@'localhost';\n\n-- User laporan: boleh baca, tidak boleh mengubah apa pun.\nCREATE USER 'pelapor'@'%' IDENTIFIED BY 'sandi-laporan';\nGRANT SELECT ON toko.* TO 'pelapor'@'%';\n\n-- Mencabut hak yang terlanjur diberikan (perhatikan: FROM, bukan TO).\nREVOKE UPDATE ON toko.* FROM 'app_toko'@'localhost';\n\n-- Memeriksa hak seseorang, dan menghapus user.\nSHOW GRANTS FOR 'app_toko'@'localhost';\nDROP USER 'pelapor'@'%';\n\n-- FLUSH PRIVILEGES cuma perlu kalau tabel hak akses disunting LANGSUNG\n-- dengan UPDATE. GRANT dan REVOKE sudah berlaku seketika. Banyak tutorial\n-- menempelkannya di mana-mana karena kebiasaan, bukan karena dibutuhkan.\nFLUSH PRIVILEGES;"
     },
     {
+     "heading": "Prinsip hak paling kecil dan kebiasaan aman",
      "body": [
       "Prinsip hak paling kecil (least privilege) artinya tiap user database",
       "cuma dikasih hak secukupnya supaya pekerjaannya jalan. Nggak lebih.",
@@ -3796,7 +3812,7 @@
      "code": "DELIMITER //\n\n-- FUNCTION: satu nilai balik, dan boleh dipakai di dalam SELECT.\nCREATE FUNCTION nilai_huruf(skor INT)\nRETURNS CHAR(1)\nDETERMINISTIC                       -- tanpa ini MySQL menolak (ERROR 1418)\nBEGIN\n    DECLARE h CHAR(1);\n    IF skor IS NULL THEN\n        SET h = '-';\n    ELSEIF skor >= 85 THEN\n        SET h = 'A';\n    ELSEIF skor >= 70 THEN\n        SET h = 'B';\n    ELSE\n        SET h = 'C';\n    END IF;\n    RETURN h;\nEND //\n\n-- PROCEDURE dengan cursor: membaca hasil query satu baris demi satu baris.\n-- Kolom penampungnya disiapkan dulu di luar sini:\n--   ALTER TABLE nilai ADD huruf CHAR(1);\nCREATE PROCEDURE beri_predikat()\nBEGIN\n    DECLARE habis  INT DEFAULT 0;                -- 1. variabel lebih dulu\n    DECLARE v_nim  INT;\n    DECLARE v_kode VARCHAR(10);\n    DECLARE v_skor INT;\n    DECLARE cur CURSOR FOR                       -- 2. baru cursor\n        SELECT nim, kode, skor FROM nilai;\n    DECLARE CONTINUE HANDLER FOR NOT FOUND       -- 3. handler paling belakang\n        SET habis = 1;\n\n    OPEN cur;\n    baca: LOOP\n        FETCH cur INTO v_nim, v_kode, v_skor;\n        IF habis = 1 THEN\n            LEAVE baca;\n        END IF;\n        UPDATE nilai SET huruf = nilai_huruf(v_skor)\n         WHERE nim = v_nim AND kode = v_kode;    -- PK nilai = (nim, kode)\n    END LOOP baca;\n    CLOSE cur;\nEND //\n\nDELIMITER ;\n\n-- Function dipakai langsung di dalam SELECT; procedure tidak bisa begitu.\nSELECT nim, kode, skor, nilai_huruf(skor) AS huruf FROM nilai;\nCALL beri_predikat();"
     },
     {
-     "heading": "Menolak data tidak sah, dan kapan semua ini TIDAK dipakai",
+     "heading": "Menolak data tidak sah, dan kapan semua ini tidak dipakai",
      "body": [
       "Sampai sini semua kode cuma menghitung. Padahal tugas trigger yang",
       "paling berguna justru menolak: menggagalkan INSERT atau UPDATE yang",
@@ -4067,6 +4083,7 @@
      ]
     },
     {
+     "heading": "Tiga masalah dan empat isolation level",
      "body": [
       "Kalau banyak transaction jalan bersamaan, ada tiga masalah yang bisa",
       "muncul:",
@@ -4182,6 +4199,7 @@
      ]
     },
     {
+     "heading": "Scaling dan daftar periksa query lambat",
      "body": [
       "Scaling artinya cara database menampung beban yang makin besar. Ada",
       "dua arah:",
@@ -4215,6 +4233,7 @@
      ]
     },
     {
+     "heading": "Profesi database dan kebiasaan latihan",
      "body": [
       "Pekerjaan di industri yang banyak bersentuhan dengan database:",
       "  - Backend Developer: nulis query dan memakai ORM tiap hari.",

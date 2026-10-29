@@ -40,7 +40,7 @@ import {
   KATA_STATUS_BINTANG,
   lingkaran,
   pathBraket,
-  padWilayah,
+  padKontur,
   pathWilayah,
   ruasIkhtisar,
   sasaranIkhtisar,
@@ -394,17 +394,25 @@ export function Ikhtisar({
   const ikRef = useRef<Ikhtisar | null>(null);
   ikRef.current = ik;
 
-  // Jalur wilayah per rasi, dihitung sekali per peta (bukan di tiap hover).
-  const jalurWilayah = useMemo(
-    () =>
-      ik
-        ? ik.rasi.map((r) =>
-            pathWilayah(r.bintang.map((b) => [b.x, b.y] as Titik), padWilayah(ik.skala)),
-          )
-        : [],
-    [ik],
-  );
-  const jalurRef = useRef<string[]>([]);
+  // Garis wilayah per rasi: kontur yang mengikuti rasinya (`pathWilayah`),
+  // dihitung saat rasinya pertama disorot dan disimpan sampai peta berganti.
+  // Satu rasi sekitar 1,3 ms, ke-32 rasi sekitar 40 ms: menghitung semuanya di
+  // tiap ukuran jendela memperlambat langkah ubah ukuran untuk garis yang
+  // paling banyak dipakai satu rasi.
+  const jalurWilayah = useMemo(() => {
+    const simpanan = new Map<number, string>();
+    return (ri: number): string => {
+      const ada = simpanan.get(ri);
+      if (ada !== undefined) return ada;
+      const r = ik?.rasi[ri];
+      const d = ik && r
+        ? pathWilayah(r.bintang.map((b) => [b.x, b.y] as Titik), padKontur(ik.skala))
+        : "";
+      simpanan.set(ri, d);
+      return d;
+    };
+  }, [ik]);
+  const jalurRef = useRef<(ri: number) => string>(() => "");
   jalurRef.current = jalurWilayah;
 
   /** Menulis sorot ke DOM. Tidak melakukan apa pun bila sasarannya sama. */
@@ -423,7 +431,7 @@ export function Ikhtisar({
     if (!lama || !baru || lama.rasi !== baru.rasi) {
       const w = wilayahRef.current;
       if (w) {
-        if (baru) w.setAttribute("d", jalurRef.current[baru.rasi] ?? "");
+        if (baru) w.setAttribute("d", jalurRef.current(baru.rasi));
         else w.removeAttribute("d");
       }
       namaAktifRef.current?.removeAttribute("data-sorot");
@@ -549,7 +557,7 @@ export function Ikhtisar({
           <Statis ik={ik} cocok={cocok} adaKonsep={adaKonsep} data={data} />
 
           <g className="lt-ik-sorot" aria-hidden="true">
-            <path ref={wilayahRef} className="lt-ik-wilayah" />
+            <path ref={wilayahRef} className="lt-ik-wilayah" fillRule="evenodd" />
             <circle ref={cincinRef} className="lt-ik-cincin" />
             {bintangSaran ? (
               <path

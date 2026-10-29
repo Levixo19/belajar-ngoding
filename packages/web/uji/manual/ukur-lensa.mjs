@@ -87,7 +87,9 @@ for (const tema of ["terang", "gelap", "malam", "kontras"]) {
   P.cek("konsep: nama tautan berubah tepat pada rasi yang bercincin", berubah === cincinPerRasi && berubah >= 10, { berubah, cincinPerRasi });
   P.cek("konsep: nama tautan memuat teks yang terlihat (\"Python 0/44\")", polos.every((n) => /^\S.* \d+\/\d+: /.test(n)), polos[0]);
   await s.page.getByRole("button", { name: "Percabangan" }).click();
-  await s.page.selectOption(".langit-pilih", { label: "Frontend Developer" }); await s.page.waitForTimeout(250);
+  // Pilihan buatan sendiri, bukan <select>: buka daftarnya lalu klik opsinya.
+  await s.page.locator(".langit-pilih").click();
+  await s.page.locator(".pil-daftar li", { hasText: "Frontend Developer" }).first().click(); await s.page.waitForTimeout(250);
   const p = await ambilNama();
   const bekal = await s.page.$$eval("a.lt-nama[data-bekal]", (a) => a.map((x) => x.dataset.key));
   const bekalNama = p.filter((n) => /, bagian bekal Frontend Developer\./.test(n)).length;

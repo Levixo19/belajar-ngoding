@@ -70,6 +70,7 @@
      "code": "fn main() {\n    println!(\"Halo Dunia!\");\n    println!(\"Aku sedang belajar Rust.\");\n}"
     },
     {
+     "heading": "Arti fn main, println!, dan aturan penamaan",
      "body": [
       "Kita bahas bagian-bagiannya:",
       "",
@@ -206,6 +207,7 @@
      "code": "fn main() {\n    let a: i32 = 42;\n    let b: f64 = 3.75;\n    let c: char = 'R';\n    let d: bool = true;\n\n    println!(\"i32  : {} .. {}\", i32::MIN, i32::MAX);\n    println!(\"u8   : {} .. {}\", u8::MIN, u8::MAX);\n    println!(\"nilai: {a} {b} {c} {d}\");\n\n    // Konversi WAJIB eksplisit\n    let e = a as f64 / 4.0;\n    println!(\"{a} / 4 = {e}\");\n\n    // Pembagian bilangan bulat memotong\n    println!(\"7 / 2 = {}\", 7 / 2);\n    println!(\"7.0 / 2.0 = {}\", 7.0 / 2.0);\n\n    // Penambahan yang melimpah ditangkap, bukan dibiarkan melingkar\n    let besar: u8 = 250;\n    println!(\"250 + 10 (checked) = {:?}\", besar.checked_add(10));\n    println!(\"250 + 10 (saturating) = {}\", besar.saturating_add(10));\n    println!(\"250 + 10 (wrapping) = {}\", besar.wrapping_add(10));\n}"
     },
     {
+     "heading": "Overflow dan empat cara menanganinya",
      "body": [
       "Keluaran:",
       "  i32  : -2147483648 .. 2147483647",
@@ -329,6 +331,7 @@
      "code": "fn luas_persegi(sisi: f64) -> f64 {\n    sisi * sisi\n}\n\nfn bagi(a: i32, b: i32) -> (i32, i32) {\n    (a / b, a % b)          // tuple: dua nilai sekaligus\n}\n\nfn grade(nilai: u32) -> char {\n    if nilai >= 85 {\n        'A'\n    } else if nilai >= 75 {\n        'B'\n    } else if nilai >= 60 {\n        'C'\n    } else {\n        'D'\n    }\n}\n\nfn main() {\n    println!(\"luas    = {}\", luas_persegi(2.5));\n\n    let (hasil, sisa) = bagi(17, 5);\n    println!(\"17 / 5  = {hasil} sisa {sisa}\");\n\n    for n in [92, 78, 64, 40] {\n        println!(\"{n:3} -> {}\", grade(n));\n    }\n\n    let kuadrat = { let a = 7; a * a };\n    println!(\"blok    = {kuadrat}\");\n}"
     },
     {
+     "heading": "Tuple, destructuring, dan cabang tanpa titik koma",
      "body": [
       "Keluaran:",
       "  luas    = 6.25",
@@ -588,6 +591,7 @@
      "code": "fn ambil_alih(s: String) -> usize {\n    s.len()\n}   // s dilepas di sini\n\nfn pinjam(s: &String) -> usize {\n    s.len()\n}   // s cuma dipinjam, tidak dilepas\n\nfn main() {\n    // Copy: angka disalin\n    let a = 5;\n    let b = a;\n    println!(\"copy   : a={a} b={b}\");\n\n    // Move: String berpindah\n    let s1 = String::from(\"halo\");\n    let s2 = s1.clone();          // clone = salinan penuh, s1 tetap sah\n    println!(\"clone  : s1={s1} s2={s2}\");\n\n    let s3 = String::from(\"dunia\");\n    let panjang = ambil_alih(s3);  // s3 PINDAH ke dalam fungsi\n    println!(\"pindah : panjang={panjang}\");\n    // println!(\"{s3}\");           <- ini tidak akan dikompilasi\n\n    let s4 = String::from(\"rust\");\n    let panjang = pinjam(&s4);     // s4 cuma dipinjam\n    println!(\"pinjam : {s4} panjangnya {panjang}\");\n\n    // Scope: nilai dilepas di akhir blok\n    {\n        let sementara = String::from(\"hidup sebentar\");\n        println!(\"blok   : {sementara}\");\n    }   // sementara dilepas persis di sini\n    println!(\"selesai\");\n}"
     },
     {
+     "heading": "Mengambil, meminjam baca, dan meminjam ubah",
      "body": [
       "Keluaran:",
       "  copy   : a=5 b=5",
@@ -843,6 +847,7 @@
      "code": "fn kata_terpanjang(kalimat: &str) -> &str {\n    let mut terbaik = \"\";\n    for kata in kalimat.split_whitespace() {\n        if kata.len() > terbaik.len() {\n            terbaik = kata;\n        }\n    }\n    terbaik\n}\n\nfn main() {\n    let kalimat = \"Rust membuat kode sistem jadi aman\";\n\n    println!(\"asli      : {kalimat}\");\n    println!(\"byte      : {}\", kalimat.len());\n    println!(\"huruf     : {}\", kalimat.chars().count());\n    println!(\"kata      : {}\", kalimat.split_whitespace().count());\n    println!(\"terpanjang: {}\", kata_terpanjang(kalimat));\n    println!(\"besar     : {}\", kalimat.to_uppercase());\n    println!(\"ganti     : {}\", kalimat.replace(\"aman\", \"cepat\"));\n    println!(\"mulai     : {}\", kalimat.starts_with(\"Rust\"));\n    println!(\"posisi    : {:?}\", kalimat.find(\"kode\"));\n    println!(\"balik     : {}\", kalimat.chars().rev().collect::<String>());\n\n    // Membangun String secara bertahap\n    let mut sapaan = String::new();\n    sapaan.push_str(\"Halo\");\n    sapaan.push(',');\n    sapaan.push_str(\" dunia\");\n    sapaan += \"!\";\n    println!(\"dibangun  : {sapaan}\");\n\n    // Slice pada vektor\n    let angka = vec![10, 20, 30, 40, 50];\n    println!(\"tengah    : {:?}\", &angka[1..4]);\n    println!(\"dua akhir : {:?}\", &angka[angka.len() - 2..]);\n}"
     },
     {
+     "heading": "Byte lawan huruf, find, dan turbofish",
      "body": [
       "Keluaran:",
       "  asli      : Rust membuat kode sistem jadi aman",
@@ -963,6 +968,7 @@
      "code": "#[derive(Debug, Clone)]\nstruct Rekening {\n    pemilik: String,\n    saldo: i64,\n}\n\nimpl Rekening {\n    // Fungsi terkait (associated function): TANPA self.\n    // Ini yang biasa disebut \"constructor\" di bahasa lain.\n    fn baru(pemilik: &str, saldo: i64) -> Self {\n        Self {\n            pemilik: pemilik.to_string(),\n            saldo,\n        }\n    }\n\n    // Method: parameter pertama self. &self = meminjam untuk MEMBACA.\n    fn ringkas(&self) -> String {\n        format!(\"{:<8}{:>10}\", self.pemilik, self.saldo)\n    }\n\n    // &mut self = meminjam untuk MENGUBAH\n    fn setor(&mut self, jumlah: i64) {\n        self.saldo += jumlah;\n    }\n\n    fn tarik(&mut self, jumlah: i64) -> bool {\n        if jumlah <= 0 || jumlah > self.saldo {\n            return false;\n        }\n        self.saldo -= jumlah;\n        true\n    }\n}\n\nfn main() {\n    let mut a = Rekening::baru(\"Andi\", 500_000);\n    let mut b = Rekening::baru(\"Budi\", 0);\n\n    a.setor(250_000);\n    println!(\"tarik 900rb dari Andi: {}\", a.tarik(900_000));\n    println!(\"tarik 300rb dari Andi: {}\", a.tarik(300_000));\n    b.setor(100_000);\n\n    println!(\"{}\", a.ringkas());\n    println!(\"{}\", b.ringkas());\n    println!(\"{a:?}\");\n}"
     },
     {
+     "heading": "Bentuk self pada method dan derive",
      "body": [
       "Keluaran:",
       "  tarik 900rb dari Andi: false",
@@ -1509,6 +1515,7 @@
      "code": "#[derive(Debug)]\nenum GalatNilai {\n    BukanAngka(String),\n    DiLuarRentang(i32),\n}\n\nfn parse_nilai(teks: &str) -> Result<i32, GalatNilai> {\n    let n: i32 = teks\n        .trim()\n        .parse()\n        .map_err(|_| GalatNilai::BukanAngka(teks.to_string()))?;\n\n    if !(0..=100).contains(&n) {\n        return Err(GalatNilai::DiLuarRentang(n));\n    }\n    Ok(n)\n}\n\nfn rata_rata(semua: &[&str]) -> Result<f64, GalatNilai> {\n    let mut total = 0;\n    for t in semua {\n        total += parse_nilai(t)?;      // gagal satu -> seluruh fungsi gagal\n    }\n    Ok(total as f64 / semua.len() as f64)\n}\n\nfn main() {\n    for t in [\"88\", \" 92 \", \"abc\", \"150\", \"-3\"] {\n        match parse_nilai(t) {\n            Ok(n) => println!(\"{t:>5} -> {n}\"),\n            Err(GalatNilai::BukanAngka(s)) => println!(\"{t:>5} -> bukan angka: {s}\"),\n            Err(GalatNilai::DiLuarRentang(n)) => println!(\"{t:>5} -> di luar 0..100: {n}\"),\n        }\n    }\n\n    println!(\"rata-rata baik : {:?}\", rata_rata(&[\"80\", \"90\", \"100\"]));\n    println!(\"rata-rata rusak: {:?}\", rata_rata(&[\"80\", \"xx\", \"100\"]));\n}"
     },
     {
+     "heading": "Memilih panic atau Result untuk galat",
      "body": [
       "Keluaran:",
       "     88 -> 88",
@@ -1636,6 +1643,7 @@
      "code": "use std::fmt::Display;\n\nfn terbesar<T: PartialOrd + Copy>(daftar: &[T]) -> T {\n    let mut hasil = daftar[0];\n    for &x in daftar {\n        if x > hasil {\n            hasil = x;\n        }\n    }\n    hasil\n}\n\nfn cetak_semua<T: Display>(judul: &str, daftar: &[T]) {\n    print!(\"{judul:<8}:\");\n    for x in daftar {\n        print!(\" {x}\");\n    }\n    println!();\n}\n\nstruct Kotak<T> {\n    isi: Vec<T>,\n    muat: usize,\n}\n\nimpl<T: Display> Kotak<T> {\n    fn baru(muat: usize) -> Self {\n        Kotak { isi: Vec::new(), muat }\n    }\n\n    fn masuk(&mut self, x: T) -> bool {\n        if self.isi.len() >= self.muat {\n            return false;\n        }\n        self.isi.push(x);\n        true\n    }\n\n    fn ringkas(&self) -> String {\n        let daftar: Vec<String> = self.isi.iter().map(|x| x.to_string()).collect();\n        format!(\"[{}] {}/{}\", daftar.join(\", \"), self.isi.len(), self.muat)\n    }\n}\n\nfn main() {\n    let angka = [3, 9, 1, 7];\n    let pecahan = [2.5, 8.1, 4.4];\n    let huruf = ['r', 'u', 's', 't'];\n\n    println!(\"terbesar i32  : {}\", terbesar(&angka));\n    println!(\"terbesar f64  : {}\", terbesar(&pecahan));\n    println!(\"terbesar char : {}\", terbesar(&huruf));\n\n    cetak_semua(\"angka\", &angka);\n    cetak_semua(\"huruf\", &huruf);\n\n    let mut kotak = Kotak::baru(3);\n    for n in [10, 20, 30, 40] {\n        println!(\"masuk {n}: {}\", kotak.masuk(n));\n    }\n    println!(\"{}\", kotak.ringkas());\n}"
     },
     {
+     "heading": "Batasan trait dan implementasi bersyarat",
      "body": [
       "Keluaran:",
       "  terbesar i32  : 9",
@@ -1764,6 +1772,7 @@
      "code": "use std::fmt;\n\ntrait Bangun {\n    fn luas(&self) -> f64;\n    fn nama(&self) -> String;\n\n    // Implementasi bawaan, boleh ditimpa\n    fn ringkas(&self) -> String {\n        format!(\"{:<12}{:8.2}\", self.nama(), self.luas())\n    }\n}\n\nstruct Persegi { sisi: f64 }\nstruct Lingkaran { jari: f64 }\n\nimpl Bangun for Persegi {\n    fn luas(&self) -> f64 { self.sisi * self.sisi }\n    fn nama(&self) -> String { \"Persegi\".to_string() }\n}\n\nimpl Bangun for Lingkaran {\n    fn luas(&self) -> f64 { 3.14159 * self.jari * self.jari }\n    fn nama(&self) -> String { \"Lingkaran\".to_string() }\n    fn ringkas(&self) -> String {\n        format!(\"{:<12}{:8.2}  (r={})\", self.nama(), self.luas(), self.jari)\n    }\n}\n\n// Display: mengatur bagaimana tipe ini dicetak dengan {}\nimpl fmt::Display for Persegi {\n    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {\n        write!(f, \"Persegi bersisi {}\", self.sisi)\n    }\n}\n\n// impl Trait: satu tipe, dipilih saat kompilasi\nfn jelaskan(b: &impl Bangun) -> String {\n    b.ringkas()\n}\n\nfn main() {\n    let p = Persegi { sisi: 4.0 };\n    let l = Lingkaran { jari: 3.0 };\n\n    println!(\"{}\", jelaskan(&p));\n    println!(\"{}\", jelaskan(&l));\n    println!(\"display : {p}\");\n\n    // dyn Trait: banyak tipe berbeda dalam SATU koleksi\n    let semua: Vec<Box<dyn Bangun>> = vec![\n        Box::new(Persegi { sisi: 2.0 }),\n        Box::new(Lingkaran { jari: 1.0 }),\n        Box::new(Persegi { sisi: 5.0 }),\n    ];\n\n    let total: f64 = semua.iter().map(|b| b.luas()).sum();\n    for b in &semua {\n        println!(\"{}\", b.ringkas());\n    }\n    println!(\"{:<12}{:8.2}\", \"TOTAL\", total);\n}"
     },
     {
+     "heading": "Box<dyn Bangun> dan implementasi bawaan",
      "body": [
       "Keluaran:",
       "  Persegi        16.00",
@@ -1883,6 +1892,7 @@
      "code": "// Dua referensi masuk, satu keluar: lifetime WAJIB ditulis.\nfn lebih_panjang<'a>(a: &'a str, b: &'a str) -> &'a str {\n    if a.len() > b.len() { a } else { b }\n}\n\n// Satu referensi masuk: elision menanganinya, tanpa anotasi.\nfn kata_pertama(s: &str) -> &str {\n    match s.find(' ') {\n        Some(i) => &s[..i],\n        None => s,\n    }\n}\n\n// Struct yang menyimpan referensi wajib beranotasi.\nstruct Pengutip<'a> {\n    sumber: &'a str,\n}\n\nimpl<'a> Pengutip<'a> {\n    fn baru(sumber: &'a str) -> Self {\n        Pengutip { sumber }\n    }\n\n    // Aturan ke-3: &self, jadi kembaliannya ikut lifetime self.\n    fn awal(&self, n: usize) -> &str {\n        let batas = self.sumber.char_indices().nth(n).map(|(i, _)| i);\n        match batas {\n            Some(i) => &self.sumber[..i],\n            None => self.sumber,\n        }\n    }\n}\n\nfn main() {\n    let a = String::from(\"pemrograman\");\n    let b = String::from(\"rust\");\n    println!(\"lebih panjang : {}\", lebih_panjang(&a, &b));\n\n    let kalimat = \"Rust menjamin keamanan memori\";\n    println!(\"kata pertama  : {}\", kata_pertama(kalimat));\n\n    let p = Pengutip::baru(kalimat);\n    println!(\"10 huruf awal : {}\", p.awal(10));\n    println!(\"999 huruf awal: {}\", p.awal(999));\n\n    // Lifetime 'static: literal hidup selama program\n    let tetap: &'static str = \"aku hidup sampai akhir\";\n    println!(\"static        : {tetap}\");\n\n    // Scope: referensi tidak boleh hidup lebih lama dari datanya\n    let hasil;\n    {\n        let sementara = String::from(\"pendek\");\n        hasil = lebih_panjang(&a, &sementara).to_string();\n        // kalau `hasil` menyimpan &str, baris ini tidak akan dikompilasi\n    }\n    println!(\"hasil         : {hasil}\");\n}"
     },
     {
+     "heading": "Cara membaca tiga pesan galat lifetime",
      "body": [
       "Keluaran:",
       "  lebih panjang : pemrograman",
@@ -2017,6 +2027,7 @@
      "code": "#[derive(Debug)]\nstruct Murid {\n    nama: String,\n    kelas: char,\n    nilai: u32,\n}\n\nfn main() {\n    let data = vec![\n        Murid { nama: \"Andi\".into(),  kelas: 'A', nilai: 88 },\n        Murid { nama: \"Budi\".into(),  kelas: 'B', nilai: 72 },\n        Murid { nama: \"Cici\".into(),  kelas: 'A', nilai: 95 },\n        Murid { nama: \"Dedi\".into(),  kelas: 'B', nilai: 64 },\n        Murid { nama: \"Euis\".into(),  kelas: 'A', nilai: 79 },\n    ];\n\n    // Saring, urutkan, tampilkan\n    let mut lulus: Vec<&Murid> = data.iter().filter(|m| m.nilai >= 75).collect();\n    lulus.sort_by(|a, b| b.nilai.cmp(&a.nilai));\n    for m in &lulus {\n        println!(\"{:<6}{}  {}\", m.nama, m.kelas, m.nilai);\n    }\n\n    // Ringkasan\n    let total: u32 = data.iter().map(|m| m.nilai).sum();\n    let rata = total as f64 / data.len() as f64;\n    println!(\"---\");\n    println!(\"rata-rata : {rata:.2}\");\n    println!(\"tertinggi : {:?}\", data.iter().map(|m| m.nilai).max());\n    println!(\"lulus     : {}\", data.iter().filter(|m| m.nilai >= 75).count());\n    println!(\"ada <65?  : {}\", data.iter().any(|m| m.nilai < 65));\n    println!(\"semua >60?: {}\", data.iter().all(|m| m.nilai > 60));\n\n    // Ambil nama saja, gabungkan\n    let nama: Vec<&str> = data.iter().map(|m| m.nama.as_str()).collect();\n    println!(\"nama      : {}\", nama.join(\", \"));\n\n    // Closure yang menangkap variabel\n    let batas = 80;\n    let di_atas = |m: &&Murid| m.nilai > batas;\n    println!(\"di atas {batas}: {}\", data.iter().filter(di_atas).count());\n\n    // fold: melipat jadi satu nilai\n    let terpanjang = data\n        .iter()\n        .fold(String::new(), |akhir, m| {\n            if m.nama.len() > akhir.len() { m.nama.clone() } else { akhir }\n        });\n    println!(\"nama terpanjang: {terpanjang}\");\n}"
     },
     {
+     "heading": "Rantai iterator zero-cost dan tanda bintang dua",
      "body": [
       "Keluaran:",
       "  Cici  A  95",
@@ -2159,6 +2170,7 @@
      "code": "[package]\nname = \"proyekku\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\nserde = { version = \"1\", features = [\"derive\"] }\nrand = \"0.8\"\n\n[dev-dependencies]\ncriterion = \"0.5\"\n\n[profile.release]\nopt-level = 3\nlto = true"
     },
     {
+     "heading": "Edition, semver, Cargo.lock, dan doc test",
      "body": [
       "Edition itu kumpulan aturan bahasa yang boleh berubah tanpa merusak",
       "kode lama. Edition yang ada: 2015, 2018, 2021, dan 2024. Crate dengan",
@@ -2290,6 +2302,7 @@
      "code": "use std::cell::RefCell;\nuse std::rc::Rc;\n\n// Tanpa Box, ukuran Daftar tak terhingga: compiler menolaknya.\n#[derive(Debug)]\nenum Daftar {\n    Isi(i32, Box<Daftar>),\n    Habis,\n}\n\nuse Daftar::{Habis, Isi};\n\nfn jumlah(d: &Daftar) -> i32 {\n    match d {\n        Isi(n, sisa) => n + jumlah(sisa),\n        Habis => 0,\n    }\n}\n\nfn main() {\n    let rantai = Isi(1, Box::new(Isi(2, Box::new(Isi(3, Box::new(Habis))))));\n    println!(\"rantai  : {rantai:?}\");\n    println!(\"jumlah  : {}\", jumlah(&rantai));\n\n    // Rc: banyak pemilik untuk data yang sama\n    let bersama = Rc::new(vec![10, 20, 30]);\n    println!(\"hitungan: {}\", Rc::strong_count(&bersama));\n    {\n        let _a = Rc::clone(&bersama);\n        let _b = Rc::clone(&bersama);\n        println!(\"di blok : {}\", Rc::strong_count(&bersama));\n    }\n    println!(\"sesudah : {}\", Rc::strong_count(&bersama));\n\n    // Rc<RefCell<T>>: dimiliki bersama DAN bisa diubah\n    let catatan = Rc::new(RefCell::new(Vec::<String>::new()));\n\n    let penulis_a = Rc::clone(&catatan);\n    penulis_a.borrow_mut().push(\"dari A\".to_string());\n\n    let penulis_b = Rc::clone(&catatan);\n    penulis_b.borrow_mut().push(\"dari B\".to_string());\n\n    catatan.borrow_mut().push(\"dari utama\".to_string());\n\n    println!(\"catatan : {:?}\", catatan.borrow());\n    println!(\"pemilik : {}\", Rc::strong_count(&catatan));\n}"
     },
     {
+     "heading": "Hitungan Rc, kebocoran, dan Weak",
      "body": [
       "Keluaran:",
       "  rantai  : Isi(1, Isi(2, Isi(3, Habis)))",
@@ -2424,6 +2437,7 @@
      "code": "use std::sync::mpsc;\nuse std::sync::{Arc, Mutex};\nuse std::thread;\n\nfn main() {\n    // --- Thread dengan hasil kembalian ---\n    let mut tugas = Vec::new();\n    for i in 1..=4 {\n        tugas.push(thread::spawn(move || {\n            let hasil: u64 = (1..=i as u64 * 1000).sum();\n            (i, hasil)\n        }));\n    }\n\n    // Kumpulkan lalu URUTKAN: urutan selesainya thread tidak pasti,\n    // dan itu sifat concurrency, bukan bug yang bisa diperbaiki.\n    let mut hasil: Vec<(i32, u64)> = tugas\n        .into_iter()\n        .map(|h| h.join().unwrap())\n        .collect();\n    hasil.sort();\n    for (i, n) in &hasil {\n        println!(\"tugas {i}: {n}\");\n    }\n\n    // --- Channel ---\n    let (kirim, terima) = mpsc::channel();\n    for nama in [\"A\", \"B\", \"C\"] {\n        let k = kirim.clone();\n        thread::spawn(move || {\n            k.send(format!(\"pesan dari {nama}\")).unwrap();\n        });\n    }\n    drop(kirim);   // tanpa ini, perulangan di bawah tidak pernah berhenti\n\n    let mut pesan: Vec<String> = terima.iter().collect();\n    pesan.sort();\n    for p in &pesan {\n        println!(\"{p}\");\n    }\n\n    // --- Mutex + Arc ---\n    let hitungan = Arc::new(Mutex::new(0));\n    let mut pekerja = Vec::new();\n    for _ in 0..8 {\n        let h = Arc::clone(&hitungan);\n        pekerja.push(thread::spawn(move || {\n            for _ in 0..1000 {\n                *h.lock().unwrap() += 1;\n            }\n        }));\n    }\n    for p in pekerja {\n        p.join().unwrap();\n    }\n    println!(\"hitungan akhir: {}\", *hitungan.lock().unwrap());\n}"
     },
     {
+     "heading": "Keluaran deterministik dan drop pengirim",
      "body": [
       "Keluaran:",
       "  tugas 1: 500500",
@@ -2804,6 +2818,7 @@
      "code": "use std::fs;\nuse std::io::{self, Read};\n\nfn main() -> io::Result<()> {\n    // --- Baca seluruh stdin lalu olah ---\n    let mut masukan = String::new();\n    io::stdin().read_to_string(&mut masukan)?;\n\n    let angka: Vec<i32> = masukan\n        .split_whitespace()\n        .filter_map(|t| t.parse().ok())     // yang gagal dilewati diam-diam\n        .collect();\n\n    if angka.is_empty() {\n        println!(\"tidak ada angka di masukan\");\n    } else {\n        let total: i32 = angka.iter().sum();\n        println!(\"data      : {angka:?}\");\n        println!(\"jumlah    : {}\", angka.len());\n        println!(\"total     : {total}\");\n        println!(\"rata-rata : {:.2}\", total as f64 / angka.len() as f64);\n        println!(\"terbesar  : {:?}\", angka.iter().max());\n    }\n\n    // --- Tulis, baca, lalu hapus sebuah berkas ---\n    let path = std::env::temp_dir().join(\"belajar-rust.txt\");\n    fs::write(&path, \"baris satu\\nbaris dua\\nbaris tiga\\n\")?;\n\n    let isi = fs::read_to_string(&path)?;\n    for (i, baris) in isi.lines().enumerate() {\n        println!(\"{:>2}| {baris}\", i + 1);\n    }\n\n    fs::remove_file(&path)?;\n    println!(\"berkas masih ada? {}\", path.exists());\n\n    Ok(())\n}"
     },
     {
+     "heading": "Pola filter_map dan main yang mengembalikan Result",
      "body": [
       "Dengan masukan \"12 7 abc 30 5\", keluarannya:",
       "  data      : [12, 7, 30, 5]",
@@ -2911,6 +2926,7 @@
      "code": "use std::collections::HashMap;\nuse std::fmt;\n\n// ---------------------------------------------------------------- MODEL\n#[derive(Debug, Clone, PartialEq)]\nstruct Barang {\n    kode: String,\n    nama: String,\n    stok: i64,\n    harga: i64,\n}\n\n#[derive(Debug, Clone, Copy, PartialEq)]\nenum Gerak {\n    Masuk,\n    Keluar,\n}\n\n#[derive(Debug, PartialEq)]\nenum GalatGudang {\n    KodeSudahAda(String),\n    KodeTidakDikenal(String),\n    JumlahTidakSah(i64),\n    StokTidakCukup { punya: i64, diminta: i64 },\n}\n\nimpl fmt::Display for GalatGudang {\n    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {\n        match self {\n            GalatGudang::KodeSudahAda(k) => write!(f, \"kode {k} sudah ada\"),\n            GalatGudang::KodeTidakDikenal(k) => write!(f, \"kode {k} tidak dikenal\"),\n            GalatGudang::JumlahTidakSah(n) => write!(f, \"jumlah {n} tidak sah\"),\n            GalatGudang::StokTidakCukup { punya, diminta } => {\n                write!(f, \"stok cuma {punya}, diminta {diminta}\")\n            }\n        }\n    }\n}\n\n// -------------------------------------------------------------- LAYANAN\nstruct Gudang {\n    isi: HashMap<String, Barang>,\n}\n\nimpl Gudang {\n    fn baru() -> Self {\n        Gudang { isi: HashMap::new() }\n    }\n\n    fn daftar(&mut self, b: Barang) -> Result<(), GalatGudang> {\n        if self.isi.contains_key(&b.kode) {\n            return Err(GalatGudang::KodeSudahAda(b.kode));\n        }\n        self.isi.insert(b.kode.clone(), b);\n        Ok(())\n    }\n\n    fn catat(&mut self, kode: &str, gerak: Gerak, jumlah: i64)\n        -> Result<i64, GalatGudang>\n    {\n        let b = self\n            .isi\n            .get_mut(kode)\n            .ok_or_else(|| GalatGudang::KodeTidakDikenal(kode.to_string()))?;\n\n        if jumlah <= 0 {\n            return Err(GalatGudang::JumlahTidakSah(jumlah));\n        }\n\n        let baru = match gerak {\n            Gerak::Masuk => b.stok + jumlah,\n            Gerak::Keluar => b.stok - jumlah,\n        };\n        if baru < 0 {\n            return Err(GalatGudang::StokTidakCukup { punya: b.stok, diminta: jumlah });\n        }\n\n        b.stok = baru;\n        Ok(baru)\n    }\n\n    fn semua(&self) -> Vec<&Barang> {\n        let mut v: Vec<&Barang> = self.isi.values().collect();\n        v.sort_by(|a, b| a.kode.cmp(&b.kode));\n        v\n    }\n\n    fn nilai_persediaan(&self) -> i64 {\n        self.isi.values().map(|b| b.stok * b.harga).sum()\n    }\n\n    fn stok_menipis(&self, batas: i64) -> Vec<&Barang> {\n        let mut v: Vec<&Barang> =\n            self.isi.values().filter(|b| b.stok < batas).collect();\n        v.sort_by(|a, b| a.stok.cmp(&b.stok).then(a.kode.cmp(&b.kode)));\n        v\n    }\n}\n\n// ------------------------------------------------------------ ANTARMUKA\nfn main() {\n    let mut g = Gudang::baru();\n\n    for (kode, nama, stok, harga) in [\n        (\"B01\", \"Kabel\", 10, 15_000),\n        (\"B02\", \"Adaptor\", 4, 85_000),\n        (\"B03\", \"Mouse\", 25, 120_000),\n    ] {\n        g.daftar(Barang {\n            kode: kode.to_string(),\n            nama: nama.to_string(),\n            stok,\n            harga,\n        })\n        .unwrap();\n    }\n\n    // Langkah yang sengaja campur berhasil dan gagal\n    let langkah: Vec<(&str, Gerak, i64)> = vec![\n        (\"B01\", Gerak::Masuk, 15),\n        (\"B02\", Gerak::Keluar, 10),\n        (\"B03\", Gerak::Keluar, 5),\n        (\"B09\", Gerak::Masuk, 1),\n        (\"B03\", Gerak::Keluar, 0),\n    ];\n\n    for (kode, gerak, n) in langkah {\n        match g.catat(kode, gerak, n) {\n            Ok(stok) => println!(\"{gerak:?} {kode} {n} -> stok {stok}\"),\n            Err(e) => println!(\"{gerak:?} {kode} {n} -> DITOLAK: {e}\"),\n        }\n    }\n\n    println!(\"---\");\n    for b in g.semua() {\n        println!(\"{:<5}{:<10}{:>4}{:>10}{:>12}\",\n                 b.kode, b.nama, b.stok, b.harga, b.stok * b.harga);\n    }\n\n    println!(\"---\");\n    println!(\"nilai persediaan: {}\", g.nilai_persediaan());\n\n    let menipis: Vec<String> = g\n        .stok_menipis(10)\n        .iter()\n        .map(|b| format!(\"{} {} ({})\", b.kode, b.nama, b.stok))\n        .collect();\n    println!(\"stok menipis (<10): {}\", menipis.join(\", \"));\n}"
     },
     {
+     "heading": "Empat keputusan desain dan ide lanjutan",
      "body": [
       "Ada empat keputusan di program itu yang layak ditiru:",
       "  1. GalatGudang itu enum, bukan String. Pemanggil bisa membedakan",

@@ -752,6 +752,7 @@
      "code": "# (umur pelanggan, beli?)  1 = beli, 0 = nggak beli\ndata = [(18, 0), (22, 0), (25, 0), (30, 1), (35, 1), (40, 1), (45, 0), (52, 1)]\n\n\ndef gini(label):\n    if not label:\n        return 0.0\n    p = sum(label) / len(label)\n    return 1 - p ** 2 - (1 - p) ** 2\n\n\ndef nilai_potongan(ambang):\n    kiri = [beli for umur, beli in data if umur < ambang]\n    kanan = [beli for umur, beli in data if umur >= ambang]\n    n = len(data)\n    return len(kiri) / n * gini(kiri) + len(kanan) / n * gini(kanan)\n\n\numur = sorted({u for u, _ in data})\ncalon = [(a + b) / 2 for a, b in zip(umur, umur[1:])]\nfor ambang in calon:\n    print(f\"umur < {ambang}: gini {nilai_potongan(ambang):.3f}\")\nprint(\"potongan terbaik: umur <\", min(calon, key=nilai_potongan))"
     },
     {
+     "heading": "Overfitting pohon dan random forest",
      "body": [
       "Keluarannya:",
       "  umur < 20.0: gini 0.429",
@@ -891,6 +892,7 @@
      "code": "n, k = 10, 5\nindeks = list(range(n))\nukuran = n // k\n\nfor lipatan in range(k):\n    validasi = indeks[lipatan * ukuran:(lipatan + 1) * ukuran]\n    latih = [i for i in indeks if i not in validasi]\n    print(f\"lipatan {lipatan + 1}: validasi {validasi}, latih {len(latih)} baris\")"
     },
     {
+     "heading": "Variasi k-fold untuk data khusus",
      "body": [
       "Keluarannya:",
       "  lipatan 1: validasi [0, 1], latih 8 baris",
@@ -1355,6 +1357,7 @@
      "code": "import math\n\n\ndef mean_squared_error(y_benar, y_tebak):\n    return sum((a - b) ** 2 for a, b in zip(y_benar, y_tebak)) / len(y_benar)\n\n\ndef cross_entropy(y_benar, p):\n    # y_benar 0 atau 1, p = peluang kelas 1 menurut model\n    return -sum(y * math.log(q) + (1 - y) * math.log(1 - q)\n                for y, q in zip(y_benar, p)) / len(y_benar)\n\n\nfor p in (0.9, 0.6, 0.1):\n    print(f\"label 1, model bilang {p}: loss {cross_entropy([1], [p]):.3f}\")\nprint(f\"regresi, tebakan dekat: {mean_squared_error([3.0, 5.0], [2.9, 5.2]):.3f}\")\nprint(f\"regresi, tebakan jauh : {mean_squared_error([3.0, 5.0], [1.0, 8.0]):.3f}\")"
     },
     {
+     "heading": "Cross-entropy dan gradient descent",
      "body": [
       "Keluarannya:",
       "  label 1, model bilang 0.9: loss 0.105",
@@ -2423,6 +2426,7 @@
      "code": "# Tokenizer mainan: potong teks dari kiri, selalu ambil potongan terpanjang\n# yang ada di kosakata. Angka di kanan itu ID token.\nkosakata = {\"saya\": 1012, \" suka\": 2245, \" bel\": 873, \"ajar\": 3301,\n            \" \": 6, \"a\": 70, \"b\": 71, \"e\": 72, \"j\": 73, \"l\": 74, \"r\": 75}\n\ndef tokenisasi(teks):\n    hasil, i = [], 0\n    while i < len(teks):\n        for panjang in range(len(teks) - i, 0, -1):\n            potong = teks[i:i + panjang]\n            if potong in kosakata:\n                hasil.append(potong)\n                i += panjang\n                break\n        else:\n            raise ValueError(f\"huruf {teks[i]!r} nggak ada di kosakata\")\n    return hasil\n\npotongan = tokenisasi(\"saya suka belajar\")\nprint(potongan)\nprint([kosakata[p] for p in potongan])"
     },
     {
+     "heading": "Token model sungguhan dan cara menghitungnya",
      "body": [
       "Keluarannya:",
       "",
@@ -3038,6 +3042,7 @@
      "code": "# Harga per sejuta token dalam dolar AS (masukan, keluaran), dicek dari\n# halaman harga resmi Claude dan OpenAI pada Oktober 2026.\nHARGA = {\n    \"claude-opus-5-5\": (4.00, 20.00),\n    \"claude-sonnet-5-5\": (2.00, 10.00),\n    \"gpt-6.1-sol\": (2.00, 10.00),\n    \"gpt-6-luna\": (0.10, 0.50),\n}\n\ndef biaya(model, token_masuk, token_keluar):\n    masuk, keluar = HARGA[model]\n    return (token_masuk * masuk + token_keluar * keluar) / 1_000_000\n\n# Angka usage dari satu balasan API: 1.500 token masuk, 300 token keluar\nmasuk, keluar = 1500, 300\nchat_per_bulan = 2000 * 30\n\nfor model in HARGA:\n    satu = biaya(model, masuk, keluar)\n    print(f\"{model:<18} ${satu:.4f} per chat   ${satu * chat_per_bulan:>8,.2f} per bulan\")"
     },
     {
+     "heading": "Token berpikir, riwayat chat, dan caching",
      "body": [
       "Keluarannya:",
       "",
@@ -5264,6 +5269,7 @@
      "code": "CREATE EXTENSION IF NOT EXISTS vector;\n\nCREATE TABLE potongan (\n    id bigserial PRIMARY KEY,\n    sumber text NOT NULL,\n    isi text NOT NULL,\n    embedding vector(384)\n);\n\n-- indeks HNSW untuk jarak cosine\nCREATE INDEX ON potongan USING hnsw (embedding vector_cosine_ops);\n\n-- lima potongan paling mirip dengan vektor kueri ($1)\nSELECT sumber, isi, 1 - (embedding <=> $1) AS kemiripan\nFROM potongan\nORDER BY embedding <=> $1\nLIMIT 5;\n"
     },
     {
+     "heading": "Operator jarak dan indeks pgvector",
      "body": [
       "pgvector menambahkan tipe kolom vector dan operator jarak ke",
       "PostgreSQL. Versi terbarunya saat materi ini ditulis 0.8.7",
@@ -5328,6 +5334,7 @@
      "code": "nama       bentuk                versi (Okt 2026)    lisensi\n---------  --------------------  ------------------  ------------------\npgvector   ekstensi PostgreSQL   0.8.7               PostgreSQL License\nChroma     tertanam atau server  1.5.9 (Mei 2026)    Apache-2.0\nPinecone   layanan cloud         SDK Python 10.0.0   proprietary\nQdrant     server (Rust)         1.19.2              Apache-2.0\nWeaviate   server (Go)           1.40.1              BSD-3-Clause\nMilvus     server skala besar    3.0.3               Apache-2.0\nFAISS      pustaka C++/Python    faiss-cpu 1.15.1    MIT\nLanceDB    tertanam (Rust)       0.40.0              Apache-2.0"
     },
     {
+     "heading": "Tujuh pilihan database vektor",
      "body": [
       "Survei Stack Overflow 2025 menanyakan penyimpanan data yang",
       "dipakai untuk agen AI. Hasilnya: Redis 42,9%, Supabase 20,9%,",

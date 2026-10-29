@@ -127,7 +127,12 @@ export function kalimatPembuka(d: DataDasbor): string {
     return "Target hari ini sudah tercapai. Sisanya bonus.";
   }
   if (d.streak >= 2) {
-    return `Sudah ${d.streak} hari berturut-turut. Jaga apinya tetap menyala.`;
+    // Tanpa "Jaga apinya tetap menyala." yang masih ada di layar-belajar.js:
+    // cabang ini hanya tampil saat target hari ini BELUM tercapai, jadi
+    // dorongan itu terbaca sebagai peringatan bahwa streak akan padam. Satu-
+    // satunya deviasi dari antarmuka lama; pembanding menyebutnya
+    // (DORONGAN_STREAK_LAMA).
+    return `Sudah ${d.streak} hari berturut-turut.`;
   }
   if (d.xp_hari_ini > 0) {
     return `Kurang ${d.target_harian - d.xp_hari_ini} XP lagi untuk menutup hari ini.`;

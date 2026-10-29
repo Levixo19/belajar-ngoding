@@ -68,6 +68,7 @@ class Program
 }"""
             },
             {
+                "heading": "Arti tiap baris dan aturan dasar C#",
                 "body": [
                     "Kita bahas bagian demi bagian:",
                     "",
@@ -230,6 +231,7 @@ class Program
 }"""
             },
             {
+                "heading": "Beda const dan readonly, serta konversi tipe",
                 "body": [
                     "const dan readonly sering ketuker. Dua-duanya bikin nilai yang nggak",
                     "bisa diubah, bedanya di kapan nilai itu ditetapkan:",
@@ -432,6 +434,7 @@ class Program
 }"""
             },
             {
+                "heading": "Operator null-conditional dan urutan operasi",
                 "body": [
                     "Empat operator di atas bikin kode C# modern jauh lebih pendek daripada",
                     "C# lama:",
@@ -631,6 +634,7 @@ baris dua";
 }"""
             },
             {
+                "heading": "Tiga bentuk string dan StringBuilder",
                 "body": [
                     "Ada tiga bentuk penulisan string:",
                     "",
@@ -1116,6 +1120,7 @@ class Program
 }"""
             },
             {
+                "heading": "Salinan array dan tipe referensi",
                 "body": [
                     "Perhatikan `(double)total / nilai.Length`. Tanpa (double), yang dibagi",
                     "dua int, dan hasilnya dipotong jadi bilangan bulat. Ini jebakan yang",
@@ -1299,6 +1304,7 @@ class Program
 }"""
             },
             {
+                "heading": "Menelusuri Dictionary dan memilih koleksi",
                 "body": [
                     "Pasangan `TryGetValue(k, out int n)` lalu `hitung[k] = n + 1` itu cara",
                     "yang biasa dipakai di C# untuk menghitung frekuensi. Kalau kuncinya",
@@ -1515,6 +1521,7 @@ class Program
 }"""
             },
             {
+                "heading": "Kapan pakai ref, out, atau tuple",
                 "body": [
                     "Keluaran:",
                     "  x=8 y=3",
@@ -1568,6 +1575,7 @@ class Program
 }"""
             },
             {
+                "heading": "Aturan overload dan rekursi",
                 "body": [
                     "Overloading artinya beberapa method punya nama yang sama, tapi jumlah",
                     "atau tipe parameternya beda. Compiler memilih yang paling cocok waktu",
@@ -1728,6 +1736,7 @@ class Program
 }"""
             },
             {
+                "heading": "Flow analysis dan operator null-forgiving",
                 "body": [
                     "Keluaran:",
                     "  [ANDI]",
@@ -1911,6 +1920,7 @@ class Program
 }"""
             },
             {
+                "heading": "Setter yang memvalidasi, ToString, dan nameof",
                 "body": [
                     "Ada empat hal yang perlu kamu perhatikan di class itu:",
                     "  1. Field privat diawali garis bawah, misalnya _nama. Compiler nggak",
@@ -2084,6 +2094,7 @@ class Program
 }"""
             },
             {
+                "heading": "Private set, statis, dan primary constructor",
                 "body": [
                     "Keluaran:",
                     "  Tarik 900rb dari Andi: False",
@@ -2265,6 +2276,7 @@ class Program
 }"""
             },
             {
+                "heading": "Polimorfisme dan aturan abstract class",
                 "body": [
                     "Keluaran:",
                     "  Persegi      luas    16.00  keliling    16.00",
@@ -2430,6 +2442,7 @@ class Program
 }"""
             },
             {
+                "heading": "IComparable, Equals, dan GetHashCode",
                 "body": [
                     "Keluaran:",
                     "  2018 Algoritma",
@@ -2586,6 +2599,7 @@ class Program
 }"""
             },
             {
+                "heading": "Struct, class, dan varian record",
                 "body": [
                     "Keluaran:",
                     "  struct : s1.X=1  s2.X=99",
@@ -2734,6 +2748,7 @@ class Program
 }"""
             },
             {
+                "heading": "Operasi bit pada enum dan jebakan HasFlag",
                 "body": [
                     "Enum yang diberi atribut [Flags] bisa menyimpan banyak pilihan",
                     "sekaligus dalam satu angka. Caranya lewat bit, yaitu digit 0 dan 1 di",
@@ -2913,6 +2928,7 @@ class Program
 }"""
             },
             {
+                "heading": "Empat kebiasaan buruk saat menangani exception",
                 "body": [
                     "Keluaran:",
                     "  Bayar   20,000 -> sisa   30,000",
@@ -3253,6 +3269,7 @@ class Program
 }"""
             },
             {
+                "heading": "Event sebagai delegate yang dipagari",
                 "body": [
                     "Keluaran:",
                     "  2 4 6 8 10",
@@ -3418,6 +3435,7 @@ class Program
 }"""
             },
             {
+                "heading": "Deferred execution pada query LINQ",
                 "body": [
                     "Keluaran:",
                     "  -- Lulus, nilai tertinggi dulu --",
@@ -3579,6 +3597,7 @@ class Program
 }"""
             },
             {
+                "heading": "Jebakan Split dan urutan catch",
                 "body": [
                     "Keluaran:",
                     "  Cici   A   95",
@@ -3894,6 +3913,7 @@ class Program
 }"""
             },
             {
+                "heading": "Task.WhenAll untuk panggilan bersamaan",
                 "body": [
                     "Keluaran (angkanya dibulatkan ke ratusan ms):",
                     "  A selesai (200ms)",
@@ -4035,6 +4055,7 @@ class Program
         └── ProdukTests.cs"""
             },
             {
+                "heading": "Perintah dotnet dan arah ketergantungan",
                 "body": [
                     "Perintah dotnet yang dipakai sehari-hari:",
                     "",
@@ -4204,6 +4225,7 @@ class Program
 }"""
             },
             {
+                "heading": "Menguji nilai batas dan melacak bug",
                 "body": [
                     "Keluaran:",
                     "  [OK  ] nilai 85 -> A                harap=A aktual=A",
@@ -4335,6 +4357,7 @@ dotnet_diagnostic.CA1062.severity = warning   # argumen publik tak diperiksa nul
 dotnet_diagnostic.CS8618.severity = warning   # field non-nullable tak diisi"""
             },
             {
+                "heading": "Analyzer dan kebiasaan kode yang mudah dirawat",
                 "body": [
                     "Analyzer adalah pemeriksa yang berjalan waktu kompilasi. Dia nemuin",
                     "kode yang sintaksnya benar, tapi hampir pasti bukan yang kamu maksud.",
@@ -4521,6 +4544,7 @@ class Program
 }"""
             },
             {
+                "heading": "Empat keputusan desain di aplikasi konsol",
                 "body": [
                     "Empat keputusan di program itu yang layak kamu tiru:",
                     "  1. Properti Semua bertipe `IReadOnlyList<Pengeluaran>`, bukan",

@@ -43,6 +43,7 @@
      "code": "public class HitungStok {\n    public static void main(String[] args) {\n        int stok = 20;\n        stok = stok - 5;\n        System.out.println(\"Sisa stok: \" + stok);\n    }\n}"
     },
     {
+     "heading": "Empat pertanyaan yang tidak dijawab skrip",
      "body": [
       "Program di atas benar. Tapi coba pikirin pertanyaan ini:",
       "",
@@ -367,6 +368,7 @@
      "code": "public class Item {\n    private Long id;\n    private String kode;\n    private String nama;\n    private String satuan;\n    private int stok;\n    private int stokMinimum;\n\n    public Item(String kode, String nama, String satuan, int stokMinimum) {\n        this.kode = kode;\n        this.nama = nama;\n        this.satuan = satuan;\n        this.stokMinimum = stokMinimum;\n        this.stok = 0;\n    }\n\n    public String getKode()   { return kode; }\n    public String getNama()   { return nama; }\n    public String getSatuan() { return satuan; }\n    public int getStok()      { return stok; }\n    public void setStok(int stok) { this.stok = stok; }\n\n    public boolean isStokMenipis() {\n        return stok <= stokMinimum;\n    }\n\n    @Override\n    public String toString() {\n        return kode + \" - \" + nama + \" (\" + stok + \" \" + satuan + \")\";\n    }\n}"
     },
     {
+     "heading": "Batas logika entitas dan aturan nama getter",
      "body": [
       "Lihat method isStokMenipis(). Ini contoh logika yang pantas ada di",
       "entitas. Method itu cuma menjawab pertanyaan tentang dirinya sendiri,",
@@ -477,6 +479,7 @@
      "code": "public class DemoStatus {\n\n    // Di proyek sungguhan tiap tipe ini tinggal di berkasnya sendiri:\n    // Status.java dan MovementType.java. Di sini digabung jadi satu\n    // supaya bisa langsung dijalankan.\n\n    enum Status {\n        PENDING, APPROVED, REJECTED, RETURNED\n    }\n\n    enum MovementType {\n        IN(\"Masuk\", 1),\n        OUT(\"Keluar\", -1);\n\n        private final String label;\n        private final int arah;\n\n        MovementType(String label, int arah) {\n            this.label = label;\n            this.arah = arah;\n        }\n\n        public String getLabel() { return label; }\n\n        public int terapkan(int stok, int jumlah) {\n            return stok + arah * jumlah;\n        }\n    }\n\n    static String pesan(Status s) {\n        switch (s) {\n            case PENDING:  return \"Menunggu persetujuan\";\n            case APPROVED: return \"Sudah disetujui\";\n            case REJECTED: return \"Ditolak\";\n            case RETURNED: return \"Barang sudah kembali\";\n            default:       throw new IllegalStateException(\"Status belum ditangani: \" + s);\n        }\n    }\n\n    public static void main(String[] args) {\n        Status s = Status.PENDING;\n\n        System.out.println(\"toString  : \" + s);\n        System.out.println(\"name()    : \" + s.name());\n        System.out.println(\"ordinal() : \" + s.ordinal());\n        System.out.println(\"pesan     : \" + pesan(s));\n\n        // Enum dibandingkan dengan ==, bukan equals.\n        System.out.println(\"s == Status.PENDING : \" + (s == Status.PENDING));\n\n        System.out.println(\"Semua nilai Status:\");\n        for (Status x : Status.values()) {\n            System.out.println(\"  \" + x.ordinal() + \" \" + x.name());\n        }\n\n        int stok = 20;\n        for (MovementType t : MovementType.values()) {\n            stok = t.terapkan(stok, 5);\n            System.out.println(t.getLabel() + \" 5 -> stok \" + stok);\n        }\n\n        System.out.println(\"Dari teks : \" + Status.valueOf(\"APPROVED\"));\n    }\n}"
     },
     {
+     "heading": "Isi enum, perbandingan ==, dan ordinal()",
      "body": [
       "Enum juga bisa punya isi",
       "",
@@ -584,6 +587,7 @@
      "code": "public class DemoAturan {\n\n    // Di proyek sungguhan: AturanDilanggar.java dan\n    // StokTidakCukupException.java, masing-masing satu berkas.\n\n    static class AturanDilanggar extends RuntimeException {\n        public AturanDilanggar(String pesan) {\n            super(pesan);\n        }\n\n        public AturanDilanggar(String pesan, Throwable penyebab) {\n            super(pesan, penyebab);\n        }\n    }\n\n    static class StokTidakCukupException extends AturanDilanggar {\n        public StokTidakCukupException(String nama, int tersedia, int diminta) {\n            super(\"Stok tidak mencukupi untuk \" + nama\n                    + \" (tersedia \" + tersedia + \", diminta \" + diminta + \").\");\n        }\n    }\n\n    // SERVICE - perhatikan: tidak ada satu pun kata 'throws' di sini.\n    static void catatKeluar(String nama, int stok, int jumlah) {\n        if (jumlah <= 0)\n            throw new AturanDilanggar(\"Jumlah mutasi harus lebih dari nol.\");\n        if (stok < jumlah)\n            throw new StokTidakCukupException(nama, stok, jumlah);\n        System.out.println(\"OK      : \" + nama + \" keluar \" + jumlah\n                + \", sisa \" + (stok - jumlah));\n    }\n\n    // CONTROLLER - satu-satunya lapisan yang menangkap.\n    static void coba(String nama, int stok, int jumlah) {\n        try {\n            catatKeluar(nama, stok, jumlah);\n        } catch (AturanDilanggar e) {\n            System.out.println(\"DITOLAK : \" + e.getMessage());\n        }\n    }\n\n    public static void main(String[] args) {\n        coba(\"APAR\", 20, 5);\n        coba(\"Selang\", 3, 10);\n        coba(\"APAR\", 20, 0);\n    }\n}"
     },
     {
+     "heading": "Checked atau unchecked untuk aturan bisnis",
      "body": [
       "Kenapa extends RuntimeException, dan nggak extends Exception?",
       "",
@@ -697,6 +701,7 @@
      "code": "public interface ItemDao {\n    Item cariById(Long id);\n    List<Item> cariSemua();\n    List<Item> cariStokMenipis();\n    void simpan(Item item);\n    void hapus(Long id);\n}"
     },
     {
+     "heading": "Interface DAO dan peran Hibernate",
      "body": [
       "Kenapa dibikin interface dulu, dan nggak langsung kelas?",
       "",
@@ -1164,6 +1169,7 @@
      "code": "import java.util.*;\n\npublic class WadahMini {\n\n    public static void main(String[] args) {\n        // Beginilah kira-kira yang dikerjakan Spring saat aplikasi start:\n        // buat yang paling bawah dulu, lalu serahkan ke yang membutuhkan.\n        ItemDao dao = new ItemDaoMemori();\n        StokService service = new StokService(dao);\n\n        service.kurangi(\"APAR-6KG\", 3);\n        service.kurangi(\"APAR-6KG\", 30);\n    }\n}\n\ninterface ItemDao {\n    int stok(String kode);\n    void simpan(String kode, int jumlah);\n}\n\nclass ItemDaoMemori implements ItemDao {\n\n    private final Map<String, Integer> tabel = new HashMap<String, Integer>();\n\n    ItemDaoMemori() {\n        tabel.put(\"APAR-6KG\", 20);\n    }\n\n    public int stok(String kode) {\n        return tabel.get(kode);\n    }\n\n    public void simpan(String kode, int jumlah) {\n        tabel.put(kode, jumlah);\n    }\n}\n\nclass StokService {\n\n    private final ItemDao itemDao;          // final: wajib terisi, tak bisa null\n\n    StokService(ItemDao itemDao) {          // satu-satunya jalan masuk\n        this.itemDao = itemDao;\n    }\n\n    void kurangi(String kode, int jumlah) {\n        int sekarang = itemDao.stok(kode);\n        if (sekarang < jumlah) {\n            System.out.println(\"Ditolak: stok \" + kode + \" cuma \" + sekarang);\n            return;\n        }\n        itemDao.simpan(kode, sekarang - jumlah);\n        System.out.println(\"Sisa stok \" + kode + \": \" + itemDao.stok(kode));\n    }\n}"
     },
     {
+     "heading": "Anotasi bean, component scan, dan pasangan Impl",
      "body": [
       "Jalankan program di atas. Keluarannya:",
       "",
@@ -1249,6 +1255,7 @@
      "code": "// src/main/java/com/badak/ifams/dao/ItemDao.java\npackage com.badak.ifams.dao;\n\npublic interface ItemDao {              // kontraknya - lihat materi DAO\n    Item cariById(Long id);\n    void simpan(Item item);\n}\n\n\n// src/main/java/com/badak/ifams/dao/ItemDaoImpl.java\npackage com.badak.ifams.dao;\n\nimport javax.persistence.EntityManager;\nimport javax.persistence.PersistenceContext;\nimport org.springframework.stereotype.Repository;\n\n@Repository                             // \"buatkan satu bean dari kelas ini\"\npublic class ItemDaoImpl implements ItemDao {\n\n    @PersistenceContext\n    private EntityManager em;           // diserahkan JPA, bukan oleh @Autowired\n\n    public Item cariById(Long id) {\n        return em.find(Item.class, id);\n    }\n\n    public void simpan(Item item) {\n        em.merge(item);\n    }\n}\n\n\n// src/main/java/com/badak/ifams/service/RequestService.java\npackage com.badak.ifams.service;\n\nimport com.badak.ifams.dao.ItemDao;\nimport com.badak.ifams.dao.RequestDao;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class RequestService {\n\n    private final ItemDao itemDao;\n    private final RequestDao requestDao;\n\n    public RequestService(ItemDao itemDao, RequestDao requestDao) {\n        this.itemDao = itemDao;         // Spring yang mengisi kedua argumen ini\n        this.requestDao = requestDao;\n    }\n\n    // setujui(...) isinya persis seperti di materi Service -\n    // bedanya sekarang field-nya benar-benar terisi.\n}"
     },
     {
+     "heading": "Constructor injection lawan @Autowired di field",
      "body": [
       "Injeksi lewat constructor",
       "",
@@ -1314,6 +1321,7 @@
      "code": "package com.badak.ifams.config;\n\nimport javax.sql.DataSource;\nimport org.apache.commons.dbcp.BasicDataSource;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;\nimport org.springframework.security.crypto.password.PasswordEncoder;\n\n@Configuration\npublic class KonfigurasiAplikasi {\n\n    // Nilainya dibaca dari src/main/resources/jdbc.properties, tidak diketik\n    // di sini. Alasannya dibahas di materi konfigurasi & rahasia.\n    @Value(\"${jdbc.url}\")      private String url;\n    @Value(\"${jdbc.user}\")     private String user;\n    @Value(\"${jdbc.password}\") private String sandi;\n\n    @Bean                               // nama bean-nya: \"dataSource\"\n    public DataSource dataSource() {\n        BasicDataSource ds = new BasicDataSource();\n        ds.setDriverClassName(\"oracle.jdbc.OracleDriver\");\n        ds.setUrl(url);\n        ds.setUsername(user);\n        ds.setPassword(sandi);\n        ds.setMaxActive(20);            // kelas milik pustaka orang lain:\n        return ds;                      // tidak bisa ditempeli @Repository\n    }\n\n    @Bean                               // nama bean-nya: \"passwordEncoder\"\n    public PasswordEncoder passwordEncoder() {\n        return new BCryptPasswordEncoder();\n    }\n}"
     },
     {
+     "heading": "Dua wadah dan anotasi yang tidak aktif",
      "body": [
       "Wadahnya ada dua",
       "",
@@ -1478,6 +1486,7 @@
      "code": "public class RequestService {\n\n    private final ItemDao itemDao;\n    private final RequestDao requestDao;\n\n    public void setujui(Long requestId, String namaPetugas) {\n        Permintaan p = requestDao.cariById(requestId);\n\n        if (p.getStatus() != Status.PENDING)\n            throw new AturanDilanggar(\"Permintaan sudah diproses.\");\n\n        for (BarisPermintaan baris : p.getBaris()) {\n            Item item = baris.getItem();\n\n            if (item.isJunk())\n                throw new AturanDilanggar(item.getNama() + \" berstatus junk.\");\n\n            if (item.getStok() < baris.getJumlah())\n                throw new AturanDilanggar(\"Stok tidak mencukupi untuk \"\n                        + item.getNama() + \" (tersedia \" + item.getStok()\n                        + \", diminta \" + baris.getJumlah() + \").\");\n        }\n\n        for (BarisPermintaan baris : p.getBaris()) {\n            Item item = baris.getItem();\n            item.setStok(item.getStok() - baris.getJumlah());\n            itemDao.simpan(item);\n            catatMutasi(item, MovementType.OUT, baris.getJumlah(),\n                        \"Dipinjam - permintaan \" + p.getKode(), namaPetugas);\n        }\n\n        p.setStatus(Status.APPROVED);\n        p.setDiprosesOleh(namaPetugas);\n        requestDao.simpan(p);\n    }\n}"
     },
     {
+     "heading": "Periksa dulu, ubah belakangan, dan transaksi",
      "body": [
       "Coba lihat susunannya. Semua pemeriksaan dikerjakan duluan, di",
       "perulangan pertama. Perubahan baru dikerjakan sesudahnya, di",
@@ -1633,6 +1642,7 @@
      "code": "GET   /items                 daftar semua item\nGET   /items/new             formulir tambah item\nPOST  /items                 simpan item baru\nGET   /items/{id}            detail satu item\nGET   /items/{id}/edit       formulir ubah item\nPOST  /items/{id}            simpan perubahan\nPOST  /items/{id}/stock      catat mutasi stok\nPOST  /items/{id}/junk       tandai rusak\nPOST  /requests/{id}/approve setujui permintaan"
     },
     {
+     "heading": "Endpoint, gaya REST, dan Post-Redirect-Get",
      "body": [
       "Tiap baris di daftar itu, yaitu satu method ditambah satu path,",
       "namanya endpoint. Kata ini bakal sering kamu temui, di dokumentasi,",
@@ -1773,6 +1783,7 @@
      "code": "@Controller\n@RequestMapping(\"/items\")\npublic class ItemController {\n\n    private final ItemService itemService;\n    private final StockService stockService;\n\n    @GetMapping\n    public String daftar(\n            @RequestParam(required = false, defaultValue = \"\") String cari,\n            Model model) {\n        model.addAttribute(\"items\", itemService.cari(cari));\n        model.addAttribute(\"cari\", cari);\n        return \"items/list\";\n    }\n\n    @GetMapping(\"/{id}\")\n    public String detail(@PathVariable Long id, Model model) {\n        model.addAttribute(\"item\", itemService.ambil(id));\n        model.addAttribute(\"history\", stockService.riwayat(id));\n        return \"items/detail\";\n    }\n\n    // Bentuk lama; sama artinya dengan @PostMapping(\"/{id}/stock\").\n    @RequestMapping(value = \"/{id}/stock\", method = RequestMethod.POST)\n    public String sesuaikanStok(@PathVariable Long id,\n                                @RequestParam MovementType type,\n                                @RequestParam int qty,\n                                RedirectAttributes ra) {\n        try {\n            stockService.catatMutasi(id, type, qty);\n            ra.addFlashAttribute(\"success\", \"Mutasi tersimpan.\");\n        } catch (StokTidakCukupException e) {\n            ra.addFlashAttribute(\"error\", e.getMessage());\n        }\n        return \"redirect:/items/\" + id;\n    }\n\n    // Bentuk lain yang sering ditemui: nama halaman dan datanya\n    // dibungkus jadi satu objek, bukan dipisah return + parameter.\n    @GetMapping(\"/{id}/print\")\n    public ModelAndView cetak(@PathVariable Long id) {\n        ModelAndView mv = new ModelAndView(\"items/print\");\n        mv.addObject(\"item\", itemService.ambil(id));\n        return mv;\n    }\n}"
     },
     {
+     "heading": "Parameter lewat @PathVariable dan @RequestParam",
      "body": [
       "Jalan masuk: dari alamat ke parameter Java",
       "",
@@ -1820,6 +1831,7 @@
      ]
     },
     {
+     "heading": "Model, view resolver, dan nama atribut",
      "body": [
       "Jalan keluar: jembatan ke halaman",
       "",
@@ -1877,6 +1889,7 @@
      "code": "import java.util.LinkedHashMap;\nimport java.util.Map;\n\npublic class JembatanTampilan {\n\n    // \"Model\" milik Spring pada dasarnya cuma kotak nama-nilai.\n    static Map<String, Object> model = new LinkedHashMap<>();\n\n    // Flash attribute: kotak terpisah yang isinya HABIS sekali dibaca.\n    static Map<String, Object> flash = new LinkedHashMap<>();\n\n    // Yang dikerjakan view resolver atas String yang kamu return.\n    static String resolusiView(String nama) {\n        return \"/WEB-INF/views/\" + nama + \".jsp\";\n    }\n\n    // Yang dikerjakan ${...} di JSP: mencari nama itu di dalam model.\n    static String isiLubang(String nama) {\n        Object nilai = model.get(nama);\n        return nilai == null ? \"\" : String.valueOf(nilai);\n    }\n\n    static String bacaFlash(String nama) {\n        Object nilai = flash.remove(nama);\n        return nilai == null ? \"\" : String.valueOf(nilai);\n    }\n\n    public static void main(String[] args) {\n        model.put(\"item\", \"APAR 3kg\");\n        model.put(\"history\", \"3 baris mutasi\");\n        flash.put(\"success\", \"Mutasi tersimpan.\");\n\n        System.out.println(\"halaman     : \" + resolusiView(\"items/detail\"));\n        System.out.println(\"${item}     : [\" + isiLubang(\"item\") + \"]\");\n        System.out.println(\"${history}  : [\" + isiLubang(\"history\") + \"]\");\n        System.out.println(\"${histori}  : [\" + isiLubang(\"histori\") + \"]\");\n\n        System.out.println(\"sesudah redirect: [\" + bacaFlash(\"success\") + \"]\");\n        System.out.println(\"lalu di-refresh : [\" + bacaFlash(\"success\") + \"]\");\n    }\n}"
     },
     {
+     "heading": "Redirect, flash attribute, dan pola MVC",
      "body": [
       "Coba lihat baris ${histori} di keluarannya. Kurung sikunya kosong,",
       "dan nggak ada yang protes. Persis begitu juga yang terjadi di halaman",
@@ -2024,6 +2037,7 @@
      ]
     },
     {
+     "heading": "Kenapa formulir memakai DTO, bukan entitas",
      "body": [
       "Objek formulir, alias DTO",
       "",
@@ -2109,6 +2123,7 @@
      "code": "public class ItemForm {\n\n    @NotBlank(message = \"Kode wajib diisi.\")\n    @Size(max = 20, message = \"Kode maksimal 20 karakter.\")\n    @Pattern(regexp = \"[A-Z]{3}-[0-9]{3}\",\n             message = \"Format kode: 3 huruf besar, tanda hubung, 3 angka (APR-003).\")\n    private String kode;\n\n    @NotBlank(message = \"Nama wajib diisi.\")\n    @Size(max = 50, message = \"Nama maksimal 50 karakter.\")\n    private String nama;\n\n    @NotBlank(message = \"Satuan wajib dipilih.\")\n    private String satuan;\n\n    @NotNull(message = \"Stok minimum wajib diisi.\")\n    @Min(value = 0, message = \"Stok minimum tidak boleh negatif.\")\n    private Integer stokMinimum;      // Integer, bukan int - lihat jebakan kedua\n\n    @NotNull(message = \"Kategori wajib dipilih.\")\n    private Long kategoriId;          // cukup id-nya, bukan objek Kategori\n\n    // Tidak ada field id, stok, maupun dibuatOleh di sini. Itu disengaja:\n    // yang tidak punya setter tidak akan pernah bisa diisi dari luar.\n\n    public String getKode() { return kode; }\n    public void setKode(String kode) { this.kode = kode; }\n\n    public Integer getStokMinimum() { return stokMinimum; }\n    public void setStokMinimum(Integer stokMinimum) { this.stokMinimum = stokMinimum; }\n\n    // getter dan setter serupa untuk nama, satuan, dan kategoriId\n}"
     },
     {
+     "heading": "Pengikatan formulir, @Valid, dan BindingResult",
      "body": [
       "@ModelAttribute: dari isi formulir jadi objek Java",
       "",
@@ -2182,6 +2197,7 @@
      "code": "@Controller\n@RequestMapping(\"/items\")\npublic class ItemController {\n\n    private final ItemService itemService;\n    private final KategoriService kategoriService;\n\n    // Formulir kosong. Objeknya HARUS sudah ada di model, kalau tidak\n    // <form:form modelAttribute=\"itemForm\"> di JSP gagal menemukannya.\n    @GetMapping(\"/new\")\n    public String formTambah(Model model) {\n        model.addAttribute(\"itemForm\", new ItemForm());\n        model.addAttribute(\"daftarKategori\", kategoriService.cariSemua());\n        return \"items/form\";\n    }\n\n    @PostMapping\n    public String simpan(@Valid @ModelAttribute(\"itemForm\") ItemForm form,\n                         BindingResult result,       // WAJIB tepat sesudah form\n                         Model model,\n                         RedirectAttributes ra) {\n\n        if (result.hasErrors()) {                    // validasi BENTUK gagal\n            model.addAttribute(\"daftarKategori\", kategoriService.cariSemua());\n            return \"items/form\";                     // tampilkan ulang, JANGAN redirect\n        }\n\n        try {\n            Item item = itemService.buat(form);      // aturan BISNIS dinilai di sini\n            ra.addFlashAttribute(\"success\", \"Item \" + item.getKode() + \" tersimpan.\");\n            return \"redirect:/items/\" + item.getId();\n\n        } catch (KodeSudahDipakai e) {\n            // Aturan bisnis yang gagal pun boleh ditempelkan ke field-nya, supaya\n            // pesannya muncul di tempat yang sama dengan pesan @NotBlank tadi.\n            result.rejectValue(\"kode\", \"duplikat\", e.getMessage());\n            model.addAttribute(\"daftarKategori\", kategoriService.cariSemua());\n            return \"items/form\";\n        }\n    }\n}"
     },
     {
+     "heading": "Pesan kesalahan per field di JSP",
      "body": [
       "Menampilkan kesalahannya di tempat yang benar",
       "",
@@ -2222,6 +2238,7 @@
      "code": "import java.lang.reflect.Method;\nimport java.util.LinkedHashMap;\nimport java.util.Map;\n\npublic class ValidasiForm {\n\n    /* Objek formulir. Semua field String, persis seperti yang datang dari HTTP. */\n    public static class ItemForm {\n        private String kode = \"\";\n        private String nama = \"\";\n        private String stokMinimum = \"\";\n\n        public void setKode(String v)        { this.kode = v; }\n        public void setNama(String v)        { this.nama = v; }\n        public void setStokMinimum(String v) { this.stokMinimum = v; }\n\n        public String getKode()        { return kode; }\n        public String getNama()        { return nama; }\n        public String getStokMinimum() { return stokMinimum; }\n    }\n\n    /* Peniru BindingResult: kesalahan disimpan PER NAMA FIELD, bukan satu pesan. */\n    static class Hasil {\n        Map<String, String> galat = new LinkedHashMap<>();\n        void tolak(String field, String pesan) { galat.putIfAbsent(field, pesan); }\n        boolean adaGalat() { return !galat.isEmpty(); }\n    }\n\n    /* Yang dikerjakan @ModelAttribute: cocokkan name di <input> dengan setter. */\n    static ItemForm ikat(Map<String, String> formulir) throws Exception {\n        ItemForm form = new ItemForm();\n        for (Map.Entry<String, String> field : formulir.entrySet()) {\n            String nama = field.getKey();\n            String setter = \"set\" + Character.toUpperCase(nama.charAt(0)) + nama.substring(1);\n            try {\n                Method m = ItemForm.class.getMethod(setter, String.class);\n                m.invoke(form, field.getValue());\n            } catch (NoSuchMethodException e) {\n                System.out.println(\"  diabaikan diam-diam: tidak ada \" + setter + \"()\");\n            }\n        }\n        return form;\n    }\n\n    /* Yang dikerjakan @NotBlank, @Size, @Min: semua dijalankan, tidak berhenti di awal. */\n    static Hasil periksa(ItemForm form) {\n        Hasil hasil = new Hasil();\n        if (form.getKode().trim().isEmpty())\n            hasil.tolak(\"kode\", \"Kode wajib diisi.\");\n        if (form.getNama().trim().isEmpty())\n            hasil.tolak(\"nama\", \"Nama wajib diisi.\");\n        if (form.getNama().length() > 50)\n            hasil.tolak(\"nama\", \"Nama maksimal 50 karakter.\");\n        try {\n            if (Integer.parseInt(form.getStokMinimum().trim()) < 0)\n                hasil.tolak(\"stokMinimum\", \"Stok minimum tidak boleh negatif.\");\n        } catch (NumberFormatException e) {\n            hasil.tolak(\"stokMinimum\", \"Stok minimum harus berupa angka.\");\n        }\n        return hasil;\n    }\n\n    static void tanganiPost(Map<String, String> formulir) throws Exception {\n        System.out.println(\"POST /items \" + formulir);\n        ItemForm form = ikat(formulir);\n        Hasil hasil = periksa(form);\n        if (hasil.adaGalat()) {\n            System.out.println(\"  hasErrors() -> tampilkan ulang items/form:\");\n            for (Map.Entry<String, String> g : hasil.galat.entrySet())\n                System.out.println(\"    \" + g.getKey() + \" : \" + g.getValue());\n        } else {\n            System.out.println(\"  bentuknya sah -> lanjut ke service\");\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) throws Exception {\n        Map<String, String> lengkap = new LinkedHashMap<>();\n        lengkap.put(\"kode\", \"APR-003\");\n        lengkap.put(\"nama\", \"APAR 3kg\");\n        lengkap.put(\"stokMinimum\", \"5\");\n        tanganiPost(lengkap);\n\n        // Spasi doang: lolos kalau cuma dicek null, ditolak oleh @NotBlank.\n        Map<String, String> kosong = new LinkedHashMap<>();\n        kosong.put(\"kode\", \"   \");\n        kosong.put(\"nama\", \"\");\n        kosong.put(\"stokMinimum\", \"dua\");\n        tanganiPost(kosong);\n\n        // Di HTML-nya tertulis name=\"namaItem\", padahal setter-nya setNama().\n        Map<String, String> salahName = new LinkedHashMap<>();\n        salahName.put(\"kode\", \"APR-004\");\n        salahName.put(\"namaItem\", \"APAR 6kg\");\n        salahName.put(\"stokMinimum\", \"-1\");\n        tanganiPost(salahName);\n    }\n}"
     },
     {
+     "heading": "Memetakan DTO ke entitas dengan MapStruct",
      "body": [
       "Coba lihat kasus ketiga di keluarannya. Penggunanya mengisi nama",
       "dengan benar, Spring nggak protes apa pun, tapi yang muncul di layar",
@@ -2433,6 +2450,7 @@
      "code": "$ curl -i http://localhost:8080/items/61\n\nHTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 8241\n\n<!DOCTYPE html>\n<html> ... isi halaman detail item ...\n\n\n$ curl -i -X POST http://localhost:8080/items/61/stock -d \"type=OUT&qty=5\"\n\nHTTP/1.1 302 Found\nLocation: http://localhost:8080/items/61\nContent-Length: 0\n\n(badannya memang kosong -- browser disuruh meminta alamat di Location.\n Inilah wujud sebenarnya dari pola POST-Redirect-GET.)\n\n\n$ curl -i http://localhost:8080/items/9999\n\nHTTP/1.1 404 Not Found\nContent-Type: text/html;charset=UTF-8\n\n<!DOCTYPE html>\n<html> ... halaman \"item tidak ditemukan\" ...\n\n\nDan inilah jejak yang ketiganya tinggalkan di access log Tomcat\n(zona waktunya dibuang di sini supaya muat sebaris):\n\n10.10.1.42 - budi [26/Aug/2026:09:14:02] \"GET /items/61 HTTP/1.1\" 200 8241\n10.10.1.42 - budi [26/Aug/2026:09:14:20] \"POST /items/61/stock HTTP/1.1\" 302 0\n10.10.1.42 - andi [26/Aug/2026:09:15:07] \"GET /items/9999 HTTP/1.1\" 404 1180\n\nKolom sesudah alamat IP itu nama pengguna yang sedang login. Kolom itulah\nyang membuat deretan 401 dan 403 bisa ditelusuri sampai ke orangnya."
     },
     {
+     "heading": "Angka status HTTP yang sering muncul",
      "body": [
       "Angka yang bakal sering kamu temui",
       "",
@@ -2536,6 +2554,7 @@
      ]
     },
     {
+     "heading": "Dari try/catch ke @ControllerAdvice",
      "body": [
       "Masalah try/catch di tiap controller",
       "",
@@ -2590,6 +2609,7 @@
      "code": "@ControllerAdvice\npublic class PenanganGalatGlobal {\n\n    private static final Logger log =\n            LoggerFactory.getLogger(PenanganGalatGlobal.class);\n\n    // Aturan bisnis dilanggar -> 400. Pesannya AMAN dibaca pengguna,\n    // karena kita sendiri yang menulisnya di service.\n    @ExceptionHandler(AturanDilanggar.class)\n    @ResponseStatus(HttpStatus.BAD_REQUEST)\n    public String aturanDilanggar(AturanDilanggar e, Model model) {\n        model.addAttribute(\"pesan\", e.getMessage());\n        return \"error/400\";\n    }\n\n    // Barangnya memang tidak ada -> 404.\n    @ExceptionHandler(DataTidakDitemukan.class)\n    @ResponseStatus(HttpStatus.NOT_FOUND)\n    public String tidakDitemukan(DataTidakDitemukan e, Model model) {\n        model.addAttribute(\"pesan\", e.getMessage());\n        return \"error/404\";\n    }\n\n    // Jaring terakhir: apa pun yang tidak terduga -> 500.\n    @ExceptionHandler(Exception.class)\n    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)\n    public String takTerduga(Exception e, Model model) {\n        log.error(\"Permintaan gagal\", e);      // jejak lengkap ke log\n        model.addAttribute(\"pesan\",\n                \"Terjadi kesalahan. Catat waktunya, lalu hubungi petugas.\");\n        return \"error/500\";                    // bukan stack trace ke layar\n    }\n}"
     },
     {
+     "heading": "Peta exception ke kode status",
      "body": [
       "Peta yang perlu kamu hafal",
       "",
@@ -2732,6 +2752,7 @@
      "code": "import org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\n\npublic class ItemService {\n\n    private static final Logger log = LoggerFactory.getLogger(ItemService.class);\n\n    private final ItemDao itemDao;\n\n    public ItemService(ItemDao itemDao) {\n        this.itemDao = itemDao;\n    }\n\n    public void catatMutasi(Long id, MovementType jenis, int qty) {\n        log.debug(\"Mutasi masuk: item={} jenis={} qty={}\", id, jenis, qty);\n\n        Item item = itemDao.cariById(id);\n        if (item.getStok() < qty) {\n            log.warn(\"Stok item {} tidak cukup: tersedia {}, diminta {}\",\n                     id, item.getStok(), qty);\n            throw new AturanDilanggar(\"Stok tidak mencukupi.\");\n        }\n\n        item.setStok(item.getStok() - qty);\n        try {\n            itemDao.simpan(item);\n        } catch (RuntimeException e) {\n            log.error(\"Gagal menyimpan item {} setelah mutasi\", id, e);\n            throw new AturanDilanggar(\"Mutasi gagal disimpan, coba lagi.\");\n        }\n\n        log.info(\"Mutasi {} qty {} pada item {} tersimpan, sisa {}\",\n                 jenis, qty, id, item.getStok());\n    }\n}"
     },
     {
+     "heading": "Deklarasi logger dan cara menulis baris log",
      "body": [
       "Bedah baris deklarasinya",
       "",
@@ -3033,6 +3054,7 @@
      "code": "<h1>${item.nama}</h1>\n<p>Stok saat ini: ${item.stok} ${item.satuan}</p>\n\n<table>\n  <tr><th>Waktu</th><th>Jenis</th><th>Qty</th><th>Sisa</th></tr>\n  <c:forEach var=\"m\" items=\"${history}\">\n    <tr>\n      <td>${m.waktu}</td>\n      <td>${m.jenis}</td>\n      <td>${m.qty}</td>\n      <td>${m.sisaStok}</td>\n    </tr>\n  </c:forEach>\n</table>"
     },
     {
+     "heading": "Cara JSP menemukan nilai lewat getter",
      "body": [
       "  ${item.nama}   diganti nilai dari objek yang dikirim controller",
       "  <c:forEach>    mengulang blok untuk tiap baris daftar",
@@ -3231,7 +3253,7 @@
      "code": "@RestController\n@RequestMapping(\"/api/items\")\npublic class ItemApiController {\n\n    private final ItemService itemService;\n\n    public ItemApiController(ItemService itemService) {\n        this.itemService = itemService;\n    }\n\n    @GetMapping                                     // GET /api/items\n    public List<ItemResponse> daftar() {\n        List<ItemResponse> hasil = new ArrayList<>();\n        for (Item item : itemService.cariSemua()) {\n            hasil.add(ItemResponse.dari(item));\n        }\n        return hasil;                               // jadi array JSON, status 200\n    }\n\n    @GetMapping(\"/{id}\")                            // GET /api/items/61\n    public ResponseEntity<ItemResponse> satu(@PathVariable Long id) {\n        Item item = itemService.cariById(id);\n        if (item == null) {\n            return ResponseEntity.notFound().build();        // 404, badan kosong\n        }\n        return ResponseEntity.ok(ItemResponse.dari(item));   // 200 + badan JSON\n    }\n\n    @PostMapping                                    // POST /api/items\n    public ResponseEntity<ItemResponse> buat(@Valid @RequestBody ItemRequest req) {\n        Item baru = itemService.simpanBaru(req.getKode(), req.getNama());\n        URI lokasi = URI.create(\"/api/items/\" + baru.getId());\n        return ResponseEntity.created(lokasi)                // 201 + Location\n                             .body(ItemResponse.dari(baru));\n    }\n\n    @DeleteMapping(\"/{id}\")                         // DELETE /api/items/61\n    public ResponseEntity<Void> hapus(@PathVariable Long id) {\n        itemService.hapus(id);\n        return ResponseEntity.noContent().build();           // 204, sengaja tanpa badan\n    }\n}"
     },
     {
-     "heading": "Jackson bukan sihir: nama field JSON diambil dari GETTER",
+     "heading": "Jackson bukan sihir: nama field JSON diambil dari getter",
      "body": [
       "Nggak ada satu baris pun di controller tadi yang menyusun teks JSON.",
       "Yang mengerjakannya pustaka bernama Jackson, dan Spring sendiri yang",
@@ -3375,6 +3397,7 @@
      "code": "<dependencies>\n  <dependency>\n    <groupId>org.springframework</groupId>\n    <artifactId>spring-webmvc</artifactId>\n    <version>4.1.0.RELEASE</version>\n  </dependency>\n  <dependency>\n    <groupId>org.hibernate</groupId>\n    <artifactId>hibernate-core</artifactId>\n    <version>4.1.12.Final</version>\n  </dependency>\n</dependencies>"
     },
     {
+     "heading": "Struktur folder Maven dan jalur import",
      "body": [
       "Tiap pustaka yang dibutuhkan ditulis sebagai satu <dependency>. Tiga",
       "baris di dalamnya (groupId, artifactId, version) bisa menarik puluhan",
@@ -3703,6 +3726,7 @@
      "code": "<web-app xmlns=\"http://java.sun.com/xml/ns/javaee\" version=\"2.5\">\n\n  <context-param>\n    <param-name>contextConfigLocation</param-name>\n    <param-value>/WEB-INF/applicationContext.xml</param-value>\n  </context-param>\n\n  <listener>\n    <listener-class>\n      org.springframework.web.context.ContextLoaderListener\n    </listener-class>\n  </listener>\n\n  <filter>\n    <filter-name>encoding</filter-name>\n    <filter-class>\n      org.springframework.web.filter.CharacterEncodingFilter\n    </filter-class>\n    <init-param>\n      <param-name>encoding</param-name>\n      <param-value>UTF-8</param-value>\n    </init-param>\n  </filter>\n  <filter-mapping>\n    <filter-name>encoding</filter-name>\n    <url-pattern>/*</url-pattern>\n  </filter-mapping>\n\n  <filter>\n    <filter-name>springSecurityFilterChain</filter-name>\n    <filter-class>\n      org.springframework.web.filter.DelegatingFilterProxy\n    </filter-class>\n  </filter>\n  <filter-mapping>\n    <filter-name>springSecurityFilterChain</filter-name>\n    <url-pattern>/*</url-pattern>\n  </filter-mapping>\n\n  <servlet>\n    <servlet-name>dispatcher</servlet-name>\n    <servlet-class>\n      org.springframework.web.servlet.DispatcherServlet\n    </servlet-class>\n    <load-on-startup>1</load-on-startup>\n  </servlet>\n  <servlet-mapping>\n    <servlet-name>dispatcher</servlet-name>\n    <url-pattern>/</url-pattern>\n  </servlet-mapping>\n\n</web-app>"
     },
     {
+     "heading": "Filter dan rantai perhentian permintaan",
      "body": [
       "Sekarang diagram lapisan di materi Lapisan-lapisan Aplikasi Web bisa",
       "dilengkapi. Di sana, Tomcat dan filter cuma digambar sebagai satu",
@@ -4345,6 +4369,7 @@
      "code": "import java.util.HashMap;\nimport java.util.Map;\n\n// \"Sesi\" bukan barang ajaib. Isinya cuma sebuah peta di dalam server,\n// plus satu nomor yang dititipkan ke browser lewat cookie.\npublic class SimulasiSesi {\n\n    // Kunci = isi cookie JSESSIONID. Nilai = catatan satu pengunjung.\n    static Map<String, Map<String, String>> gudang = new HashMap<>();\n    static Map<String, Integer> terakhirDipakai = new HashMap<>();\n\n    static int nomorSesi = 1;\n    static int menit = 0;             // jam palsu, biar hasilnya selalu sama\n    static final int BATAS_DIAM = 30; // mati setelah 30 menit menganggur\n\n    // Yang dikerjakan server SETELAH sandi terbukti benar.\n    static String buatSesi(String user) {\n        String id = \"S\" + nomorSesi;  // aslinya panjang, acak, tak tertebak\n        nomorSesi++;\n        Map<String, String> isi = new HashMap<>();\n        isi.put(\"user\", user);        // session.setAttribute(\"user\", user)\n        gudang.put(id, isi);\n        terakhirDipakai.put(id, menit);\n        System.out.println(\"  <- Set-Cookie: JSESSIONID=\" + id);\n        return id;\n    }\n\n    // Dipanggil di SETIAP permintaan, sebelum controller mana pun jalan.\n    static String siapaIni(String cookie) {\n        Integer kapan = terakhirDipakai.get(cookie);\n        if (kapan == null) return null;       // tak dikenal / sudah dibuang\n        if (menit - kapan > BATAS_DIAM) {     // terlalu lama menganggur\n            gudang.remove(cookie);\n            terakhirDipakai.remove(cookie);\n            return null;\n        }\n        terakhirDipakai.put(cookie, menit);   // tiap akses memperpanjang\n        return gudang.get(cookie).get(\"user\");   // session.getAttribute\n    }\n\n    static void minta(String jalur, String cookie) {\n        String tampil = cookie.isEmpty() ? \"(tanpa cookie)\"\n                                         : \"Cookie: JSESSIONID=\" + cookie;\n        String user = siapaIni(cookie);\n        System.out.println(\"menit \" + menit + \"  GET \" + jalur\n                + \"  \" + tampil);\n        if (user == null) {\n            System.out.println(\"  -> 302 ke /login  server tak kenal kamu\");\n        } else {\n            System.out.println(\"  -> 200 halaman untuk \" + user);\n        }\n    }\n\n    public static void main(String[] args) {\n        minta(\"/items\", \"\");                 // belum login sama sekali\n\n        System.out.println(\"menit \" + menit + \"  POST /login  budi, cocok\");\n        String cookie = buatSesi(\"budi\");\n\n        menit = 5;\n        minta(\"/items\", cookie);             // masih orang yang sama\n\n        menit = 50;                          // 45 menit tak disentuh\n        minta(\"/items\", cookie);             // inilah \"kok tiba-tiba logout\"\n\n        System.out.println(\"menit \" + menit + \"  POST /login  budi, cocok\");\n        cookie = buatSesi(\"budi\");           // nomor sesinya BEDA\n        minta(\"/items/61\", cookie);\n\n        System.out.println(\"menit \" + menit + \"  POST /logout\");\n        gudang.remove(cookie);               // session.invalidate()\n        terakhirDipakai.remove(cookie);\n        minta(\"/items/61\", cookie);          // cookie lama tak berarti lagi\n    }\n}"
     },
     {
+     "heading": "Identitas pelaku diambil dari sesi",
      "body": [
       "Sekarang soal yang tertunda sejak materi Service. Di sana ada method",
       "ini:",
@@ -4637,6 +4662,7 @@
      ]
     },
     {
+     "heading": "Bug hak akses yang tidak pernah aktif",
      "body": [
       "Kisah nyata: bug yang membuka semua pintu",
       "",
@@ -4804,6 +4830,7 @@
      ]
     },
     {
+     "heading": "Memastikan database yang dipakai aplikasi",
      "body": [
       "Satu lagi: jangan sampai salah database",
       "",
@@ -4966,6 +4993,7 @@
      "code": "import java.util.Map;\nimport java.util.Properties;\n\n// Meniru cara Spring mengisi ${NAMA} dari variabel lingkungan saat start.\npublic class IsiPlaceholder {\n\n    static String isi(String nilai, Map<String, String> lingkungan) {\n        int awal = nilai.indexOf(\"${\");\n        if (awal < 0) return nilai;              // tidak ada placeholder\n        int tutup = nilai.indexOf('}', awal);\n        String nama = nilai.substring(awal + 2, tutup);\n\n        String dari = lingkungan.get(nama);\n        if (dari == null)\n            throw new IllegalStateException(\n                    \"Variabel lingkungan \" + nama + \" belum diisi\");\n\n        return nilai.substring(0, awal) + dari + nilai.substring(tutup + 1);\n    }\n\n    public static void main(String[] args) {\n        // Isi application-prod.properties, dibaca apa adanya.\n        Properties konfig = new Properties();\n        konfig.setProperty(\"jdbc.url\",\n                           \"jdbc:oracle:thin:@//10.10.1.187:1521/XE\");\n        konfig.setProperty(\"jdbc.username\", \"BIFAMS_FS\");\n        konfig.setProperty(\"jdbc.password\", \"${DB_PASSWORD}\");\n\n        // Di server sungguhan isinya datang dari System.getenv().\n        Map<String, String> lingkungan =\n                Map.of(\"DB_PASSWORD\", \"sandi-dari-server\");\n\n        String[] kunci = {\"jdbc.url\", \"jdbc.username\", \"jdbc.password\"};\n        for (String k : kunci) {\n            String hasil = isi(konfig.getProperty(k), lingkungan);\n            System.out.println(k + \" = \" + hasil);\n        }\n\n        // Variabel yang belum dipasang: aplikasi harus BERHENTI di sini,\n        // bukan jalan terus lalu gagal saat pengguna pertama memakainya.\n        try {\n            isi(\"${SMTP_PASSWORD}\", lingkungan);\n        } catch (IllegalStateException e) {\n            System.out.println(\"gagal start: \" + e.getMessage());\n        }\n    }\n}"
     },
     {
+     "heading": "Rahasia, Git, dan berkas .gitignore",
      "body": [
       "Seluruh folder proyek masuk Git",
       "",
@@ -5223,6 +5251,7 @@
      "code": "// --- DAO: satu pernyataan, tidak ada celah di tengah ---------------------\npublic int kurangiStok(Long itemId, int jumlah) {\n    return em.createNativeQuery(\n            \"UPDATE item SET stok = stok - ?, version = version + 1 \"\n          + \" WHERE id = ? AND stok >= ?\")\n        .setParameter(1, jumlah)\n        .setParameter(2, itemId)\n        .setParameter(3, jumlah)\n        .executeUpdate();          // berapa baris yang benar-benar berubah\n}\n\n// --- Service: nol baris = ditolak, bukan error ---------------------------\n@Transactional\npublic void catatKeluar(Long itemId, int jumlah, String namaPetugas) {\n    int baris = itemDao.kurangiStok(itemId, jumlah);\n    if (baris == 0)\n        throw new AturanDilanggar(\"Stok tidak mencukupi, muat ulang.\");\n\n    catatMutasi(itemId, MovementType.OUT, jumlah, namaPetugas);\n}\n\n// --- Controller: yang kalah diberi kalimat yang bisa ditindaklanjuti -----\ntry {\n    stockService.catatKeluar(id, qty, petugasLogin());\n    ra.addFlashAttribute(\"success\", \"Mutasi tersimpan.\");\n} catch (ObjectOptimisticLockingFailureException e) {\n    ra.addFlashAttribute(\"error\",\n            \"Data item ini baru saja diubah petugas lain. \"\n          + \"Muat ulang halaman, periksa stoknya, lalu coba lagi.\");\n}"
     },
     {
+     "heading": "Memancing race condition dan jebakan synchronized",
      "body": [
       "Kenapa bug ini selalu lolos pengujian",
       "",
@@ -5481,6 +5510,7 @@
      "code": "# ===== File: docker-compose.yml =====\nservices:\n  db:\n    image: postgres:16\n    environment:\n      POSTGRES_DB: bifams\n      POSTGRES_USER: bifams\n      POSTGRES_PASSWORD: ${DB_PASSWORD}\n    volumes:\n      - data-db:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U bifams\"]\n      interval: 5s\n      retries: 10\n\n  app:\n    build: .\n    ports:\n      - \"8080:8080\"\n    environment:\n      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/bifams\n      SPRING_DATASOURCE_USERNAME: bifams\n      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}\n    depends_on:\n      db:\n        condition: service_healthy\n\nvolumes:\n  data-db:\n\n\n# ===== File: .env =====\nDB_PASSWORD=sandi-untuk-di-laptop-saja"
     },
     {
+     "heading": "Perintah Docker yang dipakai sehari-hari",
      "body": [
       "Perintah yang dipakai sehari-hari",
       "",
@@ -5617,6 +5647,7 @@
      ]
     },
     {
+     "heading": "Akibat shutdown.sh dan tiga bentuk deploy",
      "body": [
       "Akibat shutdown.sh yang belum pernah disebut",
       "",
@@ -5961,6 +5992,7 @@
      "code": "@WebMvcTest(ItemController.class)\nclass ItemControllerTest {\n\n    @Autowired\n    private MockMvc mockMvc;\n\n    @MockBean\n    private StockService stockService;     // service asli diganti boneka\n\n    @Test\n    @WithMockUser(username = \"budi\", roles = \"REQUESTER\")\n    void requesterTidakBolehMengubahStok() throws Exception {\n        mockMvc.perform(post(\"/items/1/stock\")\n                        .param(\"type\", \"OUT\")\n                        .param(\"qty\", \"5\")\n                        .with(csrf()))\n                .andExpect(status().isForbidden());\n\n        verify(stockService, never())\n                .catatMutasi(anyLong(), any(), anyInt());\n    }\n\n    @Test\n    @WithMockUser(roles = \"REQUESTER\")\n    void requesterTetapBolehMelihatDaftar() throws Exception {\n        mockMvc.perform(get(\"/items\"))\n                .andExpect(status().isOk())\n                .andExpect(view().name(\"item/list\"));\n    }\n}"
     },
     {
+     "heading": "Uji integrasi dan kapan uji berbohong",
      "body": [
       "Uji integrasi: waktu bonekanya disingkirkan",
       "",

@@ -399,7 +399,9 @@ langit malam biru-hitam + rentang kuningan (`--nyala`) + verdigris
 (`--tumbuh`); antarmuka Jost (`--f-judul`, `--f-ui`), judul besar Bodoni Moda
 (`--f-plakat`, didefinisikan di `body`), prosa tetap Atkinson. Kaca buram
 (backdrop-filter) sudah dibuang dari bilah dan panelnya: riset 2026-10-18
-menandainya sebagai ciri template AI paling mudah dikenali. `--rel-tinggi`
+menandainya sebagai ciri template AI paling mudah dikenali. Pada 2026-10-28
+kaca itu KEMBALI di bilah atas saja, atas permintaan eksplisit pemilik (lihat
+"Kaca cair di bilah atas"); panel "Lainnya" tetap padat. `--rel-tinggi`
 (80 px) tetap arti "apa yang ada di atasku" untuk semua yang menempel.
 
 **Terminal dan web wajib menampilkan ISI yang sama.** Tata letaknya memang
@@ -694,6 +696,122 @@ lagi di badan halaman. Tautan "kembali ke bahasa" dan tombol maju/mundur cuma
 ada di strip — itu sebabnya pembaca materi kehilangan `.materi-balik` dan ruang
 kerja latihan kehilangan kaki "latihan sebelumnya/berikutnya".
 
+**Strip konteks selebar ISI, bukan selebar jendela** (2026-10-28, permintaan pemilik: "untuk bar BAB
+itu tolong disesuaikan dong jangan kepanjangan seperti itu", dengan tangkapan layar jendela 1853 px).
+`#konteks` dulu membentang selebar `#panggung`: tombol kembali di x=16 dan panah di x=1837, sementara
+isi pembaca materi cuma 271 sampai 1583, jadi kedua ujung strip terpisah jauh dari isinya. Sekarang
+`--konteks-maks` (1312 px, lebar tiga kolom pembaca materi: daftar bab 248, kolom baca, peta 208, dan dua
+celah; terukur sama di 1440 sampai 2560 px) membatasinya lewat `width: 100%; max-width; margin-inline:
+auto`. Pada jendela 1440 px ke atas tepi strip persis sejajar dengan daftar bab dan peta halaman; di
+jendela yang lebih sempit tidak ada yang berubah. Satu batas untuk SEMUA layar yang memakai strip
+(bahasa, materi, kuis, latihan), bukan satu per jenis layar: kelas ukuran (`lebar`, `kolom`) menempel di
+`#layar`, saudara SESUDAH strip, dan CSS tidak bisa memilih saudara sebelumnya tanpa `:has()`. Suntingan
+CSS-nya sengaja net-zero baris (token digabung ke baris `--konteks-tinggi`, aturan ke baris `display:
+flex`, keterangan menggantikan dua baris komentar) supaya alamat `gaya.css:NNNN` yang dirujuk berkas lain
+tidak bergeser. Pagarnya `uji/manual/strip-konteks.mjs` (26 pemeriksaan di empat lebar materi ditambah
+bahasa dan latihan; hijau pada kode baru, 8 merah pada salinan berperilaku lama) dan
+`TestStripKonteksSelebarIsi`. Batasnya: bila kolom pembaca materi diubah, 1312 harus dihitung ulang (skrip
+menangkapnya lewat pemeriksaan sejajar di 1440 px ke atas), dan kesejajaran di 1280 px tidak diukur
+karena peta halaman belum tampil di sana.
+
+**Lembar baca: prosa sempit, pelat lebar, dan bug alamat Ruang Coba** (2026-10-29, sesudah debat 17 agen:
+4 riset, 8 perancang, 5 kritikus; pemilik: "layar materi ini juga masih kaku dan membuat ngantuk saat
+belajar ... rombak desainnya"). Hasil debat lengkap (fakta terkoreksi, tiga desain, keputusan yang menunggu
+pemilik) ada di memori `debat-desain-pembaca-materi-2026-10-29`; yang sudah DIBANGUN: fondasi (empat butir
+pertama), siluet baru (pelat gelap, rel terlipat, meta, callout bersimbol, "Cara memecahkannya" terlipat),
+dan judul bagian:
+
+* **Bug Ruang Coba (sudah ada sebelum perombakan).** `isi.bagian_materi` memecah bagian yang punya `body`
+  DAN `code` jadi dua blok, jadi indeks blok (`m.bagian[i]` di klien, anak ke-i `<article>`) bergeser dari
+  indeks `sections`. Tautan Ruang Coba mengirim indeks blok, sedangkan `/api/materi/contoh` membaca
+  `m["sections"][bagian]`: 807 dari 2.757 blok kode (256 materi) salah alamat, 560 berujung galat 409/404 dan
+  247 membuka kode LAIN, tanpa satu galat pun di klien (tes kontrak hanya memeriksa bentuk). Perbaikannya
+  aditif: blok `kode` kini membawa `bagian` (indeks data), dan kedua antarmuka (`BlokKode.tsx`,
+  `layar-belajar.js`) memakainya (`b.bagian ?? i`, jadi server lama tetap terbaca). Indeks BLOK tetap
+  dipakai peta bagian, pintasan, dan `children[i]`; indeks DATA dipakai Ruang Coba, kunci Tebak, dan
+  `visual.setelah`. Ada TIGA ruang indeks, jadi desain apa pun yang menambah unit atau langkah harus memilih
+  satu secara sadar. `TestAlamatBlokKodeRuangCoba` menyapu seluruh korpus (merah pada kode lama).
+* **H1 materi 66 px adalah bug urutan CSS**, bukan keputusan: `.kepala-materi h1` (sekitar 41 px; komentarnya
+  sendiri bilang "judul raksasa cuma mendorong prosa ke bawah lipatan") kalah dari `.kepala-besar h1` (66 px)
+  karena aturan itu ditulis belakangan dan header membawa KEDUA kelas. Sekarang aturan 66 px memakai
+  `.kepala-besar:where(:not(.kepala-materi)) h1` (net-zero baris, spesifisitas layar lain tidak berubah).
+* **Baris prosa 99 karakter, bukan 72**: `72ch` mengukur lebar angka nol (Atkinson 0,648 em), jadi 791 px. Yang
+  menggerakkan penggeser "Lebar kolom baca" (`--baca`) memagari SELURUH `.prosa`, kode ikut. Blok "lembar
+  baca" di kaki `gaya.css` memisahkannya: prosa (`.par`, `ul`, `ol`, `h2`) = tiga perempat `--baca`
+  (593 px, sekitar 75 huruf, tetap mengikuti penggeser), kode, tabel, dan gambar tetap selebar pelat
+  (790 px, karena p99 baris kode 84 kolom: kolom 590 px hanya memuat 33% blok kode tanpa gulir mendatar).
+  Rata kiri, jadi H1, prosa, dan pelat berbagi tepi yang sama. Blok kode dapat penanda tepi kiri 3 px
+  (kuningan bila bisa dijalankan); tidak ada token warna yang berubah (kontras sintaks tidak bergeser).
+* **Header tidak lagi mengulang bab dan posisi** yang sudah dibawa strip konteks: label "Bab N · judul" dan
+  pil "materi N dari M" dibuang untuk kurikulum berbab; sisa satu pil tingkat.
+* **Tema yang diukur dulu: TERANG.** Pemilik membaca di tema terang (tangkapan layarnya krem), padahal
+  bawaan aplikasi gelap. Di terang halaman `#faf9f6` dan kode `#f6f6f7` hanya 1,03:1, jadi kode tidak
+  punya siluet. Jawabannya pelat gelap (di bawah), bukan menggelapkan token sintaks di atas kertas terang.
+* **Pelat kode gelap di tema terang** (setelah pemilik menegur "kamu gada sama sekali merombak design"):
+  `[data-tema="terang"] .blok-kode` di dalam `@media screen` memasang ulang SELURUH token tema gelap
+  (salinan `:root`, termasuk `--k-*`) pada pelat, dan menurun ke editor, hasil, dan jejak di dalamnya.
+  Kontras sintaks yang sudah diukur di tema gelap ikut berlaku tanpa angka baru (latar 0,006 luminans,
+  teks 15,3:1); `test_pelat_gelap_di_tema_terang_adalah_salinan_tema_gelap` menuntut tiap token SAMA
+  dengan `:root`. Hanya `.blok-kode` (kode sungguhan dengan kepala Salin/Jalankan) yang gelap. Blok `pra`
+  (contoh sejajar dan diagram di dalam prosa) tetap terang, dan itu sengaja: gelap berarti "ini diketik
+  atau dijalankan", terang berarti "ini dibaca". Cetak tetap terang (`@media screen`). Pemilih ber-kombinator,
+  jadi aman terhadap pagar POPULASI. Penanda tepi kiri kini `border-left: 3px` (kuningan bila bisa
+  dijalankan), bukan `box-shadow` (bayangan dalam tak terlihat di atas pelat gelap).
+* **Rel kiri melipat bab** (hanya `@container panggung (min-width: 1130px)`, tiga kolom): judul bab jadi
+  tombol `aria-expanded`, butir materi bab non-aktif mendapat `materi-rel-tutup` dan hilang. DOM TETAP DATAR
+  (butir tetap anak langsung daftar), jadi pintasan dan pengukur yang membaca `li` tidak berubah; yang
+  terbuka secara bawaan hanya bab yang memuat materi aktif. Dari 23 butir HTML hanya 10 tampak.
+* **"Cara memecahkannya" terlipat** (`komponen/IsiProsa.tsx`): bagian "Di dunia nyata" ada di SEMUA materi
+  dan kata kuncinya sudah ada di data, jadi tidak butuh satu kata konten baru. Tombol asli
+  (`aria-expanded`, `aria-controls`), isi `hidden` (bukan `<details>`, supaya cetak cukup menimpa
+  `display: block` tanpa `!important`). Semuanya terjadi DI DALAM `<section>` bagiannya, jadi
+  `children[i]` artikel tidak bergeser.
+* **Baris meta di kepala**: "sekitar N menit · N kode · N gambar" (`ringkasMateri` di `Belajar.tsx`),
+  menit dari server (`api.materi` -> `waktu.menit_materi`, satu rumus dengan halaman bahasa). Callout
+  `Jebakan:`/`Aturan:` dapat simbol CSS (`::before`: segitiga `--salah`, siku `--nyala`), tanpa markup
+  baru. Gambar konsep diperbesar (`Visual.tsx`, `maxWidth` 1,3 kali lebar bawaan).
+* **Efek melawan kantuk TIDAK terbukti.** Semua ini hipotesis desain dari debat dan ukuran peramban;
+  belum ada pelajar yang membacanya berjam-jam. Server milik pemilik harus di-restart agar `isi.py`
+  dan `api.py` baru aktif (CSS dan bundel langsung berlaku saat dimuat ulang).
+* **Judul bagian untuk prosa panjang** (2026-10-29, `alat/tambah_judul.py`). 612 bagian prosa sedikitnya
+  150 kata (bukan bagian pertama) berdiri tanpa satu pun penanda di tengah halaman; sekarang semuanya
+  punya `heading`, jadi `h2` di layar dan peta "Di halaman ini" memuatnya (HTML materi 4: peta berisi
+  tujuh judul asli, bukan kalimat pertama yang dipotong). Hanya field `heading` yang bertambah, sebagai
+  kunci PERTAMA bagian: tidak ada bagian yang dipecah, disisipkan, atau digeser, jadi ketiga ruang indeks
+  di atas tidak bergeser. Judulnya ditulis enam agen (Sonnet, masing-masing seperenam korpus) dan digerbang
+  mesin: 8 sampai 52 huruf, 2 sampai 8 kata, huruf kapital hanya di awal dan nama atau singkatan,
+  tanpa dash, emoji, atau tanda baca penutup, bukan kata umum kosong ("Penjelasan", "Contoh"), tanpa
+  kosakata tempelan ("menyelami", "komprehensif"), unik di dalam materinya dan bukan judul materi itu
+  sendiri. Penerapnya membuktikan sesudah menulis bahwa tiap bagian sama persis selain `heading`, dan
+  mengembalikan berkasnya kalau tidak. Cara memakainya: `calon <kurikulum,...> naskah.txt` menulis daftar
+  bagian yang butuh judul, `terap hasil.json [--tulis]` memeriksa dan menulis. Batas yang disadari: banyak
+  judul berbentuk daftar ("A, B, dan C") karena banyak bagian memuat tiga pokok sama berat (506 dari 612
+  memuat "dan"), dan judul 150 kata ke bawah tidak diberi (bagian pendek mengalir mengikuti judul
+  sebelumnya). Pagarnya `tests/test_judul_bagian.py` (7 tes): nol bagian prosa panjang tanpa judul, nol judul
+  bermasalah gaya, dan gerbang serta penyisipnya diuji sendiri.
+* **`periksa_gaya.py` dulu buta terhadap judul.** Ia hanya membaca badan materi, jadi 37 judul berhuruf
+  kapital penekanan ("pojok KIRI ATAS", "kapan async TIDAK perlu") dan empat judul ber-em dash tidak pernah
+  terhitung. Sekarang `python3 alat/periksa_gaya.py judul` menghitungnya (kapital penekanan, dash, emoji,
+  tempelan, umum, kembar), dan semuanya sudah dibereskan (42 judul disunting, `ISI`, `TIDAK`, `BUKAN`, dll.
+  jadi huruf kecil; singkatan asli seperti ROC, PKCE, NGINX didaftarkan di `AKRONIM`). Pindai kosakata AI
+  (30-an pola Indonesia: "peran penting", "lanskap", "tidak hanya ... tetapi juga", "dengan demikian", ...)
+  atas seluruh prosa menemukan korpusnya sudah bersih: dari 760 ribu kata hanya sekitar 50 kecocokan, hampir
+  semuanya pemakaian wajar ("unggul" di perbandingan, "makanya" di nada ngobrol). Frasa "saat materi ini
+  ditulis" (187 baris di 12 kurikulum ranah) SENGAJA dibiarkan: ia mencap versi dan bulan rilis di samping
+  angka versinya, yaitu fakta yang berumur, bukan hiasan.
+* **Sengaja belum dikerjakan, beserta sebabnya.** Gambar menurut peran (medan penempatan per
+  blok TIDAK ADA di skema: `_MEDAN_UMUM` hanya `setelah, jenis, judul, ket`; satu perancang sempat
+  mengklaim `setelah_blok` ada, dan ia salah); "Tebak dulu" bawaan di tiap materi (median 29 baris per
+  blok, 41% membocorkan jawaban lewat komentar ujung baris, hanya sekitar 11% materi cocok, jadi fitur itu
+  hanya akan hidup di sebagian kecil halaman; "Cara memecahkannya" yang terlipat sudah memberi latihan
+  mengingat di SEMUA materi); desain "Lembar Bab" dan "Rasi Baca" dari debat.
+* Pagarnya: `uji/manual/lembar-baca.mjs` (50 pemeriksaan: empat tema plus pecahkan, rel, dan callout; 18 dari
+  27 pemeriksaan awal merah pada salinan berperilaku lama), `TestLembarBaca` (11 tes),
+  `TestAlamatBlokKodeRuangCoba` (3 tes), dan `tests/test_judul_bagian.py` (7 tes). Empat pagar "blok terakhir"
+  (`TestKacaCair`, `TestTombolKaca`, `TestPenutupDasbor`, `TestDasborHidup`) menyesuaikan jumlah blok
+  susulan. Batas yang disadari: semua angka layout desain yang BELUM dibangun adalah hitungan dari token,
+  bukan ukuran peramban; efek melawan kantuk adalah hipotesis, tidak terbukti.
+
 **Jangan pernah memakai `scrollIntoView` untuk menggulir jalur materi.** Ia
 menggulir SEMUA leluhur yang bisa digulir, termasuk dokumen — jadi membuka
 materi ke-13 lewat navigasi dalam aplikasi mendaratkan pembacanya sembilan
@@ -945,6 +1063,724 @@ sama dengan halaman bahasa, bukan definisi kedua. `gaji` HANYA diisi dari
 halaman publik yang memang untuk peran itu (tanggal diperiksa wajib ada);
 angka dari halaman "pendekatan" sengaja dibuang.
 
+**Kuis kecocokan Peta Karier: satu soal sekali tampil, jawaban tercatat di
+samping** (2026-10-28, permintaan pemilik: lebih interaktif dan tidak
+membingungkan). Kuis lama menampilkan enam soal dan 24 pilihan sekaligus,
+pilihan terpilih hanya dibedakan garis tipis, tombol hasilnya mati tanpa
+alasan, hasilnya cuma nama profesi dengan "Cocok karena: Antarmuka web", dan
+"Lihat profesi" tidak menggulir ke panelnya (ada di atas kuis, jadi tombolnya
+terlihat tidak berbuat apa-apa). Yang berlaku sekarang, masing-masing dengan
+sebabnya:
+
+* Pilihan adalah radio asli (`fieldset` + `legend`), bukan tombol
+  `aria-pressed`: panah, kelompok, dan "1 dari 4" datang gratis. Yang terpilih
+  ditandai centang, nomor terisi, dan huruf tebal, bukan warna saja. Tombol
+  1 sampai 4 juga memilih. Radionya disembunyikan dengan `appearance: none`,
+  bukan `opacity`.
+* Satu tombol maju yang berganti arti (`aksiMaju` di `layar/kuis-cocok-teks.ts`:
+  lewati, lanjut, lihat hasil, atau "Ke soal N yang belum dijawab"), dan tidak
+  pernah ada tombol mati atau buntu. Syarat minimum (tiga jawaban) disebut
+  dengan angkanya ("Jawab 2 soal lagi"). Penjaga klik ganda memakai ref, bukan
+  `disabled`.
+* Daftar jawaban di samping merekam kalimat pilihannya sendiri dan tiap
+  barisnya membuka soalnya, jadi jawaban bisa diubah kapan saja. Tidak ada
+  pilihan yang terpilih dari awal.
+* Hasil menjelaskan JAWABAN MANA yang membawa ke tiap profesi. `skor_kuis`
+  mengembalikan `dari` (soal, keahlian) yang menjelaskan SELURUH skor: jumlah
+  bobotnya sama dengan skor, dijaga `TestKuisAlasan` atas 15.625 kombinasi
+  jawaban. Layar mengutip kalimat jawabannya dan memuat `ringkas` profesinya.
+  Tidak ada label tentang siapa orangnya, dan catatan "bukan penilaian
+  kemampuan" ada di hasil. "Lihat profesi" menggulir ke `#kr-panel`;
+  "Jadikan tujuanku" tetap keputusan orangnya. Server lama tanpa `dari` tetap
+  terbaca (cadangan "Cocok karena").
+
+Prinsip psikologinya (beban ingatan kerja, keadaan sistem terlihat, kendali dan
+bisa dibalik, transparansi alasan) adalah hipotesis desain, belum diuji pada
+pelajar sungguhan. Dijaga `uji/manual/kuis-karier.mjs` (62 pemeriksaan, sebelas
+mutan sumber dan CSS semuanya merah), `TestKuisAlasan`, `TestKuisKarierWizard`,
+dan entri kontrak `/api/karier/kuis` yang kini diuji saat berisi. Catatan isi
+yang disadari: soal 5, opsi "Fokus sendiri lalu menyerahkan hasil yang rapi",
+berbobot 1 pada tiga keahlian (opsi lain 3), jadi memilihnya nyaris tidak
+menggerakkan hasil. Itu keputusan isi `data/karier.py` dan tidak diubah.
+
+**Tidak ada `<select>` native di aplikasi ini; semua dropdown memakai
+`Pilihan`** (2026-10-28, dilaporkan pemilik untuk Perencana Peta Karier:
+dropdown menutup sendiri begitu klik dilepas dan baru bertahan kalau tombol
+ditahan; sesudahnya kedelapan `<select>` yang ada ikut diganti). Popup `<select>` adalah jendela terpisah yang
+tidak bisa dikendalikan halaman. Yang terukur di Chrome, dengan popup terbuka
+yang terdeteksi lewat tombol panah yang ditelan popup (nilai select tidak
+berubah): render ulang komponen, penulisan `option.selected`, gulir, blur, dan
+pointer TIDAK menutupnya; hanya ubah ukuran jendela dan elemen yang dipasang
+ulang. Tidak satu pun terjadi di aplikasi ini: klik pada select tidak
+menimbulkan mutasi DOM, gulir, atau penulisan opsi. Jadi gejalanya berasal dari
+popup native di peramban dan sistem jendela (mesin ini Wayland/GNOME, dengan
+Chrome 155 dan Firefox terpasang), dan TIDAK bisa direproduksi dari Chrome
+headless: penyebab persisnya tidak terbukti, hanya jalur kegagalan di sisi
+halaman yang terbukti tidak ada. Perbaikannya menghindari popup itu:
+`komponen/Pilihan.tsx` (select-only combobox APG, logika murni di
+`pilihan-teks.ts`) menggambar daftarnya di dalam halaman, jadi terbuka saat
+diklik, tetap terbuka, dan memilih cukup satu klik cepat. Empat keputusan yang
+masing-masing pernah salah di jalan:
+
+* Fokus TETAP di tombol dan `pointerdown` pada opsi di-`preventDefault`. Fokus
+  pindah ke daftar berarti `blur` menutup daftar sebelum `click` sempat memilih.
+* Opsi disorot lewat `pointermove`, bukan `pointerenter` (peramban mengirim
+  `pointerenter` palsu ke elemen yang tergulir ke bawah kursor diam).
+* Daftar menggulir ke opsi aktif HANYA bila papan ketik yang menggesernya
+  (`gulirKeAktif`). Penunjuk di atas opsi yang separuh terpotong dulu menggeser
+  isi daftar di bawah kursor, dan klik mengenai baris tetangganya (ditemukan
+  pengujian, bukan pembacaan kode).
+* Label TIDAK boleh membungkus daftar: klik pada opsi diteruskan ke tombol dan
+  membukanya lagi. Karena itu `<label htmlFor>` di luar dan `.pil-medan` berupa
+  `div`.
+
+Penangan `pointerdown` di luar dan `onBlur` tumpang-tindih di Chrome (klik di
+luar juga memindahkan fokus); yang pertama satu-satunya penutup di peramban
+yang tidak memfokuskan tombol saat diklik, jadi diuji dengan `pointerdown`
+sintetis yang tidak memindahkan fokus. Dijaga `uji/manual/pilihan-karier.mjs`
+(49 pemeriksaan, tiga belas mutan semuanya merah) dan `TestPilihanKarier`.
+Mutan "tanpa pendengar gulir" sempat LOLOS: G hanya bertanya "masih terbuka?",
+dan daftar `position: fixed` yang tertinggal di layar sementara tombolnya ikut
+halaman tidak ditagih siapa pun. G2 sekarang mengukur jarak daftar ke tombol
+sesudah halaman digulir 60 px dan menolak lulus bila halamannya tidak bergeser.
+
+Kedelapan pemakainya: Perencana (`Karier.tsx`), `BlokData.tsx` (dua: pilih
+salinan dan bahasa yang direset), `Atur.tsx`, `Pustaka.tsx` (diimpor sebagai
+`PilihanDaftar`, karena ada fungsi lokal bernama `Pilihan`), `Langit.tsx`
+(`kelasPemicu="langit-pilih"`), dan `Kerja.tsx`. Dua aturan untuk pemakai
+berikutnya, keduanya terukur: daftar digambar lewat PORTAL `position: fixed`
+(ke `#tirai` bila tombolnya di dalam dialog, kalau tidak ke `<body>`), karena
+`.jendela { overflow: hidden }` memotong daftar yang menempel di dalamnya; dan
+Escape pada `.pil-pemicu[aria-expanded="true"]` hanya menutup daftar, jadi
+`Jendela.tsx` dan `fokus-dialog.ts` melewati Escape itu (selektornya sempit,
+karena kotak ketik palet juga ber-`aria-expanded`). `TestPilihanKarier` menolak
+`<select>` baru di sumber: select baru wajib `Pilihan`.
+
+**Layar Pengantar: hero yang membuka saat digulir** (2026-10-28, permintaan
+pemilik: ia menempelkan komponen `ScrollExpandMedia`, "dengan gambar yang sesuai
+dengan konteks aplikasiku"). Komponen aslinya React/Next dengan framer-motion,
+Tailwind, dan `next/image`; aplikasi ini tidak punya satu pun, dan menambahnya
+demi satu animasi gulir melanggar aturan "pustaka hanya bila menambah kemampuan
+yang belum ada". Jadi ia ditulis ulang: `komponen/HeroGulir.tsx` (komponen),
+`komponen/hero-gulir-teks.ts` (logika isyarat, murni), dan `layar/Pengantar.tsx`
+(isi), di `#/pengantar`. Seluruh geraknya satu angka CSS, `--hg-p` (0 tertutup
+sampai 1 terbuka), yang ditulis JS ke elemen lewat ref dan disusul per bingkai
+(`susul`), bukan state React. Keputusan yang masing-masing ada sebabnya:
+
+* **Bukan pengganti Dasbor.** Dasbor meja kerja dan kalimat gulirnya sengaja
+  sudah dibuang (lihat "Dasbor = meja kerja"). Pengantar layar tersendiri yang
+  bisa dibuka dan dilewati, dijangkau dari layar mulai (profil tanpa XP) lewat
+  "Baru di sini? Lihat pengantarnya" dan dari alamatnya. Ia TIDAK masuk palet
+  perintah: urutan perintah palet diadu `banding-palet.mjs` dengan antarmuka
+  lama, dan menambah satu berarti merombak pembanding itu.
+* **Gerak penuh saja yang membajak gulir.** Pada "halus", "mati", dan
+  `prefers-reduced-motion` hero tampil SUDAH terbuka (membajak roda adalah gerak
+  akibat interaksi, WCAG 2.3.3). Yang memutuskan `gerakPenuh()`; `HeroGulir`
+  tidak membaca `data-gerak` sendiri, dan mendengarkan `tampilan-berubah` serta
+  `matchMedia` supaya mengganti tingkat gerak di tengah jalan bekerja.
+* **Papan ketik punya jalan sendiri**: Spasi, PageDown, panah, End membuka;
+  Shift+Spasi, panah atas, Home menutup; ditambah tombol "Lewati pengantar" yang
+  terlihat. Aslinya hanya roda dan sentuh. Tombol tidak dicuri dari kotak isian,
+  tombol, tautan, ringkasan, atau dialog (`PEMILIK_TOMBOL`, termasuk `#tirai`).
+* **Isi tidak dirender selama hero tertutup**, jadi tidak ada tautan tersembunyi
+  yang bisa difokuskan lewat Tab: satu-satunya yang bisa difokuskan di dalam hero
+  tertutup adalah tombol Lewati. Sesudah terbuka halaman menggulir seperti
+  biasa. Hero baru menutup lagi bila halaman sudah DIAM di puncak (`JEDA_TUTUP`,
+  350 ms) dan isyaratnya naik, dan tombol yang ditahan tidak pernah menutup:
+  tanpa jeda itu, gulir berinersia yang baru sampai di puncak ikut menutup hero
+  tepat saat orang selesai membaca ke atas. Aslinya juga memanggil
+  `scrollTo(0, 0)` di tiap peristiwa gulir; di sini isi yang belum dirender
+  membuat halaman pendek, jadi tidak ada yang perlu dikunci.
+* **Pelatnya gelap di semua tema**, seperti pelat langit di layar Langit:
+  gambarnya langit malam dan teks terangnya diukur terhadap itu. Kontras diukur
+  di peramban dari piksel latar sungguhan (persentil ke-99, teks disembunyikan
+  lebih dulu, warna teks DIBACA dari gaya, tidak diketik): judul 8,49:1,
+  petunjuk 7,56:1, tombol Lewati 13,97:1, pada p = 0, 0,5, dan 1. Dua jebakan
+  pengukurnya sudah pernah menggigit. Pengukuran pertama tombol Lewati 3,53:1
+  adalah artefak: kotak yang diukur memuat garis tepi tombol yang terang, jadi
+  yang diukur harus rentang HURUFNYA. Dan versi pertama memakai warna teks yang
+  diketik di skrip, sehingga mutan yang mengganti warna tombol dengan warna tema
+  (gelap di atas pelat gelap pada tema terang) lolos.
+* **Gambarnya tangkapan layar Langit aplikasi ini sendiri**
+  (`webapp/statik/gambar/pengantar-peta.jpg` dan `pengantar-rasi.jpg`, 173 dan
+  36 KB), dibuat `uji/manual/gambar-pengantar.mjs` dari profil "campur" yang
+  mewarnai tiap status bintang di sisi klien. Progresnya CONTOH, dan isi layar
+  menyebutnya terang-terangan ("bukan progresmu"): bintang hijau di gambar tidak
+  boleh terbaca sebagai progres orang yang melihatnya. Angka di isi dihitung dari
+  `awal.bahasa`, tidak diketik. Jalankan skripnya lagi bila tampilan Langit
+  berubah; Vite memproksi `/gambar` untuk mode dev. Posisi gambar media
+  `50% 82%` supaya bagian bawah rasi (bintang hijau, cakram kuning, cincin) tidak
+  terpotong saat media melebar menjadi 2:1.
+
+Pagarnya: `uji/banding-hero.mjs` (1.646 perbandingan SIFAT atas isyarat, bukan
+adu dengan JS lama karena tidak ada; terdaftar di tiga tempat, tujuh belas sel
+mutasi semuanya merah dengan kategori yang tepat), `uji/manual/pengantar.mjs`
+(49 pemeriksaan di peramban dengan penyaring `HANYA=A,B,...` per bagian; enam
+belas mutan atas komponen, layar, dan CSS, semuanya merah dengan alasan yang
+benar), dan `TestPengantar`. Baterai mutan itu menemukan dua kelemahan yang
+tidak kelihatan saat menulis pagarnya, dan keduanya sudah ditambal: kontras yang
+dihitung terhadap warna ketikan, dan mutan "brightness(3)" yang ternyata tidak
+melanggar sifat apa pun (kontras tetap di atas 4,5:1), jadi diganti mutan yang
+melanggar (scrim dihapus). Batas yang disadari: pemeriksaan hanya mengukur
+keadaan AKHIR, jadi kedipan "tertutup dulu baru terbuka" pada gerak selain penuh
+tidak terdeteksi (CSS `.hg[data-terbuka="true"]` memberi `--hg-p: 1` justru
+supaya kedipan itu tidak terjadi), dan tidak ada pembaca layar nyata yang diuji
+(`aria-live` lewat `umumkan()` baru terpasang, belum didengar).
+
+**Orbit bekal di Peta Karier** (2026-10-28, permintaan pemilik: komponen
+`RadialOrbitalTimeline` yang ia tempel, simpul-simpul mengorbit satu pusat
+dengan kartu rinci; "bisa implementasikan ke aplikasi ga?"). Ditulis ulang tanpa
+lucide, shadcn, maupun Tailwind: `komponen/OrbitBekal.tsx` (komponen),
+`komponen/orbit-teks.ts` (logika murni), `komponen/gerak-penuh.ts` (hook
+`useGerakPenuh`, kembaran langganan inline di `HeroGulir.tsx` yang sengaja tidak
+direfaktor), dipasang di `Karier.tsx`. Yang dikodekan data sungguhan, bukan
+angka demo seperti "Energy Level" di aslinya: pusat = kesiapan profesi yang
+dipilih, cincin dalam = bekal, cincin luar = pelengkap, cincin di tiap simpul =
+persen kurikulum itu (angka yang sama dengan halaman bahasa), hijau = selesai dan
+kuningan = sedang dikerjakan, dan "terhubung" = alternatif SETARA dalam satu
+kelompok bekal. Semua alternatif sebuah kelompok jadi simpul sendiri, tetapi
+hanya `wakil` (persen tertinggi, seri jatuh ke yang pertama, persis
+`pelajar/karier.kesiapan`) yang dihitung ke kesiapan. Keputusan yang masing-masing
+ada sebabnya:
+
+* **Orbit tinggal di BAGIAN halaman (`#kr-orbit`, sesudah grid tangga dan
+  panel), bukan di dalam panel profesi.** Percobaan pertama menaruhnya di
+  panel, dan tes peramban saya lulus nyaris semuanya; yang menolaknya
+  tangkapan layar. Panel itu kolom lengket selebar sekitar 370 px, jadi papan
+  34rem mengecil jadi 318 px: label saling menimpa, simpul cincin dalam dan luar
+  bertumpuk (jarak antar cincin 45 px lebih kecil dari diameter simpul 50 px),
+  dan label cincin bawah menimpa tombol Jeda. `TestOrbitBekal` menagih letaknya
+  (sesudah `</aside>`).
+* **Putaran hanya pada gerak penuh dan BERHENTI** saat penunjuk ada di papan,
+  saat satu simpul difokus, dan saat ada simpul terpilih (aslinya hanya saat
+  simpul dibuka, jadi mengklik simpul yang bergerak sulit), ditambah tombol Jeda
+  yang terlihat (WCAG 2.2.2). Tombol Jeda di LUAR papan, supaya fokusnya sendiri
+  tidak ikut menghentikan putaran. Sudutnya ditulis ke DOM lewat ref sebagai
+  `--or-sudut` (aslinya render ulang tiap 50 ms); CSS menghitung posisi dengan
+  rantai `rotate`, `translateX`, `rotate` balik sehingga label tetap tegak, dan
+  jari-jari memakai `cqw` dari `JARI` di `orbit-teks.ts` (satu sumber, dikirim
+  sebagai `--jd`/`--jl`).
+* **Rincian tampil di panel di samping papan**, bukan kartu yang ikut berputar
+  (menutupi simpul tetangga dan tidak punya tempat tetap untuk `aria-live`).
+  Simpul adalah tombol dengan nama lengkap ("Python, bekal, 62 persen, sedang
+  dikerjakan"), dijangkau Tab dan panah (Home, End berputar), Esc melepas
+  pilihan. Daftar bekal (`.kr-bekal`) tetap ada sebagai jalur kanonik.
+* **Orbit di-`key` dengan id profesi, dan ia TIDAK lewat komponen `Blok`**
+  (didefinisikan di dalam fungsi, jadi tipenya baru tiap render dan isinya
+  dipasang ulang: pilihan dan putaran hilang tiap panel dirender).
+
+Pagarnya: `uji/banding-orbit.mjs` (4.809 perbandingan SIFAT, termasuk 600 kasus
+acak berbenih 20261028; terdaftar di tiga tempat, 19 sel mutasi merah),
+`uji/manual/orbit-bekal.mjs` (61 pemeriksaan di peramban dengan persen yang
+disemai lewat intersepsi `/api/karier` di sisi klien, penyaring `HANYA=A,B,...`,
+`FOTO=` untuk tangkapan layar; 19 mutan sumber, komponen, dan CSS, semuanya
+merah dengan alasan yang benar), dan `TestOrbitBekal`. Baterai mutan menemukan
+TIGA kelemahan pagar yang tidak kelihatan saat menulisnya, dan ketiganya sudah
+ditambal: pemeriksaan "putaran berhenti selama ada pilihan" lolos ketika
+pilihannya dihapus karena simpul yang baru diklik masih berfokus dan fokus
+sendiri sudah menghentikan putaran (fokus harus dilepas dulu); hilangnya `key`
+tidak terdeteksi karena pilihan lama baru tampak hilang bila id-nya tak ada di
+profesi baru (harus dua profesi yang berbagi satu kurikulum, dicari dari API);
+dan warna label diukur pada label PERTAMA di DOM, yaitu simpul yang baru
+dipilih, jadi warna bawaannya (`--garis` yang gagal kontras) tidak pernah diuji
+(harus `.or-node:not(.aktif)`). Dua pelajaran untuk baterai mutan di repo ini:
+mutan yang menghapus satu-satunya pemakai impor atau variabel tidak bisa
+dibangun (`noUnusedLocals` menolaknya), jadi mutan harus tetap memakainya; dan
+satu run sempat berhenti di tengah jalan alih-alih melaporkan kegagalan
+(tiga run berikutnya bersih, penyebabnya tidak ditemukan). Batas yang disadari:
+tata letak hanya diukur di satu lebar (1440 px, wadah lebar), jadi
+`padding-inline` `.or-kolom` (yang menjaga label tepi tetap di dalam kolom saat
+wadah sempit) tidak ditagih siapa pun; dan pembaca layar nyata belum diuji.
+
+**Cakrawala bara di kartu Bara dasbor** (2026-10-28, permintaan pemilik "masukin
+ke aplikasiku" sesudah pemindaian penuh 21st.dev yang memilih "GitHub
+Contribution Graph 3D Heatmap" sebagai yang terbagus). Kartu Bara punya dua tab,
+Datar dan Cakrawala; Cakrawala menggambar 182 hari yang SAMA (`baraPetak`) sebagai
+deretan batang isometrik: `komponen/Skyline.tsx` (komponen),
+`komponen/skyline-teks.ts` (logika murni), dan satu perubahan di `BlokBara`
+(`layar/Dasbor.tsx`). Kodenya BUKAN salinan komponen 21st.dev (itu butuh Tailwind
+dan palet hijau GitHub); hanya gagasannya. Yang dikodekan: satu batang = satu
+hari, tingginya LINEAR terhadap XP (terhadap yang terbesar antara target harian
+dan hari terbaik, jadi satu hari 450 XP membuat hari lain rendah, dan itu
+jujur), warna puncak = tingkat yang sama dengan sel datar, sumbu panjang =
+minggu, Senin di belakang. Keputusan yang masing-masing ada sebabnya:
+
+* **Datar tetap bawaan dan kanonik.** Pilihannya diingat di localStorage
+  (`belajar.bara.tampil`, teks JSON); nilai yang tidak dikenal (kunci lama,
+  disunting tangan, bukan JSON) jatuh ke datar tanpa galat. Skrip peramban lama
+  mengukur `.bara-petak`, jadi bawaan cakrawala akan mematahkan mereka tanpa
+  alasan. Konsekuensinya fitur ini ditemukan lewat tombol, bukan di depan mata.
+* **Kisi datar dipin ulang sesudah kembali dari cakrawala**:
+  `usePinKeHariIni(petakRef, geserRef, datar ? p : null)`. Efek pin bergantung
+  pada tanda, dan kisinya hilang dari DOM selama cakrawala tampil; dengan tanda
+  yang sama efeknya tidak berjalan ulang dan kisinya terbuka di bulan pertama.
+  Petunjuk "geser ke kiri" hanya di tampilan datar.
+* **Hover dan klik TIDAK menavigasi, dan keterangan hari tampil di baris di bawah
+  gambar**, bukan tooltip melayang (menutupi batang tetangga dan tidak punya
+  tempat tetap untuk pembaca layar). Hanya satu perhentian Tab (`.sk-papan`,
+  `role="group"`); gambarnya `aria-hidden`. Panah, Home, End, PageUp, PageDown
+  menjelajah; keterangannya diumumkan lewat `umumkan()` HANYA saat papan ketik
+  yang berpindah (hover yang ikut diumumkan jadi hujan kalimat bagi pengguna
+  pembaca layar yang menyentuh tetikus); Alt, Ctrl, dan Meta bersama panah
+  dilepas (Alt+Panah = Mundur/Maju peramban). Panah bawah dan atas tidak
+  menyeberang minggu; kiri dan kanan dijepit di ujung (dari minggu terakhir yang
+  belum penuh orang mendarat di hari ini).
+* **Garis sorot digambar SESUDAH semua batang** dan melintasinya: hari yang
+  dipilih lewat papan ketik boleh tersembunyi di belakang batang yang lebih
+  tinggi, dan harus tetap terlihat terpilih.
+* **Gerak masuk hanya pada gerak penuh, dikunci saat dipasang, dan berangkat
+  dari `scaleY(0)` dengan `animation-fill-mode: backwards`.** Keadaan akhirnya
+  keadaan alami batang (tanpa transform tertinggal). Dikunci: gerak yang
+  dinyalakan SESUDAH gambar tampil tidak memutar ulang animasi di depan mata
+  orang yang sedang membaca. `backwards` penting, bukan `both`: selama batang
+  menunggu gilirannya (jeda per minggu 16 ms) ia harus sudah berskala nol, kalau
+  tidak ia terlihat penuh lalu mendadak jatuh ke nol. Skrip peramban menahannya
+  di `currentTime = 0` untuk membuktikannya tanpa menebak waktu.
+* **Urutan `batang` ADALAH urutan gambar**, tanpa pengurutan lagi. Awalnya ada
+  `urutGambar` (kunci linear `kolom*0,14 + baris*0,66`), dan baterai mutasi
+  menemukan mutan "urutan diabaikan" LOLOS: indeks hari sudah minggu demi minggu
+  dan Senin dulu, yang otomatis urutan pelukis yang benar (untuk dua sel
+  `a <= b` di kedua sumbu, indeks `a` selalu lebih kecil). Pengurutannya kode
+  berlebih, bukan pagar yang tumpul, jadi dibuang bersama tesnya. Urutan lain
+  yang sama-sama menghormati urutan parsial (baris demi baris) juga sah, jadi
+  hanya urutan yang benar-benar melanggar yang dijadikan mutan.
+* **Kelas tingkat ditulis UTUH** (`KELAS_TINGKAT = ["sk-t0", ...]`), tidak dirakit
+  dari awalan: pagar kelas di `tests/test_web.py` membaca literal, dan
+  `"sk-t" + tingkat` terbaca sebagai kelas bernama `sk-t` tanpa aturan sambil
+  `sk-t0..3` terbaca yatim.
+* **Kartunya berkolom lentur, hanya bila memuat cakrawala**
+  (`.meja-ritme:has(.sk-wadah)` di dalam `@supports selector(:has(*))`).
+  `.meja-ritme` di lapisan desktop berkolom `max-content` (sisa sampul yang tidak
+  lagi digambar di React), jadi kartu mengikuti lebar isinya, dan svg berlebar
+  100% di kolom seperti itu jatuh ke ukuran bawaan 300 px. Terukur: 300 px
+  menjadi 1024 px sesudah aturan itu. Tampilan datar tidak berubah.
+* **Label bulan HTML, bukan teks SVG**, supaya mengikuti `rem` (setelan "Ukuran
+  huruf"). Ruang tulis di bawahnya (`RUANG_LABEL`) tidak berlebih: pada huruf
+  sangat besar label tetap di dalam bidang gambar.
+* **Teks di dalam gambar tidak diredupkan dengan `opacity`**, CSS-nya tanpa
+  transisi dan tanpa pemilih `html`; satu-satunya `@keyframes` menyentuh
+  `transform` saja. Cincin fokus terlihat (`outline` 2 px) karena kelompoknya
+  satu-satunya perhentian Tab di sana.
+
+Pagarnya: `uji/banding-skyline.mjs` (9.230 perbandingan SIFAT dengan oracle
+independen dan kasus acak berbenih 20261028; terdaftar di tiga tempat, 45 sel
+mutasi dalam tiga baterai, semuanya merah dengan kategori yang tepat),
+`uji/manual/skyline.mjs` (112 pemeriksaan di peramban pada profil UJI yang
+riwayat hariannya disemai, 182 hari termasuk jeda dan tiga hari ledakan;
+penyaring `HANYA=A,B,...`, `FOTO=`; kasus "semua hari kosong" disemai lewat
+intersepsi `/api/dasbor` di sisi klien dan ditandai simulasi), 27 mutan sumber
+dan CSS (semuanya merah dengan alasan yang benar, satu mutan setara dibuang
+bersama `urutGambar`), dan `TestSkyline`. Penyusunan mutan menunjukkan tiga
+kelemahan pada PEMBANDING saya sendiri sebelum satu pun dijalankan: bentuk `sisi`
+dan `siluet` hanya diperiksa jumlah titiknya (geometrinya tidak), `RUANG_LABEL`
+dan `TINGGI_MAKS` tidak dipatok siapa pun, dan perbandingan tinggi memakai
+`tinggi` yang sudah dibulatkan 0,01 satuan (0,34 px) terhadap toleransi
+koordinat. Tiga jebakan alat: alat penyunting MENAFSIRKAN `\u2014` menjadi
+karakternya (tulis escape lewat Python kalau berkas itu sendiri diperiksa tes
+"tanpa dash"); keluaran `assertNotIn` pada berkas utuh membanjiri layar (batasi
+dengan `grep -E "^(FAIL|ERROR):"`); dan `.meja-ritme` tampak lebar di tangkapan
+layar elemen tetapi sempit di svg: ukur `getBoundingClientRect` svg-nya, bukan
+percaya kartu. Batas yang disadari: tata letak diukur di 1440 dan 1280 px saja
+(`max-width` 64rem membuat gambar sama lebar di keduanya); kontras ubin hari
+tanpa XP 1,2 sampai 1,3:1 (sama dengan sel datar, sengaja tidak ditagih, 2,95:1
+di tema kontras); geser dan putar tidak dibuat (batang yang tinggi bisa
+menutupi baris di belakangnya, dan hari tertutup dijangkau lewat papan ketik);
+dan pembaca layar nyata belum diuji (`umumkan()` dan `aria-label` baru terpasang,
+belum didengar).
+
+**Penampil pohon berkas di blok multi-berkas** (2026-10-28, bagian kedua dari
+"masukin ke aplikasiku": "Tree Code Viewer" dari pindai 21st.dev). Ada 25 blok
+`multi` di sepuluh kurikulum (struktur project Python, modul JavaScript, header C,
+testing Go dan PHP, Docker Compose), dan sampai sekarang tiap blok tampil sebagai
+SATU blok panjang berisi komentar penanda yang harus dipecah pelajar di kepalanya.
+Sekarang: pohon folder di kiri, kode berkas yang dipilih di kanan, dengan
+`komponen/PohonBerkas.tsx` (komponen), `komponen/pohon-teks.ts` (logika murni), dan
+satu cabang di `BlokKode.tsx`. SERVER DAN KONTRAK API TIDAK BERUBAH (`/lama` dan
+`tebak` memakai petunjuk yang sama). Keputusan yang masing-masing ada sebabnya:
+
+* **Pemecahan di KLIEN, dengan pola penanda yang sama dengan server.**
+  `POLA_PENANDA` di `pohon-teks.ts` harus sama dengan `_PENANDA_BERKAS` di
+  `inti/berkas.py` (ditagih `test_pola_penanda_sama_dengan_server`); klien hanya
+  menambah jangkar awal baris, dan di data nyata ke-25 blok memang selalu begitu.
+  Syaratnya sama dengan `berkas_ganda`: paling sedikit DUA nama berbeda. Dua
+  penanda yang berbeda pendapat tentang satu blok berarti blok yang terpecah di
+  satu tempat dan utuh di tempat lain.
+* **Tidak ada baris yang hilang**, dan ini dicek atas SELURUH blok nyata (baris tak
+  kosong bukan-penanda, berurutan, sama dengan gabungan catatan dan semua berkas).
+  Dua pembuka nyata menentukan aturannya: komentar sebelum penanda pertama
+  ("// Siapkan dulu: mkdir ..." di materi Go) menjadi CATATAN di atas penampil,
+  sedangkan pembuka yang bukan komentar (`<?php` di materi PHPUnit, yang
+  penandanya jatuh sesudahnya) menempel di depan berkas pertama.
+* **Urutan penulis dipertahankan, bukan abjad** (urutan berkas di sebuah contoh
+  adalah bagian penjelasannya), dan folder berantai dipadatkan seperti VS Code
+  (`src/main/java/id` jadi satu baris); percabangan menghentikan pemadatan.
+* **Pola WAI-ARIA tree, satu perhentian Tab** (roving `tabIndex`): panah, kanan
+  dan kiri membuka dan menutup folder, Home dan End, Enter dan Spasi. Cincin
+  fokus jatuh DI DALAM baris (`outline-offset: -2px`) karena kontainer pohon
+  menggulir dan cincin di luar kotak terpotong. Alt, Ctrl, dan Meta bersama panah
+  dilepas. Fokus dipindah program HANYA sesudah tombol papan ketik
+  (`perluFokus`), tidak sesudah klik atau Tab. Pintasan global pembaca
+  (`j`, `k`, `[`, `]`, `f`) tetap bekerja; Enter global hanya bereaksi bila ada
+  tombol `.tbl-utama`, dan blok multi tidak punya.
+* **Klik hanya memilih dan membuka folder**; tidak menavigasi dan tidak menulis
+  progres. Semua folder terbuka sejak awal (isi sebuah contoh paling banyak enam
+  berkas, dan folder yang tertutup menyembunyikan justru yang dicari).
+* **Warna tiap berkas dari EKSTENSINYA**, bukan bahasa blok (blok CSS memuat
+  `index.html`, blok JavaScript memuat `package.json`): JSON dipetakan ke
+  JavaScript karena tidak ada penyorot JSON, SCSS ke CSS, `.env` dan
+  `.properties` ke ini. Klaim yang sempat salah dan dikoreksi skrip peramban:
+  pemindai TIDAK polos untuk bahasa yang tidak dikenal. String, angka, operator,
+  dan nama yang disusul kurung tetap diwarnai (`POLOS` di `sorot.ts`, sama di sisi
+  Python); yang tidak muncul hanya `kunci`, `komentar`, dan `bawaan`. Komentar
+  modul dulu mengaku "tanpa warna", dan tesnya (`TestPohonBerkas`) kini menagih
+  rumusan yang benar.
+* **Kaki blok diganti**: petunjuk server ("pisahkan sesuai komentar penanda di
+  dalam kode") tidak lagi benar karena penandanya sudah jadi baris pohon. Tombol
+  Salin di kepala blok tetap menyalin SELURUH blok beserta penanda; "Salin berkas
+  ini" di kepala panel hanya satu berkas.
+* **15 pohon ILUSTRASI (diagram `├──` dengan anotasi bebas) TIDAK disentuh.**
+  Anotasinya teks bebas ("DITULIS MANUSIA", "dihasilkan npm"), pengurainya akan
+  menebak, dan nilainya lebih kecil daripada blok multi-berkas yang memang dipecah
+  oleh pelajar sendiri.
+
+Pagarnya: `uji/banding-pohon.mjs` (24.193 perbandingan atas ke-25 blok nyata dan
+ratusan pohon sintetis acak berbenih 20261028, oracle independen; terdaftar di
+tiga tempat, 42 sel mutasi dalam tiga baterai), `uji/manual/pohon-berkas.mjs`
+(141 pemeriksaan: ke-65 berkas di 25 blok diklik satu per satu dan isi panelnya
+harus PERSIS isi berkasnya, plus peran ARIA, papan ketik, kontras empat tema, dan
+tata letak di 1440, 1280, dan huruf sangat besar; butuh
+`node --experimental-strip-types` dan profil UJI dengan `buka_semua_bab` di berkas
+konfigurasinya), 29 mutan sumber dan CSS (semuanya merah dengan alasan yang
+benar), dan `TestPohonBerkas`. Pelajaran dari penyusunannya: (1) mutan "Spasi
+tidak dikenali" merah lewat `TypeError` (aksi `null` dibaca `.pilih`), bukan lewat
+pemeriksaan yang tercetak, jadi akses ke hasil yang bisa `null` di pembanding
+wajib `?.`; (2) "ada span" BUKAN tanda penyorot bahasa (pewarnaan dasar
+menghasilkan span di semua berkas), jadi yang ditagih jenis token khas (`kunci`,
+`komentar`, `bawaan`), dan mutan "panel tanpa penyorot" lolos sampai ukurannya
+diganti; (3) label region panel tidak diperiksa sesudah berpindah berkas dan
+putaran segitiga folder tidak diukur sama sekali, keduanya ketahuan oleh daftar
+mutan sebelum dijalankan; (4) dua kegagalan pertama skrip adalah salah hitung dan
+salah ekspektasi saya sendiri (jumlah folder, Shift+Tab kembali ke baris yang
+TERAKHIR berfokus, bukan baris awal). Batas yang disadari: panel kode hanya
+sekitar 596 px di kolom baca 790 px, jadi baris lebih dari sekitar 75 kolom
+menggulir ke samping (tidak dipotong); pembaca layar nyata belum diuji; dan
+`pengantar.mjs` bagian K butuh profil BARU (XP 0), sedangkan profil uji yang
+dipakai di sini sudah berisi XP, jadi bagian itu dijalankan di server kedua.
+
+**Kaca cair di bilah atas** (2026-10-28, permintaan pemilik: komponen "Liquid Glass
+Navbar" oleh Guglielmo Giannattasio, @gughigug, 21st.dev, lisensi MIT; dibedah lewat
+REA, "implementasikan ke navbarku"). Bilah `<nav id="rel">` jadi kaca, dan butir
+yang sedang dibuka ditandai SATU tetes air yang berpindah: merenggang di
+perjalanan, pecah jadi tiga tetes kecil kalau jaraknya jauh, lalu meninggalkan
+riak. Bagian-bagiannya: `komponen/TetesKaca.tsx` (komponen), `tetes-teks.ts`
+(fisika murni), `tetes-shader.ts` (GLSL sebagai data), blok "kaca cair" di KAKI
+gaya.css, dan di `Cangkang.tsx` satu `<TetesKaca aktif={aktifRel} />` serta atribut
+`data-rel` pada butir dan pemicu "Lainnya". Bilahnya tidak digambar ulang: tautan,
+`aria-current`, dan panel tetap yang lama; komponen hanya menambah kanvas WebGL,
+tetes CSS cadangan, dan filter SVG pembiasan, semuanya `aria-hidden`, dan
+mengendalikan tampilan lewat atribut di bilah (`data-kaca` cair atau polos, `data-tk`
+gl atau css, `data-bias` on atau off). Kodenya ditulis ulang tanpa Tailwind, hanya
+gagasan dan mekanismenya yang dari sumber; teks izin MIT ikut di `TetesKaca.tsx`
+(tahun hak cipta tidak tertulis di sumbernya). Keputusan yang masing-masing ada
+sebabnya:
+
+* **Konflik dengan keputusan lama, dan ia tertulis.** Kaca buram dibuang dari bilah
+  pada 2026-10-18 ("ciri template AI paling mudah dikenali"), dan pemilik kini
+  memintanya kembali secara eksplisit. Ia kembali di bilah ini saja, dengan sebab
+  yang lain: tetesnya mengodekan sesuatu yang benar ("kamu ada di butir ini").
+  Panel "Lainnya" TETAP padat, karena `backdrop-filter` anak di dalam elemen ber-
+  `backdrop-filter` hanya melihat isi induknya, bukan halaman. Mencabut fitur ini
+  = hapus satu blok CSS dan satu baris `<TetesKaca/>`; tanpa atributnya bilah
+  instrumen lama utuh. Konfliknya tertulis di komentar blok CSS itu (dijaga
+  `TestKacaCair`).
+* **Tetes mengikuti butir yang AKTIF, bukan klik.** Rute berubah dari palet,
+  tautan di halaman, atau tombol Kembali, dan tetesnya harus ikut. Butir di dalam
+  panel menandai pemicu "Lainnya"; rute tanpa butir (halaman bahasa, materi)
+  menyembunyikan tetes, dan yang muncul lagi berdiri LANGSUNG di tempatnya (tidak
+  terbang dari tempat yang sudah tiada). Penanda lama (`a.kini`) baru dimatikan CSS
+  sesudah `data-tk` terpasang, dan atribut itu dipasang sebelum cat pertama
+  (`useLayoutEffect`, efek pemasangan dideklarasikan LEBIH DULU dari efek `aktif`).
+  Tetes yang pertama kali berdiri langsung tampak penuh (`tampilSeketika`).
+* **Tiga tingkat gerak, dibaca tiap langkah lewat `tingkatGerak()`.** Penuh:
+  pegas dua ujung (pemimpin keras, penyusul lunak dan tertunda 70 ms, jadi tetes
+  merenggang), satelit, riak, gelombang kursor. Halus: meluncur teredam kritis
+  tanpa pantulan, satelit, riak, atau kursor (berpindah karena diklik tetap
+  dijawab). Mati: langsung berdiri. Bingkai hanya berjalan selama ada yang
+  bergerak (`perluBingkai`); kanvas menahan bingkai terakhirnya, dan itu terukur:
+  nol gambar dalam 1,5 detik saat diam.
+* **Dua cacat ditemukan di PERAMBAN, bukan di pembanding murni**, dan keduanya
+  bergejala sama (gelombang kursor berhenti sesudah dua bingkai padahal penunjuk
+  masih di atas bilah): (1) cap waktu `requestAnimationFrame` adalah AWAL bingkai
+  dan bisa lebih awal dari `performance.now()` yang dicatat saat bingkai diminta,
+  jadi bingkai pertama sesudah diam berdurasi NEGATIF; `langkah` kini menganggap
+  `dt` negatif nol. (2) `perluBingkai` membaca kursor dari `kursor.s`, hasil
+  integrasi, yang masih nol pada bingkai berdurasi nol; kini ia membaca
+  `kursor.nyala` (hanya di tingkat penuh). Semua `dt` di pembanding positif, jadi
+  keduanya lolos 194.000 perbandingan dan baru tertangkap skrip peramban.
+* **Kontras huruf diukur dari piksel sungguhan, bukan dikira dari token**, karena
+  yang berada di bawah kaca berganti tiap halaman digulir. Versi pertama (blur 2 px
+  sesudah pembiasan, latar tidak diredupkan) memberi 3,15:1 (gelap) dan 2,71:1
+  (malam) pada gulir 700 px, padahal di gulir 0 semuanya 6,1:1 dan tidak ada yang
+  curiga. Tebal tinta nyaris tidak menolong (46 sampai 70 persen memberi hasil
+  sama); yang menolong blur 10 px dan latar diredupkan: 5,74:1 dan 5,33:1.
+  Meredupkan latar hanya untuk tema gelap: di tema terang ia memburukkan huruf
+  gelap (5,37 turun ke 4,92). Ambangnya 5,0:1 (4,5 mutlak ditambah margin), karena
+  dengan 4,5 dua mutan "salah redup" lolos: tema malam tanpa peredupan 4,69:1.
+* **Tema kontras tinggi mematikan kaca** (`data-kaca="polos"`, `kacaAktif`): latar
+  tembus pandang dan sorot putih justru yang dihindari orang yang memilih tema itu,
+  jadi bilah padat dan penanda butir lama kembali. `prefers-reduced-transparency`
+  juga memberi bilah padat (belum diuji: Playwright tidak bisa mengemulasinya).
+* **Pembiasan latar hanya Chromium** (`dukungBias`: nama peramban lalu
+  `CSS.supports`): di Firefox dan Safari deklarasi `url()` membuat SELURUH
+  `backdrop-filter` gugur. Pengecualian Firefox di `dukungBias` hanya bergigi untuk
+  UA hibrida (UA Firefox sungguhan tidak memuat "Chrome/"). Firefox dan Safari tidak
+  diuji; di sana kaca berupa blur biasa.
+* **Tanpa WebGL (atau konteksnya dicabut) tetes jatuh ke kapsul CSS** di tempat
+  yang sama. Koordinat tetes terhadap tepi LUAR bilah sedangkan `absolute` mengukur
+  dari tepi DALAMnya, jadi garis tepi (1 sampai 2 px) harus dikurangkan di kanvas
+  dan di tetes cadangan; toleransi pemeriksaan 0,6 px yang menangkapnya.
+* **Ikon animasi mikro dari komponen asal TIDAK diport**: bilah ini tidak punya ikon.
+
+Pagarnya: `uji/banding-tetes.mjs` (194.046 perbandingan SIFAT atas fisika dan
+shader, skenario tangan yang angkanya diukur lebih dulu ditambah 260 skenario acak
+berbenih 20261028; terdaftar di tiga tempat, 48 sel mutasi dalam dua baterai),
+`uji/manual/kaca-cair.mjs` (80 pemeriksaan, bagian A sampai G dengan penyaring
+`HANYA=`; letak tetes diukur dari PIKSEL kanvas dengan semua yang lain
+disembunyikan; butuh `--disable-3d-apis` untuk jalur cadangan, lewat opsi
+`argsChrome` di `lib.mjs`), 19 mutan sumber dan CSS di peramban (semuanya merah
+dengan alasan yang benar; skripnya di scratchpad sesi, bukan di repo), dan
+`TestKacaCair`. Baterai mutan menunjukkan DUA mutan tumpul yang ternyata pagar yang
+terlalu longgar (ambang 4,5), satu sel pembanding yang tumpul karena syarat baru
+membuatnya tidak mengikat lagi (fase luruh kursor), dan satu mutan setara yang
+dibuang bersama alasannya (ambang posisi 0,3 dan ambang `sy` tidak pernah mengikat
+sendirian). Satu pagar lama ikut disentuh: `TestPohonBerkas` menuntut blok pohon
+berkas adalah blok TERAKHIR di gaya.css, dan `_blok_css`-nya memotong sampai
+akhir berkas; keduanya dibatasi di judul blok kaca cair. Batas yang disadari:
+GPU nyata belum diukur (semua ukuran di SwiftShader, yang menggambar puluhan ms
+per bingkai), biaya `feTurbulence` per bingkai gulir tidak diukur, Firefox dan
+Safari tidak diuji, kemunculan awal tetes (pertumbuhan dari titik di tingkat penuh
+kalau `tampilSeketika` hilang) tidak ditagih skrip peramban, dan tata letak diukur
+di 1440 px saja.
+
+**Tombol kaca di dua tombol utama dasbor** (2026-10-28, permintaan pemilik: "masukkan
+ini juga", komponen "Liquid Glass Button" oleh Ali Imam, `designali-in`, 21st.dev;
+dibedah lewat REA). `.tbl-kaca` mengubah chip "Lanjutkan" (kartu Lanjutkan) dan chip
+"Mulai" (layar mulai) jadi kaca bertinta kuningan: tinta tembus pandang, kilau
+lengkung di atas, lekuk gelap di bawah, dan pembiasan isi di belakangnya lewat satu
+filter SVG. Bagian-bagiannya: `komponen/FilterKaca.tsx` (filter `#tbl-kaca`, dipasang
+SEKALI di `Cangkang.tsx`), blok "tombol kaca" di KAKI gaya.css, dan kelas `tbl-kaca` di
+dua tombol di `layar/Dasbor.tsx`. Keputusan yang masing-masing ada sebabnya:
+
+* **LISENSI: bidang `license` halaman komponen asal KOSONG** (dibaca dari DOM-nya;
+  komponen navbar yang MIT beda). Tanpa lisensi tertulis kodenya tidak boleh disalin,
+  jadi tidak satu baris pun disalin: yang dipakai hanya teknik umum (rantai filter
+  derau, pergeseran, blur; tumpukan bayangan dalam untuk tepi kaca) dengan nilai dan
+  susunan sendiri. `TestTombolKaca` menolak potongan khas bundel asal
+  (`container-glass`, `inset_3px_3px`, `LiquidButton`) dan menagih catatan lisensinya
+  di komentar komponen dan CSS. Kalau suatu hari lisensi tertera, ini bisa ditinjau
+  ulang; jangan menyalin dari bundel sebelum itu.
+* **Satu filter untuk semua tombol**, `width="0" height="0"` posisi absolut BUKAN
+  `display: none` (filter di elemen yang tidak digambar tidak terpakai). Pergeserannya
+  26 px, bukan 70 seperti asalnya: tombolnya setinggi 44 sampai 52 px. Pembiasan hanya
+  Chromium, di balik `@supports (backdrop-filter: url(#a))`; peramban lain mendapat
+  tombol bertinta tanpa pembiasan.
+* **Skala saat disorot lewat `scale`, BUKAN `transform`.** Umpan tekan
+  (`pasangIsyarat`) menganimasikan `transform` lewat WAAPI; dua mesin untuk satu
+  properti saling mengejar. `scale` bertumpuk dengannya. Transisinya memuat `scale`
+  dan tidak memuat `transform`; tingkat gerak mati dan `prefers-reduced-motion`
+  mengembalikan skala 1.
+* **Kontras diukur dari piksel, dan tema terang yang menggigit.** Teks tombol di
+  tema terang PUTIH di atas kuningan (`--di-atas-aksen`), jadi kilau putih 22 persen
+  di bagian atas kaca menerangkan latar tepat di bawah huruf: 3,27:1, padahal
+  kuningan pekat 5,92:1. Tiga angka (`--kc-tinta`, `--kc-kilau`, `--kc-lengkung`)
+  dibuat variabel, dan tema terang memakai 94, 0, dan 14 persen (5,19:1). Tema gelap
+  dan malam lega (6,71 dan 6,52: huruf gelap di atas kuningan terang). Ambang uji 5,0.
+* **Tema kontras tinggi dan transparansi dikurangi mengembalikan kuningan pekat**
+  tanpa kaca. Satu layar satu tombol utama tidak berubah: yang berkaca hanya dua
+  tombol utama itu, dan `TestTombolKaca` menolak `tbl-kaca` di layar lain.
+* **Jebakan pengukur**: pemeriksaan "bertinta tembus pandang" pertama membaca
+  `background-color` SESUDAH mencopot dan memasang kelas, dan terbaca di tengah
+  transisi (`oklab` tanpa alfa). Baca gaya sebelum menyentuh DOM.
+
+Pagarnya: `uji/manual/tombol-kaca.mjs` (37 pemeriksaan: A sampai D 31 di server
+berprofil berprogres karena kartu Lanjutkan butuh progres, E 6 di server berprofil
+BARU karena chip Mulai hanya tampil pada XP 0), 15 mutan peramban sumber dan CSS
+(semuanya merah dengan alasan yang benar; skripnya di scratchpad sesi), dan
+`TestTombolKaca`. Satu pagar lama ikut disentuh: `TestKacaCair._blok_css` memotong
+sampai akhir berkas dan dibatasi di judul "tombol kaca". Batas yang disadari:
+pembiasan di atas sampul generatif kartu Lanjutkan tidak diukur secara visual (hanya
+terpasang dan terhitung), Firefox dan Safari tidak diuji, dan GPU nyata belum diukur.
+
+**Penutup dasbor** (2026-10-28, permintaan pemilik: "aku mau dasbor yang seperti ini",
+komponen "Motion Footer" oleh Hossain Jahed, 21st.dev; dibedah lewat REA, tata letak
+diatur dengan skill soft-skill). Dasbor berprogres kini ditutup satu layar penuh yang
+TERSINGKAP saat digulir sampai habis: isi dasbor naik, dan layar yang sudah menunggu di
+bawahnya menjadi terlihat. Isinya strip teks miring yang berjalan (level, XP, materi
+dibaca, streak, lencana, kurikulum dijalani, kuis menunggu; angka NYATA dari profil),
+alis "Hari ini: N dari M XP", judul Bodoni (kalimat pembuka dasbor), dua pil besar
+berbingkai ganda (Peta Langit, Ruang Coba), empat pil kecil, kata raksasa tembus
+pandang, dan tombol "Kembali ke atas". Bagian-bagiannya: `layar/PenutupDasbor.tsx`,
+`layar/penutup-teks.ts` (isi, murni), blok "penutup dasbor" di KAKI gaya.css, dan satu
+`<PenutupDasbor d={d} />` di ujung `MejaKerja`. Keputusan yang masing-masing ada sebabnya:
+
+* **KONFLIK dengan keputusan 2026-10-17, dan ia tertulis.** Audit 12 agen sengaja
+  membuang marquee, kalimat gulir, dan ajakan penutup dari dasbor ("dasbor = meja
+  kerja"). Pemilik kini memintanya kembali secara eksplisit, jadi permintaannya yang
+  menang, dengan empat pagar dari alasan keputusan lama: (a) hanya dasbor BERPROGRES;
+  profil XP 0 memakai layar mulai dan tidak punya penutup (angka nol di strip yang
+  berjalan terbaca seperti teguran yang tidak bisa dihentikan); (b) strip hanya memuat
+  yang BERARTI (streak di bawah 2, lencana nol, kuis nol, materi nol dibuang, bukan
+  ditulis "0"); (c) tidak ada tombol beraksen kedua, penutup hanya menautkan tujuan yang
+  sudah ada di bilah atas dan tombol ke atas membawa orang kembali ke kartu Lanjutkan;
+  (d) animasi hanya di tingkat gerak penuh. Mencabutnya = hapus blok CSS, dua berkas
+  komponen, dan satu baris di `Dasbor.tsx`.
+* **LISENSI: bidang `license` komponen asal KOSONG** (dibaca dari DOM-nya), jadi tidak
+  satu baris pun disalin dan GSAP di sana tidak ikut. Yang diambil hanya mekanismenya,
+  dibaca dari bundel lewat REA lalu ditulis ulang dengan mesin repo ini. `TestPenutupDasbor`
+  menagih catatan itu di komentar komponen, isi, dan CSS.
+* **Penyingkapan**: pembungkus `.pd-bungkus` ber-`clip-path: inset(0)` memuat lapisan
+  `.pd-isi` ber-`position: fixed`. Pembungkus ikut tergulir, lapisannya diam, dan yang
+  terlihat hanya bagian lapisan di dalam kotak pembungkus. Dugaan bahwa `container-type`
+  pada `#panggung` mematahkan `position: fixed` ternyata SALAH (diukur: fixed tetap
+  menempel ke layar). Margin bawahnya `calc(-2 * var(--s8))` karena padding bawah `.meja`
+  DAN `#layar` masing-masing `--s8`; tanpa itu 64 px dasbor mengintip di bawah penutup.
+  Hanya tingkat penuh yang menyingkap (`useGerakPenuh`): membajak gulir adalah gerak akibat
+  interaksi (WCAG 2.3.3), jadi pada halus, mati, dan `prefers-reduced-motion` lapisan itu
+  `absolute` dan penutup menjadi bagian statis di dasar halaman.
+* **GSAP diganti**: `magnet()` dari `gerak.ts` untuk pil, dan CSS `view-timeline` +
+  `animation-timeline` + `animation-range` di dalam `@supports (animation-timeline:
+  view())` untuk kemunculan bergantian, tanpa pendengar gulir dan tanpa JS. Keyframes
+  kemunculan hanya `from`: keadaan akhirnya keadaan alami elemen, jadi garis waktu yang tak
+  didukung atau gerak yang dimatikan tidak menyembunyikan apa pun selamanya. Animasi tak
+  berhingga (strip, aurora) hanya selagi pembungkus TERLIHAT (`IntersectionObserver`) dan
+  hanya di tingkat penuh.
+* **Strip `aria-hidden`, ringkasannya dibacakan sekali** lewat `.pd-sr`. Kurikulum yang
+  dijalani dihitung LANGSUNG dari `d.bahasa`, bukan dari `dijalaniDasbor` yang dipotong di
+  enam untuk bento: orang dengan sepuluh kurikulum terbaca "6".
+* **Papan ketik**: Tab dari puncak (24 tekanan di profil uji) masuk ke lapisan yang
+  terpotong, dan `onFocus` menggulir ke dasar supaya terlihat. Tujuh perhentian, tiap
+  perhentian terlihat penuh, tidak tertutup apa pun, dan punya cincin fokus; Enter pada
+  "Kembali ke atas" menggulir ke puncak.
+* **Tiga temuan pengukuran.** (1) Di 1280x800 pil alis menimpa tepi bawah strip miring
+  sedalam 9 px (di 1440 jaraknya 35 px); kotak pembatas peramban terlalu konservatif untuk
+  elemen yang diputar, jadi jarak dihitung dari matriks yang sama dengan CSS. Ditambal
+  dengan `padding-top: var(--s7)` di `.pd-isi` (blok tengah berpusat di ruang sisa, jadi
+  turun separuhnya) dan kata raksasa diturunkan sedikit. (2) Kalimat pembuka dasbor
+  (`.sambut-sub`) hanya tampil bila tidak ada kartu Lanjutkan atau antrean: di profil
+  biasa judul penutup justru satu-satunya tempat kalimat itu terlihat, jadi pemeriksaan
+  "judul sama dengan yang di atas" bersyarat. (3) Pengukur kontras membaca warna terhitung
+  yang TIDAK memuat `opacity` leluhur dan membuang alfa warna teks: dua mutan lolos sampai
+  keduanya ditutup (opasitas efektif dikalikan sepanjang leluhur, dan teks setengah
+  transparan dikomposit di atas piksel latar).
+* **Kontras terukur** dari piksel di empat tema (ambang 4,5, tema kontras 7): terendah
+  4,72:1 (pil kecil, tema malam), judul bergradien diukur dari piksel TINTA di pita bawah
+  judul (ujung gradien yang paling pudar), dan kasus terburuk gerak penuh (aurora di
+  puncak napasnya) ikut diukur.
+
+Pagarnya: `uji/banding-penutup.mjs` (3.235 perbandingan SIFAT atas isi, oracle independen,
+400 profil acak berbenih 20261028; terdaftar di tiga tempat, 17 sel mutasi semuanya merah
+dengan kategori yang tepat), `uji/manual/penutup.mjs` (103 pemeriksaan di peramban, bagian
+A sampai G di server berprofil berprogres dan H di server berprofil BARU, penyaring
+`HANYA=A,B,...` dan `FOTO=`; G2 menyimulasikan profil kaya lewat intersepsi respons
+`/api/dasbor` di sisi klien karena profil uji punya XP tetapi nol materi dibaca), 28 mutan
+sumber dan CSS di peramban (semuanya merah dengan alasan yang benar sesudah dua celah
+pagar ditutup; skripnya di scratchpad sesi), dan `TestPenutupDasbor`. Dua pagar lama ikut
+disentuh: `TestKacaCair` dan `TestTombolKaca` menganggap blok mereka paling ujung berkas,
+dan kini dibatasi di judul blok berikutnya. Batas yang disadari: GPU nyata, Firefox, dan
+Safari tidak diuji (dukungan `animation-timeline` di sana tidak terukur; tanpanya isinya
+tampil apa adanya), pembaca layar nyata belum diuji, margin kontras pil kecil tema malam
+tipis (0,22), dan baterai mutan menyunting berkas sumber DI TEMPAT lalu memulihkannya
+(md5 diverifikasi): server pemilik yang sedang hidup bisa melayani CSS yang sedang
+dimutasi selama sekitar satu menit per mutan.
+
+**Dasbor hidup** (2026-10-28, permintaan pemilik: "menambahkan apapun yang bisa kamu ambil dari
+21st.dev tadi untuk membuat aplkiasiku menjadi makin interaktif dan lugas", lalu "aku berfikir mau
+merubah landing pagenya, itu terlalu kaku menurutku"; ditanya layar mana dan kaku di mana, jawabannya
+Dasbor, dan yang kaku tata letak, gerak, isi, dan gaya visualnya). Dasbor berprogres disusun ulang.
+Yang lama tiga belas kotak berbingkai sama dalam dua kolom (3.382 px di 1440, lubang kosong di kolom
+kanan, dan jawaban "aku ngapain" hanya satu dari lima belas kotak); yang baru 2.861 px dan lima
+bagian dengan bobot berbeda: hero (sapaan Bodoni, tiga angka tanpa kotak, tiket "Lanjutkan"
+selebar sapaan), "Habis ini" (paling banyak tiga langkah ditambah tantangan, mendatar), rel
+"Bahasamu" (panel yang meluas), ritme (pekan 4fr dan bara 8fr), dan dua ubin jelajah; penutup
+dasbor tetap. Bagian-bagiannya: `layar/Dasbor.tsx` (`MejaKerja`, `StripHariIni`, `TiketLanjut`,
+`BarisLangkah`, `RelBahasa`), `layar/dasbor-hidup-teks.ts` (isi murni), `komponen/AngkaHidup.tsx`
+dengan `komponen/angka-hidup-teks.ts`, dan blok "dasbor hidup" di KAKI gaya.css (kelas `.ds-*`).
+Keputusan yang masing-masing ada sebabnya:
+
+* **Keputusan lama tetap berlaku.** "Dasbor = meja kerja" (2026-10-17) tidak dibalik: tidak ada
+  kalimat gulir atau marquee baru (strip berjalan milik penutup dasbor, dari permintaan lain), dan
+  profil XP 0 tetap memakai layar mulai. "Satu layar satu tombol utama" juga: tiket adalah
+  SATU-SATUNYA `tbl-kaca` di `MejaKerja` (`TestTombolKaca` menghitung dua literal di `Dasbor.tsx`,
+  tiket dan layar mulai). Kelas lama (`.meja-*`, `.bento`) TIDAK disentuh karena `/lama` memakainya;
+  mencabut fitur ini = hapus blok CSS, ketiga berkas baru, dan kembalikan `MejaKerja` dari git.
+* **Gagasan dari 21st.dev, tidak ada kode yang disalin.** "Hover Expand" dan "Expanding Cards"
+  untuk rel, "Count Up" untuk angka; lisensi komponen asal sering KOSONG, dan tidak ada pustaka
+  yang ditambah. `TestDasborHidup` menagih catatan itu di komentar.
+* **Rel: `flex-grow` satu-satunya properti yang dianimasikan.** Terbuka = kelas `.buka`, jadi gerak
+  mati tetap benar tanpa animasi. Isi panel tertutup `inert`, jadi Tab tidak melewati tautan yang
+  tidak terlihat. Hanya `pointerType === "mouse"` yang membuka lewat hover (sentuhan tidak
+  melompat), papan ketik lewat `onFocusCapture` (fokus pada tab membuka panelnya), tab berupa
+  `<button aria-expanded>`. Rasi (`PetaRasi`) hanya digambar di panel terbuka; panel tertutup
+  memuat persen bahasanya sebagai pengukur tegak (`::before` setinggi `--p`). Paling banyak enam
+  panel: posisi sekarang dulu, lalu persen terbesar (`urutRel`), hanya bahasa yang sudah dijalani.
+* **Pergeseran tata letak BUKAN gerakan penunjuk, dan ini cacat yang ditemukan pengukuran.**
+  Panel yang melebar menggeser panel lain ke bawah penunjuk yang diam, dan Chrome menjawabnya
+  dengan `pointerenter` palsu yang membawa koordinat SAMA. Tanpa penyaring hover melompat 3, 2, 3,
+  5 dalam 200 ms dan berhenti di panel yang tidak ditunjuk siapa pun (panel kelima melewati tepi
+  kanan sampai 140 px selama transisi yang terputus). Penyaringnya `posisiMouse` di `RelBahasa`:
+  `pointerenter` yang koordinatnya sama dengan peristiwa terakhir diabaikan. Pelajarannya dua:
+  pemeriksaan keadaan akhir hanya menangkapnya kadang-kadang (lulus sekali, lalu gagal lima kali
+  berturut-turut), jadi pagarnya merekam URUTAN panel terbuka per bingkai; dan KONTROL tanpa
+  mutasi di salinan baterai yang menemukannya, karena ia memerah padahal tidak ada yang dimutasi.
+* **Angka hidup (`AngkaHidup`).** Keadaan alaminya angka AKHIR; animasi hanya berangkat dari nol,
+  hanya di tingkat gerak penuh (`useGerakPenuh`), dan tidak menganimasikan angka yang di luar layar
+  saat dipasang (kedipan di depan orang yang membaca). Teks ditulis lewat ref, bukan anak React;
+  perubahan nilai berangkat dari angka sebelumnya; pembaca layar membaca `.ds-sr`. Ini salinan
+  KETIGA hitung-naik (setelah `useAngkaJalan` di `Lencana.tsx` dan kartu angka `Statistik.tsx`,
+  kurva ease-out kubik yang sama) dan sengaja tidak digabung: menggabungkannya menyentuh pagar
+  `TestLebarDigitDiMesin` dan tiga pemakai sekaligus. Hitungannya `font-variant-numeric:
+  tabular-nums` hanya di `.angka-hidup` (pagar itu kini 31).
+* **Kartu bara meluber 40 px** begitu ditaruh di kolom 4fr/8fr: `.meja-ritme` berkolom
+  `max-content`. Dipatok `minmax(0, 1fr)` di `.ds-ritme`. Label rasi di panel semula 7 px dan tab
+  tertutup kosong; keduanya diperbaiki lewat CSS (label diperbesar, pengukur tegak).
+* **Tanggal di komentar kode harus tanggal sebenarnya.** Komentar kepala blok CSS sempat bertanggal
+  2026-10-29 padahal hari itu 2026-10-28 (tanggal yang saya karang, bukan dibaca dari `date`);
+  tesnya ikut menagih tanggal itu. Sekarang keduanya 2026-10-28.
+
+Pagarnya: `uji/banding-dasbor-hidup.mjs` (6.836 perbandingan SIFAT atas rumus dan isi, oracle
+independen; terdaftar di tiga tempat, 19 sel mutasi semuanya merah dengan kategori yang tepat),
+`uji/manual/dasbor-hidup.mjs` (97 pemeriksaan di peramban: A sampai G 48 di server berprofil
+berprogres, D kontras 48 di empat tema, H 1 di server berprofil BARU; penyaring `HANYA=A,B,...`
+dan `FOTO=`), dan `TestDasborHidup` (10 tes). Baterai mutan peramban (14 mutan sumber dan CSS,
+dijalankan di SALINAN pohon di jalur pendek dengan `node_modules` ditautkan dan server sendiri;
+skripnya di scratchpad sesi, bukan di repo) semuanya merah dengan alasan yang benar. Ia
+menemukan empat hal yang tidak kelihatan saat pagarnya ditulis, dan keempatnya sudah ditambal:
+
+* **Kontrol TANPA mutasi memerah**: itu cacat hover di atas, bukan flaky. Pemeriksaan keadaan akhir
+  sempat lulus sekali lalu gagal lima kali berturut-turut.
+* **Mutan "patok kolom bara dibuang" LOLOS.** `.ds-ritme > * { min-width: 0 }` sudah menahan
+  luberan, jadi pemeriksaan tepi kanan tetap hijau; yang berubah grid-nya menjadi dua kolom dengan
+  kolom kedua terjepit 38,7 px. Ditambah pemeriksaan "kartu bara satu kolom".
+* **Mutan "penyaring koordinat dibuang" LOLOS** (pagar pertamanya merekam urutan panel, dan itu
+  bergantung pada pewaktu `pointerenter` palsu milik Chrome). Ditambah pemeriksaan deterministik
+  yang mengirim `pointerout`/`pointerover` sintetis berkoordinat sama (React membacanya sebagai
+  `pointerenter`) dan menuntut hover tidak pindah, lalu yang berkoordinat beda dan menuntutnya pindah.
+* **Regex pagar "terdaftar di tiga tempat" salah**: `banding-[a-z]+\.mjs` tidak mengenal tanda
+  hubung, jadi pembanding bernama dua kata dilaporkan "tidak ada di skrip npm" padahal ada.
+  Dilebarkan jadi `[a-z-]+`. Penyisipan komentar di `test_web.py` juga menggeser alamat yang
+  dirujuk berkas lain; hunk-nya dibuat net-zero (pajak alamat, lihat di atas).
+
+Jebakan alat: `mulai({ ukuranTeks })` hanya mengenal kunci `"kecil"`, `"sedang"`, `"besar"`, dan
+`"sangat besar"` (dengan spasi); kunci lain jatuh DIAM-DIAM ke 16 px dan pengukuran huruf besar
+tampak lulus tanpa mengukur apa pun. Alat Write mengubah escape `\u2014` menjadi karakternya, jadi
+regex dash di skrip diperbaiki lewat Python. Batas yang disadari: margin kontras tertipis 4,68:1
+(persen panel tertutup, tema malam) dan 4,71:1 (keterangan angka, tema terang); ukuran huruf
+diukur di 18 dan 20 px saja (tanpa luberan, panel terbuka menyempit 888 jadi 824 px, kolom bara
+tetap tunggal); tata letak di 1280, 1440, 1600 px; GPU nyata, Firefox, Safari, dan pembaca layar
+nyata belum diuji; `skyline.mjs` lama gagal pada peringatan konsol "GPU stall" dari kanvas kaca
+cair, bukan karena perubahan ini. Dua tautan di `.bagian-kepala` menjorok 8 px ke kanan sebagai
+area sentuh, sama seperti sebelum perubahan ini.
+
 ### Proyek akhir
 
 Tiap bahasa ditutup satu latihan bertanda `proyek: True`. Ia latihan biasa di
@@ -1066,6 +1902,41 @@ mengikat:
   satu koma salah menghapus seluruh progres), tiap penyimpanan meninggalkan
   satu `.bak`, dan gagal menulis muncul di layar (`simpan_gagal`,
   `/api/awal -> karantina`). Jangan menulis kode tulis-atomik keempat.
+  `.bak` itu BERGULIR (tiap simpan menimpanya dengan keadaan sebelumnya), jadi
+  ia bukan cadangan untuk tindakan yang disengaja: terukur, cadangan sebelum
+  reset (30 XP) sudah menjadi 0 XP begitu pelajar membuka SATU materi. Karena
+  itu `progress.cadangkan()` (dipakai reset, impor, dan tombol "Buat cadangan")
+  juga menulis salinan BERTANGGAL `<progres>.cadangan-<waktu>` yang tidak
+  disentuh penyimpanan biasa; `CADANGAN_MAKS` (10) terbaru dipertahankan, dan
+  reset dua kali berturut-turut tidak menghapus salinan yang pertama. Salinan
+  itu JSON progres yang sama dan dipilih lewat tombol "Pulihkan dari salinan". Teks
+  dialog Reset menyebut dampak persisnya (reset satu bahasa tidak menyentuh
+  XP, level, streak, badge, tetapi membuang bookmark, jadwal ulang kuis, dan
+  riwayat skornya); jangan menjanjikan lebih dari yang dilakukan kode. Empat
+  aturan `cadangkan()` yang masing-masing pernah salah dan terbukti:
+  (1) salinan yang gagal dibuat melempar `GagalCadangan`, dan reset serta impor
+  BERHENTI: dulu `""` (yang juga berarti "belum ada progres") membuat progres
+  tetap dihapus dengan berkas separuh bernama cadangan di disk; (2) isi yang
+  sama dengan salinan terbaru tidak disalin lagi, karena sepuluh klik "Buat
+  cadangan" di progres kosong menggusur satu-satunya salinan pra-reset; (3)
+  nomor `-N` satu di atas yang TERTINGGI pada cap yang sama, bukan celah kosong
+  pertama: sesudah yang tertua terpangkas, nama itu bebas lagi, salinan baru
+  yang memakainya terurut sebagai yang tertua dan langsung terpangkas; (4)
+  urutan dan pemangkasan hanya atas nama yang cocok pola persis
+  (`_cadangan_berurut`), dengan nomor sebagai ANGKA, karena `copy2` menyalin
+  mtime sumber dan `-10` terurut sebelum `-2` sebagai teks. Memulihkan salinan
+  lewat NAMA: `GET /api/data/cadangan` mengirim daftarnya (nama, waktu, XP,
+  jumlah materi, `sah`), `POST /api/data/impor` menerima `{"cadangan": nama}`,
+  dan `progress.baca_cadangan` MENCARI nama itu di kolam salinan, tidak pernah
+  menggabungnya ke jalur (`../x` dan jalur mutlak tidak ketemu). Keadaan
+  sebelum pemulihan disimpan lebih dulu sebagai salinan baru, jadi pemulihan
+  bisa dibalik. Salinan yang tidak terbaca ikut jawaban API (`sah: false`),
+  tetapi dialog tidak menawarkannya dan hanya menyebut jumlahnya: pagar
+  `disabled={` di `BlokData.tsx` (tombol berfokus yang dinonaktifkan
+  menjatuhkan fokus ke BODY) juga menolak `<option disabled>`, dan memang
+  lebih sederhana bagi pembaca layar. Berkas karantina `.rusak-*` SENGAJA
+  tidak masuk daftar: ia ada karena isinya tidak bisa diurai, jadi tidak ada
+  yang bisa dipulihkan darinya lewat jalur ini.
 * **Kuis "selesai" = skor terbaik >= 70%** (`progress.AMBANG_KUIS_LULUS`,
   keputusan pemilik). Satu-satunya definisinya `statistik_bahasa`/`kuis_lulus`;
   ia juga melapor `kuis_dikerjakan`. Jadwal ulang monoton dan hanya tumbuh
@@ -1098,7 +1969,8 @@ mengikat:
 * **Dasbor = meja kerja** (pengganti beranda landing page): posisi, satu
   kartu Lanjutkan beraksen, antrean, dan persen bahasa di atas lipatan.
   Kalimat gulir, marquee, dan ajakan penutup sengaja dibuang; aturan CSS-nya
-  jadi catatan (alamat baris tes). Saran: kalau kegiatan terakhir membaca,
+  jadi catatan (alamat baris tes). Pada 2026-10-28 pemilik meminta strip berjalan
+  dan layar penutup kembali di dasbor berprogres; lihat "Penutup dasbor". Saran: kalau kegiatan terakhir membaca,
   bacaan itu dulu; kuis jatuh tempo paling banyak dua; tantangan harian hanya
   dari bahasa yang disentuh, toolchain siap, tingkat +1.
 * **Tebak keluarannya** (`/api/tebak`): kode wajib PERSIS salah satu contoh
@@ -1293,6 +2165,31 @@ ditunjuk). Yang mengikat:
   berselisih tepi < 4, jadi di piksel garisnya tergambar 35, 53, dan 69 persen
   di akar 1156, 1440, dan 1905 px. Sekarang >= 98 persen (ditagih
   `banding-lensa.mjs`, [garis]).
+* **Garis putus wilayah rasi mengikuti RANGKA rasi, bukan selubung cembungnya**
+  (2026-10-28, dilaporkan pemilik: garisnya melebar). Garis yang muncul saat
+  rasi disorot dulu selubung cembung semua bintang ditambah bantalan, jadi ia
+  melompati setiap lekukan: `bash` jadi segitiga lebar, `sql` melingkupi perut
+  kosong, dan garisnya menjauh sampai 69 px dari bintang pada skala 1,286
+  (titik terjauh tiap rasi: median 45 px). Sekarang `pathWilayah` menggambar kontur jarak (marching
+  squares, sel `pad / 6`) dari rangka: tiap bintang ditambah ruas antara
+  bintang BERURUTAN, termasuk ruas yang tidak digambar di batas bab (tanpa
+  jembatan itu celah antar-bab memecah satu rasi jadi pulau). Bantalannya
+  `padKontur` = 12 + 5 x skala, lantai 14,9 px masih di luar cincin sorot dan
+  braket "berikutnya". Hasilnya tabung yang membuntuti rantai bintang, dan
+  setiap simpulnya terukur 0,07 px lebih dekat sampai 1,1 px lebih jauh dari
+  bantalan itu. Rongga lebih kecil dari separuh cakram bantalan tidak
+  digambar (noktah di dalam rangka yang rapat), rongga besar jadi lingkar
+  tersendiri, jadi `<path>` wajib `fillRule="evenodd"`. Dihitung malas per rasi
+  saat pertama disorot (sekitar 1,3 ms; ke-32 rasi sekitar 40 ms, terlalu mahal
+  di tiap langkah ubah ukuran). BATAS SASARAN tidak berubah (`wilayahPoligon`,
+  selubung + `padWilayah`, ditambah jangkauan 40 px dari bintang): garis yang
+  tampak kini lebih ketat daripada area yang menyorot rasi, keputusan sadar
+  supaya toleransi klik tidak menyusut. Dijaga `[kontur]` di
+  `banding-lensa.mjs` (yang diurai dan diukur PATH yang digambar, bukan lingkar
+  mentahnya) plus delapan sel mutasi. Satu pagar mati yang disadari: pilihan
+  sisi sel pelana (8 dari 128 kombinasi rasi dan skala, hanya leher selebar
+  satu sel) tidak bisa dibedakan, dan raster 1 px independen pun berselisih
+  14 dari 128 dengan kontur, jadi bukan penagih yang adil.
 * **Kata kapsul "mulai di sini" dari status bintang sasarannya** (`kataMulai`:
   sebagian = "Lanjutkan di sini", lainnya "Mulai di sini"), bukan dari XP.
   Jawaban `/api/langit` divalidasi bentuknya sebelum dipakai
@@ -1308,12 +2205,23 @@ ditunjuk). Yang mengikat:
 * **Dua bahasa warna hidup berdampingan** sampai ada ronde CSS-saja untuk
   `PetaRasi`: Bahasa dan Dasbor masih memakai kuningan = selesai.
 * **Pengukuran di peramban tinggal di repo**: `packages/web/uji/manual/`
-  (lima belas berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
+  (dua puluh sembilan berkas: `alur-nyata.mjs`, `ukur-lensa.mjs`, `ukur-peta.mjs`,
   `tangkap.mjs`, `fokus-dialog.mjs`, `data-dialog.mjs`, `sapuan-kontrol.mjs`,
-  `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
+  `belajar-ux.mjs`, `kuis-karier.mjs`, `pilihan-karier.mjs`, `pengantar.mjs`, `gambar-pengantar.mjs`, `orbit-bekal.mjs`, `skyline.mjs`, `pohon-berkas.mjs`, `kaca-cair.mjs`, `tombol-kaca.mjs`, `penutup.mjs`, `dasbor-hidup.mjs`, `strip-konteks.mjs`, `lembar-baca.mjs`, `ukur-konsep.mjs`, `kontras.mjs` + `kontras.py`, `perf-*.mjs`,
   `regresi-piksel.mjs`, dan `lib.mjs`; hanya GET kecuali `data-dialog.mjs` dan
-  `sapuan-kontrol.mjs`, yang MENULIS dan menolak jalan terhadap port 7777 atau
-  berkas progres di rumah; jalankan dengan profil terpisah) dan `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
+  `sapuan-kontrol.mjs` (yang MENULIS) serta `belajar-ux.mjs` (mengetik di editor
+  PROFIL UJI; dua server: pelajar baru dan pelajar kembali) dan `kuis-karier.mjs`
+  (mengisi lalu membatalkan `tujuan_karier` di PROFIL UJI), dan menolak jalan terhadap port 7777 atau
+  berkas progres di rumah; jalankan dengan profil terpisah. "Hanya GET" TIDAK
+  berarti tidak menulis progres: GET `/api/latihan` mencatat `latihan_dilihat`
+  (`api.py`, `record_exercise_viewed`), dan membuka sebuah materi di layar
+  membuat UI mengirim POST `/api/materi/selesai` yang mencatatnya "sebagian"
+  atau selesai, beserta XP kecil dan streak.
+  Karena itu `belajar-ux.mjs` menuntut profil yang disemai ULANG tiap jalan;
+  di profil bekas blok lencana memerah dengan alasan yang tidak ada hubungannya
+  dengan lencana. Skrip itu hanya bisa memeriksa host dan port, bukan berkas
+  profilnya; yang memastikan profil sementara tetap tugas pemanggilnya) dan
+  `alat/uji_gigi_blok.py` (baterai mutasi pagar CSS dan sumber;
   ia menyunting berkas di tempat dan memulihkannya, jadi jalankan di salinan
   pohon dan ia gagal bila ada sel yang dilewati). Kriteria terima irisan
   menunjuk berkas-berkas itu, bukan skrip di direktori sesi yang suatu hari
@@ -1498,6 +2406,25 @@ lulus diam-diam). Yang mengikat:
   objek; `JSON.stringify` tidak. Tanpa itu sidik `bandingkan` bergeser setiap
   kali urutan dua medan ditukar di kode -- perubahan yang tidak mengubah satu
   pun perilaku.
+* **"Artinya" (`inti/galat.py`) mencakup Ruby, Rust, C#, Visual Basic, PHP,
+  Kotlin, dan TypeScript** (2026-10-28; 274 pola, 203 di antaranya baru).
+  Polanya diturunkan dari pesan yang keluar dari toolchain sungguhan lewat
+  `runner.jalankan`, bukan dari ingatan, dan berjangkar pada frasa khas
+  bahasanya (kode `error TS2304`, `CS0103`, `BC30451`, nama exception, atau
+  kalimat seperti `Call to undefined function`). Pesan nyatanya tinggal di
+  ujung `PROBE` di `alat/golden_bersama.py` dan di `tests/test_galat.py`; di
+  sana ada satu tes HIDUP (`TestToolchainNyata`, dilewati
+  `BELAJAR_SKIP_LAMBAT=1`) yang menjalankan 38 program pemicu dan menuntut
+  tiap pesan punya penjelasan, supaya pola ketahuan kalau kata-kata compiler
+  berubah. Tiga pola Java dipersempit (`error: ';' expected`,
+  `(?!.*MainKt)` pada NullPointer dan NoSuchElement) supaya pesan tsc dan
+  Kotlin tidak dijelaskan dengan kalimat Java; pesan Java tidak berubah.
+  Syarat pola baru: tanpa lookbehind dan tanpa lookahead positif yang
+  melewati teks yang cocok (penjelasan disusun dengan mencocokkan ulang pola
+  pada `group(0)`). Jalur, per 2026-10-28: aplikasi hanya mengirim
+  `hasil.galat` (stderr) ke `terjemahkan`, sedangkan kompilasi .NET dan tsc
+  serta semua pesan PHP keluar lewat stdout, jadi penjelasan untuk pesan itu
+  belum sampai ke layar sebelum runner menyalurkannya.
 
 **Blok kode tanpa warna: 192 dari 3.315, dan 118 di antaranya memang harus
 polos** (`"teks"`, diagram). Semula 421. Rekaman cakupan di `golden/sorot.json`
@@ -1656,10 +2583,11 @@ melucuti TIPE dari `.ts` tapi tidak melucuti JSX dari `.tsx`, jadi hanya berkas
 | `layarDasbor` | `layar/dasbor-teks.ts` | `layar/Dasbor.tsx` | 360 profil hasilan, benih 20261026 |
 | palet perintah | `komponen/palet-cari.ts` | `komponen/Palet.tsx` | 247 teks x 35 kueri, urutan penuh |
 | layar Langit | `komponen/lensa-geometri.ts`, `komponen/lensa-teks.ts`, `layar/langit-data.ts` | `layar/Langit*.tsx`, `komponen/Glif.tsx` | 440.982 sifat (`banding-lensa.mjs`: tidak ada JS lama untuk diadu), `ringkasPembuka` diadu `golden-pembuka.json` (110 kasus, dibangkitkan `alat/golden_pembuka.py`) |
+| dasbor hidup | `layar/dasbor-hidup-teks.ts`, `komponen/angka-hidup-teks.ts` | `layar/Dasbor.tsx`, `komponen/AngkaHidup.tsx` | 6.836 sifat (`banding-dasbor-hidup.mjs`: tidak ada JS lama untuk diadu, oracle independen) |
 
-Keenam belas pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
-`test_konten_json.TestAlgoritmaTypeScript`, dan **216 sel mutasi** di
-`packages/bersama/uji/gigi-golden.py` (201 untuk keenam belas pembanding web,
+Kedua puluh tiga pembanding di `packages/web/uji` ikut suite lewat `SKRIP_WEB` di
+`test_konten_json.TestAlgoritmaTypeScript`, dan **432 sel mutasi** di
+`packages/bersama/uji/gigi-golden.py` (417 untuk kedua puluh tiga pembanding web,
 15 untuk ketiga golden `bersama`) membuktikan semuanya bisa MERAH. Pagar CSS dan
 sumber layar Langit punya baterainya sendiri, `alat/uji_gigi_blok.py` (58 sel).
 
@@ -1804,7 +2732,9 @@ Lima catatan yang mengikat untuk cangkang:
   hampir sebulan kemudian, karena tsc, golden, dan curl tidak melihatnya. Catat
   isiannya lewat `onChange` ke objek biasa. Dijaga
   `TestIsiDialogTidakMemakaiRef`; alurnya diukur `uji/manual/data-dialog.mjs`
-  (16 pemeriksaan, hasilnya dibaca dari berkas progres).
+  (32 pemeriksaan, termasuk pulihkan dari salinan dan daftar `Pilihan` di
+  dalam dialog; hasilnya dibaca dari
+  berkas progres).
 * **Dialog yang digambar sendiri dibungkus `PembungkusModal`** (Jendela.tsx).
   `.jendela` TIDAK punya posisi sendiri: `#tirai { position: fixed }` yang
   menaruhnya di tengah. `<div className="jendela">` yang ditulis langsung
@@ -1848,6 +2778,103 @@ Lima catatan yang mengikat untuk cangkang:
   `data-dialog.mjs`. Pelajarannya: tsc hijau dan tes sumber hijau tidak
   membuktikan sebuah tombol bekerja; yang membuktikan adalah mengkliknya dan
   membaca HASILNYA dari berkas atau server, bukan dari layar.
+* **Teks yang dilihat pelajar harus jujur dan tenang** (ronde UX belajar,
+  `uji/manual/belajar-ux.mjs`, dijaga `TestUxBelajar`). Lencana bilah atas
+  tampil di SETIAP layar, jadi ia tidak boleh menyatakan sesuatu yang tidak
+  benar untuk xp 0 ("Streak terputus" untuk orang yang belum pernah punya
+  streak); tiga keadaan, tanpa kata "terputus". Judul dan legenda hasil
+  Periksa ("Lihat bedanya di bawah", "Baris hijau bertanda -") hanya muncul
+  bila memang ada diff: galat sintaks/kompilasi sengaja tidak punya diff
+  (`api.py`), dan menyuruh orang melihat tempat yang kosong tepat saat ia
+  paling butuh arah. Program pendukung yang belum terpasang disebut satu
+  kata ("program pendukung", bukan "toolchain"), berstatus netral (bukan
+  gaya galat), disebut gratis, dan selalu menunjuk jalan keluar (halaman
+  bahasa memegang perintah pasang dan tombol Salin). Materi menjelaskan
+  kapan ia tercatat selesai dengan SATU kalimat tetap di kaki; kalimat itu
+  hanya menjelaskan perilaku layar, definisi kemajuan tetap `progress.py`.
+  "Lihat contoh solusi" dan "Bandingkan dengan kodeku" lewat gerbang yang
+  sama (`izinkanSolusi`). Setiap `.pusaran` pemuat adalah `role="status"`
+  atau dekorasi `aria-hidden` di dalam pembungkus `role="status"`. Itu hanya
+  DOM-nya; efeknya pada pembaca layar sungguhan belum pernah diuji, dan region
+  kosong ber-`aria-label` mungkin tidak dibacakan sama sekali. Hasil jawaban
+  kuis diumumkan SEKALI lewat `umumkan()`; pembungkus `role="status"` yang
+  memuat tombol "Soal berikutnya" membuatnya terdengar dua kali. Alasan "tidak dinilai" dari mesin
+  ("Toolchain belum terpasang: gcc") tidak berakhir titik dan berjargon, jadi
+  lewat `kalimatAlasan()` sebelum disambung kalimat lain. Medali badge yang
+  belum diraih dibedakan dengan tepi putus-putus dan warna `--redup`, bukan
+  `opacity` (teksnya jatuh ke 2,1:1 di tema terang).
+* **Judul tab dan fokus saat berpindah layar** (`src/fokus-rute.ts`, dijaga
+  `TestUxAksesibel` dan `belajar-ux.mjs` blok H dan I). Port React kehilangan
+  keduanya dari antarmuka lama. Judul tab diambil dari `<h1>` layar yang
+  tergambar; fokus pindah ke `<h1>` HANYA sesudah orang berpindah layar
+  (`hashchange`) DAN sedang di `<body>`, di bilah navigasi, di kontainer
+  `#layar`, atau pada elemen yang sudah dilepas (mengetik di kotak cari lalu
+  Enter mengubah alamat, dan fokusnya tidak boleh dicuri). Pengaman "render
+  pertama" TIDAK cukup dan pernah salah: kunci rute ikut berubah di pemuatan
+  pertama begitu `/api/awal` tiba, jadi fokus mendarat di `<h1>` pada lima dari
+  tujuh pintu masuk. Layar bertipe sama (`Belajar`, `Bahasa`, `Kuis` tanpa
+  `key`) menjalankan efeknya selagi `<h1>` layar LAMA masih terpasang, jadi
+  pengamatnya hidup sampai batas waktu dan menerapkan ulang judul serta fokus
+  tiap `<h1>` berganti simpul atau teks. Skrip yang hanya menguji `#/atur` ke
+  `#/statistik` (dua komponen berbeda) lolos dengan semua cacat itu; uji pintu
+  masuk satu per satu dan pindah antar-layar bertipe sama. Layar tanpa `<h1>`
+  (kartu `Keadaan` "Gagal memuat", "Bab N belum terbuka") memakai judul
+  kartunya (`.keadaan-isi > b`) untuk judul tab dan fokus, dan hook memasang
+  `role="heading" aria-level="1"` padanya; `<h1>` selalu menang bila ada,
+  karena kartu `Keadaan` juga muncul di dalam layar ber-`<h1>`
+  (blok J dan K di `belajar-ux.mjs`, simulasi respons 409). "Lompat ke isi"
+  adalah `<button>`, bukan `<a href="#layar">`
+  (`#layar` dibaca router sebagai rute tak dikenal). `<main id="layar">` TIDAK
+  boleh ber-`tabIndex` tetap: klik pada teks mana pun lalu memindahkan fokus
+  dari `<body>` ke `<main>`, dan `alur-nyata.mjs` ("klik teks panel
+  menjatuhkan fokus ke BODY") memerah. `tabindex`-nya dipasang saat tombol
+  ditekan dan dilepas saat fokus pergi. `umumkan()` menggabungkan pengumuman
+  dalam jendela 60 ms; dulu hasil Periksa tertimpa pengumuman badge.
+* **Peredupan `opacity` pada teks dilarang di SEMUA layar, bukan hanya Langit.**
+  Kontras dihitung dari warna komputasi dengan `opacity` semua leluhur ikut
+  terhitung, dan di situlah token yang lolos tetap gagal: nomor bab terkunci
+  11px ~3:1, label simpul Karier 1,6 sampai 2,9:1, `<mark>` tema terang 3,1:1,
+  medali terkunci 2,1:1. Yang diredupkan bentuknya (`.kr-simpul.redup >
+  :not(.kr-label)`), hurufnya memakai warna `--redup` (5,6 sampai 11:1 di
+  empat tema, dihitung dari token). Ukurnya di peramban dengan perhitungan yang
+  sama (`kontrasDi` di `belajar-ux.mjs` blok K), karena tes sumber hanya
+  membaca barisnya. Pengukurnya wajib membaca `color(srgb 0.9 0.9 0.8 / a)`:
+  itulah cara `getComputedStyle` melaporkan `color-mix`, dengan komponen 0
+  sampai 1. Pengurai yang membacanya sebagai 0 sampai 255 menghitung latar krem
+  sebagai hitam (kontras 14:1 tampak 1,2:1, atau sebaliknya melebih-lebihkan).
+  Ditemukan 2026-10-28 oleh pemeriksaan tema terang kuis karier; angka `<mark>`
+  yang lama keliru (verdik keempat tema tetap lulus dan seluruh
+  `belajar-ux` memberi hasil yang sama, tetapi angkanya bergeser: terang 12,1,
+  gelap 7,0, malam 6,6, kontras 8,0). Konsekuensi yang disadari: simpul Karier yang diredupkan
+  tidak lagi memudar halus (transisinya ada di grup, opacity-nya kini di
+  anak), dan beda label "tampak" lawan redup tinggal bobot dan warna.
+* **Kabar program pendukung bukan galat, dan layar penolakan tidak boleh
+  buntu.** Chip "butuh gcc" di kepala halaman bahasa memakai `--tenang`
+  (`.fakta-kurang`), bukan `--salah`; teksnya tetap sama dengan antarmuka lama
+  karena `faktaBahasa` dipatok `banding-bahasa.mjs`. Kartu "Bab N belum
+  terbuka" menawarkan SATU tautan ke materi pertama yang belum selesai dan
+  tidak terkunci (predikat yang sama dengan `pilihLanjut`; yang memutuskan
+  terkunci tetap `bab.py` lewat `b.materi`), dengan daftar materi sebagai
+  cadangan. Judul bagian materi `h2` (judul layarnya `h1`; `h3` melompati satu
+  tingkat), dan pengantar kuis menyebut materi yang diuji tetapi belum dibaca
+  dengan angka `sisa_materi` yang sama dengan daftar kuis di halaman bahasa.
+* **Satu deviasi dari antarmuka lama di pagar Dasbor, dan ia bernama.**
+  `kalimatPembuka` tidak lagi menambah "Jaga apinya tetap menyala." sesudah
+  jumlah hari berturut-turut: cabang itu hanya tampil saat target hari ini
+  belum tercapai, jadi dorongannya terbaca sebagai peringatan streak padam.
+  `banding-dasbor.mjs` membuang persis akhiran itu dari acuan lama
+  (`DORONGAN_STREAK_LAMA`) dan berhenti dengan "DEVIASI MATI ATAU BASI" bila
+  tabelnya tak pernah terpakai atau `layar-belajar.js` sudah berubah; sel
+  mutasi "dorongan streak kembali ke port" membuktikannya bisa merah. Kalimat
+  "Jeda terpanjang N hari tanpa XP, masih berlangsung" SENGAJA dibiarkan:
+  itu fakta tentang hamparan di sebelahnya dan tidak ada bukti bahwa ia
+  merugikan.
+* **Bukan semua yang kamu perbaiki terlihat pelajar.** Sesudah Periksa dengan
+  galat, `usePinKeGalat` menggulir panel hasil ke blok "Pesan error" (sengaja),
+  jadi judul kartu ("Belum sesuai. Programmu berhenti dengan error…") ada di
+  atas jendela panel di desktop. Perbaikan teks judul itu menyentuh DOM yang
+  dibaca pembaca layar dan tata letak yang tidak terpotong, bukan tangkapan
+  layar pertama. Ukur apa yang tampak sebelum menyebut sebuah teks "terlihat".
 
 **UMPAN TEKAN ADALAH `pasangIsyarat()`, DAN ELEMEN SVG TIDAK PERNAH IKUT**
 (2026-10-26). Dilaporkan pemilik: layar Peta Karier "rusak" -- gumpalan teks
@@ -1966,7 +2993,7 @@ yang menyebut perintah penyalaannya, jadi "dilewati" tidak pernah berarti
 dan ditulis (urutan `find()` tanpa `sort` implementation-defined di MongoDB,
 terukur kedua arah).
 
-**Tes kontrak 41 endpoint SUDAH ADA** (`tests/test_kontrak.py`). Yang
+**Tes kontrak 42 endpoint SUDAH ADA** (`tests/test_kontrak.py`). Yang
 ditagihnya BENTUK jawaban -- nama medan dan tipenya -- bukan nilainya:
 `{"xp": 7}` dan `{"xp": 1200}` sama-sama sah, `{"xp": "7"}` tidak. Empat hal
 yang membuatnya pagar:
@@ -2160,6 +3187,8 @@ contoh. Yang mengikat untuk tulisan baru:
   ada dash di prosa, blok `Keluaran:` berubah, atau judul/kode/bagian lain
   ikut berubah. Heading dan kode boleh dibetulkan, tapi dengan tangan dan
   dengan alasan: judul tidak pernah, karena ia kunci progres.
+* **Judul bagian punya alat sendiri**: `python3 alat/periksa_gaya.py judul` mengukurnya, dan
+  `python3 alat/tambah_judul.py` menulisnya (lihat "Lembar baca"). `ganti_badan.py` tetap tidak boleh menyentuhnya.
 * **Menulis ulang juga berarti memeriksa fakta.** Putaran ini menemukan
   puluhan klaim yang salah di prosa lama (int(-3.99) bukan "dibulatkan ke
   bawah", PriorityQueue bukan antrean FIFO, contoh `[InlineData(10, "E")]`

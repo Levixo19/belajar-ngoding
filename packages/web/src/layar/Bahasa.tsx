@@ -200,13 +200,16 @@ function KartuLanjut({ s, kunci }: { s: Lanjut; kunci: string }) {
 function BlokToolchain({ b }: { b: DataBahasa }) {
   return (
     <Keadaan
-      jenis="salah"
+      jenis="kosong"
       gambar="belum"
       judul={`Kode ${b.label} belum bisa dijalankan di komputer ini`}
       ket={
-        `Yang belum terpasang: ${(b.hilang || []).join(", ")}. Materi dan kuis ` +
-        "tetap berjalan penuh; yang mati hanya penilaian otomatis latihan, dan " +
-        "latihannya tetap bisa dikerjakan lalu ditandai selesai sendiri."
+        `Program pendukung yang belum terpasang: ${(b.hilang || []).join(", ")}. ` +
+        "Semuanya gratis. Materi dan kuis tetap berjalan penuh; yang belum " +
+        "tersedia hanya hal yang menjalankan kode: tombol Jalankan, " +
+        "penilaian otomatis latihan, Tebak keluarannya, dan Ruang Coba untuk " +
+        "bahasa ini. Latihannya tetap bisa dikerjakan lalu ditandai selesai " +
+        "sendiri."
       }
       aksi={
         b.pasang ? (
@@ -930,7 +933,7 @@ export function Bahasa({
       />
     );
   }
-  if (!b || !rasi) return <div className="pusaran" aria-label="Memuat" />;
+  if (!b || !rasi) return <div className="pusaran" role="status" aria-label="Memuat" />;
 
   const s = b.statistik;
   const belumSiap = !b.siap;

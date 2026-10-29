@@ -34,7 +34,8 @@ import { BlokKode, type BagianKode } from "../komponen/BlokKode.tsx";
 import { Ikon } from "../komponen/Ikon.tsx";
 import { Keadaan } from "../komponen/Keadaan.tsx";
 import { TombolBookmark, TombolCatatan } from "../komponen/Tanda.tsx";
-import { BlokProsa, type Blok } from "../komponen/Prosa.tsx";
+import type { Blok } from "../komponen/Prosa.tsx";
+import { IsiProsa } from "../komponen/IsiProsa.tsx";
 import { Visual } from "../komponen/Visual.tsx";
 import type { SpekUmum } from "../komponen/visual-bentuk.ts";
 import { labelPeta, potong } from "./belajar-teks.ts";
@@ -66,6 +67,8 @@ interface DataMateri {
   indeks: number;
   jumlah: number;
   judul: string;
+  /** Perkiraan menit baca dari server (`pelajar/waktu.py`); tidak ada di server lama. */
+  menit?: number;
   sebelum: string;
   sesudah: string;
   bagian: Bagian[];
@@ -135,6 +138,17 @@ function bawaKeTengah(wadah: HTMLElement | null, butir: HTMLElement | null) {
   }
 }
 
+/** "sekitar 9 menit · 2 kode · 1 gambar": orientasi sebelum membaca, dari bagian yang sudah ada. */
+function ringkasMateri(m: DataMateri): string {
+  const kode = m.bagian.filter((bg) => bg.jenis === "kode").length;
+  const gambar = m.bagian.reduce((n, bg) => n + (bg.visual ? bg.visual.length : 0), 0);
+  const butir: string[] = [];
+  if (m.menit) butir.push(`sekitar ${m.menit} menit`);
+  if (kode) butir.push(`${kode} kode`);
+  if (gambar) butir.push(`${gambar} gambar`);
+  return butir.join(" · ");
+}
+
 /**
  * Kolom kiri: jalur seluruh materi bahasa ini, dikelompokkan per bab.
  *
@@ -172,6 +186,13 @@ function KolomMateri({
   const berbab = b.bab.length > 1;
   const butir: ReactNode[] = [];
   let babKini: number | null = null;
+  /* Hanya bab yang sedang dibaca yang terbuka; bab lain terlipat menjadi satu baris (judul + angka)
+     sampai dibuka. Daftar yang memuat dua puluh judul sekaligus adalah dinding teks di kolom kiri,
+     dan orang yang sedang di bab 1 tidak sedang mencari isi bab 7. Pilihan pembaca (buka atau
+     tutup satu bab) menang atas bawaan, dan bab yang baru dimasuki otomatis terbuka. */
+  const [terbuka, setTerbuka] = useState<Record<number, boolean>>({});
+  const babAktif = b.materi.find((x) => x.indeks === indeksKini)?.bab ?? null;
+  const buka = (n: number) => terbuka[n] ?? n === babAktif;
 
   for (const x of b.materi) {
     if (berbab && x.bab !== babKini) {
@@ -182,17 +203,24 @@ function KolomMateri({
         butir.push(
           <li key={"bab" + bb.nomor} className="materi-rel-bab"
               data-bab={String(bb.nomor)}>
-            <span className="materi-rel-bab-judul">
-              {`Bab ${bb.nomor} · ${bb.judul}`}
-            </span>
-            {/* Angkanya ditandai berbeda saat babnya terkunci karena keduanya
-                tidak sama pentingnya: di layar sempit "3/7" boleh mengalah demi
-                judul yang utuh, sedangkan "terkunci" adalah satu-satunya
-                keterangan yang menjelaskan kenapa butir di bawahnya tidak bisa
-                ditekan. */}
-            <span className={"materi-rel-bab-angka" + (kunci ? " kunci" : "")}>
-              {kunci ? "terkunci" : `${bb.selesai}/${bb.jumlah}`}
-            </span>
+            <button
+              type="button"
+              className="materi-rel-bab-tombol"
+              aria-expanded={buka(bb.nomor)}
+              onClick={() => setTerbuka((t) => ({ ...t, [bb.nomor]: !buka(bb.nomor) }))}
+            >
+              <span className="materi-rel-bab-judul">
+                {`Bab ${bb.nomor} · ${bb.judul}`}
+              </span>
+              {/* Angkanya ditandai berbeda saat babnya terkunci karena keduanya
+                  tidak sama pentingnya: di layar sempit "3/7" boleh mengalah demi
+                  judul yang utuh, sedangkan "terkunci" adalah satu-satunya
+                  keterangan yang menjelaskan kenapa butir di bawahnya tidak bisa
+                  ditekan. */}
+              <span className={"materi-rel-bab-angka" + (kunci ? " kunci" : "")}>
+                {kunci ? "terkunci" : `${bb.selesai}/${bb.jumlah}`}
+              </span>
+            </button>
           </li>,
         );
       }
@@ -205,7 +233,7 @@ function KolomMateri({
     // siapa pun: tidak bisa diklik, tidak disinggahi Tab, dan tidak diumumkan
     // pembaca layar sebagai tautan.
     butir.push(
-      <li key={x.indeks}>
+      <li key={x.indeks} className={berbab && !buka(x.bab) ? "materi-rel-tutup" : undefined}>
         <a
           className={(kini ? "kini" : "") + (x.terkunci ? " terkunci" : "")}
           data-indeks={String(x.indeks)}
@@ -358,7 +386,7 @@ function PetaBagian({
   return (
     <aside className="materi-peta">
       <div className="mata">Di halaman ini</div>
-      <nav className="materi-peta-daftar">
+      <nav className="materi-peta-daftar" aria-label="Di halaman ini">
         {butir.map((x, n) => (
           <a
             key={x.i}
@@ -788,6 +816,10 @@ export function Belajar({
   }
   if (terkunci && b) {
     const bb = b.bab.find((x) => x.materi.includes(indeks));
+    // Satu langkah yang BISA dibuka, supaya layar penolakan ini tidak buntu.
+    // Predikatnya sama dengan `pilihLanjut` (status belum selesai, tidak
+    // terkunci); yang memutuskan "terkunci" tetap `bab.py` lewat `b.materi`.
+    const berikut = b.materi.find((x) => x.status !== "selesai" && !x.terkunci);
     return (
       <Keadaan
         jenis="kunci"
@@ -795,17 +827,26 @@ export function Belajar({
           : "Materi ini belum terbuka"}
         ket={terkunci}
         aksi={
-          <a className="tbl tbl-utama" href={"#/bahasa/" + kunciBahasa}>
-            Lihat daftar materi
-          </a>
+          <>
+            {berikut ? (
+              <a className="tbl tbl-utama"
+                 href={`#/materi/${kunciBahasa}/${berikut.indeks}`}>
+                {"Baca " + tanpaNomor(berikut.judul)}
+              </a>
+            ) : null}
+            <a className={"tbl " + (berikut ? "tbl-hantu" : "tbl-utama")}
+               href={"#/bahasa/" + kunciBahasa}>
+              Lihat daftar materi
+            </a>
+          </>
         }
       />
     );
   }
   if (!m || !b) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat materi…</span>
       </div>
     );
@@ -882,30 +923,33 @@ export function Belajar({
             baru dibuka; mereka turun ke KAKI artikel, tempat pertanyaannya
             memang muncul. */}
         <header className="kepala-besar kepala-materi">
-          <span className="mata">
-            {berbab && m.bab
-              ? `Bab ${m.bab.nomor} · ${m.bab.judul}`
-              : `${m.label_bahasa} · materi ${m.indeks + 1} dari ${m.jumlah}`}
-          </span>
+          {/* Bab dan posisi ("2 / 23") sudah dibawa strip konteks di atas; mengulangnya
+              di sini membuat judul bab tercetak tiga kali sebelum paragraf pertama.
+              Layar tanpa bab (kurikulum tanpa pembagian) tetap memakai labelnya. */}
+          {berbab && m.bab ? null : (
+            <span className="mata">
+              {`${m.label_bahasa} · materi ${m.indeks + 1} dari ${m.jumlah}`}
+            </span>
+          )}
           <h1>{tanpaNomor(m.judul)}</h1>
-          <div className="kepala-aksi">
-            <div className="deret deret-rapat">
-              <span className="pil">
-                {`materi ${m.indeks + 1} dari ${m.jumlah}`}
-              </span>
-              {berbab && m.bab ? (
+          {berbab && m.bab ? (
+            <div className="kepala-aksi">
+              <div className="deret deret-rapat">
                 <span
                   className={"pil bab-tingkat bab-" + m.bab.tingkat}
                   title={`Tingkat ${m.bab.label_tingkat.toLowerCase()} · `
                     + `${(babKini ?? m.bab).selesai} dari `
                     + `${(babKini ?? m.bab).jumlah} materi bab ini `
-                    + "sudah dibaca tuntas"}
+                    + "sudah selesai dibaca"}
                 >
                   {m.bab.label_tingkat}
                 </span>
-              ) : null}
+                {/* Orientasi sebelum membaca: berapa lama, berapa contoh kode, berapa gambar.
+                    Dihitung dari bagian yang sudah ada, tanpa data baru. */}
+                <span className="kepala-meta">{ringkasMateri(m)}</span>
+              </div>
             </div>
-          </div>
+          ) : null}
         </header>
 
         <article ref={artikelRef} className="prosa">
@@ -913,8 +957,10 @@ export function Belajar({
             <section key={i}
                      className={bg.judul === "Di dunia nyata"
                        ? "dunia-nyata" : undefined}>
-              {bg.judul ? <h3>{bg.judul}</h3> : null}
-              {bg.blok.map((blk, j) => <BlokProsa key={j} blk={blk} />)}
+              {/* h2, bukan h3: judul layar adalah h1, dan melompat ke h3
+                  membuat pembaca layar menganggap ada tingkat yang hilang. */}
+              {bg.judul ? <h2>{bg.judul}</h2> : null}
+              <IsiProsa blok={bg.blok} lipat={bg.judul === "Di dunia nyata"} />
               {(bg.visual || []).map((sp, j) => <Visual key={j} spek={sp} />)}
             </section>
           ) : (
@@ -946,7 +992,7 @@ export function Belajar({
 
         <div className="materi-meta">
           <span className={"pil" + (status === "selesai" ? " pil-tumbuh" : "")}>
-            {status === "selesai" ? "sudah dibaca tuntas" : "belum tuntas"}
+            {status === "selesai" ? "sudah selesai dibaca" : "belum selesai dibaca"}
           </span>
           <span className="pil">
             <Ikon nama="bagian" ukuran={14} tebal={1.9} />
@@ -958,9 +1004,23 @@ export function Belajar({
               {`${jumlahKode} contoh kode`}
             </span>
           ) : null}
+          {jumlahKode && !b.siap ? (
+            <a className="pil" href={"#/bahasa/" + kunciBahasa}>
+              belum bisa dijalankan di komputer ini
+            </a>
+          ) : null}
         </div>
+        {/* Satu kalimat tetap, karena aturannya tidak terlihat di mana pun
+            sesudah layar mulai: pelajar tidak tahu kapan sebuah materi
+            dihitung. Kalimat ini MENJELASKAN perilaku layar ini; definisi
+            kemajuan tetap milik `pelajar/progress.py`. */}
+        <p className="baris-sisi" style={{ margin: "var(--s2) 0 0" }}>
+          Selesai tercatat saat kamu membaca sampai bagian paling bawah, atau
+          saat menekan Tandai selesai atau tombol materi berikutnya. Berhenti di
+          tengah tidak mengurangi apa pun.
+        </p>
 
-        <nav className="materi-kaki">
+        <nav className="materi-kaki" aria-label="Materi sebelum dan sesudah">
           {/* `sebelum`/`sesudah` sengaja dikosongkan server kalau tetangganya
               ada di bab yang masih terkunci. Memakai `m.indeks > 0` saja pernah
               cukup; sekarang tidak lagi -- tombol tanpa nama yang mengantar ke
@@ -981,6 +1041,7 @@ export function Belajar({
           <span className="deret-kanan" />
           {m.sesudah ? (
             <button type="button" className="tbl tbl-utama"
+                    title={`Menandai materi ini selesai, lalu membuka: ${m.sesudah}`}
                     onClick={() => { void tandaiSelesai(true); }}>
               {potong(m.sesudah, 26)}
             </button>

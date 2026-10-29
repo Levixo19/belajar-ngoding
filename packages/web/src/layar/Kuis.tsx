@@ -52,6 +52,9 @@ interface ButirKuis {
   jatuh_tempo: boolean;
   salah_tersisa: number;
   bookmark: boolean;
+  /** Dari `/api/bahasa` (isi.py): semua materi yang diuji sudah dibaca. */
+  siap?: boolean;
+  sisa_materi?: number;
 }
 interface DataBahasa {
   key: string;
@@ -146,6 +149,17 @@ function Persiapan({
           {`${q.soal} soal pilihan ganda. Jawaban yang salah bukan kegagalan. `
             + "Ia yang memberi tahu bagian mana yang perlu dibaca ulang."}
         </p>
+        {/* Kesiapan disebut SEBELUM mulai, seperti di daftar kuis halaman
+            bahasa. Tanpa itu skor rendah pada kuis yang menguji materi yang
+            belum dibaca baru dijelaskan sesudahnya, dan terbaca sebagai
+            kegagalan, padahal materinya memang belum ada di kepala. */}
+        {!q.pernah && q.siap === false && (q.sisa_materi ?? 0) > 0 ? (
+          <p className="kepala-sub">
+            {`${q.sisa_materi} materi yang diuji kuis ini belum kamu baca, `
+              + "jadi sebagian soal wajar terasa asing. Boleh dikerjakan "
+              + "sekarang atau sesudah membacanya."}
+          </p>
+        ) : null}
         <div className="kepala-aksi">
           <div className="deret deret-rapat">
             <span className="pil">
@@ -312,7 +326,9 @@ function SesiKuis({
       const r = await kirim<Jawaban>("kuis/jawab",
         { sesi: sesi.sesi, nomor, pilihan });
       setJawaban(r);
-      umumkan(r.benar ? "Benar." : "Belum tepat. " + (r.penjelasan || ""));
+      umumkan(r.benar ? "Benar."
+        : `Belum tepat. Jawaban yang benar: ${HURUF[r.jawaban_benar]}. `
+          + (r.penjelasan || ""));
     } catch (e) {
       sorak((e as Error).message, "salah");
       onBatal();
@@ -435,25 +451,33 @@ function SesiKuis({
             kegagalannya tetap pendek tanpa menyisipkan simpul di tengah
             daftar -- dan daftar yang tidak disisipi tetap satu daftar bagi
             pembaca layar. */}
-        {jawaban ? (
-          <div className="penjelasan">
-            <b>{jawaban.benar ? "Benar. " : "Belum tepat. "}</b>
-            <Berkode teks={jawaban.penjelasan
-              || (jawaban.benar ? "" : "Jawaban yang benar disorot hijau.")} />
-            <div className="deret" style={{ marginTop: "var(--s3)" }}>
-              <button ref={lanjutRef} type="button" className="tbl tbl-utama"
-                      onClick={berikutnya}>
-                {nomor + 1 >= sesi.total ? "Lihat hasil" : "Soal berikutnya"}
-                <Ikon nama="lanjut" ukuran={16} />
-              </button>
+        {/* Bukan live region: hasil jawaban sudah diumumkan SEKALI lewat
+            `umumkan()` di `jawab()`. Pembungkus `role="status"` di sini, yang
+            memuat juga tombol "Soal berikutnya", membuat pembaca layar
+            mendengarnya dua kali. */}
+        <div>
+          {jawaban ? (
+            <div className="penjelasan">
+              <b>{jawaban.benar ? "Benar. "
+                : `Belum tepat. Jawaban yang benar: ${HURUF[jawaban.jawaban_benar]}. `}</b>
+              <Berkode teks={jawaban.penjelasan
+                || (jawaban.benar ? "" : "Jawaban yang benar disorot hijau.")} />
+              <div className="deret" style={{ marginTop: "var(--s3)" }}>
+                <button ref={lanjutRef} type="button" className="tbl tbl-utama"
+                        onClick={berikutnya}>
+                  {nomor + 1 >= sesi.total ? "Lihat hasil" : "Soal berikutnya"}
+                  <Ikon nama="lanjut" ukuran={16} />
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
+          ) : null}
+        </div>
+        {!jawaban ? (
           <p className="baris-sisi" style={{ marginTop: "var(--s4)" }}>
             {`Tekan 1-${s.options.length} atau A-${HURUF[s.options.length - 1]} `
               + "untuk menjawab."}
           </p>
-        )}
+        ) : null}
       </div>
     </>
   );
@@ -470,22 +494,35 @@ function Hasil({
   const persen = r.total ? (r.benar / r.total) * 100 : 0;
   const sempurna = r.benar === r.total && r.total > 0;
 
-  const kalimat = sempurna ? "Sempurna. Semua benar."
+  const dasar = sempurna ? "Sempurna. Semua benar."
     : persen >= 80 ? "Bagus. Tinggal sedikit yang perlu dirapikan."
     : persen >= 50 ? "Separuh jalan. Baca ulang bagian yang salah, lalu "
                      + "ulangi soal itu saja."
-    : "Ini tanda materinya belum menempel, dan itu wajar. Baca ulang "
-      + "materinya dulu, jangan langsung mengulang kuisnya.";
+    : "Skor di bawah separuh itu wajar saat materinya masih baru. Mulai dari "
+      + "bagian yang ditandai Baca lagi di bawah, lalu ulangi soal yang salah "
+      + "saja.";
+  // Waktu habis tadinya hanya label kecil; soal yang belum dijawab dihitung
+  // salah, dan itu baru terlihat sebagai "(tidak dijawab)" di daftar bawah.
+  const kalimat = kehabisanWaktu
+    ? "Waktunya habis, jadi soal yang belum dijawab dihitung salah. " + dasar
+    : dasar;
 
+  // Fokus ke judul hasil: soal terakhir dijawab lewat tombol yang kemudian
+  // dilepas, dan fokus yang ikut dilepas jatuh ke <body> sehingga pembaca
+  // layar tidak tahu kuisnya sudah selesai.
+  const judulHasil = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     globalThis.scrollTo({ top: 0, behavior: "instant" });
+    judulHasil.current?.focus({ preventScroll: true });
   }, []);
 
   return (
     <div className="masuk">
       <header className="kepala-besar">
         <span className="mata">{kehabisanWaktu ? "Waktu habis" : "Hasil"}</span>
-        <h1>{`${r.benar} dari ${r.total} benar`}</h1>
+        <h1 ref={judulHasil} tabIndex={-1} style={{ outline: "none" }}>
+          {`${r.benar} dari ${r.total} benar`}
+        </h1>
         <p className="kepala-sub">{kalimat}</p>
       </header>
 
@@ -715,8 +752,8 @@ export function Kuis({
   }
   if (!b) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat kuis…</span>
       </div>
     );

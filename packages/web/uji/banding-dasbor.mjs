@@ -383,8 +383,22 @@ for (const [namaPola, fn] of Object.entries(POLA)) {
   }
 }
 
+// DEVIASI DISENGAJA, SATU-SATUNYA di pagar ini: port tidak memakai dorongan
+// streak yang masih ada di layar-belajar.js. Cabangnya hanya tampil saat target
+// hari ini belum tercapai, jadi "Jaga apinya tetap menyala." terbaca sebagai
+// peringatan bahwa streak akan padam. Tabelnya sempit dengan sengaja: yang
+// dibuang persis satu akhiran, dan dua pengaman di bawah menolak tabel yang
+// mati (tidak pernah terpakai) atau basi (antarmuka lama sudah berubah).
+const DORONGAN_STREAK_LAMA = " Jaga apinya tetap menyala.";
+let dorongan = 0;
+const tanpaDorongan = (t) => {
+  if (!t.endsWith(DORONGAN_STREAK_LAMA)) return t;
+  dorongan += 1;
+  return t.slice(0, -DORONGAN_STREAK_LAMA.length);
+};
+
 for (const { nama, d } of PROFIL) {
-  adu(`kalimatPembuka(${nama})`, acuan.kalimatPembuka(d), kalimatPembuka(d));
+  adu(`kalimatPembuka(${nama})`, tanpaDorongan(acuan.kalimatPembuka(d)), kalimatPembuka(d));
   adu(
     `bandingHarian(${nama})`,
     bandingDariPohon(acuan.bandingHarian(d)),
@@ -630,6 +644,15 @@ for (const [i, bahasa] of SET_BAHASA.entries()) {
     baris ? baris.barisBahasa : null,
     dijalaniDasbor(bahasa).slice(0, 4).map((b) => b.key),
   );
+}
+
+if (dorongan === 0 || !belajar.includes(DORONGAN_STREAK_LAMA.trim())) {
+  console.error(
+    `DEVIASI MATI ATAU BASI: dorongan streak terpakai ${dorongan}x dan ` +
+      `${belajar.includes(DORONGAN_STREAK_LAMA.trim()) ? "masih" : "TIDAK lagi"} ` +
+      `ada di layar-belajar.js. Perbarui atau hapus DORONGAN_STREAK_LAMA.`,
+  );
+  process.exit(1);
 }
 
 console.log(

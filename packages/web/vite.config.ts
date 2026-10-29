@@ -136,6 +136,7 @@ export default defineConfig({
       "/api": { target: ASAL_PYTHON, changeOrigin: false },
       "/huruf": { target: ASAL_PYTHON, changeOrigin: false },
       "/vendor": { target: ASAL_PYTHON, changeOrigin: false },
+      "/gambar": { target: ASAL_PYTHON, changeOrigin: false },
       "/gaya.css": { target: ASAL_PYTHON, changeOrigin: false },
     },
   },

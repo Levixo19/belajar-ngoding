@@ -17,7 +17,7 @@
  * fiturnya dibuang.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useId } from "react";
 
 import { ambil, kirim } from "../api.ts";
 import { adaGerak, tingkatGerak } from "../gerak.ts";
@@ -28,6 +28,7 @@ import { adaHaptik, bacaGetar, bacaSuara, mainkanContoh, setelSuara,
          SUARA, tandaiPreferensi, type TingkatSuara }
   from "../suara.ts";
 import { Keadaan } from "../komponen/Keadaan.tsx";
+import { Pilihan } from "../komponen/Pilihan.tsx";
 import { SakelarBaris } from "../komponen/Sakelar.tsx";
 import {
   bacaTampilan,
@@ -126,6 +127,7 @@ function MedanTeks({
   const awal = String(opsi.nilai ?? "");
   const [nilai, setNilai] = useState(awal);
   const terakhir = useRef(awal);
+  const id = useId();
   const kirimKalauBeda = () => {
     if (nilai !== terakhir.current) {
       terakhir.current = nilai;
@@ -134,9 +136,10 @@ function MedanTeks({
   };
   return (
     <div className="medan">
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
       {ket ? <div className="ket">{ket}</div> : null}
       <input
+        id={id}
         type="text"
         value={nilai}
         onChange={(e) => setNilai(e.target.value)}
@@ -161,6 +164,7 @@ function MedanAngka({
   const awal = String(opsi.nilai ?? "");
   const [nilai, setNilai] = useState(awal);
   const terakhir = useRef(awal);
+  const id = useId();
   // Yang tersimpan adalah nilai yang SUDAH diklem server ke batasnya
   // (5000 jadi 1000, 3 jadi batas bawah). Kotak mengikutinya begitu jawaban
   // tiba; tanpa ini "5000" tetap tampil padahal yang tersimpan 1000.
@@ -184,9 +188,10 @@ function MedanAngka({
   };
   return (
     <div className="medan">
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
       {opsi.keterangan ? <div className="ket">{opsi.keterangan}</div> : null}
       <input
+        id={id}
         type="number"
         value={nilai}
         min={opsi.minimum ?? undefined}
@@ -210,21 +215,20 @@ function MedanPilihan({
   label: string;
   onSimpan: (v: string) => void;
 }) {
+  // Tidak terkontrol dari luar: nilainya disimpan server lewat `onSimpan`, dan
+  // layar ini tidak mengambil ulang. Keadaan lokalnya yang menampilkan pilihan.
+  const [nilai, setNilai] = useState(String(opsi.nilai ?? ""));
   return (
     <div className="medan">
       <label>{label}</label>
       {opsi.keterangan ? <div className="ket">{opsi.keterangan}</div> : null}
-      <select
-        aria-label={label}
-        defaultValue={String(opsi.nilai ?? "")}
-        onChange={(e) => onSimpan(e.target.value)}
-      >
-        {opsi.pilihan.map((x) => (
-          <option key={x.nilai} value={x.nilai}>
-            {x.label}
-          </option>
-        ))}
-      </select>
+      <Pilihan
+        label={label}
+        namaTombol={label}
+        nilai={nilai}
+        opsi={opsi.pilihan.map((x) => ({ id: String(x.nilai), nama: x.label }))}
+        onUbah={(v) => { setNilai(v); onSimpan(v); }}
+      />
     </div>
   );
 }
@@ -303,8 +307,8 @@ export function Atur() {
   }
   if (!konfig || !awal) {
     return (
-      <div className="deret">
-        <div className="pusaran" />
+      <div className="deret" role="status">
+        <div className="pusaran" aria-hidden="true" />
         <span>Memuat pengaturan…</span>
       </div>
     );

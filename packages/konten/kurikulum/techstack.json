@@ -436,6 +436,7 @@
      "code": "Roadmap peran        Urutan kurikulum di aplikasi ini\n-------------------  --------------------------------------------------\nFrontend             HTML > CSS > JavaScript > TypeScript > Git & GitHub\n                     > Frontend Modern > Tech Stack bab 1-3\nBackend              satu bahasa (Python/Java/Go/PHP/C#) > SQL\n                     > Git & GitHub > Backend & API > Database\n                     > Tech Stack bab 8-10\nFull Stack           jalur Frontend + jalur Backend > Tech Stack\nAndroid              Kotlin > Git & GitHub > Mobile & Desktop\niOS                  Mobile & Desktop (Swift ada di Bahasa Lain)\nDevOps               CLI Fedora > Bash > Git & GitHub > DevOps & Cloud\n                     > Tech Stack bab 11\nDevSecOps            jalur DevOps > Keamanan Siber\nData Analyst, BI     SQL > Python > Data & Analitik\nData Engineer        SQL > Python > Data & Analitik > DevOps & Cloud\nAI Engineer, ML      Python > SQL > Data & Analitik > AI & ML\nMLOps                jalur AI > DevOps & Cloud\nQA                   satu bahasa > Tech Stack bab 6 > bagian tes di\n                     Frontend Modern atau Backend & API\nSoftware Architect   Backend & API > Bikin Aplikasi > Tech Stack\nCyber Security       CLI Fedora > Bash > Keamanan Siber\nGame Developer       Game & Grafis (+ C# atau C++)\nTechnical Writer     Git & GitHub > Tech Stack bab 12"
     },
     {
+     "heading": "Roadmap lain dan celah kurikulum",
      "body": [
       "Roadmap peran lain juga punya pasangan. PostgreSQL DBA ke SQL lalu",
       "Database & Penyimpanan Data. API Design ke Backend & API lalu bab 8 dan",
@@ -2646,6 +2647,7 @@
      "code": "export default {\n  async fetch(request, env) {\n    const url = new URL(request.url);\n    if (url.pathname === \"/halo\") {\n      const nama = url.searchParams.get(\"nama\") ?? \"dunia\";\n      return new Response(`Halo, ${nama}!`);\n    }\n    ...\n    return new Response(\"Nggak ada di sini\", { status: 404 });\n  },\n};"
     },
     {
+     "heading": "Paket Workers dan layanan datanya",
      "body": [
       "Cloudflare memanggil fetch untuk setiap request yang masuk, dengan objek",
       "Request yang sama seperti di browser. Alamat /halo?nama=Budi dijawab",
@@ -3569,6 +3571,7 @@
      "code": "BATAS = 79\n\n\ndef periksa(sumber):\n    temuan = []\n    for nomor, baris in enumerate(sumber.splitlines(), 1):\n        if \"\\t\" in baris:\n            temuan.append((nomor, \"W191\", \"indentasi memakai tab\"))\n        if baris != baris.rstrip():\n            temuan.append((nomor, \"W291\", \"ada spasi di ujung baris\"))\n        if len(baris) > BATAS:\n            temuan.append((nomor, \"E501\", f\"panjang {len(baris)} > {BATAS}\"))\n    return temuan\n\n\ncontoh = (\n    \"def luas(p, l):\\n\"\n    \"\\treturn p * l \\n\"\n    \"print('luas kamar tidur utama di rumah nenek, dalam meter persegi:', \"\n    \"luas(4, 5))\\n\"\n)\nfor nomor, kode, pesan in periksa(contoh):\n    print(f\"baris {nomor}: {kode} {pesan}\")"
     },
     {
+     "heading": "Alat linter dan formatter sungguhan",
      "body": [
       "Keluarannya:",
       "  baris 2: W191 indentasi memakai tab",
@@ -3729,6 +3732,7 @@
      "code": "versi = [\"1.10.0\", \"1.9.0\", \"1.2.0\", \"2.0.0\"]\n\n\ndef sebagai_angka(v):\n    return tuple(int(x) for x in v.split(\".\"))\n\n\nprint(\"urut sebagai teks :\", sorted(versi))\nprint(\"urut sebagai angka:\", sorted(versi, key=sebagai_angka))"
     },
     {
+     "heading": "Urutan versi, pra-rilis, dan metadata build",
      "body": [
       "Keluarannya:",
       "  urut sebagai teks : ['1.10.0', '1.2.0', '1.9.0', '2.0.0']",
@@ -4021,6 +4025,7 @@
      "code": "# Strategy: cara hitung ongkir bisa ditukar tanpa mengubah bayar()\ndef kurir_reguler(km):\n    return 9_000 + 1_000 * km\n\n\ndef kurir_instan(km):\n    return 15_000 + 2_500 * km\n\n\n# Decorator: menambah log tanpa menyentuh isi fungsi yang dibungkus\ndef catat(fungsi):\n    def bungkus(*args):\n        hasil = fungsi(*args)\n        print(f\"[log] {fungsi.__name__}{args} = {hasil}\")\n        return hasil\n    return bungkus\n\n\n# Observer: siapa pun boleh mendaftar untuk dikabari saat pesanan dibayar\npendengar = []\n\n\ndef saat_dibayar(fungsi):\n    pendengar.append(fungsi)\n    return fungsi\n\n\n@saat_dibayar\ndef kirim_email(nomor):\n    print(\"email terkirim untuk pesanan\", nomor)\n\n\n@saat_dibayar\ndef kurangi_stok(nomor):\n    print(\"stok dikurangi untuk pesanan\", nomor)\n\n\ndef bayar(nomor, total, km, strategi):\n    biaya = catat(strategi)(km)\n    for kabari in pendengar:\n        kabari(nomor)\n    return total + biaya\n\n\nprint(\"bayar:\", bayar(\"A17\", 50_000, 4, kurir_instan))"
     },
     {
+     "heading": "Strategy, Decorator, Observer, Factory, Adapter",
      "body": [
       "Keluarannya:",
       "  [log] kurir_instan(4,) = 25000",
@@ -5119,6 +5124,7 @@
      "code": "db = {\"produk:1\": \"Buku Tulis 38 lembar, Rp5.000\"}\ncache = {}            # kunci -> (nilai, kedaluwarsa_pada)\njam = 0               # jam palsu, dalam detik\nTTL = 60\n\n\ndef ambil(kunci):\n    data = cache.get(kunci)\n    if data and data[1] > jam:\n        return \"HIT\", data[0]\n    nilai = db[kunci]                    # query lambat ke database\n    cache[kunci] = (nilai, jam + TTL)\n    return \"MISS\", nilai\n\n\ndef ubah_harga(kunci, nilai_baru):\n    db[kunci] = nilai_baru               # 1. perbarui database dulu\n    cache.pop(kunci, None)               # 2. baru hapus dari cache\n\n\nfor jam in (0, 10, 30):\n    print(jam, *ambil(\"produk:1\"))\nubah_harga(\"produk:1\", \"Buku Tulis 38 lembar, Rp5.500\")\njam = 40\nprint(jam, *ambil(\"produk:1\"))\njam = 120\nprint(jam, *ambil(\"produk:1\"))"
     },
     {
+     "heading": "Alur cache-aside dan pola cache lain",
      "body": [
       "Keluarannya:",
       "  0 MISS Buku Tulis 38 lembar, Rp5.000",
@@ -5749,6 +5755,7 @@
      "code": "import hashlib\n\n\ndef nomor_shard(kunci, banyak_shard):\n    angka = int(hashlib.md5(kunci.encode()).hexdigest(), 16)\n    return angka % banyak_shard\n\n\npindah = 0\nfor i in range(1, 9):\n    kunci = f\"pelanggan-{i}\"\n    lama = nomor_shard(kunci, 3)\n    baru = nomor_shard(kunci, 4)\n    catatan = \"  pindah\" if lama != baru else \"\"\n    if lama != baru:\n        pindah += 1\n    print(f\"{kunci}: shard {lama} -> shard {baru}{catatan}\")\nprint(f\"{pindah} dari 8 kunci harus dipindah\")"
     },
     {
+     "heading": "Kunci yang pindah saat shard bertambah",
      "body": [
       "Keluaran:",
       "  pelanggan-1: shard 1 -> shard 2  pindah",
@@ -6091,6 +6098,7 @@
      "code": "from fractions import Fraction\n\nSETAHUN = 365 * 24 * 60          # menit dalam setahun\n\n\ndef tampil(nama, a):\n    henti = (1 - a) * SETAHUN\n    print(f\"{nama:<28} {float(a * 100):8.4f}%  {float(henti):7.1f} menit/tahun\")\n\n\nserver = Fraction(999, 1000)     # satu server aplikasi: 99,9%\ndatabase = Fraction(999, 1000)   # satu server database: 99,9%\ndua_server = 1 - (1 - server) ** 2\n\ntampil(\"1 server\", server)\ntampil(\"1 server + database\", server * database)\ntampil(\"2 server paralel\", dua_server)\ntampil(\"2 server paralel + database\", dua_server * database)"
     },
     {
+     "heading": "Database tunggal sebagai mata rantai terlemah",
      "body": [
       "Keluaran:",
       "  1 server                      99.9000%    525.6 menit/tahun",
@@ -6652,6 +6660,7 @@
      "code": "from functools import reduce\n\n# Yang disimpan cuma deretan kejadian. Saldo dihitung dari situ.\nevents = [\n    (\"rekening_dibuka\", 0),\n    (\"disetor\", 500_000),\n    (\"ditarik\", 120_000),\n    (\"disetor\", 75_000),\n    (\"ditarik\", 200_000),\n]\n\n\ndef terapkan(saldo, event):\n    jenis, jumlah = event\n    if jenis == \"disetor\":\n        return saldo + jumlah\n    if jenis == \"ditarik\":\n        return saldo - jumlah\n    return saldo\n\n\nprint(f\"{'saldo sekarang':<24}:\", reduce(terapkan, events, 0))\nprint(f\"{'saldo sesudah event ke-3':<24}:\", reduce(terapkan, events[:3], 0))\n\n# Snapshot: simpan hasil sampai event ke-3, lalu putar sisanya saja.\nsnapshot = {\"versi\": 3, \"saldo\": reduce(terapkan, events[:3], 0)}\nprint(f\"{'dihitung dari snapshot':<24}:\", reduce(terapkan, events[3:], snapshot[\"saldo\"]))"
     },
     {
+     "heading": "Snapshot dan kegunaan event sourcing",
      "body": [
       "Keluaran:",
       "  saldo sekarang          : 255000",
@@ -6712,6 +6721,7 @@
      "code": "# Saga dengan orkestrator: tiap langkah punya pasangan pembatalnya.\ndef pesan_stok(log):\n    log.append(\"stok dipesan\")\n    return True\n\n\ndef kembalikan_stok(log):\n    log.append(\"kompensasi: stok dikembalikan\")\n\n\ndef tagih(log):\n    log.append(\"pembayaran ditagih\")\n    return True\n\n\ndef refund(log):\n    log.append(\"kompensasi: pembayaran direfund\")\n\n\ndef jadwalkan_kurir(log):\n    log.append(\"kurir menolak: alamat di luar jangkauan\")\n    return False\n\n\ndef batalkan_kurir(log):\n    log.append(\"kompensasi: jadwal kurir dibatalkan\")\n\n\nLANGKAH = [(pesan_stok, kembalikan_stok), (tagih, refund),\n           (jadwalkan_kurir, batalkan_kurir)]\n\n\ndef jalankan_saga(langkah):\n    log, berhasil = [], []\n    for lakukan, batalkan in langkah:\n        if lakukan(log):\n            berhasil.append(batalkan)\n            continue\n        for batal in reversed(berhasil):\n            batal(log)\n        log.append(\"saga gagal, pesanan dibatalkan dengan rapi\")\n        return log\n    log.append(\"saga selesai, pesanan dikirim\")\n    return log\n\n\nfor baris in jalankan_saga(LANGKAH):\n    print(baris)"
     },
     {
+     "heading": "Kompensasi, pola outbox, dan Temporal",
      "body": [
       "Keluaran:",
       "  stok dipesan",
@@ -7744,6 +7754,7 @@
      "code": "import base64\nimport hashlib\nimport hmac\nimport json\n\nRAHASIA = b\"rahasia-contoh-yang-di-produksi-diambil-dari-env\"\n\n\ndef b64(data):\n    return base64.urlsafe_b64encode(data).rstrip(b\"=\").decode()\n\n\ndef dari_b64(teks):\n    return base64.urlsafe_b64decode(teks + \"=\" * (-len(teks) % 4))\n\n\ndef tanda_tangan(kepala, badan):\n    return b64(hmac.new(RAHASIA, f\"{kepala}.{badan}\".encode(), hashlib.sha256).digest())\n\n\ndef buat_token(isi):\n    kepala = b64(json.dumps({\"alg\": \"HS256\", \"typ\": \"JWT\"}).encode())\n    badan = b64(json.dumps(isi).encode())\n    return f\"{kepala}.{badan}.{tanda_tangan(kepala, badan)}\"\n\n\ndef periksa(token, sekarang):\n    kepala, badan, tanda = token.split(\".\")\n    if not hmac.compare_digest(tanda, tanda_tangan(kepala, badan)):\n        return \"ditolak: tanda tangan tidak cocok\"\n    isi = json.loads(dari_b64(badan))\n    if sekarang >= isi[\"exp\"]:\n        return \"ditolak: sudah kedaluwarsa\"\n    return f\"sah, pengguna {isi['sub']} dengan peran {isi['peran']}\"\n\n\ntoken = buat_token({\"sub\": \"ani\", \"peran\": \"siswa\", \"exp\": 1000})\nkepala, badan, tanda = token.split(\".\")\nprint(\"isi   :\", dari_b64(badan).decode())\nprint(\"t=900 :\", periksa(token, 900))\nprint(\"t=1000:\", periksa(token, 1000))\n\n# Penyerang mengubah peran jadi admin tanpa tahu rahasianya.\nbadan_palsu = b64(json.dumps({\"sub\": \"ani\", \"peran\": \"admin\", \"exp\": 1000}).encode())\nprint(\"palsu :\", periksa(f\"{kepala}.{badan_palsu}.{tanda}\", 900))"
     },
     {
+     "heading": "Kelemahan JWT dan tempat menyimpan token",
      "body": [
       "Keluaran:",
       "  isi   : {\"sub\": \"ani\", \"peran\": \"siswa\", \"exp\": 1000}",

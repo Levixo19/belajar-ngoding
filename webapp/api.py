@@ -583,7 +583,7 @@ def materi(params):
         "sorot": isi.bahasa_sorot(lang),
         "indeks": idx,
         "jumlah": len(lang["materials"]),
-        "judul": m["title"],
+        "judul": m["title"], "menit": waktu.menit_materi(m),  # satu rumus dengan halaman bahasa
         "sebelum": (lang["materials"][idx - 1]["title"]
                     if idx > 0 and idx - 1 in terbuka else ""),
         "sesudah": (lang["materials"][idx + 1]["title"]
@@ -670,7 +670,7 @@ def kuis_jawab(body):
 def kuis_selesai(body):
     r = sesi.rekap(body.get("sesi"))
     if r is None:
-        raise Galat("Sesi kuis sudah tidak ada.", 410)
+        raise Galat("Sesi kuis sudah tidak ada. Mulai ulang kuisnya.", 410)
 
     with _KUNCI_PROGRES:
         sebelum = progress.load_progress()
@@ -1223,12 +1223,29 @@ def data_ekspor(_=None):
     return {"progres": progress.load_progress()}
 
 
+def data_cadangan_daftar(_=None):
+    """Salinan progres bertanggal, terbaru dulu, untuk dipilih di layar."""
+    return {"salinan": progress.daftar_cadangan(),
+            "maks": progress.CADANGAN_MAKS}
+
+
 def data_impor(body):
-    masuk = body.get("progres")
+    nama = body.get("cadangan")
+    if nama is not None:
+        # Pulihkan dari salinan sendiri. Yang dikirim klien cuma NAMA, dan
+        # servernya yang mencarinya di kolam salinan: tidak ada jalur dari luar.
+        masuk = progress.baca_cadangan(nama) if isinstance(nama, str) else None
+        if masuk is None:
+            raise Galat("Salinan itu tidak ditemukan atau tidak bisa dibaca.", 404)
+    else:
+        masuk = body.get("progres")
     if not isinstance(masuk, dict):
         raise Galat("Isi berkas bukan data progres.", 400)
     with _KUNCI_PROGRES:
-        cadangan = progress.cadangkan()
+        try:
+            cadangan = progress.cadangkan()
+        except progress.GagalCadangan as e:
+            raise Galat(f"Progres lama tidak diganti karena salinannya gagal dibuat: {e}", 500)
         if not progress.save_progress(progress._migrasi(dict(masuk))):
             raise Galat("Gagal menulis progres.", 500)
     return {"ok": True, "cadangan": cadangan or "tanpa cadangan"}
@@ -1236,7 +1253,10 @@ def data_impor(body):
 
 def data_cadangkan(_=None):
     with _KUNCI_PROGRES:
-        return {"cadangan": progress.cadangkan()}
+        try:
+            return {"cadangan": progress.cadangkan()}
+        except progress.GagalCadangan as e:
+            raise Galat(f"Cadangan gagal dibuat: {e}", 500)
 
 
 def data_reset(body):
@@ -1249,7 +1269,10 @@ def data_reset(body):
     if body.get("konfirmasi") != "HAPUS":
         raise Galat("Reset butuh konfirmasi.", 409)
     with _KUNCI_PROGRES:
-        cadangan = progress.reset(bagian)
+        try:
+            cadangan = progress.reset(bagian)
+        except progress.GagalCadangan as e:
+            raise Galat(f"Progres tidak dihapus karena salinannya gagal dibuat: {e}", 500)
     return {"ok": True, "cadangan": cadangan or "", "bagian": bagian}
 
 

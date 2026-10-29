@@ -556,6 +556,7 @@
      "code": "// app/build.gradle.kts (sebagian)\nandroid {\n    namespace = \"id.belajar.catatan\"\n    compileSdk = 37\n\n    defaultConfig {\n        applicationId = \"id.belajar.catatan\"\n        minSdk = 26\n        targetSdk = 36\n        versionCode = 1\n        versionName = \"1.0\"\n    }\n}"
     },
     {
+     "heading": "Tiga angka SDK yang sering tertukar",
      "body": [
       "Tiga angka di situ sering tertukar, padahal artinya beda:",
       "  - compileSdk adalah API level yang dipakai waktu kode",
@@ -1220,6 +1221,7 @@
      "code": "Text(\n    text = \"Simpan\",\n    color = Color.White,\n    modifier = Modifier\n        .padding(8.dp)\n        .background(Color(0xFF2E7D32))\n        .padding(16.dp)\n        .clickable { simpan() }\n)"
     },
     {
+     "heading": "Urutan modifier mengubah hasilnya",
      "body": [
       "Modifier mengatur ukuran, jarak, latar, dan perilaku sentuh",
       "sebuah composable. Modifier dirangkai dengan titik, dan urutannya",
@@ -1500,6 +1502,7 @@
      "code": "const TINGGI_BARIS = 72;   // dp\nconst TINGGI_LAYAR = 640;  // dp\nconst CADANGAN = 1;        // baris ekstra di atas dan bawah layar\nconst total = 1000;\n\nfunction barisDibuat(gulir) {\n  const awal = Math.max(0, Math.floor(gulir / TINGGI_BARIS) - CADANGAN);\n  const akhir = Math.min(total - 1,\n    Math.floor((gulir + TINGGI_LAYAR - 1) / TINGGI_BARIS) + CADANGAN);\n  return [awal, akhir];\n}\n\nfor (const gulir of [0, 300, 7200]) {\n  const [awal, akhir] = barisDibuat(gulir);\n  console.log(`gulir ${gulir} dp: baris ${awal}-${akhir} (${akhir - awal + 1} dari ${total})`);\n}\nconsole.log(`Column biasa: selalu ${total} dari ${total}`);"
     },
     {
+     "heading": "Satuan ukuran dp dan sp",
      "body": [
       "Keluaran:",
       "  gulir 0 dp: baris 0-9 (10 dari 1000)",
@@ -1639,6 +1642,7 @@
      "code": "class SiswaAdapter : ListAdapter<Siswa, SiswaAdapter.Penampung>(Beda) {\n\n    class Penampung(val binding: ItemSiswaBinding) :\n        RecyclerView.ViewHolder(binding.root)\n\n    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =\n        Penampung(ItemSiswaBinding.inflate(LayoutInflater.from(parent.context), parent, false))\n\n    override fun onBindViewHolder(holder: Penampung, position: Int) {\n        holder.binding.teksNama.text = getItem(position).nama\n    }\n\n    object Beda : DiffUtil.ItemCallback<Siswa>() {\n        override fun areItemsTheSame(a: Siswa, b: Siswa) = a.nis == b.nis\n        override fun areContentsTheSame(a: Siswa, b: Siswa) = a == b\n    }\n}"
     },
     {
+     "heading": "Adapter, Fragment, dan ConstraintLayout",
      "body": [
       "RecyclerView menampilkan daftar panjang dengan memakai ulang",
       "beberapa baris yang sama sambil digulir. Adapter menghubungkan",
@@ -1974,6 +1978,7 @@
      "code": "val catatan: StateFlow<List<Catatan>> = dao.semua()   // Flow dari Room\n    .map { daftar -> daftar.sortedByDescending { it.diubah } }\n    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())"
     },
     {
+     "heading": "Flow dingin dan StateFlow panas",
      "body": [
       "Fungsi suspend mengembalikan satu nilai. Flow adalah aliran",
       "nilai yang datang dari waktu ke waktu, misalnya isi tabel yang",
@@ -2560,6 +2565,7 @@
      "code": "func cariNama(id: Int) -> String? {\n    id == 1 ? \"Rina\" : nil\n}\n\nlet nama = cariNama(id: 2)      // tipenya String?\n\nif let n = nama {\n    print(\"Halo, \\(n)\")\n} else {\n    print(\"Nama nggak ketemu\")\n}\n\nprint(nama ?? \"tamu\")           // tamu\nprint(nama?.count ?? 0)         // 0\n\nfunc sapa(_ nama: String?) {\n    guard let nama else {\n        print(\"Siapa ini?\")\n        return\n    }\n    print(\"Halo, \\(nama)\")        // di sini nama pasti String\n}"
     },
     {
+     "heading": "Membuka optional dengan if let dan guard let",
      "body": [
       "Swift menyebut nilai kosong nil, bukan null. Tipe yang boleh kosong",
       "diberi tanda tanya, persis seperti Kotlin: String? boleh nil, String",
@@ -2706,6 +2712,7 @@
      "code": "import SwiftUI\n\nstruct PenghitungView: View {\n    @State private var jumlah = 0\n\n    var body: some View {\n        VStack(spacing: 12) {\n            Text(\"Diklik \\(jumlah) kali\")\n                .font(.title)\n            Button(\"Tambah\") {\n                jumlah += 1\n            }\n        }\n        .padding()\n    }\n}\n\n#Preview {\n    PenghitungView()\n}"
     },
     {
+     "heading": "Struct View, @State, dan modifier",
      "body": [
       "Layar SwiftUI adalah struct yang memenuhi protokol View. Isinya",
       "satu properti wajib, body, yang mengembalikan susunan view lain.",
@@ -2908,6 +2915,7 @@
      "code": "pod install\nopen Kasir.xcworkspace\npod deintegrate"
     },
     {
+     "heading": "Status CocoaPods dan Carthage",
      "body": [
       "CocoaPods adalah pengelola dependensi iOS yang lebih tua, ditulis",
       "dalam Ruby. Berkasnya bernama Podfile. ~> 5.12 artinya 5.12 atau",
@@ -3471,6 +3479,7 @@
      "code": "import 'package:flutter/material.dart';\nimport 'package:flutter_riverpod/flutter_riverpod.dart';\n\nclass Keranjang extends Notifier<List<String>> {\n  @override\n  List<String> build() => [];\n\n  void tambah(String barang) {\n    state = [...state, barang];\n  }\n}\n\nfinal keranjangProvider =\n    NotifierProvider<Keranjang, List<String>>(Keranjang.new);\n\nclass TombolKeranjang extends ConsumerWidget {\n  const TombolKeranjang({super.key});\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final isi = ref.watch(keranjangProvider);\n    return TextButton(\n      onPressed: () => ref.read(keranjangProvider.notifier).tambah('Kopi'),\n      child: Text('Keranjang (${isi.length})'),\n    );\n  }\n}\n\nvoid main() => runApp(\n      const ProviderScope(\n        child: MaterialApp(home: Scaffold(body: Center(child: TombolKeranjang()))),\n      ),\n    );"
     },
     {
+     "heading": "Notifier, ref.watch, dan Riverpod 3.0",
      "body": [
       "Provider adalah pustaka lama yang dibangun di atas InheritedWidget,",
       "mekanisme bawaan Flutter untuk menitipkan data ke seluruh widget di",
@@ -3505,6 +3514,7 @@
      "code": "import 'package:flutter_bloc/flutter_bloc.dart';\n\nsealed class EventSaldo {}\n\nfinal class Tambah extends EventSaldo {\n  Tambah(this.jumlah);\n  final int jumlah;\n}\n\nfinal class Reset extends EventSaldo {}\n\nclass SaldoBloc extends Bloc<EventSaldo, int> {\n  SaldoBloc() : super(0) {\n    on<Tambah>((event, emit) => emit(state + event.jumlah));\n    on<Reset>((event, emit) => emit(0));\n  }\n}\n\n// Di widget:\n// BlocBuilder<SaldoBloc, int>(builder: (context, saldo) => Text('Rp$saldo'))\n// context.read<SaldoBloc>().add(Tambah(5000));"
     },
     {
+     "heading": "Bloc dan Cubit mengabaikan state kembar",
      "body": [
       "Bloc memisahkan dua arah dengan tegas. Widget cuma boleh mengirim",
       "event (Tambah, Reset). Bloc menerima event, menghitung state baru,",
@@ -3794,6 +3804,7 @@
      "code": "{\n  \"expo\": {\n    \"name\": \"Kasir Saku\",\n    \"slug\": \"kasir-saku\",\n    \"scheme\": \"kasirsaku\",\n    \"ios\": { \"bundleIdentifier\": \"id.contoh.kasirsaku\" },\n    \"android\": { \"package\": \"id.contoh.kasirsaku\" },\n    \"plugins\": [\"expo-camera\"]\n  }\n}"
     },
     {
+     "heading": "Modul native, app.json, dan expo install",
      "body": [
       "Expo Go adalah aplikasi taman bermain yang sudah berisi sekumpulan",
       "modul native tertentu. Kodemu yang JavaScript dimuat ke dalamnya.",
@@ -3826,6 +3837,7 @@
      "code": "npm install --global eas-cli\neas login\neas build:configure\neas build --platform android\neas build --platform ios\neas submit --platform ios"
     },
     {
+     "heading": "Biaya EAS dan akun Apple Developer",
      "body": [
       "eas build:configure membuat berkas eas.json berisi profil build,",
       "misalnya development, preview, dan production. eas build --platform",
@@ -3965,6 +3977,7 @@
      "code": "import { Link, useLocalSearchParams } from 'expo-router';\nimport { Text, View } from 'react-native';\n\nexport default function HalamanProduk() {\n  const { id } = useLocalSearchParams<{ id: string }>();\n  return (\n    <View>\n      <Text>Produk nomor {id}</Text>\n      <Link href=\"/produk/9\">Lihat produk lain</Link>\n    </View>\n  );\n}"
     },
     {
+     "heading": "Aturan nama berkas dan deep link",
      "body": [
       "Di Expo Router, setiap berkas di folder app/ adalah satu layar, dan",
       "jalurnya jadi alamat layar itu. Aturannya:",
@@ -4386,6 +4399,7 @@
      "code": "using CommunityToolkit.Mvvm.ComponentModel;\nusing CommunityToolkit.Mvvm.Input;\n\npublic partial class PenghitungViewModel : ObservableObject\n{\n    [ObservableProperty]\n    private int jumlah;\n\n    public string Teks => $\"Diklik {Jumlah} kali\";\n\n    [RelayCommand]\n    private void Tambah()\n    {\n        Jumlah++;\n        OnPropertyChanged(nameof(Teks));\n    }\n}"
     },
     {
+     "heading": "MAUI, binding, dan nasib Xamarin",
      "body": [
       ".NET MAUI adalah kerangka Microsoft untuk membuat aplikasi Android,",
       "iOS, macOS, dan Windows dari satu proyek C#. Tampilannya biasanya",

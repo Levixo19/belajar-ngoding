@@ -609,6 +609,7 @@ Game Developer       Game & Grafis (+ C# atau C++)
 Technical Writer     Git & GitHub > Tech Stack bab 12""",
             },
             {
+                "heading": "Roadmap lain dan celah kurikulum",
                 "body": [
                     "Roadmap peran lain juga punya pasangan. PostgreSQL DBA ke SQL lalu",
                     "Database & Penyimpanan Data. API Design ke Backend & API lalu bab 8 dan",
@@ -3509,6 +3510,7 @@ Resources:
 };""",
             },
             {
+                "heading": "Paket Workers dan layanan datanya",
                 "body": [
                     "Cloudflare memanggil fetch untuk setiap request yang masuk, dengan objek",
                     "Request yang sama seperti di browser. Alamat /halo?nama=Budi dijawab",
@@ -4526,6 +4528,7 @@ gh pr create --fill""",
                 "code": "BATAS = 79\n\n\ndef periksa(sumber):\n    temuan = []\n    for nomor, baris in enumerate(sumber.splitlines(), 1):\n        if \"\\t\" in baris:\n            temuan.append((nomor, \"W191\", \"indentasi memakai tab\"))\n        if baris != baris.rstrip():\n            temuan.append((nomor, \"W291\", \"ada spasi di ujung baris\"))\n        if len(baris) > BATAS:\n            temuan.append((nomor, \"E501\", f\"panjang {len(baris)} > {BATAS}\"))\n    return temuan\n\n\ncontoh = (\n    \"def luas(p, l):\\n\"\n    \"\\treturn p * l \\n\"\n    \"print('luas kamar tidur utama di rumah nenek, dalam meter persegi:', \"\n    \"luas(4, 5))\\n\"\n)\nfor nomor, kode, pesan in periksa(contoh):\n    print(f\"baris {nomor}: {kode} {pesan}\")",
             },
             {
+                "heading": "Alat linter dan formatter sungguhan",
                 "body": [
                     "Keluarannya:",
                     "  baris 2: W191 indentasi memakai tab",
@@ -4694,6 +4697,7 @@ print("urut sebagai teks :", sorted(versi))
 print("urut sebagai angka:", sorted(versi, key=sebagai_angka))""",
             },
             {
+                "heading": "Urutan versi, pra-rilis, dan metadata build",
                 "body": [
                     "Keluarannya:",
                     "  urut sebagai teks : ['1.10.0', '1.2.0', '1.9.0', '2.0.0']",
@@ -5094,6 +5098,7 @@ def bayar(nomor, total, km, strategi):
 print("bayar:", bayar("A17", 50_000, 4, kurir_instan))""",
             },
             {
+                "heading": "Strategy, Decorator, Observer, Factory, Adapter",
                 "body": [
                     "Keluarannya:",
                     "  [log] kurir_instan(4,) = 25000",
@@ -6417,6 +6422,7 @@ jam = 120
 print(jam, *ambil("produk:1"))""",
             },
             {
+                "heading": "Alur cache-aside dan pola cache lain",
                 "body": [
                     "Keluarannya:",
                     "  0 MISS Buku Tulis 38 lembar, Rp5.000",
@@ -7208,6 +7214,7 @@ for i in range(1, 9):
 print(f"{pindah} dari 8 kunci harus dipindah")""",
             },
             {
+                "heading": "Kunci yang pindah saat shard bertambah",
                 "body": [
                     "Keluaran:",
                     "  pelanggan-1: shard 1 -> shard 2  pindah",
@@ -7603,6 +7610,7 @@ tampil("2 server paralel", dua_server)
 tampil("2 server paralel + database", dua_server * database)""",
             },
             {
+                "heading": "Database tunggal sebagai mata rantai terlemah",
                 "body": [
                     "Keluaran:",
                     "  1 server                      99.9000%    525.6 menit/tahun",
@@ -8247,6 +8255,7 @@ snapshot = {"versi": 3, "saldo": reduce(terapkan, events[:3], 0)}
 print(f"{'dihitung dari snapshot':<24}:", reduce(terapkan, events[3:], snapshot["saldo"]))""",
             },
             {
+                "heading": "Snapshot dan kegunaan event sourcing",
                 "body": [
                     "Keluaran:",
                     "  saldo sekarang          : 255000",
@@ -8354,6 +8363,7 @@ for baris in jalankan_saga(LANGKAH):
     print(baris)""",
             },
             {
+                "heading": "Kompensasi, pola outbox, dan Temporal",
                 "body": [
                     "Keluaran:",
                     "  stok dipesan",
@@ -9584,6 +9594,7 @@ badan_palsu = b64(json.dumps({"sub": "ani", "peran": "admin", "exp": 1000}).enco
 print("palsu :", periksa(f"{kepala}.{badan_palsu}.{tanda}", 900))""",
             },
             {
+                "heading": "Kelemahan JWT dan tempat menyimpan token",
                 "body": [
                     "Keluaran:",
                     "  isi   : {\"sub\": \"ani\", \"peran\": \"siswa\", \"exp\": 1000}",

@@ -43,6 +43,10 @@ export function useFokusDialog(
     }
     const saatTombol = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // Escape pada daftar `Pilihan` yang sedang terbuka hanya menutup
+        // daftarnya. Selektornya sempit di `.pil-pemicu`: kotak ketik palet juga
+        // ber-`aria-expanded`, dan di sana Escape memang harus menutup dialog.
+        if ((e.target as Element | null)?.closest?.(".pil-pemicu[aria-expanded='true']")) return;
         e.preventDefault();
         e.stopPropagation();
         tutupRef.current();

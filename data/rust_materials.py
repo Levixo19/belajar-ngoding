@@ -64,6 +64,7 @@ RUST_MATERIALS = [
 }"""
             },
             {
+                "heading": "Arti fn main, println!, dan aturan penamaan",
                 "body": [
                     "Kita bahas bagian-bagiannya:",
                     "",
@@ -223,6 +224,7 @@ RUST_MATERIALS = [
 }"""
             },
             {
+                "heading": "Overflow dan empat cara menanganinya",
                 "body": [
                     "Keluaran:",
                     "  i32  : -2147483648 .. 2147483647",
@@ -378,6 +380,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Tuple, destructuring, dan cabang tanpa titik koma",
                 "body": [
                     "Keluaran:",
                     "  luas    = 6.25",
@@ -710,6 +713,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Mengambil, meminjam baca, dan meminjam ubah",
                 "body": [
                     "Keluaran:",
                     "  copy   : a=5 b=5",
@@ -1036,6 +1040,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Byte lawan huruf, find, dan turbofish",
                 "body": [
                     "Keluaran:",
                     "  asli      : Rust membuat kode sistem jadi aman",
@@ -1203,6 +1208,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Bentuk self pada method dan derive",
                 "body": [
                     "Keluaran:",
                     "  tarik 900rb dari Andi: false",
@@ -1924,6 +1930,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Memilih panic atau Result untuk galat",
                 "body": [
                     "Keluaran:",
                     "     88 -> 88",
@@ -2112,6 +2119,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Batasan trait dan implementasi bersyarat",
                 "body": [
                     "Keluaran:",
                     "  terbesar i32  : 9",
@@ -2300,6 +2308,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Box<dyn Bangun> dan implementasi bawaan",
                 "body": [
                     "Keluaran:",
                     "  Persegi        16.00",
@@ -2476,6 +2485,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Cara membaca tiga pesan galat lifetime",
                 "body": [
                     "Keluaran:",
                     "  lebih panjang : pemrograman",
@@ -2659,6 +2669,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Rantai iterator zero-cost dan tanda bintang dua",
                 "body": [
                     "Keluaran:",
                     "  Cici  A  95",
@@ -2826,6 +2837,7 @@ opt-level = 3
 lto = true"""
             },
             {
+                "heading": "Edition, semver, Cargo.lock, dan doc test",
                 "body": [
                     "Edition itu kumpulan aturan bahasa yang boleh berubah tanpa merusak",
                     "kode lama. Edition yang ada: 2015, 2018, 2021, dan 2024. Crate dengan",
@@ -3004,6 +3016,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Hitungan Rc, kebocoran, dan Weak",
                 "body": [
                     "Keluaran:",
                     "  rantai  : Isi(1, Isi(2, Isi(3, Habis)))",
@@ -3194,6 +3207,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Keluaran deterministik dan drop pengirim",
                 "body": [
                     "Keluaran:",
                     "  tugas 1: 500500",
@@ -3746,6 +3760,7 @@ fn main() -> io::Result<()> {
 }"""
             },
             {
+                "heading": "Pola filter_map dan main yang mengembalikan Result",
                 "body": [
                     "Dengan masukan \"12 7 abc 30 5\", keluarannya:",
                     "  data      : [12, 7, 30, 5]",
@@ -4001,6 +4016,7 @@ fn main() {
 }"""
             },
             {
+                "heading": "Empat keputusan desain dan ide lanjutan",
                 "body": [
                     "Ada empat keputusan di program itu yang layak ditiru:",
                     "  1. GalatGudang itu enum, bukan String. Pemanggil bisa membedakan",

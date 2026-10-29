@@ -1,14 +1,15 @@
 /* Adu penerjemah pesan galat TypeScript dengan rekaman yang dihasilkan Python.
  *
- * Yang diuji di sini bukan heuristiknya melainkan 71 REGEX yang diterjemahkan
- * dari Python ke JavaScript. Satu pola yang berhenti cocok di sisi TS tidak
+ * Yang diuji di sini bukan heuristiknya melainkan seluruh REGEX di
+ * `pola-galat.json` yang diterjemahkan dari Python ke JavaScript. Satu pola yang berhenti cocok di sisi TS tidak
  * menimbulkan error di mana pun: pesan errornya cuma kembali tampil mentah
  * kepada orang yang paling tidak bisa membacanya, dan itu justru alasan modul
  * itu ada.
  *
  * Korpusnya karena itu ditagih MENJALANI SEMUA pola, bukan sekadar lulus.
- * Sembilan pesan sungguhan cuma menjalani 7 dari 71; sisanya ditutup pesan uji
- * di `alat/golden_bersama.py:PROBE`.
+ * Pesan sungguhan dari toolchain hanya menjalani sebagian; sisanya ditutup
+ * pesan uji di `alat/golden_bersama.py:PROBE`. Skrip ini melaporkan "N/N pola
+ * terjalani", dan angka itu yang ditagih, bukan angka di komentar.
  *
  *     node uji/golden-galat.ts
  */

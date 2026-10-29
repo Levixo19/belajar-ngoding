@@ -576,6 +576,163 @@ class TestEksporImporReset(BasisProgres):
         progress.impor(tujuan)
         self.assertTrue(os.path.exists(progress.PROGRESS_FILE + ".bak"))
 
+    def test_cadangan_reset_tidak_tertimpa_penyimpanan_berikutnya(self):
+        """`.bak` bergulir: cadangan sebelum reset hilang begitu progres ditulis
+        sekali lagi. Salinan bertanggal tidak boleh ikut hilang."""
+        progress.record_material_read("java_materi", "A")
+        progress.record_material_read("java_materi", "B")
+        xp_sebelum = progress.load_progress()["xp"]
+        self.assertGreater(xp_sebelum, 0)
+        cadangan = progress.reset("semua")
+        progress.record_material_read("java_materi", "C", tuntas=False)
+        with open(cadangan, encoding="utf-8") as f:
+            self.assertEqual(json.load(f)["xp"], xp_sebelum)
+        # Dan `.bak` bergulir memang sudah menjadi keadaan sesudah reset.
+        with open(progress.PROGRESS_FILE + ".bak", encoding="utf-8") as f:
+            self.assertEqual(json.load(f)["xp"], 0)
+
+    def test_reset_dua_kali_tidak_menghapus_cadangan_pertama(self):
+        progress.record_material_read("java_materi", "A")
+        xp_sebelum = progress.load_progress()["xp"]
+        pertama = progress.reset("semua")
+        kedua = progress.reset("semua")
+        self.assertNotEqual(pertama, kedua)
+        with open(pertama, encoding="utf-8") as f:
+            self.assertEqual(json.load(f)["xp"], xp_sebelum)
+
+    def _salinan_beruntun(self, jumlah):
+        """`jumlah` salinan dengan isi BERBEDA, semuanya dalam satu detik.
+
+        Isi yang sama tidak disalin lagi, jadi progresnya diubah tiap putaran.
+        Dalam satu detik cap waktunya sama dan yang membedakan cuma nomor
+        `-N`, persis kondisi yang menjebak pengurutan teks (`-10` < `-2`).
+        """
+        jalur = []
+        for i in range(jumlah):
+            progress.record_material_read("java_materi", f"M{i}")
+            jalur.append(progress.cadangkan())
+        return jalur
+
+    def test_cadangan_bertanggal_dipangkas_ke_batas(self):
+        self._salinan_beruntun(progress.CADANGAN_MAKS + 3)
+        folder = os.path.dirname(progress.PROGRESS_FILE)
+        awalan = os.path.basename(progress.PROGRESS_FILE) + ".cadangan-"
+        ada = [n for n in os.listdir(folder) if n.startswith(awalan)]
+        self.assertEqual(len(ada), progress.CADANGAN_MAKS)
+
+    def test_pemangkasan_membuang_yang_tertua_bukan_yang_terbaru(self):
+        """13 salinan dalam satu detik: yang tersisa sepuluh TERBARU. Disortir
+        sebagai teks, `-10` jatuh sebelum `-2` dan yang terbaru ikut terbuang."""
+        jalur = self._salinan_beruntun(progress.CADANGAN_MAKS + 3)
+        for p in jalur[-progress.CADANGAN_MAKS:]:
+            self.assertTrue(os.path.exists(p), p)
+        for p in jalur[:3]:
+            self.assertFalse(os.path.exists(p), p)
+
+    def test_pemangkasan_hanya_menyentuh_salinan_bertanggal(self):
+        dasar = progress.PROGRESS_FILE
+        lain = [dasar + ".cadangan-catatan-saya", dasar + ".rusak-20260101-000000",
+                dasar + ".cadangan-"]
+        for p in lain:
+            with open(p, "w", encoding="utf-8") as f:
+                f.write("bukan cadangan kita")
+        self._salinan_beruntun(progress.CADANGAN_MAKS + 3)
+        for p in lain + [dasar + ".bak"]:
+            self.assertTrue(os.path.exists(p), p)
+
+    def test_salinan_kosong_berulang_tidak_menggusur_salinan_pra_reset(self):
+        """Kolam sepuluh slot dipakai bersama reset dan "Buat cadangan". Sepuluh
+        klik di progres yang sudah kosong dulu menggusur salinan pra-reset."""
+        progress.record_material_read("java_materi", "A")
+        xp_sebelum = progress.load_progress()["xp"]
+        pra_reset = progress.reset("semua")
+        sesudah = {progress.cadangkan() for _ in range(progress.CADANGAN_MAKS + 2)}
+        self.assertEqual(len(sesudah), 1)
+        self.assertTrue(os.path.exists(pra_reset))
+        with open(pra_reset, encoding="utf-8") as f:
+            self.assertEqual(json.load(f)["xp"], xp_sebelum)
+
+    def _berkas_impor(self):
+        tujuan = os.path.join(self.dir.name, "masuk.json")
+        with open(tujuan, "w", encoding="utf-8") as f:
+            json.dump(progress._default(), f)
+        return tujuan
+
+    def test_salinan_gagal_menghentikan_reset_dan_progres_tetap_utuh(self):
+        """Disk penuh saat menyalin: reset TIDAK boleh lanjut menghapus, dan
+        berkas separuh yang tertinggal tidak boleh menyamar jadi cadangan."""
+        from unittest import mock as _mock
+        progress.record_material_read("java_materi", "A")
+        xp_sebelum = progress.load_progress()["xp"]
+        asli = progress.shutil.copy2
+
+        def gagal_untuk_cadangan(src, dst, *a, **k):
+            if ".cadangan-" in str(dst):
+                with open(dst, "w", encoding="utf-8") as f:
+                    f.write("{")
+                raise OSError(28, "No space left on device")
+            return asli(src, dst, *a, **k)
+
+        with _mock.patch.object(progress.shutil, "copy2", gagal_untuk_cadangan):
+            with self.assertRaises(progress.GagalCadangan):
+                progress.reset("semua")
+            ok, pesan = progress.impor(self._berkas_impor())
+        self.assertFalse(ok)
+        self.assertIn("tidak diganti", pesan)
+        self.assertEqual(progress.load_progress()["xp"], xp_sebelum)
+        folder = os.path.dirname(progress.PROGRESS_FILE)
+        sisa = [n for n in os.listdir(folder) if ".cadangan-" in n]
+        self.assertEqual(sisa, [])
+
+    def test_daftar_cadangan_terbaru_dulu_dengan_ringkasan_isinya(self):
+        """Pelajar memilih salinan dari DAFTAR, jadi tiap butir harus menyebut
+        isinya: kapan, berapa XP, berapa materi. Urutannya dari nama, bukan
+        mtime (`copy2` menyalin mtime sumber)."""
+        jalur = self._salinan_beruntun(4)
+        daftar = progress.daftar_cadangan()
+        self.assertEqual([d["nama"] for d in daftar],
+                         [os.path.basename(p) for p in reversed(jalur)])
+        self.assertEqual([d["materi"] for d in daftar], [4, 3, 2, 1])
+        self.assertEqual(daftar[0]["xp"], progress.load_progress()["xp"])
+        for d in daftar:
+            self.assertTrue(d["sah"])
+            self.assertRegex(d["waktu"],
+                             r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    def test_salinan_tak_terbaca_tampil_tidak_sah_dan_tidak_bisa_dibaca(self):
+        """Salinan rusak disebut (pelajar yang mencarinya perlu tahu), tetapi
+        tidak bisa dipilih. Cap yang bukan tanggal sungguhan tidak melempar."""
+        sah = os.path.basename(self._salinan_beruntun(1)[0])
+        rusak = os.path.basename(progress.PROGRESS_FILE) + ".cadangan-29990101-000000"
+        bukan_objek = os.path.basename(progress.PROGRESS_FILE) + ".cadangan-99999999-999999"
+        for nama, isi in ((rusak, "{bukan json"), (bukan_objek, "[1, 2]")):
+            with open(os.path.join(self.dir.name, nama), "w", encoding="utf-8") as f:
+                f.write(isi)
+        daftar = {d["nama"]: d for d in progress.daftar_cadangan()}
+        self.assertEqual(set(daftar), {sah, rusak, bukan_objek})
+        self.assertTrue(daftar[sah]["sah"])
+        for nama in (rusak, bukan_objek):
+            self.assertFalse(daftar[nama]["sah"], nama)
+            self.assertEqual((daftar[nama]["xp"], daftar[nama]["materi"]), (0, 0))
+            self.assertIsNone(progress.baca_cadangan(nama), nama)
+        self.assertEqual(daftar[bukan_objek]["waktu"], "")
+
+    def test_baca_cadangan_hanya_menerima_nama_di_dalam_kolam(self):
+        """Klien menyebut NAMA, servernya yang mencari: jalur apa pun yang
+        menunjuk berkas lain, bahkan yang nyata dan terbaca, tidak ketemu."""
+        jalur = self._salinan_beruntun(1)[0]
+        nama = os.path.basename(jalur)
+        isi = progress.baca_cadangan(nama)
+        self.assertEqual(len(isi["materi_dibaca"]), 1)
+        luar = os.path.join(self.dir.name, "rahasia.json")
+        with open(luar, "w", encoding="utf-8") as f:
+            json.dump({"xp": 999}, f)
+        for tipu in ("../" + os.path.basename(self.dir.name) + "/rahasia.json",
+                     luar, "rahasia.json", jalur, nama + "/..", "",
+                     os.path.basename(progress.PROGRESS_FILE),
+                     os.path.basename(progress.PROGRESS_FILE) + ".bak", None, 7):
+            self.assertIsNone(progress.baca_cadangan(tipu), repr(tipu))
+
     def test_reset_satu_bahasa_menyisakan_bahasa_lain(self):
         progress.record_material_read("java_materi", "A")
         progress.record_material_read("go_materi", "B")

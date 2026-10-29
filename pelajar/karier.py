@@ -139,13 +139,21 @@ def celah_bekal(dari, ke):
 def skor_kuis(pilihan):
     """`pilihan`: daftar indeks opsi per soal (None = dilewati).
 
-    Mengembalikan tiga profesi teratas beserta keahlian yang membuatnya cocok.
+    Mengembalikan tiga profesi teratas beserta keahlian yang membuatnya cocok,
+    dan `dari`: jawaban MANA yang mendorongnya. Tiap butir `dari` menunjuk satu
+    soal yang dijawab (`soal`, mulai 0) dan keahlian profesi itu yang dibobot
+    oleh opsi terpilih (`keahlian`, bobot terbesar dulu). Soal yang dilewati
+    tidak pernah muncul, dan jumlah bobot semua butir sama dengan jumlah bobot
+    `cocok`: alasannya menjelaskan SELURUH skor, bukan sebagian.
     """
     bobot = {}
-    for soal, i in zip(data_karier.KUIS, pilihan):
+    terpilih = []
+    for n, (soal, i) in enumerate(zip(data_karier.KUIS, pilihan)):
         if i is None or not (0 <= i < len(soal["opsi"])):
             continue
-        for k, v in soal["opsi"][i]["bobot"].items():
+        opsi = soal["opsi"][i]["bobot"]
+        terpilih.append((n, opsi))
+        for k, v in opsi.items():
             bobot[k] = bobot.get(k, 0) + v
     peringkat = []
     for p in PROFESI:
@@ -154,8 +162,16 @@ def skor_kuis(pilihan):
         if skor > 0:
             peringkat.append((-skor, p["id"], cocok))
     peringkat.sort()
-    return [{"id": pid, "skor": round(-s, 3), "cocok": cocok}
-            for s, pid, cocok in peringkat[:3]]
+    hasil = []
+    for s, pid, cocok in peringkat[:3]:
+        punya = PER_ID[pid]["keahlian"]
+        dari = []
+        for n, opsi in terpilih:
+            ks = sorted((k for k in punya if opsi.get(k)), key=lambda k: -opsi[k])
+            if ks:
+                dari.append({"soal": n, "keahlian": ks})
+        hasil.append({"id": pid, "skor": round(-s, 3), "cocok": cocok, "dari": dari})
+    return hasil
 
 
 def ringkasan(languages, data=None):

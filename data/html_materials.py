@@ -72,6 +72,7 @@ HTML_MATERIALS = [
 </html>"""
             },
             {
+                "heading": "Arti tiap baris halaman pertama",
                 "body": [
                     "Kita bahas baris demi baris:",
                     "",
@@ -108,6 +109,7 @@ HTML_MATERIALS = [
                 ]
             },
             {
+                "heading": "Pohon struktur dan tag yang lupa ditutup",
                 "body": [
                     "Waktu kamu menjalankan HTML di aplikasi ini, hasilnya selalu disertai",
                     "pohon strukturnya. Di versi web ada juga tab Tampilan yang menggambar",
@@ -146,6 +148,7 @@ HTML_MATERIALS = [
                 ]
             },
             {
+                "heading": "DOM, pohon yang disimpan browser",
                 "body": [
                     "Nama pohon itu: DOM",
                     "",
@@ -291,6 +294,7 @@ HTML_MATERIALS = [
 </html>""",
             },
             {
+                "heading": "Dua jebakan saat memakai komentar",
                 "body": [
                     "Pohon struktur dari halaman di atas:",
                     "",
@@ -357,6 +361,7 @@ HTML_MATERIALS = [
 <p><strong>Penting</strong></p>""",
             },
             {
+                "heading": "Tag bersarang dan teknik bagi dua",
                 "body": [
                     "Elemen yang bersarang, artinya ada di dalam elemen lain, mirip kotak di",
                     "dalam kotak. Sebuah kotak bisa ada seluruhnya di dalam kotak lain, atau",
@@ -528,6 +533,7 @@ HTML_MATERIALS = [
                 ]
             },
             {
+                "heading": "Blok, sebaris, dan pengecualian tag a",
                 "body": [
                     "Elemen di dalam body dibagi jadi dua golongan.",
                     "",
@@ -599,6 +605,7 @@ Jalan Melati 7<br>
 Bandung</p>"""
             },
             {
+                "heading": "Cara pindah baris yang benar",
                 "body": [
                     "Pohon strukturnya:",
                     "",
@@ -765,6 +772,7 @@ Bandung</p>"""
 <p>PT Kopi &amp; Rekan &copy; 2024.</p>"""
             },
             {
+                "heading": "Kode nama dan kode angka untuk karakter",
                 "body": [
                     "Beberapa karakter harus ditulis pakai kode khusus:",
                     "",
@@ -930,6 +938,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Penanda revisi, coretan, dan sorotan",
                 "body": [
                     "Revisi: <del> dan <ins>",
                     "",
@@ -1001,6 +1010,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Tanggal, singkatan, dan penanda teknis",
                 "body": [
                     "Tanggal yang bisa dibaca mesin: <time>",
                     "",
@@ -1096,7 +1106,7 @@ Bandung</p>"""
                 ],
             },
             {
-                "heading": "artikel.html — semuanya dipakai sekaligus",
+                "heading": "artikel.html: semuanya dipakai sekaligus",
                 "code": """<!doctype html>
 <html lang="id">
 <head>
@@ -1140,6 +1150,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Membaca pohon struktur artikel.html",
                 "body": [
                     "Ini pohon struktur berkas di atas, persis seperti yang muncul di tab",
                     "Struktur (dan di terminal) kalau kamu menjalankannya:",
@@ -1524,6 +1535,7 @@ Bandung</p>"""
 <img src="gambar/garis-hias.png" alt="" width="200" height="8">"""
             },
             {
+                "heading": "Elemen kosong dan fungsi alt",
                 "body": [
                     "<img> termasuk elemen kosong.",
                     "",
@@ -1740,6 +1752,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Menyalakan server lokal dengan Python",
                 "body": [
                     "Simpan berkas itu sebagai kopi/index.html, lalu klik dua kali.",
                     "Halamannya muncul, tapi polos, gambarnya rusak, dan tautannya mati.",
@@ -1849,6 +1862,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Jalur berkas dan peka huruf besar-kecil",
                 "body": [
                     "Sekarang daftar bentuk href di materi tautan dan gambar bisa dibaca",
                     "ulang dengan lengkap. Misalkan alamat-alamat ini ditulis di berkas",
@@ -2075,6 +2089,7 @@ Bandung</p>"""
 <button type="submit" disabled>Kirim</button>"""
             },
             {
+                "heading": "Kapan memakai class dan kapan id",
                 "body": [
                     "Beda class dan id",
                     "",
@@ -2131,6 +2146,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Atribut boolean dan nilai false",
                 "body": [
                     "Atribut boolean: jebakan yang kena hampir semua pemula",
                     "",
@@ -2286,6 +2302,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Elemen style, atribut style, dan penutup script",
                 "body": [
                     "Elemen <style> dan atribut style: namanya sama, isinya beda",
                     "",
@@ -2393,6 +2410,7 @@ Bandung</p>"""
 </script>""",
             },
             {
+                "heading": "Posisi script, defer, dan atribut onclick",
                 "body": [
                     "Kenapa <script> biasanya ditaruh menjelang </body>",
                     "",
@@ -2667,6 +2685,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Empat alasan memilih elemen semantik",
                 "body": [
                     "Kenapa elemen semantik lebih baik daripada div di mana-mana",
                     "",
@@ -2822,6 +2841,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Memilih gambar lewat srcset, sizes, dan picture",
                 "body": [
                     "srcset dibedah koma demi koma",
                     "",
@@ -2963,6 +2983,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Aturan SVG sebaris, currentColor, dan use",
                 "body": [
                     "SVG sebaris: bahasa lain yang ditumpangkan ke HTML",
                     "",
@@ -3186,6 +3207,7 @@ Bandung</p>"""
 </audio>""",
             },
             {
+                "heading": "Atribut video dan audio, serta takarir",
                 "body": [
                     "Browser memakai <source> pertama yang bisa dia putar",
                     "",
@@ -3370,6 +3392,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Atribut iframe, sandbox, dan risikonya",
                 "body": [
                     "Dua iframe pertama di atas adalah kode sematan sungguhan. Yang satu dari",
                     "tombol \"Bagikan > Sematkan\" di situs video, yang satu lagi dari \"Bagikan",
@@ -3611,6 +3634,7 @@ Bandung</p>"""
 </table>"""
             },
             {
+                "heading": "Caption, thead, dan atribut scope",
                 "body": [
                     "Bagian-bagian tabel:",
                     "",
@@ -3670,6 +3694,7 @@ Bandung</p>"""
 </table>"""
             },
             {
+                "heading": "Menghitung kolom sesudah sel digabung",
                 "body": [
                     "Dua atribut untuk menggabungkan sel:",
                     "",
@@ -3720,6 +3745,7 @@ Bandung</p>"""
 </table>"""
             },
             {
+                "heading": "Gaya yang bisa dipasang lewat col",
                 "body": [
                     "Di awal materi tadi ada kalimat \"nggak ada elemen kolom yang berisi",
                     "data\". Kalimat itu tetap benar, tapi perlu satu tambahan. Elemen <col>",
@@ -3775,6 +3801,7 @@ Bandung</p>"""
 </table>"""
             },
             {
+                "heading": "Kapan scope cukup dan kapan headers",
                 "body": [
                     "scope bekerja selama tiap sel punya tepat satu judul kolom dan satu",
                     "judul baris. Masalah muncul kalau kepalanya bertingkat. Di contoh tadi,",
@@ -3873,6 +3900,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Siapa yang menerima isi formulir",
                 "body": [
                     "Apa yang ada di ujung action?",
                     "",
@@ -3931,6 +3959,7 @@ Bandung</p>"""
 </form>"""
             },
             {
+                "heading": "Label, for, dan placeholder",
                 "body": [
                     "Kenapa <label> wajib ada",
                     "",
@@ -3963,6 +3992,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Atribut name dan jenis input",
                 "body": [
                     "Atribut name: kesalahan yang paling sering di formulir",
                     "",
@@ -4022,6 +4052,7 @@ Bandung</p>"""
 </form>"""
             },
             {
+                "heading": "Aturan radio, checkbox, dan type tombol",
                 "body": [
                     "Radio dipakai untuk memilih satu dari beberapa pilihan:",
                     "  - Yang mengelompokkan radio adalah name yang sama. Kalau name-nya",
@@ -4144,6 +4175,7 @@ Bandung</p>"""
 </form>"""
             },
             {
+                "heading": "Value select, ukuran textarea, dan legend",
                 "body": [
                     "Tentang <select>:",
                     "  - Yang dikirim ke server adalah value dari option yang dipilih. Kalau",
@@ -4233,6 +4265,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Membaca pola regex di pattern",
                 "body": [
                     "Membaca pola di dalam pattern",
                     "",
@@ -4475,6 +4508,7 @@ Bandung</p>"""
 </form>""",
             },
             {
+                "heading": "Atribut enctype, readonly, dan disabled",
                 "body": [
                     "enctype: atribut yang kalau lupa, nggak ada yang ngasih tahu",
                     "",
@@ -4631,6 +4665,7 @@ Bandung</p>"""
 </form>""",
             },
             {
+                "heading": "Jenis input baru, datalist, dan autocomplete",
                 "body": [
                     "Jenis input yang belum pernah disebut",
                     "",
@@ -4911,6 +4946,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Dialog modal dan form method dialog",
                 "body": [
                     "Pohon strukturnya:",
                     "",
@@ -5082,6 +5118,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Beda progress dan meter, serta output",
                 "body": [
                     "Pohon bagian dialognya:",
                     "",
@@ -5335,6 +5372,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Role, nama aksesibel, dan aria-hidden",
                 "body": [
                     "role: mengganti yang diumumkan, dan cuma itu",
                     "",
@@ -5424,6 +5462,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Keadaan ARIA dan pesan dengan aria-live",
                 "body": [
                     "Keadaan: ARIA yang nilainya berubah-ubah",
                     "",
@@ -5513,6 +5552,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Tabindex dan atribut global lainnya",
                 "body": [
                     "tabindex: siapa yang disinggahi Tab, dan dalam urutan apa",
                     "",
@@ -5676,6 +5716,7 @@ Bandung</p>"""
 </html>"""
             },
             {
+                "heading": "Menulis title dan description",
                 "body": [
                     "<title>: satu-satunya elemen head yang wajib ada",
                     "",
@@ -5706,6 +5747,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Open Graph untuk pratinjau tautan",
                 "body": [
                     "Meta og: (Open Graph): pratinjau waktu dibagikan",
                     "",
@@ -5775,6 +5817,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Baris head lain di situs sungguhan",
                 "body": [
                     "Baris head lain yang bakal kamu lihat",
                     "",
@@ -5881,7 +5924,7 @@ Bandung</p>"""
                 ]
             },
             {
-                "heading": "index.html — halaman warung kopi",
+                "heading": "index.html: halaman warung kopi",
                 "code": """<!doctype html>
 <html lang="id">
 <head>
@@ -6044,6 +6087,7 @@ Bandung</p>"""
                 ]
             },
             {
+                "heading": "Daftar periksa sebelum halaman selesai",
                 "body": [
                     "Daftar periksa sebelum sebuah halaman disebut selesai:",
                     "",
@@ -6177,7 +6221,7 @@ Bandung</p>"""
 </canvas>""",
             },
             {
-                "heading": "JEBAKAN: width/height ATRIBUT vs width/height CSS",
+                "heading": "Jebakan: width/height atribut vs width/height CSS",
                 "body": [
                     "Hampir semua orang pernah kena kesalahan ini. Hasilnya membingungkan",
                     "karena nggak ada error. Gambarnya cuma kelihatan buram atau gepeng, dan",
@@ -6215,7 +6259,7 @@ Bandung</p>"""
         style="width: 800px; height: 600px;"></canvas>""",
             },
             {
-                "heading": "Konten cadangan, dan kenapa itu BUKAN pengganti aria-label",
+                "heading": "Konten cadangan, dan kenapa itu bukan pengganti aria-label",
                 "body": [
                     "Apa pun yang ditulis di antara <canvas> dan </canvas> disebut konten",
                     "cadangan (fallback). Di layar, browser cuma menampilkannya kalau dia",
@@ -6392,6 +6436,7 @@ Bandung</p>"""
 </html>""",
             },
             {
+                "heading": "Template, slot, dan cetakan server",
                 "body": [
                     "Coba jalankan contoh di atas, lalu lihat pohonnya (di versi web, tab",
                     "Struktur). Bagian yang menarik:",
@@ -6477,6 +6522,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Atribut kerangka kerja dan JSX",
                 "body": [
                     "Kerangka kerja di sisi browser",
                     "",
@@ -6563,6 +6609,7 @@ Bandung</p>"""
                 ],
             },
             {
+                "heading": "Penamaan class dan cara membaca berkas orang",
                 "body": [
                     "Kenapa nama class di kode nyata kelihatan melanggar aturan",
                     "",

@@ -278,6 +278,7 @@
      "code": "#include <stdio.h>\n\n/* R = (Vs - Vf) / I. Satuannya sengaja mV dan mA:\n * milivolt dibagi miliampere hasilnya langsung ohm. */\nstatic int resistor_ohm(int vs_mv, int vf_mv, int arus_ma) {\n    return (vs_mv - vf_mv) / arus_ma;\n}\n\nint main(void) {\n    printf(\"5 V,   LED merah 2,0 V, 15 mA: %d ohm\\n\", resistor_ohm(5000, 2000, 15));\n    printf(\"3,3 V, LED merah 2,0 V, 10 mA: %d ohm\\n\", resistor_ohm(3300, 2000, 10));\n    printf(\"3,3 V, LED biru 3,0 V, 10 mA: %d ohm\\n\", resistor_ohm(3300, 3000, 10));\n    return 0;\n}"
     },
     {
+     "heading": "Nilai baku resistor dan batas daya",
      "body": [
       "Keluaran:",
       "  5 V,   LED merah 2,0 V, 15 mA: 200 ohm",
@@ -1497,6 +1498,7 @@
      "code": "#include <stdio.h>\n#include <stdint.h>\n#include <stddef.h>\n\nstruct bacaan {\n    uint8_t id;\n    uint32_t nilai;\n    uint8_t status;\n};\n\n/* Tulis manual, byte demi byte: hasilnya sama di mesin mana pun. */\nstatic size_t kemas(const struct bacaan *b, uint8_t out[6]) {\n    out[0] = b->id;\n    out[1] = (uint8_t)(b->nilai);\n    out[2] = (uint8_t)(b->nilai >> 8);\n    out[3] = (uint8_t)(b->nilai >> 16);\n    out[4] = (uint8_t)(b->nilai >> 24);\n    out[5] = b->status;\n    return 6;\n}\n\nint main(void) {\n    printf(\"sizeof(struct bacaan) = %zu\\n\", sizeof(struct bacaan));\n    printf(\"offset id=%zu nilai=%zu status=%zu\\n\",\n           offsetof(struct bacaan, id), offsetof(struct bacaan, nilai),\n           offsetof(struct bacaan, status));\n\n    struct bacaan b = {7, 100000u, 1};\n    uint8_t buf[6];\n    size_t n = kemas(&b, buf);\n    printf(\"dikemas %zu byte:\", n);\n    for (size_t i = 0; i < n; i++) {\n        printf(\" %02X\", buf[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}"
     },
     {
+     "heading": "Padding, atribut packed, dan geser bit",
      "body": [
       "Keluaran:",
       "  sizeof(struct bacaan) = 12",
@@ -1640,6 +1642,7 @@
      "code": "#include <stdio.h>\n#include <stdint.h>\n#include <inttypes.h>\n\n#define VREF_MV  3300u   /* tegangan referensi ADC */\n#define ADC_MAKS 4095u   /* angka terbesar ADC 12 bit */\n#define JENDELA  4       /* banyak sampel yang dirata-rata */\n\nstatic uint32_t ke_milivolt(uint32_t mentah)\n{\n    return mentah * VREF_MV / ADC_MAKS;   /* dibulatkan ke bawah */\n}\n\nint main(void)\n{\n    const uint32_t sampel[] = {1240, 1251, 1236, 4095, 1244, 1238, 1249};\n    const int n = sizeof sampel / sizeof sampel[0];\n    uint32_t jendela[JENDELA] = {0};\n    uint32_t jumlah = 0;\n\n    for (int i = 0; i < n; i++) {\n        uint32_t mv = ke_milivolt(sampel[i]);\n        int slot = i % JENDELA;          /* slot tertua ditimpa */\n        jumlah = jumlah - jendela[slot] + mv;\n        jendela[slot] = mv;\n\n        printf(\"adc=%4\" PRIu32 \"  mv=%4\" PRIu32, sampel[i], mv);\n        if (i + 1 >= JENDELA)\n            printf(\"  rata=%4\" PRIu32 \"\\n\", jumlah / JENDELA);\n        else\n            printf(\"  rata=   -\\n\");\n    }\n    return 0;\n}"
     },
     {
+     "heading": "Lonjakan sampel dan filter median",
      "body": [
       "Keluaran:",
       "  adc=1240  mv= 999  rata=   -",
@@ -2875,6 +2878,7 @@
      "code": "#include <stdio.h>\n#include \"freertos/FreeRTOS.h\"\n#include \"freertos/task.h\"\n\nstatic void task_kedip(void *arg)\n{\n    while (1) {\n        printf(\"kedip\\n\");\n        vTaskDelay(pdMS_TO_TICKS(500));   /* tidur 500 ms, CPU dipakai task lain */\n    }\n}\n\nstatic void task_sensor(void *arg)\n{\n    while (1) {\n        printf(\"baca sensor\\n\");\n        vTaskDelay(pdMS_TO_TICKS(2000));\n    }\n}\n\nvoid app_main(void)\n{\n    /* fungsi, nama, ukuran stack, argumen, prioritas, handle */\n    xTaskCreate(task_kedip, \"kedip\", 2048, NULL, 1, NULL);\n    xTaskCreate(task_sensor, \"sensor\", 4096, NULL, 2, NULL);\n}"
     },
     {
+     "heading": "Prioritas, vTaskDelay, dan ukuran stack",
      "body": [
       "Yang perlu kamu perhatikan dari contoh itu:",
       "  - Fungsi task nggak pernah return. Isinya loop tanpa akhir. Task yang",

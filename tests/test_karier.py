@@ -164,5 +164,59 @@ class TestKesiapan(unittest.TestCase):
         self.assertEqual(k["kelompok"][0]["persen"], persen["java"])
 
 
+class TestKuisAlasan(unittest.TestCase):
+    """`skor_kuis` menjelaskan JAWABAN MANA yang mendorong tiap profesi.
+
+    Layar kuis menampilkan alasan itu dengan kata-kata pemilihnya sendiri
+    ("Soal 1: Tampilan yang dilihat..."), jadi ia harus menjelaskan SELURUH
+    skor: alasan yang cuma sebagian membuat orang percaya pada penjelasan yang
+    tidak sama dengan penghitungnya.
+    """
+
+    PILIHAN = [None, 0, 1, 2, 3]
+
+    def _bobot(self, pilihan):
+        """Bobot keahlian tiap soal yang dijawab, dihitung ulang dari KUIS
+        tanpa memanggil `skor_kuis`."""
+        return {n: data_karier.KUIS[n]["opsi"][i]["bobot"]
+                for n, i in enumerate(pilihan) if i is not None}
+
+    def test_alasan_menjelaskan_seluruh_skor_di_semua_kombinasi(self):
+        enam = len(data_karier.KUIS)
+        for pilihan in itertools.product(self.PILIHAN, repeat=enam):
+            terpilih = self._bobot(pilihan)
+            for h in karier.skor_kuis(list(pilihan)):
+                ada = karier.PER_ID[h["id"]]["keahlian"]
+                self.assertTrue(h["dari"], (pilihan, h["id"]))
+                nomor = [d["soal"] for d in h["dari"]]
+                self.assertEqual(nomor, sorted(set(nomor)), (pilihan, h["id"]))
+                for d in h["dari"]:
+                    self.assertIn(d["soal"], terpilih, "soal yang dilewati disebut")
+                    opsi = terpilih[d["soal"]]
+                    self.assertTrue(d["keahlian"])
+                    for k in d["keahlian"]:
+                        self.assertIn(k, ada)
+                        self.assertTrue(opsi.get(k), "keahlian tanpa bobot dari opsinya")
+                    bobotnya = [opsi[k] for k in d["keahlian"]]
+                    self.assertEqual(bobotnya, sorted(bobotnya, reverse=True))
+                dari = sum(terpilih[d["soal"]][k] for d in h["dari"] for k in d["keahlian"])
+                cocok = sum(o.get(k, 0) for o in terpilih.values() for k in h["cocok"])
+                self.assertEqual(dari, cocok, (pilihan, h["id"]))
+                self.assertEqual(h["skor"], round(dari / len(ada) ** 0.5, 3))
+
+    def test_soal_yang_dilewati_tidak_pernah_disebut(self):
+        for h in karier.skor_kuis([None, 1, None, 2, None, None]):
+            self.assertLessEqual({d["soal"] for d in h["dari"]}, {1, 3})
+
+    def test_endpoint_meneruskan_alasan(self):
+        from webapp import api
+        hasil = api.karier_kuis({"pilihan": "0,1,,0"})["hasil"]
+        self.assertEqual(len(hasil), 3)
+        for h in hasil:
+            self.assertIsInstance(h["dari"], list)
+            self.assertTrue(all(isinstance(d["soal"], int) and isinstance(d["keahlian"], list)
+                                for d in h["dari"]))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

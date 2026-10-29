@@ -72,6 +72,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Halaman Pertamaku</title>\n</head>\n<body>\n  <h1>Halo, Dunia!</h1>\n  <p>Ini paragraf pertamaku. Aku sedang belajar HTML.</p>\n</body>\n</html>"
     },
     {
+     "heading": "Arti tiap baris halaman pertama",
      "body": [
       "Kita bahas baris demi baris:",
       "",
@@ -108,6 +109,7 @@
      ]
     },
     {
+     "heading": "Pohon struktur dan tag yang lupa ditutup",
      "body": [
       "Waktu kamu menjalankan HTML di aplikasi ini, hasilnya selalu disertai",
       "pohon strukturnya. Di versi web ada juga tab Tampilan yang menggambar",
@@ -146,6 +148,7 @@
      ]
     },
     {
+     "heading": "DOM, pohon yang disimpan browser",
      "body": [
       "Nama pohon itu: DOM",
       "",
@@ -260,6 +263,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Toko Bunga Melati</title>\n</head>\n<body>\n\n  <!-- kepala -->\n  <div>\n    <h1>Toko Bunga Melati</h1>\n    <p>Buka setiap hari pukul 08.00 sampai 17.00.</p>\n  </div>\n  <!-- /kepala -->\n\n  <!-- isi -->\n  <div>\n    <h2>Rangkaian hari ini</h2>\n    <p>Mawar putih, melati, dan sedap malam.</p>\n    <!-- TODO: daftar harga belum ada, tanya pemilik toko dulu -->\n  </div>\n  <!-- /isi -->\n\n  <!-- Sengaja dimatikan: teksnya belum disetujui.\n  <div>\n    <h2>Promo</h2>\n    <p>Beli dua gratis satu.</p>\n  </div>\n  -->\n\n</body>\n</html>"
     },
     {
+     "heading": "Dua jebakan saat memakai komentar",
      "body": [
       "Pohon struktur dari halaman di atas:",
       "",
@@ -322,6 +326,7 @@
      "code": "<!-- SALAH: p ditutup duluan, tagnya jadi bersilangan -->\n<p><strong>Penting</p></strong>\n\n<!-- BENAR: strong dibuka terakhir, jadi ditutup lebih dulu -->\n<p><strong>Penting</strong></p>"
     },
     {
+     "heading": "Tag bersarang dan teknik bagi dua",
      "body": [
       "Elemen yang bersarang, artinya ada di dalam elemen lain, mirip kotak di",
       "dalam kotak. Sebuah kotak bisa ada seluruhnya di dalam kotak lain, atau",
@@ -481,6 +486,7 @@
      ]
     },
     {
+     "heading": "Blok, sebaris, dan pengecualian tag a",
      "body": [
       "Elemen di dalam body dibagi jadi dua golongan.",
       "",
@@ -544,6 +550,7 @@
      "code": "<p>Baris     ini     punya     banyak     spasi.</p>\n\n<p>Baris ini\nditulis\ndi tiga baris berbeda.</p>\n\n<p>Alamat:<br>\nJalan Melati 7<br>\nBandung</p>"
     },
     {
+     "heading": "Cara pindah baris yang benar",
      "body": [
       "Pohon strukturnya:",
       "",
@@ -676,6 +683,7 @@
      "code": "<blockquote cite=\"https://contoh.test/wawancara\">\n  <p>Kopi yang baik tidak perlu gula untuk disukai.</p>\n  <footer>— <cite>Wawancara Barista, 2023</cite></footer>\n</blockquote>\n\n<p>Dia bilang <q>tunggu tiga menit</q> lalu pergi.</p>\n\n<pre><code>15 gram bubuk\n250 ml air\n92 derajat</code></pre>\n\n<p>Tag paragraf ditulis &lt;p&gt; dan ditutup &lt;/p&gt;.</p>\n<p>PT Kopi &amp; Rekan &copy; 2024.</p>"
     },
     {
+     "heading": "Kode nama dan kode angka untuk karakter",
      "body": [
       "Beberapa karakter harus ditulis pakai kode khusus:",
       "",
@@ -841,6 +849,7 @@
      ]
     },
     {
+     "heading": "Penanda revisi, coretan, dan sorotan",
      "body": [
       "Revisi: <del> dan <ins>",
       "",
@@ -912,6 +921,7 @@
      ]
     },
     {
+     "heading": "Tanggal, singkatan, dan penanda teknis",
      "body": [
       "Tanggal yang bisa dibaca mesin: <time>",
       "",
@@ -1007,10 +1017,11 @@
      ]
     },
     {
-     "heading": "artikel.html — semuanya dipakai sekaligus",
+     "heading": "artikel.html: semuanya dipakai sekaligus",
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Panduan Seduh, Edisi Kedua</title>\n</head>\n<body>\n  <article>\n    <h1>Panduan Seduh, Edisi Kedua</h1>\n    <p>Terbit <time datetime=\"2024-01-15\">15 Januari 2024</time>,\n       diperbarui <time datetime=\"2024-03-02\">2 Maret 2024</time>.</p>\n\n    <p>Suhu air lama <del datetime=\"2024-03-02\">96 derajat</del>,\n       sekarang <ins datetime=\"2024-03-02\">92 derajat</ins>.</p>\n\n    <blockquote cite=\"https://contoh.test/wawancara\">\n      <p>Kopi yang baik tidak perlu gula untuk disukai.</p>\n      <footer>— <cite>Wawancara Barista</cite>, 2023</footer>\n    </blockquote>\n\n    <p>Ia menyebutnya <q>seduhan yang jujur</q> sepanjang wawancara.</p>\n\n    <hr>\n\n    <h2>Catatan teknis</h2>\n    <p>Perbandingan <mark>1 : 16</mark> dipakai di seluruh\n       <abbr title=\"Standard Operating Procedure\">SOP</abbr> ini.</p>\n    <p>Air adalah H<sub>2</sub>O, catatan kakinya di bawah<sup>1</sup>.</p>\n    <p>Waktu seduh <time datetime=\"PT3M\">3 menit</time>.</p>\n    <p>Harga cetak <s>75.000</s>, edisi ini gratis.</p>\n    <p>Tekan <kbd>Ctrl+S</kbd>, lalu jalankan <kbd>npm run seduh</kbd>.</p>\n    <p>Layar akan menulis <samp>Selesai dalam 3 menit</samp>.</p>\n    <p>Ganti nilai <var>suhu</var> di berkas pengaturan.</p>\n\n    <footer>\n      <p><small>&copy; 2024 Kopi Pagi. Boleh disalin sendiri.</small></p>\n      <address>Tanya: <a href=\"mailto:halo@contoh.test\">halo@contoh.test</a></address>\n    </footer>\n  </article>\n</body>\n</html>"
     },
     {
+     "heading": "Membaca pohon struktur artikel.html",
      "body": [
       "Ini pohon struktur berkas di atas, persis seperti yang muncul di tab",
       "Struktur (dan di terminal) kalau kamu menjalankannya:",
@@ -1330,6 +1341,7 @@
      "code": "<img src=\"gambar/biji-kopi.jpg\"\n     alt=\"Biji kopi sangrai gelap di atas timbangan digital\"\n     width=\"640\" height=\"360\">\n\n<figure>\n  <img src=\"gambar/tuang.jpg\"\n       alt=\"Air panas dituang melingkar ke atas bubuk kopi di corong V60\"\n       width=\"640\" height=\"360\">\n  <figcaption>Tuang melingkar dari tengah ke tepi, jangan kena dinding.</figcaption>\n</figure>\n\n<img src=\"gambar/garis-hias.png\" alt=\"\" width=\"200\" height=\"8\">"
     },
     {
+     "heading": "Elemen kosong dan fungsi alt",
      "body": [
       "<img> termasuk elemen kosong.",
       "",
@@ -1532,6 +1544,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Kopi Pagi</title>\n  <link rel=\"stylesheet\" href=\"/gaya.css\">\n</head>\n<body>\n  <h1>Kopi Pagi</h1>\n  <img src=\"/gambar/biji-kopi.jpg\"\n       alt=\"Biji kopi sangrai gelap di atas timbangan digital\"\n       width=\"640\" height=\"360\">\n  <p>Lihat <a href=\"/halaman/menu.html\">daftar menu</a> kami.</p>\n</body>\n</html>"
     },
     {
+     "heading": "Menyalakan server lokal dengan Python",
      "body": [
       "Simpan berkas itu sebagai kopi/index.html, lalu klik dua kali.",
       "Halamannya muncul, tapi polos, gambarnya rusak, dan tautannya mati.",
@@ -1641,6 +1654,7 @@
      ]
     },
     {
+     "heading": "Jalur berkas dan peka huruf besar-kecil",
      "body": [
       "Sekarang daftar bentuk href di materi tautan dan gambar bisa dibaca",
       "ulang dengan lengkap. Misalkan alamat-alamat ini ditulis di berkas",
@@ -1841,6 +1855,7 @@
      "code": "<article class=\"kartu kartu-menu\" id=\"menu-tubruk\" data-harga=\"15000\">\n  <h3 class=\"judul\">Kopi Tubruk</h3>\n  <p class=\"keterangan\">Kopi diseduh langsung di dalam gelas.</p>\n</article>\n\n<p lang=\"en\" title=\"Kalimat ini berbahasa Inggris\">\n  Freshly roasted every morning.\n</p>\n\n<p hidden>Baris ini tidak akan tampil sama sekali.</p>\n\n<input type=\"email\" name=\"surel\" required>\n<button type=\"submit\" disabled>Kirim</button>"
     },
     {
+     "heading": "Kapan memakai class dan kapan id",
      "body": [
       "Beda class dan id",
       "",
@@ -1897,6 +1912,7 @@
      ]
     },
     {
+     "heading": "Atribut boolean dan nilai false",
      "body": [
       "Atribut boolean: jebakan yang kena hampir semua pemula",
       "",
@@ -2016,6 +2032,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Kopi Pagi</title>\n\n  <!-- 1. CSS dari berkas lain -->\n  <link rel=\"stylesheet\" href=\"gaya.css\">\n\n  <!-- 2. CSS ditulis di halaman ini -->\n  <style>\n    .habis { color: #8a8a8a; }\n  </style>\n\n  <!-- 4. JavaScript dari berkas lain -->\n  <script src=\"app.js\" defer></script>\n</head>\n<body>\n  <!-- 3. CSS untuk satu elemen ini saja -->\n  <h1 style=\"color: #6f4e37\">Kopi Pagi</h1>\n\n  <p class=\"habis\">Kopi tubruk sedang kosong.</p>\n\n  <!-- 6. JavaScript di dalam atribut -->\n  <button onclick=\"alert('Halo!')\">Sapa</button>\n\n  <noscript>\n    <p>Tombol di atas butuh JavaScript, dan JavaScript sedang mati.</p>\n  </noscript>\n\n  <!-- 5. JavaScript ditulis di halaman ini -->\n  <script>\n    var tombol = document.querySelector(\"button\");\n    tombol.textContent = \"Sapa (siap)\";\n  </script>\n</body>\n</html>"
     },
     {
+     "heading": "Elemen style, atribut style, dan penutup script",
      "body": [
       "Elemen <style> dan atribut style: namanya sama, isinya beda",
       "",
@@ -2103,6 +2120,7 @@
      "code": "<!-- Polos: menghentikan penggambaran halaman di titik ini. -->\n<script src=\"app.js\"></script>\n\n<!-- Diunduh sambil halaman digambar, dijalankan setelah halaman siap. -->\n<script src=\"app.js\" defer></script>\n\n<!-- Diunduh sambil jalan, dijalankan begitu tiba. Urutan tidak terjaga. -->\n<script src=\"app.js\" async></script>\n\n<!-- Modul: sudah defer dengan sendirinya, dan boleh memakai import. -->\n<script src=\"app.js\" type=\"module\"></script>\n\n<!-- Skrip yang ditulis langsung di halaman, tanpa src. -->\n<script>\n  document.querySelector(\"#pesan\").textContent = \"Siap.\";\n</script>\n\n<script type=\"module\">\n  import { seduh } from \"./seduh.js\";\n  seduh(15, 250);\n</script>"
     },
     {
+     "heading": "Posisi script, defer, dan atribut onclick",
      "body": [
       "Kenapa <script> biasanya ditaruh menjelang </body>",
       "",
@@ -2332,6 +2350,7 @@
      ]
     },
     {
+     "heading": "Empat alasan memilih elemen semantik",
      "body": [
       "Kenapa elemen semantik lebih baik daripada div di mana-mana",
       "",
@@ -2451,6 +2470,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Galeri Kopi Pagi</title>\n</head>\n<body>\n  <h1>Galeri Kopi Pagi</h1>\n\n  <!-- Gambar utama, terlihat tanpa menggulir: TIDAK lazy. -->\n  <img src=\"gambar/spanduk-960.jpg\"\n       srcset=\"gambar/spanduk-480.jpg 480w, gambar/spanduk-960.jpg 960w\"\n       sizes=\"(max-width: 600px) 100vw, 960px\"\n       alt=\"Barista menuang susu berpola daun ke atas espresso\"\n       width=\"960\" height=\"540\" fetchpriority=\"high\">\n\n  <h2>Alat seduh</h2>\n\n  <!-- Format berbeda: yang paling irit ditaruh paling atas. -->\n  <picture>\n    <source type=\"image/avif\" srcset=\"gambar/v60.avif\">\n    <source type=\"image/webp\" srcset=\"gambar/v60.webp\">\n    <img src=\"gambar/v60.jpg\"\n         alt=\"Corong V60 keramik putih di atas teko kaca\"\n         width=\"640\" height=\"427\" loading=\"lazy\" decoding=\"async\">\n  </picture>\n\n  <!-- Potongan berbeda: versi tegak khusus untuk layar sempit. -->\n  <picture>\n    <source media=\"(max-width: 600px)\" srcset=\"gambar/toko-tegak.jpg\">\n    <img src=\"gambar/toko-melebar.jpg\"\n         alt=\"Bagian depan kedai dengan kursi kayu di trotoar\"\n         width=\"1200\" height=\"500\" loading=\"lazy\" decoding=\"async\">\n  </picture>\n</body>\n</html>"
     },
     {
+     "heading": "Memilih gambar lewat srcset, sizes, dan picture",
      "body": [
       "srcset dibedah koma demi koma",
       "",
@@ -2553,6 +2573,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Ikon SVG Sebaris</title>\n</head>\n<body>\n  <p style=\"color: #b45309\">\n    <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\"\n         stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"\n         aria-hidden=\"true\">\n      <path d=\"M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z\" />\n      <path d=\"M12 7.5v5l3 2\" />\n    </svg>\n    Tersimpan 3 menit lalu\n  </p>\n\n  <button type=\"button\">\n    <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\"\n         stroke=\"currentColor\" stroke-width=\"1.7\" role=\"img\">\n      <title>Unduh</title>\n      <path d=\"M12 4v11\" />\n      <path d=\"M8 11l4 4 4-4\" />\n      <path d=\"M4 19h16\" />\n    </svg>\n  </button>\n\n  <!-- Digambar sekali, disembunyikan, lalu dipanggil berkali-kali. -->\n  <svg width=\"0\" height=\"0\" aria-hidden=\"true\">\n    <symbol id=\"bintang\" viewBox=\"0 0 24 24\">\n      <path d=\"M12 3.5l2.6 5.6 6 .8-4.4 4.3 1 6-5.2-2.8-5.2 2.8 1-6-4.4-4.3 6-.8Z\" />\n    </symbol>\n  </svg>\n\n  <p style=\"color: #ca8a04\">\n    <svg width=\"20\" height=\"20\" fill=\"currentColor\"><use href=\"#bintang\" /></svg>\n    <svg width=\"20\" height=\"20\" fill=\"currentColor\"><use href=\"#bintang\" /></svg>\n  </p>\n</body>\n</html>"
     },
     {
+     "heading": "Aturan SVG sebaris, currentColor, dan use",
      "body": [
       "SVG sebaris: bahasa lain yang ditumpangkan ke HTML",
       "",
@@ -2761,6 +2782,7 @@
      "code": "<video controls width=\"640\" height=\"360\"\n       poster=\"gambar/sampul-seduh.jpg\" preload=\"metadata\">\n  <source src=\"video/seduh-v60.webm\" type=\"video/webm\">\n  <source src=\"video/seduh-v60.mp4\" type=\"video/mp4\">\n  <track kind=\"captions\" src=\"teks/seduh-v60.vtt\"\n         srclang=\"id\" label=\"Bahasa Indonesia\" default>\n  <p>Browser ini tidak bisa memutar video.\n     <a href=\"video/seduh-v60.mp4\">Unduh berkasnya</a> (14 MB).</p>\n</video>\n\n<audio controls preload=\"none\">\n  <source src=\"audio/wawancara-barista.ogg\" type=\"audio/ogg\">\n  <source src=\"audio/wawancara-barista.mp3\" type=\"audio/mpeg\">\n  <p>Browser ini tidak bisa memutar audio.\n     <a href=\"audio/wawancara-barista.mp3\">Unduh berkasnya</a>.</p>\n</audio>"
     },
     {
+     "heading": "Atribut video dan audio, serta takarir",
      "body": [
       "Browser memakai <source> pertama yang bisa dia putar",
       "",
@@ -2913,6 +2935,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Kelas Seduh Manual - Kopi Pagi</title>\n</head>\n<body>\n  <h1>Kelas Seduh Manual</h1>\n\n  <h2>Rekaman kelas minggu lalu</h2>\n  <iframe width=\"560\" height=\"315\"\n          src=\"https://www.youtube.com/embed/ID_VIDEO\"\n          title=\"Rekaman kelas seduh manual V60, 42 menit\"\n          allow=\"autoplay; encrypted-media; picture-in-picture\"\n          referrerpolicy=\"strict-origin-when-cross-origin\"\n          loading=\"lazy\"\n          allowfullscreen></iframe>\n\n  <h2>Lokasi kelas</h2>\n  <iframe src=\"https://peta.test/sematan?q=Jalan+Melati+7+Bandung\"\n          title=\"Peta lokasi Kopi Pagi di Jalan Melati 7, Bandung\"\n          width=\"600\" height=\"450\"\n          loading=\"lazy\"\n          referrerpolicy=\"no-referrer\"></iframe>\n\n  <h2>Catatan peserta</h2>\n  <iframe src=\"catatan-peserta.html\"\n          title=\"Catatan yang dikirim peserta kelas\"\n          sandbox\n          width=\"600\" height=\"300\"></iframe>\n</body>\n</html>"
     },
     {
+     "heading": "Atribut iframe, sandbox, dan risikonya",
      "body": [
       "Dua iframe pertama di atas adalah kode sematan sungguhan. Yang satu dari",
       "tombol \"Bagikan > Sematkan\" di situs video, yang satu lagi dari \"Bagikan",
@@ -3120,6 +3143,7 @@
      "code": "<table>\n  <caption>Harga menu, berlaku Januari 2024</caption>\n\n  <thead>\n    <tr>\n      <th scope=\"col\">Menu</th>\n      <th scope=\"col\">Gelas kecil</th>\n      <th scope=\"col\">Gelas besar</th>\n    </tr>\n  </thead>\n\n  <tbody>\n    <tr>\n      <th scope=\"row\">Kopi tubruk</th>\n      <td>12.000</td>\n      <td>15.000</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Kopi susu</th>\n      <td>18.000</td>\n      <td>22.000</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Cold brew</th>\n      <td>20.000</td>\n      <td>25.000</td>\n    </tr>\n  </tbody>\n\n  <tfoot>\n    <tr>\n      <td colspan=\"3\">Semua harga sudah termasuk pajak.</td>\n    </tr>\n  </tfoot>\n</table>"
     },
     {
+     "heading": "Caption, thead, dan atribut scope",
      "body": [
       "Bagian-bagian tabel:",
       "",
@@ -3159,6 +3183,7 @@
      "code": "<table>\n  <caption>Jam buka</caption>\n  <tr>\n    <th scope=\"col\">Hari</th>\n    <th scope=\"col\">Buka</th>\n    <th scope=\"col\">Tutup</th>\n  </tr>\n  <tr>\n    <td rowspan=\"2\">Senin - Jumat</td>\n    <td>07.00</td>\n    <td>21.00</td>\n  </tr>\n  <tr>\n    <td>Sarapan sampai 10.00</td>\n    <td>Dapur tutup 20.30</td>\n  </tr>\n  <tr>\n    <td>Sabtu dan Minggu</td>\n    <td colspan=\"2\">Libur</td>\n  </tr>\n</table>"
     },
     {
+     "heading": "Menghitung kolom sesudah sel digabung",
      "body": [
       "Dua atribut untuk menggabungkan sel:",
       "",
@@ -3191,6 +3216,7 @@
      "code": "<table>\n  <caption>Harga menu</caption>\n\n  <colgroup>\n    <col>\n    <col span=\"2\" class=\"harga\">\n  </colgroup>\n\n  <tr>\n    <th scope=\"col\">Menu</th>\n    <th scope=\"col\">Kecil</th>\n    <th scope=\"col\">Besar</th>\n  </tr>\n  <tr>\n    <th scope=\"row\">Kopi tubruk</th>\n    <td>12.000</td>\n    <td>15.000</td>\n  </tr>\n</table>"
     },
     {
+     "heading": "Gaya yang bisa dipasang lewat col",
      "body": [
       "Di awal materi tadi ada kalimat \"nggak ada elemen kolom yang berisi",
       "data\". Kalimat itu tetap benar, tapi perlu satu tambahan. Elemen <col>",
@@ -3230,6 +3256,7 @@
      "code": "<table>\n  <caption>Harga menu per ukuran gelas</caption>\n  <tr>\n    <td></td>\n    <th id=\"harga\" colspan=\"2\">Harga</th>\n  </tr>\n  <tr>\n    <td></td>\n    <th id=\"kecil\">Kecil</th>\n    <th id=\"besar\">Besar</th>\n  </tr>\n  <tr>\n    <th id=\"tubruk\">Kopi tubruk</th>\n    <td headers=\"tubruk harga kecil\">12.000</td>\n    <td headers=\"tubruk harga besar\">15.000</td>\n  </tr>\n</table>"
     },
     {
+     "heading": "Kapan scope cukup dan kapan headers",
      "body": [
       "scope bekerja selama tiap sel punya tepat satu judul kolom dan satu",
       "judul baris. Masalah muncul kalau kepalanya bertingkat. Di contoh tadi,",
@@ -3328,6 +3355,7 @@
      ]
     },
     {
+     "heading": "Siapa yang menerima isi formulir",
      "body": [
       "Apa yang ada di ujung action?",
       "",
@@ -3362,6 +3390,7 @@
      "code": "<form action=\"/pesan\" method=\"post\">\n  <p>\n    <label for=\"nama\">Nama lengkap</label>\n    <input type=\"text\" id=\"nama\" name=\"nama\" required>\n  </p>\n\n  <p>\n    <label for=\"surel\">Surel</label>\n    <input type=\"email\" id=\"surel\" name=\"surel\"\n           placeholder=\"nama@contoh.com\">\n  </p>\n\n  <p>\n    <label for=\"jumlah\">Jumlah gelas</label>\n    <input type=\"number\" id=\"jumlah\" name=\"jumlah\"\n           min=\"1\" max=\"10\" value=\"1\">\n  </p>\n\n  <p>\n    <label for=\"ambil\">Jam pengambilan</label>\n    <input type=\"time\" id=\"ambil\" name=\"ambil\">\n  </p>\n\n  <button type=\"submit\">Kirim pesanan</button>\n</form>"
     },
     {
+     "heading": "Label, for, dan placeholder",
      "body": [
       "Kenapa <label> wajib ada",
       "",
@@ -3394,6 +3423,7 @@
      ]
     },
     {
+     "heading": "Atribut name dan jenis input",
      "body": [
       "Atribut name: kesalahan yang paling sering di formulir",
       "",
@@ -3435,6 +3465,7 @@
      "code": "<form action=\"/pesan\" method=\"post\">\n  <fieldset>\n    <legend>Ukuran gelas</legend>\n\n    <input type=\"radio\" id=\"kecil\" name=\"ukuran\" value=\"kecil\" checked>\n    <label for=\"kecil\">Kecil (200 ml)</label>\n\n    <input type=\"radio\" id=\"besar\" name=\"ukuran\" value=\"besar\">\n    <label for=\"besar\">Besar (350 ml)</label>\n  </fieldset>\n\n  <p>\n    <input type=\"checkbox\" id=\"wadah\" name=\"bawa_wadah\" value=\"ya\">\n    <label for=\"wadah\">Saya membawa wadah sendiri (diskon 2.000)</label>\n  </p>\n\n  <button type=\"submit\">Pesan</button>\n  <button type=\"button\">Batal</button>\n</form>"
     },
     {
+     "heading": "Aturan radio, checkbox, dan type tombol",
      "body": [
       "Radio dipakai untuk memilih satu dari beberapa pilihan:",
       "  - Yang mengelompokkan radio adalah name yang sama. Kalau name-nya",
@@ -3531,6 +3562,7 @@
      "code": "<form action=\"/pesan\" method=\"post\">\n  <fieldset>\n    <legend>Detail pesanan</legend>\n\n    <p>\n      <label for=\"metode\">Metode seduh</label>\n      <select id=\"metode\" name=\"metode\">\n        <option value=\"\">-- pilih salah satu --</option>\n        <optgroup label=\"Panas\">\n          <option value=\"tubruk\">Tubruk</option>\n          <option value=\"v60\" selected>V60</option>\n        </optgroup>\n        <optgroup label=\"Dingin\">\n          <option value=\"coldbrew\">Cold brew</option>\n          <option value=\"eskopsus\">Es kopi susu</option>\n        </optgroup>\n      </select>\n    </p>\n\n    <p>\n      <label for=\"catatan\">Catatan untuk barista</label>\n      <textarea id=\"catatan\" name=\"catatan\" rows=\"4\" cols=\"40\"></textarea>\n    </p>\n  </fieldset>\n\n  <button type=\"submit\">Kirim</button>\n</form>"
     },
     {
+     "heading": "Value select, ukuran textarea, dan legend",
      "body": [
       "Tentang <select>:",
       "  - Yang dikirim ke server adalah value dari option yang dipilih. Kalau",
@@ -3592,6 +3624,7 @@
      ]
     },
     {
+     "heading": "Membaca pola regex di pattern",
      "body": [
       "Membaca pola di dalam pattern",
       "",
@@ -3810,6 +3843,7 @@
      "code": "<form action=\"/lamaran\" method=\"post\" enctype=\"multipart/form-data\">\n  <fieldset>\n    <legend>Berkas lamaran</legend>\n\n    <p>\n      <label for=\"kode\">Nomor anggota</label>\n      <input type=\"text\" id=\"kode\" name=\"kode\" value=\"KP-0421\" readonly>\n    </p>\n\n    <p>\n      <label for=\"cv\">Berkas CV</label>\n      <input type=\"file\" id=\"cv\" name=\"cv\" accept=\".pdf\" required>\n    </p>\n\n    <p>\n      <label for=\"foto\">Foto karya</label>\n      <input type=\"file\" id=\"foto\" name=\"foto\" accept=\"image/*\" multiple>\n    </p>\n  </fieldset>\n\n  <input type=\"submit\" value=\"Kirim lamaran\">\n  <button type=\"submit\" formaction=\"/draf\" formnovalidate>\n    Simpan draf\n  </button>\n</form>"
     },
     {
+     "heading": "Atribut enctype, readonly, dan disabled",
      "body": [
       "enctype: atribut yang kalau lupa, nggak ada yang ngasih tahu",
       "",
@@ -3913,6 +3947,7 @@
      "code": "<form action=\"/preferensi\" method=\"post\">\n  <p>\n    <label for=\"cari\">Cari menu</label>\n    <input type=\"search\" id=\"cari\" name=\"q\" list=\"menu-populer\"\n           placeholder=\"tubruk, v60, ...\">\n    <datalist id=\"menu-populer\">\n      <option value=\"Kopi tubruk\">\n      <option value=\"V60\">\n      <option value=\"Es kopi susu\">\n    </datalist>\n  </p>\n\n  <p>\n    <label for=\"manis\">Tingkat kemanisan (0-4)</label>\n    <input type=\"range\" id=\"manis\" name=\"manis\"\n           min=\"0\" max=\"4\" step=\"1\" value=\"2\">\n  </p>\n\n  <p>\n    <label for=\"warna\">Warna label cangkir</label>\n    <input type=\"color\" id=\"warna\" name=\"warna\" value=\"#6f4e37\">\n  </p>\n\n  <p>\n    <label for=\"jemput\">Waktu jemput</label>\n    <input type=\"datetime-local\" id=\"jemput\" name=\"jemput\"\n           min=\"2024-01-01T08:00\" max=\"2024-12-31T20:00\">\n  </p>\n\n  <p>\n    <label for=\"depan\">Nama depan</label>\n    <input type=\"text\" id=\"depan\" name=\"depan\" autocomplete=\"given-name\">\n  </p>\n\n  <p>\n    <label for=\"alamat\">Alamat pengiriman</label>\n    <input type=\"text\" id=\"alamat\" name=\"alamat\"\n           autocomplete=\"street-address\">\n  </p>\n\n  <p>\n    <label for=\"otp\">Kode dari SMS</label>\n    <input type=\"text\" id=\"otp\" name=\"otp\" inputmode=\"numeric\"\n           autocomplete=\"one-time-code\" maxlength=\"6\">\n  </p>\n\n  <p>\n    <label for=\"sandi\">Kata sandi baru</label>\n    <input type=\"password\" id=\"sandi\" name=\"sandi\"\n           autocomplete=\"new-password\" minlength=\"8\" required>\n  </p>\n\n  <input type=\"submit\" value=\"Simpan preferensi\">\n</form>"
     },
     {
+     "heading": "Jenis input baru, datalist, dan autocomplete",
      "body": [
       "Jenis input yang belum pernah disebut",
       "",
@@ -4168,6 +4203,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Tanya Jawab - Warung Kopi Pagi</title>\n</head>\n<body>\n  <h1>Tanya jawab</h1>\n\n  <details name=\"faq\" open>\n    <summary>Bisakah pesan lewat telepon?</summary>\n    <p>Bisa. Telepon 022-5550123 satu jam sebelum diambil.</p>\n  </details>\n\n  <details name=\"faq\">\n    <summary>Apakah menerima pembayaran tunai?</summary>\n    <p>Menerima. Kartu dan dompet digital juga bisa.</p>\n  </details>\n\n  <details name=\"faq\">\n    <summary>Boleh membawa wadah sendiri?</summary>\n    <p>Boleh, dan dapat potongan 2.000 rupiah.</p>\n    <p>Wadahnya kami cuci lebih dulu.</p>\n  </details>\n</body>\n</html>"
     },
     {
+     "heading": "Dialog modal dan form method dialog",
      "body": [
       "Pohon strukturnya:",
       "",
@@ -4275,6 +4311,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Status Pesanan KP-0421</title>\n</head>\n<body>\n  <h1>Pesanan KP-0421</h1>\n\n  <p>\n    <label for=\"tahap\">Tahap penyiapan</label>\n    <progress id=\"tahap\" max=\"4\" value=\"3\">3 dari 4 tahap</progress>\n  </p>\n\n  <p>\n    <label for=\"stok\">Sisa biji Gayo</label>\n    <meter id=\"stok\" min=\"0\" max=\"1000\" low=\"200\" high=\"800\"\n           optimum=\"1000\" value=\"150\">150 gram dari 1000</meter>\n  </p>\n\n  <form id=\"hitung\" action=\"/tambah\" method=\"post\">\n    <label for=\"jumlah\">Tambah gelas</label>\n    <input type=\"number\" id=\"jumlah\" name=\"jumlah\" min=\"0\" max=\"10\" value=\"2\">\n\n    <label for=\"harga\">Harga per gelas</label>\n    <input type=\"number\" id=\"harga\" name=\"harga\" min=\"0\" step=\"500\" value=\"15000\">\n\n    <output for=\"jumlah harga\" name=\"total\">30000</output>\n\n    <button type=\"submit\">Tambah</button>\n  </form>\n\n  <button id=\"tombol-batal\" type=\"button\">Batalkan pesanan</button>\n  <p id=\"hasil\"></p>\n\n  <dialog id=\"konfirmasi\">\n    <form method=\"dialog\">\n      <h2>Batalkan pesanan ini?</h2>\n      <p>Kopi yang sudah diseduh tidak bisa dikembalikan.</p>\n      <button value=\"batal\">Ya, batalkan</button>\n      <button value=\"lanjut\" autofocus>Tidak jadi</button>\n    </form>\n  </dialog>\n\n  <script>\n    const konfirmasi = document.getElementById(\"konfirmasi\");\n    const hasil = document.getElementById(\"hasil\");\n    const hitung = document.getElementById(\"hitung\");\n\n    document.getElementById(\"tombol-batal\").addEventListener(\"click\", () => {\n      konfirmasi.showModal();\n    });\n\n    konfirmasi.addEventListener(\"close\", () => {\n      hasil.textContent = \"Tombol yang ditekan: \" + konfirmasi.returnValue;\n    });\n\n    hitung.addEventListener(\"input\", () => {\n      const gelas = hitung.jumlah.valueAsNumber || 0;\n      const satuan = hitung.harga.valueAsNumber || 0;\n      hitung.total.value = gelas * satuan;\n    });\n  </script>\n</body>\n</html>"
     },
     {
+     "heading": "Beda progress dan meter, serta output",
      "body": [
       "Pohon bagian dialognya:",
       "",
@@ -4478,6 +4515,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Menu - Kopi Pagi</title>\n</head>\n<body>\n  <a class=\"lewati\" href=\"#isi\">Lewati ke isi</a>\n\n  <header>\n    <h1>Kopi Pagi</h1>\n\n    <button class=\"tombol-menu\" type=\"button\"\n            aria-label=\"Buka menu\"\n            aria-expanded=\"false\"\n            aria-controls=\"menu-utama\">\n      <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\"\n           stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">\n        <path d=\"M4 7h16M4 12h16M4 17h16\"/>\n      </svg>\n    </button>\n  </header>\n\n  <nav id=\"menu-utama\" aria-label=\"Menu utama\" hidden>\n    <ul>\n      <li><a href=\"index.html\">Beranda</a></li>\n      <li><a href=\"menu.html\" aria-current=\"page\">Menu</a></li>\n      <li><a href=\"tentang.html\">Tentang</a></li>\n    </ul>\n  </nav>\n\n  <main id=\"isi\" tabindex=\"-1\">\n    <h2>Menu hari ini</h2>\n    <p>Kopi tubruk, kopi susu, dan es kopi gula aren.</p>\n    <p id=\"kabar\" aria-live=\"polite\"></p>\n  </main>\n\n  <script>\n    const tombol = document.querySelector(\".tombol-menu\");\n    const menu = document.querySelector(\"#menu-utama\");\n\n    tombol.addEventListener(\"click\", function () {\n      const terbuka = tombol.getAttribute(\"aria-expanded\") === \"true\";\n      tombol.setAttribute(\"aria-expanded\", terbuka ? \"false\" : \"true\");\n      tombol.setAttribute(\"aria-label\", terbuka ? \"Buka menu\" : \"Tutup menu\");\n      menu.hidden = terbuka;\n    });\n  </script>\n</body>\n</html>"
     },
     {
+     "heading": "Role, nama aksesibel, dan aria-hidden",
      "body": [
       "role: mengganti yang diumumkan, dan cuma itu",
       "",
@@ -4567,6 +4605,7 @@
      ]
     },
     {
+     "heading": "Keadaan ARIA dan pesan dengan aria-live",
      "body": [
       "Keadaan: ARIA yang nilainya berubah-ubah",
       "",
@@ -4656,6 +4695,7 @@
      ]
     },
     {
+     "heading": "Tabindex dan atribut global lainnya",
      "body": [
       "tabindex: siapa yang disinggahi Tab, dan dalam urutan apa",
       "",
@@ -4793,6 +4833,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n  <title>Cara Menyeduh V60 - Kopi Pagi</title>\n  <meta name=\"description\"\n        content=\"Panduan singkat menyeduh V60 untuk pemula: takaran bubuk, suhu air, dan waktu tuang.\">\n\n  <link rel=\"icon\" href=\"favicon.png\">\n  <link rel=\"canonical\" href=\"https://kopipagi.test/v60.html\">\n  <link rel=\"stylesheet\" href=\"gaya.css\">\n\n  <meta property=\"og:title\" content=\"Cara Menyeduh V60\">\n  <meta property=\"og:description\" content=\"Takaran, suhu air, dan waktu tuang.\">\n  <meta property=\"og:image\" content=\"https://kopipagi.test/gambar/v60.jpg\">\n  <meta property=\"og:url\" content=\"https://kopipagi.test/v60.html\">\n  <meta property=\"og:type\" content=\"article\">\n\n  <meta name=\"theme-color\" content=\"#6f4e37\">\n</head>\n<body>\n  <h1>Cara Menyeduh V60</h1>\n  <p>Takaran dasarnya 15 gram bubuk untuk 250 ml air.</p>\n</body>\n</html>"
     },
     {
+     "heading": "Menulis title dan description",
      "body": [
       "<title>: satu-satunya elemen head yang wajib ada",
       "",
@@ -4823,6 +4864,7 @@
      ]
     },
     {
+     "heading": "Open Graph untuk pratinjau tautan",
      "body": [
       "Meta og: (Open Graph): pratinjau waktu dibagikan",
       "",
@@ -4892,6 +4934,7 @@
      ]
     },
     {
+     "heading": "Baris head lain di situs sungguhan",
      "body": [
       "Baris head lain yang bakal kamu lihat",
       "",
@@ -4998,7 +5041,7 @@
      ]
     },
     {
-     "heading": "index.html — halaman warung kopi",
+     "heading": "index.html: halaman warung kopi",
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Warung Kopi Pagi - Bandung</title>\n  <meta name=\"description\"\n        content=\"Warung kopi kecil di Jalan Melati, Bandung. Buka setiap hari pukul 07.00.\">\n  <link rel=\"stylesheet\" href=\"gaya.css\">\n</head>\n<body>\n\n  <header>\n    <h1>Warung Kopi Pagi</h1>\n    <p>Seduh manual, biji dari Gayo, sejak 2019.</p>\n  </header>\n\n  <nav>\n    <ul>\n      <li><a href=\"#menu\">Menu</a></li>\n      <li><a href=\"#jadwal\">Jam buka</a></li>\n      <li><a href=\"#pesan\">Pesan</a></li>\n    </ul>\n  </nav>\n\n  <main>\n\n    <article id=\"menu\">\n      <h2>Menu</h2>\n\n      <figure>\n        <img src=\"gambar/tuang.jpg\"\n             alt=\"Barista menuang air melingkar ke atas corong V60\"\n             width=\"640\" height=\"360\">\n        <figcaption>Setiap gelas diseduh saat dipesan.</figcaption>\n      </figure>\n\n      <table>\n        <caption>Harga per gelas, Januari 2024</caption>\n        <thead>\n          <tr>\n            <th scope=\"col\">Menu</th>\n            <th scope=\"col\">Kecil</th>\n            <th scope=\"col\">Besar</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr>\n            <th scope=\"row\">Kopi tubruk</th>\n            <td>12.000</td>\n            <td>15.000</td>\n          </tr>\n          <tr>\n            <th scope=\"row\">Kopi susu</th>\n            <td>18.000</td>\n            <td>22.000</td>\n          </tr>\n        </tbody>\n      </table>\n\n      <h3>Cara kami menyeduh</h3>\n      <ol>\n        <li>Giling biji tepat sebelum diseduh.</li>\n        <li>Panaskan air sampai <strong>92 derajat</strong>.</li>\n        <li>Tuang melingkar, tunggu tiga menit.</li>\n      </ol>\n    </article>\n\n    <article id=\"jadwal\">\n      <h2>Jam buka</h2>\n      <dl>\n        <dt>Senin - Jumat</dt>\n        <dd>07.00 - 21.00</dd>\n\n        <dt>Sabtu</dt>\n        <dd>08.00 - 22.00</dd>\n\n        <dt>Minggu</dt>\n        <dd>Libur</dd>\n      </dl>\n    </article>\n\n    <article id=\"pesan\">\n      <h2>Pesan lebih dulu</h2>\n      <p>Isi formulir ini, pesananmu kami siapkan sebelum kamu sampai.</p>\n\n      <form action=\"/pesan\" method=\"post\">\n        <p>\n          <label for=\"nama\">Nama</label>\n          <input type=\"text\" id=\"nama\" name=\"nama\" required>\n        </p>\n\n        <p>\n          <label for=\"telepon\">Nomor telepon</label>\n          <input type=\"tel\" id=\"telepon\" name=\"telepon\"\n                 placeholder=\"0812xxxxxxx\" required>\n        </p>\n\n        <p>\n          <label for=\"menu-pilihan\">Menu</label>\n          <select id=\"menu-pilihan\" name=\"menu\" required>\n            <option value=\"\">-- pilih menu --</option>\n            <option value=\"tubruk\">Kopi tubruk</option>\n            <option value=\"susu\">Kopi susu</option>\n          </select>\n        </p>\n\n        <fieldset>\n          <legend>Ukuran</legend>\n          <input type=\"radio\" id=\"kecil\" name=\"ukuran\" value=\"kecil\" checked>\n          <label for=\"kecil\">Kecil</label>\n          <input type=\"radio\" id=\"besar\" name=\"ukuran\" value=\"besar\">\n          <label for=\"besar\">Besar</label>\n        </fieldset>\n\n        <p>\n          <label for=\"catatan\">Catatan</label>\n          <textarea id=\"catatan\" name=\"catatan\" rows=\"3\" cols=\"40\"></textarea>\n        </p>\n\n        <button type=\"submit\">Kirim pesanan</button>\n      </form>\n    </article>\n\n  </main>\n\n  <aside>\n    <h2>Sedang dicoba</h2>\n    <p>Cold brew gula aren, tersedia terbatas tiap Jumat.</p>\n  </aside>\n\n  <footer>\n    <p>Jalan Melati 7, Bandung.\n       Surel: <a href=\"mailto:halo@kopipagi.test\">halo@kopipagi.test</a></p>\n    <p><small>&copy; 2024 Warung Kopi Pagi.</small></p>\n  </footer>\n\n</body>\n</html>"
     },
     {
@@ -5023,6 +5066,7 @@
      ]
     },
     {
+     "heading": "Daftar periksa sebelum halaman selesai",
      "body": [
       "Daftar periksa sebelum sebuah halaman disebut selesai:",
       "",
@@ -5154,7 +5198,7 @@
      "code": "<canvas id=\"papan\" width=\"400\" height=\"300\">\n  Browser Anda tidak mendukung elemen canvas.\n</canvas>"
     },
     {
-     "heading": "JEBAKAN: width/height ATRIBUT vs width/height CSS",
+     "heading": "Jebakan: width/height atribut vs width/height CSS",
      "body": [
       "Hampir semua orang pernah kena kesalahan ini. Hasilnya membingungkan",
       "karena nggak ada error. Gambarnya cuma kelihatan buram atau gepeng, dan",
@@ -5183,7 +5227,7 @@
      "code": "<!-- BENAR: resolusi internal 800x600, tampil sesuai resolusinya -->\n<canvas id=\"tajam\" width=\"800\" height=\"600\"></canvas>\n\n<!-- BURAM: resolusi internal cuma default 300x150, lalu diregangkan CSS -->\n<canvas id=\"buram\" style=\"width: 800px; height: 600px;\"></canvas>\n\n<!-- Kalau memang perlu skala layar tinggi (retina), atributnya SENGAJA dibuat -->\n<!-- lebih besar dari ukuran tampil, lalu diciutkan lewat CSS - bukan sebaliknya: -->\n<canvas id=\"tajam-retina\" width=\"1600\" height=\"1200\"\n        style=\"width: 800px; height: 600px;\"></canvas>"
     },
     {
-     "heading": "Konten cadangan, dan kenapa itu BUKAN pengganti aria-label",
+     "heading": "Konten cadangan, dan kenapa itu bukan pengganti aria-label",
      "body": [
       "Apa pun yang ditulis di antara <canvas> dan </canvas> disebut konten",
       "cadangan (fallback). Di layar, browser cuma menampilkannya kalau dia",
@@ -5331,6 +5375,7 @@
      "code": "<!doctype html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>Kartu Menu</title>\n</head>\n<body>\n\n  <h1>Menu hari ini</h1>\n\n  <kartu-menu harga=\"15000\">\n    <span slot=\"nama\">Kopi Tubruk</span>\n    <p>Diseduh langsung di dalam gelas.</p>\n  </kartu-menu>\n\n  <template id=\"cetakan-kartu\">\n    <article class=\"kartu\">\n      <img src=\"gambar/kopi.jpg\" alt=\"Segelas kopi tubruk\">\n      <h3 class=\"kartu__judul\"><slot name=\"nama\">Tanpa nama</slot></h3>\n      <div class=\"kartu__isi\"><slot></slot></div>\n    </article>\n  </template>\n\n  <script src=\"kartu-menu.js\"></script>\n</body>\n</html>"
     },
     {
+     "heading": "Template, slot, dan cetakan server",
      "body": [
       "Coba jalankan contoh di atas, lalu lihat pohonnya (di versi web, tab",
       "Struktur). Bagian yang menarik:",
@@ -5416,6 +5461,7 @@
      ]
     },
     {
+     "heading": "Atribut kerangka kerja dan JSX",
      "body": [
       "Kerangka kerja di sisi browser",
       "",
@@ -5502,6 +5548,7 @@
      ]
     },
     {
+     "heading": "Penamaan class dan cara membaca berkas orang",
      "body": [
       "Kenapa nama class di kode nyata kelihatan melanggar aturan",
       "",

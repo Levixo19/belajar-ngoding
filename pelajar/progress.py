@@ -846,16 +846,174 @@ def ekspor(tujuan):
         return False, str(e)
 
 
+# Berapa salinan sengaja (reset, impor, tombol "Buat cadangan") yang disimpan.
+CADANGAN_MAKS = 10
+
+
+class GagalCadangan(OSError):
+    """Salinan bertanggal tidak bisa dibuat padahal berkas progres ada.
+
+    Reset dan impor berhenti di sini. Menghapus atau menimpa progres yang
+    salinannya gagal dibuat (disk penuh) adalah satu-satunya jalan kehilangan
+    data yang tidak bisa dipulihkan, sementara dialognya menjanjikan salinan.
+    """
+
+
+# Sisa nama sesudah nama berkas progres: `.cadangan-<tanggal>-<jam>[-<n>]`.
+_POLA_CADANGAN = re.compile(r"\.cadangan-(\d{8}-\d{6})(?:-(\d+))?")
+
+
+def _cadangan_berurut():
+    """`[((cap, nomor), jalur), ...]` salinan bertanggal yang sah, tertua dulu.
+
+    Urutannya dari NAMA: cap waktu, lalu nomor sebagai ANGKA. mtime tidak bisa
+    dipakai karena `copy2` menyalin mtime sumber (salinan dari progres yang
+    tidak berubah bermtime sama), dan nomor yang disortir sebagai teks menaruh
+    `-10` sebelum `-2`, jadi pemangkasan membuang yang TERBARU. Hanya nama yang
+    cocok pola persis yang ikut; berkas lain berawalan serupa bukan milik kita
+    dan tidak boleh ikut dipangkas.
+    """
+    folder = os.path.dirname(PROGRESS_FILE) or "."
+    dasar = os.path.basename(PROGRESS_FILE)
+    try:
+        isi = os.listdir(folder)
+    except OSError:
+        return []
+    ada = []
+    for nama in isi:
+        if not nama.startswith(dasar):
+            continue
+        cocok = _POLA_CADANGAN.fullmatch(nama[len(dasar):])
+        if cocok:
+            ada.append(((cocok.group(1), int(cocok.group(2) or 1)),
+                        os.path.join(folder, nama)))
+    ada.sort()
+    return ada
+
+
+def _isi_sama(a, b):
+    try:
+        with open(a, "rb") as fa, open(b, "rb") as fb:
+            return fa.read() == fb.read()
+    except OSError:
+        return False
+
+
 def cadangkan():
-    """Simpan salinan progres saat ini di sebelah berkas aslinya."""
+    """Simpan salinan progres saat ini di sebelah berkas aslinya.
+
+    DUA salinan dengan umur berbeda. `.bak` dipertahankan dan ia BERGULIR:
+    `simpanan.tulis_json` menimpanya pada setiap penyimpanan, jadi isinya
+    selalu "keadaan sebelum penyimpanan terakhir". Reset dulu hanya
+    meninggalkan `.bak`, dan terukur: cadangan sebelum reset (30 XP) sudah
+    menjadi 0 XP begitu pelajar membuka SATU materi sesudahnya. Karena itu
+    tindakan yang disengaja juga membuat salinan BERTANGGAL
+    (`<nama>.cadangan-<waktu>`, pola yang sama dengan `.rusak-<waktu>`) yang
+    tidak disentuh penyimpanan biasa; yang dipangkas hanya yang melewati
+    `CADANGAN_MAKS` terbaru.
+
+    Mengembalikan jalur salinan bertanggal, atau "" HANYA bila belum ada berkas
+    progres untuk disalin. Salinan yang gagal dibuat melempar `GagalCadangan`
+    (dan berkas separuhnya dibuang), bukan "" yang artinya lain.
+
+    Isi yang sama dengan salinan terbaru tidak disalin lagi dan jalur salinan
+    itu yang dikembalikan: kolam sepuluh slot dipakai bersama reset, impor, dan
+    tombol "Buat cadangan", dan sepuluh klik di progres yang sudah kosong dulu
+    menggusur satu-satunya salinan sebelum reset.
+    """
     if not os.path.exists(PROGRESS_FILE):
         return ""
-    tujuan = PROGRESS_FILE + ".bak"
+    try:
+        shutil.copy2(PROGRESS_FILE, PROGRESS_FILE + ".bak")
+    except OSError:
+        pass  # `.bak` hanya cadangan kedua; salinan bertanggal yang diandalkan
+    ada = _cadangan_berurut()
+    if ada and _isi_sama(PROGRESS_FILE, ada[-1][1]):
+        return ada[-1][1]
+    cap = datetime.now().strftime("%Y%m%d-%H%M%S")
+    # Nomornya satu di atas yang TERTINGGI pada cap ini, bukan celah kosong
+    # pertama: sesudah yang tertua terpangkas, nama tanpa nomor kosong lagi dan
+    # salinan BARU yang memakainya terurut sebagai yang TERTUA, jadi ia
+    # langsung terpangkas dan jalur yang dikembalikan tidak ada di disk.
+    n = 1 + max((k[1] for k, _ in ada if k[0] == cap), default=0)
+    tujuan = (f"{PROGRESS_FILE}.cadangan-{cap}" if n == 1
+              else f"{PROGRESS_FILE}.cadangan-{cap}-{n}")
+    while os.path.exists(tujuan):
+        n += 1
+        tujuan = f"{PROGRESS_FILE}.cadangan-{cap}-{n}"
     try:
         shutil.copy2(PROGRESS_FILE, tujuan)
-        return tujuan
-    except OSError:
-        return ""
+    except OSError as e:
+        try:
+            os.unlink(tujuan)
+        except OSError:
+            pass
+        raise GagalCadangan(str(e)) from e
+    _pangkas_cadangan()
+    return tujuan
+
+
+def _pangkas_cadangan():
+    """Buang salinan bertanggal yang lebih tua dari `CADANGAN_MAKS` terbaru."""
+    for _, jalur in _cadangan_berurut()[:-CADANGAN_MAKS]:
+        try:
+            os.unlink(jalur)
+        except OSError:
+            pass
+
+
+def daftar_cadangan():
+    """Salinan bertanggal untuk dipilih pelajar, TERBARU dulu.
+
+    `[{"nama", "waktu", "xp", "materi", "sah"}, ...]`. `nama` hanya nama
+    berkas, bukan jalur: ia satu-satunya yang diterima `baca_cadangan`, jadi
+    klien tidak pernah menentukan jalur mana yang dibuka. `waktu` ISO tanpa
+    offset (jam dinding, sama dengan nama berkasnya), "" bila capnya bukan
+    tanggal sungguhan. Salinan yang tidak terurai tetap ditampilkan dengan
+    `sah: False`, bukan dibuang diam-diam: pelajar yang mencarinya perlu tahu
+    ia ada tetapi tidak bisa dipakai.
+    """
+    hasil = []
+    for (cap, _), jalur in reversed(_cadangan_berurut()):
+        try:
+            waktu = datetime.strptime(cap, "%Y%m%d-%H%M%S").isoformat()
+        except ValueError:
+            waktu = ""
+        isi = _baca_dict(jalur)
+        xp = isi.get("xp") if isi else 0
+        materi = isi.get("materi_dibaca") if isi else []
+        hasil.append({
+            "nama": os.path.basename(jalur),
+            "waktu": waktu,
+            "xp": xp if isinstance(xp, int) and not isinstance(xp, bool) else 0,
+            "materi": len(materi) if isinstance(materi, list) else 0,
+            "sah": isi is not None,
+        })
+    return hasil
+
+
+def _baca_dict(jalur):
+    """Isi JSON `jalur` kalau ia objek, selain itu `None`."""
+    try:
+        with open(jalur, "r", encoding="utf-8") as f:
+            isi = json.load(f)
+    except (OSError, ValueError):
+        return None
+    return isi if isinstance(isi, dict) else None
+
+
+def baca_cadangan(nama):
+    """Isi salinan bertanggal bernama `nama`, atau `None`.
+
+    `nama` DICARI di antara salinan yang sah (`_cadangan_berurut`), tidak pernah
+    digabung ke jalur: `../x`, jalur mutlak, atau nama berkas lain berawalan
+    serupa tidak ketemu, jadi tidak ada cara membaca berkas di luar kolam
+    salinan lewat sini.
+    """
+    for _, jalur in _cadangan_berurut():
+        if os.path.basename(jalur) == nama:
+            return _baca_dict(jalur)
+    return None
 
 
 def impor(asal):
@@ -871,14 +1029,21 @@ def impor(asal):
     except (OSError, json.JSONDecodeError, ValueError) as e:
         return False, str(e)
 
-    cadangan = cadangkan()
+    try:
+        cadangan = cadangkan()
+    except GagalCadangan as e:
+        return False, f"salinan progres gagal dibuat, progres lama tidak diganti: {e}"
     if not save_progress(_migrasi(masuk)):
         return False, "gagal menulis progres"
     return True, cadangan or "tanpa cadangan"
 
 
 def reset(bagian="semua"):
-    """Kosongkan progres. `bagian` = 'semua' atau prefix bahasa (mis. 'java')."""
+    """Kosongkan progres. `bagian` = 'semua' atau prefix bahasa (mis. 'java').
+
+    Salinan dibuat LEBIH DULU, dan `GagalCadangan` dari situ tidak ditangkap:
+    progres yang salinannya gagal dibuat tidak boleh dihapus.
+    """
     cadangan = cadangkan()
     if bagian == "semua":
         save_progress(_default())

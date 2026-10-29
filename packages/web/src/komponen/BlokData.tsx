@@ -1,4 +1,5 @@
-/** Pengelolaan data belajar: laporan, ekspor, impor, cadangan, dan reset.
+/** Pengelolaan data belajar: laporan, ekspor, impor, cadangan, pulihkan dari
+ *  salinan, dan reset.
  *
  *  Padanan `blokData()` dan `blokBahaya()` di `layar-lain.js`. Keduanya dipakai
  *  DUA layar di antarmuka lama -- `blokData` di Statistik dan di Pengaturan,
@@ -31,13 +32,46 @@
 // rusak persis begitu: "HAPUS" yang benar terbaca kosong, berkas yang dipilih
 // terbaca tidak ada. Pagarnya `TestIsiDialogTidakMemakaiRef`.
 import { useRef, useState } from "react";
+
+import { Pilihan } from "./Pilihan.tsx";
 import * as api from "../api.ts";
 import { adaGerak } from "../gerak.ts";
 import { salin, sorak } from "../sorak.tsx";
-import { hariIniISO } from "../waktu.ts";
+import { hariIniISO, tanggalLokal, tanggalRamah } from "../waktu.ts";
 import { useJendela } from "./Jendela.tsx";
 
 interface BahasaRingkas { key: string; label: string }
+
+/** Satu salinan progres bertanggal, bentuk `GET /api/data/cadangan`. */
+interface Salinan {
+  nama: string; waktu: string; xp: number; materi: number; sah: boolean;
+}
+
+/** "27 Okt 2026, 17.02 · 30 XP · 3 materi dibaca". */
+function labelSalinan(s: Salinan): string {
+  const t = tanggalLokal(s.waktu);
+  const kapan = t
+    ? `${tanggalRamah(s.waktu)}, `
+      + t.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
+    : s.nama;
+  return `${kapan} · ${s.xp} XP · ${s.materi} materi dibaca`;
+}
+
+/** Pilihan salinan di dialog Pulihkan. Dialognya dibangun sebagai JSX statis
+ *  untuk `tanya()`, jadi keadaan pilihannya tinggal di komponen ini dan hasilnya
+ *  dicatat ke objek `dipilih` yang dibaca pemanggil sesudah dialog ditutup. */
+function PilihSalinan({ salinan, dipilih }: { salinan: Salinan[]; dipilih: { nama: string } }) {
+  const [nama, setNama] = useState(dipilih.nama);
+  return (
+    <Pilihan
+      label="Salinan progres yang dipulihkan"
+      namaTombol="Salinan progres yang dipulihkan"
+      nilai={nama}
+      opsi={salinan.map((s) => ({ id: s.nama, nama: labelSalinan(s) }))}
+      onUbah={(v) => { dipilih.nama = v; setNama(v); }}
+    />
+  );
+}
 
 /** Unduh teks sebagai berkas. URL objeknya dilepas lagi supaya blob-nya tidak
  *  menggantung di memori tab selama tab itu hidup. */
@@ -137,8 +171,8 @@ export function BlokData() {
       isi: (
         <div>
           <p>
-            Progres yang sekarang akan DIGANTI. Salinannya dicadangkan otomatis
-            lebih dulu, di sebelah berkas aslinya.
+            Progres yang sekarang akan diganti. Salinannya disimpan lebih dulu,
+            bertanggal, di sebelah berkas aslinya.
           </p>
           <input
             type="file"
@@ -170,6 +204,61 @@ export function BlokData() {
     }
   }
 
+  async function pulihkan() {
+    if (sedang.current === "pulihkan") return;
+    sedang.current = "pulihkan";
+    try {
+      const r = await api.ambil<{ salinan: Salinan[]; maks: number }>(
+        "data/cadangan");
+      const bisa = r.salinan.filter((s) => s.sah);
+      if (bisa.length === 0) {
+        sorak("Belum ada salinan progres yang bisa dipulihkan. Salinan dibuat "
+              + "otomatis sebelum reset atau impor, dan lewat tombol Buat "
+              + "cadangan.", "");
+        return;
+      }
+      // Pilihannya dicatat lewat `onChange` ke objek biasa, bukan dibaca dari
+      // `ref` sesudah dialog tertutup (lihat catatan di kepala berkas).
+      const takTerbaca = r.salinan.length - bisa.length;
+      const dipilih = { nama: bisa[0]!.nama };
+      const pilih = await tanya({
+        judul: "Pulihkan dari salinan",
+        isi: (
+          <div>
+            <p>
+              Progres yang sekarang diganti dengan isi salinan yang kamu pilih.
+              Keadaan sekarang disimpan lebih dulu sebagai salinan baru, jadi
+              pemulihan ini sendiri bisa dibalik dengan memulihkan salinan itu.
+              Yang disimpan paling banyak {r.maks} salinan terbaru.
+              {takTerbaca > 0
+                ? ` ${takTerbaca} salinan lain tidak bisa dibaca, jadi tidak `
+                  + "ditawarkan di sini."
+                : ""}
+            </p>
+            <PilihSalinan salinan={bisa} dipilih={dipilih} />
+          </div>
+        ),
+        aksi: [
+          { label: "Batal", nilai: false },
+          { label: "Pulihkan", nilai: true, kelas: "tbl-bahaya" },
+        ],
+      });
+      if (pilih !== true) return;
+      const hasil = await api.kirim<{ cadangan: string }>(
+        "data/impor", { cadangan: dipilih.nama });
+      const simpan = /[\\/]/.test(hasil.cadangan)
+        ? " Keadaan sebelumnya tersimpan sebagai "
+          + hasil.cadangan.split(/[\\/]/).pop() + "."
+        : "";
+      sorak("Progres dipulihkan." + simpan, "tumbuh", 6);
+      setTimeout(() => location.reload(), 900);
+    } catch (e) {
+      sorak("Gagal memulihkan: " + pesanGalat(e), "salah", 6);
+    } finally {
+      sedang.current = "";
+    }
+  }
+
   async function cadangkan() {
     if (sedang.current === "cadangan") return;
     sedang.current = "cadangan";
@@ -196,6 +285,9 @@ export function BlokData() {
           Ekspor progres
         </button>
         <button className="tbl tbl-hantu" onClick={impor}>Impor progres</button>
+        <button className="tbl tbl-hantu" onClick={pulihkan}>
+          Pulihkan dari salinan
+        </button>
         <button className="tbl tbl-hantu" onClick={cadangkan}>
           Buat cadangan
         </button>
@@ -212,8 +304,11 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
 
   async function resetSatu() {
     const ya = await konfirmasi(
-      `Hapus SELURUH progres ${nama}? Materi, kuis, dan latihannya kembali `
-      + "ke nol. Ini tidak bisa dibatalkan.",
+      `Hapus progres ${nama}? Materi, kuis, dan latihan ${nama} kembali ke `
+      + "awal, termasuk bookmark, jadwal ulang kuis, dan riwayat skornya. "
+      + "XP, level, streak, dan badge-mu tetap ada. Salinan progres "
+      + "disimpan lebih dulu di sebelah berkas progresnya, jadi bisa "
+      + "dipulihkan lewat tombol Pulihkan dari salinan di Data belajarmu.",
       { judul: "Reset " + nama, labelYa: "Hapus progres " + nama,
         bahaya: true });
     if (!ya) return;
@@ -232,8 +327,10 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
 
   async function resetSemua(pemicu: HTMLElement) {
     const ya = await konfirmasi(
-      "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di SEMUA "
-      + "bahasa sekaligus.",
+      "Ini menghapus XP, level, streak, badge, dan seluruh riwayat di semua "
+      + "bahasa sekaligus. Salinan progres disimpan lebih dulu di sebelah "
+      + "berkas progresnya dan bisa dipulihkan lewat tombol Pulihkan dari "
+      + "salinan di Data belajarmu. Catatan pribadimu tidak ikut terhapus.",
       { judul: "Reset seluruh progres", labelYa: "Lanjut", bahaya: true });
     if (!ya) return;
 
@@ -248,8 +345,9 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
       isi: (
         <div>
           <p>
-            Ketik HAPUS di bawah untuk mengonfirmasi. Cadangan dibuat lebih
-            dulu, tapi jangan mengandalkan itu.
+            Ketik HAPUS di bawah untuk mengonfirmasi. Salinan progres disimpan
+            lebih dulu, jadi tindakan ini masih bisa dipulihkan lewat tombol
+            Pulihkan dari salinan di Data belajarmu.
           </p>
           <input
             type="text"
@@ -293,21 +391,20 @@ export function BlokBahaya({ bahasa }: { bahasa: BahasaRingkas[] }) {
         }}
       >
         <p style={{ color: "var(--teks-2)", fontSize: "var(--t-ui)" }}>
-          Cadangan otomatis dibuat sebelum menghapus, di sebelah berkas
-          progresnya. Catatan pribadimu tidak ikut terhapus; ia tinggal di
-          berkas yang lain.
+          Sebelum menghapus, salinan progres bertanggal disimpan di sebelah
+          berkas progresnya (10 terbaru dipertahankan) dan bisa dipilih lagi di
+          Pulihkan dari salinan. Catatan pribadimu tidak ikut terhapus; ia
+          tinggal di berkas yang lain.
         </p>
         <div className="deret">
-          <select
-            aria-label="Bahasa yang direset"
-            style={{ width: "auto" }}
-            value={kunci}
-            onChange={(e) => setKunci(e.target.value)}
-          >
-            {bahasa.map((b) => (
-              <option key={b.key} value={b.key}>{b.label}</option>
-            ))}
-          </select>
+          <Pilihan
+            label="Bahasa yang direset"
+            namaTombol="Bahasa yang direset"
+            gaya={{ width: "auto", minWidth: "14rem" }}
+            nilai={kunci}
+            opsi={bahasa.map((b) => ({ id: b.key, nama: b.label }))}
+            onUbah={setKunci}
+          />
           <button className="tbl tbl-bahaya" onClick={resetSatu}>
             Reset satu bahasa
           </button>

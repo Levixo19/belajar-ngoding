@@ -2627,6 +2627,7 @@ for kode, nama, dulu in daftar:
     print(f"{kode}  {nama:<40} {arah}")""",
             },
             {
+                "heading": "Dua kategori baru dan SSRF yang dilebur",
                 "body": [
                     "Keluarannya:",
                     "  A01  Broken Access Control                    tetap",
@@ -2778,6 +2779,7 @@ for fungsi in (lihat_rentan, lihat_aman):
         print(f"  ani minta /pesanan/{id_pesanan} -> {status} {isi}")""",
             },
             {
+                "heading": "Syarat pemilik di query dan jawaban 404",
                 "body": [
                     "Keluarannya:",
                     "  lihat_rentan",
@@ -3064,6 +3066,7 @@ nama = 'Sari" onmouseover="alert(1)'
 print('<input value="' + html.escape(nama, quote=True) + '">')""",
             },
             {
+                "heading": "Tiga jenis XSS dan encoding keluaran",
                 "body": [
                     "Keluarannya:",
                     "  <p><script>alert(1)</script> Kopinya enak & murah</p>",
@@ -3570,6 +3573,7 @@ for nama, nilai in pasang_header(respons)["header"].items():
     print(f"{nama}: {nilai}")""",
             },
             {
+                "heading": "Arti nilai CSP, HSTS, dan frame-ancestors",
                 "body": [
                     "Keluarannya:",
                     "  Content-Type: text/html",
@@ -3781,6 +3785,7 @@ for data in permintaan:
     print("DITERIMA" if not galat else "DITOLAK: " + "; ".join(galat))""",
             },
             {
+                "heading": "Mass assignment dan batas ukuran permintaan",
                 "body": [
                     "Keluarannya:",
                     "  DITERIMA",
@@ -3840,6 +3845,7 @@ print("kunci benar :", periksa(kunci_asli))
 print("kunci salah :", periksa("tk_live_tebak-tebakan"))""",
             },
             {
+                "heading": "Aturan mengelola kunci API",
                 "body": [
                     "Keluarannya:",
                     "  awalan untuk dikenali: tk_live_Q2hh",
@@ -4207,6 +4213,7 @@ path "database/creds/toko-baca" {
 }""",
             },
             {
+                "heading": "Memilih Vault, OpenBao, atau layanan cloud",
                 "body": [
                     "Mode dev menyimpan semuanya di memori, langsung dalam keadaan",
                     "terbuka, dan mencetak root token di layar. Cocok untuk",

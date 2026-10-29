@@ -189,6 +189,7 @@ FEDORA_MATERIALS = [
                 "code": "man ls\nls --help\napropos \"list directory\"\nman -k firewall\ntype ls\nwhich python3",
             },
             {
+                "heading": "Kapan pakai man, --help, apropos, atau type",
                 "body": [
                     "Kapan pakai yang mana:",
                     "  - man <perintah>: manual lengkap. Di dalamnya, pakai j/k atau tombol",
@@ -886,7 +887,7 @@ FEDORA_MATERIALS = [
                 "code": "sudo dnf5 install plocate\nsudo updatedb\nlocate sshd_config\nlocate -i README\nlocate -c \".conf\"\nsystemctl status plocate-updatedb.timer",
             },
             {
-                "heading": "grep: mencari ISI, bukan nama",
+                "heading": "grep: mencari isi, bukan nama",
                 "body": [
                     "find mencari berkas dari nama dan sifatnya. grep mencari isinya: dia",
                     "menampilkan baris di dalam berkas yang cocok dengan pola. Bisa jadi",
@@ -1454,6 +1455,7 @@ FEDORA_MATERIALS = [
                 "code": "sudo -l\nsudo -v\nsudo -k\nsudo visudo\nsudo visudo -f /etc/sudoers.d/cadangan\nsudo visudo -c",
             },
             {
+                "heading": "Berkas sudoers.d, opsi sudo, dan redirect",
                 "body": [
                     "Cara yang benar: jangan sunting /etc/sudoers secara langsung. Buat",
                     "berkas terpisah di /etc/sudoers.d/. Dengan begitu, pembaruan paket",
@@ -1800,6 +1802,7 @@ FEDORA_MATERIALS = [
                 "code": "sort daftar.txt\nsort -r daftar.txt\nsort -n angka.txt\nsort -h ukuran.txt\nsort -u daftar.txt\nsort -t: -k3 -n /etc/passwd\nsort -k2,2 -k1,1r data.txt\ndu -h --max-depth=1 /var | sort -h",
             },
             {
+                "heading": "Opsi sort dan jebakan kunci urutan",
                 "body": [
                     "  -n  numerik (2 sebelum 10)",
                     "  -h  numerik yang paham akhiran K M G (9K sebelum 2G)",
@@ -2165,6 +2168,7 @@ FEDORA_MATERIALS = [
                 "code": "sudo dnf5 install nama-paket\nsudo dnf5 install paket1 paket2 paket3\nsudo dnf5 remove nama-paket\nsudo dnf5 upgrade\nsudo dnf5 upgrade nama-paket\nsudo dnf5 autoremove\ndnf5 check-upgrade\ndnf5 search kata-kunci\ndnf5 info nama-paket\ndnf5 list --installed\ndnf5 provides /usr/bin/ss",
             },
             {
+                "heading": "Provides, autoremove, dan opsi -y",
                 "body": [
                     "Ada dua perintah yang paling sering menolong:",
                     "  - dnf5 provides menjawab pertanyaan \"perintah ini datang dari paket",
@@ -2189,7 +2193,7 @@ FEDORA_MATERIALS = [
                 "code": "dnf5 provides '*/kubectl'\ndnf5 provides /etc/ssh/sshd_config\nsudo dnf5 install -y --setopt=install_weak_deps=False nama-paket",
             },
             {
-                "heading": "Perintah yang BERUBAH dari DNF4",
+                "heading": "Perintah yang berubah dari DNF4",
                 "body": [
                     "Kalau kamu mengikuti tutorial lama, empat perintah ini yang bakal",
                     "gagal. Repo di sini singkatan dari repositori, yaitu gudang tempat",
@@ -2336,6 +2340,7 @@ FEDORA_MATERIALS = [
                 "code": "sudo dnf5 upgrade --refresh\nsudo systemctl reboot\nsudo dnf5 system-upgrade download --releasever=45\nsudo dnf5 system-upgrade reboot",
             },
             {
+                "heading": "Langkah upgrade dan persiapannya",
                 "body": [
                     "Penjelasan tiap langkah:",
                     "  1. Upgrade dulu sistem yang lama sampai mutakhir. Kalau sistemnya",
@@ -2923,6 +2928,7 @@ FEDORA_MATERIALS = [
                 "code": "[Unit]\nDescription=Pencadangan harian direktori kerja\nDocumentation=https://catatan-internal.contoh.id/cadangan\nAfter=network-online.target\nWants=network-online.target\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/cadangan.sh\nUser=cadangan\nGroup=cadangan\nStandardOutput=journal\nStandardError=journal\n\n[Install]\nWantedBy=multi-user.target",
             },
             {
+                "heading": "Isi bagian Unit, Service, dan Install",
                 "body": [
                     "Penjelasan tiap bagian:",
                     "",
@@ -3213,7 +3219,7 @@ FEDORA_MATERIALS = [
                 ],
             },
             {
-                "heading": "Log yang TIDAK masuk jurnal",
+                "heading": "Log yang tidak masuk jurnal",
                 "body": [
                     "Nggak semua log masuk journald. Beberapa aplikasi masih menulis berkas",
                     "teks sendiri di /var/log:",
@@ -3433,6 +3439,7 @@ FEDORA_MATERIALS = [
                 "code": "sudo dnf5 install cronie\nsudo systemctl enable --now crond\ncrontab -e\ncrontab -l\ncrontab -r\nsudo crontab -u budi -l",
             },
             {
+                "heading": "Format crontab dan tiga jebakan cron",
                 "body": [
                     "Format lima kolom crontab:",
                     "",
@@ -5327,6 +5334,7 @@ FEDORA_MATERIALS = [
                 "code": "tar -cvf arsip.tar direktori/\ntar -czvf arsip.tar.gz direktori/\ntar -cJvf arsip.tar.xz direktori/\ntar -caf arsip.tar.zst direktori/\ntar -tvf arsip.tar.gz\ntar -xzvf arsip.tar.gz\ntar -xzvf arsip.tar.gz -C /tujuan/\ntar -xzvf arsip.tar.gz nama-berkas-tertentu.txt",
             },
             {
+                "heading": "Opsi -a, tar bomb, dan pilihan kompresor",
                 "body": [
                     "Opsi -a paling praktis. tar melihat ekstensi yang kamu tulis, lalu",
                     "memilih kompresornya sendiri. Satu opsi untuk semua format.",
@@ -6567,6 +6575,7 @@ FEDORA_MATERIALS = [
                 "code": "#!/usr/bin/env bash\n#\n# periksa-sistem.sh -- laporan singkat kesehatan sistem Fedora\n\nset -euo pipefail\n\nreadonly BATAS_DISK=80\n\ncatat() {\n    printf '%s  %s\\n' \"$(date '+%F %T')\" \"$*\"\n}\n\nperiksa_disk() {\n    catat \"disk terpakai tertinggi: $(df -h --output=pcent / | tail -1 | tr -d ' %')%\"\n}\n\nperiksa_layanan() {\n    catat \"layanan gagal: $(systemctl --failed --no-legend --plain --no-pager | wc -l)\"\n}\n\nmain() {\n    catat \"Mulai pemeriksaan\"\n    periksa_disk\n    periksa_layanan\n    catat \"Selesai\"\n}\n\nmain \"$@\"",
             },
             {
+                "heading": "Arti set -euo pipefail",
                 "body": [
                     "Baris set -euo pipefail adalah baris paling penting di skrip Bash.",
                     "Artinya:",

@@ -51,6 +51,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Halo Dunia!\\n\");\n    printf(\"Aku sedang belajar C.\\n\");\n    return 0;\n}"
     },
     {
+     "heading": "Kompilasi dan arti tiap baris program",
      "body": [
       "Program tadi perlu dua langkah supaya jalan. Pertama dikompilasi, lalu",
       "hasilnya dijalankan:",
@@ -186,6 +187,7 @@
      "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main(void) {\n    int umur = 20;\n    double harga = 15000.50;\n    char grade = 'A';           // karakter pakai kutip TUNGGAL\n    bool lulus = true;          // butuh #include <stdbool.h>\n\n    printf(\"Umur: %d tahun\\n\", umur);\n    printf(\"Harga: %.2f\\n\", harga);\n    printf(\"Grade: %c\\n\", grade);\n    printf(\"Lulus: %d\\n\", lulus);    // C lama: tampil 1 (true) atau 0 (false)\n\n    printf(\"Ukuran int: %zu byte\\n\", sizeof(int));\n    printf(\"Ukuran double: %zu byte\\n\", sizeof(double));\n    return 0;\n}"
     },
     {
+     "heading": "Format specifier, const, dan casting",
      "body": [
       "Format specifier adalah kode berawalan % di printf dan scanf. Kode ini",
       "wajib cocok dengan tipe datanya:",
@@ -331,6 +333,7 @@
      "code": "#include <stdio.h>\n\n// Cetak 8 bit terendah dari n, mulai dari bit bernilai 128 di paling kiri.\nvoid cetakBiner8(unsigned int n) {\n    for (int i = 7; i >= 0; i--) {\n        printf(\"%u\", (n >> i) & 1u);     // geser bit ke-i ke kanan, ambil bit terakhir\n        if (i == 4) printf(\" \");         // pemisah tiap 4 bit = tepat 1 digit hex\n    }\n}\n\nint main(void) {\n    unsigned int a = 12;\n\n    printf(\"desimal %u  -> biner \", a);\n    cetakBiner8(a);\n    printf(\"\\n\");\n\n    printf(\"12 dalam hex = %x, dalam oktal = %o\\n\", a, a);\n\n    unsigned int topeng = 0x1F;          // literal hex: 0x1F = 31\n    printf(\"0x1F = %u desimal -> biner \", topeng);\n    cetakBiner8(topeng);\n    printf(\"\\n\");\n\n    printf(\"huruf kecil %%x: %x    huruf besar %%X: %X\\n\", 48879, 48879);\n\n    // 1 digit hex = 4 bit, jadi 2 digit hex = tepat 1 byte\n    unsigned char merah = 0xFF, hijau = 0xA0, biru = 0x00;\n    printf(\"warna #%02X%02X%02X\\n\", merah, hijau, biru);\n    return 0;\n}"
     },
     {
+     "heading": "Signed, unsigned, dan komplemen dua",
      "body": [
       "Secara bawaan, semua tipe bilangan bulat di C bertanda (signed),",
       "artinya bisa negatif. Kata unsigned membuang kemampuan itu. Gantinya,",
@@ -520,7 +523,7 @@
      ]
     },
     {
-     "heading": "Operator bitwise (KHAS pemrograman level rendah)",
+     "heading": "Operator bitwise (khas pemrograman level rendah)",
      "code": "#include <stdio.h>\n\nint main(void) {\n    int a = 12;    // biner: 1100\n    int b = 10;    // biner: 1010\n\n    printf(\"a & b  = %d\\n\", a & b);   // AND bit:  1000 = 8\n    printf(\"a | b  = %d\\n\", a | b);   // OR bit:   1110 = 14\n    printf(\"a ^ b  = %d\\n\", a ^ b);   // XOR bit:  0110 = 6\n    printf(\"~a     = %d\\n\", ~a);      // NOT bit:  -13 (komplemen dua)\n    printf(\"a << 1 = %d\\n\", a << 1);  // geser kiri 1 bit: 24 (kali 2)\n    printf(\"a >> 1 = %d\\n\", a >> 1);  // geser kanan 1 bit: 6 (bagi 2)\n\n    return 0;\n}"
     },
     {
@@ -636,6 +639,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    int a = 5;\n    int b = a++;      // b menerima nilai LAMA a (5), SESUDAH itu a jadi 6\n    printf(\"postfix: a = %d, b = %d\\n\", a, b);   // a = 6, b = 5\n\n    int c = 5;\n    int d = ++c;      // c dinaikkan DULU jadi 6, baru nilai itu masuk ke d\n    printf(\"prefix : c = %d, d = %d\\n\", c, d);   // c = 6, d = 6\n\n    // Idiom 1: mengisi array sambil memajukan indeks dalam satu gerakan\n    int arr[5];\n    int i = 0;\n    arr[i++] = 10;    // dipakai i lama (0), sesudah itu i jadi 1\n    arr[i++] = 20;    // dipakai i lama (1), sesudah itu i jadi 2\n    printf(\"arr[0]=%d arr[1]=%d i=%d\\n\", arr[0], arr[1], i);\n\n    // Idiom 2: stack. ++top menaikkan DULU (ke slot kosong berikutnya),\n    // top-- membaca puncak DULU baru turun. Pola persis ini dipakai Latihan 15.\n    int stack[10];\n    int top = -1;                 // -1 berarti kosong\n    stack[++top] = 100;           // top jadi 0, lalu stack[0] = 100\n    stack[++top] = 200;           // top jadi 1, lalu stack[1] = 200\n    printf(\"pop: %d\\n\", stack[top--]);   // baca stack[1]=200, sesudah itu top=0\n    printf(\"pop: %d\\n\", stack[top--]);   // baca stack[0]=100, sesudah itu top=-1\n    printf(\"top = %d (kosong lagi)\\n\", top);\n\n    // Idiom 3: while (n--) menguji nilai LAMA, jadi badannya jalan tepat n kali\n    int n = 3;\n    while (n--) {\n        printf(\"n di dalam badan: %d\\n\", n);\n    }\n    printf(\"n sesudah loop: %d\\n\", n);\n    return 0;\n}"
     },
     {
+     "heading": "Tabel prioritas dan asosiativitas operator",
      "body": [
       "Kalau satu ekspresi memuat banyak operator, C nggak membacanya begitu",
       "aja dari kiri ke kanan. Ada prioritas, yaitu operator mana yang",
@@ -737,6 +741,7 @@
      "code": "#include <stdio.h>\n\ntypedef struct Node {\n    int data;\n    struct Node *next;\n} Node;\n\n// Mencetak namanya lalu mengembalikan nilai, supaya kita LIHAT sisi\n// mana yang benar-benar dijalankan.\nint lapor(const char *nama, int nilai) {\n    printf(\"    (%s ikut dievaluasi)\\n\", nama);\n    return nilai;\n}\n\n// Aman walaupun p bernilai NULL: p->data tidak akan pernah disentuh,\n// karena sisi kirinya sudah salah lebih dulu. Pola ini yang membuat\n// penelusuran linked list di Latihan 16 tidak berujung segfault.\nint dataPositif(Node *p) {\n    return p != NULL && p->data > 0;\n}\n\nint main(void) {\n    int a = lapor(\"kiri\", 0) && lapor(\"kanan\", 1);\n    printf(\"&& dengan kiri salah -> %d\\n\\n\", a);\n\n    int b = lapor(\"kiri\", 1) || lapor(\"kanan\", 1);\n    printf(\"|| dengan kiri benar -> %d\\n\\n\", b);\n\n    Node n = {7, NULL};\n    printf(\"dataPositif(&n)   = %d\\n\", dataPositif(&n));\n    printf(\"dataPositif(NULL) = %d  (tidak crash)\\n\\n\", dataPositif(NULL));\n\n    int isi[] = {4, 8, 15, 0};\n\n    // Bentuk pengaman yang sama tanpa pointer: batas array diperiksa\n    // DULU, jadi isi[9] tidak pernah dibaca sama sekali.\n    int i = 9;\n    if (i < 4 && isi[i] > 0) {\n        printf(\"tidak akan pernah tercetak\\n\");\n    }\n\n    // Penugasan DI DALAM kondisi: ambil elemen, simpan ke c, baru uji c.\n    // Angka 0 dipakai sebagai penanda \"data sudah habis\".\n    int c;\n    i = 0;\n    while ((c = isi[i++]) != 0) {\n        printf(\"dapat %d\\n\", c);\n    }\n    return 0;\n}"
     },
     {
+     "heading": "Tiga jebakan ekspresi yang lolos compiler",
      "body": [
       "Ada tiga jebakan yang lahir langsung dari materi ini. Ketiganya sah",
       "secara sintaks, jadi compiler nggak menolaknya. Dua yang pertama cuma",
@@ -834,6 +839,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    int umur;\n    double tinggi;\n    char nama[50];   // array karakter untuk menampung string\n\n    printf(\"Masukkan nama: \");\n    scanf(\"%s\", nama);          // %s berhenti di spasi pertama!\n\n    printf(\"Masukkan umur: \");\n    scanf(\"%d\", &umur);         // WAJIB pakai &\n\n    printf(\"Masukkan tinggi (cm): \");\n    scanf(\"%lf\", &tinggi);      // %lf untuk double di scanf\n\n    printf(\"Halo %s, umur %d tahun, tinggi %.1f cm\\n\", nama, umur, tinggi);\n    return 0;\n}"
     },
     {
+     "heading": "Membaca string berspasi dan format printf",
      "body": [
       "scanf(\"%s\", ...) berhenti di spasi pertama. Jadi nama yang mengandung",
       "spasi seperti 'Andi Wijaya' cuma terbaca 'Andi'. Untuk membaca satu",
@@ -1101,6 +1107,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    int nilai[] = {80, 90, 75, 85};\n    int n = sizeof(nilai) / sizeof(nilai[0]);   // cara mendapat JUMLAH elemen\n\n    printf(\"Jumlah elemen: %d\\n\", n);\n\n    for (int i = 0; i < n; i++) {\n        printf(\"Indeks %d: %d\\n\", i, nilai[i]);\n    }\n\n    int total = 0;\n    for (int i = 0; i < n; i++) {\n        total += nilai[i];\n    }\n    double rata = (double) total / n;\n    printf(\"Total: %d, Rata-rata: %.2f\\n\", total, rata);\n\n    // Array 2 dimensi (matriks)\n    int matriks[2][3] = {\n        {1, 2, 3},\n        {4, 5, 6}\n    };\n    printf(\"matriks[0][1] = %d\\n\", matriks[0][1]);   // 2\n\n    for (int i = 0; i < 2; i++) {\n        for (int j = 0; j < 3; j++) {\n            printf(\"%d \", matriks[i][j]);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}"
     },
     {
+     "heading": "Batas sizeof dan array berukuran variabel",
      "body": [
       "Rumus sizeof(nilai)/sizeof(nilai[0]) cuma bekerja untuk array yang",
       "dideklarasikan langsung. Rumus ini nggak bekerja untuk hasil malloc,",
@@ -1189,6 +1196,7 @@
      "code": "#include <stdio.h>\n#include <string.h>\n\nint main(void) {\n    char nama[50] = \"Andi\";\n    char kota[50] = \"Jakarta\";\n\n    printf(\"Panjang: %zu\\n\", strlen(nama));     // 4 (TIDAK termasuk \\0)\n\n    strcat(nama, \" dari \");     // gabung (concatenate) - HATI-HATI overflow!\n    strcat(nama, kota);\n    printf(\"%s\\n\", nama);       // \"Andi dari Jakarta\"\n\n    char salinan[50];\n    strcpy(salinan, nama);      // salin string\n    printf(\"Salinan: %s\\n\", salinan);\n\n    if (strcmp(\"Andi\", \"andi\") == 0) {   // strcmp: 0 jika SAMA PERSIS\n        printf(\"Sama\\n\");\n    } else {\n        printf(\"Beda (case-sensitive!)\\n\");   // ini yang tercetak\n    }\n\n    printf(\"strcmp hasil: %d\\n\", strcmp(\"apel\", \"jeruk\"));  // negatif ('a'<'j')\n    return 0;\n}"
     },
     {
+     "heading": "Jebakan string dan fungsi string.h lainnya",
      "body": [
       "Ada tiga hal soal string di C yang perlu kamu waspadai:",
       "  1. strcpy dan strcat nggak mengecek ukuran tujuan, jadi gampang",
@@ -1366,7 +1374,7 @@
      "code": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double x = 2.5;\n    double y = -2.5;\n\n    printf(\"sqrt(9.0)      = %.2f\\n\", sqrt(9.0));\n    printf(\"pow(2.0, 10.0) = %.1f\\n\", pow(2.0, 10.0));\n    printf(\"fabs(%.1f)     = %.1f\\n\", y, fabs(y));\n\n    printf(\"floor(%.1f) = %.1f   ceil(%.1f) = %.1f\\n\", x, floor(x), x, ceil(x));\n    printf(\"floor(%.1f) = %.1f   ceil(%.1f) = %.1f\\n\", y, floor(y), y, ceil(y));\n\n    // (int) memotong ke arah NOL, floor() turun ke arah minus tak hingga\n    printf(\"(int)%.1f = %d  TAPI floor(%.1f) = %.1f\\n\", y, (int) y, y, floor(y));\n\n    // round() membulatkan MENJAUHI nol saat pecahannya tepat setengah\n    printf(\"round(2.5) = %.1f   round(-2.5) = %.1f\\n\", round(2.5), round(-2.5));\n\n    // Operator % hanya untuk bilangan bulat; untuk desimal pakai fmod()\n    printf(\"fmod(7.5, 2.0) = %.2f\\n\", fmod(7.5, 2.0));\n\n    // Kasus nyata: jarak dua titik (teorema Pythagoras)\n    double dx = 3.0, dy = 4.0;\n    printf(\"Jarak = %.2f\\n\", sqrt(pow(dx, 2.0) + pow(dy, 2.0)));\n    return 0;\n}"
     },
     {
-     "heading": "<ctype.h>: memeriksa dan mengubah SATU karakter",
+     "heading": "<ctype.h>: memeriksa dan mengubah satu karakter",
      "body": [
       "Isi <ctype.h> adalah fungsi yang menjawab pertanyaan tentang satu",
       "karakter, dan fungsi yang mengubah satu karakter. Namanya seragam: yang",
@@ -1750,6 +1758,7 @@
      "code": "#include <stdio.h>\n#include <string.h>\n\n// Menjumlah n elemen PERTAMA sebuah array\nint jumlah(const int arr[], int n) {\n    if (n == 0) {                             // BASE CASE: tidak ada elemen -> 0\n        return 0;\n    }\n    return arr[n - 1] + jumlah(arr, n - 1);   // elemen terakhir + jumlah sisanya\n}\n\n// Membalik string DI TEMPAT, dengan menukar ujung ke ujung\nvoid balik(char s[], int kiri, int kanan) {\n    if (kiri >= kanan) {                      // BASE CASE: kedua penunjuk bertemu\n        return;\n    }\n    char tmp = s[kiri];\n    s[kiri] = s[kanan];\n    s[kanan] = tmp;\n    balik(s, kiri + 1, kanan - 1);            // sisanya: bagian dalamnya\n}\n\n// Menara Hanoi: pindahkan n cakram dari 'asal' ke 'tujuan' lewat 'bantu'\nvoid hanoi(int n, char asal, char tujuan, char bantu) {\n    if (n == 0) {                             // BASE CASE: tidak ada yang dipindah\n        return;\n    }\n    hanoi(n - 1, asal, bantu, tujuan);        // sisihkan n-1 cakram ke tiang bantu\n    printf(\"Pindahkan cakram %d: %c -> %c\\n\", n, asal, tujuan);\n    hanoi(n - 1, bantu, tujuan, asal);        // tumpuk lagi di atas cakram terbesar\n}\n\nint main(void) {\n    int data[] = {4, 8, 15, 16, 23, 42};\n    int n = (int) (sizeof(data) / sizeof(data[0]));\n    printf(\"Jumlah array = %d\\n\", jumlah(data, n));      // 108\n\n    char kata[] = \"rekursi\";\n    balik(kata, 0, (int) strlen(kata) - 1);\n    printf(\"Dibalik      = %s\\n\", kata);                 // isruker\n\n    printf(\"Hanoi 3 cakram (butuh 7 langkah):\\n\");\n    hanoi(3, 'A', 'C', 'B');\n    return 0;\n}"
     },
     {
+     "heading": "Kapan rekursi cocok dan kapan mahal",
      "body": [
       "Rekursi lebih jelas daripada loop kalau datanya bercabang:",
       "  - Pohon: binary tree, folder di dalam folder, elemen HTML di dalam",
@@ -1879,6 +1888,7 @@
      "code": "#include <stdio.h>\n\nint nomor_baris = 0;        // GLOBAL: di luar semua fungsi, otomatis berisi 0\n\nvoid catat(char pesan[]) {\n    nomor_baris++;          // fungsi mana pun di berkas ini melihat nama yang sama\n    printf(\"%d. %s\\n\", nomor_baris, pesan);\n}\n\nint main(void) {\n    int nilai = 10;\n\n    {                            // blok telanjang, sah ditulis di C\n        int nilai = 99;          // SHADOWING: menutupi 'nilai' milik main\n        catat(\"masuk blok dalam\");\n        printf(\"   nilai di dalam blok = %d\\n\", nilai);\n    }                            // 'nilai' yang 99 mati persis di sini\n\n    printf(\"   nilai di luar blok  = %d\\n\", nilai);   // tetap 10, tidak tersentuh\n\n    for (int i = 0; i < 3; i++) {\n        catat(\"satu putaran loop\");\n    }\n    // printf(\"%d\", i);   <- kalau dibuka: error, 'i' sudah tidak ada di sini\n\n    catat(\"selesai\");\n    printf(\"total baris tercatat = %d\\n\", nomor_baris);\n    return 0;\n}"
     },
     {
+     "heading": "Kelas penyimpanan dan variabel global",
      "body": [
       "Kelas penyimpanan (storage class) menentukan di mana sebuah nilai",
       "tinggal. Tempat itulah yang menentukan berapa lama nilainya hidup:",
@@ -2071,7 +2081,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    int angka = 10;\n    int *ptr = &angka;    // ptr menunjuk ke alamat 'angka'\n\n    printf(\"Nilai angka       : %d\\n\", angka);\n    printf(\"Alamat angka (&)  : %p\\n\", (void*)&angka);\n    printf(\"Nilai ptr (alamat): %p\\n\", (void*)ptr);\n    printf(\"Nilai *ptr (deref): %d\\n\", *ptr);   // 10, mengakses lewat pointer\n\n    *ptr = 99;    // mengubah NILAI lewat pointer\n    printf(\"angka setelah *ptr = 99: %d\\n\", angka);   // 99! (angka ikut berubah)\n\n    return 0;\n}"
     },
     {
-     "heading": "Pass by Reference dengan pointer (SOLUSI masalah materi 9)",
+     "heading": "Pass by Reference dengan pointer (solusi masalah materi 9)",
      "code": "#include <stdio.h>\n\n// Menerima ALAMAT (pointer), bukan salinan nilai\nvoid tambahSatu(int *x) {\n    *x = *x + 1;    // mengubah NILAI ASLI lewat alamatnya\n}\n\nvoid tukar(int *a, int *b) {   // swap dua variabel - HANYA mungkin dengan pointer!\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint main(void) {\n    int angka = 5;\n    tambahSatu(&angka);       // kirim ALAMAT angka, bukan nilainya\n    printf(\"%d\\n\", angka);    // 6! sekarang BERHASIL berubah\n\n    int x = 1, y = 2;\n    tukar(&x, &y);\n    printf(\"x=%d, y=%d\\n\", x, y);   // x=2, y=1 (berhasil ditukar)\n\n    return 0;\n}"
     },
     {
@@ -2154,11 +2164,11 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    int angka[] = {10, 20, 30, 40, 50};\n    int *ptr = angka;   // ptr menunjuk ke angka[0]\n\n    printf(\"%d\\n\", *ptr);        // 10\n    printf(\"%d\\n\", *(ptr + 1));  // 20 (ptr+1 = alamat elemen BERIKUTNYA)\n    printf(\"%d\\n\", *(ptr + 2));  // 30\n\n    ptr++;                        // pindah ke elemen berikutnya\n    printf(\"Setelah ptr++: %d\\n\", *ptr);   // 20\n\n    // Melintasi array dengan pointer (alternatif dari indexing biasa)\n    ptr = angka;   // reset ke awal\n    for (int i = 0; i < 5; i++) {\n        printf(\"%d \", *(ptr + i));\n    }\n    printf(\"\\n\");   // 10 20 30 40 50\n\n    return 0;\n}"
     },
     {
-     "heading": "Array sebagai parameter fungsi (SELALU 'meluruh' jadi pointer!)",
+     "heading": "Array sebagai parameter fungsi (selalu 'meluruh' jadi pointer!)",
      "code": "#include <stdio.h>\n\n// Ketiga cara ini SAMA PERSIS bagi compiler (array parameter = pointer):\nvoid cetak1(int arr[], int n) { for (int i=0;i<n;i++) printf(\"%d \", arr[i]); }\nvoid cetak2(int arr[5], int n) { for (int i=0;i<n;i++) printf(\"%d \", arr[i]); }\nvoid cetak3(int *arr, int n)   { for (int i=0;i<n;i++) printf(\"%d \", arr[i]); }\n\nint main(void) {\n    int data[] = {1, 2, 3, 4, 5};\n    cetak3(data, 5);\n    printf(\"\\n\");\n\n    // AKIBATNYA: sizeof() di DALAM fungsi TIDAK bekerja seperti di luar!\n    // sizeof(arr) di dalam cetak1/2/3 akan mengembalikan ukuran POINTER\n    // (misal 8 byte), BUKAN ukuran seluruh array (20 byte untuk 5 int).\n    // INILAH KENAPA parameter 'n' (jumlah elemen) HARUS dikirim terpisah!\n    return 0;\n}"
     },
     {
-     "heading": "Array 2 dimensi sebagai parameter (dimensi KEDUA wajib!)",
+     "heading": "Array 2 dimensi sebagai parameter (dimensi kedua wajib!)",
      "body": [
       "Peluruhan tadi punya akibat yang mengejutkan pada matriks. Yang meluruh",
       "jadi pointer cuma dimensi pertama. Dimensi kedua wajib tetap ditulis.",
@@ -2292,6 +2302,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    char kotak[] = \"halo\";          // 5 byte MILIK KITA, isinya disalin dari literal\n    const char *tunjuk = \"halo\";    // cuma alamat; literalnya read-only\n\n    kotak[0] = 'H';                 // BOLEH: yang diubah salinan sendiri\n    printf(\"kotak      : %s\\n\", kotak);\n    printf(\"tunjuk     : %s\\n\", tunjuk);\n    // tunjuk[0] = 'H';             // ditolak compiler. Tanpa const: lolos lalu CRASH.\n\n    printf(\"sizeof kotak  : %zu\\n\", sizeof kotak);    // 5 = 4 huruf + '\\0'\n    printf(\"sizeof tunjuk : %zu\\n\", sizeof tunjuk);   // 8 = ukuran sebuah POINTER\n\n    tunjuk = \"dunia\";               // pointer boleh dipindah ke literal lain\n    printf(\"tunjuk baru   : %s\\n\", tunjuk);\n    // kotak = \"dunia\";             // TIDAK BISA: nama array bukan variabel pointer\n\n    const char *hari[3] = {\"Senin\", \"Selasa\", \"Rabu\"};   // 3 POINTER ke 3 literal\n    char bulan[3][8]    = {\"Januari\", \"Mei\", \"Juli\"};    // 3 x 8 byte MENYATU\n\n    bulan[1][0] = 'm';              // boleh: bulan benar-benar menyimpan hurufnya\n    // hari[1][0] = 's';            // tidak boleh: yang ditunjuk itu literal read-only\n    printf(\"%s / %s\\n\", hari[1], bulan[1]);\n    printf(\"sizeof hari  : %zu\\n\", sizeof hari);    // 3 pointer  = 24 byte\n    printf(\"sizeof bulan : %zu\\n\", sizeof bulan);   // 3 x 8 byte = 24 byte\n    return 0;\n}"
     },
     {
+     "heading": "Janji const pada pointer dan parameter",
      "body": [
       "const pada sebuah parameter adalah janji yang ikut diperiksa compiler:",
       "\"fungsi ini nggak akan mengubah data yang kamu kirim\". Makanya",
@@ -2390,6 +2401,7 @@
      "code": "#include <stdio.h>\n#include <string.h>\n\n// Merakit teks ke buffer MILIK PEMANGGIL, lengkap dengan pemeriksaan terpotong.\nvoid rakit(char *keluar, size_t muat, const char *nama, int id) {\n    int perlu = snprintf(keluar, muat, \"%s-%03d\", nama, id);\n    if (perlu < 0 || (size_t) perlu >= muat) {\n        printf(\"  (TERPOTONG: perlu %d karakter, yang muat cuma %zu)\\n\",\n               perlu, muat - 1);\n    }\n    printf(\"  [%s]\\n\", keluar);\n}\n\nint main(void) {\n    char buf[32];\n    memset(buf, 0, sizeof buf);          // nolkan 32 byte sekaligus, tanpa loop\n    printf(\"setelah memset : [%s]\\n\", buf);\n\n    printf(\"snprintf lega  :\\n\");\n    rakit(buf, sizeof buf, \"levi\", 7);\n    char sempit[6];\n    printf(\"snprintf sempit:\\n\");\n    rakit(sempit, sizeof sempit, \"levi\", 7);\n\n    char salin[32];\n    memcpy(salin, buf, strlen(buf) + 1); // +1 WAJIB supaya '\\0' ikut terbawa\n    printf(\"memcpy         : [%s]\\n\", salin);\n\n    char geser[] = \"abcdefg\";\n    memmove(geser + 2, geser, 5);        // asal & tujuan BERTUMPANG TINDIH\n    printf(\"memmove        : [%s]\\n\", geser);\n\n    char p[4] = {'a', 'b', '\\0', 'X'};   // byte KEEMPAT sengaja dibuat beda,\n    char q[4] = {'a', 'b', '\\0', 'Y'};   // padahal keduanya sama-sama \"ab\"\n    printf(\"strcmp p vs q  : %s\\n\", strcmp(p, q) == 0 ? \"sama\" : \"beda\");\n    printf(\"memcmp 4 byte  : %s\\n\", memcmp(p, q, 4) == 0 ? \"sama\" : \"beda\");\n\n    char baris[] = \"12,34\";\n    int x = 0, y = 0;\n    if (sscanf(baris, \"%d,%d\", &x, &y) == 2) {   // SELALU cek jumlah yang terisi\n        printf(\"sscanf         : x=%d y=%d\\n\", x, y);\n    }\n    return 0;\n}"
     },
     {
+     "heading": "Jebakan memset, memcpy, volatile, dan restrict",
      "body": [
       "Ini jebakan yang sering menjebak orang:",
       "",
@@ -3098,7 +3110,7 @@
      ]
     },
     {
-     "heading": "Contoh enum (enumeration) - PALING sering dipakai",
+     "heading": "Contoh enum (enumeration) - paling sering dipakai",
      "code": "#include <stdio.h>\n\n// enum: cara membuat KONSTANTA BERNAMA yang lebih jelas dari angka mentah\nenum Hari {\n    SENIN,      // otomatis bernilai 0\n    SELASA,     // 1\n    RABU,       // 2\n    KAMIS,      // 3\n    JUMAT,      // 4\n    SABTU,      // 5\n    MINGGU      // 6\n};\n\n// Bisa juga set nilai awal manual:\nenum StatusHttp {\n    OK = 200,\n    NOT_FOUND = 404,\n    SERVER_ERROR = 500\n};\n\nint main(void) {\n    enum Hari hariIni = RABU;\n\n    if (hariIni == RABU) {\n        printf(\"Hari ini Rabu (nilai enum: %d)\\n\", hariIni);   // 2\n    }\n\n    enum StatusHttp status = NOT_FOUND;\n    printf(\"Status: %d\\n\", status);   // 404\n\n    // Kenapa enum lebih baik dari angka mentah ('magic number'):\n    // if (hariIni == 2)  <- kurang jelas, 2 itu apa?\n    // if (hariIni == RABU) <- JAUH lebih jelas maksudnya!\n    return 0;\n}"
     },
     {
@@ -3189,6 +3201,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    // Menulis ke file\n    FILE *fp = fopen(\"catatan.txt\", \"w\");\n    if (fp == NULL) {                    // SELALU cek hasil fopen!\n        printf(\"Gagal membuka file untuk menulis!\\n\");\n        return 1;\n    }\n    fprintf(fp, \"Baris pertama\\n\");\n    fprintf(fp, \"Angka: %d\\n\", 42);\n    fclose(fp);                          // WAJIB ditutup!\n\n    // Membaca file baris per baris (cara PALING aman)\n    FILE *fp2 = fopen(\"catatan.txt\", \"r\");\n    if (fp2 == NULL) {\n        printf(\"Gagal membuka file untuk membaca!\\n\");\n        return 1;\n    }\n\n    char baris[100];\n    while (fgets(baris, sizeof(baris), fp2) != NULL) {\n        printf(\"Baca: %s\", baris);       // fgets menyertakan \\n, tak perlu tambah lagi\n    }\n    fclose(fp2);\n\n    return 0;\n}"
     },
     {
+     "heading": "Alasan memilih fgets dan stdin sebagai berkas",
      "body": [
       "Kenapa fgets() lebih disarankan daripada fscanf(\"%s\", ...)? Ada dua",
       "alasan:",
@@ -3313,6 +3326,7 @@
      "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char *argv[]) {\n    printf(\"argc = %d\\n\", argc);\n    printf(\"argv[0] = %s   <- nama program, BUKAN argumen pertama\\n\", argv[0]);\n\n    for (int i = 1; i < argc; i++) {     // mulai dari 1, lewati nama program\n        printf(\"argv[%d] = %s\\n\", i, argv[i]);\n    }\n\n    if (argv[argc] == NULL) {            // dijamin oleh standar C\n        printf(\"argv[%d] = NULL   <- penanda akhir daftar\\n\", argc);\n    }\n\n    if (argc >= 2) {\n        char *sisa;\n        long n = strtol(argv[1], &sisa, 10);      // 10 = basis desimal\n        if (sisa == argv[1] || *sisa != '\\0') {   // tak ada digit, atau ada sisa\n            printf(\"argv[1] bukan angka utuh, tidak jadi dikonversi.\\n\");\n        } else {\n            printf(\"argv[1] sebagai angka: %ld, dikali dua: %ld\\n\", n, n * 2);\n        }\n    }\n    return 0;\n}"
     },
     {
+     "heading": "Stream standar dan buffering",
      "body": [
       "Kompilasi, lalu jalankan dengan beberapa kata di belakangnya. Misalnya",
       "hasil kompilasinya kamu beri nama ./argumen, lalu kamu mengetik",
@@ -3404,6 +3418,7 @@
      "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char *argv[]) {\n    if (argc < 2) {\n        fprintf(stderr, \"Pemakaian: %s <berkas>\\n\", argv[0]);\n        return 1;                        // BUKAN 0: program tidak mengerjakan tugasnya\n    }\n\n    FILE *fp = fopen(argv[1], \"r\");      // nama berkas datang dari baris perintah\n    if (fp == NULL) {\n        fprintf(stderr, \"%s: gagal membuka '%s'\\n\", argv[0], argv[1]);\n        exit(EXIT_FAILURE);              // efeknya sama dengan return 1 di main\n    }\n\n    char baris[512];\n    int nomor = 1;\n    while (fgets(baris, sizeof(baris), fp) != NULL) {\n        printf(\"%4d | %s\", nomor, baris);                // HASIL   -> stdout\n        nomor++;\n    }\n    fclose(fp);\n\n    fprintf(stderr, \"(%d baris dibaca)\\n\", nomor - 1);    // CATATAN -> stderr\n    return EXIT_SUCCESS;                 // EXIT_SUCCESS bernilai 0\n}"
     },
     {
+     "heading": "Kode keluar sebagai laporan ke sistem",
      "body": [
       "Kompilasi programnya, anggap hasilnya bernama ./tampil, lalu coba",
       "empat hal ini:",
@@ -3609,6 +3624,7 @@
      "code": "#include <stdio.h>\n\nint main(void) {\n    // Langkah 1: buat dulu satu berkas teks supaya ada yang bisa dibaca.\n    FILE *tulis = fopen(\"puisi.txt\", \"w\");\n    if (tulis == NULL) {\n        printf(\"Gagal membuka berkas untuk menulis!\\n\");\n        return 1;\n    }\n    fputs(\"aku belajar C\\n\", tulis);   // fputs TIDAK menambah \\n sendiri\n    fputs(\"satu karakter\\n\", tulis);   // (beda dari puts() yang menambahkannya)\n    fputc('!', tulis);                 // fputc menulis SATU karakter saja\n    fputc('\\n', tulis);\n    fclose(tulis);\n\n    // Langkah 2: baca kembali KARAKTER PER KARAKTER sampai bertemu EOF.\n    FILE *baca = fopen(\"puisi.txt\", \"r\");\n    if (baca == NULL) {\n        printf(\"Gagal membuka berkas untuk membaca!\\n\");\n        return 1;\n    }\n\n    int c;                    // WAJIB int -- EOF tidak muat di dalam char\n    long karakter = 0, baris = 0, diubah = 0;\n\n    while ((c = fgetc(baca)) != EOF) {   // kurung dalam WAJIB\n        karakter++;\n        if (c == '\\n') {\n            baris++;\n        }\n        if (c >= 'a' && c <= 'z') {\n            putchar(c - 'a' + 'A');      // cetak versi huruf besarnya\n            diubah++;\n        } else {\n            putchar(c);                  // selain huruf kecil, salin apa adanya\n        }\n    }\n    fclose(baca);\n\n    puts(\"---\");                         // puts() menambah \\n sendiri\n    printf(\"%ld karakter, %ld baris, %ld huruf dibesarkan\\n\",\n           karakter, baris, diubah);\n    return 0;\n}"
     },
     {
+     "heading": "Mode biner, fread, fwrite, dan fseek",
      "body": [
       "Sampai sini semua berkas kita berkas teks. Ada mode kedua, yaitu",
       "biner. Bedanya cuma satu huruf tambahan di string mode:",
@@ -3695,6 +3711,7 @@
      "code": "#include <stdio.h>\n\ntypedef struct {\n    char   nama[20];\n    int    umur;\n    double ipk;\n} Mahasiswa;\n\nint main(void) {\n    Mahasiswa daftar[3] = {\n        {\"Andi\",  20, 3.50},\n        {\"Budi\",  22, 3.20},\n        {\"Citra\", 21, 3.85}\n    };\n\n    // ---- MENYIMPAN: mode \"wb\" = write binary -------------------------------\n    FILE *fp = fopen(\"mahasiswa.dat\", \"wb\");\n    if (fp == NULL) {\n        printf(\"Gagal membuka mahasiswa.dat untuk menulis!\\n\");\n        return 1;\n    }\n    size_t ditulis = fwrite(daftar, sizeof(Mahasiswa), 3, fp);\n    printf(\"fwrite mengembalikan %zu (jumlah ITEM, bukan byte)\\n\", ditulis);\n    fclose(fp);\n\n    // ---- MEMBACA KEMBALI: mode \"rb\" = read binary --------------------------\n    fp = fopen(\"mahasiswa.dat\", \"rb\");\n    if (fp == NULL) {\n        printf(\"Gagal membuka mahasiswa.dat untuk membaca!\\n\");\n        return 1;\n    }\n\n    fseek(fp, 0, SEEK_END);            // lompat ke ujung berkas\n    long ukuran = ftell(fp);           // posisi di ujung = ukuran berkas\n    rewind(fp);                        // balik lagi ke posisi 0\n    printf(\"Ukuran berkas %ld byte, satu record %ld byte\\n\",\n           ukuran, (long)sizeof(Mahasiswa));\n\n    Mahasiswa m;\n    while (fread(&m, sizeof m, 1, fp) == 1) {   // == 1: satu ITEM berhasil dibaca\n        printf(\"  %-6s %d thn  IPK %.2f\\n\", m.nama, m.umur, m.ipk);\n    }\n    if (ferror(fp)) {                  // dicek DULUAN: berhenti karena rusak?\n        printf(\"Berhenti karena GALAT baca, bukan karena habis.\\n\");\n    } else if (feof(fp)) {\n        printf(\"Berhenti karena sampai ujung berkas.\\n\");\n    }\n\n    // ---- AKSES ACAK: langsung ke record indeks 2 ---------------------------\n    fseek(fp, 2 * (long)sizeof(Mahasiswa), SEEK_SET);  // fseek menghapus tanda EOF\n    if (fread(&m, sizeof m, 1, fp) == 1) {\n        printf(\"Lompat ke record indeks 2: %s (ipk %.2f)\\n\", m.nama, m.ipk);\n    }\n    fclose(fp);\n    return 0;\n}"
     },
     {
+     "heading": "Portabilitas berkas biner dan jebakan feof",
      "body": [
       "Berkas mahasiswa.dat itu nggak bisa dibuka dengan editor teks. Kalau",
       "diintip dengan hexdump -C mahasiswa.dat di mesin x86-64, 32 byte",
@@ -3914,6 +3931,7 @@
      "code": "#include <errno.h>\n#include <stdio.h>\n#include <string.h>\n\nint main(void) {\n    errno = 0;                    // tidak ada yang membersihkan errno selain kamu sendiri\n\n    FILE *fp = fopen(\"berkas-yang-tidak-ada.txt\", \"r\");\n    if (fp == NULL) {             // periksa NILAI KEMBALI dulu, baru errno\n        int simpan = errno;       // AMBIL SEGERA, sebelum fungsi apa pun dipanggil\n\n        perror(\"fopen\");          // ke stderr: \"fopen: <penjelasan dari errno>\"\n        fprintf(stderr, \"errno = %d, strerror = %s\\n\", simpan, strerror(simpan));\n\n        if (simpan == ENOENT) {                 // bandingkan NAMA, bukan angka\n            fprintf(stderr, \"ENOENT: berkasnya memang tidak ada.\\n\");\n        } else if (simpan == EACCES) {\n            fprintf(stderr, \"EACCES: berkasnya ada, tapi izinnya tidak cukup.\\n\");\n        }\n    }\n\n    // Sekarang panggilan yang BERHASIL. Perhatikan errno TIDAK dikembalikan ke 0.\n    FILE *ok = fopen(\"coba-errno.txt\", \"w\");\n    if (ok == NULL) {\n        perror(\"fopen coba-errno.txt\");\n        return 1;\n    }\n    fputs(\"berhasil\\n\", ok);\n    fclose(ok);\n\n    printf(\"fopen kedua BERHASIL, tapi errno sekarang bernilai %d.\\n\", errno);\n    printf(\"Angka itu tidak berarti apa-apa - tidak ada yang gagal.\\n\");\n    return 0;\n}"
     },
     {
+     "heading": "Pola errno, perror, dan goto cleanup",
      "body": [
       "Kompilasi lalu jalankan. Hasilnya kira-kira begini:",
       "",
@@ -4178,6 +4196,7 @@
      "code": "#include <stdio.h>\n\n#define PI 3.14159\n#define KUADRAT(x) ((x) * (x))       // TANDA KURUNG penting! (hindari bug)\n#define MAX(a, b) ((a) > (b) ? (a) : (b))\n\nint main(void) {\n    printf(\"PI = %.5f\\n\", PI);\n    printf(\"Kuadrat 5 = %d\\n\", KUADRAT(5));        // (5)*(5) = 25\n    printf(\"Max(3, 7) = %d\\n\", MAX(3, 7));         // 7\n\n    // KENAPA harus pakai kurung ekstra di macro? Contoh bug tanpa kurung:\n    // #define KUADRAT_SALAH(x) x * x\n    // KUADRAT_SALAH(2+3)  -> preprocessor ganti jadi: 2+3 * 2+3 = 2+6+3 = 11\n    //                        (BUKAN 25 seperti yang diharapkan!)\n    // Dengan kurung: ((2+3) * (2+3)) = 25  -> BENAR\n\n    return 0;\n}"
     },
     {
+     "heading": "Kompilasi bersyarat, include guard, dan inline",
      "body": [
       "Preprocessor juga bisa memilih bagian kode mana yang ikut dikompilasi.",
       "Namanya conditional compilation (kompilasi bersyarat):",
@@ -4332,6 +4351,7 @@
      "code": "#include <stdio.h>\n\n// Cabang di bawah ini dipilih SAAT KOMPILASI. Yang tidak terpilih\n// tidak pernah sampai ke compiler - isinya boleh memakai fungsi yang\n// tidak ada di sistem ini sekalipun. Blok seperti ini ada di berkas\n// pertama hampir semua proyek C.\n#if defined(_WIN32)\n#define NAMA_OS   \"Windows\"\n#define BERSIHKAN \"cls\"\n#elif defined(__APPLE__)\n#define NAMA_OS   \"macOS\"\n#define BERSIHKAN \"clear\"\n#elif defined(__linux__)\n#define NAMA_OS   \"Linux\"\n#define BERSIHKAN \"clear\"\n#else\n#error \"Platform belum didukung - tambahkan cabangnya di sini dulu.\"\n#endif\n\n// Nilai boleh datang dari luar: tambahkan -DVERSI=2 pada perintah gcc,\n// dan angka bawaan di bawah ini tidak terpakai sama sekali.\n#ifndef VERSI\n#define VERSI 1\n#endif\n\nint main(void) {\n    // Empat makro ini diisi compiler, bukan olehmu.\n    printf(\"Berkas  : %s\\n\", __FILE__);   // nama berkas sumbernya\n    printf(\"Baris   : %d\\n\", __LINE__);   // nomor baris INI juga\n    printf(\"Fungsi  : %s\\n\", __func__);   // nama fungsi tempatnya berada\n    printf(\"OS      : %s\\n\", NAMA_OS);\n    printf(\"Bersih  : %s\\n\", BERSIHKAN);\n    printf(\"Versi   : %d\\n\", VERSI);\n\n#if VERSI >= 2\n    printf(\"Fitur tambahan ikut dikompilasi\\n\");\n#else\n    printf(\"Mode dasar\\n\");\n#endif\n\n    // __STDC_VERSION__ = versi standar C-nya. 199901L artinya C99.\n#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L\n    printf(\"Compiler ini C99 ke atas\\n\");\n#endif\n\n    // Ada juga __DATE__ dan __TIME__ (waktu KOMPILASI, bukan waktu\n    // jalan). Sengaja tidak dicetak: hasilnya berubah tiap kompilasi.\n    return 0;\n}"
     },
     {
+     "heading": "Stringify, token paste, dan bungkus do-while",
      "body": [
       "Ada tiga alat yang cuma bisa dipakai di dalam #define, dan nggak",
       "berlaku di tempat lain:",
@@ -4394,7 +4414,7 @@
      "code": "#include <stdio.h>\n#include <stdlib.h>\n\n// # mengubah ARGUMEN jadi teks apa adanya.\n#define TEKS(x) #x\n\n// ## menempel dua token jadi satu nama baru.\n#define BUAT_KUADRAT(nama) int kuadrat_##nama(int n) { return n * n; }\n\nBUAT_KUADRAT(int)   // jadi: int kuadrat_int(int n) { return n * n; }\n\n// ... = argumen sebanyak apa pun, diwakili __VA_ARGS__ di badan makro.\n// Pembungkus do { ... } while (0) membuatnya berlaku sebagai SATU\n// pernyataan, persis seperti pemanggilan fungsi.\n#define LOG(fmt, ...)                                            \\\n    do {                                                         \\\n        fprintf(stderr, \"%s:%d: \" fmt \"\\n\",                      \\\n                __FILE__, __LINE__, __VA_ARGS__);                \\\n    } while (0)\n\n// #kondisi mencetak ULANG syarat yang gagal sebagai teks - guna '#'.\n#define PERIKSA(kondisi)                                         \\\n    do {                                                         \\\n        if (!(kondisi)) {                                        \\\n            fprintf(stderr, \"%s:%d: syarat gagal: %s\\n\",         \\\n                    __FILE__, __LINE__, #kondisi);               \\\n            exit(1);                                             \\\n        }                                                        \\\n    } while (0)\n\nint main(void) {\n    int umur = 17;\n\n    printf(\"%s\\n\", TEKS(umur + 1));   // tercetak: umur + 1, bukan 18\n    printf(\"%d\\n\", kuadrat_int(6));   // 36\n\n    // if TANPA kurawal pun aman, justru karena do/while tadi.\n    if (umur < 18)\n        LOG(\"belum cukup umur (%d)\", umur);\n    else\n        LOG(\"sudah cukup umur (%d)\", umur);\n\n    PERIKSA(umur > 0);\n    printf(\"selesai\\n\");\n    return 0;\n}"
     },
     {
-     "heading": "Kapan makro justru TIDAK dipakai, dan pola static inline",
+     "heading": "Kapan makro justru tidak dipakai, dan pola static inline",
      "body": [
       "Makro itu penggantian teks mentah. Makro nggak punya tipe, nggak",
       "kelihatan di gdb, dan argumennya bisa dihitung dua kali: MAX(a++, b)",
@@ -4621,7 +4641,7 @@
      "code": "#include <stdio.h>\n\n// Satu fungsi untuk tipe APA PUN: yang diterima cuma alamat mentah + ukurannya.\nvoid cetak_byte(const void *data, size_t n) {\n    const unsigned char *b = data;   // dari void * ke tipe nyata (cast opsional di C)\n    for (size_t i = 0; i < n; i++) {\n        printf(\"%02x \", b[i]);\n    }\n    printf(\"\\n\");\n}\n\nint main(void) {\n    int angka = 5;\n    double pecahan = 1.5;\n    char huruf = 'A';\n\n    void *p;              // satu variabel, sanggup menampung alamat apa pun\n\n    p = &angka;\n    printf(\"alamat angka : %p\\n\", p);\n    printf(\"isi angka    : %d\\n\", *(int *)p);      // WAJIB di-cast sebelum di-*\n\n    p = &pecahan;\n    printf(\"isi pecahan  : %.1f\\n\", *(double *)p);\n\n    p = &huruf;\n    printf(\"isi huruf    : %c\\n\", *(char *)p);\n\n    // Mencetak alamat variabel lain: %p minta void *, jadi alamatnya di-cast.\n    printf(\"alamat huruf : %p\\n\", (void *)&huruf);\n\n    cetak_byte(&angka, sizeof angka);   // 05 00 00 00 di mesin little-endian\n    cetak_byte(&huruf, sizeof huruf);   // 41  (kode ASCII 'A')\n\n    // p + 1;   // ditolak -Wpedantic: aritmatika pada void *, ukurannya tak diketahui\n    // *p;      // GALAT keras: mau dibaca berapa byte? tidak ada yang tahu\n    return 0;\n}"
     },
     {
-     "heading": "typedef untuk tipe FUNGSI, dan struct berisi function pointer",
+     "heading": "typedef untuk tipe fungsi, dan struct berisi function pointer",
      "body": [
       "Sintaks function pointer dari materi Function Pointer jadi hampir",
       "nggak terbaca begitu dia masuk ke daftar parameter atau ke dalam",
@@ -5079,6 +5099,7 @@
      "code": "/* ===== File: statistik.h ===== */\n#ifndef STATISTIK_H\n#define STATISTIK_H\n\n/* Header itu JANJI: hanya prototype. Kode mesinnya ada di statistik.c. */\ndouble rata_rata(const double *data, int n);\ndouble simpangan_baku(const double *data, int n);\n\n#endif\n\n/* ===== File: statistik.c ===== */\n#include <math.h>          /* sqrt() -> perlu -lm saat MENAUTKAN, bukan saat compile */\n#include \"statistik.h\"     /* agar compiler mengadu isi di sini dengan janji di .h  */\n\ndouble rata_rata(const double *data, int n) {\n    double total = 0.0;\n    for (int i = 0; i < n; i++) {\n        total += data[i];\n    }\n    return total / n;\n}\n\ndouble simpangan_baku(const double *data, int n) {\n    double m = rata_rata(data, n);\n    double jumlah = 0.0;\n    for (int i = 0; i < n; i++) {\n        jumlah += (data[i] - m) * (data[i] - m);\n    }\n    return sqrt(jumlah / n);\n}\n\n/* ===== File: main.c ===== */\n#include <stdio.h>\n#include \"statistik.h\"\n\nint main(void) {\n    double nilai[] = {80.0, 90.0, 70.0, 100.0, 60.0};\n    int n = 5;\n\n    printf(\"Jumlah data    : %d\\n\", n);\n    printf(\"Rata-rata      : %.2f\\n\", rata_rata(nilai, n));\n    printf(\"Simpangan baku : %.2f\\n\", simpangan_baku(nilai, n));\n    return 0;\n}\n\n# ===== File: Makefile =====\n# PERHATIAN: tiap baris perintah di bawah diawali karakter TAB, bukan spasi.\nCC      = gcc\nCFLAGS  = -std=c11 -Wall -Wextra -g\nLDLIBS  = -lm\nOBJ     = main.o statistik.o\n\n.PHONY: all clean\n\nall: program\n\nprogram: $(OBJ)\n\t$(CC) $^ -o $@ $(LDLIBS)\n\n%.o: %.c statistik.h\n\t$(CC) $(CFLAGS) -c $< -o $@\n\nclean:\n\trm -f $(OBJ) program"
     },
     {
+     "heading": "Kompilasi terpisah dan dua keluarga galat",
      "body": [
       "Kompilasi terpisah",
       "",
@@ -5184,6 +5205,7 @@
      ]
     },
     {
+     "heading": "Makefile: target, variabel, dan aturan pola",
      "body": [
       "make cuma bisa satu hal, dan hal itu sederhana: membandingkan waktu",
       "terakhir sebuah berkas diubah. Kalau target lebih tua daripada salah",
@@ -5277,6 +5299,7 @@
      ]
     },
     {
+     "heading": "Versi standar C, pustaka, dan build system",
      "body": [
       "Versi standar C",
       "",
@@ -5484,6 +5507,7 @@
      ]
     },
     {
+     "heading": "Flag warning dan perintah dasar gdb",
      "body": [
       "Biasakan selalu mengompilasi dengan flag warning dan flag debug:",
       "",
@@ -5660,6 +5684,7 @@
      ]
     },
     {
+     "heading": "Memilih jalur spesialisasi",
      "body": [
       "Tahap 3: pilih jalur spesialisasi",
       "",
@@ -5691,6 +5716,7 @@
      ]
     },
     {
+     "heading": "Kebiasaan profesional dan kebiasaan harian",
      "body": [
       "Tahap 4: kebiasaan profesional",
       "  1. Selalu kompilasi dengan -Wall -Wextra, dan bereskan semua",

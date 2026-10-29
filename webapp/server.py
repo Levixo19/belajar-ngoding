@@ -175,6 +175,7 @@ RUTE = {
     ("GET", "/api/laporan"): (api.laporan, "kueri"),
     ("GET", "/api/data/ekspor"): (api.data_ekspor, "kueri"),
     ("POST", "/api/data/impor"): (api.data_impor, "muatan"),
+    ("GET", "/api/data/cadangan"): (api.data_cadangan_daftar, "kueri"),
     ("POST", "/api/data/cadangkan"): (api.data_cadangkan, "muatan"),
     ("POST", "/api/data/reset"): (api.data_reset, "muatan"),
 }

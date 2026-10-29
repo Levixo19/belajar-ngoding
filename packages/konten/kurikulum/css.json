@@ -55,6 +55,7 @@
      "code": "<!DOCTYPE html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Tiga cara memasang CSS</title>\n\n  <!-- Cara 3: berkas terpisah -->\n  <link rel=\"stylesheet\" href=\"gaya.css\">\n\n  <!-- Cara 2: blok <style> di dalam halaman -->\n  <style>\n    p { color: navy; }\n  </style>\n</head>\n<body>\n  <!-- Cara 1: inline, gaya menempel di elemennya -->\n  <h1 style=\"color: darkred\">Judul Halaman</h1>\n\n  <p>Paragraf ini biru tua karena aturan di blok style.</p>\n</body>\n</html>"
     },
     {
+     "heading": "Inline, blok style, atau berkas terpisah",
      "body": [
       "Tiga cara itu, diurutkan dari yang paling jelek ke yang paling baik:",
       "",
@@ -88,6 +89,7 @@
      "code": "/* Ini komentar CSS. Tidak ada bentuk // seperti di JavaScript. */\n\nbody {\n  background-color: #f7f7f5;\n  color: #23252b;\n  font-family: system-ui, sans-serif;\n  line-height: 1.6;\n}\n\nh1 {\n  color: #7a1f1f;\n  font-size: 32px;\n  margin-bottom: 8px;\n}\n\na {\n  color: #1a4fa0;\n}"
     },
     {
+     "heading": "CSS tidak pernah memberi pesan error",
      "body": [
       "Ada satu sifat CSS yang perlu kamu tahu dari awal: CSS nggak pernah",
       "ngasih pesan error.",
@@ -207,6 +209,7 @@
      "code": "/* Semua paragraf */\np {\n  line-height: 1.6;\n}\n\n/* Class, dipakai berulang di banyak tempat */\n.kartu {\n  background: white;\n  border: 1px solid #dcdcdc;\n  padding: 16px;\n}\n\n/* Satu elemen yang punya DUA class ini sekaligus */\n.kartu.penting {\n  border-color: crimson;\n}\n\n/* Tautan di dalam kartu, sedalam apa pun */\n.kartu a {\n  color: #1a4fa0;\n}\n\n/* Hanya <li> yang induk langsungnya .menu */\n.menu > li {\n  display: inline-block;\n}\n\n/* Tiga pemilih, satu blok aturan */\nh1, h2, h3 {\n  font-family: Georgia, serif;\n  line-height: 1.2;\n}\n\n/* Semua input bertipe teks */\ninput[type=\"text\"] {\n  padding: 8px;\n  border: 1px solid #c9c9c9;\n}"
     },
     {
+     "heading": "Cascade dan spesifisitas pemilih",
      "body": [
       "Cascade: aturan mana yang dipakai",
       "",
@@ -246,6 +249,7 @@
      ]
     },
     {
+     "heading": "Id, important, dan aturan yang tidak mempan",
      "body": [
       "Kenapa id sebaiknya nggak dipakai untuk menata tampilan",
       "",
@@ -382,6 +386,7 @@
      "code": "/* ===== File: index.html ===== */\n<!DOCTYPE html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Halaman uji DevTools</title>\n  <link rel=\"stylesheet\" href=\"gaya.css\">\n</head>\n<body>\n  <h1>Tiga aturan memperebutkan satu tombol</h1>\n\n  <div class=\"panel\">\n    <p>Tombol ini di DALAM panel.</p>\n    <button class=\"tombol bahaya\">Hapus</button>\n  </div>\n\n  <p>Tombol ini di LUAR panel, class-nya sama persis.</p>\n  <button class=\"tombol bahaya\">Hapus</button>\n</body>\n</html>\n\n/* ===== File: gaya.css ===== */\n/* 0. Wadah, supaya batas panelnya kelihatan. */\n.panel {\n  background: #f2f2ef;\n  border: 1px solid #dcdcdc;\n  padding: 16px;\n}\n\n/* 1. Bentuk dasar semua tombol. Spesifisitas (0,1,0). */\n.tombol {\n  background: #1a4fa0;\n  color: #ffffff;\n  font-size: 16px;\n  margin: 8px;\n  padding: 12px 20px;\n  border: 2px solid #123a78;\n  border-radius: 6px;\n}\n\n/* 2. Spesifisitas SAMA dengan .tombol (0,1,0), tapi ditulis belakangan,\n      jadi background di sini menang. */\n.bahaya {\n  background: #b3261e;\n}\n\n/* 3. Spesifisitas (0,2,0): lebih tinggi, menang atas keduanya - tapi\n      hanya untuk tombol yang berada di dalam .panel. */\n.panel .tombol {\n  background: #2f7d32;\n}\n\n/* 4. Keadaan hover. Perlu tombol :hov di DevTools supaya bisa diamati\n      dengan tenang. */\n.tombol:hover {\n  background: #0f3f8a;\n}"
     },
     {
+     "heading": "Membaca cascade di panel Styles",
      "body": [
       "Panel Styles: melihat cascade bekerja",
       "",
@@ -454,6 +459,7 @@
      ]
     },
     {
+     "heading": "Panel Computed dan diagram box model",
      "body": [
       "Panel Computed: hasil akhirnya",
       "",
@@ -506,6 +512,7 @@
      ]
     },
     {
+     "heading": "Memaksa hover dan menyunting langsung",
      "body": [
       "Memaksa keadaan: tombol :hov dan .cls",
       "",
@@ -679,6 +686,7 @@
      ]
     },
     {
+     "heading": "Satuan mutlak, relatif, dan line-height",
      "body": [
       "Satuan ukuran",
       "",
@@ -850,6 +858,7 @@
      ]
     },
     {
+     "heading": "Fungsi min, max, dan clamp",
      "body": [
       "min(), max(), dan clamp() satu keluarga dengan calc(). Ketiganya",
       "sama-sama ngitung, sama-sama boleh mencampur satuan, dan aturan",
@@ -906,6 +915,7 @@
      ]
     },
     {
+     "heading": "Satuan waktu dan satuan sudut",
      "body": [
       "Dua keluarga satuan yang belum pernah dibahas",
       "",
@@ -957,6 +967,7 @@
      ]
     },
     {
+     "heading": "Satuan viewport dan masalah 100vh",
      "body": [
       "Satuan viewport, lengkapnya",
       "",
@@ -1119,6 +1130,7 @@
      ]
     },
     {
+     "heading": "Pewarisan dan kata kunci global",
      "body": [
       "Pewarisan (inheritance)",
       "",
@@ -1186,6 +1198,7 @@
      "code": "body {\n  font-family: system-ui, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;\n  font-size: 1rem;\n  line-height: 1.65;\n  color: #23252b;\n}\n\nh1, h2, h3 {\n  font-family: Georgia, \"Times New Roman\", serif;\n  line-height: 1.2;\n  letter-spacing: -0.01em;\n  margin-bottom: 0.4em;\n}\n\nh1 {\n  font-size: 2.25rem;\n  font-weight: 700;\n}\n\nh2 {\n  font-size: 1.5rem;\n}\n\ncode, pre {\n  font-family: Consolas, \"Courier New\", monospace;\n  font-size: 0.9375rem;\n}\n\n/* Tanpa baris ini, tombol memakai huruf bawaan sistem */\nbutton, input, select, textarea {\n  font: inherit;\n}\n\na {\n  color: #1a4fa0;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n}\n\n.isi {\n  max-width: 68ch;\n}"
     },
     {
+     "heading": "Panjang baris dan properti font ringkas",
      "body": [
       "Panjang baris",
       "",
@@ -1216,6 +1229,7 @@
      ]
     },
     {
+     "heading": "Tiga cara memuat font web",
      "body": [
       "Font web: tiga bentuk yang pasti kamu lihat di berkas orang",
       "",
@@ -1334,6 +1348,7 @@
      ]
     },
     {
+     "heading": "Padding, margin, dan border",
      "body": [
       "Padding dan margin paling sering ketuker. Bedanya begini:",
       "",
@@ -1380,6 +1395,7 @@
      ]
     },
     {
+     "heading": "Lebar kotak dan box-sizing border-box",
      "body": [
       "Kenapa box-sizing: border-box hampir selalu dipakai",
       "",
@@ -1425,6 +1441,7 @@
      ]
     },
     {
+     "heading": "Margin collapse dan cara menghentikannya",
      "body": [
       "Margin yang menyatu (margin collapse)",
       "",
@@ -1565,6 +1582,7 @@
      ]
     },
     {
+     "heading": "Cara menyembunyikan elemen dan pointer-events",
      "body": [
       "Tiga cara menyembunyikan, tiga akibat yang beda",
       "",
@@ -1752,6 +1770,7 @@
      ]
     },
     {
+     "heading": "Mengulang, menaruh, dan mengukur gambar latar",
      "body": [
       "Mengulang, menaruh, dan mengukur",
       "",
@@ -1853,6 +1872,7 @@
      ]
     },
     {
+     "heading": "Gradien dan lapisan gelap di atas foto",
      "body": [
       "Gradien itu gambar, bukan warna",
       "",
@@ -2112,6 +2132,7 @@
      ]
     },
     {
+     "heading": "Bayangan inset, berlapis, dan tidak makan ruang",
      "body": [
       "inset: bayangan di dalam kotak",
       "",
@@ -2193,6 +2214,7 @@
      "code": "/* Tiga tingkat saja, disepakati sekali di sini */\n:root {\n  --bayang-1: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.10);\n  --bayang-2: 0 2px 4px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.12);\n  --bayang-3: 0 12px 32px rgba(0, 0, 0, 0.20);\n}\n\n.kartu {\n  background: white;\n  border-radius: 10px;\n  padding: 20px;\n  box-shadow: var(--bayang-1);\n}\n\n/* Terangkat sedikit saat disentuh: naik satu anak tangga, bukan angka baru */\n.kartu:hover {\n  box-shadow: var(--bayang-2);\n}\n\n/* Dialog paling jauh dari halaman, jadi tingkat paling tinggi */\n.dialog {\n  border-radius: 14px;\n  box-shadow: var(--bayang-3);\n}\n\n/* Cincin fokus: geser 0, kabur 0, sebar 3px. Tidak menggeser apa pun. */\n.tombol:focus-visible {\n  outline: 2px solid transparent;   /* penyelamat di mode kontras tinggi */\n  outline-offset: 2px;\n  box-shadow: 0 0 0 3px rgba(26, 79, 160, 0.45);\n}\n\n/* inset = cekung. Kotak isian terlihat seperti lubang tempat teks masuk. */\n.isian {\n  border: 1px solid #cfd3da;\n  border-radius: 6px;\n  padding: 8px 10px;\n  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.10);\n}\n\n/* Ditekan: bayangan luar dimatikan, diganti bayangan dalam */\n.tombol:active {\n  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);\n}"
     },
     {
+     "heading": "Bayangan teks, filter, dan backdrop-filter",
      "body": [
       "text-shadow: saudara yang lebih pendek",
       "",
@@ -2401,6 +2423,7 @@
      ]
     },
     {
+     "heading": "Translate dan pola memusatkan elemen",
      "body": [
       "translate: menggeser",
       "",
@@ -2457,6 +2480,7 @@
      ]
     },
     {
+     "heading": "Scale, rotate, skew, dan transform-origin",
      "body": [
       "scale: membesarkan dan mengecilkan",
       "",
@@ -2564,6 +2588,7 @@
      "code": "/* Tombol yang terangkat 2px saat disentuh, tertekan saat diklik */\n.tombol {\n  padding: 10px 18px;\n  border: 0;\n  border-radius: 8px;\n  background: #1a4fa0;\n  color: white;\n}\n\n.tombol:hover {\n  transform: translateY(-2px);\n}\n\n.tombol:active {\n  transform: translateY(1px);\n}\n\n/* Kartu yang sengaja dibuat sedikit miring.\n   rotate WAJIB ditulis ulang di :hover - tanpa itu scale menimpanya\n   dan kartunya jadi lurus setiap kali disentuh. */\n.kartu {\n  transform: rotate(-1deg);\n}\n\n.kartu:hover {\n  transform: rotate(-1deg) scale(1.02);\n}\n\n/* Dipusatkan tanpa perlu tahu lebar maupun tingginya */\n.dialog {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: min(90vw, 420px);\n  padding: 24px;\n  border-radius: 12px;\n  background: white;\n}\n\n/* Panel yang menunggu persis di luar tepi kiri layar */\n.panel {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 260px;\n  height: 100vh;\n  transform: translateX(-100%);\n}\n\n.panel.terbuka {\n  transform: translateX(0);\n}\n\n/* Panah yang berputar 90 derajat saat bagiannya dibuka */\n.pemicu .panah {\n  display: inline-block;   /* elemen inline tidak bisa di-transform */\n}\n\n.pemicu[aria-expanded=\"true\"] .panah {\n  transform: rotate(90deg);\n}\n\n/* Jarum yang berputar dari pangkalnya, bukan dari titik tengahnya */\n.jarum {\n  transform-origin: bottom center;\n  transform: rotate(0.25turn);\n}"
     },
     {
+     "heading": "Efek samping transform dan alasan ringannya",
      "body": [
       "Tiga efek samping yang perlu kamu ingat",
       "",
@@ -2711,6 +2736,7 @@
      ]
     },
     {
+     "heading": "Memotong teks setelah beberapa baris",
      "body": [
       "Memotong di baris ke-N",
       "",
@@ -2779,6 +2805,7 @@
      ]
     },
     {
+     "heading": "Nilai white-space dan memutus kata panjang",
      "body": [
       "Nilai white-space selengkapnya",
       "",
@@ -2859,6 +2886,7 @@
      "code": "/* Markup yang diandaikan:\n *   <article class=\"kartu\">\n *     <div class=\"kartu-kepala\">\n *       <div class=\"kartu-teks\">\n *         <h3 class=\"kartu-judul\" title=\"judul lengkapnya\">Judul</h3>\n *         <p class=\"kartu-ringkas\">Ringkasan beberapa kalimat</p>\n *       </div>\n *       <span class=\"lencana\">Baru</span>\n *     </div>\n *     <pre class=\"kode\">npm install</pre>\n *   </article>\n */\n\n.kartu {\n  width: 280px;\n  padding: 16px;\n  border: 1px solid #d7dae2;\n  border-radius: 8px;\n  font-family: system-ui, Arial, sans-serif;\n}\n\n/* Baris kepala: kolom teks boleh menyusut, lencana tidak */\n.kartu-kepala {\n  display: flex;\n  align-items: flex-start;\n  gap: 8px;\n}\n\n.kartu-teks {\n  flex: 1;\n  min-width: 0;             /* tanpa ini seluruh kartu yang melar */\n}\n\n.lencana {\n  flex: none;               /* lencana ikut menyusut = tulisannya hilang */\n  padding: 2px 8px;\n  border-radius: 999px;\n  background: #e7efff;\n  font-size: 0.75rem;\n}\n\n/* 1. Judul: selalu satu baris, sisanya jadi titik-titik */\n.kartu-judul {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n  font-size: 1rem;\n}\n\n/* 2. Ringkasan: dipotong tepat di baris kedua */\n.kartu-ringkas {\n  display: -webkit-box;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n  overflow: hidden;\n  line-height: 1.5;\n  margin: 8px 0 0;\n  color: #4a4f5a;\n}\n\n/* 3. Blok kode: baris panjang turun sendiri, spasinya tetap utuh */\n.kode {\n  white-space: pre-wrap;\n  overflow-wrap: break-word;\n  margin: 12px 0 0;\n  padding: 10px;\n  border-radius: 6px;\n  background: #f4f5f7;\n  font-family: Consolas, \"Courier New\", monospace;\n  font-size: 0.875rem;\n}\n\n/* 4. Tabel dengan satu kolom berisi URL panjang */\n.tabel {\n  width: 100%;\n  table-layout: fixed;      /* lebar kolom ditentukan CSS, bukan isinya */\n  border-collapse: collapse;\n}\n\n.tabel td {\n  padding: 8px;\n  border-bottom: 1px solid #e3e5ea;\n  vertical-align: top;\n}\n\n.tabel .alamat {\n  overflow-wrap: break-word;   /* URL boleh patah, tetap terbaca seluruhnya */\n}\n\n.tabel .berkas {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}"
     },
     {
+     "heading": "Alasan min-width nol dan batas text-overflow",
      "body": [
       "Membaca ulang contoh di atas",
       "",
@@ -2989,6 +3017,7 @@
      ]
     },
     {
+     "heading": "Properti wadah dan item flex",
      "body": [
       "Properti di wadah:",
       "  display: flex;",
@@ -3026,6 +3055,7 @@
      "code": "/* Bilah kepala: judul di kiri, menu di kanan */\n.kepala {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 16px;\n  padding: 12px 20px;\n}\n\n/* Deretan kartu yang turun sendiri di layar sempit */\n.daftar-kartu {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 20px;\n}\n\n.daftar-kartu > .kartu {\n  flex: 1 1 260px;    /* boleh melar, boleh menyusut, dasar 260px */\n  min-width: 0;\n}\n\n/* Memusatkan isi, mendatar dan menurun sekaligus */\n.tengah {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}\n\n/* Kolom yang mendorong tombolnya ke dasar kartu */\n.kartu {\n  display: flex;\n  flex-direction: column;\n}\n\n.kartu .tombol {\n  margin-top: auto;\n}"
     },
     {
+     "heading": "Pola contoh flexbox dan dua jebakannya",
      "body": [
       "Tiga bagian contoh di atas yang perlu kamu hafal:",
       "",
@@ -3129,6 +3159,7 @@
      ]
     },
     {
+     "heading": "Garis grid dan kolom yang responsif",
      "body": [
       "Menempatkan item",
       "",
@@ -3171,6 +3202,7 @@
      "code": "/* Daftar kartu yang menata dirinya sendiri */\n.papan {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n  gap: 20px;\n}\n\n/* Satu kartu yang sengaja dibuat selebar dua kolom */\n.papan .sorotan {\n  grid-column: span 2;\n}\n\n/* Kerangka halaman dengan nama daerah */\n.halaman {\n  display: grid;\n  grid-template-columns: 240px 1fr;\n  grid-template-rows: auto 1fr auto;\n  grid-template-areas:\n    \"kepala kepala\"\n    \"sisi   isi\"\n    \"kaki   kaki\";\n  gap: 16px;\n  min-height: 100vh;\n}\n\n.kepala { grid-area: kepala; }\n.sisi   { grid-area: sisi; }\n.isi    { grid-area: isi; min-width: 0; }\n.kaki   { grid-area: kaki; }"
     },
     {
+     "heading": "Template areas serta pilihan grid atau flex",
      "body": [
       "grid-template-areas itu bagian CSS yang hampir nggak perlu dijelaskan,",
       "karena tulisannya udah berbentuk gambar tata letaknya. Nama yang sama",
@@ -3284,6 +3316,7 @@
      ]
     },
     {
+     "heading": "Perataan di grid: items, self, content",
      "body": [
       "Di grid ada tiga pasang",
       "",
@@ -3355,6 +3388,7 @@
      "code": "/* 1. Memusatkan isi kartu: satu baris menggantikan tiga */\n.kartu-kosong {\n  display: grid;\n  place-items: center;\n  min-height: 240px;\n  text-align: center;\n}\n\n/* 2. Kisi berukuran tetap di dalam wadah yang lebih besar.\n      place-items mengurus isi TIAP SEL,\n      place-content mengurus letak SELURUH KISI. */\n.kisi {\n  display: grid;\n  grid-template-columns: repeat(3, 120px);\n  grid-template-rows: repeat(2, 120px);\n  gap: 12px;\n  place-items: center;\n  place-content: center;\n  min-height: 420px;\n}\n\n/* Satu sel dikecualikan: isinya melar penuh, bukan dipusatkan */\n.kisi .lebar {\n  place-self: stretch;\n}\n\n/* 3. Deretan label membungkus: barisnya menumpuk dari atas,\n      bukan dimekarkan memenuhi tinggi wadah */\n.label {\n  display: flex;\n  flex-wrap: wrap;\n  align-content: flex-start;\n  align-items: center;\n  gap: 8px;\n  height: 120px;\n  overflow-y: auto;\n}"
     },
     {
+     "heading": "Grid implisit dan arah pengisian",
      "body": [
       "Grid implisit",
       "",
@@ -3531,6 +3565,7 @@
      ]
     },
     {
+     "heading": "Induk setinggi nol, clearfix, dan flow-root",
      "body": [
       "Gejala paling umum: induk yang tingginya mendadak nol",
       "",
@@ -3622,6 +3657,7 @@
      "code": "/* ============ CARA LAMA - yang akan kamu BACA, bukan yang kamu tulis ===== */\n\n.baris-lama {\n  background: #f2f2f0;\n}\n\n/* Tanpa tiga baris ini, tinggi .baris-lama = 0: latarnya hilang dan kotak\n   sesudahnya naik menimpa kolom-kolomnya. */\n.baris-lama::after {\n  content: \"\";\n  display: block;\n  clear: both;\n}\n\n.baris-lama .kolom {\n  float: left;\n  width: 33.3333%;\n  padding: 16px;\n}\n\n/* Tidak ada gap di dunia float, jadi jarak antar kolom harus dipalsukan\n   dengan padding atau margin - dan margin itu MENAMBAH lebar kalau\n   box-sizing masih content-box, lihat materi Box Model. Ini sebabnya angka\n   di atas begitu rapuh. */\n\n.baris-lama .kolom + .kolom {\n  border-left: 1px solid #dcdcdc;\n}\n\n/* Pengaman kalau clearfix di atas telanjur dilupakan orang sebelum kamu. */\n.sesudah-baris {\n  clear: both;\n}\n\n/* ============ CARA SEKARANG - hal yang sama, dengan grid ================= */\n\n.baris {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 16px;\n  background: #f2f2f0;\n}\n\n.baris .kolom {\n  padding: 16px;\n  min-width: 0;\n}\n\n/* Tidak ada clearfix, tidak ada persentase yang harus dijumlahkan sendiri,\n   tidak ada urusan tinggi nol. Kolomnya juga otomatis sama tinggi -\n   sesuatu yang float TIDAK PERNAH bisa lakukan. */"
     },
     {
+     "heading": "Inline-flex, inline-grid, dan display contents",
      "body": [
       "Nilai display yang belum pernah disebut",
       "",
@@ -3756,6 +3792,7 @@
      ]
     },
     {
+     "heading": "Induk relative untuk anak absolute",
      "body": [
       "Kenapa position: absolute butuh induk yang positioned",
       "",
@@ -3786,6 +3823,7 @@
      ]
     },
     {
+     "heading": "Urutan tumpukan z-index dan sticky",
      "body": [
       "z-index: siapa di atas siapa",
       "",
@@ -3829,6 +3867,7 @@
      "code": "/* Pola induk-anak yang paling sering dipakai di CSS */\n.kartu {\n  position: relative;       /* jadi acuan, tanpa menggeser apa pun */\n  padding: 20px;\n}\n\n.kartu .lencana {\n  position: absolute;\n  top: 8px;\n  right: 8px;\n  padding: 2px 10px;\n  border-radius: 999px;\n  background: crimson;\n  color: white;\n}\n\n/* Bilah kepala yang menempel saat halaman digulir */\n.kepala {\n  position: sticky;\n  top: 0;\n  z-index: 10;\n  background: white;\n  border-bottom: 1px solid #e4e4e4;\n}\n\n/* Tombol mengambang; acuannya jendela, bukan induknya */\n.tombol-apung {\n  position: fixed;\n  right: 24px;\n  bottom: 24px;\n  z-index: 100;\n}\n\n/* Geser sedikit tanpa mengganggu tetangga */\n.ikon-sejajar {\n  position: relative;\n  top: 2px;\n}"
     },
     {
+     "heading": "Tautan lompat, gulir mulus, dan scroll-snap",
      "body": [
       "Akibat dari .kepala yang sticky: tautan lompat mendarat di baliknya",
       "",
@@ -3967,6 +4006,7 @@
      ]
     },
     {
+     "heading": "Pseudo-element dan properti content",
      "body": [
       "Pseudo-element bikin bagian yang nggak ada di HTML. Ditulis pakai dua",
       "titik dua.",
@@ -4002,6 +4042,7 @@
      ]
     },
     {
+     "heading": "Urutan tautan dan penanda fokus",
      "body": [
       "Urutan aturan tautan ada aturannya",
       "",
@@ -4040,6 +4081,7 @@
      ]
     },
     {
+     "heading": "Bentuk kursor sebagai tanda keadaan",
      "body": [
       "Bentuk kursor ikut ngasih tahu keadaan",
       "",
@@ -4177,6 +4219,7 @@
      ]
     },
     {
+     "heading": "Kurva waktu dan properti yang bisa bertransisi",
      "body": [
       "Beberapa properti dipisah koma, masing-masing dengan waktunya sendiri:",
       "",
@@ -4259,6 +4302,7 @@
      "code": "/* --- Tombol: dua properti bergerak, sisanya tidak --- */\n.tombol {\n  background-color: #1a4fa0;\n  color: #ffffff;\n  border: none;\n  border-radius: 8px;\n  padding: 10px 18px;\n  cursor: pointer;\n\n  /* Di keadaan DASAR, bukan di dalam :hover.\n     Koma memisahkan properti, masing-masing dengan waktunya sendiri. */\n  transition: background-color 0.15s ease-out,\n              box-shadow 0.25s ease-out;\n}\n\n.tombol:hover {\n  background-color: #0d2f66;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);\n}\n\n.tombol:active {\n  background-color: #0a2450;\n}\n\n/* --- Kotak isian: cincin fokus yang tumbuh, bukan berkedip --- */\n.isian {\n  border: 1px solid #d0d4da;\n  border-radius: 6px;\n  padding: 8px 10px;\n  transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;\n}\n\n.isian:focus-visible {\n  outline: none;                 /* diganti, bukan dihilangkan */\n  border-color: #1a4fa0;\n  box-shadow: 0 0 0 3px rgba(26, 79, 160, 0.3);\n}\n\n/* --- Panel yang memudar tanpa menyentuh display --- */\n.panel {\n  opacity: 0;\n  visibility: hidden;\n  /* Menutup: visibility menunggu 0.2s dulu, supaya memudarnya sempat\n     terlihat sampai habis baru elemennya benar-benar hilang. */\n  transition: opacity 0.2s ease, visibility 0s linear 0.2s;\n}\n\n.panel.tampil {\n  opacity: 1;\n  visibility: visible;\n  /* Membuka: visibility berlaku seketika, memudarnya menyusul. */\n  transition: opacity 0.2s ease, visibility 0s linear 0s;\n}"
     },
     {
+     "heading": "Keyframes, properti animation, dan fill-mode",
      "body": [
       "transition selalu nunggu ada yang mengubah nilai. Kalau kamu mau",
       "gerakan yang jalan sendiri, misalnya spinner yang berputar atau",
@@ -4506,6 +4550,7 @@
      ]
     },
     {
+     "heading": "Border, padding, dan perataan sel tabel",
      "body": [
       "Tulis border di sel, bukan di <table>",
       "",
@@ -4591,6 +4636,7 @@
      "code": "/* Tabel harga. Markup yang diharapkannya ada di bagian terakhir materi ini. */\n\n.bungkus-tabel {\n  overflow-x: auto;      /* yang bisa digeser tabelnya, bukan halamannya */\n  overflow-y: auto;\n  max-height: 420px;     /* supaya kepala tabel punya alasan untuk menempel */\n}\n\n.tabel-harga {\n  width: 100%;               /* tabel tidak melebar sendiri; harus disuruh */\n  border-collapse: collapse; /* satu garis, bukan dua */\n  font-variant-numeric: tabular-nums;\n}\n\n/* Lebar kolom lewat <col>. Pada <col> hanya width, background, border,\n   dan visibility yang berlaku - padding dan color diabaikan. */\n.tabel-harga .kolom-menu {\n  width: 44%;\n}\n\n.tabel-harga caption {\n  caption-side: top;\n  text-align: left;      /* bawaan caption: rata tengah */\n  padding-bottom: 12px;\n  color: #5b616e;\n  font-size: 14px;\n}\n\n/* Garis tepi ditulis di SEL, bukan di <table> */\n.tabel-harga th,\n.tabel-harga td {\n  padding: 12px 16px;    /* satu-satunya cara memberi napas di dalam sel */\n  vertical-align: top;\n  border-bottom: 1px solid #e4e6ea;\n}\n\n.tabel-harga thead th {\n  position: sticky;\n  top: 0;\n  z-index: 1;\n  background: #ffffff;   /* sticky yang bening akan ditembus baris di bawahnya */\n  text-align: left;      /* bawaan th: tebal dan RATA TENGAH */\n  font-size: 13px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  color: #5b616e;\n  /* border ikut tergulir saat collapse, jadi garisnya dibuat dari bayangan */\n  box-shadow: inset 0 -1px 0 #d3d7de;\n}\n\n/* <th scope=\"row\"> di kolom pertama juga perlu diratakan kiri */\n.tabel-harga tbody th {\n  text-align: left;\n  font-weight: 600;\n}\n\n/* Angka rata kanan supaya satuannya berbaris lurus ke bawah */\n.tabel-harga .angka {\n  text-align: right;\n}\n\n.tabel-harga tbody tr:nth-child(even) {\n  background: #f6f7f9;\n}\n\n.tabel-harga tbody tr:hover {\n  background: #eef2fb;\n}\n\n.tabel-harga tbody tr:last-child td,\n.tabel-harga tbody tr:last-child th {\n  border-bottom: none;\n}\n\n.tabel-harga tfoot td {\n  border-top: 2px solid #d3d7de;\n  border-bottom: none;\n  color: #5b616e;\n  font-size: 14px;\n}\n\n/* Di layar sempit, ruang lebih berharga daripada kelapangan */\n@media (max-width: 600px) {\n  .tabel-harga th,\n  .tabel-harga td {\n    padding: 10px 12px;\n  }\n}"
     },
     {
+     "heading": "Lebar kolom dengan table-layout",
      "body": [
       "Lebar kolom: table-layout auto atau fixed",
       "",
@@ -4778,6 +4824,7 @@
      ]
     },
     {
+     "heading": "Warna kontrol bawaan dan focus-within",
      "body": [
       "Sebelum mencopot apa pun, coba tiga properti ini dulu",
       "",
@@ -4821,6 +4868,7 @@
      ]
     },
     {
+     "heading": "Pseudo-class formulir dan jebakan invalid",
      "body": [
       "Pseudo-class yang cuma ada di formulir",
       "",
@@ -4891,6 +4939,7 @@
      ]
     },
     {
+     "heading": "Checkbox dan radio buatan sendiri",
      "body": [
       "Checkbox dan radio buatan sendiri",
       "",
@@ -5051,6 +5100,7 @@
      ]
     },
     {
+     "heading": "Mobile first dan cara menentukan breakpoint",
      "body": [
       "Mobile first artinya: tulis gaya dasarnya untuk layar sempit dulu,",
       "lalu tambahkan aturan min-width untuk layar yang lebih lebar.",
@@ -5092,6 +5142,7 @@
      "code": "/* --- Dasar: layar sempit, satu kolom --- */\n.halaman {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 16px;\n  padding: 16px;\n}\n\nimg {\n  max-width: 100%;\n  height: auto;\n}\n\nh1 {\n  font-size: clamp(1.5rem, 4vw, 2.5rem);\n}\n\n.isi {\n  max-width: 68ch;\n  min-width: 0;\n}\n\n/* --- Semua @media di bagian paling bawah berkas --- */\n\n/* 720px = panel 240 + kolom baca 440 + jarak 40 */\n@media (min-width: 720px) {\n  .halaman {\n    grid-template-columns: 240px 1fr;\n    padding: 24px;\n  }\n}\n\n/* 1100px = 240 + 520 kolom baca + 280 panel kanan + jarak 60 */\n@media (min-width: 1100px) {\n  .halaman {\n    grid-template-columns: 240px 1fr 280px;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms;\n    transition-duration: 0.01ms;\n  }\n}"
     },
     {
+     "heading": "Media query: letak, alternatif, dan hover",
      "body": [
       "Taruh blok @media di bawah aturan yang mau ditimpanya. Paling aman di",
       "bagian paling bawah berkas.",
@@ -5243,6 +5294,7 @@
      "code": ":root {\n  --latar: #ffffff;\n  --teks: #1c1e22;\n  --garis: #e4e6ea;\n  --sorot: #1a4fa0;\n\n  --s1: 4px;\n  --s2: 8px;\n  --s3: 12px;\n  --s4: 16px;\n  --s5: 24px;\n  --s6: 32px;\n\n  /* Kontrol bawaan browser ikut gelap: bilah gulir, kotak centang, dll. */\n  color-scheme: light dark;\n}\n\n/* 1. Selera sistem. Berlaku selama pemakai belum memilih sendiri. */\n@media (prefers-color-scheme: dark) {\n  :root {\n    --latar: #14161a;\n    --teks: #e8e9ec;\n    --garis: #2a2e35;\n    --sorot: #7aa7f0;\n  }\n}\n\n/* 2. Pilihan di halaman ini. Ditulis SESUDAH @media, jadi selalu menang. */\n[data-tema=\"gelap\"] {\n  --latar: #14161a;\n  --teks: #e8e9ec;\n  --garis: #2a2e35;\n  --sorot: #7aa7f0;\n  color-scheme: dark;\n}\n\n[data-tema=\"terang\"] {\n  --latar: #ffffff;\n  --teks: #1c1e22;\n  --garis: #e4e6ea;\n  --sorot: #1a4fa0;\n  color-scheme: light;\n}\n\nbody {\n  background: var(--latar);\n  color: var(--teks);\n}\n\n.kartu {\n  background: var(--latar);\n  border: 1px solid var(--garis);\n  border-radius: var(--s2);\n  padding: var(--s5);\n  margin-bottom: var(--s4);\n}\n\n.kartu h3 {\n  color: var(--sorot);\n  margin-bottom: var(--s3);\n}"
     },
     {
+     "heading": "Dua sumber tema gelap dan color-scheme",
      "body": [
       "Coba perhatikan: di contoh itu, nggak ada satu pun aturan .kartu yang",
       "ditulis dua kali. Untuk mengganti tema seluruh halaman, kamu cukup",
@@ -5315,6 +5367,7 @@
      ]
     },
     {
+     "heading": "Urutan isi berkas gaya dan kebiasaan rapi",
      "body": [
       "Urutan isi berkas gaya yang awet dipakai lama:",
       "",
@@ -5359,6 +5412,7 @@
      ]
     },
     {
+     "heading": "Daftar periksa aturan CSS yang tidak jalan",
      "body": [
       "Daftar periksa kalau sebuah aturan nggak jalan",
       "",
@@ -5560,6 +5614,7 @@
      "code": ".kartu {\n  display: grid;\n  gap: 12px;\n  padding: 16px;\n  border: 1px solid #e4e6ea;\n}\n\n/* Tata letak berubah karena ISINYA, bukan karena class tambahan\n   yang harus diingat orang saat menulis HTML-nya. */\n.kartu:has(img) {\n  grid-template-columns: 120px 1fr;\n}\n\n/* Label ikut menyala saat centang di dalamnya aktif.\n   Dulu ini butuh JavaScript, atau trik urutan <input> lalu <label>. */\nlabel:has(input:checked) {\n  background: #eef4ff;\n  font-weight: 700;\n}\n\n/* Baris tabel yang tercentang */\ntbody tr:has(input[type=\"checkbox\"]:checked) {\n  background: #fff6d8;\n}\n\n/* Halaman berhenti bisa digulir selama dialog terbuka */\nbody:has(dialog[open]) {\n  overflow: hidden;\n}\n\n/* Judul yang tepat sesudahnya ada paragraf: rapatkan jaraknya.\n   Judul yang berdiri sendiri tidak ikut. */\nh2:has(+ p) {\n  margin-bottom: 4px;\n}\n\n/* Yang ditata anaknya, syaratnya di tempat lain: tombol kirim\n   diredupkan selama masih ada isian yang belum sah. */\nform:has(input:invalid) .tombol-kirim {\n  opacity: 0.5;\n  pointer-events: none;\n}"
     },
     {
+     "heading": "Urutan lapisan dan aturan tanpa lapisan",
      "body": [
       "@layer: lapisan cascade",
       "",
@@ -5751,6 +5806,7 @@
      "code": "/* Menipiskan huruf di macOS. Tidak pernah dibakukan, dan tidak\n   berpengaruh apa-apa di Windows maupun Linux. Dua baris ini\n   sepasang: satu untuk Safari/Chrome, satu untuk Firefox di macOS. */\nbody {\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n/* Memotong teks setelah 3 baris lalu memberi '...' sendiri.\n   Keempat baris ini satu paket - hilang salah satu, tidak terjadi\n   apa-apa sama sekali. Ini satu-satunya cara memotong per BARIS;\n   text-overflow: ellipsis hanya bekerja untuk satu baris. */\n.ringkasan {\n  display: -webkit-box;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 3;\n  overflow: hidden;\n}\n\n/* Menanggalkan rupa bawaan sistem operasi dari kontrol formulir\n   sebelum menatanya sendiri. Yang berprefiks DULU, yang baku\n   TERAKHIR, supaya versi baku yang menang di browser baru. */\nselect {\n  -webkit-appearance: none;\n  appearance: none;\n  border: 1px solid #d8d8d8;\n  border-radius: 6px;\n  padding: 8px 12px;\n}\n\n/* Gulir bermomentum di iOS lama. Sudah tidak diperlukan sejak\n   bertahun-tahun. Menemukannya adalah tanda berkasnya sudah tua -\n   bukan tanda kamu perlu menambahkannya juga. */\n.panel-lama {\n  -webkit-overflow-scrolling: touch;\n}"
     },
     {
+     "heading": "Cara kerja supports dan bedanya dengan media",
      "body": [
       "@supports: cara CSS bertanya",
       "",
@@ -5824,6 +5880,7 @@
      ]
     },
     {
+     "heading": "Properti logis dan sumbu inline block",
      "body": [
       "Properti logis: kenapa \"kiri\" kurang tepat",
       "",
@@ -6220,6 +6277,7 @@
      "code": "/* 1. Reset: meratakan bawaan browser dari materi 1 */\nbody,\nh1,\nh2,\np,\nfigure {\n  margin: 0;\n}\n\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n}\n\n/* 2. Variabel: seluruh sistem desainnya, dalam satu blok */\n:root {\n  --warna-latar: #ffffff;\n  --warna-teks: #1c1e22;\n  --warna-garis: #e4e6ea;\n  --warna-sorot: #1a4fa0;\n  --s2: 8px;\n  --s4: 16px;\n  --s5: 24px;\n  --bulat: 8px;\n}\n\n/* 3. Elemen dasar */\nbody {\n  background: var(--warna-latar);\n  color: var(--warna-teks);\n  font-family: system-ui, sans-serif;\n  line-height: 1.6;\n}\n\n/* 4. Komponen, dinamai dengan BEM */\n.kartu {\n  background: var(--warna-latar);\n  border: 1px solid var(--warna-garis);\n  border-radius: var(--bulat);\n  padding: var(--s5);\n}\n\n.kartu__judul {\n  color: var(--warna-sorot);\n  font-size: 20px;\n  margin-bottom: var(--s2);\n}\n\n.kartu__isi {\n  margin-bottom: var(--s4);\n}\n\n/* Modifier ditulis SESUDAH bloknya: menang lewat urutan, bukan spesifisitas */\n.kartu--sorot {\n  border-color: var(--warna-sorot);\n}\n\n/* 5. Media query, di kaki berkas */\n@media (max-width: 600px) {\n  .kartu {\n    padding: var(--s4);\n  }\n}"
     },
     {
+     "heading": "Nesting, reset, dan berkas minifikasi",
      "body": [
       "Ada tiga hal yang bikin berkas .css sungguhan kelihatan asing.",
       "",

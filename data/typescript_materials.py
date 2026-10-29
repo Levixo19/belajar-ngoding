@@ -92,6 +92,7 @@ console.log(sapa("Budi"));
 console.log(sapa("Cici", "Selamat pagi"));"""
             },
             {
+                "heading": "Anotasi tipe, inferensi, dan strict",
                 "body": [
                     "Bedanya dengan JavaScript cuma satu: ada anotasi tipe, yaitu keterangan",
                     "tipe yang ditulis sesudah tanda titik dua.",
@@ -283,6 +284,7 @@ for (const v of ["halo", 42, true, null, [1, 2], { a: 1 }]) {
 }"""
             },
             {
+                "heading": "Kenapa unknown lebih aman daripada any",
                 "body": [
                     "Keluaran:",
                     "  nama   : Andi",
@@ -499,6 +501,7 @@ for (const v of ["halo", 12345, null]) {
 }"""
             },
             {
+                "heading": "Pemeriksaan never, Record, dan pilihan enum",
                 "body": [
                     "Keluaran:",
                     "  Persegi            16.00",
@@ -710,6 +713,7 @@ const mw: MuridBerwaktu = {
 console.log(`${mw.nama} dibuat ${mw.dibuat}`);"""
             },
             {
+                "heading": "Predikat tipe dan index signature",
                 "body": [
                     "Keluaran:",
                     "  Cici    murid   95",
@@ -914,6 +918,7 @@ try {
 }"""
             },
             {
+                "heading": "Variabel catch bertipe unknown dan never",
                 "body": [
                     "Keluaran:",
                     "  ----------- REKAP ------------",
@@ -1143,6 +1148,7 @@ console.log(`ringkas: ${JSON.stringify(ringkas)}`);
 console.log(`tambal : ${JSON.stringify(terapkan(m, tambal))}`);"""
             },
             {
+                "heading": "Hasil generic, spread, dan salinan dangkal",
                 "body": [
                     "Keluaran:",
                     "  ambil nama : Andi",
@@ -1389,6 +1395,7 @@ try {
 }"""
             },
             {
+                "heading": "Private field, tipe this, dan setelan ketat",
                 "body": [
                     "Dari contoh itu, ada empat hal yang perlu kamu lihat:",
                     "  1. #saldo dan static #urutan memakai private field JavaScript, bukan",
@@ -1587,6 +1594,7 @@ console.log(`nilai maks: ${NILAI_MAKS}`);"""
 }"""
             },
             {
+                "heading": "Arti tiap setelan compilerOptions",
                 "body": [
                     "Setelan yang paling menentukan, satu per satu:",
                     "  - strict: menyalakan semua pemeriksaan ketat sekaligus. Jumlahnya",
@@ -1792,6 +1800,7 @@ async function main(): Promise<void> {
 main();"""
             },
             {
+                "heading": "Await dalam for lawan Promise.all",
                 "body": [
                     "Keluaran:",
                     "  A selesai (200ms)",
@@ -2014,6 +2023,7 @@ console.log(`satisfies   : ${merah}`);
 console.log(`kunci       : ${Object.keys(warna).join(", ")}`);"""
             },
             {
+                "heading": "Key remapping dan satisfies",
                 "body": [
                     "Keluaran:",
                     "  bisa diubah : {\"id\":2,\"nama\":\"Andi\",\"nilai\":88}",
@@ -2230,6 +2240,7 @@ try {
 console.log(`tema tetap: ${setelan.tema}`);"""
             },
             {
+                "heading": "Beda readonly dan Object.freeze",
                 "body": [
                     "Keluaran:",
                     "  Status (enum):",
@@ -2440,6 +2451,7 @@ pastikanMurid(kandidat);
 console.log(`sesudah assert   -> ${kandidat.nama} ${kandidat.nilai}`);"""
             },
             {
+                "heading": "Bahaya as dan fungsi assertion",
                 "body": [
                     "Keluaran:",
                     "  OK    Andi  A 88",
@@ -2656,6 +2668,7 @@ describe("lulus", () => {
 });"""
             },
             {
+                "heading": "Matcher vitest dan cara menjalankannya",
                 "body": [
                     "Lihat nilai yang dipilih: 85 dan 84, 75 dan 74, 60 dan 59. Menguji",
                     "tepat di batas jauh lebih berguna daripada menguji nilai di tengah",
@@ -2856,6 +2869,7 @@ for (const t of toko) {
 }"""
             },
             {
+                "heading": "Pengurutan dua patokan dan Map.get",
                 "body": [
                     "Keluaran:",
                     "  Nasi       Makanan     4 x  30000 =   120000",
@@ -3073,6 +3087,7 @@ main().catch((e: unknown) => {
 });"""
             },
             {
+                "heading": "Destructuring, catch, dan exitCode di Node",
                 "body": [
                     "Keluaran:",
                     "  ditulis   : murid.csv",
@@ -3330,6 +3345,7 @@ const menipis = gudang
 console.log(`stok menipis (<10): ${menipis}`);"""
             },
             {
+                "heading": "Lima keputusan desain dan satisfies",
                 "body": [
                     "Lima keputusan yang layak ditiru:",
                     "  1. Kegagalan dikembalikan lewat discriminated union. Pemanggil nggak",

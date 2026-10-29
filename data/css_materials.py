@@ -65,6 +65,7 @@ CSS_MATERIALS = [
 </html>""",
             },
             {
+                "heading": "Inline, blok style, atau berkas terpisah",
                 "body": [
                     "Tiga cara itu, diurutkan dari yang paling jelek ke yang paling baik:",
                     "",
@@ -115,6 +116,7 @@ a {
 }""",
             },
             {
+                "heading": "CSS tidak pernah memberi pesan error",
                 "body": [
                     "Ada satu sifat CSS yang perlu kamu tahu dari awal: CSS nggak pernah",
                     "ngasih pesan error.",
@@ -271,6 +273,7 @@ input[type="text"] {
 }""",
             },
             {
+                "heading": "Cascade dan spesifisitas pemilih",
                 "body": [
                     "Cascade: aturan mana yang dipakai",
                     "",
@@ -310,6 +313,7 @@ input[type="text"] {
                 ]
             },
             {
+                "heading": "Id, important, dan aturan yang tidak mempan",
                 "body": [
                     "Kenapa id sebaiknya nggak dipakai untuk menata tampilan",
                     "",
@@ -502,6 +506,7 @@ input[type="text"] {
 }""",
             },
             {
+                "heading": "Membaca cascade di panel Styles",
                 "body": [
                     "Panel Styles: melihat cascade bekerja",
                     "",
@@ -574,6 +579,7 @@ input[type="text"] {
                 ],
             },
             {
+                "heading": "Panel Computed dan diagram box model",
                 "body": [
                     "Panel Computed: hasil akhirnya",
                     "",
@@ -626,6 +632,7 @@ input[type="text"] {
                 ],
             },
             {
+                "heading": "Memaksa hover dan menyunting langsung",
                 "body": [
                     "Memaksa keadaan: tombol :hov dan .cls",
                     "",
@@ -799,6 +806,7 @@ input[type="text"] {
                 ]
             },
             {
+                "heading": "Satuan mutlak, relatif, dan line-height",
                 "body": [
                     "Satuan ukuran",
                     "",
@@ -1000,6 +1008,7 @@ h1 {
                 ],
             },
             {
+                "heading": "Fungsi min, max, dan clamp",
                 "body": [
                     "min(), max(), dan clamp() satu keluarga dengan calc(). Ketiganya",
                     "sama-sama ngitung, sama-sama boleh mencampur satuan, dan aturan",
@@ -1056,6 +1065,7 @@ h1 {
                 ],
             },
             {
+                "heading": "Satuan waktu dan satuan sudut",
                 "body": [
                     "Dua keluarga satuan yang belum pernah dibahas",
                     "",
@@ -1107,6 +1117,7 @@ h1 {
                 ],
             },
             {
+                "heading": "Satuan viewport dan masalah 100vh",
                 "body": [
                     "Satuan viewport, lengkapnya",
                     "",
@@ -1373,6 +1384,7 @@ body {
                 ]
             },
             {
+                "heading": "Pewarisan dan kata kunci global",
                 "body": [
                     "Pewarisan (inheritance)",
                     "",
@@ -1481,6 +1493,7 @@ a {
 }""",
             },
             {
+                "heading": "Panjang baris dan properti font ringkas",
                 "body": [
                     "Panjang baris",
                     "",
@@ -1511,6 +1524,7 @@ a {
                 ]
             },
             {
+                "heading": "Tiga cara memuat font web",
                 "body": [
                     "Font web: tiga bentuk yang pasti kamu lihat di berkas orang",
                     "",
@@ -1629,6 +1643,7 @@ a {
                 ]
             },
             {
+                "heading": "Padding, margin, dan border",
                 "body": [
                     "Padding dan margin paling sering ketuker. Bedanya begini:",
                     "",
@@ -1675,6 +1690,7 @@ a {
                 ]
             },
             {
+                "heading": "Lebar kotak dan box-sizing border-box",
                 "body": [
                     "Kenapa box-sizing: border-box hampir selalu dipakai",
                     "",
@@ -1720,6 +1736,7 @@ a {
                 ]
             },
             {
+                "heading": "Margin collapse dan cara menghentikannya",
                 "body": [
                     "Margin yang menyatu (margin collapse)",
                     "",
@@ -1889,6 +1906,7 @@ a {
                 ]
             },
             {
+                "heading": "Cara menyembunyikan elemen dan pointer-events",
                 "body": [
                     "Tiga cara menyembunyikan, tiga akibat yang beda",
                     "",
@@ -2113,6 +2131,7 @@ img {
                 ],
             },
             {
+                "heading": "Mengulang, menaruh, dan mengukur gambar latar",
                 "body": [
                     "Mengulang, menaruh, dan mengukur",
                     "",
@@ -2214,6 +2233,7 @@ img {
                 ],
             },
             {
+                "heading": "Gradien dan lapisan gelap di atas foto",
                 "body": [
                     "Gradien itu gambar, bukan warna",
                     "",
@@ -2581,6 +2601,7 @@ body {
                 ],
             },
             {
+                "heading": "Bayangan inset, berlapis, dan tidak makan ruang",
                 "body": [
                     "inset: bayangan di dalam kotak",
                     "",
@@ -2705,6 +2726,7 @@ body {
 }""",
             },
             {
+                "heading": "Bayangan teks, filter, dan backdrop-filter",
                 "body": [
                     "text-shadow: saudara yang lebih pendek",
                     "",
@@ -2946,6 +2968,7 @@ body {
                 ],
             },
             {
+                "heading": "Translate dan pola memusatkan elemen",
                 "body": [
                     "translate: menggeser",
                     "",
@@ -3002,6 +3025,7 @@ body {
                 ],
             },
             {
+                "heading": "Scale, rotate, skew, dan transform-origin",
                 "body": [
                     "scale: membesarkan dan mengecilkan",
                     "",
@@ -3176,6 +3200,7 @@ body {
 }""",
             },
             {
+                "heading": "Efek samping transform dan alasan ringannya",
                 "body": [
                     "Tiga efek samping yang perlu kamu ingat",
                     "",
@@ -3323,6 +3348,7 @@ body {
                 ],
             },
             {
+                "heading": "Memotong teks setelah beberapa baris",
                 "body": [
                     "Memotong di baris ke-N",
                     "",
@@ -3391,6 +3417,7 @@ body {
                 ],
             },
             {
+                "heading": "Nilai white-space dan memutus kata panjang",
                 "body": [
                     "Nilai white-space selengkapnya",
                     "",
@@ -3565,6 +3592,7 @@ body {
 }""",
             },
             {
+                "heading": "Alasan min-width nol dan batas text-overflow",
                 "body": [
                     "Membaca ulang contoh di atas",
                     "",
@@ -3695,6 +3723,7 @@ body {
                 ]
             },
             {
+                "heading": "Properti wadah dan item flex",
                 "body": [
                     "Properti di wadah:",
                     "  display: flex;",
@@ -3769,6 +3798,7 @@ body {
 }""",
             },
             {
+                "heading": "Pola contoh flexbox dan dua jebakannya",
                 "body": [
                     "Tiga bagian contoh di atas yang perlu kamu hafal:",
                     "",
@@ -3872,6 +3902,7 @@ body {
                 ]
             },
             {
+                "heading": "Garis grid dan kolom yang responsif",
                 "body": [
                     "Menempatkan item",
                     "",
@@ -3942,6 +3973,7 @@ body {
 .kaki   { grid-area: kaki; }""",
             },
             {
+                "heading": "Template areas serta pilihan grid atau flex",
                 "body": [
                     "grid-template-areas itu bagian CSS yang hampir nggak perlu dijelaskan,",
                     "karena tulisannya udah berbentuk gambar tata letaknya. Nama yang sama",
@@ -4055,6 +4087,7 @@ body {
                 ],
             },
             {
+                "heading": "Perataan di grid: items, self, content",
                 "body": [
                     "Di grid ada tiga pasang",
                     "",
@@ -4162,6 +4195,7 @@ body {
 }""",
             },
             {
+                "heading": "Grid implisit dan arah pengisian",
                 "body": [
                     "Grid implisit",
                     "",
@@ -4366,6 +4400,7 @@ body {
                 ],
             },
             {
+                "heading": "Induk setinggi nol, clearfix, dan flow-root",
                 "body": [
                     "Gejala paling umum: induk yang tingginya mendadak nol",
                     "",
@@ -4507,6 +4542,7 @@ body {
    sesuatu yang float TIDAK PERNAH bisa lakukan. */""",
             },
             {
+                "heading": "Inline-flex, inline-grid, dan display contents",
                 "body": [
                     "Nilai display yang belum pernah disebut",
                     "",
@@ -4706,6 +4742,7 @@ body {
                 ]
             },
             {
+                "heading": "Induk relative untuk anak absolute",
                 "body": [
                     "Kenapa position: absolute butuh induk yang positioned",
                     "",
@@ -4736,6 +4773,7 @@ body {
                 ]
             },
             {
+                "heading": "Urutan tumpukan z-index dan sticky",
                 "body": [
                     "z-index: siapa di atas siapa",
                     "",
@@ -4816,6 +4854,7 @@ body {
 }""",
             },
             {
+                "heading": "Tautan lompat, gulir mulus, dan scroll-snap",
                 "body": [
                     "Akibat dari .kepala yang sticky: tautan lompat mendarat di baliknya",
                     "",
@@ -4954,6 +4993,7 @@ body {
                 ]
             },
             {
+                "heading": "Pseudo-element dan properti content",
                 "body": [
                     "Pseudo-element bikin bagian yang nggak ada di HTML. Ditulis pakai dua",
                     "titik dua.",
@@ -4989,6 +5029,7 @@ body {
                 ]
             },
             {
+                "heading": "Urutan tautan dan penanda fokus",
                 "body": [
                     "Urutan aturan tautan ada aturannya",
                     "",
@@ -5027,6 +5068,7 @@ body {
                 ]
             },
             {
+                "heading": "Bentuk kursor sebagai tanda keadaan",
                 "body": [
                     "Bentuk kursor ikut ngasih tahu keadaan",
                     "",
@@ -5209,6 +5251,7 @@ tbody tr:nth-child(even) {
                 ],
             },
             {
+                "heading": "Kurva waktu dan properti yang bisa bertransisi",
                 "body": [
                     "Beberapa properti dipisah koma, masing-masing dengan waktunya sendiri:",
                     "",
@@ -5343,6 +5386,7 @@ tbody tr:nth-child(even) {
 }""",
             },
             {
+                "heading": "Keyframes, properti animation, dan fill-mode",
                 "body": [
                     "transition selalu nunggu ada yang mengubah nilai. Kalau kamu mau",
                     "gerakan yang jalan sendiri, misalnya spinner yang berputar atau",
@@ -5658,6 +5702,7 @@ tbody tr:nth-child(even) {
                 ],
             },
             {
+                "heading": "Border, padding, dan perataan sel tabel",
                 "body": [
                     "Tulis border di sel, bukan di <table>",
                     "",
@@ -5830,6 +5875,7 @@ tbody tr:nth-child(even) {
 }""",
             },
             {
+                "heading": "Lebar kolom dengan table-layout",
                 "body": [
                     "Lebar kolom: table-layout auto atau fixed",
                     "",
@@ -6059,6 +6105,7 @@ tbody tr:nth-child(even) {
                 ],
             },
             {
+                "heading": "Warna kontrol bawaan dan focus-within",
                 "body": [
                     "Sebelum mencopot apa pun, coba tiga properti ini dulu",
                     "",
@@ -6102,6 +6149,7 @@ tbody tr:nth-child(even) {
                 ],
             },
             {
+                "heading": "Pseudo-class formulir dan jebakan invalid",
                 "body": [
                     "Pseudo-class yang cuma ada di formulir",
                     "",
@@ -6172,6 +6220,7 @@ tbody tr:nth-child(even) {
                 ],
             },
             {
+                "heading": "Checkbox dan radio buatan sendiri",
                 "body": [
                     "Checkbox dan radio buatan sendiri",
                     "",
@@ -6502,6 +6551,7 @@ button[type="submit"]:hover {
                 ]
             },
             {
+                "heading": "Mobile first dan cara menentukan breakpoint",
                 "body": [
                     "Mobile first artinya: tulis gaya dasarnya untuk layar sempit dulu,",
                     "lalu tambahkan aturan min-width untuk layar yang lebih lebar.",
@@ -6587,6 +6637,7 @@ h1 {
 }""",
             },
             {
+                "heading": "Media query: letak, alternatif, dan hover",
                 "body": [
                     "Taruh blok @media di bawah aturan yang mau ditimpanya. Paling aman di",
                     "bagian paling bawah berkas.",
@@ -6798,6 +6849,7 @@ body {
 }""",
             },
             {
+                "heading": "Dua sumber tema gelap dan color-scheme",
                 "body": [
                     "Coba perhatikan: di contoh itu, nggak ada satu pun aturan .kartu yang",
                     "ditulis dua kali. Untuk mengganti tema seluruh halaman, kamu cukup",
@@ -6870,6 +6922,7 @@ body {
                 ]
             },
             {
+                "heading": "Urutan isi berkas gaya dan kebiasaan rapi",
                 "body": [
                     "Urutan isi berkas gaya yang awet dipakai lama:",
                     "",
@@ -6914,6 +6967,7 @@ body {
                 ]
             },
             {
+                "heading": "Daftar periksa aturan CSS yang tidak jalan",
                 "body": [
                     "Daftar periksa kalau sebuah aturan nggak jalan",
                     "",
@@ -7205,6 +7259,7 @@ form:has(input:invalid) .tombol-kirim {
 }""",
             },
             {
+                "heading": "Urutan lapisan dan aturan tanpa lapisan",
                 "body": [
                     "@layer: lapisan cascade",
                     "",
@@ -7467,6 +7522,7 @@ select {
 }""",
             },
             {
+                "heading": "Cara kerja supports dan bedanya dengan media",
                 "body": [
                     "@supports: cara CSS bertanya",
                     "",
@@ -7540,6 +7596,7 @@ select {
                 ],
             },
             {
+                "heading": "Properti logis dan sumbu inline block",
                 "body": [
                     "Properti logis: kenapa \"kiri\" kurang tepat",
                     "",
@@ -8105,6 +8162,7 @@ body {
 }""",
             },
             {
+                "heading": "Nesting, reset, dan berkas minifikasi",
                 "body": [
                     "Ada tiga hal yang bikin berkas .css sungguhan kelihatan asing.",
                     "",
